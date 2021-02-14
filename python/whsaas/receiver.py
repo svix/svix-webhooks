@@ -21,13 +21,9 @@ class InvalidSignature(Exception):
 class Message:
     id: str
     event_type: str
-    event_id: str
     event_timestamp: datetime
-    content: str
+    data: t.Dict[str, t.Any]
     timestamp: datetime
-
-    def content_json(self):
-        return json.loads(self.content)
 
 
 class Webhook:
