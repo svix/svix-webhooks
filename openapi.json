@@ -1,1 +1,1573 @@
-{"openapi":"3.0.2","info":{"title":"Bloopy","description":"The Bloopy server API documentation","version":"0.1.0"},"paths":{"/api/v1/health/":{"get":{"tags":["health"],"summary":"Health","operationId":"health_api_v1_health__get","responses":{"204":{"description":"Successful Response"}}}},"/api/v1/app/":{"get":{"tags":["application"],"summary":"List Applications","operationId":"list_applications_api_v1_app__get","parameters":[{"required":false,"schema":{"title":"Iterator","type":"string"},"name":"iterator","in":"query"},{"required":false,"schema":{"title":"Limit","type":"integer","default":50},"name":"limit","in":"query"}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ListResponse_ApplicationOut_"}}}},"401":{"description":"Unauthorized","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HttpErrorOut"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HttpErrorOut"}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}},"security":[{"APIKeyHeader":[]}]},"post":{"tags":["application"],"summary":"Create Application","operationId":"create_application_api_v1_app__post","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/ApplicationIn"}}},"required":true},"responses":{"201":{"description":"Successful Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ApplicationOut"}}}},"401":{"description":"Unauthorized","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HttpErrorOut"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HttpErrorOut"}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}},"security":[{"APIKeyHeader":[]}]}},"/api/v1/app/{app_id}/":{"delete":{"tags":["application"],"summary":"Delete Application","operationId":"delete_application_api_v1_app__app_id___delete","parameters":[{"required":true,"schema":{"title":"App Id","type":"string"},"name":"app_id","in":"path"}],"responses":{"204":{"description":"Successful Response"},"401":{"description":"Unauthorized","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HttpErrorOut"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HttpErrorOut"}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}},"security":[{"APIKeyHeader":[]}]}},"/api/v1/app/{app_id}/dest/":{"get":{"tags":["destination"],"summary":"List Destinations","operationId":"list_destinations_api_v1_app__app_id__dest__get","parameters":[{"required":true,"schema":{"title":"App Id","type":"string"},"name":"app_id","in":"path"},{"required":false,"schema":{"title":"Iterator","type":"string"},"name":"iterator","in":"query"},{"required":false,"schema":{"title":"Limit","type":"integer","default":50},"name":"limit","in":"query"}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ListResponse_DestinationOut_"}}}},"401":{"description":"Unauthorized","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HttpErrorOut"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HttpErrorOut"}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}},"security":[{"APIKeyHeader":[]}]},"post":{"tags":["destination"],"summary":"Create Destination","operationId":"create_destination_api_v1_app__app_id__dest__post","parameters":[{"required":true,"schema":{"title":"App Id","type":"string"},"name":"app_id","in":"path"}],"requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/DestinationIn"}}},"required":true},"responses":{"201":{"description":"Successful Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/DestinationOut"}}}},"401":{"description":"Unauthorized","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HttpErrorOut"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HttpErrorOut"}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}},"security":[{"APIKeyHeader":[]}]}},"/api/v1/app/{app_id}/dest/{dest_id}/":{"delete":{"tags":["destination"],"summary":"Delete Destination","operationId":"delete_destination_api_v1_app__app_id__dest__dest_id___delete","parameters":[{"required":true,"schema":{"title":"Dest Id","type":"string"},"name":"dest_id","in":"path"},{"required":true,"schema":{"title":"App Id","type":"string"},"name":"app_id","in":"path"}],"responses":{"204":{"description":"Successful Response"},"401":{"description":"Unauthorized","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HttpErrorOut"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HttpErrorOut"}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}},"security":[{"APIKeyHeader":[]}]}},"/api/v1/app/{app_id}/msg/":{"get":{"tags":["message"],"summary":"List Messages","operationId":"list_messages_api_v1_app__app_id__msg__get","parameters":[{"required":true,"schema":{"title":"App Id","type":"string"},"name":"app_id","in":"path"},{"required":false,"schema":{"title":"Iterator","type":"string"},"name":"iterator","in":"query"},{"required":false,"schema":{"title":"Limit","type":"integer","default":50},"name":"limit","in":"query"},{"required":false,"schema":{"title":"Dest Id","type":"string"},"name":"dest_id","in":"query"}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ListResponse_MessageOut_"}}}},"401":{"description":"Unauthorized","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HttpErrorOut"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HttpErrorOut"}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}},"security":[{"APIKeyHeader":[]}]},"post":{"tags":["message"],"summary":"Create Message","operationId":"create_message_api_v1_app__app_id__msg__post","parameters":[{"required":true,"schema":{"title":"App Id","type":"string"},"name":"app_id","in":"path"}],"requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/MessageIn"}}},"required":true},"responses":{"202":{"description":"Successful Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/MessageOut"}}}},"401":{"description":"Unauthorized","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HttpErrorOut"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HttpErrorOut"}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}},"security":[{"APIKeyHeader":[]}]}},"/api/v1/app/{app_id}/msg/{msg_id}/":{"get":{"tags":["message"],"summary":"Get Message","operationId":"get_message_api_v1_app__app_id__msg__msg_id___get","parameters":[{"required":true,"schema":{"title":"Msg Id","type":"string"},"name":"msg_id","in":"path"},{"required":true,"schema":{"title":"App Id","type":"string"},"name":"app_id","in":"path"}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/MessageOut"}}}},"401":{"description":"Unauthorized","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HttpErrorOut"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HttpErrorOut"}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}},"security":[{"APIKeyHeader":[]}]}},"/api/v1/app/{app_id}/msg/{msg_id}/dest/":{"get":{"tags":["message attempt"],"summary":"List Attempted Destinations","operationId":"list_attempted_destinations_api_v1_app__app_id__msg__msg_id__dest__get","parameters":[{"required":true,"schema":{"title":"Msg Id","type":"string"},"name":"msg_id","in":"path"},{"required":true,"schema":{"title":"App Id","type":"string"},"name":"app_id","in":"path"},{"required":false,"schema":{"title":"Iterator","type":"string"},"name":"iterator","in":"query"},{"required":false,"schema":{"title":"Limit","type":"integer","default":50},"name":"limit","in":"query"}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ListResponse_MessageDestinationOut_"}}}},"401":{"description":"Unauthorized","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HttpErrorOut"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HttpErrorOut"}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}},"security":[{"APIKeyHeader":[]}]}},"/api/v1/app/{app_id}/msg/{msg_id}/dest/{dest_id}/attempt/":{"get":{"tags":["message attempt"],"summary":"List Attempts","operationId":"list_attempts_api_v1_app__app_id__msg__msg_id__dest__dest_id__attempt__get","parameters":[{"required":true,"schema":{"title":"Msg Id","type":"string"},"name":"msg_id","in":"path"},{"required":true,"schema":{"title":"Dest Id","type":"string"},"name":"dest_id","in":"path"},{"required":true,"schema":{"title":"App Id","type":"string"},"name":"app_id","in":"path"},{"required":false,"schema":{"title":"Iterator","type":"string"},"name":"iterator","in":"query"},{"required":false,"schema":{"title":"Limit","type":"integer","default":50},"name":"limit","in":"query"}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ListResponse_MessageAttemptOut_"}}}},"401":{"description":"Unauthorized","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HttpErrorOut"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HttpErrorOut"}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}},"security":[{"APIKeyHeader":[]}]}},"/api/v1/app/{app_id}/msg/{msg_id}/dest/{dest_id}/attempt/{attempt_id}/":{"get":{"tags":["message attempt"],"summary":"Get Attempt","operationId":"get_attempt_api_v1_app__app_id__msg__msg_id__dest__dest_id__attempt__attempt_id___get","parameters":[{"required":true,"schema":{"title":"Attempt Id","type":"string"},"name":"attempt_id","in":"path"},{"required":true,"schema":{"title":"Msg Id","type":"string"},"name":"msg_id","in":"path"},{"required":true,"schema":{"title":"Dest Id","type":"string"},"name":"dest_id","in":"path"},{"required":true,"schema":{"title":"App Id","type":"string"},"name":"app_id","in":"path"}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/MessageAttemptOut"}}}},"401":{"description":"Unauthorized","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HttpErrorOut"}}}},"403":{"description":"Forbidden","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HttpErrorOut"}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}},"security":[{"APIKeyHeader":[]}]}},"/api/v1/development/echo/":{"post":{"tags":["development"],"summary":"Echo","operationId":"echo_api_v1_development_echo__post","responses":{"204":{"description":"Successful Response"}}}}},"components":{"schemas":{"ApplicationIn":{"title":"ApplicationIn","required":["name"],"type":"object","properties":{"name":{"title":"Name","type":"string"}}},"ApplicationOut":{"title":"ApplicationOut","required":["name","id","createdAt"],"type":"object","properties":{"name":{"title":"Name","type":"string"},"id":{"title":"Id","type":"string"},"createdAt":{"title":"Createdat","type":"string","format":"date-time"}}},"DestinationIn":{"title":"DestinationIn","required":["url","version"],"type":"object","properties":{"url":{"title":"Url","maxLength":65536,"minLength":1,"type":"string","format":"uri"},"version":{"title":"Version","exclusiveMinimum":0.0,"type":"integer"}}},"DestinationOut":{"title":"DestinationOut","required":["url","version","id","createdAt"],"type":"object","properties":{"url":{"title":"Url","maxLength":65536,"minLength":1,"type":"string","format":"uri"},"version":{"title":"Version","exclusiveMinimum":0.0,"type":"integer"},"id":{"title":"Id","type":"string"},"createdAt":{"title":"Createdat","type":"string","format":"date-time"}}},"HTTPValidationError":{"title":"HTTPValidationError","type":"object","properties":{"detail":{"title":"Detail","type":"array","items":{"$ref":"#/components/schemas/ValidationError"}}}},"HttpErrorField":{"title":"HttpErrorField","required":["field","code","detail"],"type":"object","properties":{"field":{"title":"Field","type":"string"},"code":{"title":"Code","type":"string"},"detail":{"title":"Detail","type":"string"}}},"HttpErrorOut":{"title":"HttpError","required":["code","detail"],"type":"object","properties":{"code":{"title":"Code","type":"string"},"detail":{"title":"Detail","type":"string"},"errors":{"title":"Errors","type":"array","items":{"$ref":"#/components/schemas/HttpErrorField"}}}},"ListResponse_ApplicationOut_":{"title":"ListResponse[ApplicationOut]","required":["data","done"],"type":"object","properties":{"data":{"title":"Data","type":"array","items":{"$ref":"#/components/schemas/ApplicationOut"}},"iterator":{"title":"Iterator","type":"string"},"done":{"title":"Done","type":"boolean"}}},"ListResponse_DestinationOut_":{"title":"ListResponse[DestinationOut]","required":["data","done"],"type":"object","properties":{"data":{"title":"Data","type":"array","items":{"$ref":"#/components/schemas/DestinationOut"}},"iterator":{"title":"Iterator","type":"string"},"done":{"title":"Done","type":"boolean"}}},"ListResponse_MessageAttemptOut_":{"title":"ListResponse[MessageAttemptOut]","required":["data","done"],"type":"object","properties":{"data":{"title":"Data","type":"array","items":{"$ref":"#/components/schemas/MessageAttemptOut"}},"iterator":{"title":"Iterator","type":"string"},"done":{"title":"Done","type":"boolean"}}},"ListResponse_MessageDestinationOut_":{"title":"ListResponse[MessageDestinationOut]","required":["data","done"],"type":"object","properties":{"data":{"title":"Data","type":"array","items":{"$ref":"#/components/schemas/MessageDestinationOut"}},"iterator":{"title":"Iterator","type":"string"},"done":{"title":"Done","type":"boolean"}}},"ListResponse_MessageOut_":{"title":"ListResponse[MessageOut]","required":["data","done"],"type":"object","properties":{"data":{"title":"Data","type":"array","items":{"$ref":"#/components/schemas/MessageOut"}},"iterator":{"title":"Iterator","type":"string"},"done":{"title":"Done","type":"boolean"}}},"MessageAttemptOut":{"title":"MessageAttemptOut","required":["id","response","responseStatusCode","timestamp","status"],"type":"object","properties":{"id":{"title":"Id","type":"string"},"response":{"title":"Response","type":"string"},"responseStatusCode":{"title":"Responsestatuscode","type":"integer"},"timestamp":{"title":"Timestamp","type":"string","format":"date-time"},"status":{"$ref":"#/components/schemas/MessageStatus"}}},"MessageDestinationOut":{"title":"MessageDestinationOut","required":["id","destId","status"],"type":"object","properties":{"id":{"title":"Id","type":"string"},"destId":{"title":"Destid","type":"string"},"status":{"$ref":"#/components/schemas/MessageStatus"}}},"MessageIn":{"title":"MessageIn","required":["eventType","eventId","content"],"type":"object","properties":{"eventType":{"title":"Eventtype","maxLength":256,"pattern":"^[a-zA-Z0-9_.]+$","type":"string"},"eventId":{"title":"Eventid","maxLength":256,"pattern":"^[a-zA-Z0-9_.]+$","type":"string"},"content":{"title":"Content","type":"string"}}},"MessageOut":{"title":"MessageOut","required":["eventType","eventId","content","id","timestamp"],"type":"object","properties":{"eventType":{"title":"Eventtype","maxLength":256,"pattern":"^[a-zA-Z0-9_.]+$","type":"string"},"eventId":{"title":"Eventid","maxLength":256,"pattern":"^[a-zA-Z0-9_.]+$","type":"string"},"content":{"title":"Content","type":"string"},"id":{"title":"Id","type":"string"},"timestamp":{"title":"Timestamp","type":"string","format":"date-time"}}},"MessageStatus":{"title":"MessageStatus","enum":[0,1,2],"type":"integer","description":"An enumeration."},"ValidationError":{"title":"ValidationError","required":["loc","msg","type"],"type":"object","properties":{"loc":{"title":"Location","type":"array","items":{"type":"string"}},"msg":{"title":"Message","type":"string"},"type":{"title":"Error Type","type":"string"}}}},"securitySchemes":{"APIKeyHeader":{"type":"apiKey","in":"header","name":"Authorization"}}}}
+{
+    "openapi": "3.0.2",
+    "info": {
+        "title": "WhSaaS",
+        "description": "The WhSaaS server API documentation",
+        "version": "0.1.0"
+    },
+    "paths": {
+        "/api/v1/health/": {
+            "get": {
+                "tags": [
+                    "health"
+                ],
+                "summary": "Health",
+                "operationId": "health_api_v1_health__get",
+                "responses": {
+                    "204": {
+                        "description": "Successful Response"
+                    }
+                }
+            }
+        },
+        "/api/v1/sender/": {
+            "get": {
+                "tags": [
+                    "application"
+                ],
+                "summary": "List Senders",
+                "operationId": "list_senders_api_v1_sender__get",
+                "parameters": [
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Iterator",
+                            "type": "string"
+                        },
+                        "name": "iterator",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Limit",
+                            "type": "integer",
+                            "default": 50
+                        },
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListResponse_SenderOut_"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "application"
+                ],
+                "summary": "Create Sender",
+                "operationId": "create_sender_api_v1_sender__post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SenderIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SenderOut"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/sender/{sender_id}/": {
+            "delete": {
+                "tags": [
+                    "application"
+                ],
+                "summary": "Delete Sender",
+                "operationId": "delete_sender_api_v1_sender__sender_id___delete",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Sender Id",
+                            "type": "string"
+                        },
+                        "name": "sender_id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/sender/{sender_id}/consumer/": {
+            "get": {
+                "tags": [
+                    "consumer"
+                ],
+                "summary": "List Consumers",
+                "operationId": "list_consumers_api_v1_sender__sender_id__consumer__get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Sender Id",
+                            "type": "string"
+                        },
+                        "name": "sender_id",
+                        "in": "path"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Iterator",
+                            "type": "string"
+                        },
+                        "name": "iterator",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Limit",
+                            "type": "integer",
+                            "default": 50
+                        },
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListResponse_ConsumerOut_"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "consumer"
+                ],
+                "summary": "Create Consumer",
+                "operationId": "create_consumer_api_v1_sender__sender_id__consumer__post",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Sender Id",
+                            "type": "string"
+                        },
+                        "name": "sender_id",
+                        "in": "path"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ConsumerIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ConsumerOut"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/sender/{sender_id}/consumer/{consumer_id}/": {
+            "delete": {
+                "tags": [
+                    "consumer"
+                ],
+                "summary": "Delete Consumer",
+                "operationId": "delete_consumer_api_v1_sender__sender_id__consumer__consumer_id___delete",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Consumer Id",
+                            "type": "string"
+                        },
+                        "name": "consumer_id",
+                        "in": "path"
+                    },
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Sender Id",
+                            "type": "string"
+                        },
+                        "name": "sender_id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/sender/{sender_id}/msg/": {
+            "get": {
+                "tags": [
+                    "message"
+                ],
+                "summary": "List Messages",
+                "operationId": "list_messages_api_v1_sender__sender_id__msg__get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Sender Id",
+                            "type": "string"
+                        },
+                        "name": "sender_id",
+                        "in": "path"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Iterator",
+                            "type": "string"
+                        },
+                        "name": "iterator",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Limit",
+                            "type": "integer",
+                            "default": 50
+                        },
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Dest Id",
+                            "type": "string"
+                        },
+                        "name": "dest_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListResponse_MessageOut_"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "message"
+                ],
+                "summary": "Create Message",
+                "operationId": "create_message_api_v1_sender__sender_id__msg__post",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Sender Id",
+                            "type": "string"
+                        },
+                        "name": "sender_id",
+                        "in": "path"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MessageIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "202": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MessageOut"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/sender/{sender_id}/msg/{msg_id}/": {
+            "get": {
+                "tags": [
+                    "message"
+                ],
+                "summary": "Get Message",
+                "operationId": "get_message_api_v1_sender__sender_id__msg__msg_id___get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Msg Id",
+                            "type": "string"
+                        },
+                        "name": "msg_id",
+                        "in": "path"
+                    },
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Sender Id",
+                            "type": "string"
+                        },
+                        "name": "sender_id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MessageOut"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/sender/{sender_id}/msg/{msg_id}/consumer/": {
+            "get": {
+                "tags": [
+                    "message attempt"
+                ],
+                "summary": "List Attempted Destinations",
+                "operationId": "list_attempted_destinations_api_v1_sender__sender_id__msg__msg_id__consumer__get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Msg Id",
+                            "type": "string"
+                        },
+                        "name": "msg_id",
+                        "in": "path"
+                    },
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Sender Id",
+                            "type": "string"
+                        },
+                        "name": "sender_id",
+                        "in": "path"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Iterator",
+                            "type": "string"
+                        },
+                        "name": "iterator",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Limit",
+                            "type": "integer",
+                            "default": 50
+                        },
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListResponse_MessageConsumerOut_"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/sender/{sender_id}/msg/{msg_id}/consumer/{consumer_id}/attempt/": {
+            "get": {
+                "tags": [
+                    "message attempt"
+                ],
+                "summary": "List Attempts",
+                "operationId": "list_attempts_api_v1_sender__sender_id__msg__msg_id__consumer__consumer_id__attempt__get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Msg Id",
+                            "type": "string"
+                        },
+                        "name": "msg_id",
+                        "in": "path"
+                    },
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Consumer Id",
+                            "type": "string"
+                        },
+                        "name": "consumer_id",
+                        "in": "path"
+                    },
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Sender Id",
+                            "type": "string"
+                        },
+                        "name": "sender_id",
+                        "in": "path"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Iterator",
+                            "type": "string"
+                        },
+                        "name": "iterator",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Limit",
+                            "type": "integer",
+                            "default": 50
+                        },
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListResponse_MessageAttemptOut_"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/sender/{sender_id}/msg/{msg_id}/consumer/{consumer_id}/attempt/{attempt_id}/": {
+            "get": {
+                "tags": [
+                    "message attempt"
+                ],
+                "summary": "Get Attempt",
+                "operationId": "get_attempt_api_v1_sender__sender_id__msg__msg_id__consumer__consumer_id__attempt__attempt_id___get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Attempt Id",
+                            "type": "string"
+                        },
+                        "name": "attempt_id",
+                        "in": "path"
+                    },
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Msg Id",
+                            "type": "string"
+                        },
+                        "name": "msg_id",
+                        "in": "path"
+                    },
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Consumer Id",
+                            "type": "string"
+                        },
+                        "name": "consumer_id",
+                        "in": "path"
+                    },
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Sender Id",
+                            "type": "string"
+                        },
+                        "name": "sender_id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MessageAttemptOut"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/development/echo/": {
+            "post": {
+                "tags": [
+                    "development"
+                ],
+                "summary": "Echo",
+                "operationId": "echo_api_v1_development_echo__post",
+                "responses": {
+                    "204": {
+                        "description": "Successful Response"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "ConsumerIn": {
+                "title": "ConsumerIn",
+                "required": [
+                    "url",
+                    "version"
+                ],
+                "type": "object",
+                "properties": {
+                    "url": {
+                        "title": "Url",
+                        "maxLength": 65536,
+                        "minLength": 1,
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    "version": {
+                        "title": "Version",
+                        "exclusiveMinimum": 0.0,
+                        "type": "integer"
+                    }
+                }
+            },
+            "ConsumerOut": {
+                "title": "ConsumerOut",
+                "required": [
+                    "url",
+                    "version",
+                    "id",
+                    "createdAt"
+                ],
+                "type": "object",
+                "properties": {
+                    "url": {
+                        "title": "Url",
+                        "maxLength": 65536,
+                        "minLength": 1,
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    "version": {
+                        "title": "Version",
+                        "exclusiveMinimum": 0.0,
+                        "type": "integer"
+                    },
+                    "id": {
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "createdAt": {
+                        "title": "Createdat",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            },
+            "HTTPValidationError": {
+                "title": "HTTPValidationError",
+                "type": "object",
+                "properties": {
+                    "detail": {
+                        "title": "Detail",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationError"
+                        }
+                    }
+                }
+            },
+            "HttpErrorField": {
+                "title": "HttpErrorField",
+                "required": [
+                    "field",
+                    "code",
+                    "detail"
+                ],
+                "type": "object",
+                "properties": {
+                    "field": {
+                        "title": "Field",
+                        "type": "string"
+                    },
+                    "code": {
+                        "title": "Code",
+                        "type": "string"
+                    },
+                    "detail": {
+                        "title": "Detail",
+                        "type": "string"
+                    }
+                }
+            },
+            "HttpErrorOut": {
+                "title": "HttpError",
+                "required": [
+                    "code",
+                    "detail"
+                ],
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "title": "Code",
+                        "type": "string"
+                    },
+                    "detail": {
+                        "title": "Detail",
+                        "type": "string"
+                    },
+                    "errors": {
+                        "title": "Errors",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/HttpErrorField"
+                        }
+                    }
+                }
+            },
+            "ListResponse_ConsumerOut_": {
+                "title": "ListResponse[ConsumerOut]",
+                "required": [
+                    "data",
+                    "done"
+                ],
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "title": "Data",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ConsumerOut"
+                        }
+                    },
+                    "iterator": {
+                        "title": "Iterator",
+                        "type": "string"
+                    },
+                    "done": {
+                        "title": "Done",
+                        "type": "boolean"
+                    }
+                }
+            },
+            "ListResponse_MessageAttemptOut_": {
+                "title": "ListResponse[MessageAttemptOut]",
+                "required": [
+                    "data",
+                    "done"
+                ],
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "title": "Data",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/MessageAttemptOut"
+                        }
+                    },
+                    "iterator": {
+                        "title": "Iterator",
+                        "type": "string"
+                    },
+                    "done": {
+                        "title": "Done",
+                        "type": "boolean"
+                    }
+                }
+            },
+            "ListResponse_MessageConsumerOut_": {
+                "title": "ListResponse[MessageConsumerOut]",
+                "required": [
+                    "data",
+                    "done"
+                ],
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "title": "Data",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/MessageConsumerOut"
+                        }
+                    },
+                    "iterator": {
+                        "title": "Iterator",
+                        "type": "string"
+                    },
+                    "done": {
+                        "title": "Done",
+                        "type": "boolean"
+                    }
+                }
+            },
+            "ListResponse_MessageOut_": {
+                "title": "ListResponse[MessageOut]",
+                "required": [
+                    "data",
+                    "done"
+                ],
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "title": "Data",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/MessageOut"
+                        }
+                    },
+                    "iterator": {
+                        "title": "Iterator",
+                        "type": "string"
+                    },
+                    "done": {
+                        "title": "Done",
+                        "type": "boolean"
+                    }
+                }
+            },
+            "ListResponse_SenderOut_": {
+                "title": "ListResponse[SenderOut]",
+                "required": [
+                    "data",
+                    "done"
+                ],
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "title": "Data",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SenderOut"
+                        }
+                    },
+                    "iterator": {
+                        "title": "Iterator",
+                        "type": "string"
+                    },
+                    "done": {
+                        "title": "Done",
+                        "type": "boolean"
+                    }
+                }
+            },
+            "MessageAttemptOut": {
+                "title": "MessageAttemptOut",
+                "required": [
+                    "id",
+                    "response",
+                    "responseStatusCode",
+                    "timestamp",
+                    "status"
+                ],
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "response": {
+                        "title": "Response",
+                        "type": "string"
+                    },
+                    "responseStatusCode": {
+                        "title": "Responsestatuscode",
+                        "type": "integer"
+                    },
+                    "timestamp": {
+                        "title": "Timestamp",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/MessageStatus"
+                    }
+                }
+            },
+            "MessageConsumerOut": {
+                "title": "MessageConsumerOut",
+                "required": [
+                    "id",
+                    "consumerId",
+                    "status"
+                ],
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "consumerId": {
+                        "title": "Consumerid",
+                        "type": "string"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/MessageStatus"
+                    }
+                }
+            },
+            "MessageIn": {
+                "title": "MessageIn",
+                "required": [
+                    "eventType",
+                    "eventId",
+                    "data"
+                ],
+                "type": "object",
+                "properties": {
+                    "eventType": {
+                        "title": "Eventtype",
+                        "maxLength": 256,
+                        "pattern": "^[a-zA-Z0-9_.]+$",
+                        "type": "string"
+                    },
+                    "eventId": {
+                        "title": "Eventid",
+                        "maxLength": 256,
+                        "pattern": "^[a-zA-Z0-9_.]+$",
+                        "type": "string"
+                    },
+                    "data": {
+                        "title": "Data",
+                        "type": "object"
+                    }
+                }
+            },
+            "MessageOut": {
+                "title": "MessageOut",
+                "required": [
+                    "eventType",
+                    "eventId",
+                    "data",
+                    "id",
+                    "timestamp"
+                ],
+                "type": "object",
+                "properties": {
+                    "eventType": {
+                        "title": "Eventtype",
+                        "maxLength": 256,
+                        "pattern": "^[a-zA-Z0-9_.]+$",
+                        "type": "string"
+                    },
+                    "eventId": {
+                        "title": "Eventid",
+                        "maxLength": 256,
+                        "pattern": "^[a-zA-Z0-9_.]+$",
+                        "type": "string"
+                    },
+                    "data": {
+                        "title": "Data",
+                        "type": "object"
+                    },
+                    "id": {
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "timestamp": {
+                        "title": "Timestamp",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            },
+            "MessageStatus": {
+                "title": "MessageStatus",
+                "enum": [
+                    0,
+                    1,
+                    2
+                ],
+                "type": "integer",
+                "description": "An enumeration."
+            },
+            "SenderIn": {
+                "title": "SenderIn",
+                "required": [
+                    "name"
+                ],
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    }
+                }
+            },
+            "SenderOut": {
+                "title": "SenderOut",
+                "required": [
+                    "name",
+                    "id",
+                    "createdAt"
+                ],
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    },
+                    "id": {
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "createdAt": {
+                        "title": "Createdat",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            },
+            "ValidationError": {
+                "title": "ValidationError",
+                "required": [
+                    "loc",
+                    "msg",
+                    "type"
+                ],
+                "type": "object",
+                "properties": {
+                    "loc": {
+                        "title": "Location",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "msg": {
+                        "title": "Message",
+                        "type": "string"
+                    },
+                    "type": {
+                        "title": "Error Type",
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "APIKeyHeader": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "Authorization"
+            }
+        }
+    }
+}
