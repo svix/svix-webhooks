@@ -26,6 +26,9 @@ class Message:
     content: str
     timestamp: datetime
 
+    def content_json(self):
+        return json.loads(self.content)
+
 
 class Webhook:
     _whsecret: bytes
