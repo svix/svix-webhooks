@@ -1,9 +1,9 @@
 {
     "openapi": "3.0.2",
     "info": {
-        "title": "WhSaaS",
-        "description": "The WhSaaS server API documentation",
-        "version": "0.1.0"
+        "title": "Diahook",
+        "description": "The Diahook server API documentation",
+        "version": "0.7.3"
     },
     "paths": {
         "/api/v1/health/": {
@@ -20,13 +20,13 @@
                 }
             }
         },
-        "/api/v1/sender/": {
+        "/api/v1/app/": {
             "get": {
                 "tags": [
                     "application"
                 ],
-                "summary": "List Senders",
-                "operationId": "list_senders_api_v1_sender__get",
+                "summary": "List Applications",
+                "operationId": "list_applications_api_v1_app__get",
                 "parameters": [
                     {
                         "required": false,
@@ -54,7 +54,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ListResponse_SenderOut_"
+                                    "$ref": "#/components/schemas/ListResponse_ApplicationOut_"
                                 }
                             }
                         }
@@ -110,13 +110,13 @@
                 "tags": [
                     "application"
                 ],
-                "summary": "Create Sender",
-                "operationId": "create_sender_api_v1_sender__post",
+                "summary": "Create Application",
+                "operationId": "create_application_api_v1_app__post",
                 "requestBody": {
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/SenderIn"
+                                "$ref": "#/components/schemas/ApplicationIn"
                             }
                         }
                     },
@@ -128,7 +128,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/SenderOut"
+                                    "$ref": "#/components/schemas/ApplicationOut"
                                 }
                             }
                         }
@@ -181,21 +181,96 @@
                 ]
             }
         },
-        "/api/v1/sender/{sender_id}/": {
-            "delete": {
+        "/api/v1/app/{app_id}/": {
+            "get": {
                 "tags": [
                     "application"
                 ],
-                "summary": "Delete Sender",
-                "operationId": "delete_sender_api_v1_sender__sender_id___delete",
+                "summary": "Get Application",
+                "operationId": "get_application_api_v1_app__app_id___get",
                 "parameters": [
                     {
                         "required": true,
                         "schema": {
-                            "title": "Sender Id",
+                            "title": "App Id",
                             "type": "string"
                         },
-                        "name": "sender_id",
+                        "name": "app_id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApplicationOut"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "application"
+                ],
+                "summary": "Delete Application",
+                "operationId": "delete_application_api_v1_app__app_id___delete",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "App Id",
+                            "type": "string"
+                        },
+                        "name": "app_id",
                         "in": "path"
                     }
                 ],
@@ -251,21 +326,21 @@
                 ]
             }
         },
-        "/api/v1/sender/{sender_id}/consumer/": {
+        "/api/v1/app/{app_id}/endpoint/": {
             "get": {
                 "tags": [
-                    "consumer"
+                    "endpoint"
                 ],
-                "summary": "List Consumers",
-                "operationId": "list_consumers_api_v1_sender__sender_id__consumer__get",
+                "summary": "List Endpoints",
+                "operationId": "list_endpoints_api_v1_app__app_id__endpoint__get",
                 "parameters": [
                     {
                         "required": true,
                         "schema": {
-                            "title": "Sender Id",
+                            "title": "App Id",
                             "type": "string"
                         },
-                        "name": "sender_id",
+                        "name": "app_id",
                         "in": "path"
                     },
                     {
@@ -294,7 +369,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ListResponse_ConsumerOut_"
+                                    "$ref": "#/components/schemas/ListResponse_EndpointOut_"
                                 }
                             }
                         }
@@ -348,18 +423,18 @@
             },
             "post": {
                 "tags": [
-                    "consumer"
+                    "endpoint"
                 ],
-                "summary": "Create Consumer",
-                "operationId": "create_consumer_api_v1_sender__sender_id__consumer__post",
+                "summary": "Create Endpoint",
+                "operationId": "create_endpoint_api_v1_app__app_id__endpoint__post",
                 "parameters": [
                     {
                         "required": true,
                         "schema": {
-                            "title": "Sender Id",
+                            "title": "App Id",
                             "type": "string"
                         },
-                        "name": "sender_id",
+                        "name": "app_id",
                         "in": "path"
                     }
                 ],
@@ -367,7 +442,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/ConsumerIn"
+                                "$ref": "#/components/schemas/EndpointIn"
                             }
                         }
                     },
@@ -379,7 +454,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ConsumerOut"
+                                    "$ref": "#/components/schemas/EndpointOut"
                                 }
                             }
                         }
@@ -432,30 +507,30 @@
                 ]
             }
         },
-        "/api/v1/sender/{sender_id}/consumer/{consumer_id}/": {
+        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/": {
             "delete": {
                 "tags": [
-                    "consumer"
+                    "endpoint"
                 ],
-                "summary": "Delete Consumer",
-                "operationId": "delete_consumer_api_v1_sender__sender_id__consumer__consumer_id___delete",
+                "summary": "Delete Endpoint",
+                "operationId": "delete_endpoint_api_v1_app__app_id__endpoint__endpoint_id___delete",
                 "parameters": [
                     {
                         "required": true,
                         "schema": {
-                            "title": "Consumer Id",
+                            "title": "Endpoint Id",
                             "type": "string"
                         },
-                        "name": "consumer_id",
+                        "name": "endpoint_id",
                         "in": "path"
                     },
                     {
                         "required": true,
                         "schema": {
-                            "title": "Sender Id",
+                            "title": "App Id",
                             "type": "string"
                         },
-                        "name": "sender_id",
+                        "name": "app_id",
                         "in": "path"
                     }
                 ],
@@ -511,21 +586,21 @@
                 ]
             }
         },
-        "/api/v1/sender/{sender_id}/msg/": {
+        "/api/v1/app/{app_id}/msg/": {
             "get": {
                 "tags": [
                     "message"
                 ],
                 "summary": "List Messages",
-                "operationId": "list_messages_api_v1_sender__sender_id__msg__get",
+                "operationId": "list_messages_api_v1_app__app_id__msg__get",
                 "parameters": [
                     {
                         "required": true,
                         "schema": {
-                            "title": "Sender Id",
+                            "title": "App Id",
                             "type": "string"
                         },
-                        "name": "sender_id",
+                        "name": "app_id",
                         "in": "path"
                     },
                     {
@@ -620,15 +695,15 @@
                     "message"
                 ],
                 "summary": "Create Message",
-                "operationId": "create_message_api_v1_sender__sender_id__msg__post",
+                "operationId": "create_message_api_v1_app__app_id__msg__post",
                 "parameters": [
                     {
                         "required": true,
                         "schema": {
-                            "title": "Sender Id",
+                            "title": "App Id",
                             "type": "string"
                         },
-                        "name": "sender_id",
+                        "name": "app_id",
                         "in": "path"
                     }
                 ],
@@ -701,13 +776,13 @@
                 ]
             }
         },
-        "/api/v1/sender/{sender_id}/msg/{msg_id}/": {
+        "/api/v1/app/{app_id}/msg/{msg_id}/": {
             "get": {
                 "tags": [
                     "message"
                 ],
                 "summary": "Get Message",
-                "operationId": "get_message_api_v1_sender__sender_id__msg__msg_id___get",
+                "operationId": "get_message_api_v1_app__app_id__msg__msg_id___get",
                 "parameters": [
                     {
                         "required": true,
@@ -721,10 +796,10 @@
                     {
                         "required": true,
                         "schema": {
-                            "title": "Sender Id",
+                            "title": "App Id",
                             "type": "string"
                         },
-                        "name": "sender_id",
+                        "name": "app_id",
                         "in": "path"
                     }
                 ],
@@ -787,13 +862,13 @@
                 ]
             }
         },
-        "/api/v1/sender/{sender_id}/msg/{msg_id}/consumer/": {
+        "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/": {
             "get": {
                 "tags": [
                     "message attempt"
                 ],
                 "summary": "List Attempted Destinations",
-                "operationId": "list_attempted_destinations_api_v1_sender__sender_id__msg__msg_id__consumer__get",
+                "operationId": "list_attempted_destinations_api_v1_app__app_id__msg__msg_id__endpoint__get",
                 "parameters": [
                     {
                         "required": true,
@@ -807,10 +882,10 @@
                     {
                         "required": true,
                         "schema": {
-                            "title": "Sender Id",
+                            "title": "App Id",
                             "type": "string"
                         },
-                        "name": "sender_id",
+                        "name": "app_id",
                         "in": "path"
                     },
                     {
@@ -839,7 +914,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ListResponse_MessageConsumerOut_"
+                                    "$ref": "#/components/schemas/ListResponse_MessageEndpointOut_"
                                 }
                             }
                         }
@@ -892,13 +967,13 @@
                 ]
             }
         },
-        "/api/v1/sender/{sender_id}/msg/{msg_id}/consumer/{consumer_id}/attempt/": {
+        "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/attempt/": {
             "get": {
                 "tags": [
                     "message attempt"
                 ],
                 "summary": "List Attempts",
-                "operationId": "list_attempts_api_v1_sender__sender_id__msg__msg_id__consumer__consumer_id__attempt__get",
+                "operationId": "list_attempts_api_v1_app__app_id__msg__msg_id__endpoint__endpoint_id__attempt__get",
                 "parameters": [
                     {
                         "required": true,
@@ -912,19 +987,19 @@
                     {
                         "required": true,
                         "schema": {
-                            "title": "Consumer Id",
+                            "title": "Endpoint Id",
                             "type": "string"
                         },
-                        "name": "consumer_id",
+                        "name": "endpoint_id",
                         "in": "path"
                     },
                     {
                         "required": true,
                         "schema": {
-                            "title": "Sender Id",
+                            "title": "App Id",
                             "type": "string"
                         },
-                        "name": "sender_id",
+                        "name": "app_id",
                         "in": "path"
                     },
                     {
@@ -1006,13 +1081,13 @@
                 ]
             }
         },
-        "/api/v1/sender/{sender_id}/msg/{msg_id}/consumer/{consumer_id}/attempt/{attempt_id}/": {
+        "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/attempt/{attempt_id}/": {
             "get": {
                 "tags": [
                     "message attempt"
                 ],
                 "summary": "Get Attempt",
-                "operationId": "get_attempt_api_v1_sender__sender_id__msg__msg_id__consumer__consumer_id__attempt__attempt_id___get",
+                "operationId": "get_attempt_api_v1_app__app_id__msg__msg_id__endpoint__endpoint_id__attempt__attempt_id___get",
                 "parameters": [
                     {
                         "required": true,
@@ -1035,19 +1110,19 @@
                     {
                         "required": true,
                         "schema": {
-                            "title": "Consumer Id",
+                            "title": "Endpoint Id",
                             "type": "string"
                         },
-                        "name": "consumer_id",
+                        "name": "endpoint_id",
                         "in": "path"
                     },
                     {
                         "required": true,
                         "schema": {
-                            "title": "Sender Id",
+                            "title": "App Id",
                             "type": "string"
                         },
-                        "name": "sender_id",
+                        "name": "app_id",
                         "in": "path"
                     }
                 ],
@@ -1127,8 +1202,45 @@
     },
     "components": {
         "schemas": {
-            "ConsumerIn": {
-                "title": "ConsumerIn",
+            "ApplicationIn": {
+                "title": "ApplicationIn",
+                "required": [
+                    "name"
+                ],
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    }
+                }
+            },
+            "ApplicationOut": {
+                "title": "ApplicationOut",
+                "required": [
+                    "name",
+                    "id",
+                    "createdAt"
+                ],
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    },
+                    "id": {
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "createdAt": {
+                        "title": "Createdat",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            },
+            "EndpointIn": {
+                "title": "EndpointIn",
                 "required": [
                     "url",
                     "version"
@@ -1149,8 +1261,8 @@
                     }
                 }
             },
-            "ConsumerOut": {
-                "title": "ConsumerOut",
+            "EndpointOut": {
+                "title": "EndpointOut",
                 "required": [
                     "url",
                     "version",
@@ -1243,8 +1355,8 @@
                     }
                 }
             },
-            "ListResponse_ConsumerOut_": {
-                "title": "ListResponse[ConsumerOut]",
+            "ListResponse_ApplicationOut_": {
+                "title": "ListResponse[ApplicationOut]",
                 "required": [
                     "data",
                     "done"
@@ -1255,7 +1367,32 @@
                         "title": "Data",
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/ConsumerOut"
+                            "$ref": "#/components/schemas/ApplicationOut"
+                        }
+                    },
+                    "iterator": {
+                        "title": "Iterator",
+                        "type": "string"
+                    },
+                    "done": {
+                        "title": "Done",
+                        "type": "boolean"
+                    }
+                }
+            },
+            "ListResponse_EndpointOut_": {
+                "title": "ListResponse[EndpointOut]",
+                "required": [
+                    "data",
+                    "done"
+                ],
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "title": "Data",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/EndpointOut"
                         }
                     },
                     "iterator": {
@@ -1293,8 +1430,8 @@
                     }
                 }
             },
-            "ListResponse_MessageConsumerOut_": {
-                "title": "ListResponse[MessageConsumerOut]",
+            "ListResponse_MessageEndpointOut_": {
+                "title": "ListResponse[MessageEndpointOut]",
                 "required": [
                     "data",
                     "done"
@@ -1305,7 +1442,7 @@
                         "title": "Data",
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/MessageConsumerOut"
+                            "$ref": "#/components/schemas/MessageEndpointOut"
                         }
                     },
                     "iterator": {
@@ -1331,31 +1468,6 @@
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/MessageOut"
-                        }
-                    },
-                    "iterator": {
-                        "title": "Iterator",
-                        "type": "string"
-                    },
-                    "done": {
-                        "title": "Done",
-                        "type": "boolean"
-                    }
-                }
-            },
-            "ListResponse_SenderOut_": {
-                "title": "ListResponse[SenderOut]",
-                "required": [
-                    "data",
-                    "done"
-                ],
-                "type": "object",
-                "properties": {
-                    "data": {
-                        "title": "Data",
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/SenderOut"
                         }
                     },
                     "iterator": {
@@ -1401,11 +1513,11 @@
                     }
                 }
             },
-            "MessageConsumerOut": {
-                "title": "MessageConsumerOut",
+            "MessageEndpointOut": {
+                "title": "MessageEndpointOut",
                 "required": [
                     "id",
-                    "consumerId",
+                    "endpointId",
                     "status"
                 ],
                 "type": "object",
@@ -1414,8 +1526,8 @@
                         "title": "Id",
                         "type": "string"
                     },
-                    "consumerId": {
-                        "title": "Consumerid",
+                    "endpointId": {
+                        "title": "Endpointid",
                         "type": "string"
                     },
                     "status": {
@@ -1497,43 +1609,6 @@
                 ],
                 "type": "integer",
                 "description": "An enumeration."
-            },
-            "SenderIn": {
-                "title": "SenderIn",
-                "required": [
-                    "name"
-                ],
-                "type": "object",
-                "properties": {
-                    "name": {
-                        "title": "Name",
-                        "type": "string"
-                    }
-                }
-            },
-            "SenderOut": {
-                "title": "SenderOut",
-                "required": [
-                    "name",
-                    "id",
-                    "createdAt"
-                ],
-                "type": "object",
-                "properties": {
-                    "name": {
-                        "title": "Name",
-                        "type": "string"
-                    },
-                    "id": {
-                        "title": "Id",
-                        "type": "string"
-                    },
-                    "createdAt": {
-                        "title": "Createdat",
-                        "type": "string",
-                        "format": "date-time"
-                    }
-                }
             },
             "ValidationError": {
                 "title": "ValidationError",
