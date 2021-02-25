@@ -3,9 +3,10 @@
     "strict": true,
     /* Basic Options */
     "target": "es6",
-    "module": "es6",
+    "module": "CommonJS",
     "moduleResolution": "node",
     "declaration": true,
+    "allowJs": true,
 
     /* Additional Checks */
     "noUnusedLocals": false /* Report errors on unused locals. */, // TODO: reenable (unused imports!)

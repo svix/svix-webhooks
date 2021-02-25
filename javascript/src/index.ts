@@ -29,6 +29,9 @@ import {
 export * from "./openapi/models/all";
 export * from "./openapi/apis/exception";
 import { server1 } from "./openapi/servers";
+import * as utf8 from "@stablelib/utf8";
+import * as base64 from "@stablelib/base64";
+import * as sha256 from "fast-sha256";
 
 export interface DiahookOptions {
   debug?: boolean;
@@ -233,5 +236,45 @@ class MessageAttempt {
     return this.api.listAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGet(
       { appId, msgId, endpointId, ...options }
     );
+  }
+}
+
+
+class ExtendableError extends Error {
+  constructor(message: any) {
+    super(message);
+    Object.setPrototypeOf(this, ExtendableError.prototype);
+    this.name = "ExtendableError";
+    this.stack = (new Error(message)).stack;
+  }
+}
+
+export class WebhookVerificationError extends ExtendableError {
+  constructor(message: string) {
+    super(message);
+    Object.setPrototypeOf(this, WebhookVerificationError.prototype);
+    this.name = "WebhookVerificationError";
+  }
+}
+
+export interface WebhookRequiredHeaders {
+  "dh-id": string;
+  "dh-timestamp": string;
+  "dh-signature": string;
+}
+
+export class Webhook {
+  public static verify(secret: string, payload: string, headers: WebhookRequiredHeaders | Record<string, string>): unknown {
+    if (!headers["dh-signature"] || !headers["dh-id"] || !headers["dh-timestamp"]) {
+      throw new WebhookVerificationError("Missing required headers");
+    }
+
+    const toSign = utf8.encode(`${headers["dh-id"]}.${headers["dh-timestamp"]}.${payload}`);
+    const key = base64.decode(secret);
+    const signature = base64.encode(sha256.hmac(key, toSign));
+    if (signature !== headers["dh-signature"]) {
+      throw new WebhookVerificationError("Signature mismatch");
+    }
+    return payload;
   }
 }
