@@ -1,4 +1,5 @@
 {
   "npmName": "diahook",
+  "useObjectParameters": true,
   "supportsES6": true
 }
