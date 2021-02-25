@@ -1,4 +1,31 @@
-import { ServerConfiguration, HttpBearerConfiguration, Configuration, createConfiguration, ApplicationApi, ApplicationOut, ListResponseApplicationOut, ApplicationIn, EndpointApi, ListResponseEndpointOut, EndpointOut, EndpointIn, EndpointSecret, MessageApi, MessageOut, MessageIn, ListResponseMessageOut, AuthenticationApi, DashboardAccessOut, MessageAttemptApi, ListResponseEndpointMessageOut, ListResponseMessageEndpointOut, ListResponseMessageAttemptEndpointOut, ListResponseMessageAttemptOut, MessageAttemptOut, MessageStatus } from "./openapi/index";
+import {
+  ServerConfiguration,
+  HttpBearerConfiguration,
+  Configuration,
+  createConfiguration,
+  ApplicationApi,
+  ApplicationOut,
+  ListResponseApplicationOut,
+  ApplicationIn,
+  EndpointApi,
+  ListResponseEndpointOut,
+  EndpointOut,
+  EndpointIn,
+  EndpointSecret,
+  MessageApi,
+  MessageOut,
+  MessageIn,
+  ListResponseMessageOut,
+  AuthenticationApi,
+  DashboardAccessOut,
+  MessageAttemptApi,
+  ListResponseEndpointMessageOut,
+  ListResponseMessageEndpointOut,
+  ListResponseMessageAttemptEndpointOut,
+  ListResponseMessageAttemptOut,
+  MessageAttemptOut,
+  MessageStatus,
+} from "./openapi/index";
 export * from "./openapi/models/all";
 export * from "./openapi/apis/exception";
 import { server1 } from "./openapi/servers";
@@ -17,11 +44,11 @@ export class Diahook {
   public constructor(token: string, options?: DiahookOptions) {
     const testUrl: string | undefined = (options as any)._testUrl;
 
-    const baseServer = (testUrl) ? new ServerConfiguration<any>(testUrl, {}) : server1;
+    const baseServer = testUrl ? new ServerConfiguration<any>(testUrl, {}) : server1;
 
     const bearerConfiguration: HttpBearerConfiguration = {
       tokenProvider: {
-        getToken: (() => token),
+        getToken: () => token,
       },
     };
     const config = createConfiguration({
@@ -104,11 +131,17 @@ class Endpoint {
   }
 
   public delete(appId: string, endpointId: string): Promise<void> {
-    return this.api.deleteEndpointApiV1AppAppIdEndpointEndpointIdDelete({ endpointId, appId });
+    return this.api.deleteEndpointApiV1AppAppIdEndpointEndpointIdDelete({
+      endpointId,
+      appId,
+    });
   }
 
   public getSecret(appId: string, endpointId: string): Promise<EndpointSecret> {
-    return this.api.getEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGet({ endpointId, appId });
+    return this.api.getEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGet({
+      endpointId,
+      appId,
+    });
   }
 }
 
@@ -143,23 +176,62 @@ class MessageAttempt {
     this.api = new MessageAttemptApi(config);
   }
 
-  public list(appId: string, msgId: string, options?: FetchOptionsMessageAttempt): Promise<ListResponseMessageAttemptOut> {
-    return this.api.listAttemptsApiV1AppAppIdMsgMsgIdAttemptGet({ appId, msgId, ...options });
+  public list(
+    appId: string,
+    msgId: string,
+    options?: FetchOptionsMessageAttempt
+  ): Promise<ListResponseMessageAttemptOut> {
+    return this.api.listAttemptsApiV1AppAppIdMsgMsgIdAttemptGet({
+      appId,
+      msgId,
+      ...options,
+    });
   }
 
-  public get(appId: string, msgId: string, attemptId: string): Promise<MessageAttemptOut> {
-    return this.api.getAttemptApiV1AppAppIdMsgMsgIdAttemptAttemptIdGet({ attemptId, msgId, appId });
+  public get(
+    appId: string,
+    msgId: string,
+    attemptId: string
+  ): Promise<MessageAttemptOut> {
+    return this.api.getAttemptApiV1AppAppIdMsgMsgIdAttemptAttemptIdGet({
+      attemptId,
+      msgId,
+      appId,
+    });
   }
 
-  public listAttemptedMessages(appId: string, endpointId: string, options?: FetchOptionsMessageAttempt): Promise<ListResponseEndpointMessageOut> {
-    return this.api.listAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGet({ appId, endpointId, ...options });
+  public listAttemptedMessages(
+    appId: string,
+    endpointId: string,
+    options?: FetchOptionsMessageAttempt
+  ): Promise<ListResponseEndpointMessageOut> {
+    return this.api.listAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGet({
+      appId,
+      endpointId,
+      ...options,
+    });
   }
 
-  public listAttemptedDestinations(appId: string, msgId: string, options?: FetchOptionsMessageAttempt): Promise<ListResponseMessageEndpointOut> {
-    return this.api.listAttemptedDestinationsApiV1AppAppIdMsgMsgIdEndpointGet({ appId, msgId, ...options });
+  public listAttemptedDestinations(
+    appId: string,
+    msgId: string,
+    options?: FetchOptionsMessageAttempt
+  ): Promise<ListResponseMessageEndpointOut> {
+    return this.api.listAttemptedDestinationsApiV1AppAppIdMsgMsgIdEndpointGet({
+      appId,
+      msgId,
+      ...options,
+    });
   }
 
-  public listAttemptsForEndpoint(appId: string, msgId: string, endpointId: string, options?: FetchOptionsMessageAttempt): Promise<ListResponseMessageAttemptEndpointOut> {
-    return this.api.listAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGet({ appId, msgId, endpointId, ...options });
+  public listAttemptsForEndpoint(
+    appId: string,
+    msgId: string,
+    endpointId: string,
+    options?: FetchOptionsMessageAttempt
+  ): Promise<ListResponseMessageAttemptEndpointOut> {
+    return this.api.listAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGet(
+      { appId, msgId, endpointId, ...options }
+    );
   }
 }

@@ -16,7 +16,7 @@
     "prepare": "yarn run build",
     "prepublishOnly": "yarn prettier -c && yarn lint",
     "lint": "eslint --ignore-path .lintignore --ext .js,.jsx,.ts,.tsx src",
-    "prettier": "prettier --ignore-path .lintignore* --write src/**/*.ts"
+    "prettier": "prettier --ignore-path .lintignore* --write src/**.ts"
   },
   "dependencies": {
     "es6-promise": "^4.2.4",
