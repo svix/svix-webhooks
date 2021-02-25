@@ -5,6 +5,11 @@
         "description": "The Diahook server API documentation",
         "version": "0.8.1"
     },
+    "servers": [
+        {
+            "url": "https://api.diahook.com"
+        }
+    ],
     "paths": {
         "/api/v1/health/": {
             "get": {
