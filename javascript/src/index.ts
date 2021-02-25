@@ -4,7 +4,8 @@ export * from "./openapi/apis/exception";
 import { server1 } from "./openapi/servers";
 
 export interface DiahookOptions {
-};
+  debug?: boolean;
+}
 
 export class Diahook {
   public readonly authentication: Authentication;

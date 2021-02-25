@@ -1,4 +1,4 @@
 /dist
-/openapi
+/src/openapi
 
 node_modules

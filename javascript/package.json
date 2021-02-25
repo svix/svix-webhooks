@@ -1,27 +1,33 @@
 {
   "name": "diahook",
   "version": "0.8.1",
-  "description": "OpenAPI client for diahook",
-  "author": "OpenAPI-Generator Contributors",
+  "description": "Diahook API client",
+  "author": "diahook",
   "keywords": [
-    "fetch",
-    "typescript",
-    "openapi-client",
-    "openapi-generator"
+    "diahook",
+    "webhooks",
+    "typescript"
   ],
-  "license": "Unlicense",
+  "license": "SEE LICENSE IN LICENSE.md",
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "prepare": "yarn run build"
+    "prepare": "yarn run build",
+    "lint": "eslint --ignore-path .lintignore --ext .js,.jsx,.ts,.tsx src",
+    "prettier": "prettier --ignore-path .lintignore* --write src/**/*.ts"
   },
   "dependencies": {
-    "whatwg-fetch": "^3.0.0",
     "es6-promise": "^4.2.4",
-    "url-parse": "^1.4.3"
+    "url-parse": "^1.4.3",
+    "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.15.2",
+    "@typescript-eslint/parser": "^4.15.2",
+    "@typescript-eslint/typescript-estree": "^4.15.2",
+    "eslint": "^7.20.0",
+    "prettier": "^2.2.1",
     "typescript": "^3.9.3"
   }
 }
