@@ -3,7 +3,7 @@
     "info": {
         "title": "Diahook",
         "description": "The Diahook server API documentation",
-        "version": "0.7.3"
+        "version": "0.8.1"
     },
     "paths": {
         "/api/v1/health/": {
@@ -102,7 +102,7 @@
                 },
                 "security": [
                     {
-                        "APIKeyHeader": []
+                        "HTTPBearer": []
                     }
                 ]
             },
@@ -176,7 +176,7 @@
                 },
                 "security": [
                     {
-                        "APIKeyHeader": []
+                        "HTTPBearer": []
                     }
                 ]
             }
@@ -253,7 +253,7 @@
                 },
                 "security": [
                     {
-                        "APIKeyHeader": []
+                        "HTTPBearer": []
                     }
                 ]
             },
@@ -321,7 +321,133 @@
                 },
                 "security": [
                     {
-                        "APIKeyHeader": []
+                        "HTTPBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/auth/dashboard_access/{app_id}/": {
+            "post": {
+                "tags": [
+                    "authentication"
+                ],
+                "summary": "Get Dashboard Access",
+                "operationId": "get_dashboard_access_api_v1_auth_dashboard_access__app_id___post",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "App Id",
+                            "type": "string"
+                        },
+                        "name": "app_id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DashboardAccessOut"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/auth/logout/": {
+            "post": {
+                "tags": [
+                    "authentication"
+                ],
+                "summary": "Logout",
+                "operationId": "logout_api_v1_auth_logout__post",
+                "responses": {
+                    "204": {
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
                     }
                 ]
             }
@@ -417,7 +543,7 @@
                 },
                 "security": [
                     {
-                        "APIKeyHeader": []
+                        "HTTPBearer": []
                     }
                 ]
             },
@@ -502,12 +628,96 @@
                 },
                 "security": [
                     {
-                        "APIKeyHeader": []
+                        "HTTPBearer": []
                     }
                 ]
             }
         },
         "/api/v1/app/{app_id}/endpoint/{endpoint_id}/": {
+            "get": {
+                "tags": [
+                    "endpoint"
+                ],
+                "summary": "Get Endpoint",
+                "operationId": "get_endpoint_api_v1_app__app_id__endpoint__endpoint_id___get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Endpoint Id",
+                            "type": "string"
+                        },
+                        "name": "endpoint_id",
+                        "in": "path"
+                    },
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "App Id",
+                            "type": "string"
+                        },
+                        "name": "app_id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EndpointOut"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ]
+            },
             "delete": {
                 "tags": [
                     "endpoint"
@@ -581,7 +791,93 @@
                 },
                 "security": [
                     {
-                        "APIKeyHeader": []
+                        "HTTPBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/": {
+            "get": {
+                "tags": [
+                    "endpoint"
+                ],
+                "summary": "Get Endpoint Secret",
+                "operationId": "get_endpoint_secret_api_v1_app__app_id__endpoint__endpoint_id__secret__get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Endpoint Id",
+                            "type": "string"
+                        },
+                        "name": "endpoint_id",
+                        "in": "path"
+                    },
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "App Id",
+                            "type": "string"
+                        },
+                        "name": "app_id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EndpointSecret"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
                     }
                 ]
             }
@@ -620,15 +916,6 @@
                             "default": 50
                         },
                         "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "required": false,
-                        "schema": {
-                            "title": "Dest Id",
-                            "type": "string"
-                        },
-                        "name": "dest_id",
                         "in": "query"
                     }
                 ],
@@ -686,7 +973,7 @@
                 },
                 "security": [
                     {
-                        "APIKeyHeader": []
+                        "HTTPBearer": []
                     }
                 ]
             },
@@ -771,7 +1058,7 @@
                 },
                 "security": [
                     {
-                        "APIKeyHeader": []
+                        "HTTPBearer": []
                     }
                 ]
             }
@@ -857,7 +1144,120 @@
                 },
                 "security": [
                     {
-                        "APIKeyHeader": []
+                        "HTTPBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg/": {
+            "get": {
+                "tags": [
+                    "message attempt"
+                ],
+                "summary": "List Attempted Messages",
+                "operationId": "list_attempted_messages_api_v1_app__app_id__endpoint__endpoint_id__msg__get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Endpoint Id",
+                            "type": "string"
+                        },
+                        "name": "endpoint_id",
+                        "in": "path"
+                    },
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "App Id",
+                            "type": "string"
+                        },
+                        "name": "app_id",
+                        "in": "path"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Iterator",
+                            "type": "string"
+                        },
+                        "name": "iterator",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Limit",
+                            "type": "integer",
+                            "default": 50
+                        },
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "$ref": "#/components/schemas/MessageStatus"
+                        },
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListResponse_EndpointMessageOut_"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
                     }
                 ]
             }
@@ -962,7 +1362,7 @@
                 },
                 "security": [
                     {
-                        "APIKeyHeader": []
+                        "HTTPBearer": []
                     }
                 ]
             }
@@ -972,8 +1372,8 @@
                 "tags": [
                     "message attempt"
                 ],
-                "summary": "List Attempts",
-                "operationId": "list_attempts_api_v1_app__app_id__msg__msg_id__endpoint__endpoint_id__attempt__get",
+                "summary": "List Attempts For Endpoint",
+                "operationId": "list_attempts_for_endpoint_api_v1_app__app_id__msg__msg_id__endpoint__endpoint_id__attempt__get",
                 "parameters": [
                     {
                         "required": true,
@@ -1019,6 +1419,127 @@
                             "default": 50
                         },
                         "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "$ref": "#/components/schemas/MessageStatus"
+                        },
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListResponse_MessageAttemptEndpointOut_"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/app/{app_id}/msg/{msg_id}/attempt/": {
+            "get": {
+                "tags": [
+                    "message attempt"
+                ],
+                "summary": "List Attempts",
+                "operationId": "list_attempts_api_v1_app__app_id__msg__msg_id__attempt__get",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Msg Id",
+                            "type": "string"
+                        },
+                        "name": "msg_id",
+                        "in": "path"
+                    },
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "App Id",
+                            "type": "string"
+                        },
+                        "name": "app_id",
+                        "in": "path"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Iterator",
+                            "type": "string"
+                        },
+                        "name": "iterator",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Limit",
+                            "type": "integer",
+                            "default": 50
+                        },
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "$ref": "#/components/schemas/MessageStatus"
+                        },
+                        "name": "status",
                         "in": "query"
                     }
                 ],
@@ -1076,18 +1597,18 @@
                 },
                 "security": [
                     {
-                        "APIKeyHeader": []
+                        "HTTPBearer": []
                     }
                 ]
             }
         },
-        "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/attempt/{attempt_id}/": {
+        "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/": {
             "get": {
                 "tags": [
                     "message attempt"
                 ],
                 "summary": "Get Attempt",
-                "operationId": "get_attempt_api_v1_app__app_id__msg__msg_id__endpoint__endpoint_id__attempt__attempt_id___get",
+                "operationId": "get_attempt_api_v1_app__app_id__msg__msg_id__attempt__attempt_id___get",
                 "parameters": [
                     {
                         "required": true,
@@ -1105,15 +1626,6 @@
                             "type": "string"
                         },
                         "name": "msg_id",
-                        "in": "path"
-                    },
-                    {
-                        "required": true,
-                        "schema": {
-                            "title": "Endpoint Id",
-                            "type": "string"
-                        },
-                        "name": "endpoint_id",
                         "in": "path"
                     },
                     {
@@ -1180,7 +1692,7 @@
                 },
                 "security": [
                     {
-                        "APIKeyHeader": []
+                        "HTTPBearer": []
                     }
                 ]
             }
@@ -1239,11 +1751,33 @@
                     }
                 }
             },
+            "DashboardAccessOut": {
+                "title": "DashboardAccessOut",
+                "required": [
+                    "url",
+                    "token"
+                ],
+                "type": "object",
+                "properties": {
+                    "url": {
+                        "title": "Url",
+                        "maxLength": 65536,
+                        "minLength": 1,
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    "token": {
+                        "title": "Token",
+                        "type": "string"
+                    }
+                }
+            },
             "EndpointIn": {
                 "title": "EndpointIn",
                 "required": [
                     "url",
-                    "version"
+                    "version",
+                    "description"
                 ],
                 "type": "object",
                 "properties": {
@@ -1258,6 +1792,51 @@
                         "title": "Version",
                         "exclusiveMinimum": 0.0,
                         "type": "integer"
+                    },
+                    "description": {
+                        "title": "Description",
+                        "type": "string"
+                    }
+                }
+            },
+            "EndpointMessageOut": {
+                "title": "EndpointMessageOut",
+                "required": [
+                    "eventType",
+                    "data",
+                    "id",
+                    "timestamp",
+                    "status"
+                ],
+                "type": "object",
+                "properties": {
+                    "eventType": {
+                        "title": "Eventtype",
+                        "maxLength": 256,
+                        "pattern": "^[a-zA-Z0-9_.]+$",
+                        "type": "string"
+                    },
+                    "eventId": {
+                        "title": "Eventid",
+                        "maxLength": 256,
+                        "pattern": "^[a-zA-Z0-9_.]+$",
+                        "type": "string"
+                    },
+                    "data": {
+                        "title": "Data",
+                        "type": "object"
+                    },
+                    "id": {
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "timestamp": {
+                        "title": "Timestamp",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/MessageStatus"
                     }
                 }
             },
@@ -1266,6 +1845,7 @@
                 "required": [
                     "url",
                     "version",
+                    "description",
                     "id",
                     "createdAt"
                 ],
@@ -1283,6 +1863,10 @@
                         "exclusiveMinimum": 0.0,
                         "type": "integer"
                     },
+                    "description": {
+                        "title": "Description",
+                        "type": "string"
+                    },
                     "id": {
                         "title": "Id",
                         "type": "string"
@@ -1291,6 +1875,19 @@
                         "title": "Createdat",
                         "type": "string",
                         "format": "date-time"
+                    }
+                }
+            },
+            "EndpointSecret": {
+                "title": "EndpointSecret",
+                "required": [
+                    "key"
+                ],
+                "type": "object",
+                "properties": {
+                    "key": {
+                        "title": "Key",
+                        "type": "string"
                     }
                 }
             },
@@ -1380,6 +1977,31 @@
                     }
                 }
             },
+            "ListResponse_EndpointMessageOut_": {
+                "title": "ListResponse[EndpointMessageOut]",
+                "required": [
+                    "data",
+                    "done"
+                ],
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "title": "Data",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/EndpointMessageOut"
+                        }
+                    },
+                    "iterator": {
+                        "title": "Iterator",
+                        "type": "string"
+                    },
+                    "done": {
+                        "title": "Done",
+                        "type": "boolean"
+                    }
+                }
+            },
             "ListResponse_EndpointOut_": {
                 "title": "ListResponse[EndpointOut]",
                 "required": [
@@ -1393,6 +2015,31 @@
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/EndpointOut"
+                        }
+                    },
+                    "iterator": {
+                        "title": "Iterator",
+                        "type": "string"
+                    },
+                    "done": {
+                        "title": "Done",
+                        "type": "boolean"
+                    }
+                }
+            },
+            "ListResponse_MessageAttemptEndpointOut_": {
+                "title": "ListResponse[MessageAttemptEndpointOut]",
+                "required": [
+                    "data",
+                    "done"
+                ],
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "title": "Data",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/MessageAttemptEndpointOut"
                         }
                     },
                     "iterator": {
@@ -1480,8 +2127,8 @@
                     }
                 }
             },
-            "MessageAttemptOut": {
-                "title": "MessageAttemptOut",
+            "MessageAttemptEndpointOut": {
+                "title": "MessageAttemptEndpointOut",
                 "required": [
                     "id",
                     "response",
@@ -1513,12 +2160,15 @@
                     }
                 }
             },
-            "MessageEndpointOut": {
-                "title": "MessageEndpointOut",
+            "MessageAttemptOut": {
+                "title": "MessageAttemptOut",
                 "required": [
                     "id",
-                    "endpointId",
-                    "status"
+                    "response",
+                    "responseStatusCode",
+                    "timestamp",
+                    "status",
+                    "endpointId"
                 ],
                 "type": "object",
                 "properties": {
@@ -1526,9 +2176,64 @@
                         "title": "Id",
                         "type": "string"
                     },
+                    "response": {
+                        "title": "Response",
+                        "type": "string"
+                    },
+                    "responseStatusCode": {
+                        "title": "Responsestatuscode",
+                        "type": "integer"
+                    },
+                    "timestamp": {
+                        "title": "Timestamp",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/MessageStatus"
+                    },
                     "endpointId": {
                         "title": "Endpointid",
                         "type": "string"
+                    }
+                }
+            },
+            "MessageEndpointOut": {
+                "title": "MessageEndpointOut",
+                "required": [
+                    "url",
+                    "version",
+                    "description",
+                    "id",
+                    "createdAt",
+                    "status"
+                ],
+                "type": "object",
+                "properties": {
+                    "url": {
+                        "title": "Url",
+                        "maxLength": 65536,
+                        "minLength": 1,
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    "version": {
+                        "title": "Version",
+                        "exclusiveMinimum": 0.0,
+                        "type": "integer"
+                    },
+                    "description": {
+                        "title": "Description",
+                        "type": "string"
+                    },
+                    "id": {
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "createdAt": {
+                        "title": "Createdat",
+                        "type": "string",
+                        "format": "date-time"
                     },
                     "status": {
                         "$ref": "#/components/schemas/MessageStatus"
@@ -1539,7 +2244,6 @@
                 "title": "MessageIn",
                 "required": [
                     "eventType",
-                    "eventId",
                     "data"
                 ],
                 "type": "object",
@@ -1566,7 +2270,6 @@
                 "title": "MessageOut",
                 "required": [
                     "eventType",
-                    "eventId",
                     "data",
                     "id",
                     "timestamp"
@@ -1638,10 +2341,9 @@
             }
         },
         "securitySchemes": {
-            "APIKeyHeader": {
-                "type": "apiKey",
-                "in": "header",
-                "name": "Authorization"
+            "HTTPBearer": {
+                "type": "http",
+                "scheme": "bearer"
             }
         }
     }

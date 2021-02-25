@@ -1,7 +1,7 @@
 {
-  "name": "whsaas",
-  "version": "0.1.0",
-  "description": "OpenAPI client for whsaas",
+  "name": "diahook",
+  "version": "0.8.1",
+  "description": "OpenAPI client for diahook",
   "author": "OpenAPI-Generator Contributors",
   "keywords": [
     "fetch",
@@ -14,18 +14,14 @@
   "typings": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "prepare": "yarn run build"
+    "prepare": "npm run build"
   },
   "dependencies": {
-    "btoa": "^1.2.1",
+    "whatwg-fetch": "^3.0.0",
     "es6-promise": "^4.2.4",
-    "form-data": "^2.5.0",
-    "node-fetch": "^2.6.0",
     "url-parse": "^1.4.3"
   },
   "devDependencies": {
-    "typescript": "^3.9.3",
-    "@types/node": "*",
-    "@types/node-fetch": "^2.5.7"
+    "typescript": "^3.9.3"
   }
 }
