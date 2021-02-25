@@ -21,3 +21,9 @@
 #docs/*.md
 # Then explicitly reverse the ignore rule for a single file:
 #!docs/README.md
+
+/README.md
+/package.json
+/tsconfig.json
+/.gitignore
+/git_push.sh
