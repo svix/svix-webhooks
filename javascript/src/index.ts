@@ -239,13 +239,12 @@ class MessageAttempt {
   }
 }
 
-
 class ExtendableError extends Error {
   constructor(message: any) {
     super(message);
     Object.setPrototypeOf(this, ExtendableError.prototype);
     this.name = "ExtendableError";
-    this.stack = (new Error(message)).stack;
+    this.stack = new Error(message).stack;
   }
 }
 
@@ -264,14 +263,24 @@ export interface WebhookRequiredHeaders {
 }
 
 export class Webhook {
-  public static verify(secret: string, payload: string, headers: WebhookRequiredHeaders | Record<string, string>): unknown {
+  private readonly key: Uint8Array;
+
+  constructor(secret: string) {
+    this.key = base64.decode(secret);
+  }
+
+  public verify(
+    payload: string,
+    headers: WebhookRequiredHeaders | Record<string, string>
+  ): unknown {
     if (!headers["dh-signature"] || !headers["dh-id"] || !headers["dh-timestamp"]) {
       throw new WebhookVerificationError("Missing required headers");
     }
 
-    const toSign = utf8.encode(`${headers["dh-id"]}.${headers["dh-timestamp"]}.${payload}`);
-    const key = base64.decode(secret);
-    const signature = base64.encode(sha256.hmac(key, toSign));
+    const toSign = utf8.encode(
+      `${headers["dh-id"]}.${headers["dh-timestamp"]}.${payload}`
+    );
+    const signature = base64.encode(sha256.hmac(this.key, toSign));
     if (signature !== headers["dh-signature"]) {
       throw new WebhookVerificationError("Signature mismatch");
     }
