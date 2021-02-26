@@ -12,6 +12,9 @@
   "license": "SEE LICENSE IN LICENSE.md",
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
   "scripts": {
     "build": "tsc",
     "prepare": "yarn run build",
