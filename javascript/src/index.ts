@@ -38,6 +38,7 @@ export interface DiahookOptions {
 }
 
 export class Diahook {
+  public readonly _configuration: Configuration;
   public readonly authentication: Authentication;
   public readonly application: Application;
   public readonly endpoint: Endpoint;
@@ -61,6 +62,7 @@ export class Diahook {
       },
     });
 
+    this._configuration = config;
     this.authentication = new Authentication(config);
     this.application = new Application(config);
     this.endpoint = new Endpoint(config);
