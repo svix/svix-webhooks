@@ -205,6 +205,18 @@ class MessageAttempt {
     });
   }
 
+  public resend(
+    appId: string,
+    msgId: string,
+    endpointId: string
+  ): Promise<MessageAttemptOut> {
+    return this.api.resendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPost({
+      endpointId,
+      msgId,
+      appId,
+    });
+  }
+
   public listAttemptedMessages(
     appId: string,
     endpointId: string,
