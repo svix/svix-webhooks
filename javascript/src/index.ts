@@ -294,10 +294,18 @@ export class Webhook {
     const toSign = utf8.encode(
       `${headers["dh-id"]}.${headers["dh-timestamp"]}.${payload}`
     );
-    const signature = base64.encode(sha256.hmac(this.key, toSign));
-    if (signature !== headers["dh-signature"]) {
-      throw new WebhookVerificationError("Signature mismatch");
+    const expectedSignature = base64.encode(sha256.hmac(this.key, toSign));
+    const passedSignatures = headers["dh-signature"].split(" ");
+    for (const versionedSignature of passedSignatures) {
+      const [version, signature] = versionedSignature.split(",");
+      if (version !== "v1") {
+        continue;
+      }
+
+      if (signature === expectedSignature) {
+        return payload;
+      }
     }
-    return payload;
+    throw new WebhookVerificationError("No matching signature found");
   }
 }
