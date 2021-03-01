@@ -11,7 +11,7 @@
 from setuptools import setup, find_packages  # noqa: H301
 
 NAME = "diahook"
-VERSION = "1.0.0"
+VERSION = "0.8.3"
 # To install the library, run the following
 #
 # python setup.py install
@@ -28,15 +28,18 @@ setup(
     name=NAME,
     version=VERSION,
     description="Diahook",
-    author="OpenAPI Generator community",
+    author="The Diahook API client",
     author_email="team@openapitools.org",
     url="",
-    keywords=["OpenAPI", "OpenAPI-Generator", "Diahook"],
+    keywords=[
+        "diahook",
+        "webhooks",
+    ],
     python_requires=">=3.6",
     install_requires=REQUIRES,
     packages=find_packages(exclude=["test", "tests"]),
     include_package_data=True,
     long_description="""\
-    The Diahook server API documentation  # noqa: E501
+    The Diahook API client # noqa: E501
     """
 )

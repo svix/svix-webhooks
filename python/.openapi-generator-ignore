@@ -22,4 +22,11 @@
 # Then explicitly reverse the ignore rule for a single file:
 #!docs/README.md
 
+/setup.py
 /README.md
+/.gitignore
+/git_push.sh
+
+/.gitlab-ci.yml
+/.travis.yml
+/git_push.sh
