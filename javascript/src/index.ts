@@ -303,7 +303,7 @@ export class Webhook {
       }
 
       if (signature === expectedSignature) {
-        return payload;
+        return JSON.parse(payload);
       }
     }
     throw new WebhookVerificationError("No matching signature found");
