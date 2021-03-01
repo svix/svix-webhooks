@@ -3,8 +3,6 @@ import hashlib
 import hmac
 import json
 import typing as t
-from dataclasses import dataclass
-from datetime import datetime
 
 import dateutil.parser
 
@@ -13,17 +11,8 @@ def hmac_data(key: bytes, data: bytes) -> bytes:
     return hmac.new(key, data, hashlib.sha256).digest()
 
 
-class InvalidSignature(Exception):
+class WebhookVerificationError(Exception):
     pass
-
-
-@dataclass
-class Message:
-    id: str
-    event_type: str
-    event_timestamp: datetime
-    data: t.Dict[str, t.Any]
-    timestamp: datetime
 
 
 class Webhook:
@@ -34,15 +23,24 @@ class Webhook:
         self._whsecret = base64.b64decode(whsecret)
         self._enc_key = base64.b64decode(enc_key) if enc_key is not None else None
 
-    def parse(self, msg: t.Union[bytes, str], sig: str) -> Message:
-        msg = msg if isinstance(msg, bytes) else msg.encode()
-        sig_bytes = base64.b64decode(sig)
+    def verify(self, data: t.Union[bytes, str], headers: t.Dict[str, str]) -> t.Dict[str, t.Any]:
+        data = data if isinstance(data, str) else data.decode()
+        dh_id = headers.get("dh-id")
+        dh_signature = headers.get("dh-signature")
+        dh_timestamp = headers.get("dh-timestamp")
+        if not (dh_id and dh_timestamp and dh_timestamp):
+            raise WebhookVerificationError("Missing required headers")
 
-        calc_sig = hmac_data(self._whsecret, msg)
-        if not hmac.compare_digest(calc_sig, sig_bytes):
-            raise InvalidSignature("Got invalid signature for event.")
+        to_sign = f"{dh_id}.{dh_timestamp}.{data}".encode()
+        expected_sig = hmac_data(self._whsecret, to_sign)
+        passed_sigs = dh_signature.split(" ")
+        for versioned_sig in passed_sigs:
+            (version, signature) = versioned_sig.split(",")
+            if version != "v1":
+                continue
 
-        msg_dict = json.loads(msg)
-        msg_dict["event_timestamp"] = dateutil.parser.parse(msg_dict["event_timestamp"])
-        msg_dict["timestamp"] = dateutil.parser.parse(msg_dict["timestamp"])
-        return Message(**msg_dict)
+            sig_bytes = base64.b64decode(signature)
+            if hmac.compare_digest(expected_sig, sig_bytes):
+                return json.loads(data)
+
+        raise WebhookVerificationError("No matching signature found")
