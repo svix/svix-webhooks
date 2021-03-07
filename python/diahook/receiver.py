@@ -25,6 +25,7 @@ class Webhook:
 
     def verify(self, data: t.Union[bytes, str], headers: t.Dict[str, str]) -> t.Dict[str, t.Any]:
         data = data if isinstance(data, str) else data.decode()
+        headers = {k.lower(): v for (k, v) in headers.items()}
         dh_id = headers.get("dh-id")
         dh_signature = headers.get("dh-signature")
         dh_timestamp = headers.get("dh-timestamp")
