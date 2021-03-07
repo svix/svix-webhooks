@@ -285,8 +285,13 @@ export class Webhook {
 
   public verify(
     payload: string,
-    headers: WebhookRequiredHeaders | Record<string, string>
+    headers_: WebhookRequiredHeaders | Record<string, string>
   ): unknown {
+    const headers: Record<string, string> = {};
+    for (const key of Object.keys(headers_)) {
+      headers[key.toLowerCase()] = (headers_ as Record<string, string>)[key];
+    }
+
     if (!headers["dh-signature"] || !headers["dh-id"] || !headers["dh-timestamp"]) {
       throw new WebhookVerificationError("Missing required headers");
     }
