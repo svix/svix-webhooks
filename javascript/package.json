@@ -27,8 +27,8 @@
     "@stablelib/utf8": "^1.0.0",
     "es6-promise": "^4.2.4",
     "fast-sha256": "^1.3.0",
-    "url-parse": "^1.4.3",
-    "whatwg-fetch": "^3.0.0"
+    "isomorphic-fetch": "^3.0.0",
+    "url-parse": "^1.4.3"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.15.2",

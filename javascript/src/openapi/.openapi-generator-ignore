@@ -28,4 +28,5 @@
 /.gitignore
 /git_push.sh
 
+/http/isomorphic-fetch.ts
 /models/MessageStatus.ts
