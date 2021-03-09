@@ -45,7 +45,7 @@ export class Diahook {
   public readonly message: Message;
   public readonly messageAttempt: MessageAttempt;
 
-  public constructor(token: string, options?: DiahookOptions) {
+  public constructor(token: string, options: DiahookOptions = {}) {
     const testUrl: string | undefined = (options as any)._testUrl;
 
     const baseServer = testUrl ? new ServerConfiguration<any>(testUrl, {}) : server1;
