@@ -2124,6 +2124,10 @@
                 ],
                 "type": "object",
                 "properties": {
+                    "uid": {
+                        "title": "Uid",
+                        "type": "string"
+                    },
                     "name": {
                         "title": "Name",
                         "type": "string"
@@ -2139,6 +2143,10 @@
                 ],
                 "type": "object",
                 "properties": {
+                    "uid": {
+                        "title": "Uid",
+                        "type": "string"
+                    },
                     "name": {
                         "title": "Name",
                         "type": "string"
