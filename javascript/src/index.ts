@@ -25,6 +25,9 @@ import {
   ListResponseMessageAttemptOut,
   MessageAttemptOut,
   MessageStatus,
+  EventTypeApi,
+  ListResponseEventTypeInOut,
+  EventTypeInOut,
 } from "./openapi/index";
 export * from "./openapi/models/all";
 export * from "./openapi/apis/exception";
@@ -42,6 +45,7 @@ export class Diahook {
   public readonly authentication: Authentication;
   public readonly application: Application;
   public readonly endpoint: Endpoint;
+  public readonly eventType: EventType;
   public readonly message: Message;
   public readonly messageAttempt: MessageAttempt;
 
@@ -66,6 +70,7 @@ export class Diahook {
     this.authentication = new Authentication(config);
     this.application = new Application(config);
     this.endpoint = new Endpoint(config);
+    this.eventType = new EventType(config);
     this.message = new Message(config);
     this.messageAttempt = new MessageAttempt(config);
   }
@@ -147,6 +152,26 @@ class Endpoint {
       endpointId,
       appId,
     });
+  }
+}
+
+class EventType {
+  private readonly api: EventTypeApi;
+
+  public constructor(config: Configuration) {
+    this.api = new EventTypeApi(config);
+  }
+
+  public list(options?: FetchOptions): Promise<ListResponseEventTypeInOut> {
+    return this.api.listEventTypesApiV1EventTypeGet({ ...options });
+  }
+
+  public create(eventTypeInOut: EventTypeInOut): Promise<EventTypeInOut> {
+    return this.api.createEventTypeApiV1EventTypePost({ eventTypeInOut });
+  }
+
+  public delete(eventTypeName: string): Promise<void> {
+    return this.api.deleteEventTypeApiV1EventTypeEventTypeNameDelete({ eventTypeName });
   }
 }
 
