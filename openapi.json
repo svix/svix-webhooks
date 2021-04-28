@@ -375,7 +375,7 @@
                 ]
             }
         },
-        "/api/v1/auth/dashboard_access/{app_id}/": {
+        "/api/v1/auth/dashboard-access/{app_id}/": {
             "post": {
                 "tags": [
                     "authentication"
@@ -510,6 +510,267 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/event-type/": {
+            "get": {
+                "tags": [
+                    "event type"
+                ],
+                "summary": "List Event Types",
+                "operationId": "list_event_types_api_v1_event_type__get",
+                "parameters": [
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Iterator",
+                            "type": "string"
+                        },
+                        "name": "iterator",
+                        "in": "query"
+                    },
+                    {
+                        "required": false,
+                        "schema": {
+                            "title": "Limit",
+                            "type": "integer",
+                            "default": 50
+                        },
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListResponse_EventTypeInOut_"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "event type"
+                ],
+                "summary": "Create Event Type",
+                "operationId": "create_event_type_api_v1_event_type__post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EventTypeInOut"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EventTypeInOut"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/event-type/{event_type_name}/": {
+            "delete": {
+                "tags": [
+                    "event type"
+                ],
+                "summary": "Delete Event Type",
+                "operationId": "delete_event_type_api_v1_event_type__event_type_name___delete",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Event Type Name",
+                            "type": "string"
+                        },
+                        "name": "event_type_name",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
                                 }
                             }
                         }
@@ -2212,6 +2473,14 @@
                     "description": {
                         "title": "Description",
                         "type": "string"
+                    },
+                    "filterTypes": {
+                        "title": "Filtertypes",
+                        "uniqueItems": true,
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
                     }
                 }
             },
@@ -2229,13 +2498,13 @@
                     "eventType": {
                         "title": "Eventtype",
                         "maxLength": 256,
-                        "pattern": "^[a-zA-Z0-9_.]+$",
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "type": "string"
                     },
                     "eventId": {
                         "title": "Eventid",
                         "maxLength": 256,
-                        "pattern": "^[a-zA-Z0-9_.]+$",
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "type": "string"
                     },
                     "data": {
@@ -2283,6 +2552,14 @@
                         "title": "Description",
                         "type": "string"
                     },
+                    "filterTypes": {
+                        "title": "Filtertypes",
+                        "uniqueItems": true,
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
                     "id": {
                         "title": "Id",
                         "type": "string"
@@ -2327,6 +2604,26 @@
                     "fail": {
                         "title": "Fail",
                         "type": "integer"
+                    }
+                }
+            },
+            "EventTypeInOut": {
+                "title": "EventTypeInOut",
+                "required": [
+                    "name",
+                    "description"
+                ],
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "title": "Name",
+                        "maxLength": 256,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "type": "string"
+                    },
+                    "description": {
+                        "title": "Description",
+                        "type": "string"
                     }
                 }
             },
@@ -2454,6 +2751,31 @@
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/EndpointOut"
+                        }
+                    },
+                    "iterator": {
+                        "title": "Iterator",
+                        "type": "string"
+                    },
+                    "done": {
+                        "title": "Done",
+                        "type": "boolean"
+                    }
+                }
+            },
+            "ListResponse_EventTypeInOut_": {
+                "title": "ListResponse[EventTypeInOut]",
+                "required": [
+                    "data",
+                    "done"
+                ],
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "title": "Data",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/EventTypeInOut"
                         }
                     },
                     "iterator": {
@@ -2665,6 +2987,14 @@
                         "title": "Description",
                         "type": "string"
                     },
+                    "filterTypes": {
+                        "title": "Filtertypes",
+                        "uniqueItems": true,
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
                     "id": {
                         "title": "Id",
                         "type": "string"
@@ -2690,13 +3020,13 @@
                     "eventType": {
                         "title": "Eventtype",
                         "maxLength": 256,
-                        "pattern": "^[a-zA-Z0-9_.]+$",
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "type": "string"
                     },
                     "eventId": {
                         "title": "Eventid",
                         "maxLength": 256,
-                        "pattern": "^[a-zA-Z0-9_.]+$",
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "type": "string"
                     },
                     "data": {
@@ -2718,13 +3048,13 @@
                     "eventType": {
                         "title": "Eventtype",
                         "maxLength": 256,
-                        "pattern": "^[a-zA-Z0-9_.]+$",
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "type": "string"
                     },
                     "eventId": {
                         "title": "Eventid",
                         "maxLength": 256,
-                        "pattern": "^[a-zA-Z0-9_.]+$",
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "type": "string"
                     },
                     "data": {
