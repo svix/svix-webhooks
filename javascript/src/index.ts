@@ -116,6 +116,10 @@ class Application {
     return this.api.getApplicationApiV1AppAppIdGet({ appId });
   }
 
+  public update(appId: string, applicationIn: ApplicationIn): Promise<ApplicationOut> {
+    return this.api.updateApplicationApiV1AppAppIdPut({ appId, applicationIn });
+  }
+
   public delete(appId: string): Promise<void> {
     return this.api.deleteApplicationApiV1AppAppIdDelete({ appId });
   }
