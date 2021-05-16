@@ -1,7 +1,7 @@
 from .receiver import Webhook  # noqa
 from .api import (
-    Diahook,
-    DiahookOptions,
+    Svix,
+    SvixOptions,
     FetchOptions,
     DashboardAccessOut,
     MessageIn,

@@ -29,7 +29,7 @@ from .openapi_client.model.message_status import MessageStatus
 
 
 @dataclass
-class DiahookOptions:
+class SvixOptions:
     debug: bool = False
     _test_url: t.Optional[str] = None
 
@@ -190,10 +190,10 @@ class MessageAttempt(ApiBase[MessageAttemptApi]):
             )
 
 
-class Diahook:
+class Svix:
     _configuration: Configuration
 
-    def __init__(self, auth_token: str, options: DiahookOptions = DiahookOptions()) -> None:
+    def __init__(self, auth_token: str, options: SvixOptions = SvixOptions()) -> None:
         self._configuration = Configuration(host=options._test_url, access_token=auth_token)
 
     @property

@@ -36,11 +36,11 @@ import * as utf8 from "@stablelib/utf8";
 import * as base64 from "@stablelib/base64";
 import * as sha256 from "fast-sha256";
 
-export interface DiahookOptions {
+export interface SvixOptions {
   debug?: boolean;
 }
 
-export class Diahook {
+export class Svix {
   public readonly _configuration: Configuration;
   public readonly authentication: Authentication;
   public readonly application: Application;
@@ -49,7 +49,7 @@ export class Diahook {
   public readonly message: Message;
   public readonly messageAttempt: MessageAttempt;
 
-  public constructor(token: string, options: DiahookOptions = {}) {
+  public constructor(token: string, options: SvixOptions = {}) {
     const testUrl: string | undefined = (options as any)._testUrl;
 
     const baseServer = testUrl ? new ServerConfiguration<any>(testUrl, {}) : server1;

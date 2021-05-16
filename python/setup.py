@@ -10,7 +10,7 @@
 import os
 from setuptools import setup, find_packages  # noqa: H301
 
-NAME = "diahook"
+NAME = "svix"
 VERSION = "0.9.3"
 # To install the library, run the following
 #
@@ -33,12 +33,13 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 setup(
     name=NAME,
     version=VERSION,
-    description="Diahook",
-    author="Diahook",
-    author_email="development@diahook.com",
-    url="https://www.diahook.com",
+    description="Svix",
+    author="Svix",
+    author_email="development@svix.com",
+    url="https://www.svix.com",
     license="MIT",
     keywords=[
+        "svix",
         "diahook",
         "webhooks",
     ],

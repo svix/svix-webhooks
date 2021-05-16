@@ -1,11 +1,12 @@
 {
-  "name": "diahook",
+  "name": "svix",
   "version": "0.11.5",
-  "description": "Diahook API client",
-  "author": "diahook",
+  "description": "Svix API client",
+  "author": "svix",
   "repository": "https://github.com/svixhq/svix-libs",
   "type": "commonjs",
   "keywords": [
+    "svix",
     "diahook",
     "webhooks",
     "typescript"
