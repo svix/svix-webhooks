@@ -1,6 +1,6 @@
 {
   "name": "diahook",
-  "version": "0.11.2",
+  "version": "0.11.4",
   "description": "Diahook API client",
   "author": "diahook",
   "type": "commonjs",
