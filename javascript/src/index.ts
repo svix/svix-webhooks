@@ -295,11 +295,21 @@ export class WebhookVerificationError extends ExtendableError {
   }
 }
 
-export interface WebhookRequiredHeaders {
+export interface LegacyWebhookRequiredHeaders {
   "dh-id": string;
   "dh-timestamp": string;
   "dh-signature": string;
 }
+
+export interface NewWebhookRequiredHeaders {
+  "svix-id": string;
+  "svix-timestamp": string;
+  "svix-signature": string;
+}
+
+export type WebhookRequiredHeaders =
+  | NewWebhookRequiredHeaders
+  | LegacyWebhookRequiredHeaders;
 
 export class Webhook {
   private readonly key: Uint8Array;
@@ -317,15 +327,17 @@ export class Webhook {
       headers[key.toLowerCase()] = (headers_ as Record<string, string>)[key];
     }
 
-    if (!headers["dh-signature"] || !headers["dh-id"] || !headers["dh-timestamp"]) {
+    const msgId = headers["svix-id"] ?? headers["dh-id"];
+    const msgSignature = headers["svix-signature"] ?? headers["dh-signature"];
+    const msgTimestamp = headers["svix-timestamp"] ?? headers["dh-timestamp"];
+
+    if (!msgSignature || !msgId || !msgTimestamp) {
       throw new WebhookVerificationError("Missing required headers");
     }
 
-    const toSign = utf8.encode(
-      `${headers["dh-id"]}.${headers["dh-timestamp"]}.${payload}`
-    );
+    const toSign = utf8.encode(`${msgId}.${msgTimestamp}.${payload}`);
     const expectedSignature = base64.encode(sha256.hmac(this.key, toSign));
-    const passedSignatures = headers["dh-signature"].split(" ");
+    const passedSignatures = msgSignature.split(" ");
     for (const versionedSignature of passedSignatures) {
       const [version, signature] = versionedSignature.split(",");
       if (version !== "v1") {

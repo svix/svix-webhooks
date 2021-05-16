@@ -26,15 +26,15 @@ class Webhook:
     def verify(self, data: t.Union[bytes, str], headers: t.Dict[str, str]) -> t.Dict[str, t.Any]:
         data = data if isinstance(data, str) else data.decode()
         headers = {k.lower(): v for (k, v) in headers.items()}
-        dh_id = headers.get("dh-id")
-        dh_signature = headers.get("dh-signature")
-        dh_timestamp = headers.get("dh-timestamp")
-        if not (dh_id and dh_timestamp and dh_timestamp):
+        msg_id = headers.get("svix-id") or headers.get("dh-id")
+        msg_signature = headers.get("svix-signature") or headers.get("dh-signature")
+        msg_timestamp = headers.get("svix-timestamp") or headers.get("dh-timestamp")
+        if not (msg_id and msg_timestamp and msg_timestamp):
             raise WebhookVerificationError("Missing required headers")
 
-        to_sign = f"{dh_id}.{dh_timestamp}.{data}".encode()
+        to_sign = f"{msg_id}.{msg_timestamp}.{data}".encode()
         expected_sig = hmac_data(self._whsecret, to_sign)
-        passed_sigs = dh_signature.split(" ")
+        passed_sigs = msg_signature.split(" ")
         for versioned_sig in passed_sigs:
             (version, signature) = versioned_sig.split(",")
             if version != "v1":
