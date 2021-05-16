@@ -311,21 +311,11 @@ export class WebhookVerificationError extends ExtendableError {
   }
 }
 
-export interface LegacyWebhookRequiredHeaders {
-  "dh-id": string;
-  "dh-timestamp": string;
-  "dh-signature": string;
-}
-
-export interface NewWebhookRequiredHeaders {
+export interface WebhookRequiredHeaders {
   "svix-id": string;
   "svix-timestamp": string;
   "svix-signature": string;
 }
-
-export type WebhookRequiredHeaders =
-  | NewWebhookRequiredHeaders
-  | LegacyWebhookRequiredHeaders;
 
 export class Webhook {
   private readonly key: Uint8Array;
@@ -343,9 +333,9 @@ export class Webhook {
       headers[key.toLowerCase()] = (headers_ as Record<string, string>)[key];
     }
 
-    const msgId = headers["svix-id"] ?? headers["dh-id"];
-    const msgSignature = headers["svix-signature"] ?? headers["dh-signature"];
-    const msgTimestamp = headers["svix-timestamp"] ?? headers["dh-timestamp"];
+    const msgId = headers["svix-id"];
+    const msgSignature = headers["svix-signature"];
+    const msgTimestamp = headers["svix-timestamp"];
 
     if (!msgSignature || !msgId || !msgTimestamp) {
       throw new WebhookVerificationError("Missing required headers");

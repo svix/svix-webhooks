@@ -26,9 +26,9 @@ class Webhook:
     def verify(self, data: t.Union[bytes, str], headers: t.Dict[str, str]) -> t.Dict[str, t.Any]:
         data = data if isinstance(data, str) else data.decode()
         headers = {k.lower(): v for (k, v) in headers.items()}
-        msg_id = headers.get("svix-id") or headers.get("dh-id")
-        msg_signature = headers.get("svix-signature") or headers.get("dh-signature")
-        msg_timestamp = headers.get("svix-timestamp") or headers.get("dh-timestamp")
+        msg_id = headers.get("svix-id")
+        msg_signature = headers.get("svix-signature")
+        msg_timestamp = headers.get("svix-timestamp")
         if not (msg_id and msg_timestamp and msg_timestamp):
             raise WebhookVerificationError("Missing required headers")
 
