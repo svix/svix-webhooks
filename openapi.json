@@ -3,7 +3,7 @@
     "info": {
         "title": "Diahook",
         "description": "The Diahook server API documentation",
-        "version": "0.8.1"
+        "version": "1.4"
     },
     "servers": [
         {
@@ -228,6 +228,101 @@
                         "in": "path"
                     }
                 ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApplicationOut"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "application"
+                ],
+                "summary": "Update Application",
+                "operationId": "update_application_api_v1_app__app_id___put",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "App Id",
+                            "type": "string"
+                        },
+                        "name": "app_id",
+                        "in": "path"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApplicationIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
                 "responses": {
                     "200": {
                         "description": "Successful Response",
@@ -2499,17 +2594,23 @@
                         "title": "Eventtype",
                         "maxLength": 256,
                         "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                        "type": "string"
+                        "type": "string",
+                        "example": "user.signup"
                     },
                     "eventId": {
                         "title": "Eventid",
                         "maxLength": 256,
                         "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                        "type": "string"
+                        "type": "string",
+                        "example": "evt_pNZKtWg8Azow"
                     },
                     "data": {
                         "title": "Data",
-                        "type": "object"
+                        "type": "object",
+                        "example": {
+                            "username": "test_user",
+                            "email": "test@example.com"
+                        }
                     },
                     "id": {
                         "title": "Id",
@@ -2619,7 +2720,8 @@
                         "title": "Name",
                         "maxLength": 256,
                         "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                        "type": "string"
+                        "type": "string",
+                        "example": "user.signup"
                     },
                     "description": {
                         "title": "Description",
@@ -3021,17 +3123,23 @@
                         "title": "Eventtype",
                         "maxLength": 256,
                         "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                        "type": "string"
+                        "type": "string",
+                        "example": "user.signup"
                     },
                     "eventId": {
                         "title": "Eventid",
                         "maxLength": 256,
                         "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                        "type": "string"
+                        "type": "string",
+                        "example": "evt_pNZKtWg8Azow"
                     },
                     "data": {
                         "title": "Data",
-                        "type": "object"
+                        "type": "object",
+                        "example": {
+                            "username": "test_user",
+                            "email": "test@example.com"
+                        }
                     }
                 }
             },
@@ -3049,17 +3157,23 @@
                         "title": "Eventtype",
                         "maxLength": 256,
                         "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                        "type": "string"
+                        "type": "string",
+                        "example": "user.signup"
                     },
                     "eventId": {
                         "title": "Eventid",
                         "maxLength": 256,
                         "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                        "type": "string"
+                        "type": "string",
+                        "example": "evt_pNZKtWg8Azow"
                     },
                     "data": {
                         "title": "Data",
-                        "type": "object"
+                        "type": "object",
+                        "example": {
+                            "username": "test_user",
+                            "email": "test@example.com"
+                        }
                     },
                     "id": {
                         "title": "Id",
