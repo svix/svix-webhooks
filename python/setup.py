@@ -11,7 +11,7 @@ import os
 from setuptools import setup, find_packages  # noqa: H301
 
 NAME = "diahook"
-VERSION = "0.8.6"
+VERSION = "0.9.2"
 # To install the library, run the following
 #
 # python setup.py install
@@ -20,11 +20,11 @@ VERSION = "0.8.6"
 # http://pypi.python.org/pypi/setuptools
 
 REQUIRES = [
-  "urllib3 >= 1.25.3",
-  "python-dateutil",
+    "urllib3 >= 1.25.3",
+    "python-dateutil",
 ]
 
-with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme:
+with open(os.path.join(os.path.dirname(__file__), "README.md")) as readme:
     README = readme.read()
 
 # allow setup.py to be run from any path
@@ -47,5 +47,5 @@ setup(
     packages=find_packages(exclude=["test", "tests"]),
     include_package_data=True,
     long_description=README,
-    long_description_content_type='text/markdown',
+    long_description_content_type="text/markdown",
 )
