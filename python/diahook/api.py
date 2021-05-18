@@ -115,6 +115,12 @@ class Endpoint(ApiBase[EndpointApi]):
         with self._api() as api:
             return api.get_endpoint_api_v1_app_app_id_endpoint_endpoint_id_get(app_id=app_id, endpoint_id=endpoint_id)
 
+    def update(self, app_id: str, endpoint_id: str, endpoint_in: EndpointIn) -> EndpointOut:
+        with self._api() as api:
+            return api.update_endpoint_api_v1_app_app_id_endpoint_endpoint_id_put(
+                app_id=app_id, endpoint_id=endpoint_id, endpoint_in=endpoint_in
+            )
+
     def delete(self, app_id: str, endpoint_id: str) -> None:
         with self._api() as api:
             return api.delete_endpoint_api_v1_app_app_id_endpoint_endpoint_id_delete(

@@ -144,6 +144,10 @@ class Endpoint {
     return this.api.getEndpointApiV1AppAppIdEndpointEndpointIdGet({ endpointId, appId });
   }
 
+  public update(appId: string, endpointId: string, endpointIn: EndpointIn): Promise<EndpointOut> {
+    return this.api.updateEndpointApiV1AppAppIdEndpointEndpointIdPut({ appId, endpointId, endpointIn });
+  }
+
   public delete(appId: string, endpointId: string): Promise<void> {
     return this.api.deleteEndpointApiV1AppAppIdEndpointEndpointIdDelete({
       endpointId,
