@@ -3,13 +3,14 @@
   "version": "0.11.5",
   "description": "Diahook API client",
   "author": "diahook",
+  "repository": "https://github.com/svixhq/svix-libs",
   "type": "commonjs",
   "keywords": [
     "diahook",
     "webhooks",
     "typescript"
   ],
-  "license": "SEE LICENSE IN LICENSE.md",
+  "license": "MIT",
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
   "files": [
