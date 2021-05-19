@@ -37,7 +37,7 @@ setup(
     author="Diahook",
     author_email="development@diahook.com",
     url="https://www.diahook.com",
-    license="SEE LICENSE IN LICENSE.md",
+    license="MIT",
     keywords=[
         "diahook",
         "webhooks",
