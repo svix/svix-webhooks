@@ -1,13 +1,13 @@
 {
     "openapi": "3.0.2",
     "info": {
-        "title": "Diahook",
-        "description": "The Diahook server API documentation",
+        "title": "Svix",
+        "description": "The Svix server API documentation",
         "version": "1.4"
     },
     "servers": [
         {
-            "url": "https://api.diahook.com"
+            "url": "https://api.svix.com"
         },
         {
             "url": "http://localhost:8040"
@@ -2652,8 +2652,7 @@
                 "title": "EndpointIn",
                 "required": [
                     "url",
-                    "version",
-                    "description"
+                    "version"
                 ],
                 "type": "object",
                 "properties": {
@@ -2671,7 +2670,8 @@
                     },
                     "description": {
                         "title": "Description",
-                        "type": "string"
+                        "type": "string",
+                        "default": ""
                     },
                     "filterTypes": {
                         "title": "Filtertypes",
@@ -2735,7 +2735,6 @@
                 "required": [
                     "url",
                     "version",
-                    "description",
                     "id",
                     "createdAt"
                 ],
@@ -2755,7 +2754,8 @@
                     },
                     "description": {
                         "title": "Description",
-                        "type": "string"
+                        "type": "string",
+                        "default": ""
                     },
                     "filterTypes": {
                         "title": "Filtertypes",
@@ -3170,7 +3170,6 @@
                 "required": [
                     "url",
                     "version",
-                    "description",
                     "id",
                     "createdAt",
                     "status"
@@ -3191,7 +3190,8 @@
                     },
                     "description": {
                         "title": "Description",
-                        "type": "string"
+                        "type": "string",
+                        "default": ""
                     },
                     "filterTypes": {
                         "title": "Filtertypes",
