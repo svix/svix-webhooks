@@ -7,7 +7,7 @@ Libraries for interacting with the Svix API and verifying webhook signatures
 
 # Documentation
 
-The docs are available at https://docs.diahook.com
+The docs are available at https://docs.svix.com
 
 # Structure
 
@@ -19,7 +19,7 @@ The code is a combination of code auto-generated from the OpenAPI spec, and manu
 ```
 # Install deps
 yarn
-./regen_openapi.sh https://api.diahook.com/api/v1/openapi.json
+./regen_openapi.sh https://api.svix.com/api/v1/openapi.json
 ```
 
 Followed by running the build for each of the libraries (subdirectories).
