@@ -5,6 +5,8 @@
 
 Libraries for interacting with the Svix API and verifying webhook signatures
 
+[![Join our slack](https://img.shields.io/badge/Slack-join%20the%20community-blue?logo=slack&style=social)](https://www.svix.com/slack/)
+
 # Documentation
 
 The docs are available at https://docs.svix.com
