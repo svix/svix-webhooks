@@ -30,3 +30,8 @@
 /.gitlab-ci.yml
 /.travis.yml
 /svix/__init__.py
+
+docs/
+test/
+test-requirements.txt
+tox.ini
