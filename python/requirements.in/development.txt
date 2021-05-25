@@ -1,0 +1,9 @@
+autoflake
+black
+isort
+coverage
+flake8
+mypy
+pip-tools
+pytest
+requests # Needed for pytest
