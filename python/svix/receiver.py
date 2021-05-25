@@ -4,8 +4,6 @@ import hmac
 import json
 import typing as t
 
-import dateutil.parser
-
 
 def hmac_data(key: bytes, data: bytes) -> bytes:
     return hmac.new(key, data, hashlib.sha256).digest()
