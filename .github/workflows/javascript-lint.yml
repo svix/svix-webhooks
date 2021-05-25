@@ -1,0 +1,25 @@
+name: javascript-lint
+on:
+  pull_request:
+    paths:
+      - "javascript/**"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Regen openapi libs
+        run: |
+          yarn
+          ./regen_openapi.sh
+
+      - name: Install modules
+        run: |
+          cd javascript
+          yarn
+
+      - name: Lint
+        run: |
+          cd javascript
+          yarn run lint
