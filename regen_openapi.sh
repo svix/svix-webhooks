@@ -2,7 +2,9 @@
 
 set -ex
 
-curl $1 | python -m json.tool > openapi.json
+if [ ! -z "$1" ]; then
+    curl $1 | python -m json.tool > openapi.json
+fi
 
 yarn openapi-generator-cli generate -i openapi.json -g python -o python/ -c python/openapi-generator-config.json
 
