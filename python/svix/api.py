@@ -18,7 +18,7 @@ from .openapi_client.api.endpoint_api import (
     EndpointSecret,
     ListResponseEndpointOut,
 )
-from .openapi_client.api.event_type_api import EventTypeApi, EventTypeInOut, ListResponseEventTypeInOut
+from .openapi_client.api.event_type_api import EventTypeApi, EventTypeInOut, EventTypeUpdate, ListResponseEventTypeInOut
 from .openapi_client.api.message_api import MessageApi, MessageIn, MessageOut, ListResponseMessageOut
 from .openapi_client.api.message_attempt_api import (
     MessageAttemptApi,
@@ -144,6 +144,12 @@ class EventType(ApiBase[EventTypeApi]):
     def create(self, event_type_in_out: EventTypeInOut) -> EventTypeInOut:
         with self._api() as api:
             return api.create_event_type_api_v1_event_type_post(event_type_in_out=event_type_in_out)
+
+    def update(self, event_type_name: str, event_type_update: EventTypeUpdate) -> EndpointOut:
+        with self._api() as api:
+            return api.update_event_type_api_v1_event_type_event_type_name_put(
+                event_type_name=event_type_name, event_type_update=event_type_update
+            )
 
     def delete(self, event_type_name: str) -> None:
         with self._api() as api:
