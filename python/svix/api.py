@@ -38,7 +38,10 @@ class FetchOptionsMessageAttempt(FetchOptions):
     status: t.Optional[MessageStatus] = None
 
 
-ApiClass = t.TypeVar("ApiClass")
+ApiClass = t.TypeVar(
+    "ApiClass",
+    bound=t.Union[AuthenticationApi, ApplicationApi, EndpointApi, EventTypeApi, MessageApi, MessageAttemptApi],
+)
 
 
 class ApiBase(t.Generic[ApiClass]):
@@ -51,7 +54,7 @@ class ApiBase(t.Generic[ApiClass]):
     @contextmanager
     def _api(self) -> t.Generator[ApiClass, None, None]:
         with ApiClient(self._configuration) as api_client:
-            yield self._ApiClass(api_client)
+            yield t.cast(t.Any, self._ApiClass(api_client))
 
 
 class Authentication(ApiBase[AuthenticationApi]):
