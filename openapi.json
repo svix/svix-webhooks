@@ -799,6 +799,101 @@
             }
         },
         "/api/v1/event-type/{event_type_name}/": {
+            "put": {
+                "tags": [
+                    "event type"
+                ],
+                "summary": "Update Event Type",
+                "operationId": "update_event_type_api_v1_event_type__event_type_name___put",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "title": "Event Type Name",
+                            "type": "string"
+                        },
+                        "name": "event_type_name",
+                        "in": "path"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EventTypeUpdate"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EventTypeInOut"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ]
+            },
             "delete": {
                 "tags": [
                     "event type"
@@ -2815,18 +2910,31 @@
             "EventTypeInOut": {
                 "title": "EventTypeInOut",
                 "required": [
-                    "name",
-                    "description"
+                    "description",
+                    "name"
                 ],
                 "type": "object",
                 "properties": {
+                    "description": {
+                        "title": "Description",
+                        "type": "string"
+                    },
                     "name": {
                         "title": "Name",
                         "maxLength": 256,
                         "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "type": "string",
                         "example": "user.signup"
-                    },
+                    }
+                }
+            },
+            "EventTypeUpdate": {
+                "title": "EventTypeUpdate",
+                "required": [
+                    "description"
+                ],
+                "type": "object",
+                "properties": {
                     "description": {
                         "title": "Description",
                         "type": "string"

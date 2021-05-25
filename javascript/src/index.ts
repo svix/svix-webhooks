@@ -28,6 +28,7 @@ import {
   EventTypeApi,
   ListResponseEventTypeInOut,
   EventTypeInOut,
+  EventTypeUpdate,
 } from "./openapi/index";
 export * from "./openapi/models/all";
 export * from "./openapi/apis/exception";
@@ -184,6 +185,10 @@ class EventType {
 
   public create(eventTypeInOut: EventTypeInOut): Promise<EventTypeInOut> {
     return this.api.createEventTypeApiV1EventTypePost({ eventTypeInOut });
+  }
+
+  public update(eventTypeName: string, eventTypeUpdate: EventTypeUpdate): Promise<EventTypeInOut> {
+    return this.api.updateEventTypeApiV1EventTypeEventTypeNamePut({ eventTypeName, eventTypeUpdate });
   }
 
   public delete(eventTypeName: string): Promise<void> {
