@@ -187,8 +187,14 @@ class EventType {
     return this.api.createEventTypeApiV1EventTypePost({ eventTypeInOut });
   }
 
-  public update(eventTypeName: string, eventTypeUpdate: EventTypeUpdate): Promise<EventTypeInOut> {
-    return this.api.updateEventTypeApiV1EventTypeEventTypeNamePut({ eventTypeName, eventTypeUpdate });
+  public update(
+    eventTypeName: string,
+    eventTypeUpdate: EventTypeUpdate
+  ): Promise<EventTypeInOut> {
+    return this.api.updateEventTypeApiV1EventTypeEventTypeNamePut({
+      eventTypeName,
+      eventTypeUpdate,
+    });
   }
 
   public delete(eventTypeName: string): Promise<void> {

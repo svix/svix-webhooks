@@ -1,0 +1,32 @@
+name: python-lint
+on: 
+  pull_request:
+    paths:
+      - "python/**"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-python@v2
+        name: Install Python
+        with:
+          python-version: '3.9'
+
+      - name: Regen openapi libs
+        run: |
+          yarn
+          ./regen_openapi.sh
+
+      - name: Install deps
+        run: |
+          cd python
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt .
+          python -m pip install -r requirements-dev.txt .
+
+      - name: Run linting
+        run: |
+          cd python
+          sh ./scripts/lint.sh

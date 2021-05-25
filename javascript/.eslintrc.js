@@ -22,13 +22,14 @@ module.exports = {
     "@typescript-eslint/no-use-before-define": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
     "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/member-delimiter-style": ["error", {
       "multiline": {
         "delimiter": "semi",
         "requireLast": true
       },
       "singleline": {
-        "delimiter": "comma",
+        "delimiter": "semi",
         "requireLast": false
       }
     }],
@@ -53,9 +54,7 @@ module.exports = {
     "comma-spacing": ["error"],
     "eqeqeq": ["error", "smart"],
     "indent": "off",
-    "@typescript-eslint/indent": ["error", 2, {
-      "SwitchCase": 1,
-    }],
+    "@typescript-eslint/indent": 0,
     "no-multi-spaces": "error",
     "object-curly-spacing": ["error", "always"],
     "arrow-parens": "error",

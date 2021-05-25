@@ -67,3 +67,5 @@ target/
 
 # OpenAPI version files
 .openapi-generator
+
+/svix/openapi_client

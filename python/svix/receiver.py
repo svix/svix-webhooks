@@ -4,8 +4,6 @@ import hmac
 import json
 import typing as t
 
-import dateutil.parser
-
 
 def hmac_data(key: bytes, data: bytes) -> bytes:
     return hmac.new(key, data, hashlib.sha256).digest()
@@ -29,7 +27,7 @@ class Webhook:
         msg_id = headers.get("svix-id")
         msg_signature = headers.get("svix-signature")
         msg_timestamp = headers.get("svix-timestamp")
-        if not (msg_id and msg_timestamp and msg_timestamp):
+        if not (msg_id and msg_timestamp and msg_signature):
             raise WebhookVerificationError("Missing required headers")
 
         to_sign = f"{msg_id}.{msg_timestamp}.{data}".encode()
