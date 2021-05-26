@@ -13,7 +13,7 @@ type Authentication struct {
 type DashboardAccessOut openapi.DashboardAccessOut
 
 func (a *Authentication) DashboardAccess(appID string) (*DashboardAccessOut, error) {
-	req := a.api.AuthenticationApi.GetDashboardAccessApiV1AuthDashboardAccessAppIdPost(context.TODO(), appID)
+	req := a.api.AuthenticationApi.GetDashboardAccessApiV1AuthDashboardAccessAppIdPost(context.Background(), appID)
 	out, _, err := req.Execute()
 	if err != nil {
 		return nil, err
@@ -23,7 +23,7 @@ func (a *Authentication) DashboardAccess(appID string) (*DashboardAccessOut, err
 }
 
 func (a *Authentication) Logout() error {
-	req := a.api.AuthenticationApi.LogoutApiV1AuthLogoutPost(context.TODO())
+	req := a.api.AuthenticationApi.LogoutApiV1AuthLogoutPost(context.Background())
 	_, err := req.Execute()
 	return err
 }

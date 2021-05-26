@@ -17,7 +17,7 @@ type (
 )
 
 func (m *Message) List(appID string, options FetchOptions) (*ListResponseMessageOut, error) {
-	req := m.api.MessageApi.ListMessagesApiV1AppAppIdMsgGet(context.TODO(), appID)
+	req := m.api.MessageApi.ListMessagesApiV1AppAppIdMsgGet(context.Background(), appID)
 	out, _, err := req.Execute()
 	if err != nil {
 		return nil, err
@@ -27,7 +27,7 @@ func (m *Message) List(appID string, options FetchOptions) (*ListResponseMessage
 }
 
 func (m *Message) Create(appID string, messageIn MessageIn) (*MessageOut, error) {
-	req := m.api.MessageApi.CreateMessageApiV1AppAppIdMsgPost(context.TODO(), appID)
+	req := m.api.MessageApi.CreateMessageApiV1AppAppIdMsgPost(context.Background(), appID)
 	req = req.MessageIn(openapi.MessageIn(messageIn))
 	out, _, err := req.Execute()
 	if err != nil {
@@ -38,7 +38,7 @@ func (m *Message) Create(appID string, messageIn MessageIn) (*MessageOut, error)
 }
 
 func (m *Message) Get(appID string, msgID string) (*MessageOut, error) {
-	req := m.api.MessageApi.GetMessageApiV1AppAppIdMsgMsgIdGet(context.TODO(), msgID, appID)
+	req := m.api.MessageApi.GetMessageApiV1AppAppIdMsgMsgIdGet(context.Background(), msgID, appID)
 	out, _, err := req.Execute()
 	if err != nil {
 		return nil, err
