@@ -25,7 +25,7 @@ func NewWebhook(secret string) (*Webhook, error) {
 	}, nil
 }
 
-func (wh *Webhook) Verify(payload string, headers http.Header) error {
+func (wh *Webhook) Verify(payload []byte, headers http.Header) error {
 	msgID := headers.Get("svix-id")
 	msgSignature := headers.Get("svix-signature")
 	msgTimestamp := headers.Get("svix-timestamp")
