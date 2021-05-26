@@ -18,7 +18,18 @@ type (
 		Message        *Message
 		MessageAttempt *MessageAttempt
 	}
+	FetchOptions struct {
+		Iterator *string
+		Limit    *int32
+	}
 )
+
+func String(s string) *string {
+	return &s
+}
+func Int32(i int32) *int32 {
+	return &i
+}
 
 func New(token string, options *SvixOptions) *Svix {
 	conf := openapi.NewConfiguration()

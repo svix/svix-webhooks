@@ -16,8 +16,16 @@ type (
 	MessageOut             openapi.MessageOut
 )
 
-func (m *Message) List(appID string, options FetchOptions) (*ListResponseMessageOut, error) {
+func (m *Message) List(appID string, options *FetchOptions) (*ListResponseMessageOut, error) {
 	req := m.api.MessageApi.ListMessagesApiV1AppAppIdMsgGet(context.Background(), appID)
+	if options != nil {
+		if options.Iterator != nil {
+			req = req.Iterator(*options.Iterator)
+		}
+		if options.Limit != nil {
+			req = req.Limit(*options.Limit)
+		}
+	}
 	out, _, err := req.Execute()
 	if err != nil {
 		return nil, err

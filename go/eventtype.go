@@ -16,8 +16,16 @@ type (
 	EventTypeUpdate            openapi.EventTypeUpdate
 )
 
-func (e *EventType) list(options FetchOptions) (*ListResponseEventTypeInOut, error) {
+func (e *EventType) list(options *FetchOptions) (*ListResponseEventTypeInOut, error) {
 	req := e.api.EventTypeApi.ListEventTypesApiV1EventTypeGet(context.Background())
+	if options != nil {
+		if options.Iterator != nil {
+			req = req.Iterator(*options.Iterator)
+		}
+		if options.Limit != nil {
+			req = req.Limit(*options.Limit)
+		}
+	}
 	out, _, err := req.Execute()
 	if err != nil {
 		return nil, err

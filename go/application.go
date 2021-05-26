@@ -7,7 +7,6 @@ import (
 )
 
 type (
-	FetchOptions               struct{}
 	ListResponseApplicationOut openapi.ListResponseApplicationOut
 	ApplicationIn              openapi.ApplicationIn
 	ApplicationOut             openapi.ApplicationOut
@@ -17,9 +16,16 @@ type Application struct {
 	api *openapi.APIClient
 }
 
-// func (a *Application) List(options FetchOptions) (*ListResponseApplicationOut, error) {
-func (a *Application) List() (*ListResponseApplicationOut, error) {
+func (a *Application) List(options *FetchOptions) (*ListResponseApplicationOut, error) {
 	req := a.api.ApplicationApi.ListApplicationsApiV1AppGet(context.Background())
+	if options != nil {
+		if options.Iterator != nil {
+			req = req.Iterator(*options.Iterator)
+		}
+		if options.Limit != nil {
+			req = req.Limit(*options.Limit)
+		}
+	}
 	resp, _, err := req.Execute()
 	if err != nil {
 		return nil, err

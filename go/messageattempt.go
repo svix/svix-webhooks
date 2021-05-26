@@ -10,7 +10,12 @@ type MessageAttempt struct {
 	api *openapi.APIClient
 }
 
-type FetchOptionsMessageAttempt struct{}
+type MessageStatus openapi.MessageStatus
+
+type FetchOptionsMessageAttempt struct {
+	FetchOptions
+	Status *MessageStatus
+}
 
 type (
 	ListResponseMessageAttemptOut         openapi.ListResponseMessageAttemptOut
@@ -20,8 +25,19 @@ type (
 	ListResponseMessageAttemptEndpointOut openapi.ListResponseMessageAttemptEndpointOut
 )
 
-func (m *MessageAttempt) List(appID string, msgID string, options FetchOptionsMessageAttempt) (*ListResponseMessageAttemptOut, error) {
+func (m *MessageAttempt) List(appID string, msgID string, options *FetchOptionsMessageAttempt) (*ListResponseMessageAttemptOut, error) {
 	req := m.api.MessageAttemptApi.ListAttemptsApiV1AppAppIdMsgMsgIdAttemptGet(context.Background(), msgID, appID)
+	if options != nil {
+		if options.Iterator != nil {
+			req = req.Iterator(*options.Iterator)
+		}
+		if options.Limit != nil {
+			req = req.Limit(*options.Limit)
+		}
+		if options.Status != nil {
+			req = req.Status(openapi.MessageStatus(*options.Status))
+		}
+	}
 	out, _, err := req.Execute()
 	if err != nil {
 		return nil, err
@@ -40,18 +56,25 @@ func (m *MessageAttempt) Get(appID string, msgID string, attemptID string) (*Mes
 	return &ret, nil
 }
 
-func (m *MessageAttempt) Resend(appID string, msgID string, endpointID string) (map[string]interface{}, error) {
+func (m *MessageAttempt) Resend(appID string, msgID string, endpointID string) error {
 	req := m.api.MessageAttemptApi.ResendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPost(context.Background(), endpointID, msgID, appID)
-	out, _, err := req.Execute()
-	if err != nil {
-		return nil, err
-	}
-	// TODO Why is this not a MessageAttemptOut?
-	return out, nil
+	_, _, err := req.Execute()
+	return err
 }
 
-func (m *MessageAttempt) ListAttemptedMessages(appID string, endpointID string, options FetchOptionsMessageAttempt) (*ListResponseEndpointMessageOut, error) {
+func (m *MessageAttempt) ListAttemptedMessages(appID string, endpointID string, options *FetchOptionsMessageAttempt) (*ListResponseEndpointMessageOut, error) {
 	req := m.api.MessageAttemptApi.ListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGet(context.Background(), endpointID, appID)
+	if options != nil {
+		if options.Iterator != nil {
+			req = req.Iterator(*options.Iterator)
+		}
+		if options.Limit != nil {
+			req = req.Limit(*options.Limit)
+		}
+		if options.Status != nil {
+			req = req.Status(openapi.MessageStatus(*options.Status))
+		}
+	}
 	out, _, err := req.Execute()
 	if err != nil {
 		return nil, err
@@ -60,8 +83,16 @@ func (m *MessageAttempt) ListAttemptedMessages(appID string, endpointID string, 
 	return &ret, nil
 }
 
-func (m *MessageAttempt) ListAttemptedDestinations(appID string, msgID string, options FetchOptionsMessageAttempt) (*ListResponseMessageEndpointOut, error) {
+func (m *MessageAttempt) ListAttemptedDestinations(appID string, msgID string, options *FetchOptions) (*ListResponseMessageEndpointOut, error) {
 	req := m.api.MessageAttemptApi.ListAttemptedDestinationsApiV1AppAppIdMsgMsgIdEndpointGet(context.Background(), msgID, appID)
+	if options != nil {
+		if options.Iterator != nil {
+			req = req.Iterator(*options.Iterator)
+		}
+		if options.Limit != nil {
+			req = req.Limit(*options.Limit)
+		}
+	}
 	out, _, err := req.Execute()
 	if err != nil {
 		return nil, err

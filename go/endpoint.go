@@ -17,8 +17,16 @@ type Endpoint struct {
 	api *openapi.APIClient
 }
 
-func (e *Endpoint) List(appID string, options FetchOptions) (*ListResponseEndpointOut, error) {
+func (e *Endpoint) List(appID string, options *FetchOptions) (*ListResponseEndpointOut, error) {
 	req := e.api.EndpointApi.ListEndpointsApiV1AppAppIdEndpointGet(context.Background(), appID)
+	if options != nil {
+		if options.Iterator != nil {
+			req = req.Iterator(*options.Iterator)
+		}
+		if options.Limit != nil {
+			req = req.Limit(*options.Limit)
+		}
+	}
 	out, _, err := req.Execute()
 	if err != nil {
 		return nil, err
