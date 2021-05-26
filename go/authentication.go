@@ -12,8 +12,8 @@ type Authentication struct {
 
 type DashboardAccessOut openapi.DashboardAccessOut
 
-func (a *Authentication) DashboardAccess(appID string) (*DashboardAccessOut, error) {
-	req := a.api.AuthenticationApi.GetDashboardAccessApiV1AuthDashboardAccessAppIdPost(context.Background(), appID)
+func (a *Authentication) DashboardAccess(appId string) (*DashboardAccessOut, error) {
+	req := a.api.AuthenticationApi.GetDashboardAccessApiV1AuthDashboardAccessAppIdPost(context.Background(), appId)
 	out, _, err := req.Execute()
 	if err != nil {
 		return nil, err

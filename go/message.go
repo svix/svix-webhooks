@@ -16,8 +16,8 @@ type (
 	MessageOut             openapi.MessageOut
 )
 
-func (m *Message) List(appID string, options *FetchOptions) (*ListResponseMessageOut, error) {
-	req := m.api.MessageApi.ListMessagesApiV1AppAppIdMsgGet(context.Background(), appID)
+func (m *Message) List(appId string, options *FetchOptions) (*ListResponseMessageOut, error) {
+	req := m.api.MessageApi.ListMessagesApiV1AppAppIdMsgGet(context.Background(), appId)
 	if options != nil {
 		if options.Iterator != nil {
 			req = req.Iterator(*options.Iterator)
@@ -34,9 +34,9 @@ func (m *Message) List(appID string, options *FetchOptions) (*ListResponseMessag
 	return &ret, nil
 }
 
-func (m *Message) Create(appID string, messageIn MessageIn) (*MessageOut, error) {
-	req := m.api.MessageApi.CreateMessageApiV1AppAppIdMsgPost(context.Background(), appID)
-	req = req.MessageIn(openapi.MessageIn(messageIn))
+func (m *Message) Create(appId string, messageIn *MessageIn) (*MessageOut, error) {
+	req := m.api.MessageApi.CreateMessageApiV1AppAppIdMsgPost(context.Background(), appId)
+	req = req.MessageIn(openapi.MessageIn(*messageIn))
 	out, _, err := req.Execute()
 	if err != nil {
 		return nil, err
@@ -45,8 +45,8 @@ func (m *Message) Create(appID string, messageIn MessageIn) (*MessageOut, error)
 	return &ret, nil
 }
 
-func (m *Message) Get(appID string, msgID string) (*MessageOut, error) {
-	req := m.api.MessageApi.GetMessageApiV1AppAppIdMsgMsgIdGet(context.Background(), msgID, appID)
+func (m *Message) Get(appId string, msgId string) (*MessageOut, error) {
+	req := m.api.MessageApi.GetMessageApiV1AppAppIdMsgMsgIdGet(context.Background(), msgId, appId)
 	out, _, err := req.Execute()
 	if err != nil {
 		return nil, err

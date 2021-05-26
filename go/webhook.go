@@ -26,15 +26,15 @@ func NewWebhook(secret string) (*Webhook, error) {
 }
 
 func (wh *Webhook) Verify(payload []byte, headers http.Header) error {
-	msgID := headers.Get("svix-id")
+	msgId := headers.Get("svix-id")
 	msgSignature := headers.Get("svix-signature")
 	msgTimestamp := headers.Get("svix-timestamp")
 
-	if msgID == "" || msgSignature == "" || msgTimestamp == "" {
+	if msgId == "" || msgSignature == "" || msgTimestamp == "" {
 		return fmt.Errorf("Missing Required Headers")
 	}
 
-	toSign := fmt.Sprintf("%s.%s.%s", msgID, msgTimestamp, payload)
+	toSign := fmt.Sprintf("%s.%s.%s", msgId, msgTimestamp, payload)
 	expectedSignature := sign(wh.key, toSign)
 	passedSignatures := strings.Split(msgSignature, " ")
 
