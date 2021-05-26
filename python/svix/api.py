@@ -53,7 +53,7 @@ class ApiBase(t.Generic[ApiClass]):
 
     @contextmanager
     def _api(self) -> t.Generator[ApiClass, None, None]:
-        with ApiClient(self._configuration) as api_client:
+        with ApiClient(self._configuration) as api_client:  # type: ignore
             yield t.cast(t.Any, self._ApiClass(api_client))
 
 
@@ -64,7 +64,7 @@ class Authentication(ApiBase[AuthenticationApi]):
         with self._api() as api:
             return api.get_dashboard_access_api_v1_auth_dashboard_access_app_id_post(app_id=app_id)
 
-    def logout(self):
+    def logout(self) -> None:
         with self._api() as api:
             return api.logout_api_v1_auth_logout_post()
 
@@ -193,28 +193,28 @@ class Svix:
     _configuration: Configuration
 
     def __init__(self, auth_token: str, options: SvixOptions = SvixOptions()) -> None:
-        self._configuration = Configuration(host=options._test_url, access_token=auth_token)
+        self._configuration = Configuration(host=options._test_url, access_token=auth_token)  # type: ignore
 
     @property
-    def authentication(self):
+    def authentication(self) -> Authentication:
         return Authentication(self._configuration)
 
     @property
-    def application(self):
+    def application(self) -> Application:
         return Application(self._configuration)
 
     @property
-    def endpoint(self):
+    def endpoint(self) -> Endpoint:
         return Endpoint(self._configuration)
 
     @property
-    def event_type(self):
+    def event_type(self) -> EventType:
         return EventType(self._configuration)
 
     @property
-    def message(self):
+    def message(self) -> Message:
         return Message(self._configuration)
 
     @property
-    def message_attempt(self):
+    def message_attempt(self) -> MessageAttempt:
         return MessageAttempt(self._configuration)
