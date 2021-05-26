@@ -1,9 +1,9 @@
 autoflake
 black
 isort
-coverage
 flake8
+flake8-print
+pep8-naming
 mypy
 pip-tools
 pytest
-requests # Needed for pytest
