@@ -1,4 +1,4 @@
-package webhook
+package svix
 
 import (
 	"crypto/hmac"
@@ -15,7 +15,7 @@ type Webhook struct {
 	key []byte
 }
 
-func New(secret string) (*Webhook, error) {
+func NewWebhook(secret string) (*Webhook, error) {
 	key, err := base64enc.DecodeString(secret)
 	if err != nil {
 		return nil, err
