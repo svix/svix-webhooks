@@ -11,6 +11,7 @@ type (
 	EndpointIn              openapi.EndpointIn
 	EndpointOut             openapi.EndpointOut
 	EndpointSecret          openapi.EndpointSecret
+	EndpointStats           openapi.EndpointStats
 )
 
 type Endpoint struct {
@@ -79,5 +80,15 @@ func (e *Endpoint) GetSecret(appId string, endpointId string) (*EndpointSecret, 
 		return nil, err
 	}
 	ret := EndpointSecret(out)
+	return &ret, nil
+}
+
+func (e *Endpoint) GetStats(appId string, endpointId string) (*EndpointStats, error) {
+	req := e.api.EndpointApi.GetEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGet(context.Background(), endpointId, appId)
+	out, _, err := req.Execute()
+	if err != nil {
+		return nil, err
+	}
+	ret := EndpointStats(out)
 	return &ret, nil
 }

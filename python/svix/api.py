@@ -9,7 +9,13 @@ from .openapi_client.api.application_api import (
     ListResponseApplicationOut,
 )
 from .openapi_client.api.authentication_api import AuthenticationApi, DashboardAccessOut
-from .openapi_client.api.endpoint_api import EndpointApi, EndpointIn, EndpointOut, ListResponseEndpointOut
+from .openapi_client.api.endpoint_api import (
+    EndpointApi,
+    EndpointIn,
+    EndpointOut,
+    EndpointStats,
+    ListResponseEndpointOut,
+)
 from .openapi_client.api.event_type_api import EventTypeApi, EventTypeInOut, EventTypeUpdate, ListResponseEventTypeInOut
 from .openapi_client.api.message_api import ListResponseMessageOut, MessageApi, MessageIn, MessageOut
 from .openapi_client.api.message_attempt_api import ListResponseMessageAttemptOut, MessageAttemptApi, MessageAttemptOut
@@ -123,6 +129,12 @@ class Endpoint(ApiBase[EndpointApi]):
     def get_secret(self, app_id: str, endpoint_id: str) -> EndpointOut:
         with self._api() as api:
             return api.get_endpoint_secret_api_v1_app_app_id_endpoint_endpoint_id_secret_get(
+                app_id=app_id, endpoint_id=endpoint_id
+            )
+
+    def get_stats(self, app_id: str, endpoint_id: str) -> EndpointStats:
+        with self._api() as api:
+            return api.get_endpoint_stats_api_v1_app_app_id_endpoint_endpoint_id_stats_get(
                 app_id=app_id, endpoint_id=endpoint_id
             )
 

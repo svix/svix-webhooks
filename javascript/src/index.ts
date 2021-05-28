@@ -29,6 +29,7 @@ import {
   ListResponseEventTypeInOut,
   EventTypeInOut,
   EventTypeUpdate,
+  EndpointStats,
 } from "./openapi/index";
 export * from "./openapi/models/all";
 export * from "./openapi/apis/exception";
@@ -166,6 +167,13 @@ class Endpoint {
 
   public getSecret(appId: string, endpointId: string): Promise<EndpointSecret> {
     return this.api.getEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGet({
+      endpointId,
+      appId,
+    });
+  }
+
+  public getStats(appId: string, endpointId: string): Promise<EndpointStats> {
+    return this.api.getEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGet({
       endpointId,
       appId,
     });
