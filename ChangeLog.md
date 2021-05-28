@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.14.0
+* Add List event_types to go library
+
 ## Version 0.13.0
 * Release Go lib
 * Add function to update event_types.
