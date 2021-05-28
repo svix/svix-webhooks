@@ -2,6 +2,7 @@
 
 ## Version 0.13.0
 * Release Go lib
+* Add function to update event_types.
 
 ## Version 0.12.4
 * Update OpenAPI spec to the latest version
