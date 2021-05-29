@@ -37,6 +37,7 @@ func (e *Endpoint) List(appId string, options *FetchOptions) (*ListResponseEndpo
 
 func (e *Endpoint) Create(appId string, endpointIn *EndpointIn) (*EndpointOut, error) {
 	req := e.api.EndpointApi.CreateEndpointApiV1AppAppIdEndpointPost(context.Background(), appId)
+	req = req.EndpointIn(openapi.EndpointIn(*endpointIn))
 	out, _, err := req.Execute()
 	if err != nil {
 		return nil, err
