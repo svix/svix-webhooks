@@ -32,4 +32,5 @@
 /svix/__init__.py
 
 docs/
+api/
 .openapi-generator
