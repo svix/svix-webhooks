@@ -744,6 +744,7 @@ paths:
         name: endpoint_id
         required: true
         schema:
+          example: ep_1srOrx2ZWZBpBUvZwXKQmoEYga2
           title: Endpoint Id
           type: string
         style: simple
@@ -801,6 +802,7 @@ paths:
         name: endpoint_id
         required: true
         schema:
+          example: ep_1srOrx2ZWZBpBUvZwXKQmoEYga2
           title: Endpoint Id
           type: string
         style: simple
@@ -862,6 +864,7 @@ paths:
         name: endpoint_id
         required: true
         schema:
+          example: ep_1srOrx2ZWZBpBUvZwXKQmoEYga2
           title: Endpoint Id
           type: string
         style: simple
@@ -930,6 +933,7 @@ paths:
         name: endpoint_id
         required: true
         schema:
+          example: ep_1srOrx2ZWZBpBUvZwXKQmoEYga2
           title: Endpoint Id
           type: string
         style: simple
@@ -992,6 +996,7 @@ paths:
         name: endpoint_id
         required: true
         schema:
+          example: ep_1srOrx2ZWZBpBUvZwXKQmoEYga2
           title: Endpoint Id
           type: string
         style: simple
@@ -1249,6 +1254,7 @@ paths:
         name: endpoint_id
         required: true
         schema:
+          example: ep_1srOrx2ZWZBpBUvZwXKQmoEYga2
           title: Endpoint Id
           type: string
         style: simple
@@ -1415,6 +1421,7 @@ paths:
         name: endpoint_id
         required: true
         schema:
+          example: ep_1srOrx2ZWZBpBUvZwXKQmoEYga2
           title: Endpoint Id
           type: string
         style: simple
@@ -1490,18 +1497,19 @@ paths:
         style: simple
       - explode: false
         in: path
-        name: endpoint_id
-        required: true
-        schema:
-          title: Endpoint Id
-          type: string
-        style: simple
-      - explode: false
-        in: path
         name: app_id
         required: true
         schema:
           title: App Id
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: endpoint_id
+        required: true
+        schema:
+          example: ep_1srOrx2ZWZBpBUvZwXKQmoEYga2
+          title: Endpoint Id
           type: string
         style: simple
       - explode: true
@@ -1665,6 +1673,7 @@ paths:
         name: attempt_id
         required: true
         schema:
+          example: atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2
           title: Attempt Id
           type: string
         style: simple
@@ -1757,7 +1766,7 @@ components:
         uid: uid
         createdAt: 2000-01-23T04:56:07.000+00:00
         name: name
-        id: id
+        id: app_1srOrx2ZWZBpBUvZwXKQmoEYga2
       properties:
         uid:
           title: Uid
@@ -1766,6 +1775,7 @@ components:
           title: Name
           type: string
         id:
+          example: app_1srOrx2ZWZBpBUvZwXKQmoEYga2
           title: Id
           type: string
         createdAt:
@@ -1837,11 +1847,11 @@ components:
     EndpointMessageOut:
       example:
         eventId: evt_pNZKtWg8Azow
-        data:
+        payload:
           username: test_user
           email: test@example.com
         eventType: user.signup
-        id: id
+        id: msg_1srOrx2ZWZBpBUvZwXKQmoEYga2
         timestamp: 2000-01-23T04:56:07.000+00:00
       properties:
         eventType:
@@ -1856,13 +1866,14 @@ components:
           pattern: ^[a-zA-Z0-9\-_.]+$
           title: Eventid
           type: string
-        data:
+        payload:
           example:
             username: test_user
             email: test@example.com
-          title: Data
+          title: Payload
           type: object
         id:
+          example: msg_1srOrx2ZWZBpBUvZwXKQmoEYga2
           title: Id
           type: string
         timestamp:
@@ -1872,9 +1883,9 @@ components:
         status:
           $ref: '#/components/schemas/MessageStatus'
       required:
-      - data
       - eventType
       - id
+      - payload
       - status
       - timestamp
       title: EndpointMessageOut
@@ -1883,7 +1894,7 @@ components:
       example:
         createdAt: 2000-01-23T04:56:07.000+00:00
         description: description
-        id: id
+        id: ep_1srOrx2ZWZBpBUvZwXKQmoEYga2
         version: 0
         filterTypes:
         - filterTypes
@@ -1910,6 +1921,7 @@ components:
           type: array
           uniqueItems: true
         id:
+          example: ep_1srOrx2ZWZBpBUvZwXKQmoEYga2
           title: Id
           type: string
         createdAt:
@@ -2036,11 +2048,11 @@ components:
         - uid: uid
           createdAt: 2000-01-23T04:56:07.000+00:00
           name: name
-          id: id
+          id: app_1srOrx2ZWZBpBUvZwXKQmoEYga2
         - uid: uid
           createdAt: 2000-01-23T04:56:07.000+00:00
           name: name
-          id: id
+          id: app_1srOrx2ZWZBpBUvZwXKQmoEYga2
         done: true
       properties:
         data:
@@ -2064,18 +2076,18 @@ components:
         iterator: iterator
         data:
         - eventId: evt_pNZKtWg8Azow
-          data:
+          payload:
             username: test_user
             email: test@example.com
           eventType: user.signup
-          id: id
+          id: msg_1srOrx2ZWZBpBUvZwXKQmoEYga2
           timestamp: 2000-01-23T04:56:07.000+00:00
         - eventId: evt_pNZKtWg8Azow
-          data:
+          payload:
             username: test_user
             email: test@example.com
           eventType: user.signup
-          id: id
+          id: msg_1srOrx2ZWZBpBUvZwXKQmoEYga2
           timestamp: 2000-01-23T04:56:07.000+00:00
         done: true
       properties:
@@ -2101,7 +2113,7 @@ components:
         data:
         - createdAt: 2000-01-23T04:56:07.000+00:00
           description: description
-          id: id
+          id: ep_1srOrx2ZWZBpBUvZwXKQmoEYga2
           version: 0
           filterTypes:
           - filterTypes
@@ -2109,7 +2121,7 @@ components:
           url: https://openapi-generator.tech
         - createdAt: 2000-01-23T04:56:07.000+00:00
           description: description
-          id: id
+          id: ep_1srOrx2ZWZBpBUvZwXKQmoEYga2
           version: 0
           filterTypes:
           - filterTypes
@@ -2165,11 +2177,11 @@ components:
         data:
         - responseStatusCode: 0
           response: response
-          id: id
+          id: atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2
           timestamp: 2000-01-23T04:56:07.000+00:00
         - responseStatusCode: 0
           response: response
-          id: id
+          id: atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2
           timestamp: 2000-01-23T04:56:07.000+00:00
         done: true
       properties:
@@ -2195,13 +2207,13 @@ components:
         data:
         - responseStatusCode: 0
           response: response
-          endpointId: endpointId
-          id: id
+          endpointId: ep_1srOrx2ZWZBpBUvZwXKQmoEYga2
+          id: atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2
           timestamp: 2000-01-23T04:56:07.000+00:00
         - responseStatusCode: 0
           response: response
-          endpointId: endpointId
-          id: id
+          endpointId: ep_1srOrx2ZWZBpBUvZwXKQmoEYga2
+          id: atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2
           timestamp: 2000-01-23T04:56:07.000+00:00
         done: true
       properties:
@@ -2227,7 +2239,7 @@ components:
         data:
         - createdAt: 2000-01-23T04:56:07.000+00:00
           description: description
-          id: id
+          id: ep_1srOrx2ZWZBpBUvZwXKQmoEYga2
           version: 0
           filterTypes:
           - filterTypes
@@ -2235,7 +2247,7 @@ components:
           url: https://openapi-generator.tech
         - createdAt: 2000-01-23T04:56:07.000+00:00
           description: description
-          id: id
+          id: ep_1srOrx2ZWZBpBUvZwXKQmoEYga2
           version: 0
           filterTypes:
           - filterTypes
@@ -2264,18 +2276,18 @@ components:
         iterator: iterator
         data:
         - eventId: evt_pNZKtWg8Azow
-          data:
+          payload:
             username: test_user
             email: test@example.com
           eventType: user.signup
-          id: id
+          id: msg_1srOrx2ZWZBpBUvZwXKQmoEYga2
           timestamp: 2000-01-23T04:56:07.000+00:00
         - eventId: evt_pNZKtWg8Azow
-          data:
+          payload:
             username: test_user
             email: test@example.com
           eventType: user.signup
-          id: id
+          id: msg_1srOrx2ZWZBpBUvZwXKQmoEYga2
           timestamp: 2000-01-23T04:56:07.000+00:00
         done: true
       properties:
@@ -2299,10 +2311,11 @@ components:
       example:
         responseStatusCode: 0
         response: response
-        id: id
+        id: atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2
         timestamp: 2000-01-23T04:56:07.000+00:00
       properties:
         id:
+          example: atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2
           title: Id
           type: string
         response:
@@ -2329,11 +2342,12 @@ components:
       example:
         responseStatusCode: 0
         response: response
-        endpointId: endpointId
-        id: id
+        endpointId: ep_1srOrx2ZWZBpBUvZwXKQmoEYga2
+        id: atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2
         timestamp: 2000-01-23T04:56:07.000+00:00
       properties:
         id:
+          example: atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2
           title: Id
           type: string
         response:
@@ -2349,6 +2363,7 @@ components:
         status:
           $ref: '#/components/schemas/MessageStatus'
         endpointId:
+          example: ep_1srOrx2ZWZBpBUvZwXKQmoEYga2
           title: Endpointid
           type: string
       required:
@@ -2364,7 +2379,7 @@ components:
       example:
         createdAt: 2000-01-23T04:56:07.000+00:00
         description: description
-        id: id
+        id: ep_1srOrx2ZWZBpBUvZwXKQmoEYga2
         version: 0
         filterTypes:
         - filterTypes
@@ -2391,6 +2406,7 @@ components:
           type: array
           uniqueItems: true
         id:
+          example: ep_1srOrx2ZWZBpBUvZwXKQmoEYga2
           title: Id
           type: string
         createdAt:
@@ -2410,7 +2426,7 @@ components:
     MessageIn:
       example:
         eventId: evt_pNZKtWg8Azow
-        data:
+        payload:
           username: test_user
           email: test@example.com
         eventType: user.signup
@@ -2427,25 +2443,25 @@ components:
           pattern: ^[a-zA-Z0-9\-_.]+$
           title: Eventid
           type: string
-        data:
+        payload:
           example:
             username: test_user
             email: test@example.com
-          title: Data
+          title: Payload
           type: object
       required:
-      - data
       - eventType
+      - payload
       title: MessageIn
       type: object
     MessageOut:
       example:
         eventId: evt_pNZKtWg8Azow
-        data:
+        payload:
           username: test_user
           email: test@example.com
         eventType: user.signup
-        id: id
+        id: msg_1srOrx2ZWZBpBUvZwXKQmoEYga2
         timestamp: 2000-01-23T04:56:07.000+00:00
       properties:
         eventType:
@@ -2460,13 +2476,14 @@ components:
           pattern: ^[a-zA-Z0-9\-_.]+$
           title: Eventid
           type: string
-        data:
+        payload:
           example:
             username: test_user
             email: test@example.com
-          title: Data
+          title: Payload
           type: object
         id:
+          example: msg_1srOrx2ZWZBpBUvZwXKQmoEYga2
           title: Id
           type: string
         timestamp:
@@ -2474,9 +2491,9 @@ components:
           title: Timestamp
           type: string
       required:
-      - data
       - eventType
       - id
+      - payload
       - timestamp
       title: MessageOut
       type: object

@@ -18,17 +18,17 @@ import (
 type MessageIn struct {
 	EventType string `json:"eventType"`
 	EventId *string `json:"eventId,omitempty"`
-	Data map[string]interface{} `json:"data"`
+	Payload map[string]interface{} `json:"payload"`
 }
 
 // NewMessageIn instantiates a new MessageIn object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewMessageIn(eventType string, data map[string]interface{}, ) *MessageIn {
+func NewMessageIn(eventType string, payload map[string]interface{}, ) *MessageIn {
 	this := MessageIn{}
 	this.EventType = eventType
-	this.Data = data
+	this.Payload = payload
 	return &this
 }
 
@@ -96,28 +96,28 @@ func (o *MessageIn) SetEventId(v string) {
 	o.EventId = &v
 }
 
-// GetData returns the Data field value
-func (o *MessageIn) GetData() map[string]interface{} {
+// GetPayload returns the Payload field value
+func (o *MessageIn) GetPayload() map[string]interface{} {
 	if o == nil  {
 		var ret map[string]interface{}
 		return ret
 	}
 
-	return o.Data
+	return o.Payload
 }
 
-// GetDataOk returns a tuple with the Data field value
+// GetPayloadOk returns a tuple with the Payload field value
 // and a boolean to check if the value has been set.
-func (o *MessageIn) GetDataOk() (*map[string]interface{}, bool) {
+func (o *MessageIn) GetPayloadOk() (*map[string]interface{}, bool) {
 	if o == nil  {
 		return nil, false
 	}
-	return &o.Data, true
+	return &o.Payload, true
 }
 
-// SetData sets field value
-func (o *MessageIn) SetData(v map[string]interface{}) {
-	o.Data = v
+// SetPayload sets field value
+func (o *MessageIn) SetPayload(v map[string]interface{}) {
+	o.Payload = v
 }
 
 func (o MessageIn) MarshalJSON() ([]byte, error) {
@@ -129,7 +129,7 @@ func (o MessageIn) MarshalJSON() ([]byte, error) {
 		toSerialize["eventId"] = o.EventId
 	}
 	if true {
-		toSerialize["data"] = o.Data
+		toSerialize["payload"] = o.Payload
 	}
 	return json.Marshal(toSerialize)
 }

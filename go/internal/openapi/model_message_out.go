@@ -19,7 +19,7 @@ import (
 type MessageOut struct {
 	EventType string `json:"eventType"`
 	EventId *string `json:"eventId,omitempty"`
-	Data map[string]interface{} `json:"data"`
+	Payload map[string]interface{} `json:"payload"`
 	Id string `json:"id"`
 	Timestamp time.Time `json:"timestamp"`
 }
@@ -28,10 +28,10 @@ type MessageOut struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewMessageOut(eventType string, data map[string]interface{}, id string, timestamp time.Time, ) *MessageOut {
+func NewMessageOut(eventType string, payload map[string]interface{}, id string, timestamp time.Time, ) *MessageOut {
 	this := MessageOut{}
 	this.EventType = eventType
-	this.Data = data
+	this.Payload = payload
 	this.Id = id
 	this.Timestamp = timestamp
 	return &this
@@ -101,28 +101,28 @@ func (o *MessageOut) SetEventId(v string) {
 	o.EventId = &v
 }
 
-// GetData returns the Data field value
-func (o *MessageOut) GetData() map[string]interface{} {
+// GetPayload returns the Payload field value
+func (o *MessageOut) GetPayload() map[string]interface{} {
 	if o == nil  {
 		var ret map[string]interface{}
 		return ret
 	}
 
-	return o.Data
+	return o.Payload
 }
 
-// GetDataOk returns a tuple with the Data field value
+// GetPayloadOk returns a tuple with the Payload field value
 // and a boolean to check if the value has been set.
-func (o *MessageOut) GetDataOk() (*map[string]interface{}, bool) {
+func (o *MessageOut) GetPayloadOk() (*map[string]interface{}, bool) {
 	if o == nil  {
 		return nil, false
 	}
-	return &o.Data, true
+	return &o.Payload, true
 }
 
-// SetData sets field value
-func (o *MessageOut) SetData(v map[string]interface{}) {
-	o.Data = v
+// SetPayload sets field value
+func (o *MessageOut) SetPayload(v map[string]interface{}) {
+	o.Payload = v
 }
 
 // GetId returns the Id field value
@@ -182,7 +182,7 @@ func (o MessageOut) MarshalJSON() ([]byte, error) {
 		toSerialize["eventId"] = o.EventId
 	}
 	if true {
-		toSerialize["data"] = o.Data
+		toSerialize["payload"] = o.Payload
 	}
 	if true {
 		toSerialize["id"] = o.Id
