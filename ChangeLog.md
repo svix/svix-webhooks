@@ -2,6 +2,7 @@
 
 ## Version 0.14.0
 * Add List event_types to go library
+* Fix bug in endpoint create function
 
 ## Version 0.13.0
 * Release Go lib
