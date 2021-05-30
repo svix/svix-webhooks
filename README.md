@@ -5,6 +5,10 @@
 
 Libraries for interacting with the Svix API and verifying webhook signatures
 
+![GitHub tag](https://img.shields.io/github/tag/svixhq/svix-libs.svg)
+[![PyPI](https://img.shields.io/pypi/v/svix.svg)](https://pypi.python.org/pypi/svix/)
+[![NPM version](https://img.shields.io/npm/v/svix.svg)](https://www.npmjs.com/package/svix)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/svixhq/svix-libs)](https://pkg.go.dev/github.com/svixhq/svix-libs)
 [![Join our slack](https://img.shields.io/badge/Slack-join%20the%20community-blue?logo=slack&style=social)](https://www.svix.com/slack/)
 
 # Documentation
