@@ -1,6 +1,7 @@
 # Changelog
 
 ## Version 0.14.0
+* Update the Message model to call the payload `payload` instead of `data`.
 * Add List event_types to go library
 * Fix bug in endpoint create function
 
