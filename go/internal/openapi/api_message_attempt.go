@@ -731,8 +731,8 @@ type ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGet
 	ctx _context.Context
 	ApiService *MessageAttemptApiService
 	msgId string
-	endpointId string
 	appId string
+	endpointId string
 	iterator *string
 	limit *int32
 	status *MessageStatus
@@ -759,17 +759,17 @@ func (r ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttempt
  * ListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGet List Attempts For Endpoint
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param msgId
- * @param endpointId
  * @param appId
+ * @param endpointId
  * @return ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGetRequest
  */
-func (a *MessageAttemptApiService) ListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGet(ctx _context.Context, msgId string, endpointId string, appId string) ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGetRequest {
+func (a *MessageAttemptApiService) ListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGet(ctx _context.Context, msgId string, appId string, endpointId string) ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGetRequest {
 	return ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGetRequest{
 		ApiService: a,
 		ctx: ctx,
 		msgId: msgId,
-		endpointId: endpointId,
 		appId: appId,
+		endpointId: endpointId,
 	}
 }
 
@@ -794,8 +794,8 @@ func (a *MessageAttemptApiService) ListAttemptsForEndpointApiV1AppAppIdMsgMsgIdE
 
 	localVarPath := localBasePath + "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/attempt/"
 	localVarPath = strings.Replace(localVarPath, "{"+"msg_id"+"}", _neturl.PathEscape(parameterToString(r.msgId, "")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"endpoint_id"+"}", _neturl.PathEscape(parameterToString(r.endpointId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"endpoint_id"+"}", _neturl.PathEscape(parameterToString(r.endpointId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}

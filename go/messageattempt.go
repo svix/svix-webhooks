@@ -102,7 +102,7 @@ func (m *MessageAttempt) ListAttemptedDestinations(appId string, msgId string, o
 }
 
 func (m *MessageAttempt) ListAttemptsForEndpoint(appId string, msgId string, endpointId string, options FetchOptionsMessageAttempt) (*ListResponseMessageAttemptEndpointOut, error) {
-	req := m.api.MessageAttemptApi.ListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGet(context.Background(), msgId, endpointId, appId)
+	req := m.api.MessageAttemptApi.ListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGet(context.Background(), msgId, appId, endpointId)
 	out, _, err := req.Execute()
 	if err != nil {
 		return nil, err

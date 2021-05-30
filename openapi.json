@@ -1186,7 +1186,8 @@
                         "required": true,
                         "schema": {
                             "title": "Endpoint Id",
-                            "type": "string"
+                            "type": "string",
+                            "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                         },
                         "name": "endpoint_id",
                         "in": "path"
@@ -1280,7 +1281,8 @@
                         "required": true,
                         "schema": {
                             "title": "Endpoint Id",
-                            "type": "string"
+                            "type": "string",
+                            "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                         },
                         "name": "endpoint_id",
                         "in": "path"
@@ -1384,7 +1386,8 @@
                         "required": true,
                         "schema": {
                             "title": "Endpoint Id",
-                            "type": "string"
+                            "type": "string",
+                            "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                         },
                         "name": "endpoint_id",
                         "in": "path"
@@ -1473,7 +1476,8 @@
                         "required": true,
                         "schema": {
                             "title": "Endpoint Id",
-                            "type": "string"
+                            "type": "string",
+                            "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                         },
                         "name": "endpoint_id",
                         "in": "path"
@@ -1569,7 +1573,8 @@
                         "required": true,
                         "schema": {
                             "title": "Endpoint Id",
-                            "type": "string"
+                            "type": "string",
+                            "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                         },
                         "name": "endpoint_id",
                         "in": "path"
@@ -1963,7 +1968,8 @@
                         "required": true,
                         "schema": {
                             "title": "Endpoint Id",
-                            "type": "string"
+                            "type": "string",
+                            "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                         },
                         "name": "endpoint_id",
                         "in": "path"
@@ -2202,7 +2208,8 @@
                         "required": true,
                         "schema": {
                             "title": "Endpoint Id",
-                            "type": "string"
+                            "type": "string",
+                            "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                         },
                         "name": "endpoint_id",
                         "in": "path"
@@ -2315,19 +2322,20 @@
                     {
                         "required": true,
                         "schema": {
-                            "title": "Endpoint Id",
+                            "title": "App Id",
                             "type": "string"
                         },
-                        "name": "endpoint_id",
+                        "name": "app_id",
                         "in": "path"
                     },
                     {
                         "required": true,
                         "schema": {
-                            "title": "App Id",
-                            "type": "string"
+                            "title": "Endpoint Id",
+                            "type": "string",
+                            "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                         },
-                        "name": "app_id",
+                        "name": "endpoint_id",
                         "in": "path"
                     },
                     {
@@ -2562,7 +2570,8 @@
                         "required": true,
                         "schema": {
                             "title": "Attempt Id",
-                            "type": "string"
+                            "type": "string",
+                            "example": "atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                         },
                         "name": "attempt_id",
                         "in": "path"
@@ -2708,7 +2717,8 @@
                     },
                     "id": {
                         "title": "Id",
-                        "type": "string"
+                        "type": "string",
+                        "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                     },
                     "createdAt": {
                         "title": "Createdat",
@@ -2782,7 +2792,7 @@
                 "title": "EndpointMessageOut",
                 "required": [
                     "eventType",
-                    "data",
+                    "payload",
                     "id",
                     "timestamp",
                     "status"
@@ -2803,8 +2813,8 @@
                         "type": "string",
                         "example": "evt_pNZKtWg8Azow"
                     },
-                    "data": {
-                        "title": "Data",
+                    "payload": {
+                        "title": "Payload",
                         "type": "object",
                         "example": {
                             "username": "test_user",
@@ -2813,7 +2823,8 @@
                     },
                     "id": {
                         "title": "Id",
-                        "type": "string"
+                        "type": "string",
+                        "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                     },
                     "timestamp": {
                         "title": "Timestamp",
@@ -2862,7 +2873,8 @@
                     },
                     "id": {
                         "title": "Id",
-                        "type": "string"
+                        "type": "string",
+                        "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                     },
                     "createdAt": {
                         "title": "Createdat",
@@ -3215,7 +3227,8 @@
                 "properties": {
                     "id": {
                         "title": "Id",
-                        "type": "string"
+                        "type": "string",
+                        "example": "atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                     },
                     "response": {
                         "title": "Response",
@@ -3249,7 +3262,8 @@
                 "properties": {
                     "id": {
                         "title": "Id",
-                        "type": "string"
+                        "type": "string",
+                        "example": "atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                     },
                     "response": {
                         "title": "Response",
@@ -3269,7 +3283,8 @@
                     },
                     "endpointId": {
                         "title": "Endpointid",
-                        "type": "string"
+                        "type": "string",
+                        "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                     }
                 }
             },
@@ -3311,7 +3326,8 @@
                     },
                     "id": {
                         "title": "Id",
-                        "type": "string"
+                        "type": "string",
+                        "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                     },
                     "createdAt": {
                         "title": "Createdat",
@@ -3327,7 +3343,7 @@
                 "title": "MessageIn",
                 "required": [
                     "eventType",
-                    "data"
+                    "payload"
                 ],
                 "type": "object",
                 "properties": {
@@ -3345,8 +3361,8 @@
                         "type": "string",
                         "example": "evt_pNZKtWg8Azow"
                     },
-                    "data": {
-                        "title": "Data",
+                    "payload": {
+                        "title": "Payload",
                         "type": "object",
                         "example": {
                             "username": "test_user",
@@ -3359,7 +3375,7 @@
                 "title": "MessageOut",
                 "required": [
                     "eventType",
-                    "data",
+                    "payload",
                     "id",
                     "timestamp"
                 ],
@@ -3379,8 +3395,8 @@
                         "type": "string",
                         "example": "evt_pNZKtWg8Azow"
                     },
-                    "data": {
-                        "title": "Data",
+                    "payload": {
+                        "title": "Payload",
                         "type": "object",
                         "example": {
                             "username": "test_user",
@@ -3389,7 +3405,8 @@
                     },
                     "id": {
                         "title": "Id",
-                        "type": "string"
+                        "type": "string",
+                        "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                     },
                     "timestamp": {
                         "title": "Timestamp",
