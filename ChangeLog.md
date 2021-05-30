@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.15.0
+* go: Add DebugURL option for overriding API URL
+
 ## Version 0.14.0
 * Add List event_types to go library
 * Fix bug in endpoint create function
