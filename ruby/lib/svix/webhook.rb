@@ -24,6 +24,10 @@ module Svix
                 if version != "v1" 
                     next
                 end
+                puts expectedSignature
+                puts signature
+                puts @secret
+
                 if signature == expectedSignature
                     return JSON.parse(payload, symbolize_names: true)
                 end
