@@ -18,10 +18,10 @@ module Svix
             hexSignature = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new("sha256"), @secret, toSign)
             signature = [[hexSignature].pack("H*")].pack("m0") # convert hex to base64
 
-            passedSignatures = msgSignature.split(" ");
+            passedSignatures = msgSignature.split(" ")
             passedSignatures.each do |versionedSignature|
                 version, expectedSignature = versionedSignature.split(',', 2)
-                if version != "v1" 
+                if version != "v1"
                     next
                 end
                 if signature == expectedSignature
