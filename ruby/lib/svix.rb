@@ -1,6 +1,4 @@
-require "svix/version"
+require "openssl"
 
-module Svix
-  class Error < StandardError; end
-  # Your code goes here...
-end
+require "svix/version"
+require "svix/webhook"
