@@ -15,8 +15,7 @@ module Svix
             end
 
             toSign = "#{msgId}.#{msgTimestamp}.#{payload}"
-            hexSignature = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new("sha256"), @secret, toSign)
-            signature = [[hexSignature].pack("H*")].pack("m0") # convert hex to base64
+            signature = Base64.encode64(OpenSSL::HMAC.digest(OpenSSL::Digest.new('sha256'), @secret, toSign))
 
             passedSignatures = msgSignature.split(" ")
             passedSignatures.each do |versionedSignature|
