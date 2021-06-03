@@ -42,7 +42,7 @@ describe Svix::Webhook do
         expect { wh.verify(payload, headers) }.to raise_error(Svix::WebhookVerificationError)
     end
 
-    it "valid signature is valid" do
+    it "valid signature is valid and returns valid json" do
         wh = Svix::Webhook.new("MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw")
         payload = '{"test": 2432232314}'
         headers = {
@@ -50,7 +50,8 @@ describe Svix::Webhook do
             "svix-timestamp" => "1614265330",
             "svix-signature" => "v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE="
         }
-        wh.verify(payload, headers)
+        json = wh.verify(payload, headers)
+        expect(json[:test]).to eq(2432232314)
     end
 end
   

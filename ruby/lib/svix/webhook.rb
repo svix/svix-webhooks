@@ -3,7 +3,7 @@
 module Svix
     class Webhook
         def initialize(secret)
-            @secret = secret
+            @secret = Base64.decode64(secret)
         end
 
         def verify(payload, headers)
@@ -15,7 +15,7 @@ module Svix
             end
 
             toSign = "#{msgId}.#{msgTimestamp}.#{payload}"
-            signature = Base64.encode64(OpenSSL::HMAC.digest(OpenSSL::Digest.new('sha256'), @secret, toSign))
+            signature = Base64.encode64(OpenSSL::HMAC.digest(OpenSSL::Digest.new('sha256'), @secret, toSign)).strip()
 
             passedSignatures = msgSignature.split(" ")
             passedSignatures.each do |versionedSignature|
