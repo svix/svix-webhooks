@@ -6,11 +6,11 @@ module Svix
             @secret = secret
         end
 
-        def self.verify(payload, headers)
+        def verify(payload, headers)
             msgId = headers["svix-id"]
             msgSignature = headers["svix-signature"]
             msgTimestamp = headers["svix-timestamp"]
-
+            puts msgId
             if !msgSignature || !msgId || !msgTimestamp
                 raise WebhookVerificationError, "Missing required headers"
             end
