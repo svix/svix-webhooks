@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Stripe
+module Svix
     class Webhook
         def initialize(secret)
             @secret = secret
@@ -11,9 +11,9 @@ module Stripe
             msgSignature = headers["svix-signature"]
             msgTimestamp = headers["svix-timestamp"]
 
-            if (!msgSignature || !msgId || !msgTimestamp) {
+            if !msgSignature || !msgId || !msgTimestamp
                 raise WebhookVerificationError, "Missing required headers"
-            }
+            end
 
             toSign = "${msgId}.${msgTimestamp}.${payload}"
             signature = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new("sha256"), secret, toSign)
