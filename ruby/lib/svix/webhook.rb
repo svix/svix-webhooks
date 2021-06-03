@@ -14,20 +14,16 @@ module Svix
                 raise WebhookVerificationError, "Missing required headers"
             end
 
-            toSign = "${msgId}.${msgTimestamp}.${payload}"
+            toSign = "#{msgId}.#{msgTimestamp}.#{payload}"
             hexSignature = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new("sha256"), @secret, toSign)
             signature = [[hexSignature].pack("H*")].pack("m0") # convert hex to base64
-
+            
             passedSignatures = msgSignature.split(" ");
             passedSignatures.each do |versionedSignature|
                 version, expectedSignature = versionedSignature.split(',', 2)
                 if version != "v1" 
                     next
                 end
-                puts expectedSignature
-                puts signature
-                puts @secret
-
                 if signature == expectedSignature
                     return JSON.parse(payload, symbolize_names: true)
                 end
