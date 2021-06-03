@@ -1,0 +1,3 @@
+module Svix
+  VERSION = "0.1.0"
+end
