@@ -10,18 +10,17 @@ module Svix
             msgId = headers["svix-id"]
             msgSignature = headers["svix-signature"]
             msgTimestamp = headers["svix-timestamp"]
-            puts msgId
             if !msgSignature || !msgId || !msgTimestamp
                 raise WebhookVerificationError, "Missing required headers"
             end
 
             toSign = "${msgId}.${msgTimestamp}.${payload}"
-            signature = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new("sha256"), secret, toSign)
+            hexSignature = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new("sha256"), @secret, toSign)
+            signature = [[hexSignature].pack("H*")].pack("m0") # convert hex to base64
 
             passedSignatures = msgSignature.split(" ");
-
             passedSignatures.each do |versionedSignature|
-                version, signature = versionedSignature.split(',', 2)
+                version, expectedSignature = versionedSignature.split(',', 2)
                 if version != "v1" 
                     next
                 end
