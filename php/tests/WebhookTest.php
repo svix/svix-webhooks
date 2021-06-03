@@ -42,7 +42,7 @@ final class WebhookTest extends \PHPUnit\Framework\TestCase {
 
     public function testValidSignatureIsValidAndReturnsJson() {
         $wh = new Webhook(self::SECRET);
-        $json = $wh->verify(self::PAYLOAD, sefl::HEADER);
+        $json = $wh->verify(self::PAYLOAD, self::HEADER);
         $this->assertEquals(
             $json->{'test'},
             2432232314,
