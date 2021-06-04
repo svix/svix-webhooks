@@ -25,7 +25,6 @@ class Webhook
         $passedSignatures = explode(' ', $msgSignature);
         foreach ($passedSignatures as $versionedSignature) {
             $sigParts = explode(',', $versionedSignature, 2);
-            // TODO check len of array
             $version = $sigParts[0];
             $expectedSignature = $sigParts[1];
 
