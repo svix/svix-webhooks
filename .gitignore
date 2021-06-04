@@ -1,1 +1,6 @@
+# Javascript
 /node_modules
+
+#PHP
+/vendor/
+composer.lock

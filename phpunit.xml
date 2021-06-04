@@ -1,0 +1,12 @@
+<phpunit bootstrap="php/tests/bootstrap.php" colors="true">
+    <testsuites>
+        <testsuite name="Svix PHP Test Suite">
+            <directory suffix="Test.php">tests</directory>
+        </testsuite>
+    </testsuites>
+    <filter>
+        <whitelist>
+            <directory>src</directory>
+        </whitelist>
+    </filter>
+</phpunit>
