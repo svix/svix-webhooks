@@ -44,21 +44,23 @@ func (wh *Webhook) Verify(payload []byte, headers http.Header) error {
 			continue
 		}
 		version := sigParts[0]
-		signature := sigParts[1]
+		signature := []byte(sigParts[1])
 
 		if version != "v1" {
 			continue
 		}
 
-		if signature == expectedSignature {
+		if hmac.Equal(signature, expectedSignature) {
 			return nil
 		}
 	}
 	return fmt.Errorf("No matching signature found")
 }
 
-func sign(key []byte, toSign string) string {
+func sign(key []byte, toSign string) []byte {
 	h := hmac.New(sha256.New, key)
 	h.Write([]byte(toSign))
-	return base64enc.EncodeToString((h.Sum(nil)))
+	sig := make([]byte, base64enc.EncodedLen(h.Size()))
+	base64enc.Encode(sig, h.Sum(nil))
+	return sig
 }
