@@ -1,4 +1,4 @@
-<phpunit bootstrap="tests/bootstrap.php" colors="true">
+<phpunit bootstrap="php/tests/bootstrap.php" colors="true">
     <testsuites>
         <testsuite name="Svix PHP Test Suite">
             <directory suffix="Test.php">tests</directory>

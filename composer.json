@@ -22,13 +22,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Svix\\": "lib/"
+            "Svix\\": "php/lib/"
         }
     },
     "autoload-dev": {
         "psr-4": {
             "Svix\\": [
-                "tests/"
+                "php/tests/"
             ]
         }
     }

@@ -26,6 +26,8 @@ If you use Composer, these dependencies should be handled automatically. If you 
 
 ## Development
 
+These commands must be ran at the root of the repo
+
 ### Fmt Code
 
 composer install
@@ -34,4 +36,4 @@ composer install
 ### Running Tests
 
 composer install
-./vendor/bin/phpunit tests
+./vendor/bin/phpunit php/tests
