@@ -2,20 +2,17 @@
 
 namespace Svix;
 
-class WebhookVerificationException extends \Exception {
-    public function __construct($message, $code = 0, Throwable $previous = null) {
-            parent::__construct($message, $code, $previous);
-    }
-}
-
-class Webhook {
-    public function __construct(string $secret) {
+class Webhook
+{
+    public function __construct(string $secret)
+    {
         $this->secret = base64_decode($secret);
     }
 
-    public function verify($payload, $headers) {
+    public function verify($payload, $headers)
+    {
         if (!isset($headers['svix-id']) || !isset($headers['svix-timestamp']) || !isset($headers['svix-signature'])) {
-            throw new WebhookVerificationException("Missing required headers");
+            throw new Exception\WebhookVerificationException("Missing required headers");
         }
 
         $msgId = $headers['svix-id'];
@@ -40,11 +37,12 @@ class Webhook {
                 return json_decode($payload, true);
             }
         }
-        throw new WebhookVerificationException("No matching signature found");
+        throw new Exception\WebhookVerificationException("No matching signature found");
     }
 
-    private static function sign($key, $payload) {
+    private static function sign($key, $payload)
+    {
         $hex_hash = hash_hmac('sha256', $payload, $key);
-        return base64_encode(pack('H*',$hex_hash));
+        return base64_encode(pack('H*', $hex_hash));
     }
 }
