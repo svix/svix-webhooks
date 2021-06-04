@@ -1,5 +1,5 @@
 {
-    "name": "svixhq/svix",
+    "name": "svix/svix",
     "type": "library",
     "description": "Svix PHP Library",
     "keywords": ["webhooks","api"],
