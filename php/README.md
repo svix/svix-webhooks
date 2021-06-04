@@ -6,7 +6,16 @@ PHP 5.6.0 and later.
 
 ## Composer
 
-Coming Soon.
+Install via [Composer](https://getcomposer.org/):
+
+```sh
+composer require svix/svix
+```
+
+Autoload dependencies:
+```php
+require __DIR__ . '/vendor/autoload.php';
+```
 
 ## Manual Installation
 
