@@ -32,7 +32,7 @@ class Webhook
                 continue;
             }
 
-            if (strcmp($signature, $expectedSignature) == 0) {
+            if (hash_equals($signature, $expectedSignature)) {
                 return json_decode($payload, true);
             }
         }

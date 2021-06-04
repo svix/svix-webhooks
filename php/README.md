@@ -28,6 +28,7 @@ If you use Composer, these dependencies should be handled automatically. If you 
 
 ### Fmt Code
 
+composer install
 ./vendor/bin/php-cs-fixer fix -v --using-cache=no .
 
 ### Running Tests
