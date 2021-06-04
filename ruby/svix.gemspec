@@ -8,6 +8,7 @@ Gem::Specification.new do |spec|
   spec.version       = Svix::VERSION
   spec.authors       = ["Svix"]
   spec.email         = ["support@svix.com"]
+  spec.license       = "MIT"
 
   spec.summary       = "Ruby bindings for the Svix API"
   spec.description   = "Svix makes webhooks easy and reliable.  " \
