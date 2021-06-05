@@ -2,6 +2,8 @@
 
 ## Version 0.15.0
 * go: Add DebugURL option for overriding API URL
+* Ruby: initial release
+* PHP: initial release
 
 ## Version 0.14.0
 * Update the Message model to call the payload `payload` instead of `data`.
