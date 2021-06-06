@@ -1,0 +1,82 @@
+package svix;
+
+import java.util.Map;
+import java.util.List;
+
+public class WebhookVerificationError extends Exception {
+	private int code = 0;
+	private Map<String, List<String>> responseHeaders = null;
+	private String responseBody = null;
+
+	public WebhookVerificationError() {
+	}
+
+	public WebhookVerificationError(Throwable throwable) {
+		super(throwable);
+	}
+
+	public WebhookVerificationError(String message) {
+		super(message);
+	}
+
+	public WebhookVerificationError(String message, Throwable throwable, int code,
+	    Map<String, List<String>> responseHeaders, String responseBody) {
+		super(message, throwable);
+		this.code = code;
+		this.responseHeaders = responseHeaders;
+		this.responseBody = responseBody;
+	}
+
+	public WebhookVerificationError(String message, int code, Map<String, List<String>> responseHeaders,
+	    String responseBody) {
+		this(message, (Throwable) null, code, responseHeaders, responseBody);
+	}
+
+	public WebhookVerificationError(String message, Throwable throwable, int code,
+	    Map<String, List<String>> responseHeaders) {
+		this(message, throwable, code, responseHeaders, null);
+	}
+
+	public WebhookVerificationError(int code, Map<String, List<String>> responseHeaders, String responseBody) {
+		this((String) null, (Throwable) null, code, responseHeaders, responseBody);
+	}
+
+	public WebhookVerificationError(int code, String message) {
+		super(message);
+		this.code = code;
+	}
+
+	public WebhookVerificationError(int code, String message, Map<String, List<String>> responseHeaders,
+	    String responseBody) {
+		this(code, message);
+		this.responseHeaders = responseHeaders;
+		this.responseBody = responseBody;
+	}
+
+	/**
+	 * Get the HTTP status code.
+	 *
+	 * @return HTTP status code
+	 */
+	public int getCode() {
+		return code;
+	}
+
+	/**
+	 * Get the HTTP response headers.
+	 *
+	 * @return A map of list of string
+	 */
+	public Map<String, List<String>> getResponseHeaders() {
+		return responseHeaders;
+	}
+
+	/**
+	 * Get the HTTP response body.
+	 *
+	 * @return Response body in the form of string
+	 */
+	public String getResponseBody() {
+		return responseBody;
+	}
+}
