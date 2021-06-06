@@ -11,3 +11,5 @@ yarn openapi-generator-cli generate -i openapi.json -g python -o python/ -c pyth
 yarn openapi-generator-cli generate -i openapi.json -g typescript -o javascript/src/openapi -c javascript/openapi-generator-config.json
 
 yarn openapi-generator-cli generate -i openapi.json -g go -o go/internal/openapi -c go/openapi-generator-config.json
+
+yarn openapi-generator-cli generate -i openapi.json -g java -o java -c java/openapi-generator-config.json
