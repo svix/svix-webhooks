@@ -9,8 +9,20 @@ from .openapi_client.api.application_api import (
     ListResponseApplicationOut,
 )
 from .openapi_client.api.authentication_api import AuthenticationApi, DashboardAccessOut
-from .openapi_client.api.endpoint_api import EndpointApi, EndpointIn, EndpointOut, ListResponseEndpointOut
-from .openapi_client.api.event_type_api import EventTypeApi, EventTypeInOut, EventTypeUpdate, ListResponseEventTypeInOut
+from .openapi_client.api.endpoint_api import (
+    EndpointApi,
+    EndpointIn,
+    EndpointOut,
+    EndpointSecretOut,
+    ListResponseEndpointOut,
+)
+from .openapi_client.api.event_type_api import (
+    EventTypeApi,
+    EventTypeIn,
+    EventTypeOut,
+    EventTypeUpdate,
+    ListResponseEventTypeOut,
+)
 from .openapi_client.api.message_api import ListResponseMessageOut, MessageApi, MessageIn, MessageOut
 from .openapi_client.api.message_attempt_api import ListResponseMessageAttemptOut, MessageAttemptApi, MessageAttemptOut
 from .openapi_client.api_client import ApiClient
@@ -120,7 +132,7 @@ class Endpoint(ApiBase[EndpointApi]):
                 app_id=app_id, endpoint_id=endpoint_id
             )
 
-    def get_secret(self, app_id: str, endpoint_id: str) -> EndpointOut:
+    def get_secret(self, app_id: str, endpoint_id: str) -> EndpointSecretOut:
         with self._api() as api:
             return api.get_endpoint_secret_api_v1_app_app_id_endpoint_endpoint_id_secret_get(
                 app_id=app_id, endpoint_id=endpoint_id
@@ -130,15 +142,15 @@ class Endpoint(ApiBase[EndpointApi]):
 class EventType(ApiBase[EventTypeApi]):
     _ApiClass = EventTypeApi
 
-    def list(self, options: FetchOptions = FetchOptions()) -> ListResponseEventTypeInOut:
+    def list(self, options: FetchOptions = FetchOptions()) -> ListResponseEventTypeOut:
         with self._api() as api:
             return api.list_event_types_api_v1_event_type_get(**options.to_dict())
 
-    def create(self, event_type_in_out: EventTypeInOut) -> EventTypeInOut:
+    def create(self, event_type_in_out: EventTypeIn) -> EventTypeOut:
         with self._api() as api:
             return api.create_event_type_api_v1_event_type_post(event_type_in_out=event_type_in_out)
 
-    def update(self, event_type_name: str, event_type_update: EventTypeUpdate) -> EndpointOut:
+    def update(self, event_type_name: str, event_type_update: EventTypeUpdate) -> EventTypeOut:
         with self._api() as api:
             return api.update_event_type_api_v1_event_type_event_type_name_put(
                 event_type_name=event_type_name, event_type_update=event_type_update
