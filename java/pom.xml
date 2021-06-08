@@ -1,33 +1,33 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.openapitools</groupId>
-    <artifactId>openapi-java-client</artifactId>
+    <groupId>com.svix</groupId>
+    <artifactId>svix</artifactId>
     <packaging>jar</packaging>
-    <name>openapi-java-client</name>
+    <name>svix</name>
     <version>1.4</version>
-    <url>https://github.com/openapitools/openapi-generator</url>
-    <description>OpenAPI Java</description>
+    <url>https://github.com/svixhq/svix-libs</url>
+    <description>Java Bindings for the Svix API</description>
     <scm>
-        <connection>scm:git:git@github.com:openapitools/openapi-generator.git</connection>
-        <developerConnection>scm:git:git@github.com:openapitools/openapi-generator.git</developerConnection>
-        <url>https://github.com/openapitools/openapi-generator</url>
+        <connection>scm:git:git@github.com:svixhq/svix-libs.git</connection>
+        <developerConnection>scm:git:git@github.com:svixhq/svix-libs.git</developerConnection>
+        <url>https://github.com/svixhq/svix-libs</url>
     </scm>
 
     <licenses>
         <license>
-            <name>Unlicense</name>
-            <url>http://unlicense.org</url>
+            <name>MIT License</name>
+            <url>http://www.opensource.org/licenses/mit-license.php</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
 
     <developers>
         <developer>
-            <name>OpenAPI-Generator Contributors</name>
-            <email>team@openapitools.org</email>
-            <organization>OpenAPITools.org</organization>
-            <organizationUrl>http://openapitools.org</organizationUrl>
+            <name>Svix</name>
+            <email>support@svix.com</email>
+            <organization>Svix</organization>
+            <organizationUrl>http://www.svix.com</organizationUrl>
         </developer>
     </developers>
 
@@ -38,6 +38,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
+                    <generatedSourcesDirectory>internal/openapi/src/main/java</generatedSourcesDirectory>
                     <fork>true</fork>
                     <meminitial>128m</meminitial>
                     <maxmem>512m</maxmem>
