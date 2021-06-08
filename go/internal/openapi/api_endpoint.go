@@ -504,7 +504,7 @@ type ApiGetEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGetRequest struct 
 }
 
 
-func (r ApiGetEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGetRequest) Execute() (EndpointSecret, *_nethttp.Response, error) {
+func (r ApiGetEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGetRequest) Execute() (EndpointSecretOut, *_nethttp.Response, error) {
 	return r.ApiService.GetEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGetExecute(r)
 }
 
@@ -526,16 +526,16 @@ func (a *EndpointApiService) GetEndpointSecretApiV1AppAppIdEndpointEndpointIdSec
 
 /*
  * Execute executes the request
- * @return EndpointSecret
+ * @return EndpointSecretOut
  */
-func (a *EndpointApiService) GetEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGetExecute(r ApiGetEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGetRequest) (EndpointSecret, *_nethttp.Response, error) {
+func (a *EndpointApiService) GetEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGetExecute(r ApiGetEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGetRequest) (EndpointSecretOut, *_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodGet
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  EndpointSecret
+		localVarReturnValue  EndpointSecretOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "EndpointApiService.GetEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGet")

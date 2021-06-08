@@ -11,7 +11,7 @@ import {
   ListResponseEndpointOut,
   EndpointOut,
   EndpointIn,
-  EndpointSecret,
+  EndpointSecretOut,
   MessageApi,
   MessageOut,
   MessageIn,
@@ -26,8 +26,9 @@ import {
   MessageAttemptOut,
   MessageStatus,
   EventTypeApi,
-  ListResponseEventTypeInOut,
-  EventTypeInOut,
+  ListResponseEventTypeOut,
+  EventTypeIn,
+  EventTypeOut,
   EventTypeUpdate,
 } from "./openapi/index";
 export * from "./openapi/models/all";
@@ -164,7 +165,7 @@ class Endpoint {
     });
   }
 
-  public getSecret(appId: string, endpointId: string): Promise<EndpointSecret> {
+  public getSecret(appId: string, endpointId: string): Promise<EndpointSecretOut> {
     return this.api.getEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGet({
       endpointId,
       appId,
@@ -179,18 +180,18 @@ class EventType {
     this.api = new EventTypeApi(config);
   }
 
-  public list(options?: FetchOptions): Promise<ListResponseEventTypeInOut> {
+  public list(options?: FetchOptions): Promise<ListResponseEventTypeOut> {
     return this.api.listEventTypesApiV1EventTypeGet({ ...options });
   }
 
-  public create(eventTypeInOut: EventTypeInOut): Promise<EventTypeInOut> {
-    return this.api.createEventTypeApiV1EventTypePost({ eventTypeInOut });
+  public create(eventTypeIn: EventTypeIn): Promise<EventTypeOut> {
+    return this.api.createEventTypeApiV1EventTypePost({ eventTypeIn });
   }
 
   public update(
     eventTypeName: string,
     eventTypeUpdate: EventTypeUpdate
-  ): Promise<EventTypeInOut> {
+  ): Promise<EventTypeOut> {
     return this.api.updateEventTypeApiV1EventTypeEventTypeNamePut({
       eventTypeName,
       eventTypeUpdate,

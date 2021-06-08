@@ -14,36 +14,36 @@ import (
 	"encoding/json"
 )
 
-// ListResponseEventTypeInOut struct for ListResponseEventTypeInOut
-type ListResponseEventTypeInOut struct {
-	Data []EventTypeInOut `json:"data"`
+// ListResponseEventTypeOut struct for ListResponseEventTypeOut
+type ListResponseEventTypeOut struct {
+	Data []EventTypeOut `json:"data"`
 	Iterator *string `json:"iterator,omitempty"`
 	Done bool `json:"done"`
 }
 
-// NewListResponseEventTypeInOut instantiates a new ListResponseEventTypeInOut object
+// NewListResponseEventTypeOut instantiates a new ListResponseEventTypeOut object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewListResponseEventTypeInOut(data []EventTypeInOut, done bool, ) *ListResponseEventTypeInOut {
-	this := ListResponseEventTypeInOut{}
+func NewListResponseEventTypeOut(data []EventTypeOut, done bool, ) *ListResponseEventTypeOut {
+	this := ListResponseEventTypeOut{}
 	this.Data = data
 	this.Done = done
 	return &this
 }
 
-// NewListResponseEventTypeInOutWithDefaults instantiates a new ListResponseEventTypeInOut object
+// NewListResponseEventTypeOutWithDefaults instantiates a new ListResponseEventTypeOut object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewListResponseEventTypeInOutWithDefaults() *ListResponseEventTypeInOut {
-	this := ListResponseEventTypeInOut{}
+func NewListResponseEventTypeOutWithDefaults() *ListResponseEventTypeOut {
+	this := ListResponseEventTypeOut{}
 	return &this
 }
 
 // GetData returns the Data field value
-func (o *ListResponseEventTypeInOut) GetData() []EventTypeInOut {
+func (o *ListResponseEventTypeOut) GetData() []EventTypeOut {
 	if o == nil  {
-		var ret []EventTypeInOut
+		var ret []EventTypeOut
 		return ret
 	}
 
@@ -52,7 +52,7 @@ func (o *ListResponseEventTypeInOut) GetData() []EventTypeInOut {
 
 // GetDataOk returns a tuple with the Data field value
 // and a boolean to check if the value has been set.
-func (o *ListResponseEventTypeInOut) GetDataOk() (*[]EventTypeInOut, bool) {
+func (o *ListResponseEventTypeOut) GetDataOk() (*[]EventTypeOut, bool) {
 	if o == nil  {
 		return nil, false
 	}
@@ -60,12 +60,12 @@ func (o *ListResponseEventTypeInOut) GetDataOk() (*[]EventTypeInOut, bool) {
 }
 
 // SetData sets field value
-func (o *ListResponseEventTypeInOut) SetData(v []EventTypeInOut) {
+func (o *ListResponseEventTypeOut) SetData(v []EventTypeOut) {
 	o.Data = v
 }
 
 // GetIterator returns the Iterator field value if set, zero value otherwise.
-func (o *ListResponseEventTypeInOut) GetIterator() string {
+func (o *ListResponseEventTypeOut) GetIterator() string {
 	if o == nil || o.Iterator == nil {
 		var ret string
 		return ret
@@ -75,7 +75,7 @@ func (o *ListResponseEventTypeInOut) GetIterator() string {
 
 // GetIteratorOk returns a tuple with the Iterator field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ListResponseEventTypeInOut) GetIteratorOk() (*string, bool) {
+func (o *ListResponseEventTypeOut) GetIteratorOk() (*string, bool) {
 	if o == nil || o.Iterator == nil {
 		return nil, false
 	}
@@ -83,7 +83,7 @@ func (o *ListResponseEventTypeInOut) GetIteratorOk() (*string, bool) {
 }
 
 // HasIterator returns a boolean if a field has been set.
-func (o *ListResponseEventTypeInOut) HasIterator() bool {
+func (o *ListResponseEventTypeOut) HasIterator() bool {
 	if o != nil && o.Iterator != nil {
 		return true
 	}
@@ -92,12 +92,12 @@ func (o *ListResponseEventTypeInOut) HasIterator() bool {
 }
 
 // SetIterator gets a reference to the given string and assigns it to the Iterator field.
-func (o *ListResponseEventTypeInOut) SetIterator(v string) {
+func (o *ListResponseEventTypeOut) SetIterator(v string) {
 	o.Iterator = &v
 }
 
 // GetDone returns the Done field value
-func (o *ListResponseEventTypeInOut) GetDone() bool {
+func (o *ListResponseEventTypeOut) GetDone() bool {
 	if o == nil  {
 		var ret bool
 		return ret
@@ -108,7 +108,7 @@ func (o *ListResponseEventTypeInOut) GetDone() bool {
 
 // GetDoneOk returns a tuple with the Done field value
 // and a boolean to check if the value has been set.
-func (o *ListResponseEventTypeInOut) GetDoneOk() (*bool, bool) {
+func (o *ListResponseEventTypeOut) GetDoneOk() (*bool, bool) {
 	if o == nil  {
 		return nil, false
 	}
@@ -116,11 +116,11 @@ func (o *ListResponseEventTypeInOut) GetDoneOk() (*bool, bool) {
 }
 
 // SetDone sets field value
-func (o *ListResponseEventTypeInOut) SetDone(v bool) {
+func (o *ListResponseEventTypeOut) SetDone(v bool) {
 	o.Done = v
 }
 
-func (o ListResponseEventTypeInOut) MarshalJSON() ([]byte, error) {
+func (o ListResponseEventTypeOut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
 		toSerialize["data"] = o.Data
@@ -134,38 +134,38 @@ func (o ListResponseEventTypeInOut) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-type NullableListResponseEventTypeInOut struct {
-	value *ListResponseEventTypeInOut
+type NullableListResponseEventTypeOut struct {
+	value *ListResponseEventTypeOut
 	isSet bool
 }
 
-func (v NullableListResponseEventTypeInOut) Get() *ListResponseEventTypeInOut {
+func (v NullableListResponseEventTypeOut) Get() *ListResponseEventTypeOut {
 	return v.value
 }
 
-func (v *NullableListResponseEventTypeInOut) Set(val *ListResponseEventTypeInOut) {
+func (v *NullableListResponseEventTypeOut) Set(val *ListResponseEventTypeOut) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableListResponseEventTypeInOut) IsSet() bool {
+func (v NullableListResponseEventTypeOut) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableListResponseEventTypeInOut) Unset() {
+func (v *NullableListResponseEventTypeOut) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableListResponseEventTypeInOut(val *ListResponseEventTypeInOut) *NullableListResponseEventTypeInOut {
-	return &NullableListResponseEventTypeInOut{value: val, isSet: true}
+func NewNullableListResponseEventTypeOut(val *ListResponseEventTypeOut) *NullableListResponseEventTypeOut {
+	return &NullableListResponseEventTypeOut{value: val, isSet: true}
 }
 
-func (v NullableListResponseEventTypeInOut) MarshalJSON() ([]byte, error) {
+func (v NullableListResponseEventTypeOut) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableListResponseEventTypeInOut) UnmarshalJSON(src []byte) error {
+func (v *NullableListResponseEventTypeOut) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
