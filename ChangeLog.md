@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.16.0
+* Update the OpenAPI spec and change structures accordingly
+
 ## Version 0.15.0
 * go: Add DebugURL option for overriding API URL
 * Ruby: initial release
