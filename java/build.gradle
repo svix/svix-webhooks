@@ -2,7 +2,7 @@ apply plugin: 'idea'
 apply plugin: 'eclipse'
 apply plugin: 'java'
 
-group = 'org.openapitools'
+group = 'com.svix'
 version = '1.4'
 
 buildscript {
@@ -31,7 +31,7 @@ targetCompatibility = JavaVersion.VERSION_1_7
 
 install {
     repositories.mavenInstaller {
-        pom.artifactId = 'openapi-java-client'
+        pom.artifactId = 'svix'
     }
 }
 

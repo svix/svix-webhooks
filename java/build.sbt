@@ -1,7 +1,7 @@
 lazy val root = (project in file(".")).
   settings(
-    organization := "org.openapitools",
-    name := "openapi-java-client",
+    organization := "com.svix",
+    name := "svix",
     version := "1.4",
     scalaVersion := "2.11.4",
     scalacOptions ++= Seq("-feature"),
