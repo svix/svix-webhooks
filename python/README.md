@@ -1,4 +1,4 @@
-# Diahook
-The Diahook client API documentation
+# Svix
+The Svix client API documentation
 
-Please refer to [the documentation](https://www.diahook.com/docs/) for usage instructions.
+Please refer to [the documentation](https://www.svix.com/docs) for usage instructions.
