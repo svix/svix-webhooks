@@ -11,12 +11,13 @@ type EventType struct {
 }
 
 type (
-	ListResponseEventTypeInOut openapi.ListResponseEventTypeInOut
-	EventTypeInOut             openapi.EventTypeInOut
-	EventTypeUpdate            openapi.EventTypeUpdate
+	ListResponseEventTypeOut openapi.ListResponseEventTypeOut
+	EventTypeIn              openapi.EventTypeIn
+	EventTypeOut             openapi.EventTypeOut
+	EventTypeUpdate          openapi.EventTypeUpdate
 )
 
-func (e *EventType) List(options *FetchOptions) (*ListResponseEventTypeInOut, error) {
+func (e *EventType) List(options *FetchOptions) (*ListResponseEventTypeOut, error) {
 	req := e.api.EventTypeApi.ListEventTypesApiV1EventTypeGet(context.Background())
 	if options != nil {
 		if options.Iterator != nil {
@@ -30,29 +31,29 @@ func (e *EventType) List(options *FetchOptions) (*ListResponseEventTypeInOut, er
 	if err != nil {
 		return nil, err
 	}
-	ret := ListResponseEventTypeInOut(out)
+	ret := ListResponseEventTypeOut(out)
 	return &ret, nil
 }
 
-func (e *EventType) Create(eventTypeInOut *EventTypeInOut) (*EventTypeInOut, error) {
+func (e *EventType) Create(eventTypeIn *EventTypeIn) (*EventTypeOut, error) {
 	req := e.api.EventTypeApi.CreateEventTypeApiV1EventTypePost(context.Background())
-	req = req.EventTypeInOut(openapi.EventTypeInOut(*eventTypeInOut))
+	req = req.EventTypeIn(openapi.EventTypeIn(*eventTypeIn))
 	out, _, err := req.Execute()
 	if err != nil {
 		return nil, err
 	}
-	ret := EventTypeInOut(out)
+	ret := EventTypeOut(out)
 	return &ret, nil
 }
 
-func (e *EventType) Update(eventTypeName string, eventTypeUpdate *EventTypeUpdate) (*EventTypeInOut, error) {
+func (e *EventType) Update(eventTypeName string, eventTypeUpdate *EventTypeUpdate) (*EventTypeOut, error) {
 	req := e.api.EventTypeApi.UpdateEventTypeApiV1EventTypeEventTypeNamePut(context.Background(), eventTypeName)
 	req = req.EventTypeUpdate(openapi.EventTypeUpdate(*eventTypeUpdate))
 	out, _, err := req.Execute()
 	if err != nil {
 		return nil, err
 	}
-	ret := EventTypeInOut(out)
+	ret := EventTypeOut(out)
 	return &ret, nil
 }
 

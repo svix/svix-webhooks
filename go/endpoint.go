@@ -10,7 +10,7 @@ type (
 	ListResponseEndpointOut openapi.ListResponseEndpointOut
 	EndpointIn              openapi.EndpointIn
 	EndpointOut             openapi.EndpointOut
-	EndpointSecret          openapi.EndpointSecret
+	EndpointSecretOut       openapi.EndpointSecretOut
 )
 
 type Endpoint struct {
@@ -73,12 +73,12 @@ func (e *Endpoint) Delete(appId string, endpointId string) error {
 	return err
 }
 
-func (e *Endpoint) GetSecret(appId string, endpointId string) (*EndpointSecret, error) {
+func (e *Endpoint) GetSecret(appId string, endpointId string) (*EndpointSecretOut, error) {
 	req := e.api.EndpointApi.GetEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGet(context.Background(), endpointId, appId)
 	out, _, err := req.Execute()
 	if err != nil {
 		return nil, err
 	}
-	ret := EndpointSecret(out)
+	ret := EndpointSecretOut(out)
 	return &ret, nil
 }
