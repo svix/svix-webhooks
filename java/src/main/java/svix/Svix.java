@@ -13,7 +13,7 @@ public class Svix {
 	private final MessageAttempt messageAttempt;
 
 	public Svix(String token) {
-		this(token, new SvixOptions(false, "https://api.svix.com"));
+		this(token, new SvixOptions());
 	}
 
 	public Svix(String token, SvixOptions options) {

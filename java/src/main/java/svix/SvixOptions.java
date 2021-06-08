@@ -1,12 +1,26 @@
 package svix;
 
 public class SvixOptions {
-	private final boolean debug;
-	private final String testUrl;
+	private final String DEFAULT_URL = "https://api.svix.com";
 
-	public SvixOptions(boolean debug, String testUrl) {
+	private final boolean debug;
+	private final String debugUrl;
+
+	public SvixOptions() {
+		this(false, null);
+	}
+
+	public SvixOptions(boolean debug) {
+		this(debug, null);
+	}
+
+	public SvixOptions(String debugUrl) {
+		this(false, debugUrl);
+	}
+
+	public SvixOptions(boolean debug, String debugUrl) {
 		this.debug = debug;
-		this.testUrl = testUrl;
+		this.debugUrl = debugUrl == null ? DEFAULT_URL : debugUrl;
 	}
 
 	public boolean getDebug() {
@@ -14,6 +28,6 @@ public class SvixOptions {
 	}
 
 	public String getUrl() {
-		return testUrl;
+		return debugUrl;
 	}
 }
