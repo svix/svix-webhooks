@@ -20,5 +20,8 @@ target
 .gradle
 build
 
+# Build files
+bin/
+
 # auto generated files
-src/main/java/openapi/
+internal/
