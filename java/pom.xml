@@ -38,7 +38,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <generatedSourcesDirectory>internal/openapi/src/main/java</generatedSourcesDirectory>
+                    <generatedSourcesDirectory>generated/openapi/src/main/java</generatedSourcesDirectory>
                     <fork>true</fork>
                     <meminitial>128m</meminitial>
                     <maxmem>512m</maxmem>

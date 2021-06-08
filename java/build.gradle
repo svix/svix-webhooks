@@ -21,7 +21,7 @@ repositories {
     jcenter()
 }
 sourceSets {
-    main.java.srcDirs = ['src/main/java', 'internal/openapi/src/main/java']
+    main.java.srcDirs = ['src/main/java', 'generated/openapi/src/main/java']
 }
 
 
