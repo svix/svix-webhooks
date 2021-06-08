@@ -1,8 +1,8 @@
 package svix;
 
-import svix.ApiClient;
-import svix.Configuration;
-import svix.auth.*;
+import openapi.svix.ApiClient;
+import openapi.svix.Configuration;
+import openapi.svix.auth.*;
 
 public class Svix {
 	private final Application application;

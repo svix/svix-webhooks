@@ -1,13 +1,13 @@
 package svix;
 
-import svix.ApiException;
-import svix.openapi.MessageAttemptApi;
-import svix.openapi.model.ListResponseEndpointMessageOut;
-import svix.openapi.model.ListResponseMessageAttemptEndpointOut;
-import svix.openapi.model.ListResponseMessageAttemptOut;
-import svix.openapi.model.ListResponseMessageEndpointOut;
-import svix.openapi.model.MessageAttemptOut;
-import svix.openapi.model.MessageStatus;
+import openapi.svix.ApiException;
+import openapi.svix.api.MessageAttemptApi;
+import openapi.svix.model.ListResponseEndpointMessageOut;
+import openapi.svix.model.ListResponseMessageAttemptEndpointOut;
+import openapi.svix.model.ListResponseMessageAttemptOut;
+import openapi.svix.model.ListResponseMessageEndpointOut;
+import openapi.svix.model.MessageAttemptOut;
+import openapi.svix.model.MessageStatus;
 
 public class MessageAttempt {
 	private final MessageAttemptApi api;

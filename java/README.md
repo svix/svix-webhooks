@@ -2,7 +2,7 @@
 
 Svix
 - API version: 1.4
-  - Build date: 2021-06-06T18:08:35.083645+03:00[Asia/Jerusalem]
+  - Build date: 2021-06-08T21:21:28.075380+03:00[Asia/Jerusalem]
 
 The Svix server API documentation
 
@@ -73,12 +73,12 @@ Please follow the [installation](#installation) instruction and execute the foll
 ```java
 
 // Import classes:
-import svix.ApiClient;
-import svix.ApiException;
-import svix.Configuration;
-import svix.auth.*;
-import svix.models.*;
-import svix.openapi.ApplicationApi;
+import openapi.svix.ApiClient;
+import openapi.svix.ApiException;
+import openapi.svix.Configuration;
+import openapi.svix.auth.*;
+import openapi.svix.models.*;
+import openapi.svix.api.ApplicationApi;
 
 public class Example {
   public static void main(String[] args) {

@@ -1,10 +1,10 @@
 package svix;
 
-import svix.ApiException;
-import svix.openapi.ApplicationApi;
-import svix.openapi.model.ApplicationIn;
-import svix.openapi.model.ApplicationOut;
-import svix.openapi.model.ListResponseApplicationOut;
+import openapi.svix.ApiException;
+import openapi.svix.api.ApplicationApi;
+import openapi.svix.model.ApplicationIn;
+import openapi.svix.model.ApplicationOut;
+import openapi.svix.model.ListResponseApplicationOut;
 
 public class Application {
 	private final ApplicationApi api;

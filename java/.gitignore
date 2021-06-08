@@ -19,4 +19,6 @@ hs_err_pid*
 target
 .gradle
 build
-/bin/
+
+# auto generated files
+src/main/java/openapi/

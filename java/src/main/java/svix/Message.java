@@ -1,10 +1,10 @@
 package svix;
 
-import svix.ApiException;
-import svix.openapi.MessageApi;
-import svix.openapi.model.ListResponseMessageOut;
-import svix.openapi.model.MessageIn;
-import svix.openapi.model.MessageOut;
+import openapi.svix.ApiException;
+import openapi.svix.api.MessageApi;
+import openapi.svix.model.ListResponseMessageOut;
+import openapi.svix.model.MessageIn;
+import openapi.svix.model.MessageOut;
 
 public class Message {
 	private final MessageApi api;

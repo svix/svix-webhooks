@@ -1,10 +1,10 @@
 package svix;
 
-import svix.ApiException;
-import svix.openapi.EventTypeApi;
-import svix.openapi.model.EventTypeInOut;
-import svix.openapi.model.EventTypeUpdate;
-import svix.openapi.model.ListResponseEventTypeInOut;
+import openapi.svix.ApiException;
+import openapi.svix.api.EventTypeApi;
+import openapi.svix.model.EventTypeInOut;
+import openapi.svix.model.EventTypeUpdate;
+import openapi.svix.model.ListResponseEventTypeInOut;
 
 public class EventType {
 	private final EventTypeApi api;

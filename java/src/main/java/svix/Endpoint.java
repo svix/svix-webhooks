@@ -1,11 +1,11 @@
 package svix;
 
-import svix.ApiException;
-import svix.openapi.EndpointApi;
-import svix.openapi.model.EndpointIn;
-import svix.openapi.model.EndpointOut;
-import svix.openapi.model.EndpointSecret;
-import svix.openapi.model.ListResponseEndpointOut;
+import openapi.svix.ApiException;
+import openapi.svix.api.EndpointApi;
+import openapi.svix.model.EndpointIn;
+import openapi.svix.model.EndpointOut;
+import openapi.svix.model.EndpointSecret;
+import openapi.svix.model.ListResponseEndpointOut;
 
 public class Endpoint {
 	private final EndpointApi api;

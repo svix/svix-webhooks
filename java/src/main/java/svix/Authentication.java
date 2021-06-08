@@ -1,8 +1,8 @@
 package svix;
 
-import svix.ApiException;
-import svix.openapi.AuthenticationApi;
-import svix.openapi.model.DashboardAccessOut;
+import openapi.svix.ApiException;
+import openapi.svix.api.AuthenticationApi;
+import openapi.svix.model.DashboardAccessOut;
 
 public class Authentication {
 	private final AuthenticationApi api;
