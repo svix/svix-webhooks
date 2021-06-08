@@ -5,7 +5,7 @@
     <artifactId>svix</artifactId>
     <packaging>jar</packaging>
     <name>svix</name>
-    <version>1.4</version>
+    <version>0.17.0</version>
     <url>https://github.com/svixhq/svix-libs</url>
     <description>Java Bindings for the Svix API</description>
     <scm>
