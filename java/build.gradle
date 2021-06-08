@@ -1,6 +1,7 @@
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 apply plugin: 'java'
+apply plugin: 'maven'
 
 group = 'com.svix'
 version = '0.17.0'
@@ -23,8 +24,6 @@ sourceSets {
     main.java.srcDirs = ['src/main/java', 'internal/openapi/src/main/java']
 }
 
-apply plugin: 'java'
-apply plugin: 'maven'
 
 sourceCompatibility = JavaVersion.VERSION_1_7
 targetCompatibility = JavaVersion.VERSION_1_7
