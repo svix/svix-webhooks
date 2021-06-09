@@ -4,7 +4,7 @@ package {{package}};
 
 {{#imports}}import {{import}};
 {{/imports}}
-import {{invokerPackage}}.ApiClient;
+import {{invokerPackage}}.internal.ApiClient;
 import {{apiPackage}}.{{classname}};
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.ErrorLoggingFilter;

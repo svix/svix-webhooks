@@ -1,4 +1,4 @@
-package {{invokerPackage}};
+package {{invokerPackage}}.internal;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -32,9 +32,9 @@ import feign.form.FormEncoder;
 import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
 import feign.slf4j.Slf4jLogger;
-import {{invokerPackage}}.auth.*;
+import {{invokerPackage}}.internal.auth.*;
 {{#hasOAuthMethods}}
-import {{invokerPackage}}.auth.OAuth.AccessTokenListener;
+import {{invokerPackage}}.internal.auth.OAuth.AccessTokenListener;
 {{/hasOAuthMethods}}
 
 {{>generatedAnnotation}}

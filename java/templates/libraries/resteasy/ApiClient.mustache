@@ -1,4 +1,4 @@
-package {{invokerPackage}};
+package {{invokerPackage}}.internal;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -47,12 +47,13 @@ import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
-import {{invokerPackage}}.auth.Authentication;
-import {{invokerPackage}}.auth.HttpBasicAuth;
-import {{invokerPackage}}.auth.HttpBearerAuth;
-import {{invokerPackage}}.auth.ApiKeyAuth;
+import {{invokerPackage}}.ApiException;
+import {{invokerPackage}}.internal.auth.Authentication;
+import {{invokerPackage}}.internal.auth.HttpBasicAuth;
+import {{invokerPackage}}.internal.auth.HttpBearerAuth;
+import {{invokerPackage}}.internal.auth.ApiKeyAuth;
 {{#hasOAuthMethods}}
-import {{invokerPackage}}.auth.OAuth;
+import {{invokerPackage}}.internal.auth.OAuth;
 {{/hasOAuthMethods}}
 
 {{>generatedAnnotation}}

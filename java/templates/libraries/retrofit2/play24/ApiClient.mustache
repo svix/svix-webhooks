@@ -1,4 +1,4 @@
-package {{invokerPackage}};
+package {{invokerPackage}}.internal;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -16,12 +16,12 @@ import org.openapitools.jackson.nullable.JsonNullableModule;
 import play.libs.Json;
 import play.libs.ws.WSClient;
 
-import {{invokerPackage}}.Play24CallAdapterFactory;
-import {{invokerPackage}}.Play24CallFactory;
+import {{invokerPackage}}.internal.Play24CallAdapterFactory;
+import {{invokerPackage}}.internal.Play24CallFactory;
 
 import okhttp3.Interceptor;
-import {{invokerPackage}}.auth.ApiKeyAuth;
-import {{invokerPackage}}.auth.Authentication;
+import {{invokerPackage}}.internal.auth.ApiKeyAuth;
+import {{invokerPackage}}.internal.auth.Authentication;
 
 /**
  * API client

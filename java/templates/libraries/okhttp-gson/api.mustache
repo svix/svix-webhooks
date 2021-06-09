@@ -2,19 +2,19 @@
 
 package {{package}};
 
-import {{invokerPackage}}.ApiCallback;
-import {{invokerPackage}}.ApiClient;
+import {{invokerPackage}}.internal.ApiCallback;
+import {{invokerPackage}}.internal.ApiClient;
 import {{invokerPackage}}.ApiException;
 {{#dynamicOperations}}
-import {{invokerPackage}}.ApiOperation;
+import {{invokerPackage}}.internal.ApiOperation;
 {{/dynamicOperations}}
-import {{invokerPackage}}.ApiResponse;
-import {{invokerPackage}}.Configuration;
-import {{invokerPackage}}.Pair;
-import {{invokerPackage}}.ProgressRequestBody;
-import {{invokerPackage}}.ProgressResponseBody;
+import {{invokerPackage}}.internal.ApiResponse;
+import {{invokerPackage}}.internal.Configuration;
+import {{invokerPackage}}.internal.Pair;
+import {{invokerPackage}}.internal.ProgressRequestBody;
+import {{invokerPackage}}.internal.ProgressResponseBody;
 {{#performBeanValidation}}
-import {{invokerPackage}}.BeanValidationException;
+import {{invokerPackage}}.internal.BeanValidationException;
 {{/performBeanValidation}}
 
 import com.google.gson.reflect.TypeToken;

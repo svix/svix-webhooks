@@ -1,6 +1,6 @@
 {{>licenseInfo}}
 
-package {{invokerPackage}};
+package {{invokerPackage}}.internal;
 
 {{#dynamicOperations}}
 import io.swagger.v3.oas.models.OpenAPI;
@@ -60,14 +60,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import {{invokerPackage}}.auth.Authentication;
-import {{invokerPackage}}.auth.HttpBasicAuth;
-import {{invokerPackage}}.auth.HttpBearerAuth;
-import {{invokerPackage}}.auth.ApiKeyAuth;
+import {{invokerPackage}}.ApiException;
+import {{invokerPackage}}.internal.auth.Authentication;
+import {{invokerPackage}}.internal.auth.HttpBasicAuth;
+import {{invokerPackage}}.internal.auth.HttpBearerAuth;
+import {{invokerPackage}}.internal.auth.ApiKeyAuth;
 {{#hasOAuthMethods}}
-import {{invokerPackage}}.auth.OAuth;
-import {{invokerPackage}}.auth.RetryingOAuth;
-import {{invokerPackage}}.auth.OAuthFlow;
+import {{invokerPackage}}.internal.auth.OAuth;
+import {{invokerPackage}}.internal.auth.RetryingOAuth;
+import {{invokerPackage}}.internal.auth.OAuthFlow;
 {{/hasOAuthMethods}}
 
 public class ApiClient {

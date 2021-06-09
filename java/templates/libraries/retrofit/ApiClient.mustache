@@ -1,4 +1,4 @@
-package {{invokerPackage}};
+package {{invokerPackage}}.internal;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -35,13 +35,13 @@ import com.google.gson.stream.JsonWriter;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
 
-import {{invokerPackage}}.auth.HttpBasicAuth;
-import {{invokerPackage}}.auth.HttpBearerAuth;
-import {{invokerPackage}}.auth.ApiKeyAuth;
+import {{invokerPackage}}.internal.auth.HttpBasicAuth;
+import {{invokerPackage}}.internal.auth.HttpBearerAuth;
+import {{invokerPackage}}.internal.auth.ApiKeyAuth;
 {{#hasOAuthMethods}}
-import {{invokerPackage}}.auth.OAuth;
-import {{invokerPackage}}.auth.OAuth.AccessTokenListener;
-import {{invokerPackage}}.auth.OAuthFlow;
+import {{invokerPackage}}.internal.auth.OAuth;
+import {{invokerPackage}}.internal.auth.OAuth.AccessTokenListener;
+import {{invokerPackage}}.internal.auth.OAuthFlow;
 {{/hasOAuthMethods}}
 
 public class ApiClient {

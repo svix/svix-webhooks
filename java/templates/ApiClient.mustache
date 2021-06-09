@@ -1,5 +1,5 @@
 {{>licenseInfo}}
-package {{invokerPackage}};
+package {{invokerPackage}}.internal;
 
 {{#threetenbp}}
 import org.threeten.bp.*;
@@ -55,18 +55,19 @@ import java.io.UnsupportedEncodingException;
 
 import java.text.DateFormat;
 
-import {{invokerPackage}}.auth.Authentication;
+import {{invokerPackage}}.ApiException;
+import {{invokerPackage}}.internal.auth.Authentication;
 {{#hasHttpBasicMethods}}
-import {{invokerPackage}}.auth.HttpBasicAuth;
+import {{invokerPackage}}.internal.auth.HttpBasicAuth;
 {{/hasHttpBasicMethods}}
 {{#hasHttpBearerMethods}}
-import {{invokerPackage}}.auth.HttpBearerAuth;
+import {{invokerPackage}}.internal.auth.HttpBearerAuth;
 {{/hasHttpBearerMethods}}
 {{#hasApiKeyMethods}}
-import {{invokerPackage}}.auth.ApiKeyAuth;
+import {{invokerPackage}}.internal.auth.ApiKeyAuth;
 {{/hasApiKeyMethods}}
 {{#hasOAuthMethods}}
-import {{invokerPackage}}.auth.OAuth;
+import {{invokerPackage}}.internal.auth.OAuth;
 {{/hasOAuthMethods}}
 
 {{>generatedAnnotation}}
