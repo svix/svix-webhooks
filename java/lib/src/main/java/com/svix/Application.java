@@ -2,9 +2,9 @@ package com.svix;
 
 import com.svix.generated.ApiException;
 import com.svix.generated.api.ApplicationApi;
-import com.svix.generated.model.ApplicationIn;
-import com.svix.generated.model.ApplicationOut;
-import com.svix.generated.model.ListResponseApplicationOut;
+import com.svix.model.ApplicationIn;
+import com.svix.model.ApplicationOut;
+import com.svix.model.ListResponseApplicationOut;
 
 public final class Application {
 	private final ApplicationApi api;
@@ -17,7 +17,7 @@ public final class Application {
 		return api.listApplicationsApiV1AppGet(options.getIterator(), options.getLimit());
 	}
 
-	public ApplicationOut create(final String appId, final ApplicationIn applicationIn) throws ApiException {
+	public ApplicationOut create(final ApplicationIn applicationIn) throws ApiException {
 		return api.createApplicationApiV1AppPost(applicationIn);
 	}
 

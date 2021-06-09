@@ -2,9 +2,9 @@ package com.svix;
 
 import com.svix.generated.ApiException;
 import com.svix.generated.api.EventTypeApi;
-import com.svix.generated.model.EventTypeInOut;
-import com.svix.generated.model.EventTypeUpdate;
-import com.svix.generated.model.ListResponseEventTypeInOut;
+import com.svix.model.EventTypeInOut;
+import com.svix.model.EventTypeUpdate;
+import com.svix.model.ListResponseEventTypeInOut;
 
 public final class EventType {
 	private final EventTypeApi api;

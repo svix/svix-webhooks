@@ -2,11 +2,11 @@ package com.svix;
 
 import com.svix.generated.ApiException;
 import com.svix.generated.api.MessageAttemptApi;
-import com.svix.generated.model.ListResponseEndpointMessageOut;
-import com.svix.generated.model.ListResponseMessageAttemptEndpointOut;
-import com.svix.generated.model.ListResponseMessageAttemptOut;
-import com.svix.generated.model.ListResponseMessageEndpointOut;
-import com.svix.generated.model.MessageAttemptOut;
+import com.svix.model.ListResponseEndpointMessageOut;
+import com.svix.model.ListResponseMessageAttemptEndpointOut;
+import com.svix.model.ListResponseMessageAttemptOut;
+import com.svix.model.ListResponseMessageEndpointOut;
+import com.svix.model.MessageAttemptOut;
 
 public final class MessageAttempt {
 	private final MessageAttemptApi api;

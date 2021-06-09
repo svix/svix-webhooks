@@ -1,4 +1,4 @@
 {
   "apiPackage": "com.svix.generated.api",
-  "modelPackage": "com.svix.generated.model"
+  "modelPackage": "com.svix.model"
 }
