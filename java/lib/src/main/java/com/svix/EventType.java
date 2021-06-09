@@ -1,10 +1,10 @@
 package com.svix;
 
-import com.svix.generated.ApiException;
-import com.svix.generated.api.EventTypeApi;
-import com.svix.generated.model.EventTypeInOut;
-import com.svix.generated.model.EventTypeUpdate;
-import com.svix.generated.model.ListResponseEventTypeInOut;
+import com.svix.api.EventTypeApi;
+import com.svix.models.EventTypeIn;
+import com.svix.models.EventTypeOut;
+import com.svix.models.EventTypeUpdate;
+import com.svix.models.ListResponseEventTypeOut;
 
 public final class EventType {
 	private final EventTypeApi api;
@@ -13,15 +13,15 @@ public final class EventType {
 		api = new EventTypeApi();
 	}
 
-	public ListResponseEventTypeInOut list(final FetchOptions options) throws ApiException {
+	public ListResponseEventTypeOut list(final FetchOptions options) throws ApiException {
 		return api.listEventTypesApiV1EventTypeGet(options.getIterator(), options.getLimit());
 	}
 
-	public EventTypeInOut create(final EventTypeInOut eventTypeInOut) throws ApiException {
-		return api.createEventTypeApiV1EventTypePost(eventTypeInOut);
+	public EventTypeOut create(final EventTypeIn eventTypeIn) throws ApiException {
+		return api.createEventTypeApiV1EventTypePost(eventTypeIn);
 	}
 
-	public EventTypeInOut update(final String eventTypeName, final EventTypeUpdate eventTypeUpdate) throws ApiException {
+	public EventTypeOut update(final String eventTypeName, final EventTypeUpdate eventTypeUpdate) throws ApiException {
 		return api.updateEventTypeApiV1EventTypeEventTypeNamePut(eventTypeName, eventTypeUpdate);
 	}
 

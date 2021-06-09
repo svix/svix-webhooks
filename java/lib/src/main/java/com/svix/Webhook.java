@@ -23,13 +23,13 @@ public final class Webhook {
 		this.key = Base64.getDecoder().decode(secret);
 	}
 
-	public void verify(final String payload, final HttpHeaders headers) throws WebhookVerificationError {
+	public void verify(final String payload, final HttpHeaders headers) throws WebhookVerificationException {
 		Optional<String> msgId = headers.firstValue(MSG_ID_KEY);
 		List<String> msgSignature = headers.allValues(MSG_SIGNATURE_KEY);
 		Optional<String> msgTimestamp = headers.firstValue(MSG_TIMESTAMP_KEY);
 
 		if (msgId.isEmpty() || msgSignature.isEmpty() || msgTimestamp.isEmpty()) {
-			throw new WebhookVerificationError("Missing required headers");
+			throw new WebhookVerificationException("Missing required headers");
 		}
 
 		String toSign = String.format("%s.%s.%s", msgId.get(), msgTimestamp.get(), payload);
@@ -48,10 +48,10 @@ public final class Webhook {
 				return;
 			}
 		}
-		throw new WebhookVerificationError("No matching signature found");
+		throw new WebhookVerificationException("No matching signature found");
 	}
 
-	private String sign(final String toSign) throws WebhookVerificationError {
+	private String sign(final String toSign) throws WebhookVerificationException {
 		try {
 			Mac sha512Hmac = Mac.getInstance(HMAC_SHA256);
 			SecretKeySpec keySpec = new SecretKeySpec(key, HMAC_SHA256);
@@ -59,7 +59,7 @@ public final class Webhook {
 			byte[] macData = sha512Hmac.doFinal(toSign.getBytes(StandardCharsets.UTF_8));
 			return Base64.getEncoder().encodeToString(macData);
 		} catch (InvalidKeyException | NoSuchAlgorithmException e) {
-			throw new WebhookVerificationError(e.getMessage());
+			throw new WebhookVerificationException(e.getMessage());
 		}
 	}
 }

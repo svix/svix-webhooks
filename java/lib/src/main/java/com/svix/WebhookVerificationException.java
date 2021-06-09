@@ -3,23 +3,23 @@ package com.svix;
 import java.util.Map;
 import java.util.List;
 
-public class WebhookVerificationError extends Exception {
+public class WebhookVerificationException extends Exception {
 	private int code = 0;
 	private Map<String, List<String>> responseHeaders = null;
 	private String responseBody = null;
 
-	public WebhookVerificationError() {
+	public WebhookVerificationException() {
 	}
 
-	public WebhookVerificationError(final Throwable throwable) {
+	public WebhookVerificationException(final Throwable throwable) {
 		super(throwable);
 	}
 
-	public WebhookVerificationError(final String message) {
+	public WebhookVerificationException(final String message) {
 		super(message);
 	}
 
-	public WebhookVerificationError(final String message, final Throwable throwable, final int code,
+	public WebhookVerificationException(final String message, final Throwable throwable, final int code,
 	    final Map<String, List<String>> responseHeaders, final String responseBody) {
 		super(message, throwable);
 		this.code = code;
@@ -27,26 +27,26 @@ public class WebhookVerificationError extends Exception {
 		this.responseBody = responseBody;
 	}
 
-	public WebhookVerificationError(final String message, final int code, final Map<String, List<String>> responseHeaders,
+	public WebhookVerificationException(final String message, final int code, final Map<String, List<String>> responseHeaders,
 	    final String responseBody) {
 		this(message, (Throwable) null, code, responseHeaders, responseBody);
 	}
 
-	public WebhookVerificationError(final String message, final Throwable throwable, final int code,
+	public WebhookVerificationException(final String message, final Throwable throwable, final int code,
 	    final Map<String, List<String>> responseHeaders) {
 		this(message, throwable, code, responseHeaders, null);
 	}
 
-	public WebhookVerificationError(final int code, final Map<String, List<String>> responseHeaders, final String responseBody) {
+	public WebhookVerificationException(final int code, final Map<String, List<String>> responseHeaders, final String responseBody) {
 		this((String) null, (Throwable) null, code, responseHeaders, responseBody);
 	}
 
-	public WebhookVerificationError(final int code, final String message) {
+	public WebhookVerificationException(final int code, final String message) {
 		super(message);
 		this.code = code;
 	}
 
-	public WebhookVerificationError(final int code, final String message, final Map<String, List<String>> responseHeaders,
+	public WebhookVerificationException(final int code, final String message, final Map<String, List<String>> responseHeaders,
 	    final String responseBody) {
 		this(code, message);
 		this.responseHeaders = responseHeaders;

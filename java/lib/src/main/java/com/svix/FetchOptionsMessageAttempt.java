@@ -1,6 +1,6 @@
 package com.svix;
 
-import com.svix.generated.model.MessageStatus;
+import com.svix.models.MessageStatus;
 
 
 public final class FetchOptionsMessageAttempt extends FetchOptions {

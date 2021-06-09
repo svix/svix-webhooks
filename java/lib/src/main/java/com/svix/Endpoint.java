@@ -1,11 +1,10 @@
 package com.svix;
 
-import com.svix.generated.ApiException;
-import com.svix.generated.api.EndpointApi;
-import com.svix.generated.model.EndpointIn;
-import com.svix.generated.model.EndpointOut;
-import com.svix.generated.model.EndpointSecret;
-import com.svix.generated.model.ListResponseEndpointOut;
+import com.svix.api.EndpointApi;
+import com.svix.models.EndpointIn;
+import com.svix.models.EndpointOut;
+import com.svix.models.EndpointSecretOut;
+import com.svix.models.ListResponseEndpointOut;
 
 public final class Endpoint {
 	private final EndpointApi api;
@@ -34,7 +33,7 @@ public final class Endpoint {
 		api.deleteEndpointApiV1AppAppIdEndpointEndpointIdDelete(endpointId, appId);
 	}
 
-	public EndpointSecret getSecret(final String appId, final String endpointId) throws ApiException {
+	public EndpointSecretOut getSecret(final String appId, final String endpointId) throws ApiException {
 		return api.getEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGet(endpointId, appId);
 	}
 }
