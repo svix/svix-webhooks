@@ -4,7 +4,7 @@ import com.svix.generated.ApiException;
 import com.svix.generated.api.AuthenticationApi;
 import com.svix.generated.model.DashboardAccessOut;
 
-public class Authentication {
+public final class Authentication {
 	private final AuthenticationApi api;
 
 	Authentication() {

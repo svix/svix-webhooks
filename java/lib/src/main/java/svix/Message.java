@@ -6,7 +6,7 @@ import com.svix.generated.model.ListResponseMessageOut;
 import com.svix.generated.model.MessageIn;
 import com.svix.generated.model.MessageOut;
 
-public class Message {
+public final class Message {
 	private final MessageApi api;
 
 	Message() {

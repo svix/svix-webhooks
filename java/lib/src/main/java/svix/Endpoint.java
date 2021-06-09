@@ -7,7 +7,7 @@ import com.svix.generated.model.EndpointOut;
 import com.svix.generated.model.EndpointSecret;
 import com.svix.generated.model.ListResponseEndpointOut;
 
-public class Endpoint {
+public final class Endpoint {
 	private final EndpointApi api;
 
 	public Endpoint() {

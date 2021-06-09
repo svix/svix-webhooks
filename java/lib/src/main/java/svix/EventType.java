@@ -6,7 +6,7 @@ import com.svix.generated.model.EventTypeInOut;
 import com.svix.generated.model.EventTypeUpdate;
 import com.svix.generated.model.ListResponseEventTypeInOut;
 
-public class EventType {
+public final class EventType {
 	private final EventTypeApi api;
 
 	public EventType() {

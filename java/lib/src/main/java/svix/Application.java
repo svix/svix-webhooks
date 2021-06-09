@@ -6,7 +6,7 @@ import com.svix.generated.model.ApplicationIn;
 import com.svix.generated.model.ApplicationOut;
 import com.svix.generated.model.ListResponseApplicationOut;
 
-public class Application {
+public final class Application {
 	private final ApplicationApi api;
 
 	Application() {

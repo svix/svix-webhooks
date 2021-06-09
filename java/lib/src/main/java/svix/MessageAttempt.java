@@ -9,7 +9,7 @@ import com.svix.generated.model.ListResponseMessageEndpointOut;
 import com.svix.generated.model.MessageAttemptOut;
 import com.svix.generated.model.MessageStatus;
 
-public class MessageAttempt {
+public final class MessageAttempt {
 	private final MessageAttemptApi api;
 
 	MessageAttempt() {
