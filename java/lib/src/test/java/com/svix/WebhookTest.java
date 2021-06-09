@@ -11,6 +11,8 @@ import java.util.function.BiPredicate;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
 
+import com.svix.exceptions.WebhookVerificationException;
+
 public class WebhookTest {
 	private static final String DEFAULT_SECRET = "MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw";
 	private static final String VALID_PAYLOAD = "{\"test\": 2432232314}";

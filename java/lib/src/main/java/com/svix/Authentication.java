@@ -1,6 +1,7 @@
 package com.svix;
 
-import com.svix.api.AuthenticationApi;
+import com.svix.exceptions.ApiException;
+import com.svix.internal.api.AuthenticationApi;
 import com.svix.models.DashboardAccessOut;
 
 public final class Authentication {
@@ -11,10 +12,18 @@ public final class Authentication {
 	}
 
 	public DashboardAccessOut dashboardAccess(final String appId) throws ApiException {
-		return api.getDashboardAccessApiV1AuthDashboardAccessAppIdPost(appId);
+		try {
+			return api.getDashboardAccessApiV1AuthDashboardAccessAppIdPost(appId);
+		} catch(com.svix.internal.ApiException e) {
+			throw (ApiException) e;
+		}
 	}
 
 	public void logout() throws ApiException {
-		api.logoutApiV1AuthLogoutPost();
+		try {
+			api.logoutApiV1AuthLogoutPost();
+		} catch(com.svix.internal.ApiException e) {
+			throw (ApiException) e;
+		}
 	}
 }

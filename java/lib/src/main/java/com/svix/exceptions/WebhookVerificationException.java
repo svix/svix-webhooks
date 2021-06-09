@@ -1,4 +1,4 @@
-package com.svix;
+package com.svix.exceptions;
 
 import java.util.Map;
 import java.util.List;

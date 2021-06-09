@@ -1,6 +1,7 @@
 package com.svix;
 
-import com.svix.api.MessageApi;
+import com.svix.exceptions.ApiException;
+import com.svix.internal.api.MessageApi;
 import com.svix.models.ListResponseMessageOut;
 import com.svix.models.MessageIn;
 import com.svix.models.MessageOut;
@@ -13,14 +14,26 @@ public final class Message {
 	}
 
 	public ListResponseMessageOut list(final String appId, final FetchOptions options) throws ApiException {
-		return api.listMessagesApiV1AppAppIdMsgGet(appId, options.getIterator(), options.getLimit());
+		try {
+			return api.listMessagesApiV1AppAppIdMsgGet(appId, options.getIterator(), options.getLimit());
+		} catch(com.svix.internal.ApiException e) {
+			throw (ApiException) e;
+		}
 	}
 
 	public MessageOut create(final String appId, final MessageIn messageIn) throws ApiException {
-		return api.createMessageApiV1AppAppIdMsgPost(appId, messageIn);
+		try {
+			return api.createMessageApiV1AppAppIdMsgPost(appId, messageIn);
+		} catch(com.svix.internal.ApiException e) {
+			throw (ApiException) e;
+		}
 	}
 
 	public MessageOut get(final String msgId, final String appId) throws ApiException {
-		return api.getMessageApiV1AppAppIdMsgMsgIdGet(msgId, appId);
+		try {
+			return api.getMessageApiV1AppAppIdMsgMsgIdGet(msgId, appId);
+		} catch(com.svix.internal.ApiException e) {
+			throw (ApiException) e;
+		}
 	}
 }

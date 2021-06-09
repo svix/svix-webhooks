@@ -1,6 +1,7 @@
 package com.svix;
 
-import com.svix.api.EventTypeApi;
+import com.svix.exceptions.ApiException;
+import com.svix.internal.api.EventTypeApi;
 import com.svix.models.EventTypeIn;
 import com.svix.models.EventTypeOut;
 import com.svix.models.EventTypeUpdate;
@@ -14,18 +15,34 @@ public final class EventType {
 	}
 
 	public ListResponseEventTypeOut list(final FetchOptions options) throws ApiException {
-		return api.listEventTypesApiV1EventTypeGet(options.getIterator(), options.getLimit());
+		try {
+			return api.listEventTypesApiV1EventTypeGet(options.getIterator(), options.getLimit());
+		} catch(com.svix.internal.ApiException e) {
+			throw (ApiException) e;
+		}
 	}
 
 	public EventTypeOut create(final EventTypeIn eventTypeIn) throws ApiException {
-		return api.createEventTypeApiV1EventTypePost(eventTypeIn);
+		try {
+			return api.createEventTypeApiV1EventTypePost(eventTypeIn);
+		} catch(com.svix.internal.ApiException e) {
+			throw (ApiException) e;
+		}
 	}
 
 	public EventTypeOut update(final String eventTypeName, final EventTypeUpdate eventTypeUpdate) throws ApiException {
-		return api.updateEventTypeApiV1EventTypeEventTypeNamePut(eventTypeName, eventTypeUpdate);
+		try {
+			return api.updateEventTypeApiV1EventTypeEventTypeNamePut(eventTypeName, eventTypeUpdate);
+		} catch(com.svix.internal.ApiException e) {
+			throw (ApiException) e;
+		}
 	}
 
 	public void delete(final String eventTypeName) throws ApiException {
-		api.deleteEventTypeApiV1EventTypeEventTypeNameDelete(eventTypeName);
+		try {
+			api.deleteEventTypeApiV1EventTypeEventTypeNameDelete(eventTypeName);
+		} catch(com.svix.internal.ApiException e) {
+			throw (ApiException) e;
+		}
 	}
 }
