@@ -31,7 +31,7 @@ dependencies {
 }
 
 jar {
-    baseName = POM_ARTIFACT_ID
+    archiveBaseName = POM_ARTIFACT_ID
     manifest {
         attributes('Implementation-Title': POM_NAME,
                    'Implementation-Version': VERSION_NAME,
