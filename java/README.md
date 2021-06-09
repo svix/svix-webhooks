@@ -5,7 +5,7 @@ Please refer to [the documentation](https://docs.svix.com) for usage instruction
 ## Requirements
 
 Building the API client library requires:
-1. Java 1.7+
+1. Java 1.8+
 2. Gradle
 
 ## Installation
