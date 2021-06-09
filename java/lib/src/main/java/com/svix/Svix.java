@@ -33,27 +33,27 @@ public final class Svix {
 		messageAttempt = new MessageAttempt();
 	}
 
-	public Application getApplication() {
+	public Application application() {
 		return application;
 	}
 
-	public Authentication getAuthentication() {
+	public Authentication authentication() {
 		return authentication;
 	}
 
-	public Endpoint getEndpoint() {
+	public Endpoint endpoint() {
 		return endpoint;
 	}
 
-	public EventType getEventType() {
+	public EventType eventType() {
 		return eventType;
 	}
 
-	public Message getMessage() {
+	public Message message() {
 		return message;
 	}
 
-	public MessageAttempt getMessageAttempt() {
+	public MessageAttempt messageAttempt() {
 		return messageAttempt;
 	}
 }
