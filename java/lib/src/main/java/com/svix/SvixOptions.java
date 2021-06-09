@@ -9,21 +9,29 @@ public final class SvixOptions {
 	public SvixOptions() {
 	}
 
-	public SvixOptions setDebug(final boolean debug) {
+	public SvixOptions debug(final boolean debug) {
 		this.debug = debug;
 		return this;
 	}
 
-	public SvixOptions setUrl(final String debugUrl) {
+	public SvixOptions debugUrl(final String debugUrl) {
 		this.debugUrl = debugUrl;
 		return this;
+	}
+
+	public void setDebug(final boolean debug) {
+		this.debug = debug;
+	}
+
+	public void setDebugUrl(final String debugUrl) {
+		this.debugUrl = debugUrl;
 	}
 
 	public boolean getDebug() {
 		return debug;
 	}
 
-	public String getUrl() {
+	public String getDebugUrl() {
 		return debugUrl;
 	}
 }

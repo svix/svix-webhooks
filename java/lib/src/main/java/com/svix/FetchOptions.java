@@ -9,14 +9,22 @@ public class FetchOptions {
 	public FetchOptions() {
 	}
 
-	public FetchOptions setIterator(final String iterator) {
+	public FetchOptions iterator(final String iterator) {
 		this.iterator = iterator;
 		return this;
 	}
 
-	public FetchOptions setLimit(final Integer limit) {
+	public FetchOptions limit(final Integer limit) {
 		this.limit = limit;
 		return this;
+	}
+
+	public void setIterator(final String iterator) {
+		this.iterator = iterator;
+	}
+
+	public void setLimit(final Integer limit) {
+		this.limit = limit;
 	}
 
 	public String getIterator() {

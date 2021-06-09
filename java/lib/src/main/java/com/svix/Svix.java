@@ -18,7 +18,7 @@ public final class Svix {
 
 	public Svix(final String token, final SvixOptions options) {
 		ApiClient apiClient = Configuration.getDefaultApiClient();
-		apiClient.setBasePath(options.getUrl());
+		apiClient.setBasePath(options.getDebugUrl());
 
 		HttpBearerAuth httpBearer = (HttpBearerAuth) apiClient.getAuthentication("HTTPBearer");
 		httpBearer.setBearerToken(token);
