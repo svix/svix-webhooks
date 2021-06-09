@@ -16,7 +16,7 @@ public final class Message {
 	public ListResponseMessageOut list(final String appId, final FetchOptions options) throws ApiException {
 		try {
 			return api.listMessagesApiV1AppAppIdMsgGet(appId, options.getIterator(), options.getLimit());
-		} catch(com.svix.internal.ApiException e) {
+		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
 	}
@@ -24,7 +24,7 @@ public final class Message {
 	public MessageOut create(final String appId, final MessageIn messageIn) throws ApiException {
 		try {
 			return api.createMessageApiV1AppAppIdMsgPost(appId, messageIn);
-		} catch(com.svix.internal.ApiException e) {
+		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
 	}
@@ -32,7 +32,7 @@ public final class Message {
 	public MessageOut get(final String msgId, final String appId) throws ApiException {
 		try {
 			return api.getMessageApiV1AppAppIdMsgMsgIdGet(msgId, appId);
-		} catch(com.svix.internal.ApiException e) {
+		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
 	}

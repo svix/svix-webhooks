@@ -17,7 +17,7 @@ public final class Endpoint {
 	public ListResponseEndpointOut list(final String appId, final FetchOptions options) throws ApiException {
 		try {
 			return api.listEndpointsApiV1AppAppIdEndpointGet(appId, options.getIterator(), options.getLimit());
-		} catch(com.svix.internal.ApiException e) {
+		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
 	}
@@ -25,7 +25,7 @@ public final class Endpoint {
 	public EndpointOut create(final String appId, final EndpointIn endpointIn) throws ApiException {
 		try {
 			return api.createEndpointApiV1AppAppIdEndpointPost(appId, endpointIn);
-		} catch(com.svix.internal.ApiException e) {
+		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
 	}
@@ -33,7 +33,7 @@ public final class Endpoint {
 	public EndpointOut get(final String appId, final String endpointId) throws ApiException {
 		try {
 			return api.getEndpointApiV1AppAppIdEndpointEndpointIdGet(endpointId, appId);
-		} catch(com.svix.internal.ApiException e) {
+		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
 	}
@@ -41,7 +41,7 @@ public final class Endpoint {
 	public EndpointOut update(final String appId, final String endpointId, final EndpointIn endpointIn) throws ApiException {
 		try {
 			return api.updateEndpointApiV1AppAppIdEndpointEndpointIdPut(endpointId, appId, endpointIn);
-		} catch(com.svix.internal.ApiException e) {
+		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
 	}
@@ -49,7 +49,7 @@ public final class Endpoint {
 	public void delete(final String appId, final String endpointId) throws ApiException {
 		try {
 			api.deleteEndpointApiV1AppAppIdEndpointEndpointIdDelete(endpointId, appId);
-		} catch(com.svix.internal.ApiException e) {
+		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
 	}
@@ -57,7 +57,7 @@ public final class Endpoint {
 	public EndpointSecretOut getSecret(final String appId, final String endpointId) throws ApiException {
 		try {
 			return api.getEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGet(endpointId, appId);
-		} catch(com.svix.internal.ApiException e) {
+		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
 	}
