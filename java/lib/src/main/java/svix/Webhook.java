@@ -11,7 +11,7 @@ import java.util.Optional;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-public class Webhook {
+public final class Webhook {
 	static final String MSG_ID_KEY = "svix-id";
 	static final String MSG_SIGNATURE_KEY = "svix-signature";
 	static final String MSG_TIMESTAMP_KEY = "svix-timestamp";

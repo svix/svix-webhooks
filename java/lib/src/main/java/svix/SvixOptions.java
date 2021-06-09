@@ -1,7 +1,7 @@
 package com.svix;
 
-public class SvixOptions {
-	private final String DEFAULT_URL = "https://api.svix.com";
+public final class SvixOptions {
+	private static final String DEFAULT_URL = "https://api.svix.com";
 
 	private boolean debug = false;
 	private String debugUrl = DEFAULT_URL;

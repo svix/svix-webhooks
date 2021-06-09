@@ -1,7 +1,6 @@
 package com.svix;
 
 import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
 
 import java.net.http.HttpHeaders;
 import java.util.Arrays;
@@ -19,7 +18,7 @@ public class WebhookTest {
 	private final Webhook webhook = new Webhook(DEFAULT_SECRET);
 
 	@Test
-	public void verify_validPayloadAndheader_returnTrue() throws WebhookVerificationError {
+	public void verifyValidPayloadAndheader() throws WebhookVerificationError {
 		Map<String, List<String>> headerMap = createValidHeadersMap();
 		HttpHeaders headers = HttpHeaders.of(headerMap, new DefaultBiPredicate());
 
@@ -27,7 +26,7 @@ public class WebhookTest {
 	}
 
 	@Test
-	public void verify_validPayloadAndheaderWithMultiplePayloads_returnTrue() throws WebhookVerificationError {
+	public void verifyValidPayloadAndheaderWithMultiplePayloads() throws WebhookVerificationError {
 		Map<String, List<String>> headerMap = createValidHeadersMap();
 		headerMap.put(Webhook.MSG_SIGNATURE_KEY,
 		    Arrays.asList("v2,tmIKtSyZlE3uFJELVlNIOLJ1OE=", "v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE="));
@@ -38,7 +37,7 @@ public class WebhookTest {
 	}
 
 	@Test
-	public void verify_missingId_throwsException() {
+	public void verifyMissingIdThrowsException() {
 		Map<String, List<String>> headerMap = createValidHeadersMap();
 		headerMap.remove(Webhook.MSG_ID_KEY);
 
@@ -46,7 +45,7 @@ public class WebhookTest {
 	}
 
 	@Test
-	public void verify_missingTimestamp_throwsException() {
+	public void verifyMissingTimestampThrowsException() {
 		Map<String, List<String>> headerMap = createValidHeadersMap();
 		headerMap.remove(Webhook.MSG_TIMESTAMP_KEY);
 
@@ -54,7 +53,7 @@ public class WebhookTest {
 	}
 
 	@Test
-	public void verify_missingSignature_throwsException() {
+	public void verifyMissingSignatureThrowsException() {
 		Map<String, List<String>> headerMap = createValidHeadersMap();
 		headerMap.remove(Webhook.MSG_SIGNATURE_KEY);
 
@@ -62,7 +61,7 @@ public class WebhookTest {
 	}
 
 	@Test
-	public void verify_signatureWithDifferentVersion_throwsException() {
+	public void verifySignatureWithDifferentVersionThrowsException() {
 		Map<String, List<String>> headerMap = createValidHeadersMap();
 		headerMap.put(Webhook.MSG_SIGNATURE_KEY, Arrays.asList("v2,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE="));
 
@@ -70,7 +69,7 @@ public class WebhookTest {
 	}
 
 	@Test
-	public void verify_missingPartsInSignature_throwsException() {
+	public void verifyMissingPartsInSignatureThrowsException() {
 		Map<String, List<String>> headerMap = createValidHeadersMap();
 		headerMap.put(Webhook.MSG_SIGNATURE_KEY, Arrays.asList("invalid_signature"));
 
@@ -78,7 +77,7 @@ public class WebhookTest {
 	}
 
 	@Test
-	public void verify_signatureMismatch_throwsException() {
+	public void verifySignatureMismatchThrowsException() {
 		Map<String, List<String>> headerMap = createValidHeadersMap();
 		headerMap.put(Webhook.MSG_SIGNATURE_KEY, Arrays.asList("v1,invalid_signature"));
 
@@ -105,7 +104,7 @@ public class WebhookTest {
 
 	private class DefaultBiPredicate implements BiPredicate<String, String> {
 		@Override
-		public boolean test(String arg0, String arg1) {
+		public boolean test(final String arg0, final String arg1) {
 			return true;
 		}
 	}

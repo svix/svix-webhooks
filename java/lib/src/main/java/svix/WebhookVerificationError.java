@@ -11,43 +11,43 @@ public class WebhookVerificationError extends Exception {
 	public WebhookVerificationError() {
 	}
 
-	public WebhookVerificationError(Throwable throwable) {
+	public WebhookVerificationError(final Throwable throwable) {
 		super(throwable);
 	}
 
-	public WebhookVerificationError(String message) {
+	public WebhookVerificationError(final String message) {
 		super(message);
 	}
 
-	public WebhookVerificationError(String message, Throwable throwable, int code,
-	    Map<String, List<String>> responseHeaders, String responseBody) {
+	public WebhookVerificationError(final String message, final Throwable throwable, final int code,
+	    final Map<String, List<String>> responseHeaders, final String responseBody) {
 		super(message, throwable);
 		this.code = code;
 		this.responseHeaders = responseHeaders;
 		this.responseBody = responseBody;
 	}
 
-	public WebhookVerificationError(String message, int code, Map<String, List<String>> responseHeaders,
-	    String responseBody) {
+	public WebhookVerificationError(final String message, final int code, final Map<String, List<String>> responseHeaders,
+	    final String responseBody) {
 		this(message, (Throwable) null, code, responseHeaders, responseBody);
 	}
 
-	public WebhookVerificationError(String message, Throwable throwable, int code,
-	    Map<String, List<String>> responseHeaders) {
+	public WebhookVerificationError(final String message, final Throwable throwable, final int code,
+	    final Map<String, List<String>> responseHeaders) {
 		this(message, throwable, code, responseHeaders, null);
 	}
 
-	public WebhookVerificationError(int code, Map<String, List<String>> responseHeaders, String responseBody) {
+	public WebhookVerificationError(final int code, final Map<String, List<String>> responseHeaders, final String responseBody) {
 		this((String) null, (Throwable) null, code, responseHeaders, responseBody);
 	}
 
-	public WebhookVerificationError(int code, String message) {
+	public WebhookVerificationError(final int code, final String message) {
 		super(message);
 		this.code = code;
 	}
 
-	public WebhookVerificationError(int code, String message, Map<String, List<String>> responseHeaders,
-	    String responseBody) {
+	public WebhookVerificationError(final int code, final String message, final Map<String, List<String>> responseHeaders,
+	    final String responseBody) {
 		this(code, message);
 		this.responseHeaders = responseHeaders;
 		this.responseBody = responseBody;
