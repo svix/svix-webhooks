@@ -17,7 +17,7 @@ public final class Application {
 		return api.listApplicationsApiV1AppGet(options.getIterator(), options.getLimit());
 	}
 
-	public ApplicationOut create(final String appId, final ApplicationIn applicationIn) throws ApiException {
+	public ApplicationOut create(final ApplicationIn applicationIn) throws ApiException {
 		return api.createApplicationApiV1AppPost(applicationIn);
 	}
 
