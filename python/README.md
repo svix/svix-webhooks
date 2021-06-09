@@ -1,4 +1,4 @@
 # Svix
 The Svix client API documentation
 
-Please refer to [the documentation](https://www.svix.com/docs) for usage instructions.
+Please refer to [the documentation](https://docs.svix.com/) for usage instructions.
