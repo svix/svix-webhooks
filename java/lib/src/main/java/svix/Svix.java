@@ -12,11 +12,11 @@ public class Svix {
 	private final Message message;
 	private final MessageAttempt messageAttempt;
 
-	public Svix(String token) {
+	public Svix(final String token) {
 		this(token, new SvixOptions());
 	}
 
-	public Svix(String token, SvixOptions options) {
+	public Svix(final String token, final SvixOptions options) {
 		ApiClient apiClient = Configuration.getDefaultApiClient();
 		apiClient.setBasePath(options.getUrl());
 

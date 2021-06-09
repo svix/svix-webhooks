@@ -11,7 +11,7 @@ public class Authentication {
 		api = new AuthenticationApi();
 	}
 
-	public DashboardAccessOut dashboardAccess(String appId) throws ApiException {
+	public DashboardAccessOut dashboardAccess(final String appId) throws ApiException {
 		return api.getDashboardAccessApiV1AuthDashboardAccessAppIdPost(appId);
 	}
 

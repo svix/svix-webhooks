@@ -19,11 +19,11 @@ public class Webhook {
 
 	private final byte[] key;
 
-	public Webhook(String secret) {
+	public Webhook(final String secret) {
 		this.key = Base64.getDecoder().decode(secret);
 	}
 
-	public void verify(String payload, HttpHeaders headers) throws WebhookVerificationError {
+	public void verify(final String payload, final HttpHeaders headers) throws WebhookVerificationError {
 		Optional<String> msgId = headers.firstValue(MSG_ID_KEY);
 		List<String> msgSignature = headers.allValues(MSG_SIGNATURE_KEY);
 		Optional<String> msgTimestamp = headers.firstValue(MSG_TIMESTAMP_KEY);
@@ -51,7 +51,7 @@ public class Webhook {
 		throw new WebhookVerificationError("No matching signature found");
 	}
 
-	private String sign(String toSign) throws WebhookVerificationError {
+	private String sign(final String toSign) throws WebhookVerificationError {
 		try {
 			Mac sha512Hmac = Mac.getInstance(HMAC_SHA256);
 			SecretKeySpec keySpec = new SecretKeySpec(key, HMAC_SHA256);

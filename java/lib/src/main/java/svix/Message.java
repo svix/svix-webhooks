@@ -13,15 +13,15 @@ public class Message {
 		api = new MessageApi();
 	}
 
-	public ListResponseMessageOut list(String appId, String iterator, Integer limit) throws ApiException {
+	public ListResponseMessageOut list(final String appId, final String iterator, final Integer limit) throws ApiException {
 		return api.listMessagesApiV1AppAppIdMsgGet(appId, iterator, limit);
 	}
 
-	public MessageOut create(String appId, MessageIn messageIn) throws ApiException {
+	public MessageOut create(final String appId, final MessageIn messageIn) throws ApiException {
 		return api.createMessageApiV1AppAppIdMsgPost(appId, messageIn);
 	}
 
-	public MessageOut get(String msgId, String appId) throws ApiException {
+	public MessageOut get(final String msgId, final String appId) throws ApiException {
 		return api.getMessageApiV1AppAppIdMsgMsgIdGet(msgId, appId);
 	}
 }

@@ -13,23 +13,23 @@ public class Application {
 		api = new ApplicationApi();
 	}
 
-	public ListResponseApplicationOut list(String iterator, Integer limit) throws ApiException {
+	public ListResponseApplicationOut list(final String iterator, final Integer limit) throws ApiException {
 		return api.listApplicationsApiV1AppGet(iterator, limit);
 	}
 
-	public ApplicationOut create(String appId, ApplicationIn applicationIn) throws ApiException {
+	public ApplicationOut create(final String appId, final ApplicationIn applicationIn) throws ApiException {
 		return api.createApplicationApiV1AppPost(applicationIn);
 	}
 
-	public ApplicationOut get(String appId) throws ApiException {
+	public ApplicationOut get(final String appId) throws ApiException {
 		return api.getApplicationApiV1AppAppIdGet(appId);
 	}
 
-	public ApplicationOut update(String appId, ApplicationIn applicationIn) throws ApiException {
+	public ApplicationOut update(final String appId, final ApplicationIn applicationIn) throws ApiException {
 		return api.updateApplicationApiV1AppAppIdPut(appId, applicationIn);
 	}
 
-	public void delete(String appId) throws ApiException {
+	public void delete(final String appId) throws ApiException {
 		api.deleteApplicationApiV1AppAppIdDelete(appId);
 	}
 }

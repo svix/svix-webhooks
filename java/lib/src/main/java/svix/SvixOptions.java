@@ -9,12 +9,12 @@ public class SvixOptions {
 	public SvixOptions() {
 	}
 
-	public SvixOptions setDebug(boolean debug) {
+	public SvixOptions setDebug(final boolean debug) {
 		this.debug = debug;
 		return this;
 	}
 
-	public SvixOptions setUrl(String debugUrl) {
+	public SvixOptions setUrl(final String debugUrl) {
 		this.debugUrl = debugUrl;
 		return this;
 	}

@@ -13,19 +13,19 @@ public class EventType {
 		api = new EventTypeApi();
 	}
 
-	public ListResponseEventTypeInOut list(String iterator, Integer limit) throws ApiException {
+	public ListResponseEventTypeInOut list(final String iterator, final Integer limit) throws ApiException {
 		return api.listEventTypesApiV1EventTypeGet(iterator, limit);
 	}
 
-	public EventTypeInOut create(EventTypeInOut eventTypeInOut) throws ApiException {
+	public EventTypeInOut create(final EventTypeInOut eventTypeInOut) throws ApiException {
 		return api.createEventTypeApiV1EventTypePost(eventTypeInOut);
 	}
 
-	public EventTypeInOut update(String eventTypeName, EventTypeUpdate eventTypeUpdate) throws ApiException {
+	public EventTypeInOut update(final String eventTypeName, final EventTypeUpdate eventTypeUpdate) throws ApiException {
 		return api.updateEventTypeApiV1EventTypeEventTypeNamePut(eventTypeName, eventTypeUpdate);
 	}
 
-	public void delete(String eventTypeName) throws ApiException {
+	public void delete(final String eventTypeName) throws ApiException {
 		api.deleteEventTypeApiV1EventTypeEventTypeNameDelete(eventTypeName);
 	}
 }

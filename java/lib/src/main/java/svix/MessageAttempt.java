@@ -16,31 +16,31 @@ public class MessageAttempt {
 		api = new MessageAttemptApi();
 	}
 
-	public ListResponseMessageAttemptOut list(String appId, String msgId, String iterator, Integer limit,
-	    MessageStatus status) throws ApiException {
+	public ListResponseMessageAttemptOut list(final String appId, final String msgId, final String iterator, final Integer limit,
+		final MessageStatus status) throws ApiException {
 		return api.listAttemptsApiV1AppAppIdMsgMsgIdAttemptGet(msgId, appId, iterator, limit, status);
 	}
 
-	public MessageAttemptOut get(String msgId, String appId, String attemptId) throws ApiException {
+	public MessageAttemptOut get(final String msgId, final String appId, final String attemptId) throws ApiException {
 		return api.getAttemptApiV1AppAppIdMsgMsgIdAttemptAttemptIdGet(attemptId, msgId, appId);
 	}
 
-	public Object resend(String msgId, String appId, String endpointId) throws ApiException {
+	public Object resend(final String msgId, final String appId, final String endpointId) throws ApiException {
 		return api.resendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPost(endpointId, msgId, appId);
 	}
 
-	public ListResponseEndpointMessageOut listAttemptedMessages(String appId, String endpointId, String iterator,
-	    Integer limit, MessageStatus status) throws ApiException {
+	public ListResponseEndpointMessageOut listAttemptedMessages(final String appId, final String endpointId, final String iterator,
+		final Integer limit, final MessageStatus status) throws ApiException {
 		return api.listAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGet(endpointId, appId, iterator, limit, status);
 	}
 
-	public ListResponseMessageEndpointOut listAttemptedDestinations(String appId, String msgId, String iterator,
-	    Integer limit) throws ApiException {
+	public ListResponseMessageEndpointOut listAttemptedDestinations(final String appId, final String msgId, final String iterator,
+		final Integer limit) throws ApiException {
 		return api.listAttemptedDestinationsApiV1AppAppIdMsgMsgIdEndpointGet(msgId, appId, iterator, limit);
 	}
 
-	public ListResponseMessageAttemptEndpointOut listAttemptsForEndpoint(String appId, String msgId, String endpointId,
-	    String iterator, Integer limit, MessageStatus status) throws ApiException {
+	public ListResponseMessageAttemptEndpointOut listAttemptsForEndpoint(final String appId, final String msgId, final String endpointId,
+		final String iterator, final Integer limit, final MessageStatus status) throws ApiException {
 		return api.listAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGet(msgId, appId, endpointId,
 		    iterator, limit, status);
 	}
