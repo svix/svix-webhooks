@@ -1,0 +1,45 @@
+# Svix Java
+
+Please refer to [the documentation](https://docs.svix.com) for usage instructions.
+
+## Requirements
+
+Building the API client library requires:
+1. Java 1.8+
+2. Gradle
+
+## Installation
+
+### Maven users
+
+Add this dependency to your project's POM:
+
+```xml
+<dependency>
+  <groupId>com.svix</groupId>
+  <artifactId>svix</artifactId>
+  <version>0.17.0</version>
+  <scope>compile</scope>
+</dependency>
+```
+
+### Gradle users
+
+Add this dependency to your project's build file:
+
+```groovy
+compile "com.svix:svix:0.17.0"
+```
+
+
+## Development
+
+### Build
+
+gradle build
+
+### Test
+
+gradle test
+
+
