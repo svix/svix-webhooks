@@ -13,8 +13,8 @@ public final class Message {
 		api = new MessageApi();
 	}
 
-	public ListResponseMessageOut list(final String appId, final String iterator, final Integer limit) throws ApiException {
-		return api.listMessagesApiV1AppAppIdMsgGet(appId, iterator, limit);
+	public ListResponseMessageOut list(final String appId, final FetchOptions options) throws ApiException {
+		return api.listMessagesApiV1AppAppIdMsgGet(appId, options.getIterator(), options.getLimit());
 	}
 
 	public MessageOut create(final String appId, final MessageIn messageIn) throws ApiException {

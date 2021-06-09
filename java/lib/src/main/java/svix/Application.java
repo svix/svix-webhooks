@@ -13,8 +13,8 @@ public final class Application {
 		api = new ApplicationApi();
 	}
 
-	public ListResponseApplicationOut list(final String iterator, final Integer limit) throws ApiException {
-		return api.listApplicationsApiV1AppGet(iterator, limit);
+	public ListResponseApplicationOut list(final FetchOptions options) throws ApiException {
+		return api.listApplicationsApiV1AppGet(options.getIterator(), options.getLimit());
 	}
 
 	public ApplicationOut create(final String appId, final ApplicationIn applicationIn) throws ApiException {

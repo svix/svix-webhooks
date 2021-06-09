@@ -13,8 +13,8 @@ public final class EventType {
 		api = new EventTypeApi();
 	}
 
-	public ListResponseEventTypeInOut list(final String iterator, final Integer limit) throws ApiException {
-		return api.listEventTypesApiV1EventTypeGet(iterator, limit);
+	public ListResponseEventTypeInOut list(final FetchOptions options) throws ApiException {
+		return api.listEventTypesApiV1EventTypeGet(options.getIterator(), options.getLimit());
 	}
 
 	public EventTypeInOut create(final EventTypeInOut eventTypeInOut) throws ApiException {

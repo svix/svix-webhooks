@@ -14,8 +14,8 @@ public final class Endpoint {
 		api = new EndpointApi();
 	}
 
-	public ListResponseEndpointOut list(final String appId, final String iterator, final Integer limit) throws ApiException {
-		return api.listEndpointsApiV1AppAppIdEndpointGet(appId, iterator, limit);
+	public ListResponseEndpointOut list(final String appId, final FetchOptions options) throws ApiException {
+		return api.listEndpointsApiV1AppAppIdEndpointGet(appId, options.getIterator(), options.getLimit());
 	}
 
 	public EndpointOut create(final String appId, final EndpointIn endpointIn) throws ApiException {
