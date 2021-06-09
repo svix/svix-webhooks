@@ -1,7 +1,7 @@
 package com.svix;
 
-import com.svix.ApiException;
-import com.svix.api.EndpointApi;
+import com.svix.generated.ApiException;
+import com.svix.generated.api.EndpointApi;
 import com.svix.model.EndpointIn;
 import com.svix.model.EndpointOut;
 import com.svix.model.EndpointSecret;

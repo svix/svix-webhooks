@@ -1,7 +1,7 @@
 package com.svix;
 
-import com.svix.ApiException;
-import com.svix.api.EventTypeApi;
+import com.svix.generated.ApiException;
+import com.svix.generated.api.EventTypeApi;
 import com.svix.model.EventTypeInOut;
 import com.svix.model.EventTypeUpdate;
 import com.svix.model.ListResponseEventTypeInOut;

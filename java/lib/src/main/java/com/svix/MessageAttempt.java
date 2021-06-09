@@ -1,7 +1,7 @@
 package com.svix;
 
-import com.svix.ApiException;
-import com.svix.api.MessageAttemptApi;
+import com.svix.generated.ApiException;
+import com.svix.generated.api.MessageAttemptApi;
 import com.svix.model.ListResponseEndpointMessageOut;
 import com.svix.model.ListResponseMessageAttemptEndpointOut;
 import com.svix.model.ListResponseMessageAttemptOut;

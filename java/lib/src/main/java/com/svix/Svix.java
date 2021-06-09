@@ -1,8 +1,8 @@
 package com.svix;
 
-import com.svix.ApiClient;
-import com.svix.Configuration;
-import com.svix.auth.HttpBearerAuth;
+import com.svix.generated.ApiClient;
+import com.svix.generated.Configuration;
+import com.svix.generated.auth.HttpBearerAuth;
 
 public final class Svix {
 	private final Application application;
