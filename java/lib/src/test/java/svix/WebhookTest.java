@@ -23,7 +23,7 @@ public class WebhookTest {
 		Map<String, List<String>> headerMap = createValidHeadersMap();
 		HttpHeaders headers = HttpHeaders.of(headerMap, new DefaultBiPredicate());
 
-		assertTrue(webhook.verify(VALID_PAYLOAD, headers));
+		webhook.verify(VALID_PAYLOAD, headers);
 	}
 
 	@Test
@@ -34,7 +34,7 @@ public class WebhookTest {
 
 		HttpHeaders headers = HttpHeaders.of(headerMap, new DefaultBiPredicate());
 
-		assertTrue(webhook.verify(VALID_PAYLOAD, headers));
+		webhook.verify(VALID_PAYLOAD, headers);
 	}
 
 	@Test

@@ -23,7 +23,7 @@ public class Webhook {
 		this.key = Base64.getDecoder().decode(secret);
 	}
 
-	public boolean verify(String payload, HttpHeaders headers) throws WebhookVerificationError {
+	public void verify(String payload, HttpHeaders headers) throws WebhookVerificationError {
 		Optional<String> msgId = headers.firstValue(MSG_ID_KEY);
 		List<String> msgSignature = headers.allValues(MSG_SIGNATURE_KEY);
 		Optional<String> msgTimestamp = headers.firstValue(MSG_TIMESTAMP_KEY);
@@ -45,7 +45,7 @@ public class Webhook {
 			}
 			String signature = sigParts[1];
 			if (MessageDigest.isEqual(signature.getBytes(), expectedSignature.getBytes())) {
-				return true;
+				return;
 			}
 		}
 		throw new WebhookVerificationError("No matching signature found");
