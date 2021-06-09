@@ -33,3 +33,4 @@ jobs:
           VALIDATE_PYTHON_MYPY: false
           VALIDATE_PYTHON_PYLINT: false
           VALIDATE_GO: false
+          FILTER_REGEX_EXCLUDE: (java/gradlew)
