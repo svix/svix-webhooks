@@ -1,4 +1,4 @@
-package svix;
+package com.svix;
 
 public class SvixOptions {
 	private final String DEFAULT_URL = "https://api.svix.com";

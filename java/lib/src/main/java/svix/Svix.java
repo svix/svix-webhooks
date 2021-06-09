@@ -1,4 +1,4 @@
-package svix;
+package com.svix;
 
 import com.svix.generated.ApiClient;
 import com.svix.generated.Configuration;

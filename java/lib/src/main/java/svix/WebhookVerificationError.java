@@ -1,4 +1,4 @@
-package svix;
+package com.svix;
 
 import java.util.Map;
 import java.util.List;

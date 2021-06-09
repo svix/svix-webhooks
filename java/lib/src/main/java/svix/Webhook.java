@@ -1,4 +1,4 @@
-package svix;
+package com.svix;
 
 import java.net.http.HttpHeaders;
 import java.nio.charset.StandardCharsets;

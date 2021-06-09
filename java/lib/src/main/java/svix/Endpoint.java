@@ -1,4 +1,4 @@
-package svix;
+package com.svix;
 
 import com.svix.generated.ApiException;
 import com.svix.generated.api.EndpointApi;
