@@ -651,7 +651,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ListResponse_EventTypeInOut_"
+                                    "$ref": "#/components/schemas/ListResponse_EventTypeOut_"
                                 }
                             }
                         }
@@ -723,7 +723,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/EventTypeInOut"
+                                "$ref": "#/components/schemas/EventTypeIn"
                             }
                         }
                     },
@@ -735,7 +735,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/EventTypeInOut"
+                                    "$ref": "#/components/schemas/EventTypeOut"
                                 }
                             }
                         }
@@ -832,7 +832,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/EventTypeInOut"
+                                    "$ref": "#/components/schemas/EventTypeOut"
                                 }
                             }
                         }
@@ -1498,7 +1498,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/EndpointSecret"
+                                    "$ref": "#/components/schemas/EndpointSecretOut"
                                 }
                             }
                         }
@@ -2883,8 +2883,8 @@
                     }
                 }
             },
-            "EndpointSecret": {
-                "title": "EndpointSecret",
+            "EndpointSecretOut": {
+                "title": "EndpointSecretOut",
                 "required": [
                     "key"
                 ],
@@ -2919,8 +2919,29 @@
                     }
                 }
             },
-            "EventTypeInOut": {
-                "title": "EventTypeInOut",
+            "EventTypeIn": {
+                "title": "EventTypeIn",
+                "required": [
+                    "description",
+                    "name"
+                ],
+                "type": "object",
+                "properties": {
+                    "description": {
+                        "title": "Description",
+                        "type": "string"
+                    },
+                    "name": {
+                        "title": "Name",
+                        "maxLength": 256,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "type": "string",
+                        "example": "user.signup"
+                    }
+                }
+            },
+            "EventTypeOut": {
+                "title": "EventTypeOut",
                 "required": [
                     "description",
                     "name"
@@ -3089,8 +3110,8 @@
                     }
                 }
             },
-            "ListResponse_EventTypeInOut_": {
-                "title": "ListResponse[EventTypeInOut]",
+            "ListResponse_EventTypeOut_": {
+                "title": "ListResponse[EventTypeOut]",
                 "required": [
                     "data",
                     "done"
@@ -3101,7 +3122,7 @@
                         "title": "Data",
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/EventTypeInOut"
+                            "$ref": "#/components/schemas/EventTypeOut"
                         }
                     },
                     "iterator": {

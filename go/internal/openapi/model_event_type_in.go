@@ -14,33 +14,33 @@ import (
 	"encoding/json"
 )
 
-// EventTypeInOut struct for EventTypeInOut
-type EventTypeInOut struct {
+// EventTypeIn struct for EventTypeIn
+type EventTypeIn struct {
 	Description string `json:"description"`
 	Name string `json:"name"`
 }
 
-// NewEventTypeInOut instantiates a new EventTypeInOut object
+// NewEventTypeIn instantiates a new EventTypeIn object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEventTypeInOut(description string, name string, ) *EventTypeInOut {
-	this := EventTypeInOut{}
+func NewEventTypeIn(description string, name string, ) *EventTypeIn {
+	this := EventTypeIn{}
 	this.Description = description
 	this.Name = name
 	return &this
 }
 
-// NewEventTypeInOutWithDefaults instantiates a new EventTypeInOut object
+// NewEventTypeInWithDefaults instantiates a new EventTypeIn object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewEventTypeInOutWithDefaults() *EventTypeInOut {
-	this := EventTypeInOut{}
+func NewEventTypeInWithDefaults() *EventTypeIn {
+	this := EventTypeIn{}
 	return &this
 }
 
 // GetDescription returns the Description field value
-func (o *EventTypeInOut) GetDescription() string {
+func (o *EventTypeIn) GetDescription() string {
 	if o == nil  {
 		var ret string
 		return ret
@@ -51,7 +51,7 @@ func (o *EventTypeInOut) GetDescription() string {
 
 // GetDescriptionOk returns a tuple with the Description field value
 // and a boolean to check if the value has been set.
-func (o *EventTypeInOut) GetDescriptionOk() (*string, bool) {
+func (o *EventTypeIn) GetDescriptionOk() (*string, bool) {
 	if o == nil  {
 		return nil, false
 	}
@@ -59,12 +59,12 @@ func (o *EventTypeInOut) GetDescriptionOk() (*string, bool) {
 }
 
 // SetDescription sets field value
-func (o *EventTypeInOut) SetDescription(v string) {
+func (o *EventTypeIn) SetDescription(v string) {
 	o.Description = v
 }
 
 // GetName returns the Name field value
-func (o *EventTypeInOut) GetName() string {
+func (o *EventTypeIn) GetName() string {
 	if o == nil  {
 		var ret string
 		return ret
@@ -75,7 +75,7 @@ func (o *EventTypeInOut) GetName() string {
 
 // GetNameOk returns a tuple with the Name field value
 // and a boolean to check if the value has been set.
-func (o *EventTypeInOut) GetNameOk() (*string, bool) {
+func (o *EventTypeIn) GetNameOk() (*string, bool) {
 	if o == nil  {
 		return nil, false
 	}
@@ -83,11 +83,11 @@ func (o *EventTypeInOut) GetNameOk() (*string, bool) {
 }
 
 // SetName sets field value
-func (o *EventTypeInOut) SetName(v string) {
+func (o *EventTypeIn) SetName(v string) {
 	o.Name = v
 }
 
-func (o EventTypeInOut) MarshalJSON() ([]byte, error) {
+func (o EventTypeIn) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
 		toSerialize["description"] = o.Description
@@ -98,38 +98,38 @@ func (o EventTypeInOut) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-type NullableEventTypeInOut struct {
-	value *EventTypeInOut
+type NullableEventTypeIn struct {
+	value *EventTypeIn
 	isSet bool
 }
 
-func (v NullableEventTypeInOut) Get() *EventTypeInOut {
+func (v NullableEventTypeIn) Get() *EventTypeIn {
 	return v.value
 }
 
-func (v *NullableEventTypeInOut) Set(val *EventTypeInOut) {
+func (v *NullableEventTypeIn) Set(val *EventTypeIn) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableEventTypeInOut) IsSet() bool {
+func (v NullableEventTypeIn) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableEventTypeInOut) Unset() {
+func (v *NullableEventTypeIn) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableEventTypeInOut(val *EventTypeInOut) *NullableEventTypeInOut {
-	return &NullableEventTypeInOut{value: val, isSet: true}
+func NewNullableEventTypeIn(val *EventTypeIn) *NullableEventTypeIn {
+	return &NullableEventTypeIn{value: val, isSet: true}
 }
 
-func (v NullableEventTypeInOut) MarshalJSON() ([]byte, error) {
+func (v NullableEventTypeIn) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableEventTypeInOut) UnmarshalJSON(src []byte) error {
+func (v *NullableEventTypeIn) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

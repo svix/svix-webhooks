@@ -30,15 +30,15 @@ type EventTypeApiService service
 type ApiCreateEventTypeApiV1EventTypePostRequest struct {
 	ctx _context.Context
 	ApiService *EventTypeApiService
-	eventTypeInOut *EventTypeInOut
+	eventTypeIn *EventTypeIn
 }
 
-func (r ApiCreateEventTypeApiV1EventTypePostRequest) EventTypeInOut(eventTypeInOut EventTypeInOut) ApiCreateEventTypeApiV1EventTypePostRequest {
-	r.eventTypeInOut = &eventTypeInOut
+func (r ApiCreateEventTypeApiV1EventTypePostRequest) EventTypeIn(eventTypeIn EventTypeIn) ApiCreateEventTypeApiV1EventTypePostRequest {
+	r.eventTypeIn = &eventTypeIn
 	return r
 }
 
-func (r ApiCreateEventTypeApiV1EventTypePostRequest) Execute() (EventTypeInOut, *_nethttp.Response, error) {
+func (r ApiCreateEventTypeApiV1EventTypePostRequest) Execute() (EventTypeOut, *_nethttp.Response, error) {
 	return r.ApiService.CreateEventTypeApiV1EventTypePostExecute(r)
 }
 
@@ -56,16 +56,16 @@ func (a *EventTypeApiService) CreateEventTypeApiV1EventTypePost(ctx _context.Con
 
 /*
  * Execute executes the request
- * @return EventTypeInOut
+ * @return EventTypeOut
  */
-func (a *EventTypeApiService) CreateEventTypeApiV1EventTypePostExecute(r ApiCreateEventTypeApiV1EventTypePostRequest) (EventTypeInOut, *_nethttp.Response, error) {
+func (a *EventTypeApiService) CreateEventTypeApiV1EventTypePostExecute(r ApiCreateEventTypeApiV1EventTypePostRequest) (EventTypeOut, *_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPost
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  EventTypeInOut
+		localVarReturnValue  EventTypeOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "EventTypeApiService.CreateEventTypeApiV1EventTypePost")
@@ -78,8 +78,8 @@ func (a *EventTypeApiService) CreateEventTypeApiV1EventTypePostExecute(r ApiCrea
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
-	if r.eventTypeInOut == nil {
-		return localVarReturnValue, nil, reportError("eventTypeInOut is required and must be specified")
+	if r.eventTypeIn == nil {
+		return localVarReturnValue, nil, reportError("eventTypeIn is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -100,7 +100,7 @@ func (a *EventTypeApiService) CreateEventTypeApiV1EventTypePostExecute(r ApiCrea
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.eventTypeInOut
+	localVarPostBody = r.eventTypeIn
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -346,7 +346,7 @@ func (r ApiListEventTypesApiV1EventTypeGetRequest) Limit(limit int32) ApiListEve
 	return r
 }
 
-func (r ApiListEventTypesApiV1EventTypeGetRequest) Execute() (ListResponseEventTypeInOut, *_nethttp.Response, error) {
+func (r ApiListEventTypesApiV1EventTypeGetRequest) Execute() (ListResponseEventTypeOut, *_nethttp.Response, error) {
 	return r.ApiService.ListEventTypesApiV1EventTypeGetExecute(r)
 }
 
@@ -364,16 +364,16 @@ func (a *EventTypeApiService) ListEventTypesApiV1EventTypeGet(ctx _context.Conte
 
 /*
  * Execute executes the request
- * @return ListResponseEventTypeInOut
+ * @return ListResponseEventTypeOut
  */
-func (a *EventTypeApiService) ListEventTypesApiV1EventTypeGetExecute(r ApiListEventTypesApiV1EventTypeGetRequest) (ListResponseEventTypeInOut, *_nethttp.Response, error) {
+func (a *EventTypeApiService) ListEventTypesApiV1EventTypeGetExecute(r ApiListEventTypesApiV1EventTypeGetRequest) (ListResponseEventTypeOut, *_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodGet
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  ListResponseEventTypeInOut
+		localVarReturnValue  ListResponseEventTypeOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "EventTypeApiService.ListEventTypesApiV1EventTypeGet")
@@ -508,7 +508,7 @@ func (r ApiUpdateEventTypeApiV1EventTypeEventTypeNamePutRequest) EventTypeUpdate
 	return r
 }
 
-func (r ApiUpdateEventTypeApiV1EventTypeEventTypeNamePutRequest) Execute() (EventTypeInOut, *_nethttp.Response, error) {
+func (r ApiUpdateEventTypeApiV1EventTypeEventTypeNamePutRequest) Execute() (EventTypeOut, *_nethttp.Response, error) {
 	return r.ApiService.UpdateEventTypeApiV1EventTypeEventTypeNamePutExecute(r)
 }
 
@@ -528,16 +528,16 @@ func (a *EventTypeApiService) UpdateEventTypeApiV1EventTypeEventTypeNamePut(ctx 
 
 /*
  * Execute executes the request
- * @return EventTypeInOut
+ * @return EventTypeOut
  */
-func (a *EventTypeApiService) UpdateEventTypeApiV1EventTypeEventTypeNamePutExecute(r ApiUpdateEventTypeApiV1EventTypeEventTypeNamePutRequest) (EventTypeInOut, *_nethttp.Response, error) {
+func (a *EventTypeApiService) UpdateEventTypeApiV1EventTypeEventTypeNamePutExecute(r ApiUpdateEventTypeApiV1EventTypeEventTypeNamePutRequest) (EventTypeOut, *_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPut
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  EventTypeInOut
+		localVarReturnValue  EventTypeOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "EventTypeApiService.UpdateEventTypeApiV1EventTypeEventTypeNamePut")

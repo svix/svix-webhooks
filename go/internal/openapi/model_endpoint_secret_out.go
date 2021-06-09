@@ -14,31 +14,31 @@ import (
 	"encoding/json"
 )
 
-// EndpointSecret struct for EndpointSecret
-type EndpointSecret struct {
+// EndpointSecretOut struct for EndpointSecretOut
+type EndpointSecretOut struct {
 	Key string `json:"key"`
 }
 
-// NewEndpointSecret instantiates a new EndpointSecret object
+// NewEndpointSecretOut instantiates a new EndpointSecretOut object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEndpointSecret(key string, ) *EndpointSecret {
-	this := EndpointSecret{}
+func NewEndpointSecretOut(key string, ) *EndpointSecretOut {
+	this := EndpointSecretOut{}
 	this.Key = key
 	return &this
 }
 
-// NewEndpointSecretWithDefaults instantiates a new EndpointSecret object
+// NewEndpointSecretOutWithDefaults instantiates a new EndpointSecretOut object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewEndpointSecretWithDefaults() *EndpointSecret {
-	this := EndpointSecret{}
+func NewEndpointSecretOutWithDefaults() *EndpointSecretOut {
+	this := EndpointSecretOut{}
 	return &this
 }
 
 // GetKey returns the Key field value
-func (o *EndpointSecret) GetKey() string {
+func (o *EndpointSecretOut) GetKey() string {
 	if o == nil  {
 		var ret string
 		return ret
@@ -49,7 +49,7 @@ func (o *EndpointSecret) GetKey() string {
 
 // GetKeyOk returns a tuple with the Key field value
 // and a boolean to check if the value has been set.
-func (o *EndpointSecret) GetKeyOk() (*string, bool) {
+func (o *EndpointSecretOut) GetKeyOk() (*string, bool) {
 	if o == nil  {
 		return nil, false
 	}
@@ -57,11 +57,11 @@ func (o *EndpointSecret) GetKeyOk() (*string, bool) {
 }
 
 // SetKey sets field value
-func (o *EndpointSecret) SetKey(v string) {
+func (o *EndpointSecretOut) SetKey(v string) {
 	o.Key = v
 }
 
-func (o EndpointSecret) MarshalJSON() ([]byte, error) {
+func (o EndpointSecretOut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
 		toSerialize["key"] = o.Key
@@ -69,38 +69,38 @@ func (o EndpointSecret) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-type NullableEndpointSecret struct {
-	value *EndpointSecret
+type NullableEndpointSecretOut struct {
+	value *EndpointSecretOut
 	isSet bool
 }
 
-func (v NullableEndpointSecret) Get() *EndpointSecret {
+func (v NullableEndpointSecretOut) Get() *EndpointSecretOut {
 	return v.value
 }
 
-func (v *NullableEndpointSecret) Set(val *EndpointSecret) {
+func (v *NullableEndpointSecretOut) Set(val *EndpointSecretOut) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableEndpointSecret) IsSet() bool {
+func (v NullableEndpointSecretOut) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableEndpointSecret) Unset() {
+func (v *NullableEndpointSecretOut) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableEndpointSecret(val *EndpointSecret) *NullableEndpointSecret {
-	return &NullableEndpointSecret{value: val, isSet: true}
+func NewNullableEndpointSecretOut(val *EndpointSecretOut) *NullableEndpointSecretOut {
+	return &NullableEndpointSecretOut{value: val, isSet: true}
 }
 
-func (v NullableEndpointSecret) MarshalJSON() ([]byte, error) {
+func (v NullableEndpointSecretOut) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableEndpointSecret) UnmarshalJSON(src []byte) error {
+func (v *NullableEndpointSecretOut) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

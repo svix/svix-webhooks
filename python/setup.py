@@ -11,7 +11,7 @@ import os
 from setuptools import setup, find_packages  # noqa: H301
 
 NAME = "svix"
-VERSION = "0.14.0"
+VERSION = "0.16.0"
 # To install the library, run the following
 #
 # python setup.py install
