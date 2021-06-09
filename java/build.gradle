@@ -17,7 +17,7 @@ repositories {
 
 sourceSets {
     main.java.srcDirs = ['lib/src/main/java', 'lib/generated/openapi/src/main/java']
-    test.java.srcDirs = ['lib/src/test']
+    test.java.srcDirs = ['lib/src/test', 'lib/generated/openapi/src/test']
 }
 
 dependencies {
