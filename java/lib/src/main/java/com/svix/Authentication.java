@@ -15,7 +15,7 @@ public final class Authentication {
 		try {
 			return api.getDashboardAccessApiV1AuthDashboardAccessAppIdPost(appId);
 		} catch(com.svix.internal.ApiException e) {
-			throw (ApiException) e;
+			throw Utils.wrapInternalApiException(e);
 		}
 	}
 
@@ -23,7 +23,7 @@ public final class Authentication {
 		try {
 			api.logoutApiV1AuthLogoutPost();
 		} catch(com.svix.internal.ApiException e) {
-			throw (ApiException) e;
+			throw Utils.wrapInternalApiException(e);
 		}
 	}
 }

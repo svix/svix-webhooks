@@ -18,7 +18,7 @@ public final class EventType {
 		try {
 			return api.listEventTypesApiV1EventTypeGet(options.getIterator(), options.getLimit());
 		} catch(com.svix.internal.ApiException e) {
-			throw (ApiException) e;
+			throw Utils.wrapInternalApiException(e);
 		}
 	}
 
@@ -26,7 +26,7 @@ public final class EventType {
 		try {
 			return api.createEventTypeApiV1EventTypePost(eventTypeIn);
 		} catch(com.svix.internal.ApiException e) {
-			throw (ApiException) e;
+			throw Utils.wrapInternalApiException(e);
 		}
 	}
 
@@ -34,7 +34,7 @@ public final class EventType {
 		try {
 			return api.updateEventTypeApiV1EventTypeEventTypeNamePut(eventTypeName, eventTypeUpdate);
 		} catch(com.svix.internal.ApiException e) {
-			throw (ApiException) e;
+			throw Utils.wrapInternalApiException(e);
 		}
 	}
 
@@ -42,7 +42,7 @@ public final class EventType {
 		try {
 			api.deleteEventTypeApiV1EventTypeEventTypeNameDelete(eventTypeName);
 		} catch(com.svix.internal.ApiException e) {
-			throw (ApiException) e;
+			throw Utils.wrapInternalApiException(e);
 		}
 	}
 }

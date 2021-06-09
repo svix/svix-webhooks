@@ -17,7 +17,7 @@ public final class Application {
 		try {
 			return api.listApplicationsApiV1AppGet(options.getIterator(), options.getLimit());
 		} catch(com.svix.internal.ApiException e) {
-			throw (ApiException) e;
+			throw Utils.wrapInternalApiException(e);
 		}
 	}
 
@@ -25,7 +25,7 @@ public final class Application {
 		try {
 			return api.createApplicationApiV1AppPost(applicationIn);
 		} catch(com.svix.internal.ApiException e) {
-			throw (ApiException) e;
+			throw Utils.wrapInternalApiException(e);
 		}
 	}
 
@@ -33,7 +33,7 @@ public final class Application {
 		try {
 			return api.getApplicationApiV1AppAppIdGet(appId);
 		} catch(com.svix.internal.ApiException e) {
-			throw (ApiException) e;
+			throw Utils.wrapInternalApiException(e);
 		}
 	}
 
@@ -41,7 +41,7 @@ public final class Application {
 		try {
 			return api.updateApplicationApiV1AppAppIdPut(appId, applicationIn);
 		} catch(com.svix.internal.ApiException e) {
-			throw (ApiException) e;
+			throw Utils.wrapInternalApiException(e);
 		}
 	}
 
@@ -49,7 +49,7 @@ public final class Application {
 		try {
 			api.deleteApplicationApiV1AppAppIdDelete(appId);
 		} catch(com.svix.internal.ApiException e) {
-			throw (ApiException) e;
+			throw Utils.wrapInternalApiException(e);
 		}
 	}
 }

@@ -18,7 +18,7 @@ public final class Endpoint {
 		try {
 			return api.listEndpointsApiV1AppAppIdEndpointGet(appId, options.getIterator(), options.getLimit());
 		} catch(com.svix.internal.ApiException e) {
-			throw (ApiException) e;
+			throw Utils.wrapInternalApiException(e);
 		}
 	}
 
@@ -26,7 +26,7 @@ public final class Endpoint {
 		try {
 			return api.createEndpointApiV1AppAppIdEndpointPost(appId, endpointIn);
 		} catch(com.svix.internal.ApiException e) {
-			throw (ApiException) e;
+			throw Utils.wrapInternalApiException(e);
 		}
 	}
 
@@ -34,7 +34,7 @@ public final class Endpoint {
 		try {
 			return api.getEndpointApiV1AppAppIdEndpointEndpointIdGet(endpointId, appId);
 		} catch(com.svix.internal.ApiException e) {
-			throw (ApiException) e;
+			throw Utils.wrapInternalApiException(e);
 		}
 	}
 
@@ -42,7 +42,7 @@ public final class Endpoint {
 		try {
 			return api.updateEndpointApiV1AppAppIdEndpointEndpointIdPut(endpointId, appId, endpointIn);
 		} catch(com.svix.internal.ApiException e) {
-			throw (ApiException) e;
+			throw Utils.wrapInternalApiException(e);
 		}
 	}
 
@@ -50,7 +50,7 @@ public final class Endpoint {
 		try {
 			api.deleteEndpointApiV1AppAppIdEndpointEndpointIdDelete(endpointId, appId);
 		} catch(com.svix.internal.ApiException e) {
-			throw (ApiException) e;
+			throw Utils.wrapInternalApiException(e);
 		}
 	}
 
@@ -58,7 +58,7 @@ public final class Endpoint {
 		try {
 			return api.getEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGet(endpointId, appId);
 		} catch(com.svix.internal.ApiException e) {
-			throw (ApiException) e;
+			throw Utils.wrapInternalApiException(e);
 		}
 	}
 }
