@@ -25,4 +25,4 @@ build
 bin/
 
 # auto generated files
-generated/
+lib/generated/
