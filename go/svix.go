@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/svixhq/svix-libs/go/internal/openapi"
+	"github.com/svix/svix-libs/go/internal/openapi"
 )
 
 type (
