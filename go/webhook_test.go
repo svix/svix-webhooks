@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"testing"
 
-	svix "github.com/svixhq/svix-libs/go"
+	svix "github.com/svix/svix-libs/go"
 )
 
 func TestWebhook(t *testing.T) {
