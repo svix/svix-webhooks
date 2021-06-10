@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.17.0
+* Migrate to new github org `svix`! :rocket:
+
 ## Version 0.16.0
 * Update the OpenAPI spec and change structures accordingly
 
