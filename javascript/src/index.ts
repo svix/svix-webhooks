@@ -38,6 +38,8 @@ import * as utf8 from "@stablelib/utf8";
 import * as base64 from "@stablelib/base64";
 import * as sha256 from "fast-sha256";
 
+const WEBHOOK_TOLERANCE_IN_SECONDS = 5 * 60; // 5 minutes
+
 export interface SvixOptions {
   debug?: boolean;
 }
@@ -353,6 +355,8 @@ export class Webhook {
       throw new WebhookVerificationError("Missing required headers");
     }
 
+    this.verifyTimestamp(msgTimestamp);
+
     const toSign = utf8.encode(`${msgId}.${msgTimestamp}.${payload}`);
     const expectedSignature = base64.encode(sha256.hmac(this.key, toSign));
     const passedSignatures = msgSignature.split(" ");
@@ -367,5 +371,20 @@ export class Webhook {
       }
     }
     throw new WebhookVerificationError("No matching signature found");
+  }
+
+  private verifyTimestamp(timestampHeader: string): void {
+    const now = Math.floor(Date.now() / 1000);
+    const timestamp = parseInt(timestampHeader, 10);
+    if (isNaN(timestamp)) {
+      throw new WebhookVerificationError("Invalid Signature Headers");
+    }
+
+    if (now - timestamp > WEBHOOK_TOLERANCE_IN_SECONDS) {
+      throw new WebhookVerificationError("Message timestamp too old");
+    }
+    if (timestamp > now + WEBHOOK_TOLERANCE_IN_SECONDS) {
+      throw new WebhookVerificationError("Message timestamp too new");
+    }
   }
 }
