@@ -6,7 +6,9 @@ import (
 	"encoding/base64"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
+	"time"
 )
 
 var base64enc = base64.StdEncoding
@@ -14,6 +16,16 @@ var base64enc = base64.StdEncoding
 type Webhook struct {
 	key []byte
 }
+
+var tolerance time.Duration = 5 * time.Minute
+
+var (
+	errRequiredHeaders     = fmt.Errorf("Missing Required Headers")
+	errInvalidHeaders      = fmt.Errorf("Invalid Signature Headers")
+	errNoMatchingSignature = fmt.Errorf("No matching signature found")
+	errMessageTooOld       = fmt.Errorf("Message timestamp too old")
+	errMessageTooNew       = fmt.Errorf("Message timestamp too new")
+)
 
 func NewWebhook(secret string) (*Webhook, error) {
 	key, err := base64enc.DecodeString(secret)
@@ -31,7 +43,13 @@ func (wh *Webhook) Verify(payload []byte, headers http.Header) error {
 	msgTimestamp := headers.Get("svix-timestamp")
 
 	if msgId == "" || msgSignature == "" || msgTimestamp == "" {
-		return fmt.Errorf("Missing Required Headers")
+		return errRequiredHeaders
+	}
+
+	// enforce timestamp tolerance
+	err := verifyTimestamp(msgTimestamp)
+	if err != nil {
+		return err
 	}
 
 	toSign := fmt.Sprintf("%s.%s.%s", msgId, msgTimestamp, payload)
@@ -54,7 +72,7 @@ func (wh *Webhook) Verify(payload []byte, headers http.Header) error {
 			return nil
 		}
 	}
-	return fmt.Errorf("No matching signature found")
+	return errNoMatchingSignature
 }
 
 func sign(key []byte, toSign string) []byte {
@@ -63,4 +81,22 @@ func sign(key []byte, toSign string) []byte {
 	sig := make([]byte, base64enc.EncodedLen(h.Size()))
 	base64enc.Encode(sig, h.Sum(nil))
 	return sig
+}
+
+func verifyTimestamp(timestampHeader string) error {
+	now := time.Now()
+	timeInt, err := strconv.ParseInt(timestampHeader, 10, 64)
+	if err != nil {
+		return errInvalidHeaders
+	}
+	timestamp := time.Unix(timeInt, 0)
+
+	if now.Sub(timestamp) > tolerance {
+		return errMessageTooOld
+	}
+	if timestamp.Unix() > now.Add(tolerance).Unix() {
+		return errMessageTooNew
+	}
+
+	return nil
 }
