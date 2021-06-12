@@ -20,6 +20,7 @@
   "scripts": {
     "build": "tsc",
     "prepare": "yarn run build",
+    "test": "jest",
     "prepublishOnly": "yarn lint",
     "lint:eslint": "eslint --ignore-path .lintignore --ext .js,.jsx,.ts,.tsx src",
     "lint:prettier": "prettier --ignore-path .lintignore --write src/**.ts",
@@ -35,11 +36,14 @@
     "url-parse": "^1.4.3"
   },
   "devDependencies": {
+    "@types/jest": "^26.0.23",
     "@typescript-eslint/eslint-plugin": "^4.15.2",
     "@typescript-eslint/parser": "^4.15.2",
     "@typescript-eslint/typescript-estree": "^4.15.2",
     "eslint": "^7.20.0",
+    "jest": "^27.0.4",
     "prettier": "^2.2.1",
+    "ts-jest": "^27.0.3",
     "typescript": "^3.9.3"
   }
 }
