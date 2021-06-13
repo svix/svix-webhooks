@@ -36,4 +36,6 @@ jobs:
           VALIDATE_PYTHON_PYLINT: false
           VALIDATE_GO: false
           VALIDATE_JSCPD: false
+          VALIDATE_PHP_PHPSTAN: false
+          VALIDATE_PHP_PSALM: false
           FILTER_REGEX_EXCLUDE: (java/gradlew|javascript/tsconfig.json)
