@@ -3,6 +3,7 @@ import hashlib
 import hmac
 import json
 import typing as t
+from datetime import datetime, timedelta, timezone
 
 
 def hmac_data(key: bytes, data: bytes) -> bytes:
@@ -30,6 +31,8 @@ class Webhook:
         if not (msg_id and msg_timestamp and msg_signature):
             raise WebhookVerificationError("Missing required headers")
 
+        self.__verify_timestamp(msg_timestamp)
+
         to_sign = f"{msg_id}.{msg_timestamp}.{data}".encode()
         expected_sig = hmac_data(self._whsecret, to_sign)
         passed_sigs = msg_signature.split(" ")
@@ -43,3 +46,16 @@ class Webhook:
                 return json.loads(data)
 
         raise WebhookVerificationError("No matching signature found")
+
+    def __verify_timestamp(self, timestamp_header: str) -> None:
+        webhook_tolerance = timedelta(minutes=5)
+        now = datetime.now(tz=timezone.utc)
+        try:
+            timestamp = datetime.fromtimestamp(float(timestamp_header), tz=timezone.utc)
+        except Exception:
+            raise WebhookVerificationError("Invalid Signature Headers")
+
+        if timestamp < (now - webhook_tolerance):
+            raise WebhookVerificationError("Message timestamp too old")
+        if timestamp > (now + webhook_tolerance):
+            raise WebhookVerificationError("Message timestamp too new")
