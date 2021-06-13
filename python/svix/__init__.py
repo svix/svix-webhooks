@@ -10,4 +10,4 @@ from .api import (  # noqa
     Svix,
     SvixOptions,
 )
-from .receiver import Webhook  # noqa
+from .receiver import Webhook, WebhookVerificationError # noqa
