@@ -20,6 +20,11 @@
     "noLib": false,
     "lib": ["es6", "dom"]
   },
-  "exclude": ["dist", "node_modules"],
+  "exclude": [
+    "dist",
+    "node_modules",
+    "jest.config.js",
+    "src/**/*.test.ts",
+  ],
   "filesGlob": ["./src/**/*.ts"]
 }

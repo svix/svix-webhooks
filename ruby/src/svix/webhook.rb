@@ -2,6 +2,7 @@
 
 module Svix
     class Webhook
+
         def initialize(secret)
             @secret = Base64.decode64(secret)
         end
@@ -14,12 +15,14 @@ module Svix
                 raise WebhookVerificationError, "Missing required headers"
             end
 
+            verify_timestamp(msgTimestamp)
+
             toSign = "#{msgId}.#{msgTimestamp}.#{payload}"
-            signature = Base64.encode64(OpenSSL::HMAC.digest(OpenSSL::Digest.new('sha256'), @secret, toSign)).strip()
+            signature = Base64.encode64(OpenSSL::HMAC.digest(OpenSSL::Digest.new("sha256"), @secret, toSign)).strip
 
             passedSignatures = msgSignature.split(" ")
             passedSignatures.each do |versionedSignature|
-                version, expectedSignature = versionedSignature.split(',', 2)
+                version, expectedSignature = versionedSignature.split(",", 2)
                 if version != "v1"
                     next
                 end
@@ -28,6 +31,25 @@ module Svix
                 end
             end
             raise WebhookVerificationError, "No matching signature found"
+        end
+
+        private
+        TOLERANCE = 5 * 60
+
+        def verify_timestamp(timestampHeader)
+            begin
+                now = Integer(Time.now)
+                timestamp = Integer(timestampHeader)
+            rescue
+                raise WebhookVerificationError, "Invalid Signature Headers"
+            end
+
+            if timestamp < (now - TOLERANCE)
+                raise WebhookVerificationError, "Message timestamp too old"
+            end
+            if timestamp > (now + TOLERANCE)
+                raise WebhookVerificationError, "Message timestamp too new"
+            end
         end
     end
 end

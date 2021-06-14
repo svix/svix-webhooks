@@ -4,6 +4,9 @@ namespace Svix;
 
 class Webhook
 {
+    private const TOLERANCE = 5 * 60;
+    private $secret;
+
     public function __construct(string $secret)
     {
         $this->secret = base64_decode($secret);
@@ -18,6 +21,8 @@ class Webhook
         $msgId = $headers['svix-id'];
         $timestamp = $headers['svix-timestamp'];
         $msgSignature = $headers['svix-signature'];
+
+        self::verifyTimestamp($timestamp);
 
         $toSign = "{$msgId}.{$timestamp}.{$payload}";
         $signature = self::sign($this->secret, $toSign);
@@ -43,5 +48,22 @@ class Webhook
     {
         $hex_hash = hash_hmac('sha256', $payload, $key);
         return base64_encode(pack('H*', $hex_hash));
+    }
+
+    private function verifyTimestamp($timestampHeader)
+    {
+        $now = time();
+        try {
+            $timestamp = intval($timestampHeader, 10);
+        } catch (\Exception $e) {
+            throw new Exception\WebhookVerificationException("Invalid Signature Headers");
+        }
+
+        if ($timestamp < ($now - Webhook::TOLERANCE)) {
+            throw new Exception\WebhookVerificationException("Message timestamp too old");
+        }
+        if ($timestamp > ($now + Webhook::TOLERANCE)) {
+            throw new Exception\WebhookVerificationException("Message timestamp too new");
+        }
     }
 }
