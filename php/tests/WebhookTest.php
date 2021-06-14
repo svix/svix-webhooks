@@ -1,42 +1,10 @@
 <?php
 
-namespace Svix\Test;
+namespace Svix;
 
-const TOLERANCE = 5 * 60;
-const DEFAULT_MSG_ID = "msg_p5jXN8AQM9LWM0D4loKWxJek";
-const DEFAULT_PAYLOAD = '{"test": 2432232315}';
-const DEFAULT_SECRET = "MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw";
-
-final class TestPayload
-{
-    public $id;
-    public $timestamp;
-    public $payload;
-    public $secret;
-    public $header;
-
-    public function __construct(int $timestamp)
-    {
-        $this->id = DEFAULT_MSG_ID;
-        $this->timestamp = strval($timestamp);
-
-        $this->payload = DEFAULT_PAYLOAD;
-        $this->secret = DEFAULT_SECRET;
-
-        $toSign = "{$this->id}.{$this->timestamp}.{$this->payload}";
-        $signature =  base64_encode(pack('H*', hash_hmac('sha256', $toSign, base64_decode($this->secret))));
-
-        $this->header = array(
-            "svix-id" => $this->id,
-            "svix-signature" => "v1,{$signature}",
-            "svix-timestamp" => $this->timestamp,
-        );
-    }
-}
-
-// phpcs:ignore
 final class WebhookTest extends \PHPUnit\Framework\TestCase
 {
+    private const TOLERANCE = 5 * 60;
 
     public function testValidSignatureIsValidAndReturnsJson()
     {
@@ -105,7 +73,7 @@ final class WebhookTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\Svix\Exception\WebhookVerificationException::class);
         $this->expectExceptionMessage("Message timestamp too old");
 
-        $testPayload = new TestPayload(time() - TOLERANCE - 1);
+        $testPayload = new TestPayload(time() - self::TOLERANCE - 1);
 
         $wh = new \Svix\Webhook($testPayload->secret);
         $wh->verify($testPayload->payload, $testPayload->header);
@@ -116,7 +84,7 @@ final class WebhookTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\Svix\Exception\WebhookVerificationException::class);
         $this->expectExceptionMessage("Message timestamp too new");
 
-        $testPayload = new TestPayload(time() + TOLERANCE + 1);
+        $testPayload = new TestPayload(time() + self::TOLERANCE + 1);
 
         $wh = new \Svix\Webhook($testPayload->secret);
         $wh->verify($testPayload->payload, $testPayload->header);
