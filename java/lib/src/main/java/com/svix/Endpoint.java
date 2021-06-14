@@ -4,7 +4,7 @@ import com.svix.generated.ApiException;
 import com.svix.generated.api.EndpointApi;
 import com.svix.generated.model.EndpointIn;
 import com.svix.generated.model.EndpointOut;
-import com.svix.generated.model.EndpointSecret;
+import com.svix.generated.model.EndpointSecretOut;
 import com.svix.generated.model.ListResponseEndpointOut;
 
 public final class Endpoint {
@@ -34,7 +34,7 @@ public final class Endpoint {
 		api.deleteEndpointApiV1AppAppIdEndpointEndpointIdDelete(endpointId, appId);
 	}
 
-	public EndpointSecret getSecret(final String appId, final String endpointId) throws ApiException {
+	public EndpointSecretOut getSecret(final String appId, final String endpointId) throws ApiException {
 		return api.getEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGet(endpointId, appId);
 	}
 }
