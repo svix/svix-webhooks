@@ -37,7 +37,7 @@ jar {
                    'Implementation-Version': VERSION_NAME,
                    'Implementation-Vendor': VENDOR_NAME,
                    'Bundle-SymbolicName': POM_ARTIFACT_ID,
-                   'Export-Package': 'com.svix.*')
+                   'Export-Package': 'com.svix,com.svix.models,com.svix.exceptions')
 
         archiveVersion = VERSION_NAME
     }

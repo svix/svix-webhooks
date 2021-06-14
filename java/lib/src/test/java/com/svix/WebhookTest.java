@@ -11,6 +11,8 @@ import java.util.function.BiPredicate;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
 
+import com.svix.exceptions.WebhookVerificationException;
+
 public class WebhookTest {
 	private static final String DEFAULT_SECRET = "MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw";
 	private static final String VALID_PAYLOAD = "{\"test\": 2432232314}";
@@ -18,7 +20,7 @@ public class WebhookTest {
 	private final Webhook webhook = new Webhook(DEFAULT_SECRET);
 
 	@Test
-	public void verifyValidPayloadAndheader() throws WebhookVerificationError {
+	public void verifyValidPayloadAndheader() throws WebhookVerificationException {
 		Map<String, List<String>> headerMap = createValidHeadersMap();
 		HttpHeaders headers = HttpHeaders.of(headerMap, new DefaultBiPredicate());
 
@@ -26,7 +28,7 @@ public class WebhookTest {
 	}
 
 	@Test
-	public void verifyValidPayloadAndheaderWithMultiplePayloads() throws WebhookVerificationError {
+	public void verifyValidPayloadAndheaderWithMultiplePayloads() throws WebhookVerificationException {
 		Map<String, List<String>> headerMap = createValidHeadersMap();
 		headerMap.put(Webhook.MSG_SIGNATURE_KEY,
 		    Arrays.asList("v2,tmIKtSyZlE3uFJELVlNIOLJ1OE=", "v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE="));
@@ -41,7 +43,7 @@ public class WebhookTest {
 		Map<String, List<String>> headerMap = createValidHeadersMap();
 		headerMap.remove(Webhook.MSG_ID_KEY);
 
-		assertThrows(WebhookVerificationError.class, verify(headerMap));
+		assertThrows(WebhookVerificationException.class, verify(headerMap));
 	}
 
 	@Test
@@ -49,7 +51,7 @@ public class WebhookTest {
 		Map<String, List<String>> headerMap = createValidHeadersMap();
 		headerMap.remove(Webhook.MSG_TIMESTAMP_KEY);
 
-		assertThrows(WebhookVerificationError.class, verify(headerMap));
+		assertThrows(WebhookVerificationException.class, verify(headerMap));
 	}
 
 	@Test
@@ -57,7 +59,7 @@ public class WebhookTest {
 		Map<String, List<String>> headerMap = createValidHeadersMap();
 		headerMap.remove(Webhook.MSG_SIGNATURE_KEY);
 
-		assertThrows(WebhookVerificationError.class, verify(headerMap));
+		assertThrows(WebhookVerificationException.class, verify(headerMap));
 	}
 
 	@Test
@@ -65,7 +67,7 @@ public class WebhookTest {
 		Map<String, List<String>> headerMap = createValidHeadersMap();
 		headerMap.put(Webhook.MSG_SIGNATURE_KEY, Arrays.asList("v2,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE="));
 
-		assertThrows(WebhookVerificationError.class, verify(headerMap));
+		assertThrows(WebhookVerificationException.class, verify(headerMap));
 	}
 
 	@Test
@@ -73,7 +75,7 @@ public class WebhookTest {
 		Map<String, List<String>> headerMap = createValidHeadersMap();
 		headerMap.put(Webhook.MSG_SIGNATURE_KEY, Arrays.asList("invalid_signature"));
 
-		assertThrows(WebhookVerificationError.class, verify(headerMap));
+		assertThrows(WebhookVerificationException.class, verify(headerMap));
 	}
 
 	@Test
@@ -81,7 +83,7 @@ public class WebhookTest {
 		Map<String, List<String>> headerMap = createValidHeadersMap();
 		headerMap.put(Webhook.MSG_SIGNATURE_KEY, Arrays.asList("v1,invalid_signature"));
 
-		assertThrows(WebhookVerificationError.class, verify(headerMap));
+		assertThrows(WebhookVerificationException.class, verify(headerMap));
 	}
 
 	private Map<String, List<String>> createValidHeadersMap() {
@@ -95,7 +97,7 @@ public class WebhookTest {
 	private ThrowingRunnable verify(final Map<String, List<String>> headerMap) {
 		return new ThrowingRunnable() {
 			@Override
-			public void run() throws WebhookVerificationError {
+			public void run() throws WebhookVerificationException {
 				HttpHeaders headers = HttpHeaders.of(headerMap, new DefaultBiPredicate());
 				webhook.verify(VALID_PAYLOAD, headers);
 			}

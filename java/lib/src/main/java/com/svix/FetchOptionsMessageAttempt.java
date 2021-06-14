@@ -1,6 +1,6 @@
 package com.svix;
 
-import com.svix.generated.model.MessageStatus;
+import com.svix.models.MessageStatus;
 
 
 public final class FetchOptionsMessageAttempt extends FetchOptions {
@@ -11,9 +11,13 @@ public final class FetchOptionsMessageAttempt extends FetchOptions {
         super();
 	}
 
-	public FetchOptionsMessageAttempt setMessageStatus(final MessageStatus status) {
+	public FetchOptionsMessageAttempt messageStatus(final MessageStatus status) {
 		this.status = status;
 		return this;
+	}
+
+	public void setMessageStatus(final MessageStatus status) {
+		this.status = status;
 	}
 
 	public MessageStatus getMessageStatus() {

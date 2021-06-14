@@ -1,12 +1,12 @@
 package com.svix;
 
-import com.svix.generated.ApiException;
-import com.svix.generated.api.MessageAttemptApi;
-import com.svix.generated.model.ListResponseEndpointMessageOut;
-import com.svix.generated.model.ListResponseMessageAttemptEndpointOut;
-import com.svix.generated.model.ListResponseMessageAttemptOut;
-import com.svix.generated.model.ListResponseMessageEndpointOut;
-import com.svix.generated.model.MessageAttemptOut;
+import com.svix.exceptions.ApiException;
+import com.svix.internal.api.MessageAttemptApi;
+import com.svix.models.ListResponseEndpointMessageOut;
+import com.svix.models.ListResponseMessageAttemptEndpointOut;
+import com.svix.models.ListResponseMessageAttemptOut;
+import com.svix.models.ListResponseMessageEndpointOut;
+import com.svix.models.MessageAttemptOut;
 
 public final class MessageAttempt {
 	private final MessageAttemptApi api;
@@ -16,28 +16,52 @@ public final class MessageAttempt {
 	}
 
 	public ListResponseMessageAttemptOut list(final String appId, final String msgId, final FetchOptionsMessageAttempt options) throws ApiException {
-		return api.listAttemptsApiV1AppAppIdMsgMsgIdAttemptGet(msgId, appId, options.getIterator(), options.getLimit(), options.getMessageStatus());
+		try {
+			return api.listAttemptsApiV1AppAppIdMsgMsgIdAttemptGet(msgId, appId, options.getIterator(), options.getLimit(), options.getMessageStatus());
+		} catch (com.svix.internal.ApiException e) {
+			throw Utils.wrapInternalApiException(e);
+		}
 	}
 
 	public MessageAttemptOut get(final String msgId, final String appId, final String attemptId) throws ApiException {
-		return api.getAttemptApiV1AppAppIdMsgMsgIdAttemptAttemptIdGet(attemptId, msgId, appId);
+		try {
+			return api.getAttemptApiV1AppAppIdMsgMsgIdAttemptAttemptIdGet(attemptId, msgId, appId);
+		} catch (com.svix.internal.ApiException e) {
+			throw Utils.wrapInternalApiException(e);
+		}
 	}
 
 	public Object resend(final String msgId, final String appId, final String endpointId) throws ApiException {
-		return api.resendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPost(endpointId, msgId, appId);
+		try {
+			return api.resendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPost(endpointId, msgId, appId);
+		} catch (com.svix.internal.ApiException e) {
+			throw Utils.wrapInternalApiException(e);
+		}
 	}
 
 	public ListResponseEndpointMessageOut listAttemptedMessages(final String appId, final String endpointId, final FetchOptionsMessageAttempt options) throws ApiException {
-		return api.listAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGet(endpointId, appId, options.getIterator(), options.getLimit(), options.getMessageStatus());
+		try {
+			return api.listAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGet(endpointId, appId, options.getIterator(), options.getLimit(), options.getMessageStatus());
+		} catch (com.svix.internal.ApiException e) {
+			throw Utils.wrapInternalApiException(e);
+		}
 	}
 
 	public ListResponseMessageEndpointOut listAttemptedDestinations(final String appId, final String msgId, final FetchOptions options) throws ApiException {
-		return api.listAttemptedDestinationsApiV1AppAppIdMsgMsgIdEndpointGet(msgId, appId, options.getIterator(), options.getLimit());
+		try {
+			return api.listAttemptedDestinationsApiV1AppAppIdMsgMsgIdEndpointGet(msgId, appId, options.getIterator(), options.getLimit());
+		} catch (com.svix.internal.ApiException e) {
+			throw Utils.wrapInternalApiException(e);
+		}
 	}
 
 	public ListResponseMessageAttemptEndpointOut listAttemptsForEndpoint(final String appId, final String msgId, final String endpointId,
 		final FetchOptionsMessageAttempt options) throws ApiException {
-		return api.listAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGet(msgId, appId, endpointId,
-			options.getIterator(), options.getLimit(), options.getMessageStatus());
+			try {
+				return api.listAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGet(msgId, appId, endpointId,
+					options.getIterator(), options.getLimit(), options.getMessageStatus());
+			} catch (com.svix.internal.ApiException e) {
+				throw Utils.wrapInternalApiException(e);
+			}
 	}
 }

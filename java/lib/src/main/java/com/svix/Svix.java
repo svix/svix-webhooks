@@ -1,8 +1,8 @@
 package com.svix;
 
-import com.svix.generated.ApiClient;
-import com.svix.generated.Configuration;
-import com.svix.generated.auth.HttpBearerAuth;
+import com.svix.internal.ApiClient;
+import com.svix.internal.Configuration;
+import com.svix.internal.auth.HttpBearerAuth;
 
 public final class Svix {
 	private final Application application;
@@ -18,7 +18,7 @@ public final class Svix {
 
 	public Svix(final String token, final SvixOptions options) {
 		ApiClient apiClient = Configuration.getDefaultApiClient();
-		apiClient.setBasePath(options.getUrl());
+		apiClient.setBasePath(options.getDebugUrl());
 
 		HttpBearerAuth httpBearer = (HttpBearerAuth) apiClient.getAuthentication("HTTPBearer");
 		httpBearer.setBearerToken(token);
