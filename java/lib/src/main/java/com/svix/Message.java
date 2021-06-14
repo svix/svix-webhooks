@@ -24,8 +24,7 @@ public final class Message {
 
 	public MessageOut create(final String appId, final MessageIn messageIn) throws ApiException {
 		try {
-			return api.createMessageApiV1AppAppIdMsgPost(appId,
-				messageIn.payload(getPayload(messageIn.getPayload())));
+			return api.createMessageApiV1AppAppIdMsgPost(appId, messageIn.payload(getPayload(messageIn.getPayload())));
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
@@ -38,8 +37,8 @@ public final class Message {
 			throw Utils.wrapInternalApiException(e);
 		}
 	}
-	
-	private static Object getPayload(Object payload) {
+
+	private static Object getPayload(final Object payload) {
 		// Convert string to JsonObject, otherwise gson fails to convert it.
 		if (payload instanceof String) {
 			return new JsonParser().parse(payload.toString());
