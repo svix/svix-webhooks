@@ -3,6 +3,8 @@ plugins {
     id 'idea'
     id 'eclipse'
     id 'java'
+    id 'maven'
+    id "io.codearte.nexus-staging" version "0.30.0"
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -42,3 +44,10 @@ jar {
         archiveVersion = VERSION_NAME
     }
 }
+
+javadoc {
+    source = sourceSets.main.allJava
+    excludes = [ "com/svix/**/*" ]
+}
+
+apply from: "deploy.gradle"

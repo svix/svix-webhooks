@@ -36,10 +36,12 @@ compile "com.svix:svix:0.17.0"
 
 ### Build
 
-gradle build
+./gradlew build
 
 ### Test
 
-gradle test
+./gradlew test
 
+### Publish
 
+./gradlew uploadArchives
