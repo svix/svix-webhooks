@@ -18,6 +18,8 @@ public final class Webhook {
 	static final String MSG_SIGNATURE_KEY = "svix-signature";
 	static final String MSG_TIMESTAMP_KEY = "svix-timestamp";
 	private static final String HMAC_SHA256 = "HmacSHA256";
+	private static final int TOLERANCE_IN_SECONDS = 5 * 60; // 5 minutes
+	private static final long SECOND_IN_MS = 1000L;
 
 	private final byte[] key;
 
@@ -34,8 +36,10 @@ public final class Webhook {
 			throw new WebhookVerificationException("Missing required headers");
 		}
 
+		Webhook.verifyTimestamp(msgTimestamp.get());
+
 		String toSign = String.format("%s.%s.%s", msgId.get(), msgTimestamp.get(), payload);
-		String expectedSignature = sign(toSign);
+		String expectedSignature = Webhook.sign(key, toSign);
 		for (String versionedSignature : msgSignature) {
 			String[] sigParts = versionedSignature.split(",");
 			if (sigParts.length < 2) {
@@ -53,7 +57,25 @@ public final class Webhook {
 		throw new WebhookVerificationException("No matching signature found");
 	}
 
-	private String sign(final String toSign) throws WebhookVerificationException {
+	private static void verifyTimestamp(final String timestampHeader) throws WebhookVerificationException {
+		int now = (int) (System.currentTimeMillis() / Webhook.SECOND_IN_MS);
+
+		int timestamp;
+		try {
+			timestamp = Integer.parseInt(timestampHeader);
+		} catch (NumberFormatException e) {
+			throw new WebhookVerificationException("Invalid Signature Headers");
+		}
+
+		if (timestamp < (now - TOLERANCE_IN_SECONDS)) {
+			throw new WebhookVerificationException("Message timestamp too old");
+		}
+		if (timestamp > (now + TOLERANCE_IN_SECONDS)) {
+			throw new WebhookVerificationException("Message timestamp too new");
+		}
+	}
+
+	private static String sign(final byte[] key, final String toSign) throws WebhookVerificationException {
 		try {
 			Mac sha512Hmac = Mac.getInstance(HMAC_SHA256);
 			SecretKeySpec keySpec = new SecretKeySpec(key, HMAC_SHA256);

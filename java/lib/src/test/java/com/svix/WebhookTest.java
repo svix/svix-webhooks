@@ -2,106 +2,161 @@ package com.svix;
 
 import static org.junit.Assert.assertThrows;
 
+import com.svix.exceptions.WebhookVerificationException;
 import java.net.http.HttpHeaders;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiPredicate;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
 
-import com.svix.exceptions.WebhookVerificationException;
 
 public class WebhookTest {
-	private static final String DEFAULT_SECRET = "MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw";
-	private static final String VALID_PAYLOAD = "{\"test\": 2432232314}";
-
-	private final Webhook webhook = new Webhook(DEFAULT_SECRET);
+	private static final int TOLERANCE_IN_MS = 5 * 60 * 1000;
+	private static final int SECOND_IN_MS = 1000;
 
 	@Test
 	public void verifyValidPayloadAndheader() throws WebhookVerificationException {
-		Map<String, List<String>> headerMap = createValidHeadersMap();
-		HttpHeaders headers = HttpHeaders.of(headerMap, new DefaultBiPredicate());
+		TestPayload testPayload = new TestPayload(System.currentTimeMillis());
 
-		webhook.verify(VALID_PAYLOAD, headers);
+		Webhook webhook = new Webhook(testPayload.secret);
+
+		webhook.verify(testPayload.payload, testPayload.headers());
 	}
 
 	@Test
 	public void verifyValidPayloadAndheaderWithMultiplePayloads() throws WebhookVerificationException {
-		Map<String, List<String>> headerMap = createValidHeadersMap();
-		headerMap.put(Webhook.MSG_SIGNATURE_KEY,
-		    Arrays.asList("v2,tmIKtSyZlE3uFJELVlNIOLJ1OE=", "v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE="));
+		TestPayload testPayload = new TestPayload(System.currentTimeMillis());
+		testPayload.headerMap.get("svix-signature").add(0, "v2,tmIKtSyZlE3uFJELVlNIOLJ1OE=");
 
-		HttpHeaders headers = HttpHeaders.of(headerMap, new DefaultBiPredicate());
+		Webhook webhook = new Webhook(testPayload.secret);
 
-		webhook.verify(VALID_PAYLOAD, headers);
+		webhook.verify(testPayload.payload, testPayload.headers());
 	}
 
 	@Test
 	public void verifyMissingIdThrowsException() {
-		Map<String, List<String>> headerMap = createValidHeadersMap();
-		headerMap.remove(Webhook.MSG_ID_KEY);
+		TestPayload testPayload = new TestPayload(System.currentTimeMillis());
+		testPayload.headerMap.remove("svix-id");
 
-		assertThrows(WebhookVerificationException.class, verify(headerMap));
+		assertThrows(WebhookVerificationException.class, verify(testPayload));
 	}
 
 	@Test
 	public void verifyMissingTimestampThrowsException() {
-		Map<String, List<String>> headerMap = createValidHeadersMap();
-		headerMap.remove(Webhook.MSG_TIMESTAMP_KEY);
+		TestPayload testPayload = new TestPayload(System.currentTimeMillis());
+		testPayload.headerMap.remove("svix-timestamp");
 
-		assertThrows(WebhookVerificationException.class, verify(headerMap));
+		assertThrows(WebhookVerificationException.class, verify(testPayload));
 	}
 
 	@Test
 	public void verifyMissingSignatureThrowsException() {
-		Map<String, List<String>> headerMap = createValidHeadersMap();
-		headerMap.remove(Webhook.MSG_SIGNATURE_KEY);
+		TestPayload testPayload = new TestPayload(System.currentTimeMillis());
+		testPayload.headerMap.remove("svix-signature");
 
-		assertThrows(WebhookVerificationException.class, verify(headerMap));
+		assertThrows(WebhookVerificationException.class, verify(testPayload));
 	}
 
 	@Test
 	public void verifySignatureWithDifferentVersionThrowsException() {
-		Map<String, List<String>> headerMap = createValidHeadersMap();
-		headerMap.put(Webhook.MSG_SIGNATURE_KEY, Arrays.asList("v2,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE="));
+		TestPayload testPayload = new TestPayload(System.currentTimeMillis());
+		testPayload.headerMap.put(Webhook.MSG_SIGNATURE_KEY, new ArrayList<String>(Arrays.asList("v2,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE=")));
 
-		assertThrows(WebhookVerificationException.class, verify(headerMap));
+		assertThrows(WebhookVerificationException.class, verify(testPayload));
 	}
 
 	@Test
 	public void verifyMissingPartsInSignatureThrowsException() {
-		Map<String, List<String>> headerMap = createValidHeadersMap();
-		headerMap.put(Webhook.MSG_SIGNATURE_KEY, Arrays.asList("invalid_signature"));
+		TestPayload testPayload = new TestPayload(System.currentTimeMillis());
+		testPayload.headerMap.put(Webhook.MSG_SIGNATURE_KEY, new ArrayList<String>(Arrays.asList("invalid_signature")));
 
-		assertThrows(WebhookVerificationException.class, verify(headerMap));
+		assertThrows(WebhookVerificationException.class, verify(testPayload));
 	}
 
 	@Test
 	public void verifySignatureMismatchThrowsException() {
-		Map<String, List<String>> headerMap = createValidHeadersMap();
-		headerMap.put(Webhook.MSG_SIGNATURE_KEY, Arrays.asList("v1,invalid_signature"));
+		TestPayload testPayload = new TestPayload(System.currentTimeMillis());
+		testPayload.headerMap.put(Webhook.MSG_SIGNATURE_KEY, new ArrayList<String>(Arrays.asList("v1,invalid_signature")));
 
-		assertThrows(WebhookVerificationException.class, verify(headerMap));
+		assertThrows(WebhookVerificationException.class, verify(testPayload));
 	}
 
-	private Map<String, List<String>> createValidHeadersMap() {
-		HashMap<String, List<String>> map = new HashMap<String, List<String>>();
-		map.put(Webhook.MSG_ID_KEY, Arrays.asList("msg_p5jXN8AQM9LWM0D4loKWxJek"));
-		map.put(Webhook.MSG_TIMESTAMP_KEY, Arrays.asList("1614265330"));
-		map.put(Webhook.MSG_SIGNATURE_KEY, Arrays.asList("v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE="));
-		return map;
+	@Test
+	public void verifyOldTimestampThrowsException() {
+		TestPayload testPayload = new TestPayload(System.currentTimeMillis() + TOLERANCE_IN_MS + SECOND_IN_MS);
+
+		assertThrows(WebhookVerificationException.class, verify(testPayload));
 	}
 
-	private ThrowingRunnable verify(final Map<String, List<String>> headerMap) {
+	@Test
+	public void verifyNewTimestampThrowsException() {
+		TestPayload testPayload = new TestPayload(System.currentTimeMillis() - TOLERANCE_IN_MS - SECOND_IN_MS);
+
+		assertThrows(WebhookVerificationException.class, verify(testPayload));
+	}
+
+	private ThrowingRunnable verify(final TestPayload testPayload) {
 		return new ThrowingRunnable() {
 			@Override
 			public void run() throws WebhookVerificationException {
-				HttpHeaders headers = HttpHeaders.of(headerMap, new DefaultBiPredicate());
-				webhook.verify(VALID_PAYLOAD, headers);
-			}
+				Webhook webhook = new Webhook(testPayload.secret);
+				webhook.verify(testPayload.payload, testPayload.headers());
+			};
 		};
+	}
+
+	private class TestPayload {
+		private static final String DEFAULT_MSG_ID = "msg_p5jXN8AQM9LWM0D4loKWxJek";
+		private static final String DEFAULT_SECRET = "MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw";
+		private static final String DEFAULT_PAYLOAD = "{\"test\": 2432232314}";
+
+		private String id;
+		private String timestamp;
+		private String payload;
+		private String secret;
+		private String signature;
+		private HashMap<String, ArrayList<String>> headerMap;
+
+		TestPayload(final long timestampInMS) {
+			this.id = TestPayload.DEFAULT_MSG_ID;
+			this.timestamp = String.valueOf(timestampInMS / SECOND_IN_MS);
+			this.payload = TestPayload.DEFAULT_PAYLOAD;
+			this.secret = TestPayload.DEFAULT_SECRET;
+
+
+			try {
+				String toSign = String.format("%s.%s.%s", this.id, this.timestamp, this.payload);
+				Mac sha512Hmac = Mac.getInstance("HmacSHA256");
+				SecretKeySpec keySpec = new SecretKeySpec(Base64.getDecoder().decode(this.secret), "HmacSHA256");
+				sha512Hmac.init(keySpec);
+				byte[] macData = sha512Hmac.doFinal(toSign.getBytes(StandardCharsets.UTF_8));
+				this.signature = Base64.getEncoder().encodeToString(macData);
+			} catch (Exception e) {
+				// pass
+			}
+
+			this.headerMap = new HashMap<String, ArrayList<String>>();
+			headerMap.put("svix-id", new ArrayList<String>(Arrays.asList(this.id)));
+			headerMap.put("svix-timestamp", new ArrayList<String>(Arrays.asList(this.timestamp)));
+			headerMap.put("svix-signature", new ArrayList<String>(Arrays.asList(String.format("v1,%s", this.signature))));
+		}
+
+		public HttpHeaders headers() {
+			HashMap<String, List<String>> map = new HashMap<String, List<String>>();
+			for (Map.Entry<String, ArrayList<String>> entry : this.headerMap.entrySet()) {
+				map.put(entry.getKey(), entry.getValue());
+			}
+
+			return HttpHeaders.of(map, new DefaultBiPredicate());
+		}
 	}
 
 	private class DefaultBiPredicate implements BiPredicate<String, String> {
