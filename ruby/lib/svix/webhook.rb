@@ -26,7 +26,7 @@ module Svix
                 if version != "v1"
                     next
                 end
-                if Svix.secure_compare(signature, expectedSignature)
+                if ::Svix::secure_compare(signature, expectedSignature)
                     return JSON.parse(payload, symbolize_names: true)
                 end
             end

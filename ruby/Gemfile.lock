@@ -2,11 +2,15 @@ PATH
   remote: .
   specs:
     svix (0.17.0)
+      typhoeus (~> 1.0, >= 1.0.1)
 
 GEM
   remote: https://rubygems.org/
   specs:
     diff-lcs (1.4.4)
+    ethon (0.14.0)
+      ffi (>= 1.15.0)
+    ffi (1.15.1)
     rake (10.5.0)
     rspec (3.10.0)
       rspec-core (~> 3.10.0)
@@ -21,6 +25,8 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.10.0)
     rspec-support (3.10.2)
+    typhoeus (1.4.0)
+      ethon (>= 0.9.0)
 
 PLATFORMS
   ruby
