@@ -28,7 +28,7 @@ Add this dependency to your project's POM:
 Add this dependency to your project's build file:
 
 ```groovy
-compile "com.svix:svix:0.17.0"
+implementation "com.svix:svix:0.17.0"
 ```
 
 
