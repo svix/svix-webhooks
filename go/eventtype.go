@@ -27,9 +27,9 @@ func (e *EventType) List(options *FetchOptions) (*ListResponseEventTypeOut, erro
 			req = req.Limit(*options.Limit)
 		}
 	}
-	out, _, err := req.Execute()
+	out, res, err := req.Execute()
 	if err != nil {
-		return nil, err
+		return nil, wrapError(err, res.StatusCode)
 	}
 	ret := ListResponseEventTypeOut(out)
 	return &ret, nil
@@ -38,9 +38,9 @@ func (e *EventType) List(options *FetchOptions) (*ListResponseEventTypeOut, erro
 func (e *EventType) Create(eventTypeIn *EventTypeIn) (*EventTypeOut, error) {
 	req := e.api.EventTypeApi.CreateEventTypeApiV1EventTypePost(context.Background())
 	req = req.EventTypeIn(openapi.EventTypeIn(*eventTypeIn))
-	out, _, err := req.Execute()
+	out, res, err := req.Execute()
 	if err != nil {
-		return nil, err
+		return nil, wrapError(err, res.StatusCode)
 	}
 	ret := EventTypeOut(out)
 	return &ret, nil
@@ -49,9 +49,9 @@ func (e *EventType) Create(eventTypeIn *EventTypeIn) (*EventTypeOut, error) {
 func (e *EventType) Update(eventTypeName string, eventTypeUpdate *EventTypeUpdate) (*EventTypeOut, error) {
 	req := e.api.EventTypeApi.UpdateEventTypeApiV1EventTypeEventTypeNamePut(context.Background(), eventTypeName)
 	req = req.EventTypeUpdate(openapi.EventTypeUpdate(*eventTypeUpdate))
-	out, _, err := req.Execute()
+	out, res, err := req.Execute()
 	if err != nil {
-		return nil, err
+		return nil, wrapError(err, res.StatusCode)
 	}
 	ret := EventTypeOut(out)
 	return &ret, nil
@@ -59,6 +59,6 @@ func (e *EventType) Update(eventTypeName string, eventTypeUpdate *EventTypeUpdat
 
 func (e *EventType) Delete(eventTypeName string) error {
 	req := e.api.EventTypeApi.DeleteEventTypeApiV1EventTypeEventTypeNameDelete(context.Background(), eventTypeName)
-	_, err := req.Execute()
-	return err
+	res, err := req.Execute()
+	return wrapError(err, res.StatusCode)
 }
