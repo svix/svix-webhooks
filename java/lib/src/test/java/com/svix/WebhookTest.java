@@ -32,9 +32,15 @@ public class WebhookTest {
 	}
 
 	@Test
-	public void verifyValidPayloadAndheaderWithMultiplePayloads() throws WebhookVerificationException {
+	public void verifyValidPayloadWithMultipleSignaturesIsValid() throws WebhookVerificationException {
 		TestPayload testPayload = new TestPayload(System.currentTimeMillis());
-		testPayload.headerMap.get("svix-signature").add(0, "v2,tmIKtSyZlE3uFJELVlNIOLJ1OE=");
+		String[] sigs = new String[] {
+			"v1,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
+			"v2,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
+			testPayload.headerMap.get("svix-signature").get(0), // valid signature
+			"v1,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
+		};
+		testPayload.headerMap.put("svix-signature", new ArrayList<String>(Arrays.asList(String.join(" ", sigs))));
 
 		Webhook webhook = new Webhook(testPayload.secret);
 

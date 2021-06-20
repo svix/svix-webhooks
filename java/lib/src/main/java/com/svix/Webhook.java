@@ -6,7 +6,6 @@ import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
-import java.util.List;
 import java.util.Optional;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -29,7 +28,7 @@ public final class Webhook {
 
 	public void verify(final String payload, final HttpHeaders headers) throws WebhookVerificationException {
 		Optional<String> msgId = headers.firstValue(MSG_ID_KEY);
-		List<String> msgSignature = headers.allValues(MSG_SIGNATURE_KEY);
+		Optional<String> msgSignature = headers.firstValue(MSG_SIGNATURE_KEY);
 		Optional<String> msgTimestamp = headers.firstValue(MSG_TIMESTAMP_KEY);
 
 		if (msgId.isEmpty() || msgSignature.isEmpty() || msgTimestamp.isEmpty()) {
@@ -40,7 +39,8 @@ public final class Webhook {
 
 		String toSign = String.format("%s.%s.%s", msgId.get(), msgTimestamp.get(), payload);
 		String expectedSignature = Webhook.sign(key, toSign);
-		for (String versionedSignature : msgSignature) {
+		String[] msgSignatures = msgSignature.get().split(" ");
+		for (String versionedSignature : msgSignatures) {
 			String[] sigParts = versionedSignature.split(",");
 			if (sigParts.length < 2) {
 				continue;

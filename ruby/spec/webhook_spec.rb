@@ -104,4 +104,20 @@ describe Svix::Webhook do
 
         expect { wh.verify(testPayload.payload, testPayload.headers) }.to raise_error(Svix::WebhookVerificationError)
     end
+
+    it "multi sig pyload is valid" do
+        testPayload = TestPayload.new
+        sigs = [
+            "v1,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
+            "v2,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
+            testPayload.headers["svix-signature"], # valid signature
+            "v1,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
+        ]
+        testPayload.headers["svix-signature"] = sigs.join(" ")
+
+        wh = Svix::Webhook.new(testPayload.secret)
+
+        json = wh.verify(testPayload.payload, testPayload.headers)
+        expect(json[:test]).to eq(2432232314)
+    end
 end

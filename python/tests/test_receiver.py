@@ -13,6 +13,7 @@ defaultSecret = 'MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw'
 
 tolerance = timedelta(minutes=5)
 
+
 class PayloadForTesting:
     id: str
     timestamp: int
@@ -105,3 +106,18 @@ def test_new_timestamp_fails():
     
     with pytest.raises(WebhookVerificationError):
         wh.verify(testPayload.payload, testPayload.header)
+
+def test_multi_sig_payload_is_valid():
+    testPayload = PayloadForTesting()
+    sigs = [
+        "v1,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
+        "v2,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
+        testPayload.header["svix-signature"], # valid signature
+        "v1,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
+    ]
+    testPayload.header["svix-signature"] = " ".join(sigs)
+
+    wh = Webhook(testPayload.secret)
+
+    json = wh.verify(testPayload.payload, testPayload.header)
+    assert json["test"] == 2432232314

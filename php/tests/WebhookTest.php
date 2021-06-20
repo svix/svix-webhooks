@@ -89,4 +89,19 @@ final class WebhookTest extends \PHPUnit\Framework\TestCase
         $wh = new \Svix\Webhook($testPayload->secret);
         $wh->verify($testPayload->payload, $testPayload->header);
     }
+
+    public function testMultiSigPayloadIsValid()
+    {
+        $testPayload = new TestPayload(time());
+        $sigs = [
+            "v1,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
+            "v2,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
+            $testPayload->header['svix-signature'], // valid signature
+            "v1,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
+        ];
+        $testPayload->header['svix-signature'] = implode(" ", $sigs);
+
+        $wh = new \Svix\Webhook($testPayload->secret);
+        $wh->verify($testPayload->payload, $testPayload->header);
+    }
 }

@@ -115,3 +115,18 @@ test("new timestamp fails", () => {
     wh.verify(testPayload.payload, testPayload.header);
   }).toThrowError(WebhookVerificationError);
 });
+
+test("multi sig payload is valid", () => {
+  const wh = new Webhook("MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw");
+
+  const testPayload = new TestPayload();
+  const sigs = [
+    "v1,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
+    "v2,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
+    testPayload.header["svix-signature"], // valid signature
+    "v1,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
+  ];
+  testPayload.header["svix-signature"] = sigs.join(" ");
+
+  wh.verify(testPayload.payload, testPayload.header);
+});
