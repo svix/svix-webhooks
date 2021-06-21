@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"net/http"
+	"strings"
 	"testing"
 	"time"
 )
@@ -95,6 +96,20 @@ func TestWebhook(t *testing.T) {
 			name:        "new timestamp fails",
 			testPayload: newTestPayload(time.Now().Add(tolerance + time.Second)),
 			expectedErr: true,
+		},
+		{
+			name:        "valid multi sig is valid",
+			testPayload: newTestPayload(time.Now()),
+			modifyPayload: func(tp *testPayload) {
+				sigs := []string{
+					"v1,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
+					"v2,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
+					tp.header.Get("svix-signature"), // valid signature
+					"v1,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
+				}
+				tp.header.Set("svix-signature", strings.Join(sigs, " "))
+			},
+			expectedErr: false,
 		},
 	}
 
