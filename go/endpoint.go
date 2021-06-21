@@ -27,9 +27,9 @@ func (e *Endpoint) List(appId string, options *FetchOptions) (*ListResponseEndpo
 			req = req.Limit(*options.Limit)
 		}
 	}
-	out, _, err := req.Execute()
+	out, res, err := req.Execute()
 	if err != nil {
-		return nil, err
+		return nil, wrapError(err, res.StatusCode)
 	}
 	ret := ListResponseEndpointOut(out)
 	return &ret, nil
@@ -38,9 +38,9 @@ func (e *Endpoint) List(appId string, options *FetchOptions) (*ListResponseEndpo
 func (e *Endpoint) Create(appId string, endpointIn *EndpointIn) (*EndpointOut, error) {
 	req := e.api.EndpointApi.CreateEndpointApiV1AppAppIdEndpointPost(context.Background(), appId)
 	req = req.EndpointIn(openapi.EndpointIn(*endpointIn))
-	out, _, err := req.Execute()
+	out, res, err := req.Execute()
 	if err != nil {
-		return nil, err
+		return nil, wrapError(err, res.StatusCode)
 	}
 	ret := EndpointOut(out)
 	return &ret, nil
@@ -48,9 +48,9 @@ func (e *Endpoint) Create(appId string, endpointIn *EndpointIn) (*EndpointOut, e
 
 func (e *Endpoint) Get(appId string, endpointId string) (*EndpointOut, error) {
 	req := e.api.EndpointApi.GetEndpointApiV1AppAppIdEndpointEndpointIdGet(context.Background(), endpointId, appId)
-	out, _, err := req.Execute()
+	out, res, err := req.Execute()
 	if err != nil {
-		return nil, err
+		return nil, wrapError(err, res.StatusCode)
 	}
 	ret := EndpointOut(out)
 	return &ret, nil
@@ -59,9 +59,9 @@ func (e *Endpoint) Get(appId string, endpointId string) (*EndpointOut, error) {
 func (e *Endpoint) Update(appId string, endpointId string, endpointIn *EndpointIn) (*EndpointOut, error) {
 	req := e.api.EndpointApi.UpdateEndpointApiV1AppAppIdEndpointEndpointIdPut(context.Background(), endpointId, appId)
 	req = req.EndpointIn(openapi.EndpointIn(*endpointIn))
-	out, _, err := req.Execute()
+	out, res, err := req.Execute()
 	if err != nil {
-		return nil, err
+		return nil, wrapError(err, res.StatusCode)
 	}
 	ret := EndpointOut(out)
 	return &ret, nil
@@ -69,15 +69,15 @@ func (e *Endpoint) Update(appId string, endpointId string, endpointIn *EndpointI
 
 func (e *Endpoint) Delete(appId string, endpointId string) error {
 	req := e.api.EndpointApi.DeleteEndpointApiV1AppAppIdEndpointEndpointIdDelete(context.Background(), endpointId, appId)
-	_, err := req.Execute()
-	return err
+	res, err := req.Execute()
+	return wrapError(err, res.StatusCode)
 }
 
 func (e *Endpoint) GetSecret(appId string, endpointId string) (*EndpointSecretOut, error) {
 	req := e.api.EndpointApi.GetEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGet(context.Background(), endpointId, appId)
-	out, _, err := req.Execute()
+	out, res, err := req.Execute()
 	if err != nil {
-		return nil, err
+		return nil, wrapError(err, res.StatusCode)
 	}
 	ret := EndpointSecretOut(out)
 	return &ret, nil

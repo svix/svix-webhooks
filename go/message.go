@@ -26,9 +26,9 @@ func (m *Message) List(appId string, options *FetchOptions) (*ListResponseMessag
 			req = req.Limit(*options.Limit)
 		}
 	}
-	out, _, err := req.Execute()
+	out, res, err := req.Execute()
 	if err != nil {
-		return nil, err
+		return nil, wrapError(err, res.StatusCode)
 	}
 	ret := ListResponseMessageOut(out)
 	return &ret, nil
@@ -37,9 +37,9 @@ func (m *Message) List(appId string, options *FetchOptions) (*ListResponseMessag
 func (m *Message) Create(appId string, messageIn *MessageIn) (*MessageOut, error) {
 	req := m.api.MessageApi.CreateMessageApiV1AppAppIdMsgPost(context.Background(), appId)
 	req = req.MessageIn(openapi.MessageIn(*messageIn))
-	out, _, err := req.Execute()
+	out, res, err := req.Execute()
 	if err != nil {
-		return nil, err
+		return nil, wrapError(err, res.StatusCode)
 	}
 	ret := MessageOut(out)
 	return &ret, nil
@@ -47,9 +47,9 @@ func (m *Message) Create(appId string, messageIn *MessageIn) (*MessageOut, error
 
 func (m *Message) Get(appId string, msgId string) (*MessageOut, error) {
 	req := m.api.MessageApi.GetMessageApiV1AppAppIdMsgMsgIdGet(context.Background(), msgId, appId)
-	out, _, err := req.Execute()
+	out, res, err := req.Execute()
 	if err != nil {
-		return nil, err
+		return nil, wrapError(err, res.StatusCode)
 	}
 	ret := MessageOut(out)
 	return &ret, nil
