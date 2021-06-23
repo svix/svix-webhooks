@@ -146,9 +146,9 @@ class EventType(ApiBase[EventTypeApi]):
         with self._api() as api:
             return api.list_event_types_api_v1_event_type_get(**options.to_dict())
 
-    def create(self, event_type_in_out: EventTypeIn) -> EventTypeOut:
+    def create(self, event_type_in: EventTypeIn) -> EventTypeOut:
         with self._api() as api:
-            return api.create_event_type_api_v1_event_type_post(event_type_in_out=event_type_in_out)
+            return api.create_event_type_api_v1_event_type_post(event_type_in=event_type_in)
 
     def update(self, event_type_name: str, event_type_update: EventTypeUpdate) -> EventTypeOut:
         with self._api() as api:
