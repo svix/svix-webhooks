@@ -29,14 +29,14 @@ func (e Error) Status() int {
 }
 
 // a simple function convert openapi errors to exposed svix.Error
-func wrapError(err error, resp *http.Response) error {
+func wrapError(err error, res *http.Response) error {
 	if openapiError, ok := err.(openapi.GenericOpenAPIError); ok {
 		e := &Error{
 			body:  openapiError.Body(),
 			error: openapiError.Error(),
 		}
-		if resp != nil {
-			e.status = resp.StatusCode
+		if res != nil {
+			e.status = res.StatusCode
 		}
 		return e
 	}
