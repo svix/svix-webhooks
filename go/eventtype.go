@@ -29,7 +29,7 @@ func (e *EventType) List(options *FetchOptions) (*ListResponseEventTypeOut, erro
 	}
 	out, res, err := req.Execute()
 	if err != nil {
-		return nil, wrapError(err, res.StatusCode)
+		return nil, wrapError(err, res)
 	}
 	ret := ListResponseEventTypeOut(out)
 	return &ret, nil
@@ -40,7 +40,7 @@ func (e *EventType) Create(eventTypeIn *EventTypeIn) (*EventTypeOut, error) {
 	req = req.EventTypeIn(openapi.EventTypeIn(*eventTypeIn))
 	out, res, err := req.Execute()
 	if err != nil {
-		return nil, wrapError(err, res.StatusCode)
+		return nil, wrapError(err, res)
 	}
 	ret := EventTypeOut(out)
 	return &ret, nil
@@ -51,7 +51,7 @@ func (e *EventType) Update(eventTypeName string, eventTypeUpdate *EventTypeUpdat
 	req = req.EventTypeUpdate(openapi.EventTypeUpdate(*eventTypeUpdate))
 	out, res, err := req.Execute()
 	if err != nil {
-		return nil, wrapError(err, res.StatusCode)
+		return nil, wrapError(err, res)
 	}
 	ret := EventTypeOut(out)
 	return &ret, nil
@@ -60,5 +60,5 @@ func (e *EventType) Update(eventTypeName string, eventTypeUpdate *EventTypeUpdat
 func (e *EventType) Delete(eventTypeName string) error {
 	req := e.api.EventTypeApi.DeleteEventTypeApiV1EventTypeEventTypeNameDelete(context.Background(), eventTypeName)
 	res, err := req.Execute()
-	return wrapError(err, res.StatusCode)
+	return wrapError(err, res)
 }

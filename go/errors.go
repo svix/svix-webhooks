@@ -1,6 +1,8 @@
 package svix
 
 import (
+	"net/http"
+
 	"github.com/svix/svix-libs/go/internal/openapi"
 )
 
@@ -27,13 +29,16 @@ func (e Error) Status() int {
 }
 
 // a simple function convert openapi errors to exposed svix.Error
-func wrapError(err error, status int) error {
+func wrapError(err error, res *http.Response) error {
 	if openapiError, ok := err.(openapi.GenericOpenAPIError); ok {
-		return &Error{
-			status: status,
-			body:   openapiError.Body(),
-			error:  openapiError.Error(),
+		e := &Error{
+			body:  openapiError.Body(),
+			error: openapiError.Error(),
 		}
+		if res != nil {
+			e.status = res.StatusCode
+		}
+		return e
 	}
 	return err
 }

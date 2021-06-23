@@ -28,7 +28,7 @@ func (a *Application) List(options *FetchOptions) (*ListResponseApplicationOut, 
 	}
 	resp, res, err := req.Execute()
 	if err != nil {
-		return nil, wrapError(err, res.StatusCode)
+		return nil, wrapError(err, res)
 	}
 	ret := ListResponseApplicationOut(resp)
 	return &ret, nil
@@ -39,7 +39,7 @@ func (a *Application) Create(applicationIn *ApplicationIn) (*ApplicationOut, err
 	req = req.ApplicationIn(openapi.ApplicationIn(*applicationIn))
 	resp, res, err := req.Execute()
 	if err != nil {
-		return nil, wrapError(err, res.StatusCode)
+		return nil, wrapError(err, res)
 	}
 	ret := ApplicationOut(resp)
 	return &ret, nil
@@ -49,7 +49,7 @@ func (a *Application) Get(appId string) (*ApplicationOut, error) {
 	req := a.api.ApplicationApi.GetApplicationApiV1AppAppIdGet(context.Background(), appId)
 	resp, res, err := req.Execute()
 	if err != nil {
-		return nil, wrapError(err, res.StatusCode)
+		return nil, wrapError(err, res)
 	}
 	ret := ApplicationOut(resp)
 	return &ret, nil
@@ -60,7 +60,7 @@ func (a *Application) Update(appId string, applicationIn *ApplicationIn) (*Appli
 	req = req.ApplicationIn(openapi.ApplicationIn(*applicationIn))
 	resp, res, err := req.Execute()
 	if err != nil {
-		return nil, wrapError(err, res.StatusCode)
+		return nil, wrapError(err, res)
 	}
 	ret := ApplicationOut(resp)
 	return &ret, nil
@@ -69,5 +69,5 @@ func (a *Application) Update(appId string, applicationIn *ApplicationIn) (*Appli
 func (a *Application) Delete(appId string) error {
 	req := a.api.ApplicationApi.DeleteApplicationApiV1AppAppIdDelete(context.Background(), appId)
 	res, err := req.Execute()
-	return wrapError(err, res.StatusCode)
+	return wrapError(err, res)
 }
