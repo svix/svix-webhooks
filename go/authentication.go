@@ -16,7 +16,7 @@ func (a *Authentication) DashboardAccess(appId string) (*DashboardAccessOut, err
 	req := a.api.AuthenticationApi.GetDashboardAccessApiV1AuthDashboardAccessAppIdPost(context.Background(), appId)
 	out, res, err := req.Execute()
 	if err != nil {
-		return nil, wrapError(err, res.StatusCode)
+		return nil, wrapError(err, res)
 	}
 	ret := DashboardAccessOut(out)
 	return &ret, nil
@@ -25,5 +25,5 @@ func (a *Authentication) DashboardAccess(appId string) (*DashboardAccessOut, err
 func (a *Authentication) Logout() error {
 	req := a.api.AuthenticationApi.LogoutApiV1AuthLogoutPost(context.Background())
 	res, err := req.Execute()
-	return wrapError(err, res.StatusCode)
+	return wrapError(err, res)
 }

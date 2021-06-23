@@ -28,7 +28,7 @@ func (m *Message) List(appId string, options *FetchOptions) (*ListResponseMessag
 	}
 	out, res, err := req.Execute()
 	if err != nil {
-		return nil, wrapError(err, res.StatusCode)
+		return nil, wrapError(err, res)
 	}
 	ret := ListResponseMessageOut(out)
 	return &ret, nil
@@ -39,7 +39,7 @@ func (m *Message) Create(appId string, messageIn *MessageIn) (*MessageOut, error
 	req = req.MessageIn(openapi.MessageIn(*messageIn))
 	out, res, err := req.Execute()
 	if err != nil {
-		return nil, wrapError(err, res.StatusCode)
+		return nil, wrapError(err, res)
 	}
 	ret := MessageOut(out)
 	return &ret, nil
@@ -49,7 +49,7 @@ func (m *Message) Get(appId string, msgId string) (*MessageOut, error) {
 	req := m.api.MessageApi.GetMessageApiV1AppAppIdMsgMsgIdGet(context.Background(), msgId, appId)
 	out, res, err := req.Execute()
 	if err != nil {
-		return nil, wrapError(err, res.StatusCode)
+		return nil, wrapError(err, res)
 	}
 	ret := MessageOut(out)
 	return &ret, nil
