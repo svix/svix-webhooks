@@ -1,0 +1,34 @@
+name: Build
+
+on:
+  create:
+    tags:
+      - v*
+
+jobs:
+  build:
+    name: Build source distribution
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-python@v2
+        name: Install Python
+        with:
+          python-version: '3.8'
+
+      - name: Install setuptools
+        run: |
+          cd python
+          python -m pip install setuptools
+
+      - name: Build sdist
+        run: |
+          cd python
+          python setup.py sdist
+
+      - uses: pypa/gh-action-pypi-publish@master
+        with:
+          user: __token__
+          password: ${{ secrets.TWINE_PASSWORD }}
+          packages_dir: python/dist
