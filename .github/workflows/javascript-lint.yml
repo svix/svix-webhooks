@@ -1,4 +1,4 @@
-name: javascript-lint
+name: Javascript Lint
 on:
   pull_request:
     paths:

@@ -1,4 +1,4 @@
-name: go-lint
+name: Go Lint
 on:
   pull_request:
     paths:
