@@ -120,4 +120,16 @@ describe Svix::Webhook do
         json = wh.verify(testPayload.payload, testPayload.headers)
         expect(json[:test]).to eq(2432232314)
     end
+
+    it "signature verification works with and without prefix" do
+        testPayload = TestPayload.new
+
+        wh = Svix::Webhook.new(testPayload.secret)
+        json = wh.verify(testPayload.payload, testPayload.headers)
+        expect(json[:test]).to eq(2432232314)
+
+        wh = Svix::Webhook.new("whsec_" + testPayload.secret)
+        json = wh.verify(testPayload.payload, testPayload.headers)
+        expect(json[:test]).to eq(2432232314)
+    end
 end

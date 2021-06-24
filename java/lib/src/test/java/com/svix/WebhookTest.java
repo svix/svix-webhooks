@@ -109,6 +109,17 @@ public class WebhookTest {
 		assertThrows(WebhookVerificationException.class, verify(testPayload));
 	}
 
+	@Test
+	public void verifySecretWorksWithOrWithoutPrefix() throws WebhookVerificationException {
+		TestPayload testPayload = new TestPayload(System.currentTimeMillis());
+
+		Webhook webhook = new Webhook(testPayload.secret);
+		webhook.verify(testPayload.payload, testPayload.headers());
+
+		webhook = new Webhook(String.format("%s%s", Webhook.SECRET_PREFIX, testPayload.secret));
+		webhook.verify(testPayload.payload, testPayload.headers());
+	}
+
 	private ThrowingRunnable verify(final TestPayload testPayload) {
 		return new ThrowingRunnable() {
 			@Override

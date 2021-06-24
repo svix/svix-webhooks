@@ -332,9 +332,13 @@ export interface WebhookRequiredHeaders {
 }
 
 export class Webhook {
+  private static prefix = "whsec_";
   private readonly key: Uint8Array;
 
   constructor(secret: string) {
+    if (secret.startsWith(Webhook.prefix)) {
+      secret = secret.substr(Webhook.prefix.length);
+    }
     this.key = base64.decode(secret);
   }
 

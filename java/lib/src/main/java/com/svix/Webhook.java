@@ -13,6 +13,7 @@ import javax.crypto.spec.SecretKeySpec;
 import com.svix.exceptions.WebhookVerificationException;
 
 public final class Webhook {
+	static final String SECRET_PREFIX = "whsec_";
 	static final String MSG_ID_KEY = "svix-id";
 	static final String MSG_SIGNATURE_KEY = "svix-signature";
 	static final String MSG_TIMESTAMP_KEY = "svix-timestamp";
@@ -23,7 +24,11 @@ public final class Webhook {
 	private final byte[] key;
 
 	public Webhook(final String secret) {
-		this.key = Base64.getDecoder().decode(secret);
+		String sec = secret;
+		if (sec.startsWith(Webhook.SECRET_PREFIX)) {
+			sec = sec.substring(Webhook.SECRET_PREFIX.length());
+		}
+		this.key = Base64.getDecoder().decode(sec);
 	}
 
 	public void verify(final String payload, final HttpHeaders headers) throws WebhookVerificationException {
