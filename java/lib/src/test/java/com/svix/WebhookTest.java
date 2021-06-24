@@ -112,7 +112,7 @@ public class WebhookTest {
 	@Test
 	public void verifySecretWorksWithOrWithoutPrefix() throws WebhookVerificationException {
 		TestPayload testPayload = new TestPayload(System.currentTimeMillis());
-	
+
 		Webhook webhook = new Webhook(testPayload.secret);
 		webhook.verify(testPayload.payload, testPayload.headers());
 
