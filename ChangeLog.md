@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 0.18.0
+* Python: Properly export WebhookVerificationError
+* Python: Fix bug in event_type create function
+* Go: Expose new error class for checking api errors
+* PHP: Fix issue with psr-4 autoloading
+* All: Enforce timestamp tolerance when verifying
+* All: Support new webhook signature prefixes when verifying
+
 ## Version 0.17.0
 * Migrate to new github org `svix`! :rocket:
 
