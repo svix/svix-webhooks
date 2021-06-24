@@ -4,6 +4,10 @@ module Svix
     class Webhook
 
         def initialize(secret)
+            if secret.start_with?(SECRET_PREFIX)
+                secret = secret[SECRET_PREFIX.length..-1]
+            end
+
             @secret = Base64.decode64(secret)
         end
 
@@ -34,6 +38,7 @@ module Svix
         end
 
         private
+        SECRET_PREFIX = 'whsec_'
         TOLERANCE = 5 * 60
 
         def verify_timestamp(timestampHeader)

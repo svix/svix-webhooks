@@ -15,10 +15,13 @@ class WebhookVerificationError(Exception):
 
 
 class Webhook:
+    _SECRET_PREFIX: str = "whsec_"
     _whsecret: bytes
     _enc_key: t.Optional[bytes]
 
     def __init__(self, whsecret: str, *, enc_key: t.Optional[str] = None):
+        if whsecret.startswith(self._SECRET_PREFIX):
+            whsecret = whsecret[len(self._SECRET_PREFIX) :]
         self._whsecret = base64.b64decode(whsecret)
         self._enc_key = base64.b64decode(enc_key) if enc_key is not None else None
 

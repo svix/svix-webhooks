@@ -131,3 +131,27 @@ func TestWebhook(t *testing.T) {
 		}
 	}
 }
+
+func TestWebhookPrefix(t *testing.T) {
+	tp := newTestPayload(time.Now())
+
+	wh, err := NewWebhook(tp.secret)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = wh.Verify(tp.payload, tp.header)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	wh, err = NewWebhook(fmt.Sprintf("%s%s", webhookSecretPrefix, tp.secret))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = wh.Verify(tp.payload, tp.header)
+	if err != nil {
+		t.Fatal(err)
+	}
+}

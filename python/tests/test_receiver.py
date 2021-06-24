@@ -121,3 +121,15 @@ def test_multi_sig_payload_is_valid():
 
     json = wh.verify(testPayload.payload, testPayload.header)
     assert json["test"] == 2432232314
+
+def test_signature_verification_with_and_without_prefix():
+    testPayload = PayloadForTesting()
+
+    wh = Webhook(testPayload.secret)
+    json = wh.verify(testPayload.payload, testPayload.header)
+    assert json["test"] == 2432232314
+
+    wh = Webhook("whsec_" + testPayload.secret)
+
+    json = wh.verify(testPayload.payload, testPayload.header)
+    assert json["test"] == 2432232314

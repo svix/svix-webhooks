@@ -17,6 +17,8 @@ type Webhook struct {
 	key []byte
 }
 
+const webhookSecretPrefix = "whsec_"
+
 var tolerance time.Duration = 5 * time.Minute
 
 var (
@@ -28,7 +30,7 @@ var (
 )
 
 func NewWebhook(secret string) (*Webhook, error) {
-	key, err := base64enc.DecodeString(secret)
+	key, err := base64enc.DecodeString(strings.TrimPrefix(secret, webhookSecretPrefix))
 	if err != nil {
 		return nil, err
 	}
