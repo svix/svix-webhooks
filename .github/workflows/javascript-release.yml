@@ -1,4 +1,4 @@
-name: Python Release
+name: Javascript Release
 
 on:
   push:
