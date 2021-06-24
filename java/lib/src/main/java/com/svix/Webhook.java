@@ -23,11 +23,12 @@ public final class Webhook {
 
 	private final byte[] key;
 
-	public Webhook(String secret) {
-		if (secret.startsWith(Webhook.SECRET_PREFIX)) {
-			secret = secret.substring(Webhook.SECRET_PREFIX.length());
+	public Webhook(final String secret) {
+		String sec = secret;
+		if (sec.startsWith(Webhook.SECRET_PREFIX)) {
+			sec = sec.substring(Webhook.SECRET_PREFIX.length());
 		}
-		this.key = Base64.getDecoder().decode(secret);
+		this.key = Base64.getDecoder().decode(sec);
 	}
 
 	public void verify(final String payload, final HttpHeaders headers) throws WebhookVerificationException {

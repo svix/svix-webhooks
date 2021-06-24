@@ -108,11 +108,11 @@ final class WebhookTest extends \PHPUnit\Framework\TestCase
     public function testSignatureVerificationWithAndWithoutPrefix()
     {
         $testPayload = new TestPayload(time());
-        
+
         $wh = new \Svix\Webhook($testPayload->secret);
         $wh->verify($testPayload->payload, $testPayload->header);
-      
-      
+
+
         $wh = new \Svix\Webhook("whsec_" . $testPayload->secret);
         $wh->verify($testPayload->payload, $testPayload->header);
     }

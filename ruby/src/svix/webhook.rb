@@ -38,7 +38,7 @@ module Svix
         end
 
         private
-        SECRET_PREFIX = 'whsec_'
+        SECRET_PREFIX = "whsec_"
         TOLERANCE = 5 * 60
 
         def verify_timestamp(timestampHeader)

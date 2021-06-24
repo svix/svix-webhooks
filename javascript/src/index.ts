@@ -332,7 +332,7 @@ export interface WebhookRequiredHeaders {
 }
 
 export class Webhook {
-  private static prefix: string = "whsec_";
+  private static prefix = "whsec_";
   private readonly key: Uint8Array;
 
   constructor(secret: string) {

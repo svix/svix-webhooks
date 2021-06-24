@@ -134,7 +134,7 @@ test("multi sig payload is valid", () => {
 test("verification works with and without signature prefix", () => {
   const testPayload = new TestPayload();
   
-  var wh = new Webhook(defaultSecret);
+  let wh = new Webhook(defaultSecret);
   wh.verify(testPayload.payload, testPayload.header);
 
 
