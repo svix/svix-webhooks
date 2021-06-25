@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - 'v*'
+    branches:
+      - frank/rel_js
 
 jobs:
   build:
