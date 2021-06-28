@@ -108,7 +108,7 @@ afterEvaluate { project ->
 
     task sourcesJar(type: Jar) {
         classifier = "sources"
-        from jar.destinationDir
+        from sourceSets.main.allSource
     }
 
     task javadocJar(type: Jar, dependsOn: javadoc) {
