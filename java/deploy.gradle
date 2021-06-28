@@ -106,18 +106,13 @@ afterEvaluate { project ->
         onlyIf { isReleaseBuild() && project.hasProperty("signing.gnupg.keyName") }
     }
 
-    task sourcesJar(type: Jar) {
-        classifier = "sources"
-        from jar.destinationDir
-    }
-
     task javadocJar(type: Jar, dependsOn: javadoc) {
         classifier = "javadoc"
         from javadoc.destinationDir
     }
 
     artifacts {
-        archives sourcesJar
+        archives jar
         archives javadocJar
     }
 }
