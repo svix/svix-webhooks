@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.19.1
+* Python: Fix issue with pip package not generating the `openapi_client` properly on deploy
+
 ## Version 0.19.0
 * Python: Clean up exports, add API exceptions as `svix.exceptions`
 

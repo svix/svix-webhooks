@@ -17,6 +17,11 @@ jobs:
         with:
           python-version: '3.8'
 
+      - name: Regen openapi libs
+        run: |
+          yarn
+          ./regen_openapi.sh
+
       - name: Install setuptools
         run: |
           cd python
