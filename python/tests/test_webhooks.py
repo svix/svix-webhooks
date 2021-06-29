@@ -5,7 +5,7 @@ import typing as t
 from math import floor
 from datetime import datetime, timedelta, timezone
 
-from svix.receiver import hmac_data, Webhook, WebhookVerificationError
+from svix.webhooks import hmac_data, Webhook, WebhookVerificationError
 
 defaultMsgID = 'msg_p5jXN8AQM9LWM0D4loKWxJek'
 defaultPayload = '{"test": 2432232314}'
