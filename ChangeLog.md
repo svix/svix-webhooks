@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.19.0
+* Python: Clean up exports, add API exceptions as `svix.exceptions`
+
 ## Version 0.18.0
 * All: Enforce timestamp tolerance when verifying
 * All: Support new webhook signature prefixes when verifying
