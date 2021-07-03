@@ -264,7 +264,7 @@ class MessageAttempt {
     appId: string,
     msgId: string,
     endpointId: string
-  ): Promise<MessageAttemptOut> {
+  ): Promise<void> {
     return this.api.resendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPost({
       endpointId,
       msgId,

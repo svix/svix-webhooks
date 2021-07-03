@@ -1,7 +1,7 @@
 /*
- * Svix
+ * Svix API
  *
- * The Svix server API documentation
+ * Welcome to the Svix API documentation!  Useful links: [Homepage](https://www.svix.com) | [Support email](mailto:support+docs@svix.com) | [Slack Community](https://www.svix.com/slack/)  # Introduction  This is the reference documentation and schemas for the Svix API. For tutorials and other documentation please refer to [the documentation](https://docs.svix.com).  ## Main concepts  In Svix you have four important entities you will be interacting with:  - `messages`: these are the webhooks being sent. They can have contents and a few other properties. - `application`: this is where `messages` are sent to. Usually you want to create one application for each of your users. - `endpoint`: endpoints are the URLs messages will be sent to. Each application can have multiple `endpoints` and each message sent to that application will be sent to all of them (unless they are not subscribed to the sent event type). - `event-type`: event types are identifiers denoting the type of the message being sent. Event types are primarily used to decide which events are sent to which endpoint.   ## Authentication  Get your authentication token (`AUTH_TOKEN`) from the [Svix dashboard](https://dashboard.svix.com) and use it as part of the `Authorization` header as such: `Authorization: Bearer ${AUTH_TOKEN}`.  <SecurityDefinitions />   ## Code samples  The code samples assume you already have the respective libraries installed and you know how to use them. For the latest information on how to do that, please refer to [the documentation](https://docs.svix.com/).   ## Cross-Origin Resource Sharing  This API features Cross-Origin Resource Sharing (CORS) implemented in compliance with [W3C spec](https://www.w3.org/TR/cors/). And that allows cross-domain communication from the browser. All responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site. 
  *
  * API version: 1.4
  */
@@ -45,8 +45,9 @@ func (r ApiCreateMessageApiV1AppAppIdMsgPostRequest) Execute() (MessageOut, *_ne
 
 /*
  * CreateMessageApiV1AppAppIdMsgPost Create Message
- * Creates a new message and schedules it to be sent.
-If the message includes an `event_id` and a message with this id already exists, a 409 conflict error will be returned.
+ * Creates a new message and dispatch it to all of the application's endpoints. The message will be delivered following the organizations delivery and retry policy.
+`eventId` Is an optional global unique ID accross all applications.
+If a message with the same `eventId` already exists, a 409 conflict error will be returned.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param appId
  * @return ApiCreateMessageApiV1AppAppIdMsgPostRequest
@@ -169,6 +170,16 @@ func (a *MessageApiService) CreateMessageApiV1AppAppIdMsgPostExecute(r ApiCreate
 			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
+		if localVarHTTPResponse.StatusCode == 413 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
 		if localVarHTTPResponse.StatusCode == 422 {
 			var v HTTPValidationError
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -207,6 +218,7 @@ func (r ApiGetMessageApiV1AppAppIdMsgMsgIdGetRequest) Execute() (MessageOut, *_n
 
 /*
  * GetMessageApiV1AppAppIdMsgMsgIdGet Get Message
+ * Get a message by its ID or eventID.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param msgId
  * @param appId
@@ -374,6 +386,7 @@ func (r ApiListMessagesApiV1AppAppIdMsgGetRequest) Execute() (ListResponseMessag
 
 /*
  * ListMessagesApiV1AppAppIdMsgGet List Messages
+ * List all of the application's messages.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param appId
  * @return ApiListMessagesApiV1AppAppIdMsgGetRequest

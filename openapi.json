@@ -1,23 +1,19 @@
 {
     "openapi": "3.0.2",
     "info": {
-        "title": "Svix",
-        "description": "The Svix server API documentation",
-        "version": "1.4"
-    },
-    "servers": [
-        {
-            "url": "https://api.svix.com"
-        },
-        {
-            "url": "http://localhost:8040"
+        "title": "Svix API",
+        "description": "Welcome to the Svix API documentation!\n\nUseful links: [Homepage](https://www.svix.com) | [Support email](mailto:support+docs@svix.com) | [Slack Community](https://www.svix.com/slack/)\n\n# Introduction\n\nThis is the reference documentation and schemas for the Svix API. For tutorials and other documentation please refer to [the documentation](https://docs.svix.com).\n\n## Main concepts\n\nIn Svix you have four important entities you will be interacting with:\n\n- `messages`: these are the webhooks being sent. They can have contents and a few other properties.\n- `application`: this is where `messages` are sent to. Usually you want to create one application for each of your users.\n- `endpoint`: endpoints are the URLs messages will be sent to. Each application can have multiple `endpoints` and each message sent to that application will be sent to all of them (unless they are not subscribed to the sent event type).\n- `event-type`: event types are identifiers denoting the type of the message being sent. Event types are primarily used to decide which events are sent to which endpoint.\n\n\n## Authentication\n\nGet your authentication token (`AUTH_TOKEN`) from the [Svix dashboard](https://dashboard.svix.com) and use it as part of the `Authorization` header as such: `Authorization: Bearer ${AUTH_TOKEN}`.\n\n<SecurityDefinitions />\n\n\n## Code samples\n\nThe code samples assume you already have the respective libraries installed and you know how to use them. For the latest information on how to do that, please refer to [the documentation](https://docs.svix.com/).\n\n\n## Cross-Origin Resource Sharing\n\nThis API features Cross-Origin Resource Sharing (CORS) implemented in compliance with [W3C spec](https://www.w3.org/TR/cors/). And that allows cross-domain communication from the browser. All responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site.\n",
+        "version": "1.4",
+        "x-logo": {
+            "url": "https://www.svix.com/static/img/brand-padded.svg",
+            "altText": "Svix Logo"
         }
-    ],
+    },
     "paths": {
         "/api/v1/health/": {
             "get": {
                 "tags": [
-                    "health"
+                    "Health"
                 ],
                 "summary": "Health",
                 "description": "Verify the API server is up and running.",
@@ -26,15 +22,23 @@
                     "204": {
                         "description": "Successful Response"
                     }
-                }
+                },
+                "x-codeSamples": [
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/health/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
             }
         },
         "/api/v1/app/": {
             "get": {
                 "tags": [
-                    "application"
+                    "Application"
                 ],
                 "summary": "List Applications",
+                "description": "List of all the organization's applications.",
                 "operationId": "list_applications_api_v1_app__get",
                 "parameters": [
                     {
@@ -123,13 +127,56 @@
                     {
                         "HTTPBearer": []
                     }
+                ],
+                "x-codeSamples": [
+                    {
+                        "lang": "JavaScript",
+                        "label": "JavaScript",
+                        "source": "const listResponseApplicationOut = await svix.application.list();"
+                    },
+                    {
+                        "lang": "JavaScript",
+                        "label": "TypeScript",
+                        "source": "const listResponseApplicationOut = await svix.application.list();"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "list_response_application_out = svix.application.list()"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "listResponseApplicationOut, err := svixClient.Application.List(nil)"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "val listResponseApplicationOut = svix.application.list(FetchOptions())"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "ListResponseApplicationOut listResponseApplicationOut = svix.getApplication().list(new FetchOptions())"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix application list "
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
                 ]
             },
             "post": {
                 "tags": [
-                    "application"
+                    "Application"
                 ],
                 "summary": "Create Application",
+                "description": "Create a new application.",
                 "operationId": "create_application_api_v1_app__post",
                 "requestBody": {
                     "content": {
@@ -207,22 +254,67 @@
                     {
                         "HTTPBearer": []
                     }
+                ],
+                "x-codeSamples": [
+                    {
+                        "lang": "JavaScript",
+                        "label": "JavaScript",
+                        "source": "const applicationOut = await svix.application.create({\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\"\n});"
+                    },
+                    {
+                        "lang": "JavaScript",
+                        "label": "TypeScript",
+                        "source": "const applicationOut = await svix.application.create({\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\"\n});"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "application_out = svix.application.create(ApplicationIn(\n    uid=\"unique-app-identifier\",\n    name=\"My first application\"\n))"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "applicationOut, err := svixClient.Application.Create(&svix.ApplicationIn{\n    Uid: \"unique-app-identifier\",\n    Name: \"My first application\"\n})"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "val applicationOut = svix.application.create(ApplicationIn()\n    .uid(\"unique-app-identifier\"),\n    .name(\"My first application\")\n)"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "ApplicationOut applicationOut = svix.getApplication().create(new ApplicationIn()\n    .uid(\"unique-app-identifier\"),\n    .name(\"My first application\")\n)"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix application create '{\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\"\n}'"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'\n  -d '{\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\"\n}'"
+                    }
                 ]
             }
         },
         "/api/v1/app/{app_id}/": {
             "get": {
                 "tags": [
-                    "application"
+                    "Application"
                 ],
                 "summary": "Get Application",
+                "description": "Get an application.",
                 "operationId": "get_application_api_v1_app__app_id___get",
                 "parameters": [
                     {
                         "required": true,
                         "schema": {
                             "title": "App Id",
-                            "type": "string"
+                            "type": "string",
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                         },
                         "name": "app_id",
                         "in": "path"
@@ -294,20 +386,65 @@
                     {
                         "HTTPBearer": []
                     }
+                ],
+                "x-codeSamples": [
+                    {
+                        "lang": "JavaScript",
+                        "label": "JavaScript",
+                        "source": "const applicationOut = await svix.application.get('app_id');"
+                    },
+                    {
+                        "lang": "JavaScript",
+                        "label": "TypeScript",
+                        "source": "const applicationOut = await svix.application.get('app_id');"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "application_out = svix.application.get('app_id')"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "applicationOut, err := svixClient.Application.Get(\"app_id\")"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "val applicationOut = svix.application.get('app_id')"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "ApplicationOut applicationOut = svix.getApplication().get('app_id')"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix application get 'app_id'"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
                 ]
             },
             "put": {
                 "tags": [
-                    "application"
+                    "Application"
                 ],
                 "summary": "Update Application",
+                "description": "Update an application.",
                 "operationId": "update_application_api_v1_app__app_id___put",
                 "parameters": [
                     {
                         "required": true,
                         "schema": {
                             "title": "App Id",
-                            "type": "string"
+                            "type": "string",
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                         },
                         "name": "app_id",
                         "in": "path"
@@ -389,20 +526,65 @@
                     {
                         "HTTPBearer": []
                     }
+                ],
+                "x-codeSamples": [
+                    {
+                        "lang": "JavaScript",
+                        "label": "JavaScript",
+                        "source": "const applicationOut = await svix.application.update('app_id', {\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\"\n});"
+                    },
+                    {
+                        "lang": "JavaScript",
+                        "label": "TypeScript",
+                        "source": "const applicationOut = await svix.application.update('app_id', {\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\"\n});"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "application_out = svix.application.update('app_id', ApplicationIn(\n    uid=\"unique-app-identifier\",\n    name=\"My first application\"\n))"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "applicationOut, err := svixClient.Application.Update(\"app_id\", &svix.ApplicationIn{\n    Uid: \"unique-app-identifier\",\n    Name: \"My first application\"\n})"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "val applicationOut = svix.application.update('app_id', ApplicationIn()\n    .uid(\"unique-app-identifier\"),\n    .name(\"My first application\")\n)"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "ApplicationOut applicationOut = svix.getApplication().update('app_id', new ApplicationIn()\n    .uid(\"unique-app-identifier\"),\n    .name(\"My first application\")\n)"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix application update 'app_id' '{\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\"\n}'"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'PUT' \\\n  'https://api.svix.com/api/v1/app/{app_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'\n  -d '{\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\"\n}'"
+                    }
                 ]
             },
             "delete": {
                 "tags": [
-                    "application"
+                    "Application"
                 ],
                 "summary": "Delete Application",
+                "description": "Delete an application.",
                 "operationId": "delete_application_api_v1_app__app_id___delete",
                 "parameters": [
                     {
                         "required": true,
                         "schema": {
                             "title": "App Id",
-                            "type": "string"
+                            "type": "string",
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                         },
                         "name": "app_id",
                         "in": "path"
@@ -467,13 +649,55 @@
                     {
                         "HTTPBearer": []
                     }
+                ],
+                "x-codeSamples": [
+                    {
+                        "lang": "JavaScript",
+                        "label": "JavaScript",
+                        "source": "await svix.application.delete('app_id');"
+                    },
+                    {
+                        "lang": "JavaScript",
+                        "label": "TypeScript",
+                        "source": "await svix.application.delete('app_id');"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "svix.application.delete('app_id')"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "err := svixClient.Application.Delete(\"app_id\")"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "svix.application.delete('app_id')"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "svix.getApplication().delete('app_id')"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix application delete 'app_id'"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'DELETE' \\\n  'https://api.svix.com/api/v1/app/{app_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
                 ]
             }
         },
         "/api/v1/auth/dashboard-access/{app_id}/": {
             "post": {
                 "tags": [
-                    "authentication"
+                    "Authentication"
                 ],
                 "summary": "Get Dashboard Access",
                 "description": "Use this function to get magic links (and authentication codes) for connecting your users to the management UIs.",
@@ -483,7 +707,9 @@
                         "required": true,
                         "schema": {
                             "title": "App Id",
-                            "type": "string"
+                            "type": "string",
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                         },
                         "name": "app_id",
                         "in": "path"
@@ -555,15 +781,58 @@
                     {
                         "HTTPBearer": []
                     }
+                ],
+                "x-codeSamples": [
+                    {
+                        "lang": "JavaScript",
+                        "label": "JavaScript",
+                        "source": "const dashboardAccessOut = await svix.authentication.get('app_id');"
+                    },
+                    {
+                        "lang": "JavaScript",
+                        "label": "TypeScript",
+                        "source": "const dashboardAccessOut = await svix.authentication.get('app_id');"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "dashboard_access_out = svix.authentication.get('app_id')"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "dashboardAccessOut, err := svixClient.Authentication.Get(\"app_id\")"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "val dashboardAccessOut = svix.authentication.get('app_id')"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "DashboardAccessOut dashboardAccessOut = svix.getAuthentication().get('app_id')"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix authentication get 'app_id'"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/auth/dashboard-access/{app_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
                 ]
             }
         },
         "/api/v1/auth/logout/": {
             "post": {
                 "tags": [
-                    "authentication"
+                    "Authentication"
                 ],
                 "summary": "Logout",
+                "description": "Logout an app token.\n\nTrying to log out other tokens will fail.",
                 "operationId": "logout_api_v1_auth_logout__post",
                 "responses": {
                     "204": {
@@ -614,15 +883,58 @@
                     {
                         "HTTPBearer": []
                     }
+                ],
+                "x-codeSamples": [
+                    {
+                        "lang": "JavaScript",
+                        "label": "JavaScript",
+                        "source": "await svix.authentication.logout();"
+                    },
+                    {
+                        "lang": "JavaScript",
+                        "label": "TypeScript",
+                        "source": "await svix.authentication.logout();"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "svix.authentication.logout()"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "err := svixClient.Authentication.Logout()"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "svix.authentication.logout()"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "svix.getAuthentication().logout()"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix authentication logout "
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/auth/logout/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
                 ]
             }
         },
         "/api/v1/event-type/": {
             "get": {
                 "tags": [
-                    "event type"
+                    "Event Type"
                 ],
                 "summary": "List Event Types",
+                "description": "Return the list of event types.",
                 "operationId": "list_event_types_api_v1_event_type__get",
                 "parameters": [
                     {
@@ -711,13 +1023,56 @@
                     {
                         "HTTPBearer": []
                     }
+                ],
+                "x-codeSamples": [
+                    {
+                        "lang": "JavaScript",
+                        "label": "JavaScript",
+                        "source": "const listResponseEventTypeOut = await svix.eventType.list();"
+                    },
+                    {
+                        "lang": "JavaScript",
+                        "label": "TypeScript",
+                        "source": "const listResponseEventTypeOut = await svix.eventType.list();"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "list_response_event_type_out = svix.event_type.list()"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "listResponseEventTypeOut, err := svixClient.EventType.List(nil)"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "val listResponseEventTypeOut = svix.eventType.list(FetchOptions())"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "ListResponseEventTypeOut listResponseEventTypeOut = svix.getEventType().list(new FetchOptions())"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix event-type list "
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/event-type/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
                 ]
             },
             "post": {
                 "tags": [
-                    "event type"
+                    "Event Type"
                 ],
                 "summary": "Create Event Type",
+                "description": "Create an event type.",
                 "operationId": "create_event_type_api_v1_event_type__post",
                 "requestBody": {
                     "content": {
@@ -795,15 +1150,58 @@
                     {
                         "HTTPBearer": []
                     }
+                ],
+                "x-codeSamples": [
+                    {
+                        "lang": "JavaScript",
+                        "label": "JavaScript",
+                        "source": "const eventTypeOut = await svix.eventType.create({\n    \"description\": \"A user has signed up\",\n    \"name\": \"user.signup\"\n});"
+                    },
+                    {
+                        "lang": "JavaScript",
+                        "label": "TypeScript",
+                        "source": "const eventTypeOut = await svix.eventType.create({\n    \"description\": \"A user has signed up\",\n    \"name\": \"user.signup\"\n});"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "event_type_out = svix.event_type.create(EventTypeIn(\n    description=\"A user has signed up\",\n    name=\"user.signup\"\n))"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "eventTypeOut, err := svixClient.EventType.Create(&svix.EventTypeIn{\n    Description: \"A user has signed up\",\n    Name: \"user.signup\"\n})"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "val eventTypeOut = svix.eventType.create(EventTypeIn()\n    .description(\"A user has signed up\"),\n    .name(\"user.signup\")\n)"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "EventTypeOut eventTypeOut = svix.getEventType().create(new EventTypeIn()\n    .description(\"A user has signed up\"),\n    .name(\"user.signup\")\n)"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix event-type create '{\n    \"description\": \"A user has signed up\",\n    \"name\": \"user.signup\"\n}'"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/event-type/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'\n  -d '{\n    \"description\": \"A user has signed up\",\n    \"name\": \"user.signup\"\n}'"
+                    }
                 ]
             }
         },
         "/api/v1/event-type/{event_type_name}/": {
             "put": {
                 "tags": [
-                    "event type"
+                    "Event Type"
                 ],
                 "summary": "Update Event Type",
+                "description": "Update an event type.",
                 "operationId": "update_event_type_api_v1_event_type__event_type_name___put",
                 "parameters": [
                     {
@@ -892,13 +1290,56 @@
                     {
                         "HTTPBearer": []
                     }
+                ],
+                "x-codeSamples": [
+                    {
+                        "lang": "JavaScript",
+                        "label": "JavaScript",
+                        "source": "const eventTypeOut = await svix.eventType.update('event_type_name', {\n    \"description\": \"A user has signed up\"\n});"
+                    },
+                    {
+                        "lang": "JavaScript",
+                        "label": "TypeScript",
+                        "source": "const eventTypeOut = await svix.eventType.update('event_type_name', {\n    \"description\": \"A user has signed up\"\n});"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "event_type_out = svix.event_type.update('event_type_name', EventTypeUpdate(\n    description=\"A user has signed up\"\n))"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "eventTypeOut, err := svixClient.EventType.Update(\"event_type_name\", &svix.EventTypeUpdate{\n    Description: \"A user has signed up\"\n})"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "val eventTypeOut = svix.eventType.update('event_type_name', EventTypeUpdate()\n    .description(\"A user has signed up\")\n)"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "EventTypeOut eventTypeOut = svix.getEventType().update('event_type_name', new EventTypeUpdate()\n    .description(\"A user has signed up\")\n)"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix event-type update 'event_type_name' '{\n    \"description\": \"A user has signed up\"\n}'"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'PUT' \\\n  'https://api.svix.com/api/v1/event-type/{event_type_name}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'\n  -d '{\n    \"description\": \"A user has signed up\"\n}'"
+                    }
                 ]
             },
             "delete": {
                 "tags": [
-                    "event type"
+                    "Event Type"
                 ],
                 "summary": "Delete Event Type",
+                "description": "Delete an event type.",
                 "operationId": "delete_event_type_api_v1_event_type__event_type_name___delete",
                 "parameters": [
                     {
@@ -970,22 +1411,67 @@
                     {
                         "HTTPBearer": []
                     }
+                ],
+                "x-codeSamples": [
+                    {
+                        "lang": "JavaScript",
+                        "label": "JavaScript",
+                        "source": "await svix.eventType.delete('event_type_name');"
+                    },
+                    {
+                        "lang": "JavaScript",
+                        "label": "TypeScript",
+                        "source": "await svix.eventType.delete('event_type_name');"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "svix.event_type.delete('event_type_name')"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "err := svixClient.EventType.Delete(\"event_type_name\")"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "svix.eventType.delete('event_type_name')"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "svix.getEventType().delete('event_type_name')"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix event-type delete 'event_type_name'"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'DELETE' \\\n  'https://api.svix.com/api/v1/event-type/{event_type_name}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
                 ]
             }
         },
         "/api/v1/app/{app_id}/endpoint/": {
             "get": {
                 "tags": [
-                    "endpoint"
+                    "Endpoint"
                 ],
                 "summary": "List Endpoints",
+                "description": "List the application's endpoints.",
                 "operationId": "list_endpoints_api_v1_app__app_id__endpoint__get",
                 "parameters": [
                     {
                         "required": true,
                         "schema": {
                             "title": "App Id",
-                            "type": "string"
+                            "type": "string",
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                         },
                         "name": "app_id",
                         "in": "path"
@@ -1076,20 +1562,65 @@
                     {
                         "HTTPBearer": []
                     }
+                ],
+                "x-codeSamples": [
+                    {
+                        "lang": "JavaScript",
+                        "label": "JavaScript",
+                        "source": "const listResponseEndpointOut = await svix.endpoint.list('app_id');"
+                    },
+                    {
+                        "lang": "JavaScript",
+                        "label": "TypeScript",
+                        "source": "const listResponseEndpointOut = await svix.endpoint.list('app_id');"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "list_response_endpoint_out = svix.endpoint.list('app_id')"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "listResponseEndpointOut, err := svixClient.Endpoint.List(\"app_id\", nil)"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "val listResponseEndpointOut = svix.endpoint.list('app_id', FetchOptions())"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "ListResponseEndpointOut listResponseEndpointOut = svix.getEndpoint().list('app_id', new FetchOptions())"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix endpoint list 'app_id'"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
                 ]
             },
             "post": {
                 "tags": [
-                    "endpoint"
+                    "Endpoint"
                 ],
                 "summary": "Create Endpoint",
+                "description": "Create a new endpoint for the application.",
                 "operationId": "create_endpoint_api_v1_app__app_id__endpoint__post",
                 "parameters": [
                     {
                         "required": true,
                         "schema": {
                             "title": "App Id",
-                            "type": "string"
+                            "type": "string",
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                         },
                         "name": "app_id",
                         "in": "path"
@@ -1171,15 +1702,58 @@
                     {
                         "HTTPBearer": []
                     }
+                ],
+                "x-codeSamples": [
+                    {
+                        "lang": "JavaScript",
+                        "label": "JavaScript",
+                        "source": "const endpointOut = await svix.endpoint.create('app_id', {\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ]\n});"
+                    },
+                    {
+                        "lang": "JavaScript",
+                        "label": "TypeScript",
+                        "source": "const endpointOut = await svix.endpoint.create('app_id', {\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ]\n});"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "endpoint_out = svix.endpoint.create('app_id', EndpointIn(\n    url=\"https://example.com/webhook/\",\n    version=1,\n    description=\"An example endpoint name\",\n    filter_types=['user.signup', 'user.deleted']\n))"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "endpointOut, err := svixClient.Endpoint.Create(\"app_id\", &svix.EndpointIn{\n    Url: \"https://example.com/webhook/\",\n    Version: 1,\n    Description: \"An example endpoint name\",\n    FilterTypes: [...]string{\"user.signup\", \"user.deleted\"}\n})"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "val endpointOut = svix.endpoint.create('app_id', EndpointIn()\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\"))\n)"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "EndpointOut endpointOut = svix.getEndpoint().create('app_id', new EndpointIn()\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"})\n)"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix endpoint create 'app_id' '{\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ]\n}'"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'\n  -d '{\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ]\n}'"
+                    }
                 ]
             }
         },
         "/api/v1/app/{app_id}/endpoint/{endpoint_id}/": {
             "get": {
                 "tags": [
-                    "endpoint"
+                    "Endpoint"
                 ],
                 "summary": "Get Endpoint",
+                "description": "Get an application.",
                 "operationId": "get_endpoint_api_v1_app__app_id__endpoint__endpoint_id___get",
                 "parameters": [
                     {
@@ -1196,7 +1770,9 @@
                         "required": true,
                         "schema": {
                             "title": "App Id",
-                            "type": "string"
+                            "type": "string",
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                         },
                         "name": "app_id",
                         "in": "path"
@@ -1268,13 +1844,56 @@
                     {
                         "HTTPBearer": []
                     }
+                ],
+                "x-codeSamples": [
+                    {
+                        "lang": "JavaScript",
+                        "label": "JavaScript",
+                        "source": "const endpointOut = await svix.endpoint.get('app_id', 'endpoint_id');"
+                    },
+                    {
+                        "lang": "JavaScript",
+                        "label": "TypeScript",
+                        "source": "const endpointOut = await svix.endpoint.get('app_id', 'endpoint_id');"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "endpoint_out = svix.endpoint.get('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "endpointOut, err := svixClient.Endpoint.Get(\"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "val endpointOut = svix.endpoint.get('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "EndpointOut endpointOut = svix.getEndpoint().get('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix endpoint get 'app_id' 'endpoint_id'"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
                 ]
             },
             "put": {
                 "tags": [
-                    "endpoint"
+                    "Endpoint"
                 ],
                 "summary": "Update Endpoint",
+                "description": "Update an endpoint.",
                 "operationId": "update_endpoint_api_v1_app__app_id__endpoint__endpoint_id___put",
                 "parameters": [
                     {
@@ -1291,7 +1910,9 @@
                         "required": true,
                         "schema": {
                             "title": "App Id",
-                            "type": "string"
+                            "type": "string",
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                         },
                         "name": "app_id",
                         "in": "path"
@@ -1373,13 +1994,56 @@
                     {
                         "HTTPBearer": []
                     }
+                ],
+                "x-codeSamples": [
+                    {
+                        "lang": "JavaScript",
+                        "label": "JavaScript",
+                        "source": "const endpointOut = await svix.endpoint.update('app_id', 'endpoint_id', {\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ]\n});"
+                    },
+                    {
+                        "lang": "JavaScript",
+                        "label": "TypeScript",
+                        "source": "const endpointOut = await svix.endpoint.update('app_id', 'endpoint_id', {\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ]\n});"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "endpoint_out = svix.endpoint.update('app_id', 'endpoint_id', EndpointIn(\n    url=\"https://example.com/webhook/\",\n    version=1,\n    description=\"An example endpoint name\",\n    filter_types=['user.signup', 'user.deleted']\n))"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "endpointOut, err := svixClient.Endpoint.Update(\"app_id\", \"endpoint_id\", &svix.EndpointIn{\n    Url: \"https://example.com/webhook/\",\n    Version: 1,\n    Description: \"An example endpoint name\",\n    FilterTypes: [...]string{\"user.signup\", \"user.deleted\"}\n})"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "val endpointOut = svix.endpoint.update('app_id', 'endpoint_id', EndpointIn()\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\"))\n)"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "EndpointOut endpointOut = svix.getEndpoint().update('app_id', 'endpoint_id', new EndpointIn()\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"})\n)"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix endpoint update 'app_id' 'endpoint_id' '{\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ]\n}'"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'PUT' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'\n  -d '{\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ]\n}'"
+                    }
                 ]
             },
             "delete": {
                 "tags": [
-                    "endpoint"
+                    "Endpoint"
                 ],
                 "summary": "Delete Endpoint",
+                "description": "Delete an endpoint.",
                 "operationId": "delete_endpoint_api_v1_app__app_id__endpoint__endpoint_id___delete",
                 "parameters": [
                     {
@@ -1396,7 +2060,9 @@
                         "required": true,
                         "schema": {
                             "title": "App Id",
-                            "type": "string"
+                            "type": "string",
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                         },
                         "name": "app_id",
                         "in": "path"
@@ -1461,15 +2127,58 @@
                     {
                         "HTTPBearer": []
                     }
+                ],
+                "x-codeSamples": [
+                    {
+                        "lang": "JavaScript",
+                        "label": "JavaScript",
+                        "source": "await svix.endpoint.delete('app_id', 'endpoint_id');"
+                    },
+                    {
+                        "lang": "JavaScript",
+                        "label": "TypeScript",
+                        "source": "await svix.endpoint.delete('app_id', 'endpoint_id');"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "svix.endpoint.delete('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "err := svixClient.Endpoint.Delete(\"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "svix.endpoint.delete('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "svix.getEndpoint().delete('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix endpoint delete 'app_id' 'endpoint_id'"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'DELETE' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
                 ]
             }
         },
         "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/": {
             "get": {
                 "tags": [
-                    "endpoint"
+                    "Endpoint"
                 ],
                 "summary": "Get Endpoint Secret",
+                "description": "Get the endpoint's signing secret.\n\nThis is used to verify the authenticity of the webhook.\nFor more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).",
                 "operationId": "get_endpoint_secret_api_v1_app__app_id__endpoint__endpoint_id__secret__get",
                 "parameters": [
                     {
@@ -1486,7 +2195,9 @@
                         "required": true,
                         "schema": {
                             "title": "App Id",
-                            "type": "string"
+                            "type": "string",
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                         },
                         "name": "app_id",
                         "in": "path"
@@ -1558,102 +2269,47 @@
                     {
                         "HTTPBearer": []
                     }
-                ]
-            }
-        },
-        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/stats/": {
-            "get": {
-                "tags": [
-                    "endpoint"
                 ],
-                "summary": "Get Endpoint Stats",
-                "operationId": "get_endpoint_stats_api_v1_app__app_id__endpoint__endpoint_id__stats__get",
-                "parameters": [
+                "x-codeSamples": [
                     {
-                        "required": true,
-                        "schema": {
-                            "title": "Endpoint Id",
-                            "type": "string",
-                            "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2"
-                        },
-                        "name": "endpoint_id",
-                        "in": "path"
+                        "lang": "JavaScript",
+                        "label": "JavaScript",
+                        "source": "const endpointSecretOut = await svix.endpoint.secret('app_id', 'endpoint_id');"
                     },
                     {
-                        "required": true,
-                        "schema": {
-                            "title": "App Id",
-                            "type": "string"
-                        },
-                        "name": "app_id",
-                        "in": "path"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/EndpointStats"
-                                }
-                            }
-                        }
+                        "lang": "JavaScript",
+                        "label": "TypeScript",
+                        "source": "const endpointSecretOut = await svix.endpoint.secret('app_id', 'endpoint_id');"
                     },
-                    "401": {
-                        "description": "Unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        }
-                    },
-                    "409": {
-                        "description": "Conflict",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
                     {
-                        "HTTPBearer": []
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "endpoint_secret_out = svix.endpoint.secret('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "endpointSecretOut, err := svixClient.Endpoint.Secret(\"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "val endpointSecretOut = svix.endpoint.secret('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "EndpointSecretOut endpointSecretOut = svix.getEndpoint().secret('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix endpoint secret 'app_id' 'endpoint_id'"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -1661,16 +2317,19 @@
         "/api/v1/app/{app_id}/msg/": {
             "get": {
                 "tags": [
-                    "message"
+                    "Message"
                 ],
                 "summary": "List Messages",
+                "description": "List all of the application's messages.",
                 "operationId": "list_messages_api_v1_app__app_id__msg__get",
                 "parameters": [
                     {
                         "required": true,
                         "schema": {
                             "title": "App Id",
-                            "type": "string"
+                            "type": "string",
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                         },
                         "name": "app_id",
                         "in": "path"
@@ -1761,21 +2420,65 @@
                     {
                         "HTTPBearer": []
                     }
+                ],
+                "x-codeSamples": [
+                    {
+                        "lang": "JavaScript",
+                        "label": "JavaScript",
+                        "source": "const listResponseMessageOut = await svix.message.list('app_id');"
+                    },
+                    {
+                        "lang": "JavaScript",
+                        "label": "TypeScript",
+                        "source": "const listResponseMessageOut = await svix.message.list('app_id');"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "list_response_message_out = svix.message.list('app_id')"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "listResponseMessageOut, err := svixClient.Message.List(\"app_id\", nil)"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "val listResponseMessageOut = svix.message.list('app_id', FetchOptions())"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "ListResponseMessageOut listResponseMessageOut = svix.getMessage().list('app_id', new FetchOptions())"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix message list 'app_id'"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/msg/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
                 ]
             },
             "post": {
                 "tags": [
-                    "message"
+                    "Message"
                 ],
                 "summary": "Create Message",
-                "description": "Creates a new message and schedules it to be sent.\nIf the message includes an `event_id` and a message with this id already exists, a 409 conflict error will be returned.",
+                "description": "Creates a new message and dispatch it to all of the application's endpoints. The message will be delivered following the organizations delivery and retry policy.\n`eventId` Is an optional global unique ID accross all applications.\nIf a message with the same `eventId` already exists, a 409 conflict error will be returned.",
                 "operationId": "create_message_api_v1_app__app_id__msg__post",
                 "parameters": [
                     {
                         "required": true,
                         "schema": {
                             "title": "App Id",
-                            "type": "string"
+                            "type": "string",
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                         },
                         "name": "app_id",
                         "in": "path"
@@ -1842,6 +2545,16 @@
                             }
                         }
                     },
+                    "413": {
+                        "description": "Request Entity Too Large",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
                     "422": {
                         "description": "Validation Error",
                         "content": {
@@ -1857,22 +2570,67 @@
                     {
                         "HTTPBearer": []
                     }
+                ],
+                "x-codeSamples": [
+                    {
+                        "lang": "JavaScript",
+                        "label": "JavaScript",
+                        "source": "const messageOut = await svix.message.create('app_id', {\n    \"eventType\": \"user.signup\",\n    \"eventId\": \"evt_pNZKtWg8Azow\",\n    \"payload\": {\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    }\n});"
+                    },
+                    {
+                        "lang": "JavaScript",
+                        "label": "TypeScript",
+                        "source": "const messageOut = await svix.message.create('app_id', {\n    \"eventType\": \"user.signup\",\n    \"eventId\": \"evt_pNZKtWg8Azow\",\n    \"payload\": {\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    }\n});"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "message_out = svix.message.create('app_id', MessageIn(\n    event_type=\"user.signup\",\n    event_id=\"evt_pNZKtWg8Azow\",\n    payload={'username': 'test_user', 'email': 'test@example.com'}\n))"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "messageOut, err := svixClient.Message.Create(\"app_id\", &svix.MessageIn{\n    EventType: \"user.signup\",\n    EventId: \"evt_pNZKtWg8Azow\",\n    Payload: map[string]interface{}{\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    }\n})"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "val messageOut = svix.message.create('app_id', MessageIn()\n    .eventType(\"user.signup\"),\n    .eventId(\"evt_pNZKtWg8Azow\"),\n    .payload(\"\"\"{\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    }\"\"\")\n)"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "MessageOut messageOut = svix.getMessage().create('app_id', new MessageIn()\n    .eventType(\"user.signup\"),\n    .eventId(\"evt_pNZKtWg8Azow\"),\n    .payload(\"{\" +\n        \"\\\"username\\\": \\\"test_user\\\",\" +\n        \"\\\"email\\\": \\\"test@example.com\\\"\" +\n    \"}\")\n)"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix message create 'app_id' '{\n    \"eventType\": \"user.signup\",\n    \"eventId\": \"evt_pNZKtWg8Azow\",\n    \"payload\": {\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    }\n}'"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/msg/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'\n  -d '{\n    \"eventType\": \"user.signup\",\n    \"eventId\": \"evt_pNZKtWg8Azow\",\n    \"payload\": {\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    }\n}'"
+                    }
                 ]
             }
         },
         "/api/v1/app/{app_id}/msg/{msg_id}/": {
             "get": {
                 "tags": [
-                    "message"
+                    "Message"
                 ],
                 "summary": "Get Message",
+                "description": "Get a message by its ID or eventID.",
                 "operationId": "get_message_api_v1_app__app_id__msg__msg_id___get",
                 "parameters": [
                     {
                         "required": true,
                         "schema": {
                             "title": "Msg Id",
-                            "type": "string"
+                            "type": "string",
+                            "description": "The message's ID or eventID",
+                            "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                         },
                         "name": "msg_id",
                         "in": "path"
@@ -1881,7 +2639,9 @@
                         "required": true,
                         "schema": {
                             "title": "App Id",
-                            "type": "string"
+                            "type": "string",
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                         },
                         "name": "app_id",
                         "in": "path"
@@ -1953,15 +2713,58 @@
                     {
                         "HTTPBearer": []
                     }
+                ],
+                "x-codeSamples": [
+                    {
+                        "lang": "JavaScript",
+                        "label": "JavaScript",
+                        "source": "const messageOut = await svix.message.get('app_id', 'msg_id');"
+                    },
+                    {
+                        "lang": "JavaScript",
+                        "label": "TypeScript",
+                        "source": "const messageOut = await svix.message.get('app_id', 'msg_id');"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "message_out = svix.message.get('app_id', 'msg_id')"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "messageOut, err := svixClient.Message.Get(\"app_id\", \"msg_id\")"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "val messageOut = svix.message.get('app_id', 'msg_id')"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "MessageOut messageOut = svix.getMessage().get('app_id', 'msg_id')"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix message get 'app_id' 'msg_id'"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/msg/{msg_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
                 ]
             }
         },
         "/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg/": {
             "get": {
                 "tags": [
-                    "message attempt"
+                    "Message Attempt"
                 ],
                 "summary": "List Attempted Messages",
+                "description": "List the message attempts for a particular endpoint.\n\nReturning the message.",
                 "operationId": "list_attempted_messages_api_v1_app__app_id__endpoint__endpoint_id__msg__get",
                 "parameters": [
                     {
@@ -1978,7 +2781,9 @@
                         "required": true,
                         "schema": {
                             "title": "App Id",
-                            "type": "string"
+                            "type": "string",
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                         },
                         "name": "app_id",
                         "in": "path"
@@ -2077,22 +2882,32 @@
                     {
                         "HTTPBearer": []
                     }
+                ],
+                "x-codeSamples": [
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
                 ]
             }
         },
         "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/": {
             "get": {
                 "tags": [
-                    "message attempt"
+                    "Message Attempt"
                 ],
                 "summary": "List Attempted Destinations",
+                "description": "`msg_id`: Use a message id or a message `eventId`",
                 "operationId": "list_attempted_destinations_api_v1_app__app_id__msg__msg_id__endpoint__get",
                 "parameters": [
                     {
                         "required": true,
                         "schema": {
                             "title": "Msg Id",
-                            "type": "string"
+                            "type": "string",
+                            "description": "The message's ID or eventID",
+                            "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                         },
                         "name": "msg_id",
                         "in": "path"
@@ -2101,7 +2916,9 @@
                         "required": true,
                         "schema": {
                             "title": "App Id",
-                            "type": "string"
+                            "type": "string",
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                         },
                         "name": "app_id",
                         "in": "path"
@@ -2192,13 +3009,20 @@
                     {
                         "HTTPBearer": []
                     }
+                ],
+                "x-codeSamples": [
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/msg/{msg_id}/endpoint/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
                 ]
             }
         },
         "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/resend/": {
             "post": {
                 "tags": [
-                    "message attempt"
+                    "Message Attempt"
                 ],
                 "summary": "Resend Webhook",
                 "description": "Resend a message to the specified endpoint.",
@@ -2218,7 +3042,9 @@
                         "required": true,
                         "schema": {
                             "title": "Msg Id",
-                            "type": "string"
+                            "type": "string",
+                            "description": "The message's ID or eventID",
+                            "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                         },
                         "name": "msg_id",
                         "in": "path"
@@ -2227,7 +3053,9 @@
                         "required": true,
                         "schema": {
                             "title": "App Id",
-                            "type": "string"
+                            "type": "string",
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                         },
                         "name": "app_id",
                         "in": "path"
@@ -2235,14 +3063,7 @@
                 ],
                 "responses": {
                     "202": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/BaseModel"
-                                }
-                            }
-                        }
+                        "description": "Successful Response"
                     },
                     "401": {
                         "description": "Unauthorized",
@@ -2299,22 +3120,67 @@
                     {
                         "HTTPBearer": []
                     }
+                ],
+                "x-codeSamples": [
+                    {
+                        "lang": "JavaScript",
+                        "label": "JavaScript",
+                        "source": "await svix.messageAttempt.resend('app_id', 'msg_id', 'endpoint_id');"
+                    },
+                    {
+                        "lang": "JavaScript",
+                        "label": "TypeScript",
+                        "source": "await svix.messageAttempt.resend('app_id', 'msg_id', 'endpoint_id');"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "svix.message_attempt.resend('app_id', 'msg_id', 'endpoint_id')"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "err := svixClient.MessageAttempt.Resend(\"app_id\", \"msg_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "svix.messageAttempt.resend('app_id', 'msg_id', 'endpoint_id')"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "svix.getMessageAttempt().resend('app_id', 'msg_id', 'endpoint_id')"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix message-attempt resend 'app_id' 'msg_id' 'endpoint_id'"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/resend/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
                 ]
             }
         },
         "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/attempt/": {
             "get": {
                 "tags": [
-                    "message attempt"
+                    "Message Attempt"
                 ],
                 "summary": "List Attempts For Endpoint",
+                "description": "List the message attempts for a particular endpoint.\n\nReturning the endpint.",
                 "operationId": "list_attempts_for_endpoint_api_v1_app__app_id__msg__msg_id__endpoint__endpoint_id__attempt__get",
                 "parameters": [
                     {
                         "required": true,
                         "schema": {
                             "title": "Msg Id",
-                            "type": "string"
+                            "type": "string",
+                            "description": "The message's ID or eventID",
+                            "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                         },
                         "name": "msg_id",
                         "in": "path"
@@ -2323,7 +3189,9 @@
                         "required": true,
                         "schema": {
                             "title": "App Id",
-                            "type": "string"
+                            "type": "string",
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                         },
                         "name": "app_id",
                         "in": "path"
@@ -2432,22 +3300,32 @@
                     {
                         "HTTPBearer": []
                     }
+                ],
+                "x-codeSamples": [
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/attempt/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
                 ]
             }
         },
         "/api/v1/app/{app_id}/msg/{msg_id}/attempt/": {
             "get": {
                 "tags": [
-                    "message attempt"
+                    "Message Attempt"
                 ],
                 "summary": "List Attempts",
+                "description": "`msg_id`: Use a message id or a message `eventId`",
                 "operationId": "list_attempts_api_v1_app__app_id__msg__msg_id__attempt__get",
                 "parameters": [
                     {
                         "required": true,
                         "schema": {
                             "title": "Msg Id",
-                            "type": "string"
+                            "type": "string",
+                            "description": "The message's ID or eventID",
+                            "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                         },
                         "name": "msg_id",
                         "in": "path"
@@ -2456,7 +3334,9 @@
                         "required": true,
                         "schema": {
                             "title": "App Id",
-                            "type": "string"
+                            "type": "string",
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                         },
                         "name": "app_id",
                         "in": "path"
@@ -2555,15 +3435,58 @@
                     {
                         "HTTPBearer": []
                     }
+                ],
+                "x-codeSamples": [
+                    {
+                        "lang": "JavaScript",
+                        "label": "JavaScript",
+                        "source": "const listResponseMessageAttemptOut = await svix.messageAttempt.list('app_id', 'msg_id');"
+                    },
+                    {
+                        "lang": "JavaScript",
+                        "label": "TypeScript",
+                        "source": "const listResponseMessageAttemptOut = await svix.messageAttempt.list('app_id', 'msg_id');"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "list_response_message_attempt_out = svix.message_attempt.list('app_id', 'msg_id')"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "listResponseMessageAttemptOut, err := svixClient.MessageAttempt.List(\"app_id\", \"msg_id\", nil)"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "val listResponseMessageAttemptOut = svix.messageAttempt.list('app_id', 'msg_id', FetchOptionsMessageAttempt())"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "ListResponseMessageAttemptOut listResponseMessageAttemptOut = svix.getMessageAttempt().list('app_id', 'msg_id', new FetchOptionsMessageAttempt())"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix message-attempt list 'app_id' 'msg_id'"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/msg/{msg_id}/attempt/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
                 ]
             }
         },
         "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/": {
             "get": {
                 "tags": [
-                    "message attempt"
+                    "Message Attempt"
                 ],
                 "summary": "Get Attempt",
+                "description": "`msg_id`: Use a message id or a message `eventId`",
                 "operationId": "get_attempt_api_v1_app__app_id__msg__msg_id__attempt__attempt_id___get",
                 "parameters": [
                     {
@@ -2580,7 +3503,9 @@
                         "required": true,
                         "schema": {
                             "title": "Msg Id",
-                            "type": "string"
+                            "type": "string",
+                            "description": "The message's ID or eventID",
+                            "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                         },
                         "name": "msg_id",
                         "in": "path"
@@ -2589,7 +3514,9 @@
                         "required": true,
                         "schema": {
                             "title": "App Id",
-                            "type": "string"
+                            "type": "string",
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                         },
                         "name": "app_id",
                         "in": "path"
@@ -2661,21 +3588,49 @@
                     {
                         "HTTPBearer": []
                     }
-                ]
-            }
-        },
-        "/api/v1/development/echo/": {
-            "post": {
-                "tags": [
-                    "development"
                 ],
-                "summary": "Echo",
-                "operationId": "echo_api_v1_development_echo__post",
-                "responses": {
-                    "204": {
-                        "description": "Successful Response"
+                "x-codeSamples": [
+                    {
+                        "lang": "JavaScript",
+                        "label": "JavaScript",
+                        "source": "const messageAttemptOut = await svix.messageAttempt.get('app_id', 'msg_id', 'attempt_id');"
+                    },
+                    {
+                        "lang": "JavaScript",
+                        "label": "TypeScript",
+                        "source": "const messageAttemptOut = await svix.messageAttempt.get('app_id', 'msg_id', 'attempt_id');"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "message_attempt_out = svix.message_attempt.get('app_id', 'msg_id', 'attempt_id')"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "messageAttemptOut, err := svixClient.MessageAttempt.Get(\"app_id\", \"msg_id\", \"attempt_id\")"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "val messageAttemptOut = svix.messageAttempt.get('app_id', 'msg_id', 'attempt_id')"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "MessageAttemptOut messageAttemptOut = svix.getMessageAttempt().get('app_id', 'msg_id', 'attempt_id')"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix message-attempt get 'app_id' 'msg_id' 'attempt_id'"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
-                }
+                ]
             }
         }
     },
@@ -2690,11 +3645,13 @@
                 "properties": {
                     "uid": {
                         "title": "Uid",
-                        "type": "string"
+                        "type": "string",
+                        "example": "unique-app-identifier"
                     },
                     "name": {
                         "title": "Name",
-                        "type": "string"
+                        "type": "string",
+                        "example": "My first application"
                     }
                 }
             },
@@ -2709,11 +3666,13 @@
                 "properties": {
                     "uid": {
                         "title": "Uid",
-                        "type": "string"
+                        "type": "string",
+                        "example": "unique-app-identifier"
                     },
                     "name": {
                         "title": "Name",
-                        "type": "string"
+                        "type": "string",
+                        "example": "My first application"
                     },
                     "id": {
                         "title": "Id",
@@ -2726,11 +3685,6 @@
                         "format": "date-time"
                     }
                 }
-            },
-            "BaseModel": {
-                "title": "BaseModel",
-                "type": "object",
-                "properties": {}
             },
             "DashboardAccessOut": {
                 "title": "DashboardAccessOut",
@@ -2745,11 +3699,13 @@
                         "maxLength": 65536,
                         "minLength": 1,
                         "type": "string",
-                        "format": "uri"
+                        "format": "uri",
+                        "example": "https://app.svix.com/login#key=eyJhcHBJZCI6ICJhcHBfMXRSdFl"
                     },
                     "token": {
                         "title": "Token",
-                        "type": "string"
+                        "type": "string",
+                        "example": "appsk_kV3ts5tKPNJN4Dl25cMTfUNdmabxbX0O"
                     }
                 }
             },
@@ -2766,17 +3722,20 @@
                         "maxLength": 65536,
                         "minLength": 1,
                         "type": "string",
-                        "format": "uri"
+                        "format": "uri",
+                        "example": "https://example.com/webhook/"
                     },
                     "version": {
                         "title": "Version",
                         "exclusiveMinimum": 0.0,
-                        "type": "integer"
+                        "type": "integer",
+                        "example": 1
                     },
                     "description": {
                         "title": "Description",
                         "type": "string",
-                        "default": ""
+                        "default": "",
+                        "example": "An example endpoint name"
                     },
                     "filterTypes": {
                         "title": "Filtertypes",
@@ -2784,7 +3743,11 @@
                         "type": "array",
                         "items": {
                             "type": "string"
-                        }
+                        },
+                        "example": [
+                            "user.signup",
+                            "user.deleted"
+                        ]
                     }
                 }
             },
@@ -2851,17 +3814,20 @@
                         "maxLength": 65536,
                         "minLength": 1,
                         "type": "string",
-                        "format": "uri"
+                        "format": "uri",
+                        "example": "https://example.com/webhook/"
                     },
                     "version": {
                         "title": "Version",
                         "exclusiveMinimum": 0.0,
-                        "type": "integer"
+                        "type": "integer",
+                        "example": 1
                     },
                     "description": {
                         "title": "Description",
                         "type": "string",
-                        "default": ""
+                        "default": "",
+                        "example": "An example endpoint name"
                     },
                     "filterTypes": {
                         "title": "Filtertypes",
@@ -2869,7 +3835,11 @@
                         "type": "array",
                         "items": {
                             "type": "string"
-                        }
+                        },
+                        "example": [
+                            "user.signup",
+                            "user.deleted"
+                        ]
                     },
                     "id": {
                         "title": "Id",
@@ -2896,29 +3866,6 @@
                     }
                 }
             },
-            "EndpointStats": {
-                "title": "EndpointStats",
-                "required": [
-                    "success",
-                    "pending",
-                    "fail"
-                ],
-                "type": "object",
-                "properties": {
-                    "success": {
-                        "title": "Success",
-                        "type": "integer"
-                    },
-                    "pending": {
-                        "title": "Pending",
-                        "type": "integer"
-                    },
-                    "fail": {
-                        "title": "Fail",
-                        "type": "integer"
-                    }
-                }
-            },
             "EventTypeIn": {
                 "title": "EventTypeIn",
                 "required": [
@@ -2929,7 +3876,8 @@
                 "properties": {
                     "description": {
                         "title": "Description",
-                        "type": "string"
+                        "type": "string",
+                        "example": "A user has signed up"
                     },
                     "name": {
                         "title": "Name",
@@ -2950,7 +3898,8 @@
                 "properties": {
                     "description": {
                         "title": "Description",
-                        "type": "string"
+                        "type": "string",
+                        "example": "A user has signed up"
                     },
                     "name": {
                         "title": "Name",
@@ -2970,7 +3919,8 @@
                 "properties": {
                     "description": {
                         "title": "Description",
-                        "type": "string"
+                        "type": "string",
+                        "example": "A user has signed up"
                     }
                 }
             },
@@ -2984,29 +3934,6 @@
                         "items": {
                             "$ref": "#/components/schemas/ValidationError"
                         }
-                    }
-                }
-            },
-            "HttpErrorField": {
-                "title": "HttpErrorField",
-                "required": [
-                    "field",
-                    "code",
-                    "detail"
-                ],
-                "type": "object",
-                "properties": {
-                    "field": {
-                        "title": "Field",
-                        "type": "string"
-                    },
-                    "code": {
-                        "title": "Code",
-                        "type": "string"
-                    },
-                    "detail": {
-                        "title": "Detail",
-                        "type": "string"
                     }
                 }
             },
@@ -3025,13 +3952,6 @@
                     "detail": {
                         "title": "Detail",
                         "type": "string"
-                    },
-                    "errors": {
-                        "title": "Errors",
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/HttpErrorField"
-                        }
                     }
                 }
             },
@@ -3052,7 +3972,8 @@
                     },
                     "iterator": {
                         "title": "Iterator",
-                        "type": "string"
+                        "type": "string",
+                        "example": "iterator"
                     },
                     "done": {
                         "title": "Done",
@@ -3077,7 +3998,8 @@
                     },
                     "iterator": {
                         "title": "Iterator",
-                        "type": "string"
+                        "type": "string",
+                        "example": "iterator"
                     },
                     "done": {
                         "title": "Done",
@@ -3102,7 +4024,8 @@
                     },
                     "iterator": {
                         "title": "Iterator",
-                        "type": "string"
+                        "type": "string",
+                        "example": "iterator"
                     },
                     "done": {
                         "title": "Done",
@@ -3127,7 +4050,8 @@
                     },
                     "iterator": {
                         "title": "Iterator",
-                        "type": "string"
+                        "type": "string",
+                        "example": "iterator"
                     },
                     "done": {
                         "title": "Done",
@@ -3152,7 +4076,8 @@
                     },
                     "iterator": {
                         "title": "Iterator",
-                        "type": "string"
+                        "type": "string",
+                        "example": "iterator"
                     },
                     "done": {
                         "title": "Done",
@@ -3177,7 +4102,8 @@
                     },
                     "iterator": {
                         "title": "Iterator",
-                        "type": "string"
+                        "type": "string",
+                        "example": "iterator"
                     },
                     "done": {
                         "title": "Done",
@@ -3202,7 +4128,8 @@
                     },
                     "iterator": {
                         "title": "Iterator",
-                        "type": "string"
+                        "type": "string",
+                        "example": "iterator"
                     },
                     "done": {
                         "title": "Done",
@@ -3227,7 +4154,8 @@
                     },
                     "iterator": {
                         "title": "Iterator",
-                        "type": "string"
+                        "type": "string",
+                        "example": "iterator"
                     },
                     "done": {
                         "title": "Done",
@@ -3253,11 +4181,13 @@
                     },
                     "response": {
                         "title": "Response",
-                        "type": "string"
+                        "type": "string",
+                        "example": "{}"
                     },
                     "responseStatusCode": {
                         "title": "Responsestatuscode",
-                        "type": "integer"
+                        "type": "integer",
+                        "example": 200
                     },
                     "timestamp": {
                         "title": "Timestamp",
@@ -3288,11 +4218,13 @@
                     },
                     "response": {
                         "title": "Response",
-                        "type": "string"
+                        "type": "string",
+                        "example": "{}"
                     },
                     "responseStatusCode": {
                         "title": "Responsestatuscode",
-                        "type": "integer"
+                        "type": "integer",
+                        "example": 200
                     },
                     "timestamp": {
                         "title": "Timestamp",
@@ -3325,17 +4257,20 @@
                         "maxLength": 65536,
                         "minLength": 1,
                         "type": "string",
-                        "format": "uri"
+                        "format": "uri",
+                        "example": "https://example.com/webhook/"
                     },
                     "version": {
                         "title": "Version",
                         "exclusiveMinimum": 0.0,
-                        "type": "integer"
+                        "type": "integer",
+                        "example": 1
                     },
                     "description": {
                         "title": "Description",
                         "type": "string",
-                        "default": ""
+                        "default": "",
+                        "example": "An example endpoint name"
                     },
                     "filterTypes": {
                         "title": "Filtertypes",
@@ -3343,7 +4278,11 @@
                         "type": "array",
                         "items": {
                             "type": "string"
-                        }
+                        },
+                        "example": [
+                            "user.signup",
+                            "user.deleted"
+                        ]
                     },
                     "id": {
                         "title": "Id",
@@ -3444,7 +4383,7 @@
                     2
                 ],
                 "type": "integer",
-                "description": "An enumeration."
+                "description": "The sending status of the message:\n- Success = 0\n- Pending = 1\n- Fail = 2"
             },
             "ValidationError": {
                 "title": "ValidationError",
@@ -3479,5 +4418,59 @@
                 "scheme": "bearer"
             }
         }
-    }
+    },
+    "tags": [
+        {
+            "name": "Application",
+            "description": "Applications are where messages are sent to. In most cases you would wantto have one application for each of your users."
+        },
+        {
+            "name": "Message",
+            "description": "Messages are the webhook events being sent."
+        },
+        {
+            "name": "Message Attempt",
+            "description": "Attempts to deliver `Message`s to `Endpoint`s."
+        },
+        {
+            "name": "Endpoint",
+            "description": "Endpoints are the URLs messages will be sent to. Each application can have multiple endpoints and each message sent to that application will be sent to all of them (unless they are not subscribed to the sent event type)."
+        },
+        {
+            "name": "Event Type",
+            "description": "Event types are identifiers denoting the type of message being sent. Event types are primarily used to decide which events are sent to which endpoint."
+        },
+        {
+            "name": "Authentication",
+            "description": "Easily give your users access to our pre-built management UI."
+        },
+        {
+            "name": "Health",
+            "description": "Health checks for the API."
+        }
+    ],
+    "x-tagGroups": [
+        {
+            "name": "General",
+            "tags": [
+                "Application",
+                "Event Type"
+            ]
+        },
+        {
+            "name": "Application specific",
+            "tags": [
+                "Authentication",
+                "Endpoint",
+                "Message",
+                "Message Attempt"
+            ]
+        },
+        {
+            "name": "Utility",
+            "tags": [
+                "Health"
+            ]
+        }
+    ]
 }
