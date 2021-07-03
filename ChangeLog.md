@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.20.0
+* All: Update OpenAPI spec
+* Javascript: Fix bug with message attempt resend (would throw on return)
+* Python: Fix optional bug where optional return types would throw
+
 ## Version 0.19.1
 * Python: Fix issue with pip package not generating the `openapi_client` properly on deploy
 
