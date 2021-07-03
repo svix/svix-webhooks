@@ -1,7 +1,7 @@
 /*
- * Svix
+ * Svix API
  *
- * The Svix server API documentation
+ * Welcome to the Svix API documentation!  Useful links: [Homepage](https://www.svix.com) | [Support email](mailto:support+docs@svix.com) | [Slack Community](https://www.svix.com/slack/)  # Introduction  This is the reference documentation and schemas for the Svix API. For tutorials and other documentation please refer to [the documentation](https://docs.svix.com).  ## Main concepts  In Svix you have four important entities you will be interacting with:  - `messages`: these are the webhooks being sent. They can have contents and a few other properties. - `application`: this is where `messages` are sent to. Usually you want to create one application for each of your users. - `endpoint`: endpoints are the URLs messages will be sent to. Each application can have multiple `endpoints` and each message sent to that application will be sent to all of them (unless they are not subscribed to the sent event type). - `event-type`: event types are identifiers denoting the type of the message being sent. Event types are primarily used to decide which events are sent to which endpoint.   ## Authentication  Get your authentication token (`AUTH_TOKEN`) from the [Svix dashboard](https://dashboard.svix.com) and use it as part of the `Authorization` header as such: `Authorization: Bearer ${AUTH_TOKEN}`.  <SecurityDefinitions />   ## Code samples  The code samples assume you already have the respective libraries installed and you know how to use them. For the latest information on how to do that, please refer to [the documentation](https://docs.svix.com/).   ## Cross-Origin Resource Sharing  This API features Cross-Origin Resource Sharing (CORS) implemented in compliance with [W3C spec](https://www.w3.org/TR/cors/). And that allows cross-domain communication from the browser. All responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site. 
  *
  * API version: 1.4
  */
@@ -44,6 +44,7 @@ func (r ApiCreateEventTypeApiV1EventTypePostRequest) Execute() (EventTypeOut, *_
 
 /*
  * CreateEventTypeApiV1EventTypePost Create Event Type
+ * Create an event type.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @return ApiCreateEventTypeApiV1EventTypePostRequest
  */
@@ -200,6 +201,7 @@ func (r ApiDeleteEventTypeApiV1EventTypeEventTypeNameDeleteRequest) Execute() (*
 
 /*
  * DeleteEventTypeApiV1EventTypeEventTypeNameDelete Delete Event Type
+ * Delete an event type.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param eventTypeName
  * @return ApiDeleteEventTypeApiV1EventTypeEventTypeNameDeleteRequest
@@ -352,6 +354,7 @@ func (r ApiListEventTypesApiV1EventTypeGetRequest) Execute() (ListResponseEventT
 
 /*
  * ListEventTypesApiV1EventTypeGet List Event Types
+ * Return the list of event types.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @return ApiListEventTypesApiV1EventTypeGetRequest
  */
@@ -514,6 +517,7 @@ func (r ApiUpdateEventTypeApiV1EventTypeEventTypeNamePutRequest) Execute() (Even
 
 /*
  * UpdateEventTypeApiV1EventTypeEventTypeNamePut Update Event Type
+ * Update an event type.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param eventTypeName
  * @return ApiUpdateEventTypeApiV1EventTypeEventTypeNamePutRequest

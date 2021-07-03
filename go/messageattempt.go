@@ -58,7 +58,7 @@ func (m *MessageAttempt) Get(appId string, msgId string, attemptID string) (*Mes
 
 func (m *MessageAttempt) Resend(appId string, msgId string, endpointId string) error {
 	req := m.api.MessageAttemptApi.ResendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPost(context.Background(), endpointId, msgId, appId)
-	_, res, err := req.Execute()
+	res, err := req.Execute()
 	return wrapError(err, res)
 }
 

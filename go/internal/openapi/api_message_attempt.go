@@ -1,7 +1,7 @@
 /*
- * Svix
+ * Svix API
  *
- * The Svix server API documentation
+ * Welcome to the Svix API documentation!  Useful links: [Homepage](https://www.svix.com) | [Support email](mailto:support+docs@svix.com) | [Slack Community](https://www.svix.com/slack/)  # Introduction  This is the reference documentation and schemas for the Svix API. For tutorials and other documentation please refer to [the documentation](https://docs.svix.com).  ## Main concepts  In Svix you have four important entities you will be interacting with:  - `messages`: these are the webhooks being sent. They can have contents and a few other properties. - `application`: this is where `messages` are sent to. Usually you want to create one application for each of your users. - `endpoint`: endpoints are the URLs messages will be sent to. Each application can have multiple `endpoints` and each message sent to that application will be sent to all of them (unless they are not subscribed to the sent event type). - `event-type`: event types are identifiers denoting the type of the message being sent. Event types are primarily used to decide which events are sent to which endpoint.   ## Authentication  Get your authentication token (`AUTH_TOKEN`) from the [Svix dashboard](https://dashboard.svix.com) and use it as part of the `Authorization` header as such: `Authorization: Bearer ${AUTH_TOKEN}`.  <SecurityDefinitions />   ## Code samples  The code samples assume you already have the respective libraries installed and you know how to use them. For the latest information on how to do that, please refer to [the documentation](https://docs.svix.com/).   ## Cross-Origin Resource Sharing  This API features Cross-Origin Resource Sharing (CORS) implemented in compliance with [W3C spec](https://www.w3.org/TR/cors/). And that allows cross-domain communication from the browser. All responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site. 
  *
  * API version: 1.4
  */
@@ -42,6 +42,7 @@ func (r ApiGetAttemptApiV1AppAppIdMsgMsgIdAttemptAttemptIdGetRequest) Execute() 
 
 /*
  * GetAttemptApiV1AppAppIdMsgMsgIdAttemptAttemptIdGet Get Attempt
+ * `msg_id`: Use a message id or a message `eventId`
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param attemptId
  * @param msgId
@@ -213,6 +214,7 @@ func (r ApiListAttemptedDestinationsApiV1AppAppIdMsgMsgIdEndpointGetRequest) Exe
 
 /*
  * ListAttemptedDestinationsApiV1AppAppIdMsgMsgIdEndpointGet List Attempted Destinations
+ * `msg_id`: Use a message id or a message `eventId`
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param msgId
  * @param appId
@@ -392,6 +394,9 @@ func (r ApiListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGetRequest) Ex
 
 /*
  * ListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGet List Attempted Messages
+ * List the message attempts for a particular endpoint.
+
+Returning the message.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param endpointId
  * @param appId
@@ -574,6 +579,7 @@ func (r ApiListAttemptsApiV1AppAppIdMsgMsgIdAttemptGetRequest) Execute() (ListRe
 
 /*
  * ListAttemptsApiV1AppAppIdMsgMsgIdAttemptGet List Attempts
+ * `msg_id`: Use a message id or a message `eventId`
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param msgId
  * @param appId
@@ -757,6 +763,9 @@ func (r ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttempt
 
 /*
  * ListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGet List Attempts For Endpoint
+ * List the message attempts for a particular endpoint.
+
+Returning the endpint.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param msgId
  * @param appId
@@ -922,7 +931,7 @@ type ApiResendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPostRequest st
 }
 
 
-func (r ApiResendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPostRequest) Execute() (map[string]interface{}, *_nethttp.Response, error) {
+func (r ApiResendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPostRequest) Execute() (*_nethttp.Response, error) {
 	return r.ApiService.ResendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPostExecute(r)
 }
 
@@ -947,21 +956,19 @@ func (a *MessageAttemptApiService) ResendWebhookApiV1AppAppIdMsgMsgIdEndpointEnd
 
 /*
  * Execute executes the request
- * @return map[string]interface{}
  */
-func (a *MessageAttemptApiService) ResendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPostExecute(r ApiResendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPostRequest) (map[string]interface{}, *_nethttp.Response, error) {
+func (a *MessageAttemptApiService) ResendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPostExecute(r ApiResendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPostRequest) (*_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPost
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  map[string]interface{}
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MessageAttemptApiService.ResendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPost")
 	if err != nil {
-		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
+		return nil, GenericOpenAPIError{error: err.Error()}
 	}
 
 	localVarPath := localBasePath + "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/resend/"
@@ -992,19 +999,19 @@ func (a *MessageAttemptApiService) ResendWebhookApiV1AppAppIdMsgMsgIdEndpointEnd
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
-		return localVarReturnValue, nil, err
+		return nil, err
 	}
 
 	localVarHTTPResponse, err := a.client.callAPI(req)
 	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
+		return localVarHTTPResponse, err
 	}
 
 	localVarBody, err := _ioutil.ReadAll(localVarHTTPResponse.Body)
 	localVarHTTPResponse.Body.Close()
 	localVarHTTPResponse.Body = _ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
+		return localVarHTTPResponse, err
 	}
 
 	if localVarHTTPResponse.StatusCode >= 300 {
@@ -1017,61 +1024,52 @@ func (a *MessageAttemptApiService) ResendWebhookApiV1AppAppIdMsgMsgIdEndpointEnd
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
+				return localVarHTTPResponse, newErr
 			}
 			newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
+			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
 			var v HttpErrorOut
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
+				return localVarHTTPResponse, newErr
 			}
 			newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
+			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
 			var v HttpErrorOut
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
+				return localVarHTTPResponse, newErr
 			}
 			newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
+			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
 			var v HttpErrorOut
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
+				return localVarHTTPResponse, newErr
 			}
 			newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
+			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
 			var v HTTPValidationError
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
+				return localVarHTTPResponse, newErr
 			}
 			newErr.model = v
 		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
+		return localVarHTTPResponse, newErr
 	}
 
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
+	return localVarHTTPResponse, nil
 }

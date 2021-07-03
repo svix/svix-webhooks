@@ -1,7 +1,7 @@
 /*
- * Svix
+ * Svix API
  *
- * The Svix server API documentation
+ * Welcome to the Svix API documentation!  Useful links: [Homepage](https://www.svix.com) | [Support email](mailto:support+docs@svix.com) | [Slack Community](https://www.svix.com/slack/)  # Introduction  This is the reference documentation and schemas for the Svix API. For tutorials and other documentation please refer to [the documentation](https://docs.svix.com).  ## Main concepts  In Svix you have four important entities you will be interacting with:  - `messages`: these are the webhooks being sent. They can have contents and a few other properties. - `application`: this is where `messages` are sent to. Usually you want to create one application for each of your users. - `endpoint`: endpoints are the URLs messages will be sent to. Each application can have multiple `endpoints` and each message sent to that application will be sent to all of them (unless they are not subscribed to the sent event type). - `event-type`: event types are identifiers denoting the type of the message being sent. Event types are primarily used to decide which events are sent to which endpoint.   ## Authentication  Get your authentication token (`AUTH_TOKEN`) from the [Svix dashboard](https://dashboard.svix.com) and use it as part of the `Authorization` header as such: `Authorization: Bearer ${AUTH_TOKEN}`.  <SecurityDefinitions />   ## Code samples  The code samples assume you already have the respective libraries installed and you know how to use them. For the latest information on how to do that, please refer to [the documentation](https://docs.svix.com/).   ## Cross-Origin Resource Sharing  This API features Cross-Origin Resource Sharing (CORS) implemented in compliance with [W3C spec](https://www.w3.org/TR/cors/). And that allows cross-domain communication from the browser. All responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site. 
  *
  * API version: 1.4
  */
@@ -45,6 +45,7 @@ func (r ApiCreateEndpointApiV1AppAppIdEndpointPostRequest) Execute() (EndpointOu
 
 /*
  * CreateEndpointApiV1AppAppIdEndpointPost Create Endpoint
+ * Create a new endpoint for the application.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param appId
  * @return ApiCreateEndpointApiV1AppAppIdEndpointPostRequest
@@ -205,6 +206,7 @@ func (r ApiDeleteEndpointApiV1AppAppIdEndpointEndpointIdDeleteRequest) Execute()
 
 /*
  * DeleteEndpointApiV1AppAppIdEndpointEndpointIdDelete Delete Endpoint
+ * Delete an endpoint.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param endpointId
  * @param appId
@@ -352,6 +354,7 @@ func (r ApiGetEndpointApiV1AppAppIdEndpointEndpointIdGetRequest) Execute() (Endp
 
 /*
  * GetEndpointApiV1AppAppIdEndpointEndpointIdGet Get Endpoint
+ * Get an application.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param endpointId
  * @param appId
@@ -510,6 +513,10 @@ func (r ApiGetEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGetRequest) Exe
 
 /*
  * GetEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGet Get Endpoint Secret
+ * Get the endpoint's signing secret.
+
+This is used to verify the authenticity of the webhook.
+For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param endpointId
  * @param appId
@@ -654,164 +661,6 @@ func (a *EndpointApiService) GetEndpointSecretApiV1AppAppIdEndpointEndpointIdSec
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiGetEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGetRequest struct {
-	ctx _context.Context
-	ApiService *EndpointApiService
-	endpointId string
-	appId string
-}
-
-
-func (r ApiGetEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGetRequest) Execute() (EndpointStats, *_nethttp.Response, error) {
-	return r.ApiService.GetEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGetExecute(r)
-}
-
-/*
- * GetEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGet Get Endpoint Stats
- * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param endpointId
- * @param appId
- * @return ApiGetEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGetRequest
- */
-func (a *EndpointApiService) GetEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGet(ctx _context.Context, endpointId string, appId string) ApiGetEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGetRequest {
-	return ApiGetEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGetRequest{
-		ApiService: a,
-		ctx: ctx,
-		endpointId: endpointId,
-		appId: appId,
-	}
-}
-
-/*
- * Execute executes the request
- * @return EndpointStats
- */
-func (a *EndpointApiService) GetEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGetExecute(r ApiGetEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGetRequest) (EndpointStats, *_nethttp.Response, error) {
-	var (
-		localVarHTTPMethod   = _nethttp.MethodGet
-		localVarPostBody     interface{}
-		localVarFormFileName string
-		localVarFileName     string
-		localVarFileBytes    []byte
-		localVarReturnValue  EndpointStats
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "EndpointApiService.GetEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGet")
-	if err != nil {
-		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}/stats/"
-	localVarPath = strings.Replace(localVarPath, "{"+"endpoint_id"+"}", _neturl.PathEscape(parameterToString(r.endpointId, "")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := _neturl.Values{}
-	localVarFormParams := _neturl.Values{}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := _ioutil.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = _ioutil.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v HttpErrorOut
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 403 {
-			var v HttpErrorOut
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v HttpErrorOut
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 409 {
-			var v HttpErrorOut
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 422 {
-			var v HTTPValidationError
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.model = v
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
 type ApiListEndpointsApiV1AppAppIdEndpointGetRequest struct {
 	ctx _context.Context
 	ApiService *EndpointApiService
@@ -835,6 +684,7 @@ func (r ApiListEndpointsApiV1AppAppIdEndpointGetRequest) Execute() (ListResponse
 
 /*
  * ListEndpointsApiV1AppAppIdEndpointGet List Endpoints
+ * List the application's endpoints.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param appId
  * @return ApiListEndpointsApiV1AppAppIdEndpointGetRequest
@@ -1001,6 +851,7 @@ func (r ApiUpdateEndpointApiV1AppAppIdEndpointEndpointIdPutRequest) Execute() (E
 
 /*
  * UpdateEndpointApiV1AppAppIdEndpointEndpointIdPut Update Endpoint
+ * Update an endpoint.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param endpointId
  * @param appId

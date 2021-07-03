@@ -1,7 +1,7 @@
 /*
- * Svix
+ * Svix API
  *
- * The Svix server API documentation
+ * Welcome to the Svix API documentation!  Useful links: [Homepage](https://www.svix.com) | [Support email](mailto:support+docs@svix.com) | [Slack Community](https://www.svix.com/slack/)  # Introduction  This is the reference documentation and schemas for the Svix API. For tutorials and other documentation please refer to [the documentation](https://docs.svix.com).  ## Main concepts  In Svix you have four important entities you will be interacting with:  - `messages`: these are the webhooks being sent. They can have contents and a few other properties. - `application`: this is where `messages` are sent to. Usually you want to create one application for each of your users. - `endpoint`: endpoints are the URLs messages will be sent to. Each application can have multiple `endpoints` and each message sent to that application will be sent to all of them (unless they are not subscribed to the sent event type). - `event-type`: event types are identifiers denoting the type of the message being sent. Event types are primarily used to decide which events are sent to which endpoint.   ## Authentication  Get your authentication token (`AUTH_TOKEN`) from the [Svix dashboard](https://dashboard.svix.com) and use it as part of the `Authorization` header as such: `Authorization: Bearer ${AUTH_TOKEN}`.  <SecurityDefinitions />   ## Code samples  The code samples assume you already have the respective libraries installed and you know how to use them. For the latest information on how to do that, please refer to [the documentation](https://docs.svix.com/).   ## Cross-Origin Resource Sharing  This API features Cross-Origin Resource Sharing (CORS) implemented in compliance with [W3C spec](https://www.w3.org/TR/cors/). And that allows cross-domain communication from the browser. All responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site. 
  *
  * API version: 1.4
  */
@@ -18,7 +18,6 @@ import (
 type HttpErrorOut struct {
 	Code string `json:"code"`
 	Detail string `json:"detail"`
-	Errors *[]HttpErrorField `json:"errors,omitempty"`
 }
 
 // NewHttpErrorOut instantiates a new HttpErrorOut object
@@ -88,38 +87,6 @@ func (o *HttpErrorOut) SetDetail(v string) {
 	o.Detail = v
 }
 
-// GetErrors returns the Errors field value if set, zero value otherwise.
-func (o *HttpErrorOut) GetErrors() []HttpErrorField {
-	if o == nil || o.Errors == nil {
-		var ret []HttpErrorField
-		return ret
-	}
-	return *o.Errors
-}
-
-// GetErrorsOk returns a tuple with the Errors field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *HttpErrorOut) GetErrorsOk() (*[]HttpErrorField, bool) {
-	if o == nil || o.Errors == nil {
-		return nil, false
-	}
-	return o.Errors, true
-}
-
-// HasErrors returns a boolean if a field has been set.
-func (o *HttpErrorOut) HasErrors() bool {
-	if o != nil && o.Errors != nil {
-		return true
-	}
-
-	return false
-}
-
-// SetErrors gets a reference to the given []HttpErrorField and assigns it to the Errors field.
-func (o *HttpErrorOut) SetErrors(v []HttpErrorField) {
-	o.Errors = &v
-}
-
 func (o HttpErrorOut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
@@ -127,9 +94,6 @@ func (o HttpErrorOut) MarshalJSON() ([]byte, error) {
 	}
 	if true {
 		toSerialize["detail"] = o.Detail
-	}
-	if o.Errors != nil {
-		toSerialize["errors"] = o.Errors
 	}
 	return json.Marshal(toSerialize)
 }

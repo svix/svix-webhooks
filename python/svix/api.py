@@ -194,7 +194,7 @@ class MessageAttempt(ApiBase[MessageAttemptApi]):
                 app_id=app_id, msg_id=msg_id, attempt_id=attempt_id
             )
 
-    def resend(self, app_id: str, msg_id: str, endpoint_id: str) -> MessageAttemptOut:
+    def resend(self, app_id: str, msg_id: str, endpoint_id: str) -> None:
         with self._api() as api:
             return api.resend_webhook_api_v1_app_app_id_msg_msg_id_endpoint_endpoint_id_resend_post(
                 app_id=app_id, msg_id=msg_id, endpoint_id=endpoint_id

@@ -31,9 +31,9 @@ public final class MessageAttempt {
 		}
 	}
 
-	public Object resend(final String msgId, final String appId, final String endpointId) throws ApiException {
+	public void resend(final String msgId, final String appId, final String endpointId) throws ApiException {
 		try {
-			return api.resendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPost(endpointId, msgId, appId);
+			api.resendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPost(endpointId, msgId, appId);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
