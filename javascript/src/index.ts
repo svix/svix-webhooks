@@ -33,7 +33,6 @@ import {
 } from "./openapi/index";
 export * from "./openapi/models/all";
 export * from "./openapi/apis/exception";
-import { server1 } from "./openapi/servers";
 import * as utf8 from "@stablelib/utf8";
 import * as base64 from "@stablelib/base64";
 import * as sha256 from "fast-sha256";
@@ -54,9 +53,9 @@ export class Svix {
   public readonly messageAttempt: MessageAttempt;
 
   public constructor(token: string, options: SvixOptions = {}) {
-    const testUrl: string | undefined = (options as any)._testUrl;
+    const baseUrl: string = (options as any)._testUrl ?? "https://api.svix.com";
 
-    const baseServer = testUrl ? new ServerConfiguration<any>(testUrl, {}) : server1;
+    const baseServer = new ServerConfiguration<any>(baseUrl, {});
 
     const bearerConfiguration: HttpBearerConfiguration = {
       tokenProvider: {
