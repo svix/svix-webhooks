@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.20.1
+* JavaScript, Python and Go: fix regression with server URLs not being set correctly.
+
 ## Version 0.20.0
 * All: Update OpenAPI spec
 * Javascript: Fix bug with message attempt resend (would throw on return)
