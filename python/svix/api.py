@@ -29,6 +29,8 @@ from .openapi_client.api_client import ApiClient
 from .openapi_client.configuration import Configuration
 from .openapi_client.model.message_status import MessageStatus
 
+DEFAULT_SERVER_URL = "https://api.svix.com"
+
 
 @dataclass
 class SvixOptions:
@@ -223,7 +225,8 @@ class Svix:
     _configuration: Configuration
 
     def __init__(self, auth_token: str, options: SvixOptions = SvixOptions()) -> None:
-        self._configuration = Configuration(host=options._test_url, access_token=auth_token)  # type: ignore
+        host = options._test_url or DEFAULT_SERVER_URL
+        self._configuration = Configuration(host=host, access_token=auth_token)  # type: ignore
 
     @property
     def authentication(self) -> Authentication:

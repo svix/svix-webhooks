@@ -37,6 +37,8 @@ func Int32(i int32) *int32 {
 
 func New(token string, options *SvixOptions) *Svix {
 	conf := openapi.NewConfiguration()
+	conf.Scheme = "https"
+	conf.Host = "api.svix.com"
 	if options != nil {
 		conf.Debug = options.Debug
 		if options.DebugURL != nil {
