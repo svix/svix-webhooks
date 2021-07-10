@@ -7,9 +7,11 @@ using System.Security.Cryptography;
 
 using Svix.Exceptions;
 
-namespace Svix.Tests {
+namespace Svix.Tests
+{
 
-    class TestPayload {
+    class TestPayload
+    {
         private static string DEFAULT_MSG_ID = "msg_p5jXN8AQM9LWM0D4loKWxJek";
         private static string DEFAULT_PAYLOAD = "{\"test\": 2432232314}";
         private static string DEFAULT_SECRET = "MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw";
@@ -21,13 +23,14 @@ namespace Svix.Tests {
         public string secret;
         public string payload;
         public string signature;
-        public TestPayload(DateTimeOffset timestamp) {
+        public TestPayload(DateTimeOffset timestamp)
+        {
             id = DEFAULT_MSG_ID;
             this.timestamp = timestamp;
 
             payload = DEFAULT_PAYLOAD;
             secret = DEFAULT_SECRET;
-            
+
             byte[] keyBytes = Convert.FromBase64String(secret);
             string decodedSecret = Encoding.UTF8.GetString(keyBytes);
             string toSign = $"{this.id}.{this.timestamp.ToUnixTimeSeconds()}.{this.payload}";
@@ -39,7 +42,8 @@ namespace Svix.Tests {
             headers.Set("svix-timestamp", timestamp.ToUnixTimeSeconds().ToString());
         }
 
-        private static string Sign(string key, string payload) {
+        private static string Sign(string key, string payload)
+        {
             var secretBytes = Encoding.UTF8.GetBytes(key);
             var toSignBytes = Encoding.UTF8.GetBytes(payload);
 
@@ -51,11 +55,13 @@ namespace Svix.Tests {
         }
     }
 
-    public class WebhookTests {
+    public class WebhookTests
+    {
         public const int TOLERANCE_IN_SECONDS = 5 * 60;
 
         [Fact]
-        public void TestMissingIdRasiesException() {
+        public void TestMissingIdRasiesException()
+        {
             var testPayload = new TestPayload(DateTimeOffset.UtcNow);
             testPayload.headers.Remove("svix-id");
 
@@ -65,7 +71,8 @@ namespace Svix.Tests {
         }
 
         [Fact]
-        public void TestMissingTimestampThrowsException() {
+        public void TestMissingTimestampThrowsException()
+        {
             var testPayload = new TestPayload(DateTimeOffset.UtcNow);
             testPayload.headers.Remove("svix-timestamp");
 
@@ -75,7 +82,8 @@ namespace Svix.Tests {
         }
 
         [Fact]
-        public void TestMissingSignatureThrowsException() {
+        public void TestMissingSignatureThrowsException()
+        {
             var testPayload = new TestPayload(DateTimeOffset.UtcNow);
             testPayload.headers.Remove("svix-signature");
 
@@ -85,7 +93,8 @@ namespace Svix.Tests {
         }
 
         [Fact]
-        public void TestInvalidSignatureThrowsException() {
+        public void TestInvalidSignatureThrowsException()
+        {
             var testPayload = new TestPayload(DateTimeOffset.UtcNow);
             testPayload.headers.Set("svix-signature", "v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLawdd");
 
@@ -95,7 +104,8 @@ namespace Svix.Tests {
         }
 
         [Fact]
-        public void TestValidSignatureIsValid() {
+        public void TestValidSignatureIsValid()
+        {
             var testPayload = new TestPayload(DateTimeOffset.UtcNow);
             var wh = new Webhook(testPayload.secret);
 
@@ -103,7 +113,8 @@ namespace Svix.Tests {
         }
 
         [Fact]
-        public void TestOldTimestampThrowsException() {
+        public void TestOldTimestampThrowsException()
+        {
             var testPayload = new TestPayload(DateTimeOffset.UtcNow.AddSeconds(-1 * (TOLERANCE_IN_SECONDS + 1)));
 
             var wh = new Webhook(testPayload.secret);
@@ -112,7 +123,8 @@ namespace Svix.Tests {
         }
 
         [Fact]
-        public void TestNewTimestampThrowsException() {
+        public void TestNewTimestampThrowsException()
+        {
             var testPayload = new TestPayload(DateTimeOffset.UtcNow.AddSeconds(TOLERANCE_IN_SECONDS + 1));
 
             var wh = new Webhook(testPayload.secret);
@@ -121,9 +133,10 @@ namespace Svix.Tests {
         }
 
         [Fact]
-        public void TestMultiSigPayloadIsValid() {
+        public void TestMultiSigPayloadIsValid()
+        {
             var testPayload = new TestPayload(DateTimeOffset.UtcNow);
-            
+
             string[] sigs = new string[] {
                 "v1,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
                 "v2,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
@@ -136,9 +149,10 @@ namespace Svix.Tests {
 
             wh.Verify(testPayload.payload, testPayload.headers);
         }
-        
+
         [Fact]
-        public void TestSivnatureVerificationWorksWithoutPrefix() {
+        public void TestSivnatureVerificationWorksWithoutPrefix()
+        {
             var testPayload = new TestPayload(DateTimeOffset.UtcNow);
 
             var wh = new Webhook(testPayload.secret);

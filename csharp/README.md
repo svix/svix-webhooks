@@ -1,9 +1,17 @@
 # Svix CSharp
 
-## Build 
+## Build
 
 ```sh
 dotnet build
+```
+
+## Format
+We use [dotnet-format](https://github.com/dotnet/format) for this project.
+
+First install it then run:
+```sh
+dotnet-format
 ```
 
 ## Test

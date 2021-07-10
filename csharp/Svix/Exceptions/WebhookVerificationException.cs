@@ -1,6 +1,7 @@
 using System;
 
-namespace Svix.Exceptions {
+namespace Svix.Exceptions
+{
 
     [Serializable]
     public class WebhookVerificationException : Exception
