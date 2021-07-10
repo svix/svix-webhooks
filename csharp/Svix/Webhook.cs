@@ -1,26 +1,26 @@
 ﻿using System;
 using System.Text;
 using System.Net;
-using System.Collections.Generic;
 using System.Security.Cryptography;
 
 using Svix.Exceptions;
 namespace Svix {
     public class Webhook {
+
         internal static readonly UTF8Encoding SafeUTF8Encoding = new UTF8Encoding(false, true);
 
+        private static readonly int TOLERANCE_IN_SECONDS = 60 * 5;
         private static string prefix = "whsec_";
         private string key;
         public Webhook(string key) {
             if (key.StartsWith(prefix)) {
-                key.Substring(prefix.Length);
+                key = key.Substring(prefix.Length);
             }
 
             byte[] keyBytes = Convert.FromBase64String(key);
             string decodedKey = Encoding.UTF8.GetString(keyBytes);
 
             this.key = decodedKey;
-            Console.WriteLine(this.key);
         }
 
         public void Verify(string payload, WebHeaderCollection headers) {            
@@ -28,13 +28,55 @@ namespace Svix {
             string msgSignature = headers.Get("svix-signature");
             string msgTimestamp = headers.Get("svix-timestamp");
 
-            if (msgId == "" || msgSignature == "" ||  msgTimestamp == "") {
+            if (String.IsNullOrEmpty(msgId) || String.IsNullOrEmpty(msgSignature) ||  String.IsNullOrEmpty(msgTimestamp)) {
                 throw new WebhookVerificationException("Missing Required Headers");
             }
-            throw new WebhookVerificationException("not implemented");
+
+            Webhook.VerifyTimestamp(msgTimestamp);
+
+            var toSign = $"{msgId}.{msgTimestamp}.{payload}";
+            var signature = Webhook.Sign(this.key, toSign);
+
+            var passedSignatures = msgSignature.Split(' ');
+            foreach (string versionedSignature in passedSignatures) {
+                var parts = versionedSignature.Split(",");
+                if (parts.Length < 2) {
+                    throw new WebhookVerificationException("Invalid Signature Headers");
+                }
+                var version = parts[0];
+                var expectedSignature = parts[1];
+
+                if (version != "v1") {
+                    continue;
+                }
+                if (Utils.SecureCompare(signature, expectedSignature)) {
+                    return;
+                }
+
+            }
+            throw new WebhookVerificationException("No matching signature found");
         }
 
-        public static string Sign(string secret, string toSign) {
+        private static void VerifyTimestamp(string timestampHeader) {
+            DateTimeOffset timestamp;
+            var now = DateTimeOffset.UtcNow;
+            try {
+                var timestampInt = long.Parse(timestampHeader);
+                timestamp = DateTimeOffset.FromUnixTimeSeconds(timestampInt);
+            } catch {
+                throw new WebhookVerificationException("Invalid Signature Headers");
+            }
+
+            if (timestamp < (now.AddSeconds( -1 * TOLERANCE_IN_SECONDS))) {
+                throw new WebhookVerificationException("Message timestamp too old");
+            }
+            if (timestamp > (now.AddSeconds(TOLERANCE_IN_SECONDS))) {
+                throw new WebhookVerificationException("Message timestamp too new");
+            }
+
+        }
+
+        private static string Sign(string secret, string toSign) {
             var secretBytes = SafeUTF8Encoding.GetBytes(secret);
             var toSignBytes = SafeUTF8Encoding.GetBytes(toSign);
 

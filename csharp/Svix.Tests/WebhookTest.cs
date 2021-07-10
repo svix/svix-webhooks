@@ -26,7 +26,6 @@ namespace Svix.Tests {
             this.timestamp = timestamp;
 
             payload = DEFAULT_PAYLOAD;
-
             secret = DEFAULT_SECRET;
             
             byte[] keyBytes = Convert.FromBase64String(secret);
