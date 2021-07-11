@@ -1,17 +1,19 @@
-package svix
+package svix_test
 
 import (
-	"encoding/base64"
 	"fmt"
 	"net/http"
 	"strings"
 	"testing"
 	"time"
+
+	svix "github.com/svix/svix-libs/go"
 )
 
 var defaultMsgID = "msg_p5jXN8AQM9LWM0D4loKWxJek"
 var defaultPayload = []byte(`{"test": 2432232314}`)
 var defaultSecret = "MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw"
+var tolerance time.Duration = 5 * time.Minute
 
 type testPayload struct {
 	id        string
@@ -19,7 +21,7 @@ type testPayload struct {
 	header    http.Header
 	secret    string
 	payload   []byte
-	signature []byte
+	signature string
 }
 
 func newTestPayload(timestamp time.Time) *testPayload {
@@ -29,14 +31,13 @@ func newTestPayload(timestamp time.Time) *testPayload {
 
 	tp.payload = defaultPayload
 	tp.secret = defaultSecret
-	toSign := fmt.Sprintf("%s.%d.%s", tp.id, tp.timestamp.Unix(), tp.payload)
 
-	secret, _ := base64.StdEncoding.DecodeString(tp.secret)
-	tp.signature = sign(secret, toSign)
+	wh, _ := svix.NewWebhook(tp.secret)
+	tp.signature, _ = wh.Sign(tp.id, tp.timestamp, tp.payload)
 
 	tp.header = http.Header{}
 	tp.header.Set("svix-id", tp.id)
-	tp.header.Set("svix-signature", fmt.Sprintf("v1,%s", tp.signature))
+	tp.header.Set("svix-signature", tp.signature)
 	tp.header.Set("svix-timestamp", fmt.Sprint(tp.timestamp.Unix()))
 
 	return tp
@@ -118,7 +119,7 @@ func TestWebhook(t *testing.T) {
 			tc.modifyPayload(tc.testPayload)
 		}
 
-		wh, err := NewWebhook(tc.testPayload.secret)
+		wh, err := svix.NewWebhook(tc.testPayload.secret)
 		if err != nil {
 			t.Error(err)
 			continue
@@ -135,7 +136,7 @@ func TestWebhook(t *testing.T) {
 func TestWebhookPrefix(t *testing.T) {
 	tp := newTestPayload(time.Now())
 
-	wh, err := NewWebhook(tp.secret)
+	wh, err := svix.NewWebhook(tp.secret)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -145,7 +146,7 @@ func TestWebhookPrefix(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	wh, err = NewWebhook(fmt.Sprintf("%s%s", webhookSecretPrefix, tp.secret))
+	wh, err = svix.NewWebhook(fmt.Sprintf("whsec_%s", tp.secret))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -154,4 +155,27 @@ func TestWebhookPrefix(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+}
+
+func TestWebhookSign(t *testing.T) {
+	key := "whsec_MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw"
+	msgID := "msg_p5jXN8AQM9LWM0D4loKWxJek"
+	timestamp := time.Unix(1614265330, 0)
+	payload := []byte(`{"test": 2432232314}`)
+	expected := "v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE="
+
+	wh, err := svix.NewWebhook(key)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	signature, err := wh.Sign(msgID, timestamp, payload)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if signature != expected {
+		t.Fatalf("signature %s != expected signature %s", signature, expected)
+	}
+
 }
