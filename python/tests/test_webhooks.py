@@ -133,3 +133,15 @@ def test_signature_verification_with_and_without_prefix():
 
     json = wh.verify(testPayload.payload, testPayload.header)
     assert json["test"] == 2432232314
+
+def test_sign_function():
+    key = "whsec_MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw"
+    msg_id = "msg_p5jXN8AQM9LWM0D4loKWxJek"
+    timestamp = datetime.utcfromtimestamp(1614265330)
+    payload = '{"test": 2432232314}'
+    expected = "v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE="
+
+    wh = Webhook(key)
+    signature = wh.sign(msg_id=msg_id, timestamp=timestamp, data=payload)
+    print(signature)
+    assert signature == expected
