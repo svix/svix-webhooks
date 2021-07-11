@@ -1,8 +1,11 @@
 package com.svix;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
 import com.svix.exceptions.WebhookVerificationException;
+import com.svix.exceptions.WebhookSigningException;
+
 import java.net.http.HttpHeaders;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -119,6 +122,20 @@ public class WebhookTest {
 		webhook = new Webhook(String.format("%s%s", Webhook.SECRET_PREFIX, testPayload.secret));
 		webhook.verify(testPayload.payload, testPayload.headers());
 	}
+
+	@Test
+	public void verifyWebhookSignWorks() throws WebhookSigningException {
+		String key = "whsec_MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw";
+		String msgId = "msg_p5jXN8AQM9LWM0D4loKWxJek";
+		final long timestamp = 1614265330;
+		String payload = "{\"test\": 2432232314}";
+		String expected = "v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE=";
+
+		Webhook webhook = new Webhook(key);
+		String signature = webhook.sign(msgId, timestamp, payload);
+		assertEquals(signature, expected);
+	}
+
 
 	private ThrowingRunnable verify(final TestPayload testPayload) {
 		return new ThrowingRunnable() {

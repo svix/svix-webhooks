@@ -11,6 +11,8 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import com.svix.exceptions.WebhookVerificationException;
+import com.svix.exceptions.WebhookSigningException;
+
 
 public final class Webhook {
 	static final String SECRET_PREFIX = "whsec_";
@@ -40,10 +42,15 @@ public final class Webhook {
 			throw new WebhookVerificationException("Missing required headers");
 		}
 
-		Webhook.verifyTimestamp(msgTimestamp.get());
+		long timestamp = Webhook.verifyTimestamp(msgTimestamp.get());
 
-		String toSign = String.format("%s.%s.%s", msgId.get(), msgTimestamp.get(), payload);
-		String expectedSignature = Webhook.sign(key, toSign);
+		String expectedSignature;
+		try {
+			expectedSignature = this.sign(msgId.get(), timestamp, payload).split(",")[1];
+		} catch (WebhookSigningException e) {
+			throw new WebhookVerificationException("Failed to generate expected signature");
+		}
+
 		String[] msgSignatures = msgSignature.get().split(" ");
 		for (String versionedSignature : msgSignatures) {
 			String[] sigParts = versionedSignature.split(",");
@@ -62,12 +69,26 @@ public final class Webhook {
 		throw new WebhookVerificationException("No matching signature found");
 	}
 
-	private static void verifyTimestamp(final String timestampHeader) throws WebhookVerificationException {
-		int now = (int) (System.currentTimeMillis() / Webhook.SECOND_IN_MS);
-
-		int timestamp;
+	public String sign(final String msgId, final long timestamp, final String payload) throws WebhookSigningException {
 		try {
-			timestamp = Integer.parseInt(timestampHeader);
+			String toSign = String.format("%s.%s.%s", msgId, timestamp, payload);
+			Mac sha512Hmac = Mac.getInstance(HMAC_SHA256);
+			SecretKeySpec keySpec = new SecretKeySpec(this.key, HMAC_SHA256);
+			sha512Hmac.init(keySpec);
+			byte[] macData = sha512Hmac.doFinal(toSign.getBytes(StandardCharsets.UTF_8));
+			String signature = Base64.getEncoder().encodeToString(macData);
+			return String.format("v1,%s", signature);
+		} catch (InvalidKeyException | NoSuchAlgorithmException e) {
+			throw new WebhookSigningException(e.getMessage());
+		}
+	}
+
+	private static long verifyTimestamp(final String timestampHeader) throws WebhookVerificationException {
+		long now = System.currentTimeMillis() / Webhook.SECOND_IN_MS;
+
+		long timestamp;
+		try {
+			timestamp = Long.parseLong(timestampHeader);
 		} catch (NumberFormatException e) {
 			throw new WebhookVerificationException("Invalid Signature Headers");
 		}
@@ -78,17 +99,6 @@ public final class Webhook {
 		if (timestamp > (now + TOLERANCE_IN_SECONDS)) {
 			throw new WebhookVerificationException("Message timestamp too new");
 		}
-	}
-
-	private static String sign(final byte[] key, final String toSign) throws WebhookVerificationException {
-		try {
-			Mac sha512Hmac = Mac.getInstance(HMAC_SHA256);
-			SecretKeySpec keySpec = new SecretKeySpec(key, HMAC_SHA256);
-			sha512Hmac.init(keySpec);
-			byte[] macData = sha512Hmac.doFinal(toSign.getBytes(StandardCharsets.UTF_8));
-			return Base64.getEncoder().encodeToString(macData);
-		} catch (InvalidKeyException | NoSuchAlgorithmException e) {
-			throw new WebhookVerificationException(e.getMessage());
-		}
+		return timestamp;
 	}
 }
