@@ -36,64 +36,67 @@ class TestPayload {
   }
 }
 
-test('missing id raises error', () => {
-    const wh = new Webhook("MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw");
+test("missing id raises error", () => {
+  const wh = new Webhook("MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw");
 
-    const testPayload = new TestPayload();
-    delete testPayload.header['svix-id'];
+  const testPayload = new TestPayload();
+  delete testPayload.header["svix-id"];
 
-    expect(() => {
-        wh.verify(testPayload.payload, testPayload.header);
-    }).toThrowError(WebhookVerificationError);
-});
-
-test('missing timestamp raises error', () => {
-    const wh = new Webhook("MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw");
-
-    const testPayload = new TestPayload();
-    delete testPayload.header['svix-timestamp'];
-
-    expect(() => {
-        wh.verify(testPayload.payload, testPayload.header);
-    }).toThrowError(WebhookVerificationError);});
-
-test('invalid timestamp throws error', () => {
-    const wh = new Webhook("MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw");
-
-    const testPayload = new TestPayload();
-    testPayload.header['svix-timestamp'] = "hello";
-
-    expect(() => {
-        wh.verify(testPayload.payload, testPayload.header);
-    }).toThrowError(WebhookVerificationError);});
-
-test('missing signature raises error', () => {
-    const wh = new Webhook("MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw");
-
-    const testPayload = new TestPayload();
-    delete testPayload.header['svix-signature'];
-
-    expect(() => {
-        wh.verify(testPayload.payload, testPayload.header);
-    }).toThrowError(WebhookVerificationError);});
-
-test('invalid signature throws error', () => {
-    const wh = new Webhook("MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw");
-
-    const testPayload = new TestPayload();
-    testPayload.header['svix-signature'] = 'v1,dawfeoifkpqwoekfpqoekf';
-
-    expect(() => {
-        wh.verify(testPayload.payload, testPayload.header);
-    }).toThrowError(WebhookVerificationError);
-});
-
-test('valid signature is valid and returns valid json', () => {
-    const wh = new Webhook("MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw");
-
-    const testPayload = new TestPayload();
-
+  expect(() => {
     wh.verify(testPayload.payload, testPayload.header);
+  }).toThrowError(WebhookVerificationError);
+});
+
+test("missing timestamp raises error", () => {
+  const wh = new Webhook("MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw");
+
+  const testPayload = new TestPayload();
+  delete testPayload.header["svix-timestamp"];
+
+  expect(() => {
+    wh.verify(testPayload.payload, testPayload.header);
+  }).toThrowError(WebhookVerificationError);
+});
+
+test("invalid timestamp throws error", () => {
+  const wh = new Webhook("MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw");
+
+  const testPayload = new TestPayload();
+  testPayload.header["svix-timestamp"] = "hello";
+
+  expect(() => {
+    wh.verify(testPayload.payload, testPayload.header);
+  }).toThrowError(WebhookVerificationError);
+});
+
+test("missing signature raises error", () => {
+  const wh = new Webhook("MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw");
+
+  const testPayload = new TestPayload();
+  delete testPayload.header["svix-signature"];
+
+  expect(() => {
+    wh.verify(testPayload.payload, testPayload.header);
+  }).toThrowError(WebhookVerificationError);
+});
+
+test("invalid signature throws error", () => {
+  const wh = new Webhook("MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw");
+
+  const testPayload = new TestPayload();
+  testPayload.header["svix-signature"] = "v1,dawfeoifkpqwoekfpqoekf";
+
+  expect(() => {
+    wh.verify(testPayload.payload, testPayload.header);
+  }).toThrowError(WebhookVerificationError);
+});
+
+test("valid signature is valid and returns valid json", () => {
+  const wh = new Webhook("MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw");
+
+  const testPayload = new TestPayload();
+
+  wh.verify(testPayload.payload, testPayload.header);
 });
 
 test("old timestamp fails", () => {
@@ -133,11 +136,23 @@ test("multi sig payload is valid", () => {
 
 test("verification works with and without signature prefix", () => {
   const testPayload = new TestPayload();
-  
+
   let wh = new Webhook(defaultSecret);
   wh.verify(testPayload.payload, testPayload.header);
 
-
   wh = new Webhook("whsec_" + defaultSecret);
   wh.verify(testPayload.payload, testPayload.header);
+});
+
+test("sign function works", () => {
+  const key = "whsec_MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw";
+  const msgId = "msg_p5jXN8AQM9LWM0D4loKWxJek";
+  const timestamp = new Date(1614265330 * 1000);
+  const payload = '{"test": 2432232314}';
+  const expected = "v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE=";
+
+  const wh = new Webhook(key);
+
+  const signature = wh.sign(msgId, timestamp, payload);
+  expect(signature).toBe(expected);
 });
