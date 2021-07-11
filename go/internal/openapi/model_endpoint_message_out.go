@@ -1,7 +1,7 @@
 /*
  * Svix API
  *
- * Welcome to the Svix API documentation!  Useful links: [Homepage](https://www.svix.com) | [Support email](mailto:support+docs@svix.com) | [Slack Community](https://www.svix.com/slack/)  # Introduction  This is the reference documentation and schemas for the Svix API. For tutorials and other documentation please refer to [the documentation](https://docs.svix.com).  ## Main concepts  In Svix you have four important entities you will be interacting with:  - `messages`: these are the webhooks being sent. They can have contents and a few other properties. - `application`: this is where `messages` are sent to. Usually you want to create one application for each of your users. - `endpoint`: endpoints are the URLs messages will be sent to. Each application can have multiple `endpoints` and each message sent to that application will be sent to all of them (unless they are not subscribed to the sent event type). - `event-type`: event types are identifiers denoting the type of the message being sent. Event types are primarily used to decide which events are sent to which endpoint.   ## Authentication  Get your authentication token (`AUTH_TOKEN`) from the [Svix dashboard](https://dashboard.svix.com) and use it as part of the `Authorization` header as such: `Authorization: Bearer ${AUTH_TOKEN}`.  <SecurityDefinitions />   ## Code samples  The code samples assume you already have the respective libraries installed and you know how to use them. For the latest information on how to do that, please refer to [the documentation](https://docs.svix.com/).   ## Cross-Origin Resource Sharing  This API features Cross-Origin Resource Sharing (CORS) implemented in compliance with [W3C spec](https://www.w3.org/TR/cors/). And that allows cross-domain communication from the browser. All responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site. 
+ * Welcome to the Svix API documentation!  Useful links: [Homepage](https://www.svix.com) | [Support email](mailto:support+docs@svix.com) | [Blog](https://www.svix.com/blog/) | [Slack Community](https://www.svix.com/slack/)  # Introduction  This is the reference documentation and schemas for the Svix API. For tutorials and other documentation please refer to [the documentation](https://docs.svix.com).  ## Main concepts  In Svix you have four important entities you will be interacting with:  - `messages`: these are the webhooks being sent. They can have contents and a few other properties. - `application`: this is where `messages` are sent to. Usually you want to create one application for each of your users. - `endpoint`: endpoints are the URLs messages will be sent to. Each application can have multiple `endpoints` and each message sent to that application will be sent to all of them (unless they are not subscribed to the sent event type). - `event-type`: event types are identifiers denoting the type of the message being sent. Event types are primarily used to decide which events are sent to which endpoint.   ## Authentication  Get your authentication token (`AUTH_TOKEN`) from the [Svix dashboard](https://dashboard.svix.com) and use it as part of the `Authorization` header as such: `Authorization: Bearer ${AUTH_TOKEN}`.  <SecurityDefinitions />   ## Code samples  The code samples assume you already have the respective libraries installed and you know how to use them. For the latest information on how to do that, please refer to [the documentation](https://docs.svix.com/).   ## Cross-Origin Resource Sharing  This API features Cross-Origin Resource Sharing (CORS) implemented in compliance with [W3C spec](https://www.w3.org/TR/cors/). And that allows cross-domain communication from the browser. All responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site. 
  *
  * API version: 1.4
  */
@@ -17,25 +17,25 @@ import (
 
 // EndpointMessageOut struct for EndpointMessageOut
 type EndpointMessageOut struct {
-	EventType string `json:"eventType"`
 	EventId *string `json:"eventId,omitempty"`
-	Payload map[string]interface{} `json:"payload"`
+	EventType string `json:"eventType"`
 	Id string `json:"id"`
-	Timestamp time.Time `json:"timestamp"`
+	Payload map[string]interface{} `json:"payload"`
 	Status MessageStatus `json:"status"`
+	Timestamp time.Time `json:"timestamp"`
 }
 
 // NewEndpointMessageOut instantiates a new EndpointMessageOut object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEndpointMessageOut(eventType string, payload map[string]interface{}, id string, timestamp time.Time, status MessageStatus, ) *EndpointMessageOut {
+func NewEndpointMessageOut(eventType string, id string, payload map[string]interface{}, status MessageStatus, timestamp time.Time, ) *EndpointMessageOut {
 	this := EndpointMessageOut{}
 	this.EventType = eventType
-	this.Payload = payload
 	this.Id = id
-	this.Timestamp = timestamp
+	this.Payload = payload
 	this.Status = status
+	this.Timestamp = timestamp
 	return &this
 }
 
@@ -45,30 +45,6 @@ func NewEndpointMessageOut(eventType string, payload map[string]interface{}, id 
 func NewEndpointMessageOutWithDefaults() *EndpointMessageOut {
 	this := EndpointMessageOut{}
 	return &this
-}
-
-// GetEventType returns the EventType field value
-func (o *EndpointMessageOut) GetEventType() string {
-	if o == nil  {
-		var ret string
-		return ret
-	}
-
-	return o.EventType
-}
-
-// GetEventTypeOk returns a tuple with the EventType field value
-// and a boolean to check if the value has been set.
-func (o *EndpointMessageOut) GetEventTypeOk() (*string, bool) {
-	if o == nil  {
-		return nil, false
-	}
-	return &o.EventType, true
-}
-
-// SetEventType sets field value
-func (o *EndpointMessageOut) SetEventType(v string) {
-	o.EventType = v
 }
 
 // GetEventId returns the EventId field value if set, zero value otherwise.
@@ -103,28 +79,28 @@ func (o *EndpointMessageOut) SetEventId(v string) {
 	o.EventId = &v
 }
 
-// GetPayload returns the Payload field value
-func (o *EndpointMessageOut) GetPayload() map[string]interface{} {
+// GetEventType returns the EventType field value
+func (o *EndpointMessageOut) GetEventType() string {
 	if o == nil  {
-		var ret map[string]interface{}
+		var ret string
 		return ret
 	}
 
-	return o.Payload
+	return o.EventType
 }
 
-// GetPayloadOk returns a tuple with the Payload field value
+// GetEventTypeOk returns a tuple with the EventType field value
 // and a boolean to check if the value has been set.
-func (o *EndpointMessageOut) GetPayloadOk() (*map[string]interface{}, bool) {
+func (o *EndpointMessageOut) GetEventTypeOk() (*string, bool) {
 	if o == nil  {
 		return nil, false
 	}
-	return &o.Payload, true
+	return &o.EventType, true
 }
 
-// SetPayload sets field value
-func (o *EndpointMessageOut) SetPayload(v map[string]interface{}) {
-	o.Payload = v
+// SetEventType sets field value
+func (o *EndpointMessageOut) SetEventType(v string) {
+	o.EventType = v
 }
 
 // GetId returns the Id field value
@@ -151,28 +127,28 @@ func (o *EndpointMessageOut) SetId(v string) {
 	o.Id = v
 }
 
-// GetTimestamp returns the Timestamp field value
-func (o *EndpointMessageOut) GetTimestamp() time.Time {
+// GetPayload returns the Payload field value
+func (o *EndpointMessageOut) GetPayload() map[string]interface{} {
 	if o == nil  {
-		var ret time.Time
+		var ret map[string]interface{}
 		return ret
 	}
 
-	return o.Timestamp
+	return o.Payload
 }
 
-// GetTimestampOk returns a tuple with the Timestamp field value
+// GetPayloadOk returns a tuple with the Payload field value
 // and a boolean to check if the value has been set.
-func (o *EndpointMessageOut) GetTimestampOk() (*time.Time, bool) {
+func (o *EndpointMessageOut) GetPayloadOk() (*map[string]interface{}, bool) {
 	if o == nil  {
 		return nil, false
 	}
-	return &o.Timestamp, true
+	return &o.Payload, true
 }
 
-// SetTimestamp sets field value
-func (o *EndpointMessageOut) SetTimestamp(v time.Time) {
-	o.Timestamp = v
+// SetPayload sets field value
+func (o *EndpointMessageOut) SetPayload(v map[string]interface{}) {
+	o.Payload = v
 }
 
 // GetStatus returns the Status field value
@@ -199,25 +175,49 @@ func (o *EndpointMessageOut) SetStatus(v MessageStatus) {
 	o.Status = v
 }
 
+// GetTimestamp returns the Timestamp field value
+func (o *EndpointMessageOut) GetTimestamp() time.Time {
+	if o == nil  {
+		var ret time.Time
+		return ret
+	}
+
+	return o.Timestamp
+}
+
+// GetTimestampOk returns a tuple with the Timestamp field value
+// and a boolean to check if the value has been set.
+func (o *EndpointMessageOut) GetTimestampOk() (*time.Time, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.Timestamp, true
+}
+
+// SetTimestamp sets field value
+func (o *EndpointMessageOut) SetTimestamp(v time.Time) {
+	o.Timestamp = v
+}
+
 func (o EndpointMessageOut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["eventType"] = o.EventType
-	}
 	if o.EventId != nil {
 		toSerialize["eventId"] = o.EventId
 	}
 	if true {
-		toSerialize["payload"] = o.Payload
+		toSerialize["eventType"] = o.EventType
 	}
 	if true {
 		toSerialize["id"] = o.Id
 	}
 	if true {
-		toSerialize["timestamp"] = o.Timestamp
+		toSerialize["payload"] = o.Payload
 	}
 	if true {
 		toSerialize["status"] = o.Status
+	}
+	if true {
+		toSerialize["timestamp"] = o.Timestamp
 	}
 	return json.Marshal(toSerialize)
 }

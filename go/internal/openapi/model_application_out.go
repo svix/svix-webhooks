@@ -1,7 +1,7 @@
 /*
  * Svix API
  *
- * Welcome to the Svix API documentation!  Useful links: [Homepage](https://www.svix.com) | [Support email](mailto:support+docs@svix.com) | [Slack Community](https://www.svix.com/slack/)  # Introduction  This is the reference documentation and schemas for the Svix API. For tutorials and other documentation please refer to [the documentation](https://docs.svix.com).  ## Main concepts  In Svix you have four important entities you will be interacting with:  - `messages`: these are the webhooks being sent. They can have contents and a few other properties. - `application`: this is where `messages` are sent to. Usually you want to create one application for each of your users. - `endpoint`: endpoints are the URLs messages will be sent to. Each application can have multiple `endpoints` and each message sent to that application will be sent to all of them (unless they are not subscribed to the sent event type). - `event-type`: event types are identifiers denoting the type of the message being sent. Event types are primarily used to decide which events are sent to which endpoint.   ## Authentication  Get your authentication token (`AUTH_TOKEN`) from the [Svix dashboard](https://dashboard.svix.com) and use it as part of the `Authorization` header as such: `Authorization: Bearer ${AUTH_TOKEN}`.  <SecurityDefinitions />   ## Code samples  The code samples assume you already have the respective libraries installed and you know how to use them. For the latest information on how to do that, please refer to [the documentation](https://docs.svix.com/).   ## Cross-Origin Resource Sharing  This API features Cross-Origin Resource Sharing (CORS) implemented in compliance with [W3C spec](https://www.w3.org/TR/cors/). And that allows cross-domain communication from the browser. All responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site. 
+ * Welcome to the Svix API documentation!  Useful links: [Homepage](https://www.svix.com) | [Support email](mailto:support+docs@svix.com) | [Blog](https://www.svix.com/blog/) | [Slack Community](https://www.svix.com/slack/)  # Introduction  This is the reference documentation and schemas for the Svix API. For tutorials and other documentation please refer to [the documentation](https://docs.svix.com).  ## Main concepts  In Svix you have four important entities you will be interacting with:  - `messages`: these are the webhooks being sent. They can have contents and a few other properties. - `application`: this is where `messages` are sent to. Usually you want to create one application for each of your users. - `endpoint`: endpoints are the URLs messages will be sent to. Each application can have multiple `endpoints` and each message sent to that application will be sent to all of them (unless they are not subscribed to the sent event type). - `event-type`: event types are identifiers denoting the type of the message being sent. Event types are primarily used to decide which events are sent to which endpoint.   ## Authentication  Get your authentication token (`AUTH_TOKEN`) from the [Svix dashboard](https://dashboard.svix.com) and use it as part of the `Authorization` header as such: `Authorization: Bearer ${AUTH_TOKEN}`.  <SecurityDefinitions />   ## Code samples  The code samples assume you already have the respective libraries installed and you know how to use them. For the latest information on how to do that, please refer to [the documentation](https://docs.svix.com/).   ## Cross-Origin Resource Sharing  This API features Cross-Origin Resource Sharing (CORS) implemented in compliance with [W3C spec](https://www.w3.org/TR/cors/). And that allows cross-domain communication from the browser. All responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site. 
  *
  * API version: 1.4
  */
@@ -17,21 +17,21 @@ import (
 
 // ApplicationOut struct for ApplicationOut
 type ApplicationOut struct {
-	Uid *string `json:"uid,omitempty"`
-	Name string `json:"name"`
-	Id string `json:"id"`
 	CreatedAt time.Time `json:"createdAt"`
+	Id string `json:"id"`
+	Name string `json:"name"`
+	Uid *string `json:"uid,omitempty"`
 }
 
 // NewApplicationOut instantiates a new ApplicationOut object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewApplicationOut(name string, id string, createdAt time.Time, ) *ApplicationOut {
+func NewApplicationOut(createdAt time.Time, id string, name string, ) *ApplicationOut {
 	this := ApplicationOut{}
-	this.Name = name
-	this.Id = id
 	this.CreatedAt = createdAt
+	this.Id = id
+	this.Name = name
 	return &this
 }
 
@@ -41,6 +41,78 @@ func NewApplicationOut(name string, id string, createdAt time.Time, ) *Applicati
 func NewApplicationOutWithDefaults() *ApplicationOut {
 	this := ApplicationOut{}
 	return &this
+}
+
+// GetCreatedAt returns the CreatedAt field value
+func (o *ApplicationOut) GetCreatedAt() time.Time {
+	if o == nil  {
+		var ret time.Time
+		return ret
+	}
+
+	return o.CreatedAt
+}
+
+// GetCreatedAtOk returns a tuple with the CreatedAt field value
+// and a boolean to check if the value has been set.
+func (o *ApplicationOut) GetCreatedAtOk() (*time.Time, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.CreatedAt, true
+}
+
+// SetCreatedAt sets field value
+func (o *ApplicationOut) SetCreatedAt(v time.Time) {
+	o.CreatedAt = v
+}
+
+// GetId returns the Id field value
+func (o *ApplicationOut) GetId() string {
+	if o == nil  {
+		var ret string
+		return ret
+	}
+
+	return o.Id
+}
+
+// GetIdOk returns a tuple with the Id field value
+// and a boolean to check if the value has been set.
+func (o *ApplicationOut) GetIdOk() (*string, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.Id, true
+}
+
+// SetId sets field value
+func (o *ApplicationOut) SetId(v string) {
+	o.Id = v
+}
+
+// GetName returns the Name field value
+func (o *ApplicationOut) GetName() string {
+	if o == nil  {
+		var ret string
+		return ret
+	}
+
+	return o.Name
+}
+
+// GetNameOk returns a tuple with the Name field value
+// and a boolean to check if the value has been set.
+func (o *ApplicationOut) GetNameOk() (*string, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.Name, true
+}
+
+// SetName sets field value
+func (o *ApplicationOut) SetName(v string) {
+	o.Name = v
 }
 
 // GetUid returns the Uid field value if set, zero value otherwise.
@@ -75,91 +147,19 @@ func (o *ApplicationOut) SetUid(v string) {
 	o.Uid = &v
 }
 
-// GetName returns the Name field value
-func (o *ApplicationOut) GetName() string {
-	if o == nil  {
-		var ret string
-		return ret
-	}
-
-	return o.Name
-}
-
-// GetNameOk returns a tuple with the Name field value
-// and a boolean to check if the value has been set.
-func (o *ApplicationOut) GetNameOk() (*string, bool) {
-	if o == nil  {
-		return nil, false
-	}
-	return &o.Name, true
-}
-
-// SetName sets field value
-func (o *ApplicationOut) SetName(v string) {
-	o.Name = v
-}
-
-// GetId returns the Id field value
-func (o *ApplicationOut) GetId() string {
-	if o == nil  {
-		var ret string
-		return ret
-	}
-
-	return o.Id
-}
-
-// GetIdOk returns a tuple with the Id field value
-// and a boolean to check if the value has been set.
-func (o *ApplicationOut) GetIdOk() (*string, bool) {
-	if o == nil  {
-		return nil, false
-	}
-	return &o.Id, true
-}
-
-// SetId sets field value
-func (o *ApplicationOut) SetId(v string) {
-	o.Id = v
-}
-
-// GetCreatedAt returns the CreatedAt field value
-func (o *ApplicationOut) GetCreatedAt() time.Time {
-	if o == nil  {
-		var ret time.Time
-		return ret
-	}
-
-	return o.CreatedAt
-}
-
-// GetCreatedAtOk returns a tuple with the CreatedAt field value
-// and a boolean to check if the value has been set.
-func (o *ApplicationOut) GetCreatedAtOk() (*time.Time, bool) {
-	if o == nil  {
-		return nil, false
-	}
-	return &o.CreatedAt, true
-}
-
-// SetCreatedAt sets field value
-func (o *ApplicationOut) SetCreatedAt(v time.Time) {
-	o.CreatedAt = v
-}
-
 func (o ApplicationOut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Uid != nil {
-		toSerialize["uid"] = o.Uid
-	}
 	if true {
-		toSerialize["name"] = o.Name
+		toSerialize["createdAt"] = o.CreatedAt
 	}
 	if true {
 		toSerialize["id"] = o.Id
 	}
 	if true {
-		toSerialize["createdAt"] = o.CreatedAt
+		toSerialize["name"] = o.Name
+	}
+	if o.Uid != nil {
+		toSerialize["uid"] = o.Uid
 	}
 	return json.Marshal(toSerialize)
 }

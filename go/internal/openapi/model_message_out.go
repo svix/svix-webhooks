@@ -1,7 +1,7 @@
 /*
  * Svix API
  *
- * Welcome to the Svix API documentation!  Useful links: [Homepage](https://www.svix.com) | [Support email](mailto:support+docs@svix.com) | [Slack Community](https://www.svix.com/slack/)  # Introduction  This is the reference documentation and schemas for the Svix API. For tutorials and other documentation please refer to [the documentation](https://docs.svix.com).  ## Main concepts  In Svix you have four important entities you will be interacting with:  - `messages`: these are the webhooks being sent. They can have contents and a few other properties. - `application`: this is where `messages` are sent to. Usually you want to create one application for each of your users. - `endpoint`: endpoints are the URLs messages will be sent to. Each application can have multiple `endpoints` and each message sent to that application will be sent to all of them (unless they are not subscribed to the sent event type). - `event-type`: event types are identifiers denoting the type of the message being sent. Event types are primarily used to decide which events are sent to which endpoint.   ## Authentication  Get your authentication token (`AUTH_TOKEN`) from the [Svix dashboard](https://dashboard.svix.com) and use it as part of the `Authorization` header as such: `Authorization: Bearer ${AUTH_TOKEN}`.  <SecurityDefinitions />   ## Code samples  The code samples assume you already have the respective libraries installed and you know how to use them. For the latest information on how to do that, please refer to [the documentation](https://docs.svix.com/).   ## Cross-Origin Resource Sharing  This API features Cross-Origin Resource Sharing (CORS) implemented in compliance with [W3C spec](https://www.w3.org/TR/cors/). And that allows cross-domain communication from the browser. All responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site. 
+ * Welcome to the Svix API documentation!  Useful links: [Homepage](https://www.svix.com) | [Support email](mailto:support+docs@svix.com) | [Blog](https://www.svix.com/blog/) | [Slack Community](https://www.svix.com/slack/)  # Introduction  This is the reference documentation and schemas for the Svix API. For tutorials and other documentation please refer to [the documentation](https://docs.svix.com).  ## Main concepts  In Svix you have four important entities you will be interacting with:  - `messages`: these are the webhooks being sent. They can have contents and a few other properties. - `application`: this is where `messages` are sent to. Usually you want to create one application for each of your users. - `endpoint`: endpoints are the URLs messages will be sent to. Each application can have multiple `endpoints` and each message sent to that application will be sent to all of them (unless they are not subscribed to the sent event type). - `event-type`: event types are identifiers denoting the type of the message being sent. Event types are primarily used to decide which events are sent to which endpoint.   ## Authentication  Get your authentication token (`AUTH_TOKEN`) from the [Svix dashboard](https://dashboard.svix.com) and use it as part of the `Authorization` header as such: `Authorization: Bearer ${AUTH_TOKEN}`.  <SecurityDefinitions />   ## Code samples  The code samples assume you already have the respective libraries installed and you know how to use them. For the latest information on how to do that, please refer to [the documentation](https://docs.svix.com/).   ## Cross-Origin Resource Sharing  This API features Cross-Origin Resource Sharing (CORS) implemented in compliance with [W3C spec](https://www.w3.org/TR/cors/). And that allows cross-domain communication from the browser. All responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site. 
  *
  * API version: 1.4
  */
@@ -17,10 +17,10 @@ import (
 
 // MessageOut struct for MessageOut
 type MessageOut struct {
-	EventType string `json:"eventType"`
 	EventId *string `json:"eventId,omitempty"`
-	Payload map[string]interface{} `json:"payload"`
+	EventType string `json:"eventType"`
 	Id string `json:"id"`
+	Payload map[string]interface{} `json:"payload"`
 	Timestamp time.Time `json:"timestamp"`
 }
 
@@ -28,11 +28,11 @@ type MessageOut struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewMessageOut(eventType string, payload map[string]interface{}, id string, timestamp time.Time, ) *MessageOut {
+func NewMessageOut(eventType string, id string, payload map[string]interface{}, timestamp time.Time, ) *MessageOut {
 	this := MessageOut{}
 	this.EventType = eventType
-	this.Payload = payload
 	this.Id = id
+	this.Payload = payload
 	this.Timestamp = timestamp
 	return &this
 }
@@ -43,30 +43,6 @@ func NewMessageOut(eventType string, payload map[string]interface{}, id string, 
 func NewMessageOutWithDefaults() *MessageOut {
 	this := MessageOut{}
 	return &this
-}
-
-// GetEventType returns the EventType field value
-func (o *MessageOut) GetEventType() string {
-	if o == nil  {
-		var ret string
-		return ret
-	}
-
-	return o.EventType
-}
-
-// GetEventTypeOk returns a tuple with the EventType field value
-// and a boolean to check if the value has been set.
-func (o *MessageOut) GetEventTypeOk() (*string, bool) {
-	if o == nil  {
-		return nil, false
-	}
-	return &o.EventType, true
-}
-
-// SetEventType sets field value
-func (o *MessageOut) SetEventType(v string) {
-	o.EventType = v
 }
 
 // GetEventId returns the EventId field value if set, zero value otherwise.
@@ -101,28 +77,28 @@ func (o *MessageOut) SetEventId(v string) {
 	o.EventId = &v
 }
 
-// GetPayload returns the Payload field value
-func (o *MessageOut) GetPayload() map[string]interface{} {
+// GetEventType returns the EventType field value
+func (o *MessageOut) GetEventType() string {
 	if o == nil  {
-		var ret map[string]interface{}
+		var ret string
 		return ret
 	}
 
-	return o.Payload
+	return o.EventType
 }
 
-// GetPayloadOk returns a tuple with the Payload field value
+// GetEventTypeOk returns a tuple with the EventType field value
 // and a boolean to check if the value has been set.
-func (o *MessageOut) GetPayloadOk() (*map[string]interface{}, bool) {
+func (o *MessageOut) GetEventTypeOk() (*string, bool) {
 	if o == nil  {
 		return nil, false
 	}
-	return &o.Payload, true
+	return &o.EventType, true
 }
 
-// SetPayload sets field value
-func (o *MessageOut) SetPayload(v map[string]interface{}) {
-	o.Payload = v
+// SetEventType sets field value
+func (o *MessageOut) SetEventType(v string) {
+	o.EventType = v
 }
 
 // GetId returns the Id field value
@@ -147,6 +123,30 @@ func (o *MessageOut) GetIdOk() (*string, bool) {
 // SetId sets field value
 func (o *MessageOut) SetId(v string) {
 	o.Id = v
+}
+
+// GetPayload returns the Payload field value
+func (o *MessageOut) GetPayload() map[string]interface{} {
+	if o == nil  {
+		var ret map[string]interface{}
+		return ret
+	}
+
+	return o.Payload
+}
+
+// GetPayloadOk returns a tuple with the Payload field value
+// and a boolean to check if the value has been set.
+func (o *MessageOut) GetPayloadOk() (*map[string]interface{}, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.Payload, true
+}
+
+// SetPayload sets field value
+func (o *MessageOut) SetPayload(v map[string]interface{}) {
+	o.Payload = v
 }
 
 // GetTimestamp returns the Timestamp field value
@@ -175,17 +175,17 @@ func (o *MessageOut) SetTimestamp(v time.Time) {
 
 func (o MessageOut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["eventType"] = o.EventType
-	}
 	if o.EventId != nil {
 		toSerialize["eventId"] = o.EventId
 	}
 	if true {
-		toSerialize["payload"] = o.Payload
+		toSerialize["eventType"] = o.EventType
 	}
 	if true {
 		toSerialize["id"] = o.Id
+	}
+	if true {
+		toSerialize["payload"] = o.Payload
 	}
 	if true {
 		toSerialize["timestamp"] = o.Timestamp
