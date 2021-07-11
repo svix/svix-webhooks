@@ -13,7 +13,7 @@ namespace Svix
 
         private static readonly int TOLERANCE_IN_SECONDS = 60 * 5;
         private static string prefix = "whsec_";
-        private string key;
+        private byte[] key;
         public Webhook(string key)
         {
             if (key.StartsWith(prefix))
@@ -21,10 +21,7 @@ namespace Svix
                 key = key.Substring(prefix.Length);
             }
 
-            byte[] keyBytes = Convert.FromBase64String(key);
-            string decodedKey = Encoding.UTF8.GetString(keyBytes);
-
-            this.key = decodedKey;
+            this.key = Convert.FromBase64String(key); ;
         }
 
         public void Verify(string payload, WebHeaderCollection headers)
@@ -38,10 +35,10 @@ namespace Svix
                 throw new WebhookVerificationException("Missing Required Headers");
             }
 
-            Webhook.VerifyTimestamp(msgTimestamp);
+            var timestamp = Webhook.VerifyTimestamp(msgTimestamp);
 
-            var toSign = $"{msgId}.{msgTimestamp}.{payload}";
-            var signature = Webhook.Sign(this.key, toSign);
+            var signature = this.Sign(msgId, timestamp, payload);
+            var expectedSignature = signature.Split(",")[1];
 
             var passedSignatures = msgSignature.Split(' ');
             foreach (string versionedSignature in passedSignatures)
@@ -52,13 +49,13 @@ namespace Svix
                     throw new WebhookVerificationException("Invalid Signature Headers");
                 }
                 var version = parts[0];
-                var expectedSignature = parts[1];
+                var passedSignature = parts[1];
 
                 if (version != "v1")
                 {
                     continue;
                 }
-                if (Utils.SecureCompare(signature, expectedSignature))
+                if (Utils.SecureCompare(expectedSignature, passedSignature))
                 {
                     return;
                 }
@@ -67,7 +64,7 @@ namespace Svix
             throw new WebhookVerificationException("No matching signature found");
         }
 
-        private static void VerifyTimestamp(string timestampHeader)
+        private static DateTimeOffset VerifyTimestamp(string timestampHeader)
         {
             DateTimeOffset timestamp;
             var now = DateTimeOffset.UtcNow;
@@ -89,18 +86,18 @@ namespace Svix
             {
                 throw new WebhookVerificationException("Message timestamp too new");
             }
-
+            return timestamp;
         }
 
-        private static string Sign(string secret, string toSign)
+        public string Sign(string msgId, DateTimeOffset timestamp, string payload)
         {
-            var secretBytes = SafeUTF8Encoding.GetBytes(secret);
+            var toSign = $"{msgId}.{timestamp.ToUnixTimeSeconds().ToString()}.{payload}";
             var toSignBytes = SafeUTF8Encoding.GetBytes(toSign);
-
-            using (var hmac = new HMACSHA256(secretBytes))
+            using (var hmac = new HMACSHA256(this.key))
             {
                 var hash = hmac.ComputeHash(toSignBytes);
-                return Convert.ToBase64String(hash);
+                var signature = Convert.ToBase64String(hash);
+                return $"v1,{signature}";
             }
         }
     }

@@ -2,8 +2,6 @@ using Xunit;
 
 using System;
 using System.Net;
-using System.Text;
-using System.Security.Cryptography;
 
 using Svix.Exceptions;
 
@@ -31,27 +29,13 @@ namespace Svix.Tests
             payload = DEFAULT_PAYLOAD;
             secret = DEFAULT_SECRET;
 
-            byte[] keyBytes = Convert.FromBase64String(secret);
-            string decodedSecret = Encoding.UTF8.GetString(keyBytes);
-            string toSign = $"{this.id}.{this.timestamp.ToUnixTimeSeconds()}.{this.payload}";
-            signature = TestPayload.Sign(decodedSecret, toSign);
+            Webhook wh = new Webhook(secret);
+            var signature = wh.Sign(id, this.timestamp, payload);
 
             headers = new WebHeaderCollection();
             headers.Set("svix-id", id);
-            headers.Set("svix-signature", $"v1,{signature}");
+            headers.Set("svix-signature", signature);
             headers.Set("svix-timestamp", timestamp.ToUnixTimeSeconds().ToString());
-        }
-
-        private static string Sign(string key, string payload)
-        {
-            var secretBytes = Encoding.UTF8.GetBytes(key);
-            var toSignBytes = Encoding.UTF8.GetBytes(payload);
-
-            using (var hmac = new HMACSHA256(secretBytes))
-            {
-                var hash = hmac.ComputeHash(toSignBytes);
-                return Convert.ToBase64String(hash);
-            }
         }
     }
 
@@ -160,6 +144,20 @@ namespace Svix.Tests
 
             wh = new Webhook("whsec_" + testPayload.secret);
             wh.Verify(testPayload.payload, testPayload.headers);
+        }
+
+        [Fact]
+        public void verifyWebhookSignWorks()
+        {
+            var key = "whsec_MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw";
+            var msgId = "msg_p5jXN8AQM9LWM0D4loKWxJek";
+            var timestamp = DateTimeOffset.FromUnixTimeSeconds(1614265330);
+            var payload = "{\"test\": 2432232314}";
+            var expected = "v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE=";
+
+            var wh = new Webhook(key);
+            var signature = wh.Sign(msgId, timestamp, payload);
+            Assert.Equal(signature, expected);
         }
     }
 }
