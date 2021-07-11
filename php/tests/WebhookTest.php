@@ -116,4 +116,36 @@ final class WebhookTest extends \PHPUnit\Framework\TestCase
         $wh = new \Svix\Webhook("whsec_" . $testPayload->secret);
         $wh->verify($testPayload->payload, $testPayload->header);
     }
+
+    public function testSignFunctionWorks()
+    {
+        $key = "whsec_MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw";
+        $msgId = "msg_p5jXN8AQM9LWM0D4loKWxJek";
+        $timestamp = 1614265330;
+        $payload = '{"test": 2432232314}';
+        $expected = "v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE=";
+
+        $wh = new \Svix\Webhook($key);
+
+        $signature = $wh->sign($msgId, $timestamp, $payload);
+        $this->assertEquals(
+            $signature,
+            $expected,
+            "did not return expected signature"
+        );
+    }
+
+    public function testInvalidTimestamp()
+    {
+        $this->expectException(\Svix\Exception\WebhookSigningException::class);
+        $key = "whsec_MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw";
+        $msgId = "msg_p5jXN8AQM9LWM0D4loKWxJek";
+        $timestamp = 161426533.0;
+        $payload = '{"test": 2432232314}';
+        $expected = "v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE=";
+
+        $wh = new \Svix\Webhook($key);
+
+        $signature = $wh->sign($msgId, $timestamp, $payload);
+    }
 }
