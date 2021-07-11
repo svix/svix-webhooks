@@ -11,4 +11,7 @@ module Svix
 
     class WebhookVerificationError < SvixError
     end
+
+    class WebhookSigningError < SvixError
+    end
 end
