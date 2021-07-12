@@ -10,8 +10,11 @@ namespace Svix
     {
 
         internal static readonly UTF8Encoding SafeUTF8Encoding = new UTF8Encoding(false, true);
+        internal const string SVIX_ID_HEADER_KEY = "svix-id";
+        internal const string SVIX_SIGNATURE_HEADER_KEY = "svix-signature";
+        internal const string SVIX_TIMESTAMP_HEADER_KEY = "svix-timestamp";
 
-        private static readonly int TOLERANCE_IN_SECONDS = 60 * 5;
+        private const int TOLERANCE_IN_SECONDS = 60 * 5;
         private static string prefix = "whsec_";
         private byte[] key;
         public Webhook(string key)
@@ -26,9 +29,9 @@ namespace Svix
 
         public void Verify(string payload, WebHeaderCollection headers)
         {
-            string msgId = headers.Get("svix-id");
-            string msgSignature = headers.Get("svix-signature");
-            string msgTimestamp = headers.Get("svix-timestamp");
+            string msgId = headers.Get(SVIX_ID_HEADER_KEY);
+            string msgSignature = headers.Get(SVIX_SIGNATURE_HEADER_KEY);
+            string msgTimestamp = headers.Get(SVIX_TIMESTAMP_HEADER_KEY);
 
             if (String.IsNullOrEmpty(msgId) || String.IsNullOrEmpty(msgSignature) || String.IsNullOrEmpty(msgTimestamp))
             {

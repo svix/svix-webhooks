@@ -10,9 +10,12 @@ namespace Svix.Tests
 
     class TestPayload
     {
-        private static string DEFAULT_MSG_ID = "msg_p5jXN8AQM9LWM0D4loKWxJek";
-        private static string DEFAULT_PAYLOAD = "{\"test\": 2432232314}";
-        private static string DEFAULT_SECRET = "MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw";
+        internal const string SVIX_ID_HEADER_KEY = "svix-id";
+        internal const string SVIX_SIGNATURE_HEADER_KEY = "svix-signature";
+        internal const string SVIX_TIMESTAMP_HEADER_KEY = "svix-timestamp";
+        private const string DEFAULT_MSG_ID = "msg_p5jXN8AQM9LWM0D4loKWxJek";
+        private const string DEFAULT_PAYLOAD = "{\"test\": 2432232314}";
+        private const string DEFAULT_SECRET = "MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw";
 
         public string id;
         public DateTimeOffset timestamp;
@@ -33,9 +36,9 @@ namespace Svix.Tests
             var signature = wh.Sign(id, this.timestamp, payload);
 
             headers = new WebHeaderCollection();
-            headers.Set("svix-id", id);
-            headers.Set("svix-signature", signature);
-            headers.Set("svix-timestamp", timestamp.ToUnixTimeSeconds().ToString());
+            headers.Set(SVIX_ID_HEADER_KEY, id);
+            headers.Set(SVIX_SIGNATURE_HEADER_KEY, signature);
+            headers.Set(SVIX_TIMESTAMP_HEADER_KEY, timestamp.ToUnixTimeSeconds().ToString());
         }
     }
 
@@ -47,7 +50,7 @@ namespace Svix.Tests
         public void TestMissingIdRasiesException()
         {
             var testPayload = new TestPayload(DateTimeOffset.UtcNow);
-            testPayload.headers.Remove("svix-id");
+            testPayload.headers.Remove(TestPayload.SVIX_ID_HEADER_KEY);
 
             var wh = new Webhook(testPayload.secret);
 
@@ -58,7 +61,7 @@ namespace Svix.Tests
         public void TestMissingTimestampThrowsException()
         {
             var testPayload = new TestPayload(DateTimeOffset.UtcNow);
-            testPayload.headers.Remove("svix-timestamp");
+            testPayload.headers.Remove(TestPayload.SVIX_TIMESTAMP_HEADER_KEY);
 
             var wh = new Webhook(testPayload.secret);
 
@@ -69,7 +72,7 @@ namespace Svix.Tests
         public void TestMissingSignatureThrowsException()
         {
             var testPayload = new TestPayload(DateTimeOffset.UtcNow);
-            testPayload.headers.Remove("svix-signature");
+            testPayload.headers.Remove(TestPayload.SVIX_SIGNATURE_HEADER_KEY);
 
             var wh = new Webhook(testPayload.secret);
 
@@ -80,7 +83,7 @@ namespace Svix.Tests
         public void TestInvalidSignatureThrowsException()
         {
             var testPayload = new TestPayload(DateTimeOffset.UtcNow);
-            testPayload.headers.Set("svix-signature", "v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLawdd");
+            testPayload.headers.Set(TestPayload.SVIX_SIGNATURE_HEADER_KEY, "v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLawdd");
 
             var wh = new Webhook(testPayload.secret);
 
@@ -124,10 +127,10 @@ namespace Svix.Tests
             string[] sigs = new string[] {
                 "v1,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
                 "v2,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
-                testPayload.headers.Get("svix-signature"), // valid signature
+                testPayload.headers.Get(TestPayload.SVIX_SIGNATURE_HEADER_KEY), // valid signature
                 "v1,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
             };
-            testPayload.headers.Set("svix-signature", String.Join(" ", sigs));
+            testPayload.headers.Set(TestPayload.SVIX_SIGNATURE_HEADER_KEY, String.Join(" ", sigs));
 
             var wh = new Webhook(testPayload.secret);
 
