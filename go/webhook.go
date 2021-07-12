@@ -49,15 +49,18 @@ func (wh *Webhook) Verify(payload []byte, headers http.Header) error {
 	}
 
 	// enforce timestamp tolerance
-	err := verifyTimestamp(msgTimestamp)
+	timestamp, err := verifyTimestamp(msgTimestamp)
 	if err != nil {
 		return err
 	}
 
-	toSign := fmt.Sprintf("%s.%s.%s", msgId, msgTimestamp, payload)
-	expectedSignature := sign(wh.key, toSign)
-	passedSignatures := strings.Split(msgSignature, " ")
+	computedSignature, err := wh.Sign(msgId, timestamp, payload)
+	if err != nil {
+		return err
+	}
+	expectedSignature := []byte(strings.Split(computedSignature, ",")[1])
 
+	passedSignatures := strings.Split(msgSignature, " ")
 	for _, versionedSignature := range passedSignatures {
 		sigParts := strings.Split(versionedSignature, ",")
 		if len(sigParts) < 2 {
@@ -77,28 +80,31 @@ func (wh *Webhook) Verify(payload []byte, headers http.Header) error {
 	return errNoMatchingSignature
 }
 
-func sign(key []byte, toSign string) []byte {
-	h := hmac.New(sha256.New, key)
+func (wh *Webhook) Sign(msgId string, timestamp time.Time, payload []byte) (string, error) {
+	toSign := fmt.Sprintf("%s.%d.%s", msgId, timestamp.Unix(), payload)
+
+	h := hmac.New(sha256.New, wh.key)
 	h.Write([]byte(toSign))
 	sig := make([]byte, base64enc.EncodedLen(h.Size()))
 	base64enc.Encode(sig, h.Sum(nil))
-	return sig
+	return fmt.Sprintf("v1,%s", sig), nil
+
 }
 
-func verifyTimestamp(timestampHeader string) error {
+func verifyTimestamp(timestampHeader string) (time.Time, error) {
 	now := time.Now()
 	timeInt, err := strconv.ParseInt(timestampHeader, 10, 64)
 	if err != nil {
-		return errInvalidHeaders
+		return time.Time{}, errInvalidHeaders
 	}
 	timestamp := time.Unix(timeInt, 0)
 
 	if now.Sub(timestamp) > tolerance {
-		return errMessageTooOld
+		return time.Time{}, errMessageTooOld
 	}
 	if timestamp.Unix() > now.Add(tolerance).Unix() {
-		return errMessageTooNew
+		return time.Time{}, errMessageTooNew
 	}
 
-	return nil
+	return timestamp, nil
 }

@@ -23,35 +23,40 @@ class Webhook
         }
 
         $msgId = $headers['svix-id'];
-        $timestamp = $headers['svix-timestamp'];
+        $msgTimestamp = $headers['svix-timestamp'];
         $msgSignature = $headers['svix-signature'];
 
-        self::verifyTimestamp($timestamp);
+        $timestamp = self::verifyTimestamp($msgTimestamp);
 
-        $toSign = "{$msgId}.{$timestamp}.{$payload}";
-        $signature = self::sign($this->secret, $toSign);
+        $signature = $this->sign($msgId, $timestamp, $payload);
+        $expectedSignature = explode(',', $signature, 2)[1];
 
         $passedSignatures = explode(' ', $msgSignature);
         foreach ($passedSignatures as $versionedSignature) {
             $sigParts = explode(',', $versionedSignature, 2);
             $version = $sigParts[0];
-            $expectedSignature = $sigParts[1];
+            $passedSignature = $sigParts[1];
 
             if (strcmp($version, "v1") != 0) {
                 continue;
             }
 
-            if (hash_equals($signature, $expectedSignature)) {
+            if (hash_equals($expectedSignature, $passedSignature)) {
                 return json_decode($payload, true);
             }
         }
         throw new Exception\WebhookVerificationException("No matching signature found");
     }
 
-    private static function sign($key, $payload)
+    public function sign($msgId, $timestamp, $payload)
     {
-        $hex_hash = hash_hmac('sha256', $payload, $key);
-        return base64_encode(pack('H*', $hex_hash));
+        if (!is_numeric($timestamp) && (int)$timestamp == $timestamp) {
+            throw new Exception\WebhookSigningException("Invalid timestamp");
+        }
+        $toSign = "{$msgId}.{$timestamp}.{$payload}";
+        $hex_hash = hash_hmac('sha256', $toSign, $this->secret);
+        $signature = base64_encode(pack('H*', $hex_hash));
+        return "v1,{$signature}";
     }
 
     private function verifyTimestamp($timestampHeader)
@@ -69,5 +74,6 @@ class Webhook
         if ($timestamp > ($now + Webhook::TOLERANCE)) {
             throw new Exception\WebhookVerificationException("Message timestamp too new");
         }
+        return $timestamp;
     }
 }

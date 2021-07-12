@@ -132,4 +132,16 @@ describe Svix::Webhook do
         json = wh.verify(testPayload.payload, testPayload.headers)
         expect(json[:test]).to eq(2432232314)
     end
+
+    it "sign function works" do
+            key = "whsec_MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw"
+            msg_id = "msg_p5jXN8AQM9LWM0D4loKWxJek"
+            timestamp = 1614265330
+            payload = '{"test": 2432232314}'
+            expected = "v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE="
+
+            wh = Svix::Webhook.new(key)
+            signature = wh.sign(msg_id, timestamp, payload)
+            expect(signature).to eq(expected)
+    end
 end

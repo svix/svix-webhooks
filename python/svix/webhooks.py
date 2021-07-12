@@ -4,6 +4,7 @@ import hmac
 import json
 import typing as t
 from datetime import datetime, timedelta, timezone
+from math import floor
 
 
 def hmac_data(key: bytes, data: bytes) -> bytes:
@@ -34,23 +35,27 @@ class Webhook:
         if not (msg_id and msg_timestamp and msg_signature):
             raise WebhookVerificationError("Missing required headers")
 
-        self.__verify_timestamp(msg_timestamp)
+        timestamp = self.__verify_timestamp(msg_timestamp)
 
-        to_sign = f"{msg_id}.{msg_timestamp}.{data}".encode()
-        expected_sig = hmac_data(self._whsecret, to_sign)
+        expected_sig = base64.b64decode(self.sign(msg_id=msg_id, timestamp=timestamp, data=data).split(",")[1])
         passed_sigs = msg_signature.split(" ")
         for versioned_sig in passed_sigs:
             (version, signature) = versioned_sig.split(",")
             if version != "v1":
                 continue
-
             sig_bytes = base64.b64decode(signature)
             if hmac.compare_digest(expected_sig, sig_bytes):
                 return json.loads(data)
 
         raise WebhookVerificationError("No matching signature found")
 
-    def __verify_timestamp(self, timestamp_header: str) -> None:
+    def sign(self, msg_id: str, timestamp: datetime, data: str) -> str:
+        timestamp_str = str(floor(timestamp.replace(tzinfo=timezone.utc).timestamp()))
+        to_sign = f"{msg_id}.{timestamp_str}.{data}".encode()
+        signature = hmac_data(self._whsecret, to_sign)
+        return f"v1,{base64.b64encode(signature).decode('utf-8')}"
+
+    def __verify_timestamp(self, timestamp_header: str) -> datetime:
         webhook_tolerance = timedelta(minutes=5)
         now = datetime.now(tz=timezone.utc)
         try:
@@ -62,3 +67,4 @@ class Webhook:
             raise WebhookVerificationError("Message timestamp too old")
         if timestamp > (now + webhook_tolerance):
             raise WebhookVerificationError("Message timestamp too new")
+        return timestamp

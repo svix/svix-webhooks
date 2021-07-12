@@ -21,8 +21,7 @@ module Svix
 
             verify_timestamp(msgTimestamp)
 
-            toSign = "#{msgId}.#{msgTimestamp}.#{payload}"
-            signature = Base64.encode64(OpenSSL::HMAC.digest(OpenSSL::Digest.new("sha256"), @secret, toSign)).strip
+            _, signature = sign(msgId, msgTimestamp, payload).split(",", 2)
 
             passedSignatures = msgSignature.split(" ")
             passedSignatures.each do |versionedSignature|
@@ -35,6 +34,17 @@ module Svix
                 end
             end
             raise WebhookVerificationError, "No matching signature found"
+        end
+
+        def sign(msgId, timestamp, payload)
+            begin
+                now = Integer(timestamp)
+            rescue
+                raise WebhookSigningError, "Invalid timestamp"
+            end
+            toSign = "#{msgId}.#{timestamp}.#{payload}"
+            signature = Base64.encode64(OpenSSL::HMAC.digest(OpenSSL::Digest.new("sha256"), @secret, toSign)).strip
+            return "v1,#{signature}"
         end
 
         private

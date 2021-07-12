@@ -259,11 +259,7 @@ class MessageAttempt {
     });
   }
 
-  public resend(
-    appId: string,
-    msgId: string,
-    endpointId: string
-  ): Promise<void> {
+  public resend(appId: string, msgId: string, endpointId: string): Promise<void> {
     return this.api.resendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPost({
       endpointId,
       msgId,
@@ -358,10 +354,11 @@ export class Webhook {
       throw new WebhookVerificationError("Missing required headers");
     }
 
-    this.verifyTimestamp(msgTimestamp);
+    const timestamp = this.verifyTimestamp(msgTimestamp);
 
-    const toSign = utf8.encode(`${msgId}.${msgTimestamp}.${payload}`);
-    const expectedSignature = base64.encode(sha256.hmac(this.key, toSign));
+    const computedSignature = this.sign(msgId, timestamp, payload);
+    const expectedSignature = computedSignature.split(",")[1];
+
     const passedSignatures = msgSignature.split(" ");
     for (const versionedSignature of passedSignatures) {
       const [version, signature] = versionedSignature.split(",");
@@ -376,7 +373,13 @@ export class Webhook {
     throw new WebhookVerificationError("No matching signature found");
   }
 
-  private verifyTimestamp(timestampHeader: string): void {
+  public sign(msgId: string, timestamp: Date, payload: string): string {
+    const toSign = utf8.encode(`${msgId}.${timestamp.getTime() / 1000}.${payload}`);
+    const expectedSignature = base64.encode(sha256.hmac(this.key, toSign));
+    return `v1,${expectedSignature}`;
+  }
+
+  private verifyTimestamp(timestampHeader: string): Date {
     const now = Math.floor(Date.now() / 1000);
     const timestamp = parseInt(timestampHeader, 10);
     if (isNaN(timestamp)) {
@@ -389,5 +392,6 @@ export class Webhook {
     if (timestamp > now + WEBHOOK_TOLERANCE_IN_SECONDS) {
       throw new WebhookVerificationError("Message timestamp too new");
     }
+    return new Date(timestamp * 1000);
   }
 }
