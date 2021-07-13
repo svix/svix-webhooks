@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 0.21.0
+* All: Add Sign functions for generating webhook signatures 🔏
+* Python: Enable typing 🤓
+* Csharp: Initial webhook verification library 🚀
+* Go: Set default http client timeout and allow overriding of client. ⏲️
+* All: Bump openapi spec, fixes bug in resend function, which could throw an error in some languages on return. 🐛
+
 ## Version 0.20.1
 * JavaScript, Python and Go: fix regression with server URLs not being set correctly.
 
