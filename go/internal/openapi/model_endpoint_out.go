@@ -19,6 +19,7 @@ import (
 type EndpointOut struct {
 	CreatedAt time.Time `json:"createdAt"`
 	Description *string `json:"description,omitempty"`
+	Disabled *bool `json:"disabled,omitempty"`
 	FilterTypes *[]string `json:"filterTypes,omitempty"`
 	Id string `json:"id"`
 	Url string `json:"url"`
@@ -34,6 +35,8 @@ func NewEndpointOut(createdAt time.Time, id string, url string, version int32, )
 	this.CreatedAt = createdAt
 	var description string = ""
 	this.Description = &description
+	var disabled bool = false
+	this.Disabled = &disabled
 	this.Id = id
 	this.Url = url
 	this.Version = version
@@ -47,6 +50,8 @@ func NewEndpointOutWithDefaults() *EndpointOut {
 	this := EndpointOut{}
 	var description string = ""
 	this.Description = &description
+	var disabled bool = false
+	this.Disabled = &disabled
 	return &this
 }
 
@@ -104,6 +109,38 @@ func (o *EndpointOut) HasDescription() bool {
 // SetDescription gets a reference to the given string and assigns it to the Description field.
 func (o *EndpointOut) SetDescription(v string) {
 	o.Description = &v
+}
+
+// GetDisabled returns the Disabled field value if set, zero value otherwise.
+func (o *EndpointOut) GetDisabled() bool {
+	if o == nil || o.Disabled == nil {
+		var ret bool
+		return ret
+	}
+	return *o.Disabled
+}
+
+// GetDisabledOk returns a tuple with the Disabled field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *EndpointOut) GetDisabledOk() (*bool, bool) {
+	if o == nil || o.Disabled == nil {
+		return nil, false
+	}
+	return o.Disabled, true
+}
+
+// HasDisabled returns a boolean if a field has been set.
+func (o *EndpointOut) HasDisabled() bool {
+	if o != nil && o.Disabled != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetDisabled gets a reference to the given bool and assigns it to the Disabled field.
+func (o *EndpointOut) SetDisabled(v bool) {
+	o.Disabled = &v
 }
 
 // GetFilterTypes returns the FilterTypes field value if set, zero value otherwise.
@@ -217,6 +254,9 @@ func (o EndpointOut) MarshalJSON() ([]byte, error) {
 	}
 	if o.Description != nil {
 		toSerialize["description"] = o.Description
+	}
+	if o.Disabled != nil {
+		toSerialize["disabled"] = o.Disabled
 	}
 	if o.FilterTypes != nil {
 		toSerialize["filterTypes"] = o.FilterTypes

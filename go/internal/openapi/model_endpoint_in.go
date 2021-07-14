@@ -17,6 +17,7 @@ import (
 // EndpointIn struct for EndpointIn
 type EndpointIn struct {
 	Description *string `json:"description,omitempty"`
+	Disabled *bool `json:"disabled,omitempty"`
 	FilterTypes *[]string `json:"filterTypes,omitempty"`
 	Url string `json:"url"`
 	Version int32 `json:"version"`
@@ -30,6 +31,8 @@ func NewEndpointIn(url string, version int32, ) *EndpointIn {
 	this := EndpointIn{}
 	var description string = ""
 	this.Description = &description
+	var disabled bool = false
+	this.Disabled = &disabled
 	this.Url = url
 	this.Version = version
 	return &this
@@ -42,6 +45,8 @@ func NewEndpointInWithDefaults() *EndpointIn {
 	this := EndpointIn{}
 	var description string = ""
 	this.Description = &description
+	var disabled bool = false
+	this.Disabled = &disabled
 	return &this
 }
 
@@ -75,6 +80,38 @@ func (o *EndpointIn) HasDescription() bool {
 // SetDescription gets a reference to the given string and assigns it to the Description field.
 func (o *EndpointIn) SetDescription(v string) {
 	o.Description = &v
+}
+
+// GetDisabled returns the Disabled field value if set, zero value otherwise.
+func (o *EndpointIn) GetDisabled() bool {
+	if o == nil || o.Disabled == nil {
+		var ret bool
+		return ret
+	}
+	return *o.Disabled
+}
+
+// GetDisabledOk returns a tuple with the Disabled field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *EndpointIn) GetDisabledOk() (*bool, bool) {
+	if o == nil || o.Disabled == nil {
+		return nil, false
+	}
+	return o.Disabled, true
+}
+
+// HasDisabled returns a boolean if a field has been set.
+func (o *EndpointIn) HasDisabled() bool {
+	if o != nil && o.Disabled != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetDisabled gets a reference to the given bool and assigns it to the Disabled field.
+func (o *EndpointIn) SetDisabled(v bool) {
+	o.Disabled = &v
 }
 
 // GetFilterTypes returns the FilterTypes field value if set, zero value otherwise.
@@ -161,6 +198,9 @@ func (o EndpointIn) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if o.Description != nil {
 		toSerialize["description"] = o.Description
+	}
+	if o.Disabled != nil {
+		toSerialize["disabled"] = o.Disabled
 	}
 	if o.FilterTypes != nil {
 		toSerialize["filterTypes"] = o.FilterTypes

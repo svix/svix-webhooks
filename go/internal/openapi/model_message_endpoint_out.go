@@ -19,6 +19,7 @@ import (
 type MessageEndpointOut struct {
 	CreatedAt time.Time `json:"createdAt"`
 	Description *string `json:"description,omitempty"`
+	Disabled *bool `json:"disabled,omitempty"`
 	FilterTypes *[]string `json:"filterTypes,omitempty"`
 	Id string `json:"id"`
 	Status MessageStatus `json:"status"`
@@ -35,6 +36,8 @@ func NewMessageEndpointOut(createdAt time.Time, id string, status MessageStatus,
 	this.CreatedAt = createdAt
 	var description string = ""
 	this.Description = &description
+	var disabled bool = false
+	this.Disabled = &disabled
 	this.Id = id
 	this.Status = status
 	this.Url = url
@@ -49,6 +52,8 @@ func NewMessageEndpointOutWithDefaults() *MessageEndpointOut {
 	this := MessageEndpointOut{}
 	var description string = ""
 	this.Description = &description
+	var disabled bool = false
+	this.Disabled = &disabled
 	return &this
 }
 
@@ -106,6 +111,38 @@ func (o *MessageEndpointOut) HasDescription() bool {
 // SetDescription gets a reference to the given string and assigns it to the Description field.
 func (o *MessageEndpointOut) SetDescription(v string) {
 	o.Description = &v
+}
+
+// GetDisabled returns the Disabled field value if set, zero value otherwise.
+func (o *MessageEndpointOut) GetDisabled() bool {
+	if o == nil || o.Disabled == nil {
+		var ret bool
+		return ret
+	}
+	return *o.Disabled
+}
+
+// GetDisabledOk returns a tuple with the Disabled field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *MessageEndpointOut) GetDisabledOk() (*bool, bool) {
+	if o == nil || o.Disabled == nil {
+		return nil, false
+	}
+	return o.Disabled, true
+}
+
+// HasDisabled returns a boolean if a field has been set.
+func (o *MessageEndpointOut) HasDisabled() bool {
+	if o != nil && o.Disabled != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetDisabled gets a reference to the given bool and assigns it to the Disabled field.
+func (o *MessageEndpointOut) SetDisabled(v bool) {
+	o.Disabled = &v
 }
 
 // GetFilterTypes returns the FilterTypes field value if set, zero value otherwise.
@@ -243,6 +280,9 @@ func (o MessageEndpointOut) MarshalJSON() ([]byte, error) {
 	}
 	if o.Description != nil {
 		toSerialize["description"] = o.Description
+	}
+	if o.Disabled != nil {
+		toSerialize["disabled"] = o.Disabled
 	}
 	if o.FilterTypes != nil {
 		toSerialize["filterTypes"] = o.FilterTypes
