@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.22.0
+* Python: Cleanup explicit exports in python 🤓
+* All: Add Disabled flag to endpoint models ❌
+
 ## Version 0.21.0
 * All: Add Sign functions for generating webhook signatures 🔏
 * Python: Enable typing 🤓
