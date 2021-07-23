@@ -23,7 +23,7 @@ type EndpointSecretOut struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEndpointSecretOut(key string, ) *EndpointSecretOut {
+func NewEndpointSecretOut(key string) *EndpointSecretOut {
 	this := EndpointSecretOut{}
 	this.Key = key
 	return &this
@@ -39,7 +39,7 @@ func NewEndpointSecretOutWithDefaults() *EndpointSecretOut {
 
 // GetKey returns the Key field value
 func (o *EndpointSecretOut) GetKey() string {
-	if o == nil  {
+	if o == nil {
 		var ret string
 		return ret
 	}

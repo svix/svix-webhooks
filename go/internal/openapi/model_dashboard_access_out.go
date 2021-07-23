@@ -24,7 +24,7 @@ type DashboardAccessOut struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewDashboardAccessOut(token string, url string, ) *DashboardAccessOut {
+func NewDashboardAccessOut(token string, url string) *DashboardAccessOut {
 	this := DashboardAccessOut{}
 	this.Token = token
 	this.Url = url
@@ -41,7 +41,7 @@ func NewDashboardAccessOutWithDefaults() *DashboardAccessOut {
 
 // GetToken returns the Token field value
 func (o *DashboardAccessOut) GetToken() string {
-	if o == nil  {
+	if o == nil {
 		var ret string
 		return ret
 	}
@@ -65,7 +65,7 @@ func (o *DashboardAccessOut) SetToken(v string) {
 
 // GetUrl returns the Url field value
 func (o *DashboardAccessOut) GetUrl() string {
-	if o == nil  {
+	if o == nil {
 		var ret string
 		return ret
 	}

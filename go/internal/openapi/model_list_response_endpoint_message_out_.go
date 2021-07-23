@@ -25,7 +25,7 @@ type ListResponseEndpointMessageOut struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewListResponseEndpointMessageOut(data []EndpointMessageOut, done bool, ) *ListResponseEndpointMessageOut {
+func NewListResponseEndpointMessageOut(data []EndpointMessageOut, done bool) *ListResponseEndpointMessageOut {
 	this := ListResponseEndpointMessageOut{}
 	this.Data = data
 	this.Done = done
@@ -42,7 +42,7 @@ func NewListResponseEndpointMessageOutWithDefaults() *ListResponseEndpointMessag
 
 // GetData returns the Data field value
 func (o *ListResponseEndpointMessageOut) GetData() []EndpointMessageOut {
-	if o == nil  {
+	if o == nil {
 		var ret []EndpointMessageOut
 		return ret
 	}
@@ -66,7 +66,7 @@ func (o *ListResponseEndpointMessageOut) SetData(v []EndpointMessageOut) {
 
 // GetDone returns the Done field value
 func (o *ListResponseEndpointMessageOut) GetDone() bool {
-	if o == nil  {
+	if o == nil {
 		var ret bool
 		return ret
 	}

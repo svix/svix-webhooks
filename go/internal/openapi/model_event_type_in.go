@@ -24,7 +24,7 @@ type EventTypeIn struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEventTypeIn(description string, name string, ) *EventTypeIn {
+func NewEventTypeIn(description string, name string) *EventTypeIn {
 	this := EventTypeIn{}
 	this.Description = description
 	this.Name = name
@@ -41,7 +41,7 @@ func NewEventTypeInWithDefaults() *EventTypeIn {
 
 // GetDescription returns the Description field value
 func (o *EventTypeIn) GetDescription() string {
-	if o == nil  {
+	if o == nil {
 		var ret string
 		return ret
 	}
@@ -65,7 +65,7 @@ func (o *EventTypeIn) SetDescription(v string) {
 
 // GetName returns the Name field value
 func (o *EventTypeIn) GetName() string {
-	if o == nil  {
+	if o == nil {
 		var ret string
 		return ret
 	}

@@ -25,7 +25,7 @@ type ListResponseApplicationOut struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewListResponseApplicationOut(data []ApplicationOut, done bool, ) *ListResponseApplicationOut {
+func NewListResponseApplicationOut(data []ApplicationOut, done bool) *ListResponseApplicationOut {
 	this := ListResponseApplicationOut{}
 	this.Data = data
 	this.Done = done
@@ -42,7 +42,7 @@ func NewListResponseApplicationOutWithDefaults() *ListResponseApplicationOut {
 
 // GetData returns the Data field value
 func (o *ListResponseApplicationOut) GetData() []ApplicationOut {
-	if o == nil  {
+	if o == nil {
 		var ret []ApplicationOut
 		return ret
 	}
@@ -66,7 +66,7 @@ func (o *ListResponseApplicationOut) SetData(v []ApplicationOut) {
 
 // GetDone returns the Done field value
 func (o *ListResponseApplicationOut) GetDone() bool {
-	if o == nil  {
+	if o == nil {
 		var ret bool
 		return ret
 	}

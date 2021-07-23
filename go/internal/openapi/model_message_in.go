@@ -25,7 +25,7 @@ type MessageIn struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewMessageIn(eventType string, payload map[string]interface{}, ) *MessageIn {
+func NewMessageIn(eventType string, payload map[string]interface{}) *MessageIn {
 	this := MessageIn{}
 	this.EventType = eventType
 	this.Payload = payload
@@ -74,7 +74,7 @@ func (o *MessageIn) SetEventId(v string) {
 
 // GetEventType returns the EventType field value
 func (o *MessageIn) GetEventType() string {
-	if o == nil  {
+	if o == nil {
 		var ret string
 		return ret
 	}
@@ -98,7 +98,7 @@ func (o *MessageIn) SetEventType(v string) {
 
 // GetPayload returns the Payload field value
 func (o *MessageIn) GetPayload() map[string]interface{} {
-	if o == nil  {
+	if o == nil {
 		var ret map[string]interface{}
 		return ret
 	}

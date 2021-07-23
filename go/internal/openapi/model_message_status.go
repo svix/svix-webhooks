@@ -25,6 +25,12 @@ const (
 	_2 MessageStatus = 2
 )
 
+var allowedMessageStatusEnumValues = []MessageStatus{
+	0,
+	1,
+	2,
+}
+
 func (v *MessageStatus) UnmarshalJSON(src []byte) error {
 	var value int32
 	err := json.Unmarshal(src, &value)
@@ -32,7 +38,7 @@ func (v *MessageStatus) UnmarshalJSON(src []byte) error {
 		return err
 	}
 	enumTypeValue := MessageStatus(value)
-	for _, existing := range []MessageStatus{ 0, 1, 2,   } {
+	for _, existing := range allowedMessageStatusEnumValues {
 		if existing == enumTypeValue {
 			*v = enumTypeValue
 			return nil
@@ -40,6 +46,27 @@ func (v *MessageStatus) UnmarshalJSON(src []byte) error {
 	}
 
 	return fmt.Errorf("%+v is not a valid MessageStatus", value)
+}
+
+// NewMessageStatusFromValue returns a pointer to a valid MessageStatus
+// for the value passed as argument, or an error if the value passed is not allowed by the enum
+func NewMessageStatusFromValue(v int32) (*MessageStatus, error) {
+	ev := MessageStatus(v)
+	if ev.IsValid() {
+		return &ev, nil
+	} else {
+		return nil, fmt.Errorf("invalid value '%v' for MessageStatus: valid values are %v", v, allowedMessageStatusEnumValues)
+	}
+}
+
+// IsValid return true if the value is valid for the enum, false otherwise
+func (v MessageStatus) IsValid() bool {
+	for _, existing := range allowedMessageStatusEnumValues {
+		if existing == v {
+			return true
+		}
+	}
+	return false
 }
 
 // Ptr returns reference to MessageStatus value

@@ -31,7 +31,7 @@ type MessageEndpointOut struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewMessageEndpointOut(createdAt time.Time, id string, status MessageStatus, url string, version int32, ) *MessageEndpointOut {
+func NewMessageEndpointOut(createdAt time.Time, id string, status MessageStatus, url string, version int32) *MessageEndpointOut {
 	this := MessageEndpointOut{}
 	this.CreatedAt = createdAt
 	var description string = ""
@@ -59,7 +59,7 @@ func NewMessageEndpointOutWithDefaults() *MessageEndpointOut {
 
 // GetCreatedAt returns the CreatedAt field value
 func (o *MessageEndpointOut) GetCreatedAt() time.Time {
-	if o == nil  {
+	if o == nil {
 		var ret time.Time
 		return ret
 	}
@@ -179,7 +179,7 @@ func (o *MessageEndpointOut) SetFilterTypes(v []string) {
 
 // GetId returns the Id field value
 func (o *MessageEndpointOut) GetId() string {
-	if o == nil  {
+	if o == nil {
 		var ret string
 		return ret
 	}
@@ -203,7 +203,7 @@ func (o *MessageEndpointOut) SetId(v string) {
 
 // GetStatus returns the Status field value
 func (o *MessageEndpointOut) GetStatus() MessageStatus {
-	if o == nil  {
+	if o == nil {
 		var ret MessageStatus
 		return ret
 	}
@@ -227,7 +227,7 @@ func (o *MessageEndpointOut) SetStatus(v MessageStatus) {
 
 // GetUrl returns the Url field value
 func (o *MessageEndpointOut) GetUrl() string {
-	if o == nil  {
+	if o == nil {
 		var ret string
 		return ret
 	}
@@ -251,7 +251,7 @@ func (o *MessageEndpointOut) SetUrl(v string) {
 
 // GetVersion returns the Version field value
 func (o *MessageEndpointOut) GetVersion() int32 {
-	if o == nil  {
+	if o == nil {
 		var ret int32
 		return ret
 	}

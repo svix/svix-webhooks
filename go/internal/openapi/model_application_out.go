@@ -27,7 +27,7 @@ type ApplicationOut struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewApplicationOut(createdAt time.Time, id string, name string, ) *ApplicationOut {
+func NewApplicationOut(createdAt time.Time, id string, name string) *ApplicationOut {
 	this := ApplicationOut{}
 	this.CreatedAt = createdAt
 	this.Id = id
@@ -45,7 +45,7 @@ func NewApplicationOutWithDefaults() *ApplicationOut {
 
 // GetCreatedAt returns the CreatedAt field value
 func (o *ApplicationOut) GetCreatedAt() time.Time {
-	if o == nil  {
+	if o == nil {
 		var ret time.Time
 		return ret
 	}
@@ -69,7 +69,7 @@ func (o *ApplicationOut) SetCreatedAt(v time.Time) {
 
 // GetId returns the Id field value
 func (o *ApplicationOut) GetId() string {
-	if o == nil  {
+	if o == nil {
 		var ret string
 		return ret
 	}
@@ -93,7 +93,7 @@ func (o *ApplicationOut) SetId(v string) {
 
 // GetName returns the Name field value
 func (o *ApplicationOut) GetName() string {
-	if o == nil  {
+	if o == nil {
 		var ret string
 		return ret
 	}

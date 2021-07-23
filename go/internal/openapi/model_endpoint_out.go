@@ -30,7 +30,7 @@ type EndpointOut struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEndpointOut(createdAt time.Time, id string, url string, version int32, ) *EndpointOut {
+func NewEndpointOut(createdAt time.Time, id string, url string, version int32) *EndpointOut {
 	this := EndpointOut{}
 	this.CreatedAt = createdAt
 	var description string = ""
@@ -57,7 +57,7 @@ func NewEndpointOutWithDefaults() *EndpointOut {
 
 // GetCreatedAt returns the CreatedAt field value
 func (o *EndpointOut) GetCreatedAt() time.Time {
-	if o == nil  {
+	if o == nil {
 		var ret time.Time
 		return ret
 	}
@@ -177,7 +177,7 @@ func (o *EndpointOut) SetFilterTypes(v []string) {
 
 // GetId returns the Id field value
 func (o *EndpointOut) GetId() string {
-	if o == nil  {
+	if o == nil {
 		var ret string
 		return ret
 	}
@@ -201,7 +201,7 @@ func (o *EndpointOut) SetId(v string) {
 
 // GetUrl returns the Url field value
 func (o *EndpointOut) GetUrl() string {
-	if o == nil  {
+	if o == nil {
 		var ret string
 		return ret
 	}
@@ -225,7 +225,7 @@ func (o *EndpointOut) SetUrl(v string) {
 
 // GetVersion returns the Version field value
 func (o *EndpointOut) GetVersion() int32 {
-	if o == nil  {
+	if o == nil {
 		var ret int32
 		return ret
 	}

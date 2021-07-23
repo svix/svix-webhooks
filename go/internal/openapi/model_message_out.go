@@ -28,7 +28,7 @@ type MessageOut struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewMessageOut(eventType string, id string, payload map[string]interface{}, timestamp time.Time, ) *MessageOut {
+func NewMessageOut(eventType string, id string, payload map[string]interface{}, timestamp time.Time) *MessageOut {
 	this := MessageOut{}
 	this.EventType = eventType
 	this.Id = id
@@ -79,7 +79,7 @@ func (o *MessageOut) SetEventId(v string) {
 
 // GetEventType returns the EventType field value
 func (o *MessageOut) GetEventType() string {
-	if o == nil  {
+	if o == nil {
 		var ret string
 		return ret
 	}
@@ -103,7 +103,7 @@ func (o *MessageOut) SetEventType(v string) {
 
 // GetId returns the Id field value
 func (o *MessageOut) GetId() string {
-	if o == nil  {
+	if o == nil {
 		var ret string
 		return ret
 	}
@@ -127,7 +127,7 @@ func (o *MessageOut) SetId(v string) {
 
 // GetPayload returns the Payload field value
 func (o *MessageOut) GetPayload() map[string]interface{} {
-	if o == nil  {
+	if o == nil {
 		var ret map[string]interface{}
 		return ret
 	}
@@ -151,7 +151,7 @@ func (o *MessageOut) SetPayload(v map[string]interface{}) {
 
 // GetTimestamp returns the Timestamp field value
 func (o *MessageOut) GetTimestamp() time.Time {
-	if o == nil  {
+	if o == nil {
 		var ret time.Time
 		return ret
 	}
