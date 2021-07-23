@@ -25,7 +25,7 @@ type EndpointStats struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEndpointStats(fail int32, pending int32, success int32, ) *EndpointStats {
+func NewEndpointStats(fail int32, pending int32, success int32) *EndpointStats {
 	this := EndpointStats{}
 	this.Fail = fail
 	this.Pending = pending
@@ -43,7 +43,7 @@ func NewEndpointStatsWithDefaults() *EndpointStats {
 
 // GetFail returns the Fail field value
 func (o *EndpointStats) GetFail() int32 {
-	if o == nil  {
+	if o == nil {
 		var ret int32
 		return ret
 	}
@@ -67,7 +67,7 @@ func (o *EndpointStats) SetFail(v int32) {
 
 // GetPending returns the Pending field value
 func (o *EndpointStats) GetPending() int32 {
-	if o == nil  {
+	if o == nil {
 		var ret int32
 		return ret
 	}
@@ -91,7 +91,7 @@ func (o *EndpointStats) SetPending(v int32) {
 
 // GetSuccess returns the Success field value
 func (o *EndpointStats) GetSuccess() int32 {
-	if o == nil  {
+	if o == nil {
 		var ret int32
 		return ret
 	}

@@ -25,7 +25,7 @@ type ValidationError struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewValidationError(loc []string, msg string, type_ string, ) *ValidationError {
+func NewValidationError(loc []string, msg string, type_ string) *ValidationError {
 	this := ValidationError{}
 	this.Loc = loc
 	this.Msg = msg
@@ -43,7 +43,7 @@ func NewValidationErrorWithDefaults() *ValidationError {
 
 // GetLoc returns the Loc field value
 func (o *ValidationError) GetLoc() []string {
-	if o == nil  {
+	if o == nil {
 		var ret []string
 		return ret
 	}
@@ -67,7 +67,7 @@ func (o *ValidationError) SetLoc(v []string) {
 
 // GetMsg returns the Msg field value
 func (o *ValidationError) GetMsg() string {
-	if o == nil  {
+	if o == nil {
 		var ret string
 		return ret
 	}
@@ -91,7 +91,7 @@ func (o *ValidationError) SetMsg(v string) {
 
 // GetType returns the Type field value
 func (o *ValidationError) GetType() string {
-	if o == nil  {
+	if o == nil {
 		var ret string
 		return ret
 	}

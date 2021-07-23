@@ -29,7 +29,7 @@ type EndpointMessageOut struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEndpointMessageOut(eventType string, id string, payload map[string]interface{}, status MessageStatus, timestamp time.Time, ) *EndpointMessageOut {
+func NewEndpointMessageOut(eventType string, id string, payload map[string]interface{}, status MessageStatus, timestamp time.Time) *EndpointMessageOut {
 	this := EndpointMessageOut{}
 	this.EventType = eventType
 	this.Id = id
@@ -81,7 +81,7 @@ func (o *EndpointMessageOut) SetEventId(v string) {
 
 // GetEventType returns the EventType field value
 func (o *EndpointMessageOut) GetEventType() string {
-	if o == nil  {
+	if o == nil {
 		var ret string
 		return ret
 	}
@@ -105,7 +105,7 @@ func (o *EndpointMessageOut) SetEventType(v string) {
 
 // GetId returns the Id field value
 func (o *EndpointMessageOut) GetId() string {
-	if o == nil  {
+	if o == nil {
 		var ret string
 		return ret
 	}
@@ -129,7 +129,7 @@ func (o *EndpointMessageOut) SetId(v string) {
 
 // GetPayload returns the Payload field value
 func (o *EndpointMessageOut) GetPayload() map[string]interface{} {
-	if o == nil  {
+	if o == nil {
 		var ret map[string]interface{}
 		return ret
 	}
@@ -153,7 +153,7 @@ func (o *EndpointMessageOut) SetPayload(v map[string]interface{}) {
 
 // GetStatus returns the Status field value
 func (o *EndpointMessageOut) GetStatus() MessageStatus {
-	if o == nil  {
+	if o == nil {
 		var ret MessageStatus
 		return ret
 	}
@@ -177,7 +177,7 @@ func (o *EndpointMessageOut) SetStatus(v MessageStatus) {
 
 // GetTimestamp returns the Timestamp field value
 func (o *EndpointMessageOut) GetTimestamp() time.Time {
-	if o == nil  {
+	if o == nil {
 		var ret time.Time
 		return ret
 	}

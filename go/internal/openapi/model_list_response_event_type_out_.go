@@ -25,7 +25,7 @@ type ListResponseEventTypeOut struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewListResponseEventTypeOut(data []EventTypeOut, done bool, ) *ListResponseEventTypeOut {
+func NewListResponseEventTypeOut(data []EventTypeOut, done bool) *ListResponseEventTypeOut {
 	this := ListResponseEventTypeOut{}
 	this.Data = data
 	this.Done = done
@@ -42,7 +42,7 @@ func NewListResponseEventTypeOutWithDefaults() *ListResponseEventTypeOut {
 
 // GetData returns the Data field value
 func (o *ListResponseEventTypeOut) GetData() []EventTypeOut {
-	if o == nil  {
+	if o == nil {
 		var ret []EventTypeOut
 		return ret
 	}
@@ -66,7 +66,7 @@ func (o *ListResponseEventTypeOut) SetData(v []EventTypeOut) {
 
 // GetDone returns the Done field value
 func (o *ListResponseEventTypeOut) GetDone() bool {
-	if o == nil  {
+	if o == nil {
 		var ret bool
 		return ret
 	}

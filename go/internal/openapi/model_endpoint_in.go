@@ -27,7 +27,7 @@ type EndpointIn struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEndpointIn(url string, version int32, ) *EndpointIn {
+func NewEndpointIn(url string, version int32) *EndpointIn {
 	this := EndpointIn{}
 	var description string = ""
 	this.Description = &description
@@ -148,7 +148,7 @@ func (o *EndpointIn) SetFilterTypes(v []string) {
 
 // GetUrl returns the Url field value
 func (o *EndpointIn) GetUrl() string {
-	if o == nil  {
+	if o == nil {
 		var ret string
 		return ret
 	}
@@ -172,7 +172,7 @@ func (o *EndpointIn) SetUrl(v string) {
 
 // GetVersion returns the Version field value
 func (o *EndpointIn) GetVersion() int32 {
-	if o == nil  {
+	if o == nil {
 		var ret int32
 		return ret
 	}

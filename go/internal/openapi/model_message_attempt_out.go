@@ -29,7 +29,7 @@ type MessageAttemptOut struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewMessageAttemptOut(endpointId string, id string, response string, responseStatusCode int32, status MessageStatus, timestamp time.Time, ) *MessageAttemptOut {
+func NewMessageAttemptOut(endpointId string, id string, response string, responseStatusCode int32, status MessageStatus, timestamp time.Time) *MessageAttemptOut {
 	this := MessageAttemptOut{}
 	this.EndpointId = endpointId
 	this.Id = id
@@ -50,7 +50,7 @@ func NewMessageAttemptOutWithDefaults() *MessageAttemptOut {
 
 // GetEndpointId returns the EndpointId field value
 func (o *MessageAttemptOut) GetEndpointId() string {
-	if o == nil  {
+	if o == nil {
 		var ret string
 		return ret
 	}
@@ -74,7 +74,7 @@ func (o *MessageAttemptOut) SetEndpointId(v string) {
 
 // GetId returns the Id field value
 func (o *MessageAttemptOut) GetId() string {
-	if o == nil  {
+	if o == nil {
 		var ret string
 		return ret
 	}
@@ -98,7 +98,7 @@ func (o *MessageAttemptOut) SetId(v string) {
 
 // GetResponse returns the Response field value
 func (o *MessageAttemptOut) GetResponse() string {
-	if o == nil  {
+	if o == nil {
 		var ret string
 		return ret
 	}
@@ -122,7 +122,7 @@ func (o *MessageAttemptOut) SetResponse(v string) {
 
 // GetResponseStatusCode returns the ResponseStatusCode field value
 func (o *MessageAttemptOut) GetResponseStatusCode() int32 {
-	if o == nil  {
+	if o == nil {
 		var ret int32
 		return ret
 	}
@@ -146,7 +146,7 @@ func (o *MessageAttemptOut) SetResponseStatusCode(v int32) {
 
 // GetStatus returns the Status field value
 func (o *MessageAttemptOut) GetStatus() MessageStatus {
-	if o == nil  {
+	if o == nil {
 		var ret MessageStatus
 		return ret
 	}
@@ -170,7 +170,7 @@ func (o *MessageAttemptOut) SetStatus(v MessageStatus) {
 
 // GetTimestamp returns the Timestamp field value
 func (o *MessageAttemptOut) GetTimestamp() time.Time {
-	if o == nil  {
+	if o == nil {
 		var ret time.Time
 		return ret
 	}

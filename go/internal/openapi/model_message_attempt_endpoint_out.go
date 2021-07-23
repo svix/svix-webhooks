@@ -28,7 +28,7 @@ type MessageAttemptEndpointOut struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewMessageAttemptEndpointOut(id string, response string, responseStatusCode int32, status MessageStatus, timestamp time.Time, ) *MessageAttemptEndpointOut {
+func NewMessageAttemptEndpointOut(id string, response string, responseStatusCode int32, status MessageStatus, timestamp time.Time) *MessageAttemptEndpointOut {
 	this := MessageAttemptEndpointOut{}
 	this.Id = id
 	this.Response = response
@@ -48,7 +48,7 @@ func NewMessageAttemptEndpointOutWithDefaults() *MessageAttemptEndpointOut {
 
 // GetId returns the Id field value
 func (o *MessageAttemptEndpointOut) GetId() string {
-	if o == nil  {
+	if o == nil {
 		var ret string
 		return ret
 	}
@@ -72,7 +72,7 @@ func (o *MessageAttemptEndpointOut) SetId(v string) {
 
 // GetResponse returns the Response field value
 func (o *MessageAttemptEndpointOut) GetResponse() string {
-	if o == nil  {
+	if o == nil {
 		var ret string
 		return ret
 	}
@@ -96,7 +96,7 @@ func (o *MessageAttemptEndpointOut) SetResponse(v string) {
 
 // GetResponseStatusCode returns the ResponseStatusCode field value
 func (o *MessageAttemptEndpointOut) GetResponseStatusCode() int32 {
-	if o == nil  {
+	if o == nil {
 		var ret int32
 		return ret
 	}
@@ -120,7 +120,7 @@ func (o *MessageAttemptEndpointOut) SetResponseStatusCode(v int32) {
 
 // GetStatus returns the Status field value
 func (o *MessageAttemptEndpointOut) GetStatus() MessageStatus {
-	if o == nil  {
+	if o == nil {
 		var ret MessageStatus
 		return ret
 	}
@@ -144,7 +144,7 @@ func (o *MessageAttemptEndpointOut) SetStatus(v MessageStatus) {
 
 // GetTimestamp returns the Timestamp field value
 func (o *MessageAttemptEndpointOut) GetTimestamp() time.Time {
-	if o == nil  {
+	if o == nil {
 		var ret time.Time
 		return ret
 	}

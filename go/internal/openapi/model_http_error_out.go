@@ -24,7 +24,7 @@ type HttpErrorOut struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewHttpErrorOut(code string, detail string, ) *HttpErrorOut {
+func NewHttpErrorOut(code string, detail string) *HttpErrorOut {
 	this := HttpErrorOut{}
 	this.Code = code
 	this.Detail = detail
@@ -41,7 +41,7 @@ func NewHttpErrorOutWithDefaults() *HttpErrorOut {
 
 // GetCode returns the Code field value
 func (o *HttpErrorOut) GetCode() string {
-	if o == nil  {
+	if o == nil {
 		var ret string
 		return ret
 	}
@@ -65,7 +65,7 @@ func (o *HttpErrorOut) SetCode(v string) {
 
 // GetDetail returns the Detail field value
 func (o *HttpErrorOut) GetDetail() string {
-	if o == nil  {
+	if o == nil {
 		var ret string
 		return ret
 	}

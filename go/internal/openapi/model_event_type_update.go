@@ -23,7 +23,7 @@ type EventTypeUpdate struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEventTypeUpdate(description string, ) *EventTypeUpdate {
+func NewEventTypeUpdate(description string) *EventTypeUpdate {
 	this := EventTypeUpdate{}
 	this.Description = description
 	return &this
@@ -39,7 +39,7 @@ func NewEventTypeUpdateWithDefaults() *EventTypeUpdate {
 
 // GetDescription returns the Description field value
 func (o *EventTypeUpdate) GetDescription() string {
-	if o == nil  {
+	if o == nil {
 		var ret string
 		return ret
 	}
