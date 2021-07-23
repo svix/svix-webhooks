@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.23.0
+* All: Bump openapi-generator to 5.2.0, fixes bug in python lib which can throw if additionalProperties are found 🐛
+
 ## Version 0.22.0
 * Python: Cleanup explicit exports in python 🤓
 * All: Add Disabled flag to endpoint models ❌
