@@ -1,6 +1,8 @@
 <h1 align="center">
-  <img width="120" src="https://avatars.githubusercontent.com/u/80175132?s=200&v=4" />
-  <p align="center">Svix - Webhooks as a service</p>
+  <a href="https://www.svix.com">
+    <img width="120" src="https://avatars.githubusercontent.com/u/80175132?s=200&v=4" />
+    <p align="center">Svix - Webhooks as a service</p>
+  </a>
 </h1>
 
 Libraries for interacting with the Svix API and verifying webhook signatures
