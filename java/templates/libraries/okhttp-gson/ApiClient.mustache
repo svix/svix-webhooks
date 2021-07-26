@@ -1114,13 +1114,32 @@ public class ApiClient {
      * @throws ApiException If fail to execute the call
      */
     public <T> ApiResponse<T> execute(Call call, Type returnType) throws ApiException {
-        try {
-            Response response = call.execute();
-            T data = handleResponse(response, returnType);
-            return new ApiResponse<T>(response.code(), response.headers().toMultimap(), data);
-        } catch (IOException e) {
-            throw new ApiException(e);
+        int numRetries = 3;
+        int sleepTime = 50;
+        for (int retry = 0; retry < numRetries; retry++) {
+            try {
+                try {
+                    Response response = call.clone().execute();
+                    T data = handleResponse(response, returnType);
+                    if (response.code() < 500 || retry >= numRetries - 1) {
+                        return new ApiResponse<T>(response.code(), response.headers().toMultimap(), data);
+                    }
+                } catch (IOException e) {
+                    throw new ApiException(e);
+                }
+            } catch (ApiException e) {
+                if (e.getCode() < 500 || retry >= numRetries -1) {
+                    throw e;
+                }
+            }
+            try {
+                Thread.sleep(sleepTime);
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            }
+            sleepTime = sleepTime * 2;
         }
+        throw new ApiException("failed to execute api call");
     }
 
     /**
