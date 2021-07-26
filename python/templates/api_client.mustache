@@ -10,6 +10,7 @@ import re
 import typing
 from urllib.parse import quote
 from urllib3.fields import RequestField
+from time import sleep
 
 {{#tornado}}
 import tornado.gen
@@ -33,6 +34,7 @@ from {{packageName}}.model_utils import (
     validate_and_convert_types
 )
 
+num_retries = 3
 
 class ApiClient(object):
     """Generic API client for OpenAPI client library builds.
@@ -188,16 +190,22 @@ class ApiClient(object):
             # use server/host defined in path or operation instead
             url = _host + resource_path
 
-        try:
-            # perform request and return response
-            response_data = {{#asyncio}}await {{/asyncio}}{{#tornado}}yield {{/tornado}}self.request(
-                method, url, query_params=query_params, headers=header_params,
-                post_params=post_params, body=body,
-                _preload_content=_preload_content,
-                _request_timeout=_request_timeout)
-        except ApiException as e:
-            e.body = e.body.decode('utf-8')
-            raise e
+        sleep_time = 0.05
+        for retry in range(num_retries):
+            try:
+                # perform request and return response
+                response_data = {{#asyncio}}await {{/asyncio}}{{#tornado}}yield {{/tornado}}self.request(
+                    method, url, query_params=query_params, headers=header_params,
+                    post_params=post_params, body=body,
+                    _preload_content=_preload_content,
+                    _request_timeout=_request_timeout)
+                break
+            except ApiException as e:
+                if e.status < 500 or retry >= num_retries - 1:
+                    e.body = e.body.decode('utf-8')
+                    raise e
+            sleep(sleep_time)
+            sleep_time = sleep_time * 2
 
         self.last_response = response_data
 
