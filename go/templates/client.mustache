@@ -31,6 +31,8 @@ import (
 	{{/withAWSV4Signature}}
 )
 
+const NumTries = 3
+
 var (
 	jsonCheck = regexp.MustCompile(`(?i:(?:application|text)/(?:vnd\.[^;]+\+)?json)`)
 	xmlCheck  = regexp.MustCompile(`(?i:(?:application|text)/xml)`)
@@ -180,9 +182,19 @@ func (c *APIClient) callAPI(request *http.Request) (*http.Response, error) {
 		log.Printf("\n%s\n", string(dump))
 	}
 
-	resp, err := c.cfg.HTTPClient.Do(request)
-	if err != nil {
-		return resp, err
+	var resp *http.Response
+	var err error
+	sleepTime := time.Millisecond * 50
+	for try := 0; try < NumTries; try++ {
+		resp, err = c.cfg.HTTPClient.Do(request)
+		if err == nil && resp.StatusCode < 500 {
+			break
+		}
+		if try >= NumTries - 1 {
+			return resp, err
+		}
+		time.Sleep(sleepTime)
+		sleepTime = sleepTime * 2
 	}
 
 	if c.cfg.Debug {
