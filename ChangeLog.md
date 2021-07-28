@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.24.0
+* Java: Bump dependencies 🆕
+* All: Add support for rate limiting 📈
+
 ## Version 0.23.0
 * All: Bump openapi-generator to 5.2.0, fixes bug in python lib which can throw if additionalProperties are found 🐛
 
