@@ -22,6 +22,7 @@ type EndpointOut struct {
 	Disabled *bool `json:"disabled,omitempty"`
 	FilterTypes *[]string `json:"filterTypes,omitempty"`
 	Id string `json:"id"`
+	RateLimit *int32 `json:"rateLimit,omitempty"`
 	Url string `json:"url"`
 	Version int32 `json:"version"`
 }
@@ -199,6 +200,38 @@ func (o *EndpointOut) SetId(v string) {
 	o.Id = v
 }
 
+// GetRateLimit returns the RateLimit field value if set, zero value otherwise.
+func (o *EndpointOut) GetRateLimit() int32 {
+	if o == nil || o.RateLimit == nil {
+		var ret int32
+		return ret
+	}
+	return *o.RateLimit
+}
+
+// GetRateLimitOk returns a tuple with the RateLimit field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *EndpointOut) GetRateLimitOk() (*int32, bool) {
+	if o == nil || o.RateLimit == nil {
+		return nil, false
+	}
+	return o.RateLimit, true
+}
+
+// HasRateLimit returns a boolean if a field has been set.
+func (o *EndpointOut) HasRateLimit() bool {
+	if o != nil && o.RateLimit != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetRateLimit gets a reference to the given int32 and assigns it to the RateLimit field.
+func (o *EndpointOut) SetRateLimit(v int32) {
+	o.RateLimit = &v
+}
+
 // GetUrl returns the Url field value
 func (o *EndpointOut) GetUrl() string {
 	if o == nil {
@@ -263,6 +296,9 @@ func (o EndpointOut) MarshalJSON() ([]byte, error) {
 	}
 	if true {
 		toSerialize["id"] = o.Id
+	}
+	if o.RateLimit != nil {
+		toSerialize["rateLimit"] = o.RateLimit
 	}
 	if true {
 		toSerialize["url"] = o.Url
