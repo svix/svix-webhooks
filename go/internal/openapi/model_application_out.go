@@ -20,6 +20,7 @@ type ApplicationOut struct {
 	CreatedAt time.Time `json:"createdAt"`
 	Id string `json:"id"`
 	Name string `json:"name"`
+	RateLimit *int32 `json:"rateLimit,omitempty"`
 	Uid *string `json:"uid,omitempty"`
 }
 
@@ -115,6 +116,38 @@ func (o *ApplicationOut) SetName(v string) {
 	o.Name = v
 }
 
+// GetRateLimit returns the RateLimit field value if set, zero value otherwise.
+func (o *ApplicationOut) GetRateLimit() int32 {
+	if o == nil || o.RateLimit == nil {
+		var ret int32
+		return ret
+	}
+	return *o.RateLimit
+}
+
+// GetRateLimitOk returns a tuple with the RateLimit field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ApplicationOut) GetRateLimitOk() (*int32, bool) {
+	if o == nil || o.RateLimit == nil {
+		return nil, false
+	}
+	return o.RateLimit, true
+}
+
+// HasRateLimit returns a boolean if a field has been set.
+func (o *ApplicationOut) HasRateLimit() bool {
+	if o != nil && o.RateLimit != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetRateLimit gets a reference to the given int32 and assigns it to the RateLimit field.
+func (o *ApplicationOut) SetRateLimit(v int32) {
+	o.RateLimit = &v
+}
+
 // GetUid returns the Uid field value if set, zero value otherwise.
 func (o *ApplicationOut) GetUid() string {
 	if o == nil || o.Uid == nil {
@@ -157,6 +190,9 @@ func (o ApplicationOut) MarshalJSON() ([]byte, error) {
 	}
 	if true {
 		toSerialize["name"] = o.Name
+	}
+	if o.RateLimit != nil {
+		toSerialize["rateLimit"] = o.RateLimit
 	}
 	if o.Uid != nil {
 		toSerialize["uid"] = o.Uid
