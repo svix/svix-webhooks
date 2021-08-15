@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.25.0
+* All: Add nextAttempt to EndpointMessageOut 🕛
+
 ## Version 0.24.0
 * Java: Bump dependencies 🆕
 * All: Add support for rate limiting 📈
