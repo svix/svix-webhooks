@@ -17,7 +17,7 @@ public final class MessageAttempt {
 
 	public ListResponseMessageAttemptOut list(final String appId, final String msgId, final FetchOptionsMessageAttempt options) throws ApiException {
 		try {
-			return api.listAttemptsApiV1AppAppIdMsgMsgIdAttemptGet(msgId, appId, options.getIterator(), options.getLimit(), options.getMessageStatus());
+			return api.listAttemptsApiV1AppAppIdMsgMsgIdAttemptGet(appId, msgId, options.getIterator(), options.getLimit(), options.getMessageStatus());
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
