@@ -714,6 +714,11 @@
                         "title": "Id",
                         "type": "string"
                     },
+                    "nextAttempt": {
+                        "format": "date-time",
+                        "title": "Nextattempt",
+                        "type": "string"
+                    },
                     "rateLimit": {
                         "example": 1000,
                         "exclusiveMinimum": 0.0,
