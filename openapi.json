@@ -164,6 +164,11 @@
                         "title": "Id",
                         "type": "string"
                     },
+                    "nextAttempt": {
+                        "format": "date-time",
+                        "title": "Nextattempt",
+                        "type": "string"
+                    },
                     "payload": {
                         "example": {
                             "email": "test@example.com",
