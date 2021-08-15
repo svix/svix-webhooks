@@ -22,6 +22,7 @@ type MessageEndpointOut struct {
 	Disabled *bool `json:"disabled,omitempty"`
 	FilterTypes *[]string `json:"filterTypes,omitempty"`
 	Id string `json:"id"`
+	NextAttempt *time.Time `json:"nextAttempt,omitempty"`
 	RateLimit *int32 `json:"rateLimit,omitempty"`
 	Status MessageStatus `json:"status"`
 	Url string `json:"url"`
@@ -202,6 +203,38 @@ func (o *MessageEndpointOut) SetId(v string) {
 	o.Id = v
 }
 
+// GetNextAttempt returns the NextAttempt field value if set, zero value otherwise.
+func (o *MessageEndpointOut) GetNextAttempt() time.Time {
+	if o == nil || o.NextAttempt == nil {
+		var ret time.Time
+		return ret
+	}
+	return *o.NextAttempt
+}
+
+// GetNextAttemptOk returns a tuple with the NextAttempt field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *MessageEndpointOut) GetNextAttemptOk() (*time.Time, bool) {
+	if o == nil || o.NextAttempt == nil {
+		return nil, false
+	}
+	return o.NextAttempt, true
+}
+
+// HasNextAttempt returns a boolean if a field has been set.
+func (o *MessageEndpointOut) HasNextAttempt() bool {
+	if o != nil && o.NextAttempt != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetNextAttempt gets a reference to the given time.Time and assigns it to the NextAttempt field.
+func (o *MessageEndpointOut) SetNextAttempt(v time.Time) {
+	o.NextAttempt = &v
+}
+
 // GetRateLimit returns the RateLimit field value if set, zero value otherwise.
 func (o *MessageEndpointOut) GetRateLimit() int32 {
 	if o == nil || o.RateLimit == nil {
@@ -322,6 +355,9 @@ func (o MessageEndpointOut) MarshalJSON() ([]byte, error) {
 	}
 	if true {
 		toSerialize["id"] = o.Id
+	}
+	if o.NextAttempt != nil {
+		toSerialize["nextAttempt"] = o.NextAttempt
 	}
 	if o.RateLimit != nil {
 		toSerialize["rateLimit"] = o.RateLimit
