@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/svix/svix-libs/go/internal/openapi"
+	"github.com/svix/svix-libs/go/internal/version"
 )
 
 type (
@@ -58,6 +59,7 @@ func New(token string, options *SvixOptions) *Svix {
 		}
 	}
 	conf.AddDefaultHeader("Authorization", fmt.Sprintf("Bearer %s", token))
+	conf.UserAgent = fmt.Sprintf("svix-libs/%s/go", version.Version)
 	apiClient := openapi.NewAPIClient(conf)
 	return &Svix{
 		Authentication: &Authentication{
