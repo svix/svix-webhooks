@@ -68,6 +68,11 @@ class ApiBase(t.Generic[ApiClass]):
     @contextmanager
     def _api(self) -> t.Generator[ApiClass, None, None]:
         with ApiClient(self._configuration) as api_client:  # type: ignore
+
+            from . import __version__
+
+            api_client.user_agent = f"svix-libs/{__version__}/python"
+
             yield t.cast(t.Any, self._ApiClass(api_client))
 
 
