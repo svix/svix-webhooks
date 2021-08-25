@@ -49,7 +49,7 @@ class ListOptions:
 
 @dataclass
 class MessageListOptions(ListOptions):
-    pass
+    event_types: t.Optional[t.List[str]] = None
 
 
 @dataclass
