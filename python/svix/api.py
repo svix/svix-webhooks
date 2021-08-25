@@ -39,7 +39,7 @@ class SvixOptions:
 
 
 @dataclass
-class FetchOptions:
+class ListOptions:
     iterator: t.Optional[str] = None
     limit: t.Optional[int] = None
 
@@ -48,7 +48,27 @@ class FetchOptions:
 
 
 @dataclass
-class FetchOptionsMessageAttempt(FetchOptions):
+class MessageListOptions(ListOptions):
+    pass
+
+
+@dataclass
+class ApplicationListOptions(ListOptions):
+    pass
+
+
+@dataclass
+class EventTypeListOptions(ListOptions):
+    pass
+
+
+@dataclass
+class EndpointListOptions(ListOptions):
+    pass
+
+
+@dataclass
+class MessageAttemptListOptions(ListOptions):
     status: t.Optional[MessageStatus] = None
 
 
@@ -93,7 +113,7 @@ class Authentication(ApiBase[AuthenticationApi]):
 class Application(ApiBase[ApplicationApi]):
     _ApiClass = ApplicationApi
 
-    def list(self, options: FetchOptions = FetchOptions()) -> ListResponseApplicationOut:
+    def list(self, options: ApplicationListOptions = ApplicationListOptions()) -> ListResponseApplicationOut:
         with self._api() as api:
             return api.list_applications_api_v1_app_get(**options.to_dict(), _check_return_type=False)
 
@@ -119,7 +139,7 @@ class Application(ApiBase[ApplicationApi]):
 class Endpoint(ApiBase[EndpointApi]):
     _ApiClass = EndpointApi
 
-    def list(self, app_id: str, options: FetchOptions = FetchOptions()) -> ListResponseEndpointOut:
+    def list(self, app_id: str, options: EndpointListOptions = EndpointListOptions()) -> ListResponseEndpointOut:
         with self._api() as api:
             return api.list_endpoints_api_v1_app_app_id_endpoint_get(
                 app_id=app_id, **options.to_dict(), _check_return_type=False
@@ -159,7 +179,7 @@ class Endpoint(ApiBase[EndpointApi]):
 class EventType(ApiBase[EventTypeApi]):
     _ApiClass = EventTypeApi
 
-    def list(self, options: FetchOptions = FetchOptions()) -> ListResponseEventTypeOut:
+    def list(self, options: EventTypeListOptions = EventTypeListOptions()) -> ListResponseEventTypeOut:
         with self._api() as api:
             return api.list_event_types_api_v1_event_type_get(**options.to_dict(), _check_return_type=False)
 
@@ -183,7 +203,7 @@ class EventType(ApiBase[EventTypeApi]):
 class Message(ApiBase[MessageApi]):
     _ApiClass = MessageApi
 
-    def list(self, app_id: str, options: FetchOptions = FetchOptions()) -> ListResponseMessageOut:
+    def list(self, app_id: str, options: MessageListOptions = MessageListOptions()) -> ListResponseMessageOut:
         with self._api() as api:
             return api.list_messages_api_v1_app_app_id_msg_get(
                 app_id=app_id, **options.to_dict(), _check_return_type=False
@@ -206,7 +226,7 @@ class MessageAttempt(ApiBase[MessageAttemptApi]):
     _ApiClass = MessageAttemptApi
 
     def list(
-        self, app_id: str, msg_id: str, options: FetchOptionsMessageAttempt = FetchOptionsMessageAttempt()
+        self, app_id: str, msg_id: str, options: MessageAttemptListOptions = MessageAttemptListOptions()
     ) -> ListResponseMessageAttemptOut:
         with self._api() as api:
             return api.list_attempts_api_v1_app_app_id_msg_msg_id_attempt_get(
@@ -278,7 +298,9 @@ __all__ = [
     "MessageAttemptOut",
     "MessageStatus",
     "SvixOptions",
-    "FetchOptions",
-    "FetchOptionsMessageAttempt",
+    "ApplicationListOptions",
+    "EventTypeListOptions",
+    "EndpointListOptions",
+    "MessageAttemptListOptions",
     "Svix",
 ]
