@@ -38,6 +38,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["src"]
 
   spec.add_development_dependency "bundler", "~> 1.17"
-  spec.add_development_dependency "rake", "~> 10.0"
+  spec.add_development_dependency "rake", "~> 13.0"
   spec.add_development_dependency "rspec", "~> 3.2"
 end
