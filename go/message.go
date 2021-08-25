@@ -16,7 +16,12 @@ type (
 	MessageOut             openapi.MessageOut
 )
 
-func (m *Message) List(appId string, options *FetchOptions) (*ListResponseMessageOut, error) {
+type MessageListOptions struct {
+	Iterator *string
+	Limit    *int32
+}
+
+func (m *Message) List(appId string, options *MessageListOptions) (*ListResponseMessageOut, error) {
 	req := m.api.MessageApi.ListMessagesApiV1AppAppIdMsgGet(context.Background(), appId)
 	if options != nil {
 		if options.Iterator != nil {

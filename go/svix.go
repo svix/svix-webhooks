@@ -26,10 +26,6 @@ type (
 		Message        *Message
 		MessageAttempt *MessageAttempt
 	}
-	FetchOptions struct {
-		Iterator *string
-		Limit    *int32
-	}
 )
 
 var defaultHTTPClient = &http.Client{

@@ -16,7 +16,12 @@ type Application struct {
 	api *openapi.APIClient
 }
 
-func (a *Application) List(options *FetchOptions) (*ListResponseApplicationOut, error) {
+type ApplicationListOptions struct {
+	Iterator *string
+	Limit    *int32
+}
+
+func (a *Application) List(options *ApplicationListOptions) (*ListResponseApplicationOut, error) {
 	req := a.api.ApplicationApi.ListApplicationsApiV1AppGet(context.Background())
 	if options != nil {
 		if options.Iterator != nil {

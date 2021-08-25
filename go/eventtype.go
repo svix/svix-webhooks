@@ -17,7 +17,12 @@ type (
 	EventTypeUpdate          openapi.EventTypeUpdate
 )
 
-func (e *EventType) List(options *FetchOptions) (*ListResponseEventTypeOut, error) {
+type EventTypeListOptions struct {
+	Iterator *string
+	Limit    *int32
+}
+
+func (e *EventType) List(options *EventTypeListOptions) (*ListResponseEventTypeOut, error) {
 	req := e.api.EventTypeApi.ListEventTypesApiV1EventTypeGet(context.Background())
 	if options != nil {
 		if options.Iterator != nil {
