@@ -2,16 +2,14 @@ package com.svix;
 
 import com.svix.models.MessageStatus;
 
-
-public final class FetchOptionsMessageAttempt extends FetchOptions {
-
+public class MessageAttemptListOptions extends ListOptions {
     private MessageStatus status;
 
-	public FetchOptionsMessageAttempt() {
+	public MessageAttemptListOptions() {
         super();
 	}
 
-	public FetchOptionsMessageAttempt messageStatus(final MessageStatus status) {
+	public MessageAttemptListOptions messageStatus(final MessageStatus status) {
 		this.status = status;
 		return this;
 	}

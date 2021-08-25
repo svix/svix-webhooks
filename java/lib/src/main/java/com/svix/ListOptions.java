@@ -1,20 +1,20 @@
 package com.svix;
 
-public class FetchOptions {
+public class ListOptions {
     private static final int DEFAULT_LIMIT = 50;
 
     private String iterator;
     private Integer limit = DEFAULT_LIMIT;
 
-	public FetchOptions() {
+	public ListOptions() {
 	}
 
-	public FetchOptions iterator(final String iterator) {
+	public ListOptions iterator(final String iterator) {
 		this.iterator = iterator;
 		return this;
 	}
 
-	public FetchOptions limit(final Integer limit) {
+	public ListOptions limit(final Integer limit) {
 		this.limit = limit;
 		return this;
 	}

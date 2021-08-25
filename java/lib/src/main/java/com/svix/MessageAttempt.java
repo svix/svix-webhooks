@@ -15,7 +15,7 @@ public final class MessageAttempt {
 		api = new MessageAttemptApi();
 	}
 
-	public ListResponseMessageAttemptOut list(final String appId, final String msgId, final FetchOptionsMessageAttempt options) throws ApiException {
+	public ListResponseMessageAttemptOut list(final String appId, final String msgId, final MessageAttemptListOptions options) throws ApiException {
 		try {
 			return api.listAttemptsApiV1AppAppIdMsgMsgIdAttemptGet(appId, msgId, options.getIterator(), options.getLimit(), options.getMessageStatus());
 		} catch (com.svix.internal.ApiException e) {
@@ -39,7 +39,7 @@ public final class MessageAttempt {
 		}
 	}
 
-	public ListResponseEndpointMessageOut listAttemptedMessages(final String appId, final String endpointId, final FetchOptionsMessageAttempt options) throws ApiException {
+	public ListResponseEndpointMessageOut listAttemptedMessages(final String appId, final String endpointId, final MessageAttemptListOptions options) throws ApiException {
 		try {
 			return api.listAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGet(endpointId, appId, options.getIterator(), options.getLimit(), options.getMessageStatus());
 		} catch (com.svix.internal.ApiException e) {
@@ -47,7 +47,7 @@ public final class MessageAttempt {
 		}
 	}
 
-	public ListResponseMessageEndpointOut listAttemptedDestinations(final String appId, final String msgId, final FetchOptions options) throws ApiException {
+	public ListResponseMessageEndpointOut listAttemptedDestinations(final String appId, final String msgId, final MessageAttemptListOptions options) throws ApiException {
 		try {
 			return api.listAttemptedDestinationsApiV1AppAppIdMsgMsgIdEndpointGet(msgId, appId, options.getIterator(), options.getLimit());
 		} catch (com.svix.internal.ApiException e) {
@@ -56,7 +56,7 @@ public final class MessageAttempt {
 	}
 
 	public ListResponseMessageAttemptEndpointOut listAttemptsForEndpoint(final String appId, final String msgId, final String endpointId,
-		final FetchOptionsMessageAttempt options) throws ApiException {
+		final MessageAttemptListOptions options) throws ApiException {
 			try {
 				return api.listAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGet(msgId, appId, endpointId,
 					options.getIterator(), options.getLimit(), options.getMessageStatus());

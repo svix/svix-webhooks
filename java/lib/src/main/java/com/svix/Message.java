@@ -14,7 +14,7 @@ public final class Message {
 		api = new MessageApi();
 	}
 
-	public ListResponseMessageOut list(final String appId, final FetchOptions options) throws ApiException {
+	public ListResponseMessageOut list(final String appId, final MessageListOptions options) throws ApiException {
 		try {
 			return api.listMessagesApiV1AppAppIdMsgGet(appId, options.getIterator(), options.getLimit());
 		} catch (com.svix.internal.ApiException e) {
