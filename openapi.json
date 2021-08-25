@@ -17,6 +17,7 @@
                     "uid": {
                         "example": "unique-app-identifier",
                         "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "title": "Uid",
                         "type": "string"
                     }
@@ -53,6 +54,7 @@
                     "uid": {
                         "example": "unique-app-identifier",
                         "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "title": "Uid",
                         "type": "string"
                     }
@@ -86,6 +88,58 @@
                     "token"
                 ],
                 "title": "DashboardAccessOut",
+                "type": "object"
+            },
+            "EndpointDisabledEvent": {
+                "description": "Sent when an endpoint has been automatically disabled after continuous failures.",
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/EndpointDisabledEventData"
+                    },
+                    "type": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/EventType"
+                            }
+                        ],
+                        "default": "endpoint.disabled",
+                        "example": "endpoint.disabled"
+                    }
+                },
+                "required": [
+                    "data"
+                ],
+                "title": "EndpointDisabledEvent",
+                "type": "object"
+            },
+            "EndpointDisabledEventData": {
+                "properties": {
+                    "appId": {
+                        "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "title": "Appid",
+                        "type": "string"
+                    },
+                    "appUid": {
+                        "title": "Appuid",
+                        "type": "string"
+                    },
+                    "endpointId": {
+                        "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "title": "Endpointid",
+                        "type": "string"
+                    },
+                    "failSince": {
+                        "format": "date-time",
+                        "title": "Failsince",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "appId",
+                    "endpointId",
+                    "failSince"
+                ],
+                "title": "EndpointDisabledEventData",
                 "type": "object"
             },
             "EndpointIn": {
@@ -302,6 +356,31 @@
                 ],
                 "title": "EndpointStats",
                 "type": "object"
+            },
+            "EventExampleIn": {
+                "properties": {
+                    "eventType": {
+                        "example": "user.signup",
+                        "maxLength": 256,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "title": "Eventtype",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "eventType"
+                ],
+                "title": "EventExampleIn",
+                "type": "object"
+            },
+            "EventType": {
+                "description": "An enumeration.",
+                "enum": [
+                    "message.attempt.exhausted",
+                    "endpoint.disabled"
+                ],
+                "title": "EventType",
+                "type": "string"
             },
             "EventTypeIn": {
                 "properties": {
@@ -636,6 +715,88 @@
                 "title": "MessageAttemptEndpointOut",
                 "type": "object"
             },
+            "MessageAttemptExhaustedEvent": {
+                "description": "Sent when a message delivery has failed (all of the retry attempts have been exhausted).",
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/MessageAttemptExhaustedEventData"
+                    },
+                    "type": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/EventType"
+                            }
+                        ],
+                        "default": "message.attempt.exhausted",
+                        "example": "message.attempt.exhausted"
+                    }
+                },
+                "required": [
+                    "data"
+                ],
+                "title": "MessageAttemptExhaustedEvent",
+                "type": "object"
+            },
+            "MessageAttemptExhaustedEventData": {
+                "properties": {
+                    "appId": {
+                        "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "title": "Appid",
+                        "type": "string"
+                    },
+                    "appUid": {
+                        "title": "Appuid",
+                        "type": "string"
+                    },
+                    "endpointId": {
+                        "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "title": "Endpointid",
+                        "type": "string"
+                    },
+                    "lastAttempt": {
+                        "$ref": "#/components/schemas/MessageAttemptFailedEvent"
+                    },
+                    "msgId": {
+                        "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "title": "Msgid",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "appId",
+                    "msgId",
+                    "endpointId",
+                    "lastAttempt"
+                ],
+                "title": "MessageAttemptExhaustedEventData",
+                "type": "object"
+            },
+            "MessageAttemptFailedEvent": {
+                "properties": {
+                    "id": {
+                        "example": "atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "responseStatusCode": {
+                        "example": 500,
+                        "title": "Responsestatuscode",
+                        "type": "integer"
+                    },
+                    "timestamp": {
+                        "format": "date-time",
+                        "title": "Timestamp",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "responseStatusCode",
+                    "timestamp"
+                ],
+                "title": "MessageAttemptFailedEvent",
+                "type": "object"
+            },
             "MessageAttemptOut": {
                 "properties": {
                     "endpointId": {
@@ -865,6 +1026,23 @@
                     "type"
                 ],
                 "title": "ValidationError",
+                "type": "object"
+            },
+            "WebhookTypes": {
+                "description": "All of the webhook types that we support",
+                "properties": {
+                    "a": {
+                        "$ref": "#/components/schemas/EndpointDisabledEvent"
+                    },
+                    "b": {
+                        "$ref": "#/components/schemas/MessageAttemptExhaustedEvent"
+                    }
+                },
+                "required": [
+                    "a",
+                    "b"
+                ],
+                "title": "WebhookTypes",
                 "type": "object"
             }
         },
@@ -2536,6 +2714,158 @@
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/send-example/": {
+            "post": {
+                "description": "Send an example message for event",
+                "operationId": "send_event_type_example_message_api_v1_app__app_id__endpoint__endpoint_id__send_example__post",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "title": "App Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "required": true,
+                        "schema": {
+                            "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "title": "Endpoint Id",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EventExampleIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "202": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MessageOut"
+                                }
+                            }
+                        },
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Send Event Type Example Message",
+                "tags": [
+                    "Endpoint"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const messageOut = await svix.endpoint.send('app_id', 'endpoint_id', {\n    \"eventType\": \"user.signup\"\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const messageOut = await svix.endpoint.send('app_id', 'endpoint_id', {\n    \"eventType\": \"user.signup\"\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "message_out = svix.endpoint.send('app_id', 'endpoint_id', EventExampleIn(\n    event_type=\"user.signup\"\n))"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "messageOut, err := svixClient.Endpoint.Send(\"app_id\", \"endpoint_id\", &svix.EventExampleIn{\n    EventType: \"user.signup\"\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val messageOut = svix.endpoint.send('app_id', 'endpoint_id', EventExampleIn()\n    .eventType(\"user.signup\")\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "MessageOut messageOut = svix.getEndpoint().send('app_id', 'endpoint_id', new EventExampleIn()\n    .eventType(\"user.signup\")\n)"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix endpoint send 'app_id' 'endpoint_id' '{\n    \"eventType\": \"user.signup\"\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/send-example/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'\n  -d '{\n    \"eventType\": \"user.signup\"\n}'"
                     }
                 ]
             }
@@ -4615,6 +4945,46 @@
                     }
                 ]
             }
+        },
+        "/api/v1/internal-webhook-model-openapi/": {
+            "get": {
+                "deprecated": true,
+                "description": "A helper to automatically generate OpenAPI models for the webhook schemas",
+                "operationId": "webhook_model_api_v1_internal_webhook_model_openapi__get",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WebhookTypes"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "Successful Response"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    }
+                },
+                "summary": "Webhook Model",
+                "x-codeSamples": [
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/internal-webhook-model-openapi/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'\n  -d '{\n    \"a\": null,\n    \"b\": null\n}'"
+                    }
+                ]
+            }
         }
     },
     "tags": [
@@ -4645,6 +5015,14 @@
         {
             "description": "Health checks for the API.",
             "name": "Health"
+        },
+        {
+            "description": "<SchemaDefinition schemaRef=\"#/components/schemas/EndpointDisabledEvent\" />",
+            "name": "EndpointDisabledEvent"
+        },
+        {
+            "description": "<SchemaDefinition schemaRef=\"#/components/schemas/MessageAttemptExhaustedEvent\" />",
+            "name": "MessageAttemptExhaustedEvent"
         }
     ],
     "x-tagGroups": [
@@ -4668,6 +5046,13 @@
             "name": "Utility",
             "tags": [
                 "Health"
+            ]
+        },
+        {
+            "name": "Outgoing Webhook Models",
+            "tags": [
+                "EndpointDisabledEvent",
+                "MessageAttemptExhaustedEvent"
             ]
         }
     ]
