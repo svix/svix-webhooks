@@ -30,6 +30,9 @@ import {
   EventTypeIn,
   EventTypeOut,
   EventTypeUpdate,
+  Middleware,
+  RequestContext,
+  ResponseContext,
 } from "./openapi/index";
 export * from "./openapi/models/all";
 export * from "./openapi/apis/exception";
@@ -38,6 +41,18 @@ import * as base64 from "@stablelib/base64";
 import * as sha256 from "fast-sha256";
 
 const WEBHOOK_TOLERANCE_IN_SECONDS = 5 * 60; // 5 minutes
+const VERSION = "0.25.0";
+
+class UserAgentMiddleware implements Middleware {
+  public pre(context: RequestContext): Promise<RequestContext>{
+    context.setHeaderParam("User-Agent", `svix-libs/${VERSION}/javascript`);
+    return Promise.resolve(context);
+  }
+
+  public post(context: ResponseContext): Promise<ResponseContext> {
+    return Promise.resolve(context);
+  }
+}
 
 export interface SvixOptions {
   debug?: boolean;
@@ -64,6 +79,7 @@ export class Svix {
     };
     const config = createConfiguration({
       baseServer,
+      promiseMiddleware: [new UserAgentMiddleware()],
       authMethods: {
         HTTPBearer: bearerConfiguration,
       },
