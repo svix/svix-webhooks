@@ -14,7 +14,7 @@ public final class Endpoint {
 		api = new EndpointApi();
 	}
 
-	public ListResponseEndpointOut list(final String appId, final FetchOptions options) throws ApiException {
+	public ListResponseEndpointOut list(final String appId, final EndpointListOptions options) throws ApiException {
 		try {
 			return api.listEndpointsApiV1AppAppIdEndpointGet(appId, options.getIterator(), options.getLimit());
 		} catch (com.svix.internal.ApiException e) {

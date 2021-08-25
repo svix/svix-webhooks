@@ -13,7 +13,7 @@ public final class Application {
 		api = new ApplicationApi();
 	}
 
-	public ListResponseApplicationOut list(final FetchOptions options) throws ApiException {
+	public ListResponseApplicationOut list(final ApplicationListOptions options) throws ApiException {
 		try {
 			return api.listApplicationsApiV1AppGet(options.getIterator(), options.getLimit());
 		} catch (com.svix.internal.ApiException e) {

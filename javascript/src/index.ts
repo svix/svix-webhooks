@@ -44,7 +44,7 @@ const WEBHOOK_TOLERANCE_IN_SECONDS = 5 * 60; // 5 minutes
 const VERSION = "0.25.0";
 
 class UserAgentMiddleware implements Middleware {
-  public pre(context: RequestContext): Promise<RequestContext>{
+  public pre(context: RequestContext): Promise<RequestContext> {
     context.setHeaderParam("User-Agent", `svix-libs/${VERSION}/javascript`);
     return Promise.resolve(context);
   }
@@ -111,9 +111,21 @@ class Authentication {
   }
 }
 
-export interface FetchOptions {
+interface ListOptions {
   iterator?: string;
   limit?: number;
+}
+
+export type ApplicationListOptions = ListOptions;
+
+export type EndpointListOptions = ListOptions;
+
+export type EventTypeListOptions = ListOptions;
+
+export type MessageListOptions = ListOptions;
+
+export interface MessageAttemptListOptions extends ListOptions {
+  status?: MessageStatus;
 }
 
 class Application {
@@ -123,7 +135,7 @@ class Application {
     this.api = new ApplicationApi(config);
   }
 
-  public list(options?: FetchOptions): Promise<ListResponseApplicationOut> {
+  public list(options?: ApplicationListOptions): Promise<ListResponseApplicationOut> {
     return this.api.listApplicationsApiV1AppGet({ ...options });
   }
 
@@ -151,7 +163,10 @@ class Endpoint {
     this.api = new EndpointApi(config);
   }
 
-  public list(appId: string, options?: FetchOptions): Promise<ListResponseEndpointOut> {
+  public list(
+    appId: string,
+    options?: EndpointListOptions
+  ): Promise<ListResponseEndpointOut> {
     return this.api.listEndpointsApiV1AppAppIdEndpointGet({ appId, ...options });
   }
 
@@ -197,7 +212,7 @@ class EventType {
     this.api = new EventTypeApi(config);
   }
 
-  public list(options?: FetchOptions): Promise<ListResponseEventTypeOut> {
+  public list(options?: EventTypeListOptions): Promise<ListResponseEventTypeOut> {
     return this.api.listEventTypesApiV1EventTypeGet({ ...options });
   }
 
@@ -227,7 +242,10 @@ class Message {
     this.api = new MessageApi(config);
   }
 
-  public list(appId: string, options?: FetchOptions): Promise<ListResponseMessageOut> {
+  public list(
+    appId: string,
+    options?: MessageListOptions
+  ): Promise<ListResponseMessageOut> {
     return this.api.listMessagesApiV1AppAppIdMsgGet({ appId, ...options });
   }
 
@@ -240,10 +258,6 @@ class Message {
   }
 }
 
-export interface FetchOptionsMessageAttempt extends FetchOptions {
-  status?: MessageStatus;
-}
-
 class MessageAttempt {
   private readonly api: MessageAttemptApi;
 
@@ -254,7 +268,7 @@ class MessageAttempt {
   public list(
     appId: string,
     msgId: string,
-    options?: FetchOptionsMessageAttempt
+    options?: MessageAttemptListOptions
   ): Promise<ListResponseMessageAttemptOut> {
     return this.api.listAttemptsApiV1AppAppIdMsgMsgIdAttemptGet({
       appId,
@@ -286,7 +300,7 @@ class MessageAttempt {
   public listAttemptedMessages(
     appId: string,
     endpointId: string,
-    options?: FetchOptionsMessageAttempt
+    options?: MessageAttemptListOptions
   ): Promise<ListResponseEndpointMessageOut> {
     return this.api.listAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGet({
       appId,
@@ -298,7 +312,7 @@ class MessageAttempt {
   public listAttemptedDestinations(
     appId: string,
     msgId: string,
-    options?: FetchOptionsMessageAttempt
+    options?: MessageAttemptListOptions
   ): Promise<ListResponseMessageEndpointOut> {
     return this.api.listAttemptedDestinationsApiV1AppAppIdMsgMsgIdEndpointGet({
       appId,
@@ -311,7 +325,7 @@ class MessageAttempt {
     appId: string,
     msgId: string,
     endpointId: string,
-    options?: FetchOptionsMessageAttempt
+    options?: MessageAttemptListOptions
   ): Promise<ListResponseMessageAttemptEndpointOut> {
     return this.api.listAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGet(
       { appId, msgId, endpointId, ...options }
