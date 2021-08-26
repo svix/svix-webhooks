@@ -1,5 +1,15 @@
 # Changelog
 
+## Version 0.26.0
+* All: Some of the list options structs have been renamed (this is a minor breaking change in some languages) 💥
+* All: Filter messages by EventType ⏳
+* All: Add custom user-agents 🧑‍💻
+* All: Retry 5XXs & network errors 🔁
+* All: Add nextAttempt to MessageEndpointOut 🆕
+* All: Update Schema 🆕
+* Javascript: Update Dependencies 🆕
+* Ruby: Update Dependencies 🆕
+
 ## Version 0.25.0
 * All: Add nextAttempt to EndpointMessageOut 🕛
 
