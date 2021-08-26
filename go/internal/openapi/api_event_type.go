@@ -237,6 +237,9 @@ func (a *EventTypeApiService) DeleteEventTypeApiV1EventTypeEventTypeNameDeleteEx
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
+	if strlen(r.eventTypeName) > 256 {
+		return nil, reportError("eventTypeName must have less than 256 elements")
+	}
 
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -555,6 +558,9 @@ func (a *EventTypeApiService) UpdateEventTypeApiV1EventTypeEventTypeNamePutExecu
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
+	if strlen(r.eventTypeName) > 256 {
+		return localVarReturnValue, nil, reportError("eventTypeName must have less than 256 elements")
+	}
 	if r.eventTypeUpdate == nil {
 		return localVarReturnValue, nil, reportError("eventTypeUpdate is required and must be specified")
 	}

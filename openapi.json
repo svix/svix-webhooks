@@ -3011,6 +3011,21 @@
                             "title": "Limit",
                             "type": "integer"
                         }
+                    },
+                    {
+                        "in": "query",
+                        "name": "event_types",
+                        "required": false,
+                        "schema": {
+                            "items": {
+                                "example": "user.signup",
+                                "maxLength": 256,
+                                "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                                "type": "string"
+                            },
+                            "title": "Event Types",
+                            "type": "array"
+                        }
                     }
                 ],
                 "responses": {
@@ -4673,6 +4688,9 @@
                         "name": "event_type_name",
                         "required": true,
                         "schema": {
+                            "example": "user.signup",
+                            "maxLength": 256,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Event Type Name",
                             "type": "string"
                         }
@@ -4794,6 +4812,9 @@
                         "name": "event_type_name",
                         "required": true,
                         "schema": {
+                            "example": "user.signup",
+                            "maxLength": 256,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Event Type Name",
                             "type": "string"
                         }

@@ -17,8 +17,9 @@ type (
 )
 
 type MessageListOptions struct {
-	Iterator *string
-	Limit    *int32
+	Iterator   *string
+	Limit      *int32
+	EventTypes *[]string
 }
 
 func (m *Message) List(appId string, options *MessageListOptions) (*ListResponseMessageOut, error) {
@@ -29,6 +30,9 @@ func (m *Message) List(appId string, options *MessageListOptions) (*ListResponse
 		}
 		if options.Limit != nil {
 			req = req.Limit(*options.Limit)
+		}
+		if options.EventTypes != nil {
+			req = req.EventTypes(*options.EventTypes)
 		}
 	}
 	out, res, err := req.Execute()

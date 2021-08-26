@@ -122,7 +122,9 @@ export type EndpointListOptions = ListOptions;
 
 export type EventTypeListOptions = ListOptions;
 
-export type MessageListOptions = ListOptions;
+export interface MessageListOptions extends ListOptions {
+  eventTypes?: string[];
+}
 
 export interface MessageAttemptListOptions extends ListOptions {
   status?: MessageStatus;

@@ -17,6 +17,7 @@ import (
 	_nethttp "net/http"
 	_neturl "net/url"
 	"strings"
+	"reflect"
 )
 
 // Linger please
@@ -369,6 +370,7 @@ type ApiListMessagesApiV1AppAppIdMsgGetRequest struct {
 	appId string
 	iterator *string
 	limit *int32
+	eventTypes *[]string
 }
 
 func (r ApiListMessagesApiV1AppAppIdMsgGetRequest) Iterator(iterator string) ApiListMessagesApiV1AppAppIdMsgGetRequest {
@@ -377,6 +379,10 @@ func (r ApiListMessagesApiV1AppAppIdMsgGetRequest) Iterator(iterator string) Api
 }
 func (r ApiListMessagesApiV1AppAppIdMsgGetRequest) Limit(limit int32) ApiListMessagesApiV1AppAppIdMsgGetRequest {
 	r.limit = &limit
+	return r
+}
+func (r ApiListMessagesApiV1AppAppIdMsgGetRequest) EventTypes(eventTypes []string) ApiListMessagesApiV1AppAppIdMsgGetRequest {
+	r.eventTypes = &eventTypes
 	return r
 }
 
@@ -430,6 +436,17 @@ func (a *MessageApiService) ListMessagesApiV1AppAppIdMsgGetExecute(r ApiListMess
 	}
 	if r.limit != nil {
 		localVarQueryParams.Add("limit", parameterToString(*r.limit, ""))
+	}
+	if r.eventTypes != nil {
+		t := *r.eventTypes
+		if reflect.TypeOf(t).Kind() == reflect.Slice {
+			s := reflect.ValueOf(t)
+			for i := 0; i < s.Len(); i++ {
+				localVarQueryParams.Add("event_types", parameterToString(s.Index(i), "multi"))
+			}
+		} else {
+			localVarQueryParams.Add("event_types", parameterToString(t, "multi"))
+		}
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
