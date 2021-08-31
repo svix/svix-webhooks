@@ -121,7 +121,7 @@ export type ApplicationListOptions = ListOptions;
 export type EndpointListOptions = ListOptions;
 
 export interface EventTypeListOptions extends ListOptions {
-  with_content?: boolean;
+  withContent?: boolean;
 };
 
 export interface MessageListOptions extends ListOptions {
