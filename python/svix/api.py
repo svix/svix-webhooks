@@ -59,7 +59,7 @@ class ApplicationListOptions(ListOptions):
 
 @dataclass
 class EventTypeListOptions(ListOptions):
-    pass
+    with_content: t.Optional[bool] = None
 
 
 @dataclass

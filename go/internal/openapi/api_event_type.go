@@ -340,6 +340,7 @@ type ApiListEventTypesApiV1EventTypeGetRequest struct {
 	ApiService *EventTypeApiService
 	iterator *string
 	limit *int32
+	withContent *bool
 }
 
 func (r ApiListEventTypesApiV1EventTypeGetRequest) Iterator(iterator string) ApiListEventTypesApiV1EventTypeGetRequest {
@@ -348,6 +349,10 @@ func (r ApiListEventTypesApiV1EventTypeGetRequest) Iterator(iterator string) Api
 }
 func (r ApiListEventTypesApiV1EventTypeGetRequest) Limit(limit int32) ApiListEventTypesApiV1EventTypeGetRequest {
 	r.limit = &limit
+	return r
+}
+func (r ApiListEventTypesApiV1EventTypeGetRequest) WithContent(withContent bool) ApiListEventTypesApiV1EventTypeGetRequest {
+	r.withContent = &withContent
 	return r
 }
 
@@ -398,6 +403,9 @@ func (a *EventTypeApiService) ListEventTypesApiV1EventTypeGetExecute(r ApiListEv
 	}
 	if r.limit != nil {
 		localVarQueryParams.Add("limit", parameterToString(*r.limit, ""))
+	}
+	if r.withContent != nil {
+		localVarQueryParams.Add("with_content", parameterToString(*r.withContent, ""))
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}

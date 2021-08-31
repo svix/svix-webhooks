@@ -23,12 +23,14 @@ const (
 	_0 MessageStatus = 0
 	_1 MessageStatus = 1
 	_2 MessageStatus = 2
+	_3 MessageStatus = 3
 )
 
 var allowedMessageStatusEnumValues = []MessageStatus{
 	0,
 	1,
 	2,
+	3,
 }
 
 func (v *MessageStatus) UnmarshalJSON(src []byte) error {

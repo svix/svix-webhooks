@@ -17,6 +17,8 @@ import (
 // EventTypeUpdate struct for EventTypeUpdate
 type EventTypeUpdate struct {
 	Description string `json:"description"`
+	// The schema for the event type for a specific version as a JSON schema.
+	Schemas *map[string]map[string]interface{} `json:"schemas,omitempty"`
 }
 
 // NewEventTypeUpdate instantiates a new EventTypeUpdate object
@@ -61,10 +63,45 @@ func (o *EventTypeUpdate) SetDescription(v string) {
 	o.Description = v
 }
 
+// GetSchemas returns the Schemas field value if set, zero value otherwise.
+func (o *EventTypeUpdate) GetSchemas() map[string]map[string]interface{} {
+	if o == nil || o.Schemas == nil {
+		var ret map[string]map[string]interface{}
+		return ret
+	}
+	return *o.Schemas
+}
+
+// GetSchemasOk returns a tuple with the Schemas field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *EventTypeUpdate) GetSchemasOk() (*map[string]map[string]interface{}, bool) {
+	if o == nil || o.Schemas == nil {
+		return nil, false
+	}
+	return o.Schemas, true
+}
+
+// HasSchemas returns a boolean if a field has been set.
+func (o *EventTypeUpdate) HasSchemas() bool {
+	if o != nil && o.Schemas != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetSchemas gets a reference to the given map[string]map[string]interface{} and assigns it to the Schemas field.
+func (o *EventTypeUpdate) SetSchemas(v map[string]map[string]interface{}) {
+	o.Schemas = &v
+}
+
 func (o EventTypeUpdate) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
 		toSerialize["description"] = o.Description
+	}
+	if o.Schemas != nil {
+		toSerialize["schemas"] = o.Schemas
 	}
 	return json.Marshal(toSerialize)
 }
