@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.27.0
+* All: Adds Sending to MessageStatus 📤
+* All: Add support for Schemas in EventType API 🆕
+
 ## Version 0.26.0
 * All: Some of the list options structs have been renamed (this is a minor breaking change in some languages) 💥
 * All: Filter messages by EventType ⏳
