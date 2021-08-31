@@ -18,8 +18,9 @@ type (
 )
 
 type EventTypeListOptions struct {
-	Iterator *string
-	Limit    *int32
+	Iterator    *string
+	Limit       *int32
+	WithContent *bool
 }
 
 func (e *EventType) List(options *EventTypeListOptions) (*ListResponseEventTypeOut, error) {
@@ -30,6 +31,9 @@ func (e *EventType) List(options *EventTypeListOptions) (*ListResponseEventTypeO
 		}
 		if options.Limit != nil {
 			req = req.Limit(*options.Limit)
+		}
+		if options.WithContent != nil {
+			req = req.WithContent(*options.WithContent)
 		}
 	}
 	out, res, err := req.Execute()
