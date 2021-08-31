@@ -395,6 +395,54 @@
                         "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "title": "Name",
                         "type": "string"
+                    },
+                    "schemas": {
+                        "additionalProperties": {
+                            "example": {
+                                "description": "An invoice was paid by a user",
+                                "properties": {
+                                    "invoiceId": {
+                                        "description": "The invoice id",
+                                        "type": "string"
+                                    },
+                                    "userId": {
+                                        "description": "The user id",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "invoiceId",
+                                    "userId"
+                                ],
+                                "title": "Invoice Paid Event",
+                                "type": "object"
+                            },
+                            "type": "object"
+                        },
+                        "description": "The schema for the event type for a specific version as a JSON schema.",
+                        "example": {
+                            "1": {
+                                "description": "An invoice was paid by a user",
+                                "properties": {
+                                    "invoiceId": {
+                                        "description": "The invoice id",
+                                        "type": "string"
+                                    },
+                                    "userId": {
+                                        "description": "The user id",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "invoiceId",
+                                    "userId"
+                                ],
+                                "title": "Invoice Paid Event",
+                                "type": "object"
+                            }
+                        },
+                        "title": "Schemas",
+                        "type": "object"
                     }
                 },
                 "required": [
@@ -417,6 +465,54 @@
                         "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "title": "Name",
                         "type": "string"
+                    },
+                    "schemas": {
+                        "additionalProperties": {
+                            "example": {
+                                "description": "An invoice was paid by a user",
+                                "properties": {
+                                    "invoiceId": {
+                                        "description": "The invoice id",
+                                        "type": "string"
+                                    },
+                                    "userId": {
+                                        "description": "The user id",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "invoiceId",
+                                    "userId"
+                                ],
+                                "title": "Invoice Paid Event",
+                                "type": "object"
+                            },
+                            "type": "object"
+                        },
+                        "description": "The schema for the event type for a specific version as a JSON schema.",
+                        "example": {
+                            "1": {
+                                "description": "An invoice was paid by a user",
+                                "properties": {
+                                    "invoiceId": {
+                                        "description": "The invoice id",
+                                        "type": "string"
+                                    },
+                                    "userId": {
+                                        "description": "The user id",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "invoiceId",
+                                    "userId"
+                                ],
+                                "title": "Invoice Paid Event",
+                                "type": "object"
+                            }
+                        },
+                        "title": "Schemas",
+                        "type": "object"
                     }
                 },
                 "required": [
@@ -432,6 +528,54 @@
                         "example": "A user has signed up",
                         "title": "Description",
                         "type": "string"
+                    },
+                    "schemas": {
+                        "additionalProperties": {
+                            "example": {
+                                "description": "An invoice was paid by a user",
+                                "properties": {
+                                    "invoiceId": {
+                                        "description": "The invoice id",
+                                        "type": "string"
+                                    },
+                                    "userId": {
+                                        "description": "The user id",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "invoiceId",
+                                    "userId"
+                                ],
+                                "title": "Invoice Paid Event",
+                                "type": "object"
+                            },
+                            "type": "object"
+                        },
+                        "description": "The schema for the event type for a specific version as a JSON schema.",
+                        "example": {
+                            "1": {
+                                "description": "An invoice was paid by a user",
+                                "properties": {
+                                    "invoiceId": {
+                                        "description": "The invoice id",
+                                        "type": "string"
+                                    },
+                                    "userId": {
+                                        "description": "The user id",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "invoiceId",
+                                    "userId"
+                                ],
+                                "title": "Invoice Paid Event",
+                                "type": "object"
+                            }
+                        },
+                        "title": "Schemas",
+                        "type": "object"
                     }
                 },
                 "required": [
@@ -997,7 +1141,8 @@
                 "enum": [
                     0,
                     1,
-                    2
+                    2,
+                    3
                 ],
                 "title": "MessageStatus",
                 "type": "integer"
@@ -4434,6 +4579,16 @@
                             "title": "Limit",
                             "type": "integer"
                         }
+                    },
+                    {
+                        "in": "query",
+                        "name": "with_content",
+                        "required": false,
+                        "schema": {
+                            "default": false,
+                            "title": "With Content",
+                            "type": "boolean"
+                        }
                     }
                 ],
                 "responses": {
@@ -4638,42 +4793,42 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const eventTypeOut = await svix.eventType.create({\n    \"description\": \"A user has signed up\",\n    \"name\": \"user.signup\"\n});"
+                        "source": "const eventTypeOut = await svix.eventType.create({\n    \"description\": \"A user has signed up\",\n    \"schemas\": {\n        \"1\": {\n            \"title\": \"Invoice Paid Event\",\n            \"description\": \"An invoice was paid by a user\",\n            \"type\": \"object\",\n            \"properties\": {\n                \"invoiceId\": {\n                    \"description\": \"The invoice id\",\n                    \"type\": \"string\"\n                },\n                \"userId\": {\n                    \"description\": \"The user id\",\n                    \"type\": \"string\"\n                }\n            },\n            \"required\": [\n                \"invoiceId\",\n                \"userId\"\n            ]\n        }\n    },\n    \"name\": \"user.signup\"\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const eventTypeOut = await svix.eventType.create({\n    \"description\": \"A user has signed up\",\n    \"name\": \"user.signup\"\n});"
+                        "source": "const eventTypeOut = await svix.eventType.create({\n    \"description\": \"A user has signed up\",\n    \"schemas\": {\n        \"1\": {\n            \"title\": \"Invoice Paid Event\",\n            \"description\": \"An invoice was paid by a user\",\n            \"type\": \"object\",\n            \"properties\": {\n                \"invoiceId\": {\n                    \"description\": \"The invoice id\",\n                    \"type\": \"string\"\n                },\n                \"userId\": {\n                    \"description\": \"The user id\",\n                    \"type\": \"string\"\n                }\n            },\n            \"required\": [\n                \"invoiceId\",\n                \"userId\"\n            ]\n        }\n    },\n    \"name\": \"user.signup\"\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "event_type_out = svix.event_type.create(EventTypeIn(\n    description=\"A user has signed up\",\n    name=\"user.signup\"\n))"
+                        "source": "event_type_out = svix.event_type.create(EventTypeIn(\n    description=\"A user has signed up\",\n    schemas={'1': {'title': 'Invoice Paid Event', 'description': 'An invoice was paid by a user', 'type': 'object', 'properties': {'invoiceId': {'description': 'The invoice id', 'type': 'string'}, 'userId': {'description': 'The user id', 'type': 'string'}}, 'required': ['invoiceId', 'userId']}},\n    name=\"user.signup\"\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "eventTypeOut, err := svixClient.EventType.Create(&svix.EventTypeIn{\n    Description: \"A user has signed up\",\n    Name: \"user.signup\"\n})"
+                        "source": "eventTypeOut, err := svixClient.EventType.Create(&svix.EventTypeIn{\n    Description: \"A user has signed up\",\n    Schemas: map[string]interface{}{\n        \"1\": {\n                \"title\": \"Invoice Paid Event\",\n                \"description\": \"An invoice was paid by a user\",\n                \"type\": \"object\",\n                \"properties\": {\n                        \"invoiceId\": {\n                                \"description\": \"The invoice id\",\n                                \"type\": \"string\"\n                        },\n                        \"userId\": {\n                                \"description\": \"The user id\",\n                                \"type\": \"string\"\n                        }\n                },\n                \"required\": [\n                        \"invoiceId\",\n                        \"userId\"\n                ]\n        }\n    },\n    Name: \"user.signup\"\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val eventTypeOut = svix.eventType.create(EventTypeIn()\n    .description(\"A user has signed up\"),\n    .name(\"user.signup\")\n)"
+                        "source": "val eventTypeOut = svix.eventType.create(EventTypeIn()\n    .description(\"A user has signed up\"),\n    .schemas(\"\"\"{\n        \"1\": {\n                \"title\": \"Invoice Paid Event\",\n                \"description\": \"An invoice was paid by a user\",\n                \"type\": \"object\",\n                \"properties\": {\n                        \"invoiceId\": {\n                                \"description\": \"The invoice id\",\n                                \"type\": \"string\"\n                        },\n                        \"userId\": {\n                                \"description\": \"The user id\",\n                                \"type\": \"string\"\n                        }\n                },\n                \"required\": [\n                        \"invoiceId\",\n                        \"userId\"\n                ]\n        }\n    }\"\"\"),\n    .name(\"user.signup\")\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "EventTypeOut eventTypeOut = svix.getEventType().create(new EventTypeIn()\n    .description(\"A user has signed up\"),\n    .name(\"user.signup\")\n)"
+                        "source": "EventTypeOut eventTypeOut = svix.getEventType().create(new EventTypeIn()\n    .description(\"A user has signed up\"),\n    .schemas(\"{\" +\n        \"\\\"1\\\": {\" +\n                \"\\\"title\\\": \\\"Invoice Paid Event\\\",\" +\n                \"\\\"description\\\": \\\"An invoice was paid by a user\\\",\" +\n                \"\\\"type\\\": \\\"object\\\",\" +\n                \"\\\"properties\\\": {\" +\n                        \"\\\"invoiceId\\\": {\" +\n                                \"\\\"description\\\": \\\"The invoice id\\\",\" +\n                                \"\\\"type\\\": \\\"string\\\"\" +\n                        \"},\" +\n                        \"\\\"userId\\\": {\" +\n                                \"\\\"description\\\": \\\"The user id\\\",\" +\n                                \"\\\"type\\\": \\\"string\\\"\" +\n                        \"}\" +\n                \"},\" +\n                \"\\\"required\\\": [\" +\n                        \"\\\"invoiceId\\\",\" +\n                        \"\\\"userId\\\"\" +\n                \"]\" +\n        \"}\" +\n    \"}\"),\n    .name(\"user.signup\")\n)"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix event-type create '{\n    \"description\": \"A user has signed up\",\n    \"name\": \"user.signup\"\n}'"
+                        "source": "svix event-type create '{\n    \"description\": \"A user has signed up\",\n    \"schemas\": {\n        \"1\": {\n            \"title\": \"Invoice Paid Event\",\n            \"description\": \"An invoice was paid by a user\",\n            \"type\": \"object\",\n            \"properties\": {\n                \"invoiceId\": {\n                    \"description\": \"The invoice id\",\n                    \"type\": \"string\"\n                },\n                \"userId\": {\n                    \"description\": \"The user id\",\n                    \"type\": \"string\"\n                }\n            },\n            \"required\": [\n                \"invoiceId\",\n                \"userId\"\n            ]\n        }\n    },\n    \"name\": \"user.signup\"\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/event-type/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'\n  -d '{\n    \"description\": \"A user has signed up\",\n    \"name\": \"user.signup\"\n}'"
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/event-type/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'\n  -d '{\n    \"description\": \"A user has signed up\",\n    \"schemas\": {\n        \"1\": {\n            \"title\": \"Invoice Paid Event\",\n            \"description\": \"An invoice was paid by a user\",\n            \"type\": \"object\",\n            \"properties\": {\n                \"invoiceId\": {\n                    \"description\": \"The invoice id\",\n                    \"type\": \"string\"\n                },\n                \"userId\": {\n                    \"description\": \"The user id\",\n                    \"type\": \"string\"\n                }\n            },\n            \"required\": [\n                \"invoiceId\",\n                \"userId\"\n            ]\n        }\n    },\n    \"name\": \"user.signup\"\n}'"
                     }
                 ]
             }
@@ -4905,42 +5060,42 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const eventTypeOut = await svix.eventType.update('event_type_name', {\n    \"description\": \"A user has signed up\"\n});"
+                        "source": "const eventTypeOut = await svix.eventType.update('event_type_name', {\n    \"description\": \"A user has signed up\",\n    \"schemas\": {\n        \"1\": {\n            \"title\": \"Invoice Paid Event\",\n            \"description\": \"An invoice was paid by a user\",\n            \"type\": \"object\",\n            \"properties\": {\n                \"invoiceId\": {\n                    \"description\": \"The invoice id\",\n                    \"type\": \"string\"\n                },\n                \"userId\": {\n                    \"description\": \"The user id\",\n                    \"type\": \"string\"\n                }\n            },\n            \"required\": [\n                \"invoiceId\",\n                \"userId\"\n            ]\n        }\n    }\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const eventTypeOut = await svix.eventType.update('event_type_name', {\n    \"description\": \"A user has signed up\"\n});"
+                        "source": "const eventTypeOut = await svix.eventType.update('event_type_name', {\n    \"description\": \"A user has signed up\",\n    \"schemas\": {\n        \"1\": {\n            \"title\": \"Invoice Paid Event\",\n            \"description\": \"An invoice was paid by a user\",\n            \"type\": \"object\",\n            \"properties\": {\n                \"invoiceId\": {\n                    \"description\": \"The invoice id\",\n                    \"type\": \"string\"\n                },\n                \"userId\": {\n                    \"description\": \"The user id\",\n                    \"type\": \"string\"\n                }\n            },\n            \"required\": [\n                \"invoiceId\",\n                \"userId\"\n            ]\n        }\n    }\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "event_type_out = svix.event_type.update('event_type_name', EventTypeUpdate(\n    description=\"A user has signed up\"\n))"
+                        "source": "event_type_out = svix.event_type.update('event_type_name', EventTypeUpdate(\n    description=\"A user has signed up\",\n    schemas={'1': {'title': 'Invoice Paid Event', 'description': 'An invoice was paid by a user', 'type': 'object', 'properties': {'invoiceId': {'description': 'The invoice id', 'type': 'string'}, 'userId': {'description': 'The user id', 'type': 'string'}}, 'required': ['invoiceId', 'userId']}}\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "eventTypeOut, err := svixClient.EventType.Update(\"event_type_name\", &svix.EventTypeUpdate{\n    Description: \"A user has signed up\"\n})"
+                        "source": "eventTypeOut, err := svixClient.EventType.Update(\"event_type_name\", &svix.EventTypeUpdate{\n    Description: \"A user has signed up\",\n    Schemas: map[string]interface{}{\n        \"1\": {\n                \"title\": \"Invoice Paid Event\",\n                \"description\": \"An invoice was paid by a user\",\n                \"type\": \"object\",\n                \"properties\": {\n                        \"invoiceId\": {\n                                \"description\": \"The invoice id\",\n                                \"type\": \"string\"\n                        },\n                        \"userId\": {\n                                \"description\": \"The user id\",\n                                \"type\": \"string\"\n                        }\n                },\n                \"required\": [\n                        \"invoiceId\",\n                        \"userId\"\n                ]\n        }\n    }\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val eventTypeOut = svix.eventType.update('event_type_name', EventTypeUpdate()\n    .description(\"A user has signed up\")\n)"
+                        "source": "val eventTypeOut = svix.eventType.update('event_type_name', EventTypeUpdate()\n    .description(\"A user has signed up\"),\n    .schemas(\"\"\"{\n        \"1\": {\n                \"title\": \"Invoice Paid Event\",\n                \"description\": \"An invoice was paid by a user\",\n                \"type\": \"object\",\n                \"properties\": {\n                        \"invoiceId\": {\n                                \"description\": \"The invoice id\",\n                                \"type\": \"string\"\n                        },\n                        \"userId\": {\n                                \"description\": \"The user id\",\n                                \"type\": \"string\"\n                        }\n                },\n                \"required\": [\n                        \"invoiceId\",\n                        \"userId\"\n                ]\n        }\n    }\"\"\")\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "EventTypeOut eventTypeOut = svix.getEventType().update('event_type_name', new EventTypeUpdate()\n    .description(\"A user has signed up\")\n)"
+                        "source": "EventTypeOut eventTypeOut = svix.getEventType().update('event_type_name', new EventTypeUpdate()\n    .description(\"A user has signed up\"),\n    .schemas(\"{\" +\n        \"\\\"1\\\": {\" +\n                \"\\\"title\\\": \\\"Invoice Paid Event\\\",\" +\n                \"\\\"description\\\": \\\"An invoice was paid by a user\\\",\" +\n                \"\\\"type\\\": \\\"object\\\",\" +\n                \"\\\"properties\\\": {\" +\n                        \"\\\"invoiceId\\\": {\" +\n                                \"\\\"description\\\": \\\"The invoice id\\\",\" +\n                                \"\\\"type\\\": \\\"string\\\"\" +\n                        \"},\" +\n                        \"\\\"userId\\\": {\" +\n                                \"\\\"description\\\": \\\"The user id\\\",\" +\n                                \"\\\"type\\\": \\\"string\\\"\" +\n                        \"}\" +\n                \"},\" +\n                \"\\\"required\\\": [\" +\n                        \"\\\"invoiceId\\\",\" +\n                        \"\\\"userId\\\"\" +\n                \"]\" +\n        \"}\" +\n    \"}\")\n)"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix event-type update 'event_type_name' '{\n    \"description\": \"A user has signed up\"\n}'"
+                        "source": "svix event-type update 'event_type_name' '{\n    \"description\": \"A user has signed up\",\n    \"schemas\": {\n        \"1\": {\n            \"title\": \"Invoice Paid Event\",\n            \"description\": \"An invoice was paid by a user\",\n            \"type\": \"object\",\n            \"properties\": {\n                \"invoiceId\": {\n                    \"description\": \"The invoice id\",\n                    \"type\": \"string\"\n                },\n                \"userId\": {\n                    \"description\": \"The user id\",\n                    \"type\": \"string\"\n                }\n            },\n            \"required\": [\n                \"invoiceId\",\n                \"userId\"\n            ]\n        }\n    }\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.svix.com/api/v1/event-type/{event_type_name}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'\n  -d '{\n    \"description\": \"A user has signed up\"\n}'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.svix.com/api/v1/event-type/{event_type_name}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'\n  -d '{\n    \"description\": \"A user has signed up\",\n    \"schemas\": {\n        \"1\": {\n            \"title\": \"Invoice Paid Event\",\n            \"description\": \"An invoice was paid by a user\",\n            \"type\": \"object\",\n            \"properties\": {\n                \"invoiceId\": {\n                    \"description\": \"The invoice id\",\n                    \"type\": \"string\"\n                },\n                \"userId\": {\n                    \"description\": \"The user id\",\n                    \"type\": \"string\"\n                }\n            },\n            \"required\": [\n                \"invoiceId\",\n                \"userId\"\n            ]\n        }\n    }\n}'"
                     }
                 ]
             }
