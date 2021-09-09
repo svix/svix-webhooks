@@ -20,6 +20,26 @@ final class WebhookTest extends \PHPUnit\Framework\TestCase
         );
     }
 
+    public function testValidBrandlessSignatureIsValidAndReturnsJson()
+    {
+        $testPayload = new TestPayload(time());
+        $brandlessHeaders = array(
+            "webhook-id" => $testPayload->header['svix-id'],
+            "webhook-signature" => $testPayload->header['svix-signature'],
+            "webhook-timestamp" => $testPayload->header['svix-timestamp'],
+        );
+        $testPayload->header = $brandlessHeaders;
+
+        $wh = new \Svix\Webhook($testPayload->secret);
+        $json = $wh->verify($testPayload->payload, $testPayload->header);
+
+        $this->assertEquals(
+            $json['test'],
+            2432232315,
+            "did not return expected json"
+        );
+    }
+
     public function testInvalidSignatureThrowsException()
     {
         $this->expectException(\Svix\Exception\WebhookVerificationException::class);
@@ -140,7 +160,7 @@ final class WebhookTest extends \PHPUnit\Framework\TestCase
         $this->expectException(\Svix\Exception\WebhookSigningException::class);
         $key = "whsec_MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw";
         $msgId = "msg_p5jXN8AQM9LWM0D4loKWxJek";
-        $timestamp = 161426533.0;
+        $timestamp = "161426533.0";
         $payload = '{"test": 2432232314}';
         $expected = "v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE=";
 

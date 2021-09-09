@@ -18,13 +18,26 @@ class Webhook
 
     public function verify($payload, $headers)
     {
-        if (!isset($headers['svix-id']) || !isset($headers['svix-timestamp']) || !isset($headers['svix-signature'])) {
+        if (
+            isset($headers['svix-id'])
+            && isset($headers['svix-timestamp'])
+            && isset($headers['svix-signature'])
+        ) {
+            $msgId = $headers['svix-id'];
+            $msgTimestamp = $headers['svix-timestamp'];
+            $msgSignature = $headers['svix-signature'];
+        } elseif (
+            isset($headers['webhook-id'])
+            && isset($headers['webhook-timestamp'])
+            && isset($headers['webhook-signature'])
+        ) {
+            $msgId = $headers['webhook-id'];
+            $msgTimestamp = $headers['webhook-timestamp'];
+            $msgSignature = $headers['webhook-signature'];
+        } else {
             throw new Exception\WebhookVerificationException("Missing required headers");
         }
 
-        $msgId = $headers['svix-id'];
-        $msgTimestamp = $headers['svix-timestamp'];
-        $msgSignature = $headers['svix-signature'];
 
         $timestamp = self::verifyTimestamp($msgTimestamp);
 
