@@ -45,7 +45,12 @@ func (wh *Webhook) Verify(payload []byte, headers http.Header) error {
 	msgTimestamp := headers.Get("svix-timestamp")
 
 	if msgId == "" || msgSignature == "" || msgTimestamp == "" {
-		return errRequiredHeaders
+		msgId = headers.Get("webhook-id")
+		msgSignature = headers.Get("webhook-signature")
+		msgTimestamp = headers.Get("webhook-timestamp")
+		if msgId == "" || msgSignature == "" || msgTimestamp == "" {
+			return errRequiredHeaders
+		}
 	}
 
 	// enforce timestamp tolerance

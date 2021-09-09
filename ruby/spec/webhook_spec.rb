@@ -81,6 +81,21 @@ describe Svix::Webhook do
         expect(json[:test]).to eq(2432232314)
     end
 
+    it "valid brandless signature is valid and returns valid json" do
+        testPayload = TestPayload.new
+        brandlessHeaders = {
+            "webhook-id" => testPayload.headers["svix-id"],
+            "webhook-signature" => testPayload.headers["svix-signature"],
+            "webhook-timestamp" => testPayload.headers["svix-timestamp"]
+        }
+        testPayload.headers = brandlessHeaders
+
+        wh = Svix::Webhook.new(testPayload.secret)
+
+        json = wh.verify(testPayload.payload, testPayload.headers)
+        expect(json[:test]).to eq(2432232314)
+    end
+
     it "old timestamp raises error" do
         testPayload = TestPayload.new(Time.now.to_i - TOLERANCE - 1)
 

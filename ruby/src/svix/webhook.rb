@@ -16,7 +16,12 @@ module Svix
             msgSignature = headers["svix-signature"]
             msgTimestamp = headers["svix-timestamp"]
             if !msgSignature || !msgId || !msgTimestamp
-                raise WebhookVerificationError, "Missing required headers"
+                msgId = headers["webhook-id"]
+                msgSignature = headers["webhook-signature"]
+                msgTimestamp = headers["webhook-timestamp"]
+                if !msgSignature || !msgId || !msgTimestamp
+                    raise WebhookVerificationError, "Missing required headers"
+                end
             end
 
             verify_timestamp(msgTimestamp)

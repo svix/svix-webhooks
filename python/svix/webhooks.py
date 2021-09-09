@@ -33,7 +33,11 @@ class Webhook:
         msg_signature = headers.get("svix-signature")
         msg_timestamp = headers.get("svix-timestamp")
         if not (msg_id and msg_timestamp and msg_signature):
-            raise WebhookVerificationError("Missing required headers")
+            msg_id = headers.get("webhook-id")
+            msg_signature = headers.get("webhook-signature")
+            msg_timestamp = headers.get("webhook-timestamp")
+            if not (msg_id and msg_timestamp and msg_signature):
+                raise WebhookVerificationError("Missing required headers")
 
         timestamp = self.__verify_timestamp(msg_timestamp)
 

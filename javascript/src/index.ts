@@ -122,7 +122,7 @@ export type EndpointListOptions = ListOptions;
 
 export interface EventTypeListOptions extends ListOptions {
   withContent?: boolean;
-};
+}
 
 export interface MessageListOptions extends ListOptions {
   eventTypes?: string[];
@@ -380,12 +380,18 @@ export class Webhook {
       headers[key.toLowerCase()] = (headers_ as Record<string, string>)[key];
     }
 
-    const msgId = headers["svix-id"];
-    const msgSignature = headers["svix-signature"];
-    const msgTimestamp = headers["svix-timestamp"];
+    let msgId = headers["svix-id"];
+    let msgSignature = headers["svix-signature"];
+    let msgTimestamp = headers["svix-timestamp"];
 
     if (!msgSignature || !msgId || !msgTimestamp) {
-      throw new WebhookVerificationError("Missing required headers");
+      msgId = headers["webhook-id"];
+      msgSignature = headers["webhook-signature"];
+      msgTimestamp = headers["webhook-timestamp"];
+
+      if (!msgSignature || !msgId || !msgTimestamp) {
+        throw new WebhookVerificationError("Missing required headers");
+      }
     }
 
     const timestamp = this.verifyTimestamp(msgTimestamp);
