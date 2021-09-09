@@ -28,7 +28,7 @@ public class ApiException extends com.svix.internal.ApiException {
             try {
                 Gson gson = new Gson();
                 APIError error = gson.fromJson(responseBody, APIError.class);
-                this.message = error.getDetail();
+                this.message = String.format("%s (%s)", error.getDetail(), error.getCode());
             } catch (Exception e) {
                 this.message = responseBody;
             }
