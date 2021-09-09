@@ -100,14 +100,14 @@ namespace Svix.Tests
         }
 
         [Fact]
-        public void TestBrandlessSignatureIsValid()
+        public void TestUnbrandedSignatureIsValid()
         {
             var testPayload = new TestPayload(DateTimeOffset.UtcNow);
-            WebHeaderCollection brandlessHeaders = new WebHeaderCollection();
-            brandlessHeaders.Set("webhook-id", testPayload.headers.Get(TestPayload.SVIX_ID_HEADER_KEY));
-            brandlessHeaders.Set("webhook-signature", testPayload.headers.Get(TestPayload.SVIX_SIGNATURE_HEADER_KEY));
-            brandlessHeaders.Set("webhook-timestamp", testPayload.headers.Get(TestPayload.SVIX_TIMESTAMP_HEADER_KEY));
-            testPayload.headers = brandlessHeaders;
+            WebHeaderCollection unbrandedHeaders = new WebHeaderCollection();
+            unbrandedHeaders.Set("webhook-id", testPayload.headers.Get(TestPayload.SVIX_ID_HEADER_KEY));
+            unbrandedHeaders.Set("webhook-signature", testPayload.headers.Get(TestPayload.SVIX_SIGNATURE_HEADER_KEY));
+            unbrandedHeaders.Set("webhook-timestamp", testPayload.headers.Get(TestPayload.SVIX_TIMESTAMP_HEADER_KEY));
+            testPayload.headers = unbrandedHeaders;
 
             var wh = new Webhook(testPayload.secret);
 

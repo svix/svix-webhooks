@@ -91,14 +91,14 @@ def test_valid_signature_is_valid_and_returns_json():
     json = wh.verify(testPayload.payload, testPayload.header)
     assert json['test'] == 2432232314
 
-def test_valid_brandless_signature_is_valid_and_returns_json():
+def test_valid_unbranded_signature_is_valid_and_returns_json():
     testPayload = PayloadForTesting()
-    brandlessHeaders = {
+    unbrandedHeaders = {
         "webhook-id": testPayload.header.get("svix-id"),
         "webhook-signature": testPayload.header.get("svix-signature"),
         "webhook-timestamp": testPayload.header.get("svix-timestamp")
     }
-    testPayload.header = brandlessHeaders
+    testPayload.header = unbrandedHeaders
 
     wh = Webhook(testPayload.secret)
 

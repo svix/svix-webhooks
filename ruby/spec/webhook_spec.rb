@@ -81,14 +81,14 @@ describe Svix::Webhook do
         expect(json[:test]).to eq(2432232314)
     end
 
-    it "valid brandless signature is valid and returns valid json" do
+    it "valid unbranded signature is valid and returns valid json" do
         testPayload = TestPayload.new
-        brandlessHeaders = {
+        unbrandedHeaders = {
             "webhook-id" => testPayload.headers["svix-id"],
             "webhook-signature" => testPayload.headers["svix-signature"],
             "webhook-timestamp" => testPayload.headers["svix-timestamp"]
         }
-        testPayload.headers = brandlessHeaders
+        testPayload.headers = unbrandedHeaders
 
         wh = Svix::Webhook.new(testPayload.secret)
 

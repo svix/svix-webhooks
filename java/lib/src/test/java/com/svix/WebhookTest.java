@@ -37,11 +37,11 @@ public class WebhookTest {
 	@Test
 	public void verifyValidBrandlessPayloadAndheader() throws WebhookVerificationException {
 		TestPayload testPayload = new TestPayload(System.currentTimeMillis());
-		HashMap<String, ArrayList<String>> brandlessHeaders = new HashMap<String, ArrayList<String>>();
-		brandlessHeaders.put("webhook-id", testPayload.headerMap.get("svix-id"));
-		brandlessHeaders.put("webhook-timestamp", testPayload.headerMap.get("svix-timestamp"));
-		brandlessHeaders.put("webhook-signature", testPayload.headerMap.get("svix-signature"));
-		testPayload.headerMap = brandlessHeaders;
+		HashMap<String, ArrayList<String>> unbrandedHeaders = new HashMap<String, ArrayList<String>>();
+		unbrandedHeaders.put("webhook-id", testPayload.headerMap.get("svix-id"));
+		unbrandedHeaders.put("webhook-timestamp", testPayload.headerMap.get("svix-timestamp"));
+		unbrandedHeaders.put("webhook-signature", testPayload.headerMap.get("svix-signature"));
+		testPayload.headerMap = unbrandedHeaders;
 
 		Webhook webhook = new Webhook(testPayload.secret);
 
