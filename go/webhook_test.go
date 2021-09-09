@@ -57,6 +57,18 @@ func TestWebhook(t *testing.T) {
 			expectedErr: false,
 		},
 		{
+			name:        "valid brandless signature is valid",
+			testPayload: newTestPayload(time.Now()),
+			modifyPayload: func(tp *testPayload) {
+				brandlessHeaders := http.Header{}
+				brandlessHeaders.Set("webhook-id", tp.header.Get("svix-id"))
+				brandlessHeaders.Set("webhook-timestamp", tp.header.Get("svix-timestamp"))
+				brandlessHeaders.Set("webhook-signature", tp.header.Get("svix-signature"))
+				tp.header = brandlessHeaders
+			},
+			expectedErr: false,
+		},
+		{
 			name:        "missing id returns error",
 			testPayload: newTestPayload(time.Now()),
 			modifyPayload: func(tp *testPayload) {
