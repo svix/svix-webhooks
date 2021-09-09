@@ -63,7 +63,8 @@ class Webhook
 
     public function sign($msgId, $timestamp, $payload)
     {
-        if (!is_numeric($timestamp) && (int)$timestamp == $timestamp) {
+        $is_positive_integer = ctype_digit($timestamp);
+        if (!$is_positive_integer) {
             throw new Exception\WebhookSigningException("Invalid timestamp");
         }
         $toSign = "{$msgId}.{$timestamp}.{$payload}";

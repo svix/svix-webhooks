@@ -155,12 +155,40 @@ final class WebhookTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    public function testInvalidTimestamp()
+    public function testInvalidFloatTimestamp()
     {
         $this->expectException(\Svix\Exception\WebhookSigningException::class);
         $key = "whsec_MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw";
         $msgId = "msg_p5jXN8AQM9LWM0D4loKWxJek";
         $timestamp = "161426533.0";
+        $payload = '{"test": 2432232314}';
+        $expected = "v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE=";
+
+        $wh = new \Svix\Webhook($key);
+
+        $signature = $wh->sign($msgId, $timestamp, $payload);
+    }
+
+    public function testInvalidStringTimestamp()
+    {
+        $this->expectException(\Svix\Exception\WebhookSigningException::class);
+        $key = "whsec_MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw";
+        $msgId = "msg_p5jXN8AQM9LWM0D4loKWxJek";
+        $timestamp = "invalid timestamp";
+        $payload = '{"test": 2432232314}';
+        $expected = "v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE=";
+
+        $wh = new \Svix\Webhook($key);
+
+        $signature = $wh->sign($msgId, $timestamp, $payload);
+    }
+
+    public function testInvalidNegativeTimestamp()
+    {
+        $this->expectException(\Svix\Exception\WebhookSigningException::class);
+        $key = "whsec_MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw";
+        $msgId = "msg_p5jXN8AQM9LWM0D4loKWxJek";
+        $timestamp = "-161426533";
         $payload = '{"test": 2432232314}';
         $expected = "v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE=";
 
