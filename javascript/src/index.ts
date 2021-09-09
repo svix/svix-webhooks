@@ -360,6 +360,12 @@ export interface WebhookRequiredHeaders {
   "svix-signature": string;
 }
 
+export interface WebhookUnbrandedRequiredHeaders {
+  "webhook-id": string;
+  "webhook-timestamp": string;
+  "webhook-signature": string;
+}
+
 export class Webhook {
   private static prefix = "whsec_";
   private readonly key: Uint8Array;
@@ -373,7 +379,10 @@ export class Webhook {
 
   public verify(
     payload: string,
-    headers_: WebhookRequiredHeaders | Record<string, string>
+    headers_:
+      | WebhookRequiredHeaders
+      | WebhookUnbrandedRequiredHeaders
+      | Record<string, string>
   ): unknown {
     const headers: Record<string, string> = {};
     for (const key of Object.keys(headers_)) {
