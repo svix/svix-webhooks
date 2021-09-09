@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.28.0
+* All: Adds support for unbranded webhooks 📋
+* PHP: Improve tests and validation for sign function 🐞
+* Java: Set descriptive message on APIExceptions 🆕
+
 ## Version 0.27.0
 * All: Adds Sending to MessageStatus 📤
 * All: Add support for Schemas in EventType API 🆕
