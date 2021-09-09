@@ -23,12 +23,12 @@ final class WebhookTest extends \PHPUnit\Framework\TestCase
     public function testValidBrandlessSignatureIsValidAndReturnsJson()
     {
         $testPayload = new TestPayload(time());
-        $brandlessHeaders = array(
+        $unbrandedHeaders = array(
             "webhook-id" => $testPayload->header['svix-id'],
             "webhook-signature" => $testPayload->header['svix-signature'],
             "webhook-timestamp" => $testPayload->header['svix-timestamp'],
         );
-        $testPayload->header = $brandlessHeaders;
+        $testPayload->header = $unbrandedHeaders;
 
         $wh = new \Svix\Webhook($testPayload->secret);
         $json = $wh->verify($testPayload->payload, $testPayload->header);
