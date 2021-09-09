@@ -35,6 +35,20 @@ public class WebhookTest {
 	}
 
 	@Test
+	public void verifyValidBrandlessPayloadAndheader() throws WebhookVerificationException {
+		TestPayload testPayload = new TestPayload(System.currentTimeMillis());
+		HashMap<String, ArrayList<String>> brandlessHeaders = new HashMap<String, ArrayList<String>>();
+		brandlessHeaders.put("webhook-id", testPayload.headerMap.get("svix-id"));
+		brandlessHeaders.put("webhook-timestamp", testPayload.headerMap.get("svix-timestamp"));
+		brandlessHeaders.put("webhook-signature", testPayload.headerMap.get("svix-signature"));
+		testPayload.headerMap = brandlessHeaders;
+
+		Webhook webhook = new Webhook(testPayload.secret);
+
+		webhook.verify(testPayload.payload, testPayload.headers());
+	}
+
+	@Test
 	public void verifyValidPayloadWithMultipleSignaturesIsValid() throws WebhookVerificationException {
 		TestPayload testPayload = new TestPayload(System.currentTimeMillis());
 		String[] sigs = new String[] {
@@ -77,7 +91,7 @@ public class WebhookTest {
 	@Test
 	public void verifySignatureWithDifferentVersionThrowsException() {
 		TestPayload testPayload = new TestPayload(System.currentTimeMillis());
-		testPayload.headerMap.put(Webhook.MSG_SIGNATURE_KEY, new ArrayList<String>(Arrays.asList("v2,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE=")));
+		testPayload.headerMap.put(Webhook.SVIX_MSG_ID_KEY, new ArrayList<String>(Arrays.asList("v2,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE=")));
 
 		assertThrows(WebhookVerificationException.class, verify(testPayload));
 	}
@@ -85,7 +99,7 @@ public class WebhookTest {
 	@Test
 	public void verifyMissingPartsInSignatureThrowsException() {
 		TestPayload testPayload = new TestPayload(System.currentTimeMillis());
-		testPayload.headerMap.put(Webhook.MSG_SIGNATURE_KEY, new ArrayList<String>(Arrays.asList("invalid_signature")));
+		testPayload.headerMap.put(Webhook.SVIX_MSG_ID_KEY, new ArrayList<String>(Arrays.asList("invalid_signature")));
 
 		assertThrows(WebhookVerificationException.class, verify(testPayload));
 	}
@@ -93,7 +107,7 @@ public class WebhookTest {
 	@Test
 	public void verifySignatureMismatchThrowsException() {
 		TestPayload testPayload = new TestPayload(System.currentTimeMillis());
-		testPayload.headerMap.put(Webhook.MSG_SIGNATURE_KEY, new ArrayList<String>(Arrays.asList("v1,invalid_signature")));
+		testPayload.headerMap.put(Webhook.SVIX_MSG_ID_KEY, new ArrayList<String>(Arrays.asList("v1,invalid_signature")));
 
 		assertThrows(WebhookVerificationException.class, verify(testPayload));
 	}

@@ -16,9 +16,12 @@ import com.svix.exceptions.WebhookSigningException;
 
 public final class Webhook {
 	static final String SECRET_PREFIX = "whsec_";
-	static final String MSG_ID_KEY = "svix-id";
-	static final String MSG_SIGNATURE_KEY = "svix-signature";
-	static final String MSG_TIMESTAMP_KEY = "svix-timestamp";
+	static final String SVIX_MSG_ID_KEY = "svix-id";
+	static final String SVIX_MSG_SIGNATURE_KEY = "svix-signature";
+	static final String SVIX_MSG_TIMESTAMP_KEY = "svix-timestamp";
+	static final String BRANDLESS_MSG_ID_KEY = "webhook-id";
+	static final String BRANDLESS_MSG_SIGNATURE_KEY = "webhook-signature";
+	static final String BRANDLESS_MSG_TIMESTAMP_KEY = "webhook-timestamp";
 	private static final String HMAC_SHA256 = "HmacSHA256";
 	private static final int TOLERANCE_IN_SECONDS = 5 * 60; // 5 minutes
 	private static final long SECOND_IN_MS = 1000L;
@@ -34,12 +37,18 @@ public final class Webhook {
 	}
 
 	public void verify(final String payload, final HttpHeaders headers) throws WebhookVerificationException {
-		Optional<String> msgId = headers.firstValue(MSG_ID_KEY);
-		Optional<String> msgSignature = headers.firstValue(MSG_SIGNATURE_KEY);
-		Optional<String> msgTimestamp = headers.firstValue(MSG_TIMESTAMP_KEY);
+		Optional<String> msgId = headers.firstValue(SVIX_MSG_ID_KEY);
+		Optional<String> msgSignature = headers.firstValue(SVIX_MSG_SIGNATURE_KEY);
+		Optional<String> msgTimestamp = headers.firstValue(SVIX_MSG_TIMESTAMP_KEY);
 
 		if (msgId.isEmpty() || msgSignature.isEmpty() || msgTimestamp.isEmpty()) {
-			throw new WebhookVerificationException("Missing required headers");
+			// fallback to brandless
+			msgId = headers.firstValue(BRANDLESS_MSG_ID_KEY);
+			msgSignature = headers.firstValue(BRANDLESS_MSG_SIGNATURE_KEY);
+			msgTimestamp = headers.firstValue(BRANDLESS_MSG_TIMESTAMP_KEY);
+			if (msgId.isEmpty() || msgSignature.isEmpty() || msgTimestamp.isEmpty()) {
+				throw new WebhookVerificationException("Missing required headers");
+			}
 		}
 
 		long timestamp = Webhook.verifyTimestamp(msgTimestamp.get());
