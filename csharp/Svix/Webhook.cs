@@ -13,6 +13,9 @@ namespace Svix
         internal const string SVIX_ID_HEADER_KEY = "svix-id";
         internal const string SVIX_SIGNATURE_HEADER_KEY = "svix-signature";
         internal const string SVIX_TIMESTAMP_HEADER_KEY = "svix-timestamp";
+        internal const string BRANDLESS_ID_HEADER_KEY = "webhook-id";
+        internal const string BRANDLESS_SIGNATURE_HEADER_KEY = "webhook-signature";
+        internal const string BRANDLESS_TIMESTAMP_HEADER_KEY = "webhook-timestamp";
 
         private const int TOLERANCE_IN_SECONDS = 60 * 5;
         private static string prefix = "whsec_";
@@ -35,7 +38,13 @@ namespace Svix
 
             if (String.IsNullOrEmpty(msgId) || String.IsNullOrEmpty(msgSignature) || String.IsNullOrEmpty(msgTimestamp))
             {
-                throw new WebhookVerificationException("Missing Required Headers");
+                msgId = headers.Get(BRANDLESS_ID_HEADER_KEY);
+                msgSignature = headers.Get(BRANDLESS_SIGNATURE_HEADER_KEY);
+                msgTimestamp = headers.Get(BRANDLESS_TIMESTAMP_HEADER_KEY);
+                if (String.IsNullOrEmpty(msgId) || String.IsNullOrEmpty(msgSignature) || String.IsNullOrEmpty(msgTimestamp))
+                {
+                    throw new WebhookVerificationException("Missing Required Headers");
+                }
             }
 
             var timestamp = Webhook.VerifyTimestamp(msgTimestamp);
