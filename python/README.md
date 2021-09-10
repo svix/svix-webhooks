@@ -1,7 +1,21 @@
 # Svix
-The Svix client API documentation
 
-Please refer to [the documentation](https://docs.svix.com/) for usage instructions.
+The Svix client API
+
+## Usage
+
+```sh
+pip install Svix
+```
+
+```python
+from svix.api import Svix, ApplicationIn
+
+svix = Svix("AUTH_TOKEN")
+app = svix.application.create(ApplicationIn(name="Application name"))
+```
+
+Please refer to [the documentation](https://docs.svix.com/) or [the API reference](https://api.svix.com/docs) for usage instructions.
 
 
 ## Development
