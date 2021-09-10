@@ -9,7 +9,7 @@ pip install Svix
 ```
 
 ```python
-from svix import Svix, ApplicationIn
+from svix.api import Svix, ApplicationIn
 
 svix = Svix("AUTH_TOKEN")
 app = svix.application.create(ApplicationIn(name="Application name"))
