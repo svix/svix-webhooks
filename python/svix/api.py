@@ -2,31 +2,31 @@ import typing as t
 from contextlib import contextmanager
 from dataclasses import asdict, dataclass
 
-from .openapi_client.api.application_api import (
-    ApplicationApi,
-    ApplicationIn,
-    ApplicationOut,
-    ListResponseApplicationOut,
-)
-from .openapi_client.api.authentication_api import AuthenticationApi, DashboardAccessOut
-from .openapi_client.api.endpoint_api import (
-    EndpointApi,
-    EndpointIn,
-    EndpointOut,
-    EndpointSecretOut,
-    ListResponseEndpointOut,
-)
-from .openapi_client.api.event_type_api import (
-    EventTypeApi,
-    EventTypeIn,
-    EventTypeOut,
-    EventTypeUpdate,
-    ListResponseEventTypeOut,
-)
-from .openapi_client.api.message_api import ListResponseMessageOut, MessageApi, MessageIn, MessageOut
-from .openapi_client.api.message_attempt_api import ListResponseMessageAttemptOut, MessageAttemptApi, MessageAttemptOut
+from .openapi_client.api.application_api import ApplicationApi
+from .openapi_client.api.authentication_api import AuthenticationApi
+from .openapi_client.api.endpoint_api import EndpointApi
+from .openapi_client.api.event_type_api import EventTypeApi
+from .openapi_client.api.message_api import MessageApi
+from .openapi_client.api.message_attempt_api import MessageAttemptApi
 from .openapi_client.api_client import ApiClient
 from .openapi_client.configuration import Configuration
+from .openapi_client.model.application_in import ApplicationIn
+from .openapi_client.model.application_out import ApplicationOut
+from .openapi_client.model.dashboard_access_out import DashboardAccessOut
+from .openapi_client.model.endpoint_in import EndpointIn
+from .openapi_client.model.endpoint_out import EndpointOut
+from .openapi_client.model.endpoint_secret_out import EndpointSecretOut
+from .openapi_client.model.event_type_in import EventTypeIn
+from .openapi_client.model.event_type_out import EventTypeOut
+from .openapi_client.model.event_type_update import EventTypeUpdate
+from .openapi_client.model.list_response_application_out import ListResponseApplicationOut
+from .openapi_client.model.list_response_endpoint_out import ListResponseEndpointOut
+from .openapi_client.model.list_response_event_type_out import ListResponseEventTypeOut
+from .openapi_client.model.list_response_message_attempt_out import ListResponseMessageAttemptOut
+from .openapi_client.model.list_response_message_out import ListResponseMessageOut
+from .openapi_client.model.message_attempt_out import MessageAttemptOut
+from .openapi_client.model.message_in import MessageIn
+from .openapi_client.model.message_out import MessageOut
 from .openapi_client.model.message_status import MessageStatus
 
 DEFAULT_SERVER_URL = "https://api.svix.com"
