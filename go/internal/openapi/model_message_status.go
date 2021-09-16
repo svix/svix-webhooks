@@ -20,10 +20,10 @@ type MessageStatus int32
 
 // List of MessageStatus
 const (
-	_0 MessageStatus = 0
-	_1 MessageStatus = 1
-	_2 MessageStatus = 2
-	_3 MessageStatus = 3
+	MESSAGESTATUS__0 MessageStatus = 0
+	MESSAGESTATUS__1 MessageStatus = 1
+	MESSAGESTATUS__2 MessageStatus = 2
+	MESSAGESTATUS__3 MessageStatus = 3
 )
 
 var allowedMessageStatusEnumValues = []MessageStatus{

@@ -15,51 +15,51 @@ import (
 	"fmt"
 )
 
-// EventType An enumeration.
-type EventType string
+// MessageAttemptTriggerType The reason an attempt was made: - Scheduled = 0 - Manual = 1
+type MessageAttemptTriggerType int32
 
-// List of EventType
+// List of MessageAttemptTriggerType
 const (
-	MESSAGE_ATTEMPT_EXHAUSTED EventType = "message.attempt.exhausted"
-	ENDPOINT_DISABLED EventType = "endpoint.disabled"
+	MESSAGEATTEMPTTRIGGERTYPE__0 MessageAttemptTriggerType = 0
+	MESSAGEATTEMPTTRIGGERTYPE__1 MessageAttemptTriggerType = 1
 )
 
-var allowedEventTypeEnumValues = []EventType{
-	"message.attempt.exhausted",
-	"endpoint.disabled",
+var allowedMessageAttemptTriggerTypeEnumValues = []MessageAttemptTriggerType{
+	0,
+	1,
 }
 
-func (v *EventType) UnmarshalJSON(src []byte) error {
-	var value string
+func (v *MessageAttemptTriggerType) UnmarshalJSON(src []byte) error {
+	var value int32
 	err := json.Unmarshal(src, &value)
 	if err != nil {
 		return err
 	}
-	enumTypeValue := EventType(value)
-	for _, existing := range allowedEventTypeEnumValues {
+	enumTypeValue := MessageAttemptTriggerType(value)
+	for _, existing := range allowedMessageAttemptTriggerTypeEnumValues {
 		if existing == enumTypeValue {
 			*v = enumTypeValue
 			return nil
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid EventType", value)
+	return fmt.Errorf("%+v is not a valid MessageAttemptTriggerType", value)
 }
 
-// NewEventTypeFromValue returns a pointer to a valid EventType
+// NewMessageAttemptTriggerTypeFromValue returns a pointer to a valid MessageAttemptTriggerType
 // for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewEventTypeFromValue(v string) (*EventType, error) {
-	ev := EventType(v)
+func NewMessageAttemptTriggerTypeFromValue(v int32) (*MessageAttemptTriggerType, error) {
+	ev := MessageAttemptTriggerType(v)
 	if ev.IsValid() {
 		return &ev, nil
 	} else {
-		return nil, fmt.Errorf("invalid value '%v' for EventType: valid values are %v", v, allowedEventTypeEnumValues)
+		return nil, fmt.Errorf("invalid value '%v' for MessageAttemptTriggerType: valid values are %v", v, allowedMessageAttemptTriggerTypeEnumValues)
 	}
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise
-func (v EventType) IsValid() bool {
-	for _, existing := range allowedEventTypeEnumValues {
+func (v MessageAttemptTriggerType) IsValid() bool {
+	for _, existing := range allowedMessageAttemptTriggerTypeEnumValues {
 		if existing == v {
 			return true
 		}
@@ -67,43 +67,43 @@ func (v EventType) IsValid() bool {
 	return false
 }
 
-// Ptr returns reference to EventType value
-func (v EventType) Ptr() *EventType {
+// Ptr returns reference to MessageAttemptTriggerType value
+func (v MessageAttemptTriggerType) Ptr() *MessageAttemptTriggerType {
 	return &v
 }
 
-type NullableEventType struct {
-	value *EventType
+type NullableMessageAttemptTriggerType struct {
+	value *MessageAttemptTriggerType
 	isSet bool
 }
 
-func (v NullableEventType) Get() *EventType {
+func (v NullableMessageAttemptTriggerType) Get() *MessageAttemptTriggerType {
 	return v.value
 }
 
-func (v *NullableEventType) Set(val *EventType) {
+func (v *NullableMessageAttemptTriggerType) Set(val *MessageAttemptTriggerType) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableEventType) IsSet() bool {
+func (v NullableMessageAttemptTriggerType) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableEventType) Unset() {
+func (v *NullableMessageAttemptTriggerType) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableEventType(val *EventType) *NullableEventType {
-	return &NullableEventType{value: val, isSet: true}
+func NewNullableMessageAttemptTriggerType(val *MessageAttemptTriggerType) *NullableMessageAttemptTriggerType {
+	return &NullableMessageAttemptTriggerType{value: val, isSet: true}
 }
 
-func (v NullableEventType) MarshalJSON() ([]byte, error) {
+func (v NullableMessageAttemptTriggerType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableEventType) UnmarshalJSON(src []byte) error {
+func (v *NullableMessageAttemptTriggerType) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

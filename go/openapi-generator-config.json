@@ -1,4 +1,5 @@
 {
     "packageName": "openapi",
-    "isGoSubmodule": true
+    "isGoSubmodule": true,
+    "enumClassPrefix": true
 }

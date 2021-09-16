@@ -25,6 +25,8 @@ type MessageEndpointOut struct {
 	NextAttempt *time.Time `json:"nextAttempt,omitempty"`
 	RateLimit *int32 `json:"rateLimit,omitempty"`
 	Status MessageStatus `json:"status"`
+	// Optional unique identifier for the endpoint
+	Uid *string `json:"uid,omitempty"`
 	Url string `json:"url"`
 	Version int32 `json:"version"`
 }
@@ -291,6 +293,38 @@ func (o *MessageEndpointOut) SetStatus(v MessageStatus) {
 	o.Status = v
 }
 
+// GetUid returns the Uid field value if set, zero value otherwise.
+func (o *MessageEndpointOut) GetUid() string {
+	if o == nil || o.Uid == nil {
+		var ret string
+		return ret
+	}
+	return *o.Uid
+}
+
+// GetUidOk returns a tuple with the Uid field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *MessageEndpointOut) GetUidOk() (*string, bool) {
+	if o == nil || o.Uid == nil {
+		return nil, false
+	}
+	return o.Uid, true
+}
+
+// HasUid returns a boolean if a field has been set.
+func (o *MessageEndpointOut) HasUid() bool {
+	if o != nil && o.Uid != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetUid gets a reference to the given string and assigns it to the Uid field.
+func (o *MessageEndpointOut) SetUid(v string) {
+	o.Uid = &v
+}
+
 // GetUrl returns the Url field value
 func (o *MessageEndpointOut) GetUrl() string {
 	if o == nil {
@@ -364,6 +398,9 @@ func (o MessageEndpointOut) MarshalJSON() ([]byte, error) {
 	}
 	if true {
 		toSerialize["status"] = o.Status
+	}
+	if o.Uid != nil {
+		toSerialize["uid"] = o.Uid
 	}
 	if true {
 		toSerialize["url"] = o.Url

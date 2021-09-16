@@ -237,6 +237,12 @@ func (a *ApplicationApiService) DeleteApplicationApiV1AppAppIdDeleteExecute(r Ap
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
+	if strlen(r.appId) < 1 {
+		return nil, reportError("appId must have at least 1 elements")
+	}
+	if strlen(r.appId) > 256 {
+		return nil, reportError("appId must have less than 256 elements")
+	}
 
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -383,6 +389,12 @@ func (a *ApplicationApiService) GetApplicationApiV1AppAppIdGetExecute(r ApiGetAp
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
+	if strlen(r.appId) < 1 {
+		return localVarReturnValue, nil, reportError("appId must have at least 1 elements")
+	}
+	if strlen(r.appId) > 256 {
+		return localVarReturnValue, nil, reportError("appId must have less than 256 elements")
+	}
 
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -710,6 +722,12 @@ func (a *ApplicationApiService) UpdateApplicationApiV1AppAppIdPutExecute(r ApiUp
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
+	if strlen(r.appId) < 1 {
+		return localVarReturnValue, nil, reportError("appId must have at least 1 elements")
+	}
+	if strlen(r.appId) > 256 {
+		return localVarReturnValue, nil, reportError("appId must have less than 256 elements")
+	}
 	if r.applicationIn == nil {
 		return localVarReturnValue, nil, reportError("applicationIn is required and must be specified")
 	}

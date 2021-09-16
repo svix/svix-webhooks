@@ -22,19 +22,21 @@ type MessageAttemptEndpointOut struct {
 	ResponseStatusCode int32 `json:"responseStatusCode"`
 	Status MessageStatus `json:"status"`
 	Timestamp time.Time `json:"timestamp"`
+	TriggerType MessageAttemptTriggerType `json:"triggerType"`
 }
 
 // NewMessageAttemptEndpointOut instantiates a new MessageAttemptEndpointOut object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewMessageAttemptEndpointOut(id string, response string, responseStatusCode int32, status MessageStatus, timestamp time.Time) *MessageAttemptEndpointOut {
+func NewMessageAttemptEndpointOut(id string, response string, responseStatusCode int32, status MessageStatus, timestamp time.Time, triggerType MessageAttemptTriggerType) *MessageAttemptEndpointOut {
 	this := MessageAttemptEndpointOut{}
 	this.Id = id
 	this.Response = response
 	this.ResponseStatusCode = responseStatusCode
 	this.Status = status
 	this.Timestamp = timestamp
+	this.TriggerType = triggerType
 	return &this
 }
 
@@ -166,6 +168,30 @@ func (o *MessageAttemptEndpointOut) SetTimestamp(v time.Time) {
 	o.Timestamp = v
 }
 
+// GetTriggerType returns the TriggerType field value
+func (o *MessageAttemptEndpointOut) GetTriggerType() MessageAttemptTriggerType {
+	if o == nil {
+		var ret MessageAttemptTriggerType
+		return ret
+	}
+
+	return o.TriggerType
+}
+
+// GetTriggerTypeOk returns a tuple with the TriggerType field value
+// and a boolean to check if the value has been set.
+func (o *MessageAttemptEndpointOut) GetTriggerTypeOk() (*MessageAttemptTriggerType, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.TriggerType, true
+}
+
+// SetTriggerType sets field value
+func (o *MessageAttemptEndpointOut) SetTriggerType(v MessageAttemptTriggerType) {
+	o.TriggerType = v
+}
+
 func (o MessageAttemptEndpointOut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
@@ -182,6 +208,9 @@ func (o MessageAttemptEndpointOut) MarshalJSON() ([]byte, error) {
 	}
 	if true {
 		toSerialize["timestamp"] = o.Timestamp
+	}
+	if true {
+		toSerialize["triggerType"] = o.TriggerType
 	}
 	return json.Marshal(toSerialize)
 }

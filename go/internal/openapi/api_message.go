@@ -18,6 +18,7 @@ import (
 	_neturl "net/url"
 	"strings"
 	"reflect"
+	"time"
 )
 
 // Linger please
@@ -86,6 +87,12 @@ func (a *MessageApiService) CreateMessageApiV1AppAppIdMsgPostExecute(r ApiCreate
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
+	if strlen(r.appId) < 1 {
+		return localVarReturnValue, nil, reportError("appId must have at least 1 elements")
+	}
+	if strlen(r.appId) > 256 {
+		return localVarReturnValue, nil, reportError("appId must have less than 256 elements")
+	}
 	if r.messageIn == nil {
 		return localVarReturnValue, nil, reportError("messageIn is required and must be specified")
 	}
@@ -260,6 +267,18 @@ func (a *MessageApiService) GetMessageApiV1AppAppIdMsgMsgIdGetExecute(r ApiGetMe
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
+	if strlen(r.msgId) < 1 {
+		return localVarReturnValue, nil, reportError("msgId must have at least 1 elements")
+	}
+	if strlen(r.msgId) > 256 {
+		return localVarReturnValue, nil, reportError("msgId must have less than 256 elements")
+	}
+	if strlen(r.appId) < 1 {
+		return localVarReturnValue, nil, reportError("appId must have at least 1 elements")
+	}
+	if strlen(r.appId) > 256 {
+		return localVarReturnValue, nil, reportError("appId must have less than 256 elements")
+	}
 
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -371,6 +390,7 @@ type ApiListMessagesApiV1AppAppIdMsgGetRequest struct {
 	iterator *string
 	limit *int32
 	eventTypes *[]string
+	before *time.Time
 }
 
 func (r ApiListMessagesApiV1AppAppIdMsgGetRequest) Iterator(iterator string) ApiListMessagesApiV1AppAppIdMsgGetRequest {
@@ -385,6 +405,10 @@ func (r ApiListMessagesApiV1AppAppIdMsgGetRequest) EventTypes(eventTypes []strin
 	r.eventTypes = &eventTypes
 	return r
 }
+func (r ApiListMessagesApiV1AppAppIdMsgGetRequest) Before(before time.Time) ApiListMessagesApiV1AppAppIdMsgGetRequest {
+	r.before = &before
+	return r
+}
 
 func (r ApiListMessagesApiV1AppAppIdMsgGetRequest) Execute() (ListResponseMessageOut, *_nethttp.Response, error) {
 	return r.ApiService.ListMessagesApiV1AppAppIdMsgGetExecute(r)
@@ -393,6 +417,8 @@ func (r ApiListMessagesApiV1AppAppIdMsgGetRequest) Execute() (ListResponseMessag
 /*
  * ListMessagesApiV1AppAppIdMsgGet List Messages
  * List all of the application's messages.
+
+The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param appId
  * @return ApiListMessagesApiV1AppAppIdMsgGetRequest
@@ -430,6 +456,12 @@ func (a *MessageApiService) ListMessagesApiV1AppAppIdMsgGetExecute(r ApiListMess
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
+	if strlen(r.appId) < 1 {
+		return localVarReturnValue, nil, reportError("appId must have at least 1 elements")
+	}
+	if strlen(r.appId) > 256 {
+		return localVarReturnValue, nil, reportError("appId must have less than 256 elements")
+	}
 
 	if r.iterator != nil {
 		localVarQueryParams.Add("iterator", parameterToString(*r.iterator, ""))
@@ -447,6 +479,9 @@ func (a *MessageApiService) ListMessagesApiV1AppAppIdMsgGetExecute(r ApiListMess
 		} else {
 			localVarQueryParams.Add("event_types", parameterToString(t, "multi"))
 		}
+	}
+	if r.before != nil {
+		localVarQueryParams.Add("before", parameterToString(*r.before, ""))
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}

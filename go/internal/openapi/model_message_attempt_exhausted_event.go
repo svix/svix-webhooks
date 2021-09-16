@@ -17,7 +17,7 @@ import (
 // MessageAttemptExhaustedEvent Sent when a message delivery has failed (all of the retry attempts have been exhausted).
 type MessageAttemptExhaustedEvent struct {
 	Data MessageAttemptExhaustedEventData `json:"data"`
-	Type *EventType `json:"type,omitempty"`
+	Type *string `json:"type,omitempty"`
 }
 
 // NewMessageAttemptExhaustedEvent instantiates a new MessageAttemptExhaustedEvent object
@@ -27,6 +27,8 @@ type MessageAttemptExhaustedEvent struct {
 func NewMessageAttemptExhaustedEvent(data MessageAttemptExhaustedEventData) *MessageAttemptExhaustedEvent {
 	this := MessageAttemptExhaustedEvent{}
 	this.Data = data
+	var type_ string = "message.attempt.exhausted"
+	this.Type = &type_
 	return &this
 }
 
@@ -35,6 +37,8 @@ func NewMessageAttemptExhaustedEvent(data MessageAttemptExhaustedEventData) *Mes
 // but it doesn't guarantee that properties required by API are set
 func NewMessageAttemptExhaustedEventWithDefaults() *MessageAttemptExhaustedEvent {
 	this := MessageAttemptExhaustedEvent{}
+	var type_ string = "message.attempt.exhausted"
+	this.Type = &type_
 	return &this
 }
 
@@ -63,9 +67,9 @@ func (o *MessageAttemptExhaustedEvent) SetData(v MessageAttemptExhaustedEventDat
 }
 
 // GetType returns the Type field value if set, zero value otherwise.
-func (o *MessageAttemptExhaustedEvent) GetType() EventType {
+func (o *MessageAttemptExhaustedEvent) GetType() string {
 	if o == nil || o.Type == nil {
-		var ret EventType
+		var ret string
 		return ret
 	}
 	return *o.Type
@@ -73,7 +77,7 @@ func (o *MessageAttemptExhaustedEvent) GetType() EventType {
 
 // GetTypeOk returns a tuple with the Type field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *MessageAttemptExhaustedEvent) GetTypeOk() (*EventType, bool) {
+func (o *MessageAttemptExhaustedEvent) GetTypeOk() (*string, bool) {
 	if o == nil || o.Type == nil {
 		return nil, false
 	}
@@ -89,8 +93,8 @@ func (o *MessageAttemptExhaustedEvent) HasType() bool {
 	return false
 }
 
-// SetType gets a reference to the given EventType and assigns it to the Type field.
-func (o *MessageAttemptExhaustedEvent) SetType(v EventType) {
+// SetType gets a reference to the given string and assigns it to the Type field.
+func (o *MessageAttemptExhaustedEvent) SetType(v string) {
 	o.Type = &v
 }
 

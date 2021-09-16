@@ -78,6 +78,12 @@ func (a *AuthenticationApiService) GetDashboardAccessApiV1AuthDashboardAccessApp
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
+	if strlen(r.appId) < 1 {
+		return localVarReturnValue, nil, reportError("appId must have at least 1 elements")
+	}
+	if strlen(r.appId) > 256 {
+		return localVarReturnValue, nil, reportError("appId must have less than 256 elements")
+	}
 
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}

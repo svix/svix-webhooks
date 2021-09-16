@@ -17,6 +17,7 @@ import (
 
 // MessageOut struct for MessageOut
 type MessageOut struct {
+	// Optional unique identifier for the message
 	EventId *string `json:"eventId,omitempty"`
 	EventType string `json:"eventType"`
 	Id string `json:"id"`

@@ -1,12 +1,26 @@
 package com.svix;
 
+import java.util.List;
+import org.threeten.bp.OffsetDateTime;
 import com.svix.models.MessageStatus;
 
 public class MessageAttemptListOptions extends ListOptions {
     private MessageStatus status;
+	private List<String> eventTypes;
+	private OffsetDateTime before;
 
 	public MessageAttemptListOptions() {
         super();
+	}
+
+	@Override
+	public MessageAttemptListOptions iterator(final String iterator) {
+		return (MessageAttemptListOptions) super.iterator(iterator);
+	}
+
+	@Override
+	public MessageAttemptListOptions limit(final Integer limit) {
+		return (MessageAttemptListOptions) super.limit(limit);
 	}
 
 	public MessageAttemptListOptions messageStatus(final MessageStatus status) {
@@ -22,13 +36,29 @@ public class MessageAttemptListOptions extends ListOptions {
 		return status;
 	}
 
-	@Override
-	public MessageAttemptListOptions iterator(final String iterator) {
-		return (MessageAttemptListOptions) super.iterator(iterator);
+    public MessageAttemptListOptions eventTypes(final List<String> eventTypes) {
+		this.eventTypes = eventTypes;
+		return this;
 	}
 
-	@Override
-	public MessageAttemptListOptions limit(final Integer limit) {
-		return (MessageAttemptListOptions) super.limit(limit);
+	public void setEventTypes(final List<String> eventTypes) {
+		this.eventTypes = eventTypes;
+	}
+
+	public List<String> getEventTypes() {
+		return eventTypes;
+	}
+
+	public ListOptions before(final OffsetDateTime before) {
+		this.before = before;
+		return this;
+	}
+
+	public void setBefore(final OffsetDateTime before) {
+		this.before = before;
+	}
+
+	public OffsetDateTime getBefore() {
+		return before;
 	}
 }

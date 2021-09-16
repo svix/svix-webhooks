@@ -55,8 +55,6 @@ type APIClient struct {
 
 	AuthenticationApi *AuthenticationApiService
 
-	DefaultApi *DefaultApiService
-
 	EndpointApi *EndpointApiService
 
 	EventTypeApi *EventTypeApiService
@@ -86,7 +84,6 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	// API Services
 	c.ApplicationApi = (*ApplicationApiService)(&c.common)
 	c.AuthenticationApi = (*AuthenticationApiService)(&c.common)
-	c.DefaultApi = (*DefaultApiService)(&c.common)
 	c.EndpointApi = (*EndpointApiService)(&c.common)
 	c.EventTypeApi = (*EventTypeApiService)(&c.common)
 	c.HealthApi = (*HealthApiService)(&c.common)

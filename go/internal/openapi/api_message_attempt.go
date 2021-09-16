@@ -17,6 +17,8 @@ import (
 	_nethttp "net/http"
 	_neturl "net/url"
 	"strings"
+	"time"
+	"reflect"
 )
 
 // Linger please
@@ -86,6 +88,18 @@ func (a *MessageAttemptApiService) GetAttemptApiV1AppAppIdMsgMsgIdAttemptAttempt
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
+	if strlen(r.msgId) < 1 {
+		return localVarReturnValue, nil, reportError("msgId must have at least 1 elements")
+	}
+	if strlen(r.msgId) > 256 {
+		return localVarReturnValue, nil, reportError("msgId must have less than 256 elements")
+	}
+	if strlen(r.appId) < 1 {
+		return localVarReturnValue, nil, reportError("appId must have at least 1 elements")
+	}
+	if strlen(r.appId) > 256 {
+		return localVarReturnValue, nil, reportError("appId must have less than 256 elements")
+	}
 
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -255,6 +269,18 @@ func (a *MessageAttemptApiService) ListAttemptedDestinationsApiV1AppAppIdMsgMsgI
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
+	if strlen(r.msgId) < 1 {
+		return localVarReturnValue, nil, reportError("msgId must have at least 1 elements")
+	}
+	if strlen(r.msgId) > 256 {
+		return localVarReturnValue, nil, reportError("msgId must have less than 256 elements")
+	}
+	if strlen(r.appId) < 1 {
+		return localVarReturnValue, nil, reportError("appId must have at least 1 elements")
+	}
+	if strlen(r.appId) > 256 {
+		return localVarReturnValue, nil, reportError("appId must have less than 256 elements")
+	}
 
 	if r.iterator != nil {
 		localVarQueryParams.Add("iterator", parameterToString(*r.iterator, ""))
@@ -373,6 +399,7 @@ type ApiListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGetRequest struct
 	iterator *string
 	limit *int32
 	status *MessageStatus
+	before *time.Time
 }
 
 func (r ApiListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGetRequest) Iterator(iterator string) ApiListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGetRequest {
@@ -387,6 +414,10 @@ func (r ApiListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGetRequest) St
 	r.status = &status
 	return r
 }
+func (r ApiListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGetRequest) Before(before time.Time) ApiListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGetRequest {
+	r.before = &before
+	return r
+}
 
 func (r ApiListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGetRequest) Execute() (ListResponseEndpointMessageOut, *_nethttp.Response, error) {
 	return r.ApiService.ListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGetExecute(r)
@@ -397,6 +428,8 @@ func (r ApiListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGetRequest) Ex
  * List the message attempts for a particular endpoint.
 
 Returning the message.
+
+The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param endpointId
  * @param appId
@@ -437,6 +470,18 @@ func (a *MessageAttemptApiService) ListAttemptedMessagesApiV1AppAppIdEndpointEnd
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
+	if strlen(r.endpointId) < 1 {
+		return localVarReturnValue, nil, reportError("endpointId must have at least 1 elements")
+	}
+	if strlen(r.endpointId) > 256 {
+		return localVarReturnValue, nil, reportError("endpointId must have less than 256 elements")
+	}
+	if strlen(r.appId) < 1 {
+		return localVarReturnValue, nil, reportError("appId must have at least 1 elements")
+	}
+	if strlen(r.appId) > 256 {
+		return localVarReturnValue, nil, reportError("appId must have less than 256 elements")
+	}
 
 	if r.iterator != nil {
 		localVarQueryParams.Add("iterator", parameterToString(*r.iterator, ""))
@@ -446,6 +491,9 @@ func (a *MessageAttemptApiService) ListAttemptedMessagesApiV1AppAppIdEndpointEnd
 	}
 	if r.status != nil {
 		localVarQueryParams.Add("status", parameterToString(*r.status, ""))
+	}
+	if r.before != nil {
+		localVarQueryParams.Add("before", parameterToString(*r.before, ""))
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -620,6 +668,18 @@ func (a *MessageAttemptApiService) ListAttemptsApiV1AppAppIdMsgMsgIdAttemptGetEx
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
+	if strlen(r.appId) < 1 {
+		return localVarReturnValue, nil, reportError("appId must have at least 1 elements")
+	}
+	if strlen(r.appId) > 256 {
+		return localVarReturnValue, nil, reportError("appId must have less than 256 elements")
+	}
+	if strlen(r.msgId) < 1 {
+		return localVarReturnValue, nil, reportError("msgId must have at least 1 elements")
+	}
+	if strlen(r.msgId) > 256 {
+		return localVarReturnValue, nil, reportError("msgId must have less than 256 elements")
+	}
 
 	if r.iterator != nil {
 		localVarQueryParams.Add("iterator", parameterToString(*r.iterator, ""))
@@ -741,7 +801,9 @@ type ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGet
 	endpointId string
 	iterator *string
 	limit *int32
+	eventTypes *[]string
 	status *MessageStatus
+	before *time.Time
 }
 
 func (r ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGetRequest) Iterator(iterator string) ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGetRequest {
@@ -752,8 +814,16 @@ func (r ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttempt
 	r.limit = &limit
 	return r
 }
+func (r ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGetRequest) EventTypes(eventTypes []string) ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGetRequest {
+	r.eventTypes = &eventTypes
+	return r
+}
 func (r ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGetRequest) Status(status MessageStatus) ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGetRequest {
 	r.status = &status
+	return r
+}
+func (r ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGetRequest) Before(before time.Time) ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGetRequest {
+	r.before = &before
 	return r
 }
 
@@ -766,6 +836,8 @@ func (r ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttempt
  * List the message attempts for a particular endpoint.
 
 Returning the endpint.
+
+The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param msgId
  * @param appId
@@ -809,6 +881,24 @@ func (a *MessageAttemptApiService) ListAttemptsForEndpointApiV1AppAppIdMsgMsgIdE
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
+	if strlen(r.msgId) < 1 {
+		return localVarReturnValue, nil, reportError("msgId must have at least 1 elements")
+	}
+	if strlen(r.msgId) > 256 {
+		return localVarReturnValue, nil, reportError("msgId must have less than 256 elements")
+	}
+	if strlen(r.appId) < 1 {
+		return localVarReturnValue, nil, reportError("appId must have at least 1 elements")
+	}
+	if strlen(r.appId) > 256 {
+		return localVarReturnValue, nil, reportError("appId must have less than 256 elements")
+	}
+	if strlen(r.endpointId) < 1 {
+		return localVarReturnValue, nil, reportError("endpointId must have at least 1 elements")
+	}
+	if strlen(r.endpointId) > 256 {
+		return localVarReturnValue, nil, reportError("endpointId must have less than 256 elements")
+	}
 
 	if r.iterator != nil {
 		localVarQueryParams.Add("iterator", parameterToString(*r.iterator, ""))
@@ -816,8 +906,22 @@ func (a *MessageAttemptApiService) ListAttemptsForEndpointApiV1AppAppIdMsgMsgIdE
 	if r.limit != nil {
 		localVarQueryParams.Add("limit", parameterToString(*r.limit, ""))
 	}
+	if r.eventTypes != nil {
+		t := *r.eventTypes
+		if reflect.TypeOf(t).Kind() == reflect.Slice {
+			s := reflect.ValueOf(t)
+			for i := 0; i < s.Len(); i++ {
+				localVarQueryParams.Add("event_types", parameterToString(s.Index(i), "multi"))
+			}
+		} else {
+			localVarQueryParams.Add("event_types", parameterToString(t, "multi"))
+		}
+	}
 	if r.status != nil {
 		localVarQueryParams.Add("status", parameterToString(*r.status, ""))
+	}
+	if r.before != nil {
+		localVarQueryParams.Add("before", parameterToString(*r.before, ""))
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -979,6 +1083,24 @@ func (a *MessageAttemptApiService) ResendWebhookApiV1AppAppIdMsgMsgIdEndpointEnd
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
+	if strlen(r.endpointId) < 1 {
+		return nil, reportError("endpointId must have at least 1 elements")
+	}
+	if strlen(r.endpointId) > 256 {
+		return nil, reportError("endpointId must have less than 256 elements")
+	}
+	if strlen(r.msgId) < 1 {
+		return nil, reportError("msgId must have at least 1 elements")
+	}
+	if strlen(r.msgId) > 256 {
+		return nil, reportError("msgId must have less than 256 elements")
+	}
+	if strlen(r.appId) < 1 {
+		return nil, reportError("appId must have at least 1 elements")
+	}
+	if strlen(r.appId) > 256 {
+		return nil, reportError("appId must have less than 256 elements")
+	}
 
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
