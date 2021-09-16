@@ -1,0 +1,4 @@
+{
+  "packageName": "com.svix.kotlin.internal",
+  "useCoroutines": true
+}
