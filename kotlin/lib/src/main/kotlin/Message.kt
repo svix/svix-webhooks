@@ -1,10 +1,10 @@
 package com.svix.kotlin
 
 import com.svix.kotlin.internal.apis.MessageApi
+import com.svix.kotlin.internal.infrastructure.ServerException
 import com.svix.kotlin.internal.models.MessageIn
 import com.svix.kotlin.internal.models.MessageOut
 import com.svix.kotlin.internal.models.ListResponseMessageOut
-import com.svix.kotlin.internal.infrastructure.ServerException
 
 class Message() {
 	val api = MessageApi()

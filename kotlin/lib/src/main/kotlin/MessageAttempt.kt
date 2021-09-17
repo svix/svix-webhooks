@@ -1,12 +1,12 @@
 package com.svix.kotlin
 
 import com.svix.kotlin.internal.apis.MessageAttemptApi
+import com.svix.kotlin.internal.infrastructure.ServerException
 import com.svix.kotlin.internal.models.MessageAttemptOut
 import com.svix.kotlin.internal.models.ListResponseEndpointMessageOut
 import com.svix.kotlin.internal.models.ListResponseMessageAttemptEndpointOut
 import com.svix.kotlin.internal.models.ListResponseMessageAttemptOut
 import com.svix.kotlin.internal.models.ListResponseMessageEndpointOut
-import com.svix.kotlin.internal.infrastructure.ServerException
 
 class MessageAttempt() {
 	val api = MessageAttemptApi()
