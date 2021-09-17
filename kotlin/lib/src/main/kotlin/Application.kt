@@ -1,10 +1,10 @@
 package com.svix.kotlin
 
 import com.svix.kotlin.internal.apis.ApplicationApi
+import com.svix.kotlin.internal.infrastructure.ServerException
 import com.svix.kotlin.internal.models.ApplicationIn
 import com.svix.kotlin.internal.models.ApplicationOut
 import com.svix.kotlin.internal.models.ListResponseApplicationOut
-import com.svix.kotlin.internal.infrastructure.ServerException
 
 class Application() {
 	val api = ApplicationApi()

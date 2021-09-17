@@ -1,8 +1,8 @@
 package com.svix.kotlin
 
 import com.svix.kotlin.internal.apis.AuthenticationApi
-import com.svix.kotlin.internal.models.DashboardAccessOut
 import com.svix.kotlin.internal.infrastructure.ServerException
+import com.svix.kotlin.internal.models.DashboardAccessOut
 
 class Authentication() {
 	val api = AuthenticationApi()
