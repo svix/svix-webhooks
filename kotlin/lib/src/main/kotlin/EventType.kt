@@ -7,7 +7,7 @@ import com.svix.kotlin.models.EventTypeOut
 import com.svix.kotlin.models.EventTypeUpdate
 import com.svix.kotlin.models.ListResponseEventTypeOut
 
-class EventType(debugUrl: String = SvixOptions.DEFAULT_URL) {
+class EventType internal constructor(debugUrl: String = SvixOptions.DEFAULT_URL) {
     val api = EventTypeApi(debugUrl)
 
     suspend fun list(options: EventTypeListOptions): ListResponseEventTypeOut {
