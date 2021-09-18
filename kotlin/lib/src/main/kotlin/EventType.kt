@@ -1,7 +1,7 @@
 package com.svix.kotlin
 
+import com.svix.kotlin.exceptions.ApiException
 import com.svix.kotlin.internal.apis.EventTypeApi
-import com.svix.kotlin.internal.infrastructure.ServerException
 import com.svix.kotlin.models.EventTypeIn
 import com.svix.kotlin.models.EventTypeOut
 import com.svix.kotlin.models.EventTypeUpdate
@@ -14,8 +14,7 @@ class EventType() {
         try {
             return api.listEventTypesApiV1EventTypeGet(options.iterator, options.limit, options.withContent)
         } catch (ex: Exception) {
-            // TODO: Wrap expeption with new expection
-            throw ServerException(ex.message)
+            throw ApiException(ex)
         }
     }
 
@@ -23,8 +22,7 @@ class EventType() {
         try {
             return api.createEventTypeApiV1EventTypePost(eventTypeIn)
         } catch (ex: Exception) {
-            // TODO: Wrap expeption with new expection
-            throw ServerException(ex.message)
+            throw ApiException(ex)
         }
     }
 
@@ -32,8 +30,7 @@ class EventType() {
         try {
             return api.updateEventTypeApiV1EventTypeEventTypeNamePut(eventTypeName, eventTypeUpdate)
         } catch (ex: Exception) {
-            // TODO: Wrap expeption with new expection
-            throw ServerException(ex.message)
+            throw ApiException(ex)
         }
     }
 
@@ -41,8 +38,7 @@ class EventType() {
         try {
             api.deleteEventTypeApiV1EventTypeEventTypeNameDelete(eventTypeName)
         } catch (ex: Exception) {
-            // TODO: Wrap expeption with new expection
-            throw ServerException(ex.message)
+            throw ApiException(ex)
         }
     }
 }

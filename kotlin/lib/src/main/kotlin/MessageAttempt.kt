@@ -1,7 +1,7 @@
 package com.svix.kotlin
 
+import com.svix.kotlin.exceptions.ApiException
 import com.svix.kotlin.internal.apis.MessageAttemptApi
-import com.svix.kotlin.internal.infrastructure.ServerException
 import com.svix.kotlin.models.MessageAttemptOut
 import com.svix.kotlin.models.ListResponseEndpointMessageOut
 import com.svix.kotlin.models.ListResponseMessageAttemptEndpointOut
@@ -15,8 +15,7 @@ class MessageAttempt() {
         try {
             return api.listAttemptsApiV1AppAppIdMsgMsgIdAttemptGet(appId, msgId, options.iterator, options.limit, options.messageStatus)
         } catch (ex: Exception) {
-            // TODO: Wrap expeption with new expection
-            throw ServerException(ex.message)
+            throw ApiException(ex)
         }
     }
 
@@ -24,8 +23,7 @@ class MessageAttempt() {
         try {
             return api.getAttemptApiV1AppAppIdMsgMsgIdAttemptAttemptIdGet(attemptId, msgId, appId)
         } catch (ex: Exception) {
-            // TODO: Wrap expeption with new expection
-            throw ServerException(ex.message)
+            throw ApiException(ex)
         }
     }
 
@@ -33,8 +31,7 @@ class MessageAttempt() {
         try {
             api.resendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPost(endpointId, msgId, appId)
         } catch (ex: Exception) {
-            // TODO: Wrap expeption with new expection
-            throw ServerException(ex.message)
+            throw ApiException(ex)
         }
     }
 
@@ -42,8 +39,7 @@ class MessageAttempt() {
         try {
             return api.listAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGet(appId, endpointId, options.iterator, options.limit, options.messageStatus)
         } catch (ex: Exception) {
-            // TODO: Wrap expeption with new expection
-            throw ServerException(ex.message)
+            throw ApiException(ex)
         }
     }
 
@@ -51,8 +47,7 @@ class MessageAttempt() {
         try {
             return api.listAttemptedDestinationsApiV1AppAppIdMsgMsgIdEndpointGet(msgId, appId, options.iterator, options.limit)
         } catch (ex: Exception) {
-            // TODO: Wrap expeption with new expection
-            throw ServerException(ex.message)
+            throw ApiException(ex)
         }
     }
 
@@ -60,8 +55,7 @@ class MessageAttempt() {
         try {
             return api.listAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGet(msgId, appId, endpointId, options.iterator, options.limit, options.messageStatus)
         } catch (ex: Exception) {
-            // TODO: Wrap expeption with new expection
-            throw ServerException(ex.message)
+            throw ApiException(ex)
         }
     }
 }

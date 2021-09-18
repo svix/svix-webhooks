@@ -1,7 +1,7 @@
 package com.svix.kotlin
 
+import com.svix.kotlin.exceptions.ApiException
 import com.svix.kotlin.internal.apis.MessageApi
-import com.svix.kotlin.internal.infrastructure.ServerException
 import com.svix.kotlin.models.ListResponseMessageOut
 import com.svix.kotlin.models.MessageIn
 import com.svix.kotlin.models.MessageOut
@@ -13,8 +13,7 @@ class Message() {
         try {
             return api.listMessagesApiV1AppAppIdMsgGet(appId, options.iterator, options.limit, options.eventTypes)
         } catch (ex: Exception) {
-            // TODO: Wrap expeption with new expection
-            throw ServerException(ex.message)
+            throw ApiException(ex)
         }
     }
 
@@ -22,8 +21,7 @@ class Message() {
         try {
             return api.createMessageApiV1AppAppIdMsgPost(appId, messageIn)
         } catch (ex: Exception) {
-            // TODO: Wrap expeption with new expection
-            throw ServerException(ex.message)
+            throw ApiException(ex)
         }
     }
 
@@ -31,8 +29,7 @@ class Message() {
         try {
             return api.getMessageApiV1AppAppIdMsgMsgIdGet(msgId, appId)
         } catch (ex: Exception) {
-            // TODO: Wrap expeption with new expection
-            throw ServerException(ex.message)
+            throw ApiException(ex)
         }
     }
 }
