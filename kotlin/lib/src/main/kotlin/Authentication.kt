@@ -4,7 +4,7 @@ import com.svix.kotlin.exceptions.ApiException
 import com.svix.kotlin.internal.apis.AuthenticationApi
 import com.svix.kotlin.models.DashboardAccessOut
 
-class Authentication internal constructor(debugUrl: String = SvixOptions.DEFAULT_URL) {
+class Authentication internal constructor(debugUrl: String) {
     val api = AuthenticationApi(debugUrl)
 
     suspend fun dashboardAccess(appId: String): DashboardAccessOut {
