@@ -25,7 +25,8 @@ repositories {
 
 sourceSets {
     main.kotlin.srcDirs += 'lib/src/main/kotlin'
-    main.kotlin.srcDirs += 'lib/generated/openapi/src/main/kotlin'
+    main.kotlin.srcDirs += 'lib/generated/openapi/src/main/kotlin'        
+    sourceSets.test.kotlin.srcDirs = ["lib/src/test/main/kotlin"]
 }
 
 test {
@@ -37,7 +38,8 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     implementation "com.squareup.moshi:moshi-kotlin:1.12.0"
     implementation "com.squareup.okhttp3:okhttp:4.9.1"
-    testImplementation "io.kotlintest:kotlintest-runner-junit5:3.4.2"
+    testCompile 'junit:junit:4.13.2'
+    testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5:1.5.21'
 }
 
 jar {
