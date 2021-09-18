@@ -17,4 +17,14 @@ public class MessageListOptions extends ListOptions {
 	public List<String> getEventTypes() {
 		return eventTypes;
 	}
+
+	@Override
+	public MessageListOptions iterator(final String iterator) {
+		return (MessageListOptions) super.iterator(iterator);
+	}
+
+	@Override
+	public MessageListOptions limit(final Integer limit) {
+		return (MessageListOptions) super.limit(limit);
+	}
 }
