@@ -6,7 +6,9 @@ import com.svix.kotlin.models.ApplicationIn
 import com.svix.kotlin.models.ApplicationOut
 import com.svix.kotlin.models.ListResponseApplicationOut
 
-class Application internal constructor(debugUrl: String = SvixOptions.DEFAULT_URL) {
+class ApplicationListOptions() : ListOptions()
+
+class Application internal constructor(debugUrl: String) {
     val api = ApplicationApi(debugUrl)
 
     suspend fun list(options: ApplicationListOptions): ListResponseApplicationOut {

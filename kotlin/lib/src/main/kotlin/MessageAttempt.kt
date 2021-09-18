@@ -3,12 +3,15 @@ package com.svix.kotlin
 import com.svix.kotlin.exceptions.ApiException
 import com.svix.kotlin.internal.apis.MessageAttemptApi
 import com.svix.kotlin.models.MessageAttemptOut
+import com.svix.kotlin.models.MessageStatus
 import com.svix.kotlin.models.ListResponseEndpointMessageOut
 import com.svix.kotlin.models.ListResponseMessageAttemptEndpointOut
 import com.svix.kotlin.models.ListResponseMessageAttemptOut
 import com.svix.kotlin.models.ListResponseMessageEndpointOut
 
-class MessageAttempt internal constructor(debugUrl: String = SvixOptions.DEFAULT_URL) {
+class MessageAttemptListOptions(var messageStatus: MessageStatus? = null) : ListOptions()
+
+class MessageAttempt internal constructor(debugUrl: String) {
     val api = MessageAttemptApi(debugUrl)
 
     suspend fun list(appId: String, msgId: String, options: MessageAttemptListOptions): ListResponseMessageAttemptOut {
