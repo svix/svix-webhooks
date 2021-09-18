@@ -2,6 +2,12 @@ package com.svix.kotlin
 
 import com.svix.kotlin.internal.infrastructure.ApiClient
 
+data class SvixOptions(val debugUrl: String = DEFAULT_URL) {
+	companion object {
+		val DEFAULT_URL = "https://api.svix.com"
+	}
+}
+
 class Svix(token: String, svixOptions: SvixOptions = SvixOptions()) {
 	companion object {
 		val VERSION = "0.28.0"
