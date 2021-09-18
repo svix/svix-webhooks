@@ -9,7 +9,9 @@ import com.svix.kotlin.models.ListResponseMessageAttemptEndpointOut
 import com.svix.kotlin.models.ListResponseMessageAttemptOut
 import com.svix.kotlin.models.ListResponseMessageEndpointOut
 
-class MessageAttemptListOptions(var messageStatus: MessageStatus? = null) : ListOptions()
+class MessageAttemptListOptions(var messageStatus: MessageStatus? = null) : ListOptions() {
+	fun messageStatus(messageStatus: MessageStatus) = apply { this.messageStatus = messageStatus}
+}
 
 class MessageAttempt internal constructor(debugUrl: String) {
     val api = MessageAttemptApi(debugUrl)

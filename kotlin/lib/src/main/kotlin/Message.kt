@@ -6,7 +6,9 @@ import com.svix.kotlin.models.ListResponseMessageOut
 import com.svix.kotlin.models.MessageIn
 import com.svix.kotlin.models.MessageOut
 
-class MessageListOptions(var eventTypes: List<String> = listOf<String>()) : ListOptions()
+class MessageListOptions(var eventTypes: List<String> = listOf<String>()) : ListOptions() {
+	fun eventTypes(eventTypes: List<String>) = apply { this.eventTypes = eventTypes}
+}
 
 class Message internal constructor(debugUrl: String) {
     val api = MessageApi(debugUrl)

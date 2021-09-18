@@ -7,7 +7,9 @@ import com.svix.kotlin.models.EventTypeOut
 import com.svix.kotlin.models.EventTypeUpdate
 import com.svix.kotlin.models.ListResponseEventTypeOut
 
-class EventTypeListOptions(var withContent: Boolean = false) : ListOptions()
+class EventTypeListOptions(var withContent: Boolean = false) : ListOptions() {
+	fun withContent(withContent: Boolean) = apply { this.withContent = withContent}
+}
 
 class EventType internal constructor(debugUrl: String) {
     val api = EventTypeApi(debugUrl)
