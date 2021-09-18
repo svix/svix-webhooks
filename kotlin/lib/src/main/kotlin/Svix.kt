@@ -1,3 +1,3 @@
 package com.svix.kotlin
 
-class Svix{}
+class Svix
