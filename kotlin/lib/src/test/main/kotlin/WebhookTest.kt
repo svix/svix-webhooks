@@ -4,16 +4,14 @@ import com.svix.kotlin.exceptions.WebhookSigningException
 import com.svix.kotlin.exceptions.WebhookVerificationException
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
-import kotlin.test.Test
-import org.junit.function.ThrowingRunnable
-import java.lang.Exception
 import java.net.http.HttpHeaders
 import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.function.BiPredicate
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
-import kotlin.collections.HashMap
+import kotlin.test.Test
+
 
 class WebhookTest {
     @Test
@@ -53,54 +51,78 @@ class WebhookTest {
     fun verifyMissingIdThrowsException() {
         val testPayload: TestPayload = TestPayload(System.currentTimeMillis())
         testPayload.headerMap.remove("svix-id")
-//        assertThrows(WebhookVerificationException::class.java, verify(testPayload))
+        val webhook = Webhook(testPayload.secret)
+        assertThrows(WebhookVerificationException::class.java) {
+            webhook.verify(testPayload.payload, testPayload.headers())
+        }
     }
 
     @Test
     fun verifyMissingTimestampThrowsException() {
         val testPayload: TestPayload = TestPayload(System.currentTimeMillis())
         testPayload.headerMap.remove("svix-timestamp")
-//        assertThrows(WebhookVerificationException::class.java, verify(testPayload))
+        val webhook = Webhook(testPayload.secret)
+        assertThrows(WebhookVerificationException::class.java) {
+            webhook.verify(testPayload.payload, testPayload.headers())
+        }
     }
 
     @Test
     fun verifyMissingSignatureThrowsException() {
         val testPayload: TestPayload = TestPayload(System.currentTimeMillis())
         testPayload.headerMap.remove("svix-signature")
-//        assertThrows(WebhookVerificationException::class.java, verify(testPayload))
+        val webhook = Webhook(testPayload.secret)
+        assertThrows(WebhookVerificationException::class.java) {
+            webhook.verify(testPayload.payload, testPayload.headers())
+        }
     }
 
     @Test
     fun verifySignatureWithDifferentVersionThrowsException() {
         val testPayload: TestPayload = TestPayload(System.currentTimeMillis())
         testPayload.headerMap[Webhook.SVIX_MSG_ID_KEY] = ArrayList<String>(Arrays.asList<String>("v2,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE="))
-//        assertThrows(WebhookVerificationException::class.java, verify(testPayload))
+        val webhook = Webhook(testPayload.secret)
+        assertThrows(WebhookVerificationException::class.java) {
+            webhook.verify(testPayload.payload, testPayload.headers())
+        }
     }
 
     @Test
     fun verifyMissingPartsInSignatureThrowsException() {
         val testPayload: TestPayload = TestPayload(System.currentTimeMillis())
         testPayload.headerMap[Webhook.SVIX_MSG_ID_KEY] = ArrayList<String>(Arrays.asList<String>("invalid_signature"))
-//        assertThrows(WebhookVerificationException::class.java, verify(testPayload))
+        val webhook = Webhook(testPayload.secret)
+        assertThrows(WebhookVerificationException::class.java) {
+            webhook.verify(testPayload.payload, testPayload.headers())
+        }
     }
 
     @Test
     fun verifySignatureMismatchThrowsException() {
         val testPayload: TestPayload = TestPayload(System.currentTimeMillis())
         testPayload.headerMap[Webhook.SVIX_MSG_ID_KEY] = ArrayList<String>(Arrays.asList<String>("v1,invalid_signature"))
-//        assertThrows(WebhookVerificationException::class.java, verify(testPayload))
+        val webhook = Webhook(testPayload.secret)
+        assertThrows(WebhookVerificationException::class.java) {
+            webhook.verify(testPayload.payload, testPayload.headers())
+        }
     }
 
     @Test
     fun verifyOldTimestampThrowsException() {
         val testPayload: TestPayload = TestPayload(System.currentTimeMillis() + TOLERANCE_IN_MS + SECOND_IN_MS)
-//        assertThrows(WebhookVerificationException::class.java, verify(testPayload))
+        val webhook = Webhook(testPayload.secret)
+        assertThrows(WebhookVerificationException::class.java) {
+            webhook.verify(testPayload.payload, testPayload.headers())
+        }
     }
 
     @Test
     fun verifyNewTimestampThrowsException() {
         val testPayload: TestPayload = TestPayload(System.currentTimeMillis() - TOLERANCE_IN_MS - SECOND_IN_MS)
-//        assertThrows(WebhookVerificationException::class.java, verify(testPayload))
+        val webhook = Webhook(testPayload.secret)
+        assertThrows(WebhookVerificationException::class.java) {
+            webhook.verify(testPayload.payload, testPayload.headers())
+        }
     }
 
     @Test
