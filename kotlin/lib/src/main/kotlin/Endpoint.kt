@@ -2,9 +2,9 @@ package com.svix.kotlin
 
 import com.svix.kotlin.internal.apis.EndpointApi
 import com.svix.kotlin.internal.infrastructure.ServerException
-import com.svix.kotlin.internal.models.EndpointIn
-import com.svix.kotlin.internal.models.EndpointOut
-import com.svix.kotlin.internal.models.ListResponseEndpointOut
+import com.svix.kotlin.models.EndpointIn
+import com.svix.kotlin.models.EndpointOut
+import com.svix.kotlin.models.ListResponseEndpointOut
 
 class Endpoint() {
     val api = EndpointApi()

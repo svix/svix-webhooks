@@ -2,9 +2,9 @@ package com.svix.kotlin
 
 import com.svix.kotlin.internal.apis.ApplicationApi
 import com.svix.kotlin.internal.infrastructure.ServerException
-import com.svix.kotlin.internal.models.ApplicationIn
-import com.svix.kotlin.internal.models.ApplicationOut
-import com.svix.kotlin.internal.models.ListResponseApplicationOut
+import com.svix.kotlin.models.ApplicationIn
+import com.svix.kotlin.models.ApplicationOut
+import com.svix.kotlin.models.ListResponseApplicationOut
 
 class Application() {
     val api = ApplicationApi()

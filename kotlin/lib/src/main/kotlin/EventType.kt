@@ -2,10 +2,10 @@ package com.svix.kotlin
 
 import com.svix.kotlin.internal.apis.EventTypeApi
 import com.svix.kotlin.internal.infrastructure.ServerException
-import com.svix.kotlin.internal.models.EventTypeIn
-import com.svix.kotlin.internal.models.EventTypeOut
-import com.svix.kotlin.internal.models.EventTypeUpdate
-import com.svix.kotlin.internal.models.ListResponseEventTypeOut
+import com.svix.kotlin.models.EventTypeIn
+import com.svix.kotlin.models.EventTypeOut
+import com.svix.kotlin.models.EventTypeUpdate
+import com.svix.kotlin.models.ListResponseEventTypeOut
 
 class EventType() {
     val api = EventTypeApi()
