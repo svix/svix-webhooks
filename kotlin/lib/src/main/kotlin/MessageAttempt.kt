@@ -10,7 +10,11 @@ import com.svix.kotlin.models.ListResponseMessageAttemptOut
 import com.svix.kotlin.models.ListResponseMessageEndpointOut
 
 class MessageAttemptListOptions(var messageStatus: MessageStatus? = null) : ListOptions() {
-	fun messageStatus(messageStatus: MessageStatus) = apply { this.messageStatus = messageStatus}
+	fun messageStatus(messageStatus: MessageStatus) = apply { this.messageStatus = messageStatus }
+
+    override fun iterator(iterator : kotlin.String) = apply { super.iterator(iterator) }
+
+    override fun limit(limit : kotlin.Int) = apply { super.limit(limit) }
 }
 
 class MessageAttempt internal constructor(debugUrl: String) {

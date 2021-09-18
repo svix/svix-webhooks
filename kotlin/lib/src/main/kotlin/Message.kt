@@ -7,7 +7,11 @@ import com.svix.kotlin.models.MessageIn
 import com.svix.kotlin.models.MessageOut
 
 class MessageListOptions(var eventTypes: List<String> = listOf<String>()) : ListOptions() {
-	fun eventTypes(eventTypes: List<String>) = apply { this.eventTypes = eventTypes}
+	fun eventTypes(eventTypes: List<String>) = apply { this.eventTypes = eventTypes }
+
+    override fun iterator(iterator : kotlin.String) = apply { super.iterator(iterator) }
+
+    override fun limit(limit : kotlin.Int) = apply { super.limit(limit) }
 }
 
 class Message internal constructor(debugUrl: String) {

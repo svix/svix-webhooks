@@ -6,7 +6,11 @@ import com.svix.kotlin.models.ApplicationIn
 import com.svix.kotlin.models.ApplicationOut
 import com.svix.kotlin.models.ListResponseApplicationOut
 
-class ApplicationListOptions() : ListOptions()
+class ApplicationListOptions() : ListOptions() {
+    override fun iterator(iterator : String) = apply { super.iterator(iterator) }
+
+    override fun limit(limit : Int) = apply { super.limit(limit) }
+}
 
 class Application internal constructor(debugUrl: String) {
     val api = ApplicationApi(debugUrl)

@@ -9,6 +9,10 @@ import com.svix.kotlin.models.ListResponseEventTypeOut
 
 class EventTypeListOptions(var withContent: Boolean = false) : ListOptions() {
 	fun withContent(withContent: Boolean) = apply { this.withContent = withContent}
+
+    override fun iterator(iterator : kotlin.String) = apply { super.iterator(iterator) }
+
+    override fun limit(limit : kotlin.Int) = apply { super.limit(limit) }
 }
 
 class EventType internal constructor(debugUrl: String) {
