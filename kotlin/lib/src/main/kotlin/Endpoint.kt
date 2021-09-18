@@ -1,7 +1,7 @@
 package com.svix.kotlin
 
+import com.svix.kotlin.exceptions.ApiException
 import com.svix.kotlin.internal.apis.EndpointApi
-import com.svix.kotlin.internal.infrastructure.ServerException
 import com.svix.kotlin.models.EndpointIn
 import com.svix.kotlin.models.EndpointOut
 import com.svix.kotlin.models.ListResponseEndpointOut
@@ -13,8 +13,7 @@ class Endpoint() {
         try {
             return api.listEndpointsApiV1AppAppIdEndpointGet(appId, options.iterator, options.limit)
         } catch (ex: Exception) {
-            // TODO: Wrap expeption with new expection
-            throw ServerException(ex.message)
+            throw ApiException(ex)
         }
     }
 
@@ -22,8 +21,7 @@ class Endpoint() {
         try {
             return api.createEndpointApiV1AppAppIdEndpointPost(appId, applicationIn)
         } catch (ex: Exception) {
-            // TODO: Wrap expeption with new expection
-            throw ServerException(ex.message)
+            throw ApiException(ex)
         }
     }
 
@@ -31,8 +29,7 @@ class Endpoint() {
         try {
             return api.getEndpointApiV1AppAppIdEndpointEndpointIdGet(appId, endpointIn)
         } catch (ex: Exception) {
-            // TODO: Wrap expeption with new expection
-            throw ServerException(ex.message)
+            throw ApiException(ex)
         }
     }
 
@@ -40,8 +37,7 @@ class Endpoint() {
         try {
             return api.updateEndpointApiV1AppAppIdEndpointEndpointIdPut(appId, endpointId, endpointIn)
         } catch (ex: Exception) {
-            // TODO: Wrap expeption with new expection
-            throw ServerException(ex.message)
+            throw ApiException(ex)
         }
     }
 
@@ -49,8 +45,7 @@ class Endpoint() {
         try {
             api.deleteEndpointApiV1AppAppIdEndpointEndpointIdDelete(appId, endpointId)
         } catch (ex: Exception) {
-            // TODO: Wrap expeption with new expection
-            throw ServerException(ex.message)
+            throw ApiException(ex)
         }
     }
 
@@ -58,8 +53,7 @@ class Endpoint() {
         try {
             api.getEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGet(appId, endpointId)
         } catch (ex: Exception) {
-            // TODO: Wrap expeption with new expection
-            throw ServerException(ex.message)
+            throw ApiException(ex)
         }
     }
 }

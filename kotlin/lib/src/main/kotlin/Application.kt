@@ -1,7 +1,7 @@
 package com.svix.kotlin
 
+import com.svix.kotlin.exceptions.ApiException
 import com.svix.kotlin.internal.apis.ApplicationApi
-import com.svix.kotlin.internal.infrastructure.ServerException
 import com.svix.kotlin.models.ApplicationIn
 import com.svix.kotlin.models.ApplicationOut
 import com.svix.kotlin.models.ListResponseApplicationOut
@@ -13,8 +13,7 @@ class Application() {
         try {
             return api.listApplicationsApiV1AppGet(options.iterator, options.limit)
         } catch (ex: Exception) {
-            // TODO: Wrap expeption with new expection
-            throw ServerException(ex.message)
+            throw ApiException(ex)
         }
     }
 
@@ -22,8 +21,7 @@ class Application() {
         try {
             return api.createApplicationApiV1AppPost(applicationIn)
         } catch (ex: Exception) {
-            // TODO: Wrap expeption with new expection
-            throw ServerException(ex.message)
+            throw ApiException(ex)
         }
     }
 
@@ -31,8 +29,7 @@ class Application() {
         try {
             return api.getApplicationApiV1AppAppIdGet(appId)
         } catch (ex: Exception) {
-            // TODO: Wrap expeption with new expection
-            throw ServerException(ex.message)
+            throw ApiException(ex)
         }
     }
 
@@ -40,8 +37,7 @@ class Application() {
         try {
             return api.updateApplicationApiV1AppAppIdPut(appId, applicationIn)
         } catch (ex: Exception) {
-            // TODO: Wrap expeption with new expection
-            throw ServerException(ex.message)
+            throw ApiException(ex)
         }
     }
 
@@ -49,8 +45,7 @@ class Application() {
         try {
             api.deleteApplicationApiV1AppAppIdDelete(appId)
         } catch (ex: Exception) {
-            // TODO: Wrap expeption with new expection
-            throw ServerException(ex.message)
+            throw ApiException(ex)
         }
     }
 }

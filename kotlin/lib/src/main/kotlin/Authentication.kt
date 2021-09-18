@@ -1,7 +1,7 @@
 package com.svix.kotlin
 
+import com.svix.kotlin.exceptions.ApiException
 import com.svix.kotlin.internal.apis.AuthenticationApi
-import com.svix.kotlin.internal.infrastructure.ServerException
 import com.svix.kotlin.models.DashboardAccessOut
 
 class Authentication() {
@@ -11,8 +11,7 @@ class Authentication() {
         try {
             return api.getDashboardAccessApiV1AuthDashboardAccessAppIdPost(appId)
         } catch (ex: Exception) {
-            // TODO: Wrap expeption with new expection
-            throw ServerException(ex.message)
+            throw ApiException(ex)
         }
     }
 
@@ -20,8 +19,7 @@ class Authentication() {
         try {
             api.logoutApiV1AuthLogoutPost()
         } catch (ex: Exception) {
-            // TODO: Wrap expeption with new expection
-            throw ServerException(ex.message)
+            throw ApiException(ex)
         }
     }
 }
