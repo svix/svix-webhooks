@@ -1,9 +1,7 @@
 package com.svix.kotlin
 
 import com.svix.kotlin.internal.infrastructure.ApiClient
-//import com.svix.kotlin.internal.DefaultApi
-//import com.svix.kotlin.internal.auth.HttpBearerAuth
-// Add svix option
+
 class Svix(token: String, svixOptions: SvixOptions = SvixOptions()) {
 	companion object {
 		val VERSION = "0.28.0"
