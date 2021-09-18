@@ -6,7 +6,11 @@ import com.svix.kotlin.models.EndpointIn
 import com.svix.kotlin.models.EndpointOut
 import com.svix.kotlin.models.ListResponseEndpointOut
 
-class EndpointListOptions() : ListOptions()
+class EndpointListOptions() : ListOptions() {
+    override fun iterator(iterator : String) = apply { super.iterator(iterator) }
+
+    override fun limit(limit : Int) = apply { super.limit(limit) }
+}
 
 class Endpoint internal constructor(debugUrl: String) {
     val api = EndpointApi(debugUrl)
