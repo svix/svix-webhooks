@@ -7,12 +7,13 @@ import java.nio.charset.StandardCharsets
 import java.security.InvalidKeyException
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
-import java.util.*
+import java.util.Base64
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
 class Webhook(secret: String) {
     private val key: ByteArray
+
     @Throws(WebhookVerificationException::class)
     fun verify(payload: String?, headers: HttpHeaders) {
         var msgId = headers.firstValue(Webhook.Companion.SVIX_MSG_ID_KEY)
@@ -28,8 +29,7 @@ class Webhook(secret: String) {
             }
         }
         val timestamp: Long = Webhook.Companion.verifyTimestamp(msgTimestamp.get())
-        val expectedSignature: String
-        expectedSignature = try {
+        val expectedSignature: String = try {
             sign(msgId.get(), timestamp, payload).split(",".toRegex()).toTypedArray()[1]
         } catch (e: WebhookSigningException) {
             throw WebhookVerificationException("Failed to generate expected signature")
@@ -80,6 +80,7 @@ class Webhook(secret: String) {
         private const val HMAC_SHA256 = "HmacSHA256"
         private const val TOLERANCE_IN_SECONDS = 5 * 60 // 5 minutes
         private const val SECOND_IN_MS = 1000L
+
         @Throws(WebhookVerificationException::class)
         private fun verifyTimestamp(timestampHeader: String): Long {
             val now: Long = System.currentTimeMillis() / Webhook.Companion.SECOND_IN_MS
