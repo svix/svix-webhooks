@@ -2,6 +2,7 @@ package com.svix.kotlin
 
 import com.svix.kotlin.exceptions.WebhookSigningException
 import com.svix.kotlin.exceptions.WebhookVerificationException
+import com.svix.kotlin.models.EndpointIn
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import java.net.http.HttpHeaders
@@ -163,10 +164,11 @@ class WebhookTest {
             return HttpHeaders.of(map, BiPredicate { _, _ -> true })
         }
 
+
         init {
             timestamp = (timestampInMS / SECOND_IN_MS).toString()
-            payload = "MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw"
-            secret = "test"
+            payload = "{\"test\": 2432232314}"
+            secret = "MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw"
             try {
                 val toSign = String.format("%s.%s.%s", id, timestamp, payload)
                 val sha512Hmac: Mac = Mac.getInstance("HmacSHA256")
