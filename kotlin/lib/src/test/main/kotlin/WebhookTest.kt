@@ -2,17 +2,18 @@ package com.svix.kotlin
 
 import com.svix.kotlin.exceptions.WebhookSigningException
 import com.svix.kotlin.exceptions.WebhookVerificationException
-import com.svix.kotlin.models.EndpointIn
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import java.net.http.HttpHeaders
 import java.nio.charset.StandardCharsets
-import java.util.*
+import java.util.Arrays
+import java.util.Base64
 import java.util.function.BiPredicate
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 import kotlin.test.Test
-
 
 class WebhookTest {
     @Test
@@ -39,10 +40,11 @@ class WebhookTest {
     fun verifyValidPayloadWithMultipleSignaturesIsValid() {
         val testPayload: TestPayload = TestPayload(System.currentTimeMillis())
         val sigs = arrayOf(
-                "v1,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
-                "v2,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
-                testPayload.headerMap["svix-signature"]!![0],  // valid signature
-                "v1,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=")
+            "v1,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
+            "v2,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
+            testPayload.headerMap["svix-signature"]!![0],
+            "v1,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc="
+        )
         testPayload.headerMap["svix-signature"] = ArrayList<String>(Arrays.asList<String>(java.lang.String.join(" ", *sigs)))
         val webhook = Webhook(testPayload.secret)
         webhook.verify(testPayload.payload, testPayload.headers())
@@ -163,7 +165,6 @@ class WebhookTest {
             }
             return HttpHeaders.of(map, BiPredicate { _, _ -> true })
         }
-
 
         init {
             timestamp = (timestampInMS / SECOND_IN_MS).toString()
