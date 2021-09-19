@@ -4,12 +4,12 @@ import com.svix.kotlin.exceptions.ApiException
 import com.svix.kotlin.internal.apis.MessageAttemptApi
 import com.svix.kotlin.internal.infrastructure.ClientException
 import com.svix.kotlin.internal.infrastructure.ServerException
-import com.svix.kotlin.models.MessageAttemptOut
-import com.svix.kotlin.models.MessageStatus
 import com.svix.kotlin.models.ListResponseEndpointMessageOut
 import com.svix.kotlin.models.ListResponseMessageAttemptEndpointOut
 import com.svix.kotlin.models.ListResponseMessageAttemptOut
 import com.svix.kotlin.models.ListResponseMessageEndpointOut
+import com.svix.kotlin.models.MessageAttemptOut
+import com.svix.kotlin.models.MessageStatus
 
 class MessageAttemptListOptions(var messageStatus: MessageStatus? = null) : ListOptions() {
     fun messageStatus(messageStatus: MessageStatus) = apply { this.messageStatus = messageStatus }
