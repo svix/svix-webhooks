@@ -31,4 +31,3 @@ class Svix(token: String, svixOptions: SvixOptions = SvixOptions()) {
         messageAttempt = MessageAttempt(svixOptions.debugUrl)
     }
 }
-
