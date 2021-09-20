@@ -23,12 +23,7 @@ class Message internal constructor(debugUrl: String) {
         try {
             return api.listMessagesApiV1AppAppIdMsgGet(appId, options.iterator, options.limit, options.eventTypes)
         } catch (e: Exception) {
-            when (e) {
-                is ServerException, is ClientException, is UnsupportedOperationException -> {
-                    throw ApiException(e)
-                }
-                else -> throw e
-            }
+            throw ApiException.wrapInternalApiException(e)
         }
     }
 
@@ -36,12 +31,7 @@ class Message internal constructor(debugUrl: String) {
         try {
             return api.createMessageApiV1AppAppIdMsgPost(appId, messageIn)
         } catch (e: Exception) {
-            when (e) {
-                is ServerException, is ClientException, is UnsupportedOperationException -> {
-                    throw ApiException(e)
-                }
-                else -> throw e
-            }
+            throw ApiException.wrapInternalApiException(e)
         }
     }
 
@@ -49,12 +39,7 @@ class Message internal constructor(debugUrl: String) {
         try {
             return api.getMessageApiV1AppAppIdMsgMsgIdGet(msgId, appId)
         } catch (e: Exception) {
-            when (e) {
-                is ServerException, is ClientException, is UnsupportedOperationException -> {
-                    throw ApiException(e)
-                }
-                else -> throw e
-            }
+            throw ApiException.wrapInternalApiException(e)
         }
     }
 }

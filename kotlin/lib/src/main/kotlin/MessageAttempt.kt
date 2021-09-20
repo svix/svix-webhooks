@@ -32,12 +32,7 @@ class MessageAttempt internal constructor(debugUrl: String) {
                 options.messageStatus
             )
         } catch (e: Exception) {
-            when (e) {
-                is ServerException, is ClientException, is UnsupportedOperationException -> {
-                    throw ApiException(e)
-                }
-                else -> throw e
-            }
+            throw ApiException.wrapInternalApiException(e)
         }
     }
 
@@ -45,12 +40,7 @@ class MessageAttempt internal constructor(debugUrl: String) {
         try {
             return api.getAttemptApiV1AppAppIdMsgMsgIdAttemptAttemptIdGet(attemptId, msgId, appId)
         } catch (e: Exception) {
-            when (e) {
-                is ServerException, is ClientException, is UnsupportedOperationException -> {
-                    throw ApiException(e)
-                }
-                else -> throw e
-            }
+            throw ApiException.wrapInternalApiException(e)
         }
     }
 
@@ -58,12 +48,7 @@ class MessageAttempt internal constructor(debugUrl: String) {
         try {
             api.resendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPost(endpointId, msgId, appId)
         } catch (e: Exception) {
-            when (e) {
-                is ServerException, is ClientException, is UnsupportedOperationException -> {
-                    throw ApiException(e)
-                }
-                else -> throw e
-            }
+            throw ApiException.wrapInternalApiException(e)
         }
     }
 
@@ -81,12 +66,7 @@ class MessageAttempt internal constructor(debugUrl: String) {
                 options.messageStatus
             )
         } catch (e: Exception) {
-            when (e) {
-                is ServerException, is ClientException, is UnsupportedOperationException -> {
-                    throw ApiException(e)
-                }
-                else -> throw e
-            }
+            throw ApiException.wrapInternalApiException(e)
         }
     }
 
@@ -103,12 +83,7 @@ class MessageAttempt internal constructor(debugUrl: String) {
                 options.limit
             )
         } catch (e: Exception) {
-            when (e) {
-                is ServerException, is ClientException, is UnsupportedOperationException -> {
-                    throw ApiException(e)
-                }
-                else -> throw e
-            }
+            throw ApiException.wrapInternalApiException(e)
         }
     }
 
@@ -128,12 +103,7 @@ class MessageAttempt internal constructor(debugUrl: String) {
                 options.messageStatus
             )
         } catch (e: Exception) {
-            when (e) {
-                is ServerException, is ClientException, is UnsupportedOperationException -> {
-                    throw ApiException(e)
-                }
-                else -> throw e
-            }
+            throw ApiException.wrapInternalApiException(e)
         }
     }
 }

@@ -24,12 +24,7 @@ class EventType internal constructor(debugUrl: String) {
         try {
             return api.listEventTypesApiV1EventTypeGet(options.iterator, options.limit, options.withContent)
         } catch (e: Exception) {
-            when (e) {
-                is ServerException, is ClientException, is UnsupportedOperationException -> {
-                    throw ApiException(e)
-                }
-                else -> throw e
-            }
+            throw ApiException.wrapInternalApiException(e)
         }
     }
 
@@ -37,12 +32,7 @@ class EventType internal constructor(debugUrl: String) {
         try {
             return api.createEventTypeApiV1EventTypePost(eventTypeIn)
         } catch (e: Exception) {
-            when (e) {
-                is ServerException, is ClientException, is UnsupportedOperationException -> {
-                    throw ApiException(e)
-                }
-                else -> throw e
-            }
+            throw ApiException.wrapInternalApiException(e)
         }
     }
 
@@ -50,12 +40,7 @@ class EventType internal constructor(debugUrl: String) {
         try {
             return api.updateEventTypeApiV1EventTypeEventTypeNamePut(eventTypeName, eventTypeUpdate)
         } catch (e: Exception) {
-            when (e) {
-                is ServerException, is ClientException, is UnsupportedOperationException -> {
-                    throw ApiException(e)
-                }
-                else -> throw e
-            }
+            throw ApiException.wrapInternalApiException(e)
         }
     }
 
@@ -63,12 +48,7 @@ class EventType internal constructor(debugUrl: String) {
         try {
             api.deleteEventTypeApiV1EventTypeEventTypeNameDelete(eventTypeName)
         } catch (e: Exception) {
-            when (e) {
-                is ServerException, is ClientException, is UnsupportedOperationException -> {
-                    throw ApiException(e)
-                }
-                else -> throw e
-            }
+            throw ApiException.wrapInternalApiException(e)
         }
     }
 }

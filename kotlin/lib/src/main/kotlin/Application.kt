@@ -21,12 +21,7 @@ class Application internal constructor(debugUrl: String) {
         try {
             return api.listApplicationsApiV1AppGet(options.iterator, options.limit)
         } catch (e: Exception) {
-            when (e) {
-                is ServerException, is ClientException, is UnsupportedOperationException -> {
-                    throw ApiException(e)
-                }
-                else -> throw e
-            }
+            throw ApiException.wrapInternalApiException(e)
         }
     }
 
@@ -34,12 +29,7 @@ class Application internal constructor(debugUrl: String) {
         try {
             return api.createApplicationApiV1AppPost(applicationIn)
         } catch (e: Exception) {
-            when (e) {
-                is ServerException, is ClientException, is UnsupportedOperationException -> {
-                    throw ApiException(e)
-                }
-                else -> throw e
-            }
+            throw ApiException.wrapInternalApiException(e)
         }
     }
 
@@ -47,12 +37,7 @@ class Application internal constructor(debugUrl: String) {
         try {
             return api.getApplicationApiV1AppAppIdGet(appId)
         } catch (e: Exception) {
-            when (e) {
-                is ServerException, is ClientException, is UnsupportedOperationException -> {
-                    throw ApiException(e)
-                }
-                else -> throw e
-            }
+            throw ApiException.wrapInternalApiException(e)
         }
     }
 
@@ -60,12 +45,7 @@ class Application internal constructor(debugUrl: String) {
         try {
             return api.updateApplicationApiV1AppAppIdPut(appId, applicationIn)
         } catch (e: Exception) {
-            when (e) {
-                is ServerException, is ClientException, is UnsupportedOperationException -> {
-                    throw ApiException(e)
-                }
-                else -> throw e
-            }
+            throw ApiException.wrapInternalApiException(e)
         }
     }
 
@@ -73,12 +53,7 @@ class Application internal constructor(debugUrl: String) {
         try {
             api.deleteApplicationApiV1AppAppIdDelete(appId)
         } catch (e: Exception) {
-            when (e) {
-                is ServerException, is ClientException, is UnsupportedOperationException -> {
-                    throw ApiException(e)
-                }
-                else -> throw e
-            }
+            throw ApiException.wrapInternalApiException(e)
         }
     }
 }
