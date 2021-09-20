@@ -21,12 +21,7 @@ class Endpoint internal constructor(debugUrl: String) {
         try {
             return api.listEndpointsApiV1AppAppIdEndpointGet(appId, options.iterator, options.limit)
         } catch (e: Exception) {
-            when (e) {
-                is ServerException, is ClientException, is UnsupportedOperationException -> {
-                    throw ApiException(e)
-                }
-                else -> throw e
-            }
+            throw ApiException.wrapInternalApiException(e)
         }
     }
 
@@ -34,12 +29,7 @@ class Endpoint internal constructor(debugUrl: String) {
         try {
             return api.createEndpointApiV1AppAppIdEndpointPost(appId, applicationIn)
         } catch (e: Exception) {
-            when (e) {
-                is ServerException, is ClientException, is UnsupportedOperationException -> {
-                    throw ApiException(e)
-                }
-                else -> throw e
-            }
+            throw ApiException.wrapInternalApiException(e)
         }
     }
 
@@ -47,12 +37,7 @@ class Endpoint internal constructor(debugUrl: String) {
         try {
             return api.getEndpointApiV1AppAppIdEndpointEndpointIdGet(appId, endpointIn)
         } catch (e: Exception) {
-            when (e) {
-                is ServerException, is ClientException, is UnsupportedOperationException -> {
-                    throw ApiException(e)
-                }
-                else -> throw e
-            }
+            throw ApiException.wrapInternalApiException(e)
         }
     }
 
@@ -60,12 +45,7 @@ class Endpoint internal constructor(debugUrl: String) {
         try {
             return api.updateEndpointApiV1AppAppIdEndpointEndpointIdPut(appId, endpointId, endpointIn)
         } catch (e: Exception) {
-            when (e) {
-                is ServerException, is ClientException, is UnsupportedOperationException -> {
-                    throw ApiException(e)
-                }
-                else -> throw e
-            }
+            throw ApiException.wrapInternalApiException(e)
         }
     }
 
@@ -73,12 +53,7 @@ class Endpoint internal constructor(debugUrl: String) {
         try {
             api.deleteEndpointApiV1AppAppIdEndpointEndpointIdDelete(appId, endpointId)
         } catch (e: Exception) {
-            when (e) {
-                is ServerException, is ClientException, is UnsupportedOperationException -> {
-                    throw ApiException(e)
-                }
-                else -> throw e
-            }
+            throw ApiException.wrapInternalApiException(e)
         }
     }
 
@@ -86,12 +61,7 @@ class Endpoint internal constructor(debugUrl: String) {
         try {
             api.getEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGet(appId, endpointId)
         } catch (e: Exception) {
-            when (e) {
-                is ServerException, is ClientException, is UnsupportedOperationException -> {
-                    throw ApiException(e)
-                }
-                else -> throw e
-            }
+            throw ApiException.wrapInternalApiException(e)
         }
     }
 }

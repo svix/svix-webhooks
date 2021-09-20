@@ -13,12 +13,7 @@ class Authentication internal constructor(debugUrl: String) {
         try {
             return api.getDashboardAccessApiV1AuthDashboardAccessAppIdPost(appId)
         } catch (e: Exception) {
-            when (e) {
-                is ServerException, is ClientException, is UnsupportedOperationException -> {
-                    throw ApiException(e)
-                }
-                else -> throw e
-            }
+            throw ApiException.wrapInternalApiException(e)
         }
     }
 
@@ -26,12 +21,7 @@ class Authentication internal constructor(debugUrl: String) {
         try {
             api.logoutApiV1AuthLogoutPost()
         } catch (e: Exception) {
-            when (e) {
-                is ServerException, is ClientException, is UnsupportedOperationException -> {
-                    throw ApiException(e)
-                }
-                else -> throw e
-            }
+            throw ApiException.wrapInternalApiException(e)
         }
     }
 }
