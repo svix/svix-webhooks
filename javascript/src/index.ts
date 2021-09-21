@@ -126,10 +126,13 @@ export interface EventTypeListOptions extends ListOptions {
 
 export interface MessageListOptions extends ListOptions {
   eventTypes?: string[];
+  before?: Date;
 }
 
 export interface MessageAttemptListOptions extends ListOptions {
   status?: MessageStatus;
+  eventTypes?: string[];
+  before?: Date;
 }
 
 class Application {
