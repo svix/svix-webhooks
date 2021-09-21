@@ -49,7 +49,7 @@ public class MessageAttemptListOptions extends ListOptions {
 		return eventTypes;
 	}
 
-	public ListOptions before(final OffsetDateTime before) {
+	public MessageAttemptListOptions before(final OffsetDateTime before) {
 		this.before = before;
 		return this;
 	}

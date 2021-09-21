@@ -26,3 +26,6 @@ bin/
 
 # auto generated files
 lib/generated/
+
+.classpath
+.settings
