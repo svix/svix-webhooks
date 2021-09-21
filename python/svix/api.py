@@ -1,6 +1,7 @@
 import typing as t
 from contextlib import contextmanager
 from dataclasses import asdict, dataclass
+from datetime import datetime
 
 from .openapi_client.api.application_api import ApplicationApi
 from .openapi_client.api.authentication_api import AuthenticationApi
@@ -50,6 +51,7 @@ class ListOptions:
 @dataclass
 class MessageListOptions(ListOptions):
     event_types: t.Optional[t.List[str]] = None
+    before: t.Optional[datetime] = None
 
 
 @dataclass
@@ -70,6 +72,8 @@ class EndpointListOptions(ListOptions):
 @dataclass
 class MessageAttemptListOptions(ListOptions):
     status: t.Optional[MessageStatus] = None
+    event_types: t.Optional[t.List[str]] = None
+    before: t.Optional[datetime] = None
 
 
 ApiClass = t.TypeVar(
