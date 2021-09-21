@@ -14,26 +14,24 @@ import (
 	"encoding/json"
 )
 
-// EndpointIn struct for EndpointIn
-type EndpointIn struct {
+// EndpointUpdate struct for EndpointUpdate
+type EndpointUpdate struct {
 	Description *string `json:"description,omitempty"`
 	Disabled *bool `json:"disabled,omitempty"`
 	FilterTypes *[]string `json:"filterTypes,omitempty"`
 	RateLimit *int32 `json:"rateLimit,omitempty"`
-	// The endpoint's verification secret. If `null` is passed, a secret is automatically generated.
-	Secret *string `json:"secret,omitempty"`
 	// Optional unique identifier for the endpoint
 	Uid *string `json:"uid,omitempty"`
 	Url string `json:"url"`
 	Version int32 `json:"version"`
 }
 
-// NewEndpointIn instantiates a new EndpointIn object
+// NewEndpointUpdate instantiates a new EndpointUpdate object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEndpointIn(url string, version int32) *EndpointIn {
-	this := EndpointIn{}
+func NewEndpointUpdate(url string, version int32) *EndpointUpdate {
+	this := EndpointUpdate{}
 	var description string = ""
 	this.Description = &description
 	var disabled bool = false
@@ -43,11 +41,11 @@ func NewEndpointIn(url string, version int32) *EndpointIn {
 	return &this
 }
 
-// NewEndpointInWithDefaults instantiates a new EndpointIn object
+// NewEndpointUpdateWithDefaults instantiates a new EndpointUpdate object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewEndpointInWithDefaults() *EndpointIn {
-	this := EndpointIn{}
+func NewEndpointUpdateWithDefaults() *EndpointUpdate {
+	this := EndpointUpdate{}
 	var description string = ""
 	this.Description = &description
 	var disabled bool = false
@@ -56,7 +54,7 @@ func NewEndpointInWithDefaults() *EndpointIn {
 }
 
 // GetDescription returns the Description field value if set, zero value otherwise.
-func (o *EndpointIn) GetDescription() string {
+func (o *EndpointUpdate) GetDescription() string {
 	if o == nil || o.Description == nil {
 		var ret string
 		return ret
@@ -66,7 +64,7 @@ func (o *EndpointIn) GetDescription() string {
 
 // GetDescriptionOk returns a tuple with the Description field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *EndpointIn) GetDescriptionOk() (*string, bool) {
+func (o *EndpointUpdate) GetDescriptionOk() (*string, bool) {
 	if o == nil || o.Description == nil {
 		return nil, false
 	}
@@ -74,7 +72,7 @@ func (o *EndpointIn) GetDescriptionOk() (*string, bool) {
 }
 
 // HasDescription returns a boolean if a field has been set.
-func (o *EndpointIn) HasDescription() bool {
+func (o *EndpointUpdate) HasDescription() bool {
 	if o != nil && o.Description != nil {
 		return true
 	}
@@ -83,12 +81,12 @@ func (o *EndpointIn) HasDescription() bool {
 }
 
 // SetDescription gets a reference to the given string and assigns it to the Description field.
-func (o *EndpointIn) SetDescription(v string) {
+func (o *EndpointUpdate) SetDescription(v string) {
 	o.Description = &v
 }
 
 // GetDisabled returns the Disabled field value if set, zero value otherwise.
-func (o *EndpointIn) GetDisabled() bool {
+func (o *EndpointUpdate) GetDisabled() bool {
 	if o == nil || o.Disabled == nil {
 		var ret bool
 		return ret
@@ -98,7 +96,7 @@ func (o *EndpointIn) GetDisabled() bool {
 
 // GetDisabledOk returns a tuple with the Disabled field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *EndpointIn) GetDisabledOk() (*bool, bool) {
+func (o *EndpointUpdate) GetDisabledOk() (*bool, bool) {
 	if o == nil || o.Disabled == nil {
 		return nil, false
 	}
@@ -106,7 +104,7 @@ func (o *EndpointIn) GetDisabledOk() (*bool, bool) {
 }
 
 // HasDisabled returns a boolean if a field has been set.
-func (o *EndpointIn) HasDisabled() bool {
+func (o *EndpointUpdate) HasDisabled() bool {
 	if o != nil && o.Disabled != nil {
 		return true
 	}
@@ -115,12 +113,12 @@ func (o *EndpointIn) HasDisabled() bool {
 }
 
 // SetDisabled gets a reference to the given bool and assigns it to the Disabled field.
-func (o *EndpointIn) SetDisabled(v bool) {
+func (o *EndpointUpdate) SetDisabled(v bool) {
 	o.Disabled = &v
 }
 
 // GetFilterTypes returns the FilterTypes field value if set, zero value otherwise.
-func (o *EndpointIn) GetFilterTypes() []string {
+func (o *EndpointUpdate) GetFilterTypes() []string {
 	if o == nil || o.FilterTypes == nil {
 		var ret []string
 		return ret
@@ -130,7 +128,7 @@ func (o *EndpointIn) GetFilterTypes() []string {
 
 // GetFilterTypesOk returns a tuple with the FilterTypes field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *EndpointIn) GetFilterTypesOk() (*[]string, bool) {
+func (o *EndpointUpdate) GetFilterTypesOk() (*[]string, bool) {
 	if o == nil || o.FilterTypes == nil {
 		return nil, false
 	}
@@ -138,7 +136,7 @@ func (o *EndpointIn) GetFilterTypesOk() (*[]string, bool) {
 }
 
 // HasFilterTypes returns a boolean if a field has been set.
-func (o *EndpointIn) HasFilterTypes() bool {
+func (o *EndpointUpdate) HasFilterTypes() bool {
 	if o != nil && o.FilterTypes != nil {
 		return true
 	}
@@ -147,12 +145,12 @@ func (o *EndpointIn) HasFilterTypes() bool {
 }
 
 // SetFilterTypes gets a reference to the given []string and assigns it to the FilterTypes field.
-func (o *EndpointIn) SetFilterTypes(v []string) {
+func (o *EndpointUpdate) SetFilterTypes(v []string) {
 	o.FilterTypes = &v
 }
 
 // GetRateLimit returns the RateLimit field value if set, zero value otherwise.
-func (o *EndpointIn) GetRateLimit() int32 {
+func (o *EndpointUpdate) GetRateLimit() int32 {
 	if o == nil || o.RateLimit == nil {
 		var ret int32
 		return ret
@@ -162,7 +160,7 @@ func (o *EndpointIn) GetRateLimit() int32 {
 
 // GetRateLimitOk returns a tuple with the RateLimit field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *EndpointIn) GetRateLimitOk() (*int32, bool) {
+func (o *EndpointUpdate) GetRateLimitOk() (*int32, bool) {
 	if o == nil || o.RateLimit == nil {
 		return nil, false
 	}
@@ -170,7 +168,7 @@ func (o *EndpointIn) GetRateLimitOk() (*int32, bool) {
 }
 
 // HasRateLimit returns a boolean if a field has been set.
-func (o *EndpointIn) HasRateLimit() bool {
+func (o *EndpointUpdate) HasRateLimit() bool {
 	if o != nil && o.RateLimit != nil {
 		return true
 	}
@@ -179,44 +177,12 @@ func (o *EndpointIn) HasRateLimit() bool {
 }
 
 // SetRateLimit gets a reference to the given int32 and assigns it to the RateLimit field.
-func (o *EndpointIn) SetRateLimit(v int32) {
+func (o *EndpointUpdate) SetRateLimit(v int32) {
 	o.RateLimit = &v
 }
 
-// GetSecret returns the Secret field value if set, zero value otherwise.
-func (o *EndpointIn) GetSecret() string {
-	if o == nil || o.Secret == nil {
-		var ret string
-		return ret
-	}
-	return *o.Secret
-}
-
-// GetSecretOk returns a tuple with the Secret field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *EndpointIn) GetSecretOk() (*string, bool) {
-	if o == nil || o.Secret == nil {
-		return nil, false
-	}
-	return o.Secret, true
-}
-
-// HasSecret returns a boolean if a field has been set.
-func (o *EndpointIn) HasSecret() bool {
-	if o != nil && o.Secret != nil {
-		return true
-	}
-
-	return false
-}
-
-// SetSecret gets a reference to the given string and assigns it to the Secret field.
-func (o *EndpointIn) SetSecret(v string) {
-	o.Secret = &v
-}
-
 // GetUid returns the Uid field value if set, zero value otherwise.
-func (o *EndpointIn) GetUid() string {
+func (o *EndpointUpdate) GetUid() string {
 	if o == nil || o.Uid == nil {
 		var ret string
 		return ret
@@ -226,7 +192,7 @@ func (o *EndpointIn) GetUid() string {
 
 // GetUidOk returns a tuple with the Uid field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *EndpointIn) GetUidOk() (*string, bool) {
+func (o *EndpointUpdate) GetUidOk() (*string, bool) {
 	if o == nil || o.Uid == nil {
 		return nil, false
 	}
@@ -234,7 +200,7 @@ func (o *EndpointIn) GetUidOk() (*string, bool) {
 }
 
 // HasUid returns a boolean if a field has been set.
-func (o *EndpointIn) HasUid() bool {
+func (o *EndpointUpdate) HasUid() bool {
 	if o != nil && o.Uid != nil {
 		return true
 	}
@@ -243,12 +209,12 @@ func (o *EndpointIn) HasUid() bool {
 }
 
 // SetUid gets a reference to the given string and assigns it to the Uid field.
-func (o *EndpointIn) SetUid(v string) {
+func (o *EndpointUpdate) SetUid(v string) {
 	o.Uid = &v
 }
 
 // GetUrl returns the Url field value
-func (o *EndpointIn) GetUrl() string {
+func (o *EndpointUpdate) GetUrl() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -259,7 +225,7 @@ func (o *EndpointIn) GetUrl() string {
 
 // GetUrlOk returns a tuple with the Url field value
 // and a boolean to check if the value has been set.
-func (o *EndpointIn) GetUrlOk() (*string, bool) {
+func (o *EndpointUpdate) GetUrlOk() (*string, bool) {
 	if o == nil  {
 		return nil, false
 	}
@@ -267,12 +233,12 @@ func (o *EndpointIn) GetUrlOk() (*string, bool) {
 }
 
 // SetUrl sets field value
-func (o *EndpointIn) SetUrl(v string) {
+func (o *EndpointUpdate) SetUrl(v string) {
 	o.Url = v
 }
 
 // GetVersion returns the Version field value
-func (o *EndpointIn) GetVersion() int32 {
+func (o *EndpointUpdate) GetVersion() int32 {
 	if o == nil {
 		var ret int32
 		return ret
@@ -283,7 +249,7 @@ func (o *EndpointIn) GetVersion() int32 {
 
 // GetVersionOk returns a tuple with the Version field value
 // and a boolean to check if the value has been set.
-func (o *EndpointIn) GetVersionOk() (*int32, bool) {
+func (o *EndpointUpdate) GetVersionOk() (*int32, bool) {
 	if o == nil  {
 		return nil, false
 	}
@@ -291,11 +257,11 @@ func (o *EndpointIn) GetVersionOk() (*int32, bool) {
 }
 
 // SetVersion sets field value
-func (o *EndpointIn) SetVersion(v int32) {
+func (o *EndpointUpdate) SetVersion(v int32) {
 	o.Version = v
 }
 
-func (o EndpointIn) MarshalJSON() ([]byte, error) {
+func (o EndpointUpdate) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if o.Description != nil {
 		toSerialize["description"] = o.Description
@@ -309,9 +275,6 @@ func (o EndpointIn) MarshalJSON() ([]byte, error) {
 	if o.RateLimit != nil {
 		toSerialize["rateLimit"] = o.RateLimit
 	}
-	if o.Secret != nil {
-		toSerialize["secret"] = o.Secret
-	}
 	if o.Uid != nil {
 		toSerialize["uid"] = o.Uid
 	}
@@ -324,38 +287,38 @@ func (o EndpointIn) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-type NullableEndpointIn struct {
-	value *EndpointIn
+type NullableEndpointUpdate struct {
+	value *EndpointUpdate
 	isSet bool
 }
 
-func (v NullableEndpointIn) Get() *EndpointIn {
+func (v NullableEndpointUpdate) Get() *EndpointUpdate {
 	return v.value
 }
 
-func (v *NullableEndpointIn) Set(val *EndpointIn) {
+func (v *NullableEndpointUpdate) Set(val *EndpointUpdate) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableEndpointIn) IsSet() bool {
+func (v NullableEndpointUpdate) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableEndpointIn) Unset() {
+func (v *NullableEndpointUpdate) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableEndpointIn(val *EndpointIn) *NullableEndpointIn {
-	return &NullableEndpointIn{value: val, isSet: true}
+func NewNullableEndpointUpdate(val *EndpointUpdate) *NullableEndpointUpdate {
+	return &NullableEndpointUpdate{value: val, isSet: true}
 }
 
-func (v NullableEndpointIn) MarshalJSON() ([]byte, error) {
+func (v NullableEndpointUpdate) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableEndpointIn) UnmarshalJSON(src []byte) error {
+func (v *NullableEndpointUpdate) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

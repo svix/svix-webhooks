@@ -9,6 +9,7 @@ import (
 type (
 	ListResponseEndpointOut openapi.ListResponseEndpointOut
 	EndpointIn              openapi.EndpointIn
+	EndpointUpdate          openapi.EndpointUpdate
 	EndpointOut             openapi.EndpointOut
 	EndpointSecretOut       openapi.EndpointSecretOut
 )
@@ -61,9 +62,9 @@ func (e *Endpoint) Get(appId string, endpointId string) (*EndpointOut, error) {
 	return &ret, nil
 }
 
-func (e *Endpoint) Update(appId string, endpointId string, endpointIn *EndpointIn) (*EndpointOut, error) {
+func (e *Endpoint) Update(appId string, endpointId string, endpointUpdate *EndpointUpdate) (*EndpointOut, error) {
 	req := e.api.EndpointApi.UpdateEndpointApiV1AppAppIdEndpointEndpointIdPut(context.Background(), endpointId, appId)
-	req = req.EndpointIn(openapi.EndpointIn(*endpointIn))
+	req = req.EndpointUpdate(openapi.EndpointUpdate(*endpointUpdate))
 	out, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)

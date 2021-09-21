@@ -267,6 +267,12 @@
                         "title": "Ratelimit",
                         "type": "integer"
                     },
+                    "secret": {
+                        "description": "The endpoint's verification secret. If `null` is passed, a secret is automatically generated.",
+                        "example": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD",
+                        "title": "Secret",
+                        "type": "string"
+                    },
                     "uid": {
                         "description": "Optional unique identifier for the endpoint",
                         "example": "unique-endpoint-identifier",
@@ -431,6 +437,8 @@
             "EndpointSecretOut": {
                 "properties": {
                     "key": {
+                        "description": "The endpoint's verification secret. If `null` is passed, a secret is automatically generated.",
+                        "example": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD",
                         "title": "Key",
                         "type": "string"
                     }
@@ -467,6 +475,69 @@
                     "fail"
                 ],
                 "title": "EndpointStats",
+                "type": "object"
+            },
+            "EndpointUpdate": {
+                "properties": {
+                    "description": {
+                        "default": "",
+                        "example": "An example endpoint name",
+                        "title": "Description",
+                        "type": "string"
+                    },
+                    "disabled": {
+                        "default": false,
+                        "example": false,
+                        "title": "Disabled",
+                        "type": "boolean"
+                    },
+                    "filterTypes": {
+                        "example": [
+                            "user.signup",
+                            "user.deleted"
+                        ],
+                        "items": {
+                            "type": "string"
+                        },
+                        "title": "Filtertypes",
+                        "type": "array",
+                        "uniqueItems": true
+                    },
+                    "rateLimit": {
+                        "example": 1000,
+                        "exclusiveMinimum": 0.0,
+                        "title": "Ratelimit",
+                        "type": "integer"
+                    },
+                    "uid": {
+                        "description": "Optional unique identifier for the endpoint",
+                        "example": "unique-endpoint-identifier",
+                        "maxLength": 256,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "title": "Uid",
+                        "type": "string"
+                    },
+                    "url": {
+                        "example": "https://example.com/webhook/",
+                        "format": "uri",
+                        "maxLength": 65536,
+                        "minLength": 1,
+                        "title": "Url",
+                        "type": "string"
+                    },
+                    "version": {
+                        "example": 1,
+                        "exclusiveMinimum": 0.0,
+                        "title": "Version",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "url",
+                    "version"
+                ],
+                "title": "EndpointUpdate",
                 "type": "object"
             },
             "EndpointUpdatedEventData": {
@@ -2221,7 +2292,7 @@
                 ]
             },
             "post": {
-                "description": "Create a new endpoint for the application.",
+                "description": "Create a new endpoint for the application.\n\nWhen `secret` is `null` the secret is automatically generated (recommended)",
                 "operationId": "create_endpoint_api_v1_app__app_id__endpoint__post",
                 "parameters": [
                     {
@@ -2324,42 +2395,42 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const endpointOut = await svix.endpoint.create('app_id', {\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000\n});"
+                        "source": "const endpointOut = await svix.endpoint.create('app_id', {\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const endpointOut = await svix.endpoint.create('app_id', {\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000\n});"
+                        "source": "const endpointOut = await svix.endpoint.create('app_id', {\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "endpoint_out = svix.endpoint.create('app_id', EndpointIn(\n    uid=\"unique-endpoint-identifier\",\n    url=\"https://example.com/webhook/\",\n    version=1,\n    description=\"An example endpoint name\",\n    filter_types=['user.signup', 'user.deleted'],\n    disabled=False,\n    rate_limit=1000\n))"
+                        "source": "endpoint_out = svix.endpoint.create('app_id', EndpointIn(\n    uid=\"unique-endpoint-identifier\",\n    url=\"https://example.com/webhook/\",\n    version=1,\n    description=\"An example endpoint name\",\n    filter_types=['user.signup', 'user.deleted'],\n    disabled=False,\n    rate_limit=1000,\n    secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "endpointOut, err := svixClient.Endpoint.Create(\"app_id\", &svix.EndpointIn{\n    Uid: \"unique-endpoint-identifier\",\n    Url: \"https://example.com/webhook/\",\n    Version: 1,\n    Description: \"An example endpoint name\",\n    FilterTypes: [...]string{\"user.signup\", \"user.deleted\"},\n    Disabled: False,\n    RateLimit: 1000\n})"
+                        "source": "endpointOut, err := svixClient.Endpoint.Create(\"app_id\", &svix.EndpointIn{\n    Uid: \"unique-endpoint-identifier\",\n    Url: \"https://example.com/webhook/\",\n    Version: 1,\n    Description: \"An example endpoint name\",\n    FilterTypes: [...]string{\"user.signup\", \"user.deleted\"},\n    Disabled: False,\n    RateLimit: 1000,\n    Secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val endpointOut = svix.endpoint.create('app_id', EndpointIn()\n    .uid(\"unique-endpoint-identifier\"),\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\")),\n    .disabled(False),\n    .rateLimit(1000)\n)"
+                        "source": "val endpointOut = svix.endpoint.create('app_id', EndpointIn()\n    .uid(\"unique-endpoint-identifier\"),\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\")),\n    .disabled(False),\n    .rateLimit(1000),\n    .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "EndpointOut endpointOut = svix.getEndpoint().create('app_id', new EndpointIn()\n    .uid(\"unique-endpoint-identifier\"),\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"}),\n    .disabled(False),\n    .rateLimit(1000)\n)"
+                        "source": "EndpointOut endpointOut = svix.getEndpoint().create('app_id', new EndpointIn()\n    .uid(\"unique-endpoint-identifier\"),\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"}),\n    .disabled(False),\n    .rateLimit(1000),\n    .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n)"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix endpoint create 'app_id' '{\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000\n}'"
+                        "source": "svix endpoint create 'app_id' '{\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'\n  -d '{\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000\n}'"
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'\n  -d '{\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}'"
                     }
                 ]
             }
@@ -2689,7 +2760,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/EndpointIn"
+                                "$ref": "#/components/schemas/EndpointUpdate"
                             }
                         }
                     },
@@ -2780,22 +2851,22 @@
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "endpoint_out = svix.endpoint.update('app_id', 'endpoint_id', EndpointIn(\n    uid=\"unique-endpoint-identifier\",\n    url=\"https://example.com/webhook/\",\n    version=1,\n    description=\"An example endpoint name\",\n    filter_types=['user.signup', 'user.deleted'],\n    disabled=False,\n    rate_limit=1000\n))"
+                        "source": "endpoint_out = svix.endpoint.update('app_id', 'endpoint_id', EndpointUpdate(\n    uid=\"unique-endpoint-identifier\",\n    url=\"https://example.com/webhook/\",\n    version=1,\n    description=\"An example endpoint name\",\n    filter_types=['user.signup', 'user.deleted'],\n    disabled=False,\n    rate_limit=1000\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "endpointOut, err := svixClient.Endpoint.Update(\"app_id\", \"endpoint_id\", &svix.EndpointIn{\n    Uid: \"unique-endpoint-identifier\",\n    Url: \"https://example.com/webhook/\",\n    Version: 1,\n    Description: \"An example endpoint name\",\n    FilterTypes: [...]string{\"user.signup\", \"user.deleted\"},\n    Disabled: False,\n    RateLimit: 1000\n})"
+                        "source": "endpointOut, err := svixClient.Endpoint.Update(\"app_id\", \"endpoint_id\", &svix.EndpointUpdate{\n    Uid: \"unique-endpoint-identifier\",\n    Url: \"https://example.com/webhook/\",\n    Version: 1,\n    Description: \"An example endpoint name\",\n    FilterTypes: [...]string{\"user.signup\", \"user.deleted\"},\n    Disabled: False,\n    RateLimit: 1000\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val endpointOut = svix.endpoint.update('app_id', 'endpoint_id', EndpointIn()\n    .uid(\"unique-endpoint-identifier\"),\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\")),\n    .disabled(False),\n    .rateLimit(1000)\n)"
+                        "source": "val endpointOut = svix.endpoint.update('app_id', 'endpoint_id', EndpointUpdate()\n    .uid(\"unique-endpoint-identifier\"),\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\")),\n    .disabled(False),\n    .rateLimit(1000)\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "EndpointOut endpointOut = svix.getEndpoint().update('app_id', 'endpoint_id', new EndpointIn()\n    .uid(\"unique-endpoint-identifier\"),\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"}),\n    .disabled(False),\n    .rateLimit(1000)\n)"
+                        "source": "EndpointOut endpointOut = svix.getEndpoint().update('app_id', 'endpoint_id', new EndpointUpdate()\n    .uid(\"unique-endpoint-identifier\"),\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"}),\n    .disabled(False),\n    .rateLimit(1000)\n)"
                     },
                     {
                         "label": "CLI",

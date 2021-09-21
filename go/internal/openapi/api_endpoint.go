@@ -46,6 +46,8 @@ func (r ApiCreateEndpointApiV1AppAppIdEndpointPostRequest) Execute() (EndpointOu
 /*
  * CreateEndpointApiV1AppAppIdEndpointPost Create Endpoint
  * Create a new endpoint for the application.
+
+When `secret` is `null` the secret is automatically generated (recommended)
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param appId
  * @return ApiCreateEndpointApiV1AppAppIdEndpointPostRequest
@@ -1237,11 +1239,11 @@ type ApiUpdateEndpointApiV1AppAppIdEndpointEndpointIdPutRequest struct {
 	ApiService *EndpointApiService
 	endpointId string
 	appId string
-	endpointIn *EndpointIn
+	endpointUpdate *EndpointUpdate
 }
 
-func (r ApiUpdateEndpointApiV1AppAppIdEndpointEndpointIdPutRequest) EndpointIn(endpointIn EndpointIn) ApiUpdateEndpointApiV1AppAppIdEndpointEndpointIdPutRequest {
-	r.endpointIn = &endpointIn
+func (r ApiUpdateEndpointApiV1AppAppIdEndpointEndpointIdPutRequest) EndpointUpdate(endpointUpdate EndpointUpdate) ApiUpdateEndpointApiV1AppAppIdEndpointEndpointIdPutRequest {
+	r.endpointUpdate = &endpointUpdate
 	return r
 }
 
@@ -1304,8 +1306,8 @@ func (a *EndpointApiService) UpdateEndpointApiV1AppAppIdEndpointEndpointIdPutExe
 	if strlen(r.appId) > 256 {
 		return localVarReturnValue, nil, reportError("appId must have less than 256 elements")
 	}
-	if r.endpointIn == nil {
-		return localVarReturnValue, nil, reportError("endpointIn is required and must be specified")
+	if r.endpointUpdate == nil {
+		return localVarReturnValue, nil, reportError("endpointUpdate is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -1326,7 +1328,7 @@ func (a *EndpointApiService) UpdateEndpointApiV1AppAppIdEndpointEndpointIdPutExe
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.endpointIn
+	localVarPostBody = r.endpointUpdate
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return localVarReturnValue, nil, err
