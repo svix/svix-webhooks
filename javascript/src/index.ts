@@ -11,6 +11,7 @@ import {
   ListResponseEndpointOut,
   EndpointOut,
   EndpointIn,
+  EndpointUpdate,
   EndpointSecretOut,
   MessageApi,
   MessageOut,
@@ -188,12 +189,12 @@ class Endpoint {
   public update(
     appId: string,
     endpointId: string,
-    endpointIn: EndpointIn
+    endpointUpdate: EndpointUpdate
   ): Promise<EndpointOut> {
     return this.api.updateEndpointApiV1AppAppIdEndpointEndpointIdPut({
       appId,
       endpointId,
-      endpointIn,
+      endpointUpdate,
     });
   }
 
