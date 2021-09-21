@@ -17,6 +17,7 @@ from .openapi_client.model.dashboard_access_out import DashboardAccessOut
 from .openapi_client.model.endpoint_in import EndpointIn
 from .openapi_client.model.endpoint_out import EndpointOut
 from .openapi_client.model.endpoint_secret_out import EndpointSecretOut
+from .openapi_client.model.endpoint_update import EndpointUpdate
 from .openapi_client.model.event_type_in import EventTypeIn
 from .openapi_client.model.event_type_out import EventTypeOut
 from .openapi_client.model.event_type_update import EventTypeUpdate
@@ -161,10 +162,10 @@ class Endpoint(ApiBase[EndpointApi]):
                 app_id=app_id, endpoint_id=endpoint_id, _check_return_type=False
             )
 
-    def update(self, app_id: str, endpoint_id: str, endpoint_in: EndpointIn) -> EndpointOut:
+    def update(self, app_id: str, endpoint_id: str, endpoint_update: EndpointUpdate) -> EndpointOut:
         with self._api() as api:
             return api.update_endpoint_api_v1_app_app_id_endpoint_endpoint_id_put(
-                app_id=app_id, endpoint_id=endpoint_id, endpoint_in=endpoint_in, _check_return_type=False
+                app_id=app_id, endpoint_id=endpoint_id, endpoint_update=endpoint_update, _check_return_type=False
             )
 
     def delete(self, app_id: str, endpoint_id: str) -> None:
