@@ -1,10 +1,6 @@
 package com.svix.kotlin
 
-open class ListOptions {
-    var iterator = ""
-    var limit = 50
-
-    open fun iterator(iterator: String) = apply { this.iterator = iterator }
-
-    open fun limit(limit: Int) = apply { this.limit = limit }
+abstract class ListOptions {
+    abstract var iterator: String?
+    abstract var limit: Int?
 }
