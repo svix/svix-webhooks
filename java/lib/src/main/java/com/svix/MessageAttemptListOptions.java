@@ -13,16 +13,6 @@ public class MessageAttemptListOptions extends ListOptions {
         super();
 	}
 
-	@Override
-	public MessageAttemptListOptions iterator(final String iterator) {
-		return (MessageAttemptListOptions) super.iterator(iterator);
-	}
-
-	@Override
-	public MessageAttemptListOptions limit(final Integer limit) {
-		return (MessageAttemptListOptions) super.limit(limit);
-	}
-
 	public MessageAttemptListOptions messageStatus(final MessageStatus status) {
 		this.status = status;
 		return this;
