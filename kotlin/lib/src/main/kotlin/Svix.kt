@@ -7,12 +7,12 @@ class Svix(token: String, options: SvixOptions = SvixOptions()) {
 //        val VERSION = "0.29.0"
 //    }
 
-    private val application: Application
-    private val authentication: Authentication
-    private val endpoint: Endpoint
-    private val eventType: EventType
-    private val message: Message
-    private val messageAttempt: MessageAttempt
+    val application: Application
+    val authentication: Authentication
+    val endpoint: Endpoint
+    val eventType: EventType
+    val message: Message
+    val messageAttempt: MessageAttempt
 
     init {
         // FIXME the way ApiClient is generated makes it global...
