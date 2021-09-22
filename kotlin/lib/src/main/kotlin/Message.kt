@@ -9,7 +9,7 @@ import com.svix.kotlin.models.MessageOut
 class Message internal constructor(options: SvixOptions) {
     val api = MessageApi(options.debugUrl)
 
-    suspend fun list(appId: String, options: MessageListOptions): ListResponseMessageOut {
+    suspend fun list(appId: String, options: MessageListOptions = MessageListOptions()): ListResponseMessageOut {
         try {
             return api.listMessagesApiV1AppAppIdMsgGet(appId, options.iterator, options.limit, options.eventTypes, options.before)
         } catch (e: Exception) {

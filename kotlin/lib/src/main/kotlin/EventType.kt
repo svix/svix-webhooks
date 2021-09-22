@@ -10,7 +10,7 @@ import com.svix.kotlin.models.ListResponseEventTypeOut
 class EventType internal constructor(options: SvixOptions) {
     val api = EventTypeApi(options.debugUrl)
 
-    suspend fun list(options: EventTypeListOptions): ListResponseEventTypeOut {
+    suspend fun list(options: EventTypeListOptions = EventTypeListOptions()): ListResponseEventTypeOut {
         try {
             return api.listEventTypesApiV1EventTypeGet(options.iterator, options.limit, options.withContent)
         } catch (e: Exception) {

@@ -44,7 +44,7 @@ class MessageAttempt internal constructor(options: SvixOptions) {
     suspend fun listAttemptedMessages(
         appId: String,
         endpointId: String,
-        options: MessageAttemptListOptions
+        options: MessageAttemptListOptions = MessageAttemptListOptions()
     ): ListResponseEndpointMessageOut {
         try {
             return api.listAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGet(
@@ -63,7 +63,7 @@ class MessageAttempt internal constructor(options: SvixOptions) {
     suspend fun listAttemptedDestinations(
         msgId: String,
         appId: String,
-        options: MessageAttemptListOptions
+        options: MessageAttemptListOptions = MessageAttemptListOptions()
     ): ListResponseMessageEndpointOut {
         try {
             return api.listAttemptedDestinationsApiV1AppAppIdMsgMsgIdEndpointGet(
@@ -81,7 +81,7 @@ class MessageAttempt internal constructor(options: SvixOptions) {
         msgId: String,
         appId: String,
         endpointId: String,
-        options: MessageAttemptListOptions
+        options: MessageAttemptListOptions = MessageAttemptListOptions()
     ): ListResponseMessageAttemptEndpointOut {
         return try {
             api.listAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGet(

@@ -1,7 +1,7 @@
 package com.svix.kotlin
 
 class EventTypeListOptions() : ListOptions() {
-    var withContent: Boolean = false
+    var withContent: Boolean? = null
 
     fun withContent(withContent: Boolean) = apply { this.withContent = withContent }
 

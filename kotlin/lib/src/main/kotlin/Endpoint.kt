@@ -10,7 +10,7 @@ import com.svix.kotlin.models.ListResponseEndpointOut
 class Endpoint internal constructor(options: SvixOptions) {
     val api = EndpointApi(options.debugUrl)
 
-    suspend fun list(appId: String, options: EndpointListOptions): ListResponseEndpointOut {
+    suspend fun list(appId: String, options: EndpointListOptions = EndpointListOptions()): ListResponseEndpointOut {
         try {
             return api.listEndpointsApiV1AppAppIdEndpointGet(appId, options.iterator, options.limit)
         } catch (e: Exception) {

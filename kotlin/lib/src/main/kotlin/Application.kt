@@ -9,7 +9,7 @@ import com.svix.kotlin.models.ListResponseApplicationOut
 class Application internal constructor(options: SvixOptions) {
     private val api = ApplicationApi(options.debugUrl)
 
-    suspend fun list(options: ApplicationListOptions): ListResponseApplicationOut {
+    suspend fun list(options: ApplicationListOptions = ApplicationListOptions()): ListResponseApplicationOut {
         try {
             return api.listApplicationsApiV1AppGet(options.iterator, options.limit)
         } catch (e: Exception) {
