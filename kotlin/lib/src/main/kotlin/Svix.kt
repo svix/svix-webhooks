@@ -2,23 +2,17 @@ package com.svix.kotlin
 
 import com.svix.kotlin.internal.infrastructure.ApiClient
 
-data class SvixOptions(val debugUrl: String = DEFAULT_URL) {
-    companion object {
-        val DEFAULT_URL = "https://api.svix.com"
-    }
-}
-
 class Svix(token: String, svixOptions: SvixOptions = SvixOptions()) {
     companion object {
-        val VERSION = "0.28.0"
+        val VERSION = "0.29.0"
     }
 
-    val application: Application
-    val authentication: Authentication
-    val endpoint: Endpoint
-    val eventType: EventType
-    val message: Message
-    val messageAttempt: MessageAttempt
+    private val application: Application
+    private val authentication: Authentication
+    private val endpoint: Endpoint
+    private val eventType: EventType
+    private val message: Message
+    private val messageAttempt: MessageAttempt
 
     init {
         ApiClient.accessToken = token

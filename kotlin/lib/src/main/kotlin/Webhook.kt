@@ -16,19 +16,19 @@ class Webhook(secret: String) {
 
     @Throws(WebhookVerificationException::class)
     fun verify(payload: String?, headers: HttpHeaders) {
-        var msgId = headers.firstValue(Webhook.Companion.SVIX_MSG_ID_KEY)
-        var msgSignature = headers.firstValue(Webhook.Companion.SVIX_MSG_SIGNATURE_KEY)
-        var msgTimestamp = headers.firstValue(Webhook.Companion.SVIX_MSG_TIMESTAMP_KEY)
+        var msgId = headers.firstValue(SVIX_MSG_ID_KEY)
+        var msgSignature = headers.firstValue(SVIX_MSG_SIGNATURE_KEY)
+        var msgTimestamp = headers.firstValue(SVIX_MSG_TIMESTAMP_KEY)
         if (msgId.isEmpty || msgSignature.isEmpty || msgTimestamp.isEmpty) {
             // fallback to unbranded
-            msgId = headers.firstValue(Webhook.Companion.UNBRANDED_MSG_ID_KEY)
-            msgSignature = headers.firstValue(Webhook.Companion.UNBRANDED_MSG_SIGNATURE_KEY)
-            msgTimestamp = headers.firstValue(Webhook.Companion.UNBRANDED_MSG_TIMESTAMP_KEY)
+            msgId = headers.firstValue(UNBRANDED_MSG_ID_KEY)
+            msgSignature = headers.firstValue(UNBRANDED_MSG_SIGNATURE_KEY)
+            msgTimestamp = headers.firstValue(UNBRANDED_MSG_TIMESTAMP_KEY)
             if (msgId.isEmpty || msgSignature.isEmpty || msgTimestamp.isEmpty) {
                 throw WebhookVerificationException("Missing required headers")
             }
         }
-        val timestamp: Long = Webhook.Companion.verifyTimestamp(msgTimestamp.get())
+        val timestamp: Long = verifyTimestamp(msgTimestamp.get())
         val expectedSignature: String = try {
             sign(msgId.get(), timestamp, payload).split(",".toRegex()).toTypedArray()[1]
         } catch (e: WebhookSigningException) {
@@ -56,7 +56,7 @@ class Webhook(secret: String) {
     fun sign(msgId: String?, timestamp: Long, payload: String?): String {
         return try {
             val toSign = String.format("%s.%s.%s", msgId, timestamp, payload)
-            val sha512Hmac: Mac = Mac.getInstance(Webhook.Companion.HMAC_SHA256)
+            val sha512Hmac: Mac = Mac.getInstance(HMAC_SHA256)
             val keySpec = SecretKeySpec(key, HMAC_SHA256)
             sha512Hmac.init(keySpec)
             val macData: ByteArray = sha512Hmac.doFinal(toSign.toByteArray(StandardCharsets.UTF_8))
@@ -83,17 +83,17 @@ class Webhook(secret: String) {
 
         @Throws(WebhookVerificationException::class)
         private fun verifyTimestamp(timestampHeader: String): Long {
-            val now: Long = System.currentTimeMillis() / Webhook.Companion.SECOND_IN_MS
-            val timestamp: Long
-            timestamp = try {
+            val now: Long = System.currentTimeMillis() / SECOND_IN_MS
+            val timestamp: Long = try {
                 timestampHeader.toLong()
             } catch (e: NumberFormatException) {
                 throw WebhookVerificationException("Invalid Signature Headers")
             }
-            if (timestamp < now - Webhook.Companion.TOLERANCE_IN_SECONDS) {
+
+            if (timestamp < now - TOLERANCE_IN_SECONDS) {
                 throw WebhookVerificationException("Message timestamp too old")
             }
-            if (timestamp > now + Webhook.Companion.TOLERANCE_IN_SECONDS) {
+            if (timestamp > now + TOLERANCE_IN_SECONDS) {
                 throw WebhookVerificationException("Message timestamp too new")
             }
             return timestamp
@@ -102,8 +102,8 @@ class Webhook(secret: String) {
 
     init {
         var sec = secret
-        if (sec.startsWith(Webhook.Companion.SECRET_PREFIX)) {
-            sec = sec.substring(Webhook.Companion.SECRET_PREFIX.length)
+        if (sec.startsWith(SECRET_PREFIX)) {
+            sec = sec.substring(SECRET_PREFIX.length)
         }
         key = Base64.getDecoder().decode(sec)
     }

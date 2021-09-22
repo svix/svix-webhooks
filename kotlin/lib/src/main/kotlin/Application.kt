@@ -2,20 +2,12 @@ package com.svix.kotlin
 
 import com.svix.kotlin.exceptions.ApiException
 import com.svix.kotlin.internal.apis.ApplicationApi
-import com.svix.kotlin.internal.infrastructure.ClientException
-import com.svix.kotlin.internal.infrastructure.ServerException
 import com.svix.kotlin.models.ApplicationIn
 import com.svix.kotlin.models.ApplicationOut
 import com.svix.kotlin.models.ListResponseApplicationOut
 
-class ApplicationListOptions() : ListOptions() {
-    override fun iterator(iterator: String) = apply { super.iterator(iterator) }
-
-    override fun limit(limit: Int) = apply { super.limit(limit) }
-}
-
 class Application internal constructor(debugUrl: String) {
-    val api = ApplicationApi(debugUrl)
+    private val api = ApplicationApi(debugUrl)
 
     suspend fun list(options: ApplicationListOptions): ListResponseApplicationOut {
         try {

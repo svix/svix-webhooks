@@ -2,22 +2,11 @@ package com.svix.kotlin
 
 import com.svix.kotlin.exceptions.ApiException
 import com.svix.kotlin.internal.apis.MessageAttemptApi
-import com.svix.kotlin.internal.infrastructure.ClientException
-import com.svix.kotlin.internal.infrastructure.ServerException
 import com.svix.kotlin.models.ListResponseEndpointMessageOut
 import com.svix.kotlin.models.ListResponseMessageAttemptEndpointOut
 import com.svix.kotlin.models.ListResponseMessageAttemptOut
 import com.svix.kotlin.models.ListResponseMessageEndpointOut
 import com.svix.kotlin.models.MessageAttemptOut
-import com.svix.kotlin.models.MessageStatus
-
-class MessageAttemptListOptions(var messageStatus: MessageStatus? = null) : ListOptions() {
-    fun messageStatus(messageStatus: MessageStatus) = apply { this.messageStatus = messageStatus }
-
-    override fun iterator(iterator: kotlin.String) = apply { super.iterator(iterator) }
-
-    override fun limit(limit: kotlin.Int) = apply { super.limit(limit) }
-}
 
 class MessageAttempt internal constructor(debugUrl: String) {
     val api = MessageAttemptApi(debugUrl)
@@ -63,7 +52,8 @@ class MessageAttempt internal constructor(debugUrl: String) {
                 endpointId,
                 options.iterator,
                 options.limit,
-                options.messageStatus
+                options.messageStatus,
+                options.before
             )
         } catch (e: Exception) {
             throw ApiException.wrapInternalApiException(e)
@@ -93,14 +83,16 @@ class MessageAttempt internal constructor(debugUrl: String) {
         endpointId: String,
         options: MessageAttemptListOptions
     ): ListResponseMessageAttemptEndpointOut {
-        try {
-            return api.listAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGet(
+        return try {
+            api.listAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGet(
                 msgId,
                 appId,
                 endpointId,
                 options.iterator,
                 options.limit,
-                options.messageStatus
+                options.eventTypes,
+                options.messageStatus,
+                options.before
             )
         } catch (e: Exception) {
             throw ApiException.wrapInternalApiException(e)

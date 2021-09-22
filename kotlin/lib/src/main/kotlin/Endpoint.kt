@@ -2,17 +2,10 @@ package com.svix.kotlin
 
 import com.svix.kotlin.exceptions.ApiException
 import com.svix.kotlin.internal.apis.EndpointApi
-import com.svix.kotlin.internal.infrastructure.ClientException
-import com.svix.kotlin.internal.infrastructure.ServerException
 import com.svix.kotlin.models.EndpointIn
 import com.svix.kotlin.models.EndpointOut
+import com.svix.kotlin.models.EndpointUpdate
 import com.svix.kotlin.models.ListResponseEndpointOut
-
-class EndpointListOptions() : ListOptions() {
-    override fun iterator(iterator: String) = apply { super.iterator(iterator) }
-
-    override fun limit(limit: Int) = apply { super.limit(limit) }
-}
 
 class Endpoint internal constructor(debugUrl: String) {
     val api = EndpointApi(debugUrl)
@@ -41,9 +34,9 @@ class Endpoint internal constructor(debugUrl: String) {
         }
     }
 
-    suspend fun update(appId: String, endpointId: String, endpointIn: EndpointIn): EndpointOut {
+    suspend fun update(appId: String, endpointId: String, endpointUpdate: EndpointUpdate): EndpointOut {
         try {
-            return api.updateEndpointApiV1AppAppIdEndpointEndpointIdPut(appId, endpointId, endpointIn)
+            return api.updateEndpointApiV1AppAppIdEndpointEndpointIdPut(appId, endpointId, endpointUpdate)
         } catch (e: Exception) {
             throw ApiException.wrapInternalApiException(e)
         }

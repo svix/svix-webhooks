@@ -2,20 +2,10 @@ package com.svix.kotlin
 
 import com.svix.kotlin.exceptions.ApiException
 import com.svix.kotlin.internal.apis.EventTypeApi
-import com.svix.kotlin.internal.infrastructure.ClientException
-import com.svix.kotlin.internal.infrastructure.ServerException
 import com.svix.kotlin.models.EventTypeIn
 import com.svix.kotlin.models.EventTypeOut
 import com.svix.kotlin.models.EventTypeUpdate
 import com.svix.kotlin.models.ListResponseEventTypeOut
-
-class EventTypeListOptions(var withContent: Boolean = false) : ListOptions() {
-    fun withContent(withContent: Boolean) = apply { this.withContent = withContent }
-
-    override fun iterator(iterator: kotlin.String) = apply { super.iterator(iterator) }
-
-    override fun limit(limit: kotlin.Int) = apply { super.limit(limit) }
-}
 
 class EventType internal constructor(debugUrl: String) {
     val api = EventTypeApi(debugUrl)

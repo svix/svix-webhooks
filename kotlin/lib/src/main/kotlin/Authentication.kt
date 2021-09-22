@@ -2,8 +2,6 @@ package com.svix.kotlin
 
 import com.svix.kotlin.exceptions.ApiException
 import com.svix.kotlin.internal.apis.AuthenticationApi
-import com.svix.kotlin.internal.infrastructure.ClientException
-import com.svix.kotlin.internal.infrastructure.ServerException
 import com.svix.kotlin.models.DashboardAccessOut
 
 class Authentication internal constructor(debugUrl: String) {
