@@ -14,166 +14,158 @@ import (
 	"encoding/json"
 )
 
-// ApplicationIn struct for ApplicationIn
-type ApplicationIn struct {
-	Name string `json:"name"`
-	RateLimit *int32 `json:"rateLimit,omitempty"`
-	// Optional unique identifier for the application
-	Uid *string `json:"uid,omitempty"`
+// EndpointCreatedEventData struct for EndpointCreatedEventData
+type EndpointCreatedEventData struct {
+	AppId string `json:"appId"`
+	AppUid *string `json:"appUid,omitempty"`
+	EndpointId string `json:"endpointId"`
 }
 
-// NewApplicationIn instantiates a new ApplicationIn object
+// NewEndpointCreatedEventData instantiates a new EndpointCreatedEventData object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewApplicationIn(name string) *ApplicationIn {
-	this := ApplicationIn{}
-	this.Name = name
+func NewEndpointCreatedEventData(appId string, endpointId string) *EndpointCreatedEventData {
+	this := EndpointCreatedEventData{}
+	this.AppId = appId
+	this.EndpointId = endpointId
 	return &this
 }
 
-// NewApplicationInWithDefaults instantiates a new ApplicationIn object
+// NewEndpointCreatedEventDataWithDefaults instantiates a new EndpointCreatedEventData object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewApplicationInWithDefaults() *ApplicationIn {
-	this := ApplicationIn{}
+func NewEndpointCreatedEventDataWithDefaults() *EndpointCreatedEventData {
+	this := EndpointCreatedEventData{}
 	return &this
 }
 
-// GetName returns the Name field value
-func (o *ApplicationIn) GetName() string {
+// GetAppId returns the AppId field value
+func (o *EndpointCreatedEventData) GetAppId() string {
 	if o == nil {
 		var ret string
 		return ret
 	}
 
-	return o.Name
+	return o.AppId
 }
 
-// GetNameOk returns a tuple with the Name field value
+// GetAppIdOk returns a tuple with the AppId field value
 // and a boolean to check if the value has been set.
-func (o *ApplicationIn) GetNameOk() (*string, bool) {
+func (o *EndpointCreatedEventData) GetAppIdOk() (*string, bool) {
 	if o == nil  {
 		return nil, false
 	}
-	return &o.Name, true
+	return &o.AppId, true
 }
 
-// SetName sets field value
-func (o *ApplicationIn) SetName(v string) {
-	o.Name = v
+// SetAppId sets field value
+func (o *EndpointCreatedEventData) SetAppId(v string) {
+	o.AppId = v
 }
 
-// GetRateLimit returns the RateLimit field value if set, zero value otherwise.
-func (o *ApplicationIn) GetRateLimit() int32 {
-	if o == nil || o.RateLimit == nil {
-		var ret int32
-		return ret
-	}
-	return *o.RateLimit
-}
-
-// GetRateLimitOk returns a tuple with the RateLimit field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *ApplicationIn) GetRateLimitOk() (*int32, bool) {
-	if o == nil || o.RateLimit == nil {
-		return nil, false
-	}
-	return o.RateLimit, true
-}
-
-// HasRateLimit returns a boolean if a field has been set.
-func (o *ApplicationIn) HasRateLimit() bool {
-	if o != nil && o.RateLimit != nil {
-		return true
-	}
-
-	return false
-}
-
-// SetRateLimit gets a reference to the given int32 and assigns it to the RateLimit field.
-func (o *ApplicationIn) SetRateLimit(v int32) {
-	o.RateLimit = &v
-}
-
-// GetUid returns the Uid field value if set, zero value otherwise.
-func (o *ApplicationIn) GetUid() string {
-	if o == nil || o.Uid == nil {
+// GetAppUid returns the AppUid field value if set, zero value otherwise.
+func (o *EndpointCreatedEventData) GetAppUid() string {
+	if o == nil || o.AppUid == nil {
 		var ret string
 		return ret
 	}
-	return *o.Uid
+	return *o.AppUid
 }
 
-// GetUidOk returns a tuple with the Uid field value if set, nil otherwise
+// GetAppUidOk returns a tuple with the AppUid field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ApplicationIn) GetUidOk() (*string, bool) {
-	if o == nil || o.Uid == nil {
+func (o *EndpointCreatedEventData) GetAppUidOk() (*string, bool) {
+	if o == nil || o.AppUid == nil {
 		return nil, false
 	}
-	return o.Uid, true
+	return o.AppUid, true
 }
 
-// HasUid returns a boolean if a field has been set.
-func (o *ApplicationIn) HasUid() bool {
-	if o != nil && o.Uid != nil {
+// HasAppUid returns a boolean if a field has been set.
+func (o *EndpointCreatedEventData) HasAppUid() bool {
+	if o != nil && o.AppUid != nil {
 		return true
 	}
 
 	return false
 }
 
-// SetUid gets a reference to the given string and assigns it to the Uid field.
-func (o *ApplicationIn) SetUid(v string) {
-	o.Uid = &v
+// SetAppUid gets a reference to the given string and assigns it to the AppUid field.
+func (o *EndpointCreatedEventData) SetAppUid(v string) {
+	o.AppUid = &v
 }
 
-func (o ApplicationIn) MarshalJSON() ([]byte, error) {
+// GetEndpointId returns the EndpointId field value
+func (o *EndpointCreatedEventData) GetEndpointId() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.EndpointId
+}
+
+// GetEndpointIdOk returns a tuple with the EndpointId field value
+// and a boolean to check if the value has been set.
+func (o *EndpointCreatedEventData) GetEndpointIdOk() (*string, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.EndpointId, true
+}
+
+// SetEndpointId sets field value
+func (o *EndpointCreatedEventData) SetEndpointId(v string) {
+	o.EndpointId = v
+}
+
+func (o EndpointCreatedEventData) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
-		toSerialize["name"] = o.Name
+		toSerialize["appId"] = o.AppId
 	}
-	if o.RateLimit != nil {
-		toSerialize["rateLimit"] = o.RateLimit
+	if o.AppUid != nil {
+		toSerialize["appUid"] = o.AppUid
 	}
-	if o.Uid != nil {
-		toSerialize["uid"] = o.Uid
+	if true {
+		toSerialize["endpointId"] = o.EndpointId
 	}
 	return json.Marshal(toSerialize)
 }
 
-type NullableApplicationIn struct {
-	value *ApplicationIn
+type NullableEndpointCreatedEventData struct {
+	value *EndpointCreatedEventData
 	isSet bool
 }
 
-func (v NullableApplicationIn) Get() *ApplicationIn {
+func (v NullableEndpointCreatedEventData) Get() *EndpointCreatedEventData {
 	return v.value
 }
 
-func (v *NullableApplicationIn) Set(val *ApplicationIn) {
+func (v *NullableEndpointCreatedEventData) Set(val *EndpointCreatedEventData) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableApplicationIn) IsSet() bool {
+func (v NullableEndpointCreatedEventData) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableApplicationIn) Unset() {
+func (v *NullableEndpointCreatedEventData) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableApplicationIn(val *ApplicationIn) *NullableApplicationIn {
-	return &NullableApplicationIn{value: val, isSet: true}
+func NewNullableEndpointCreatedEventData(val *EndpointCreatedEventData) *NullableEndpointCreatedEventData {
+	return &NullableEndpointCreatedEventData{value: val, isSet: true}
 }
 
-func (v NullableApplicationIn) MarshalJSON() ([]byte, error) {
+func (v NullableEndpointCreatedEventData) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableApplicationIn) UnmarshalJSON(src []byte) error {
+func (v *NullableEndpointCreatedEventData) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

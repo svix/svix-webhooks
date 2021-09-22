@@ -23,6 +23,8 @@ type EndpointOut struct {
 	FilterTypes *[]string `json:"filterTypes,omitempty"`
 	Id string `json:"id"`
 	RateLimit *int32 `json:"rateLimit,omitempty"`
+	// Optional unique identifier for the endpoint
+	Uid *string `json:"uid,omitempty"`
 	Url string `json:"url"`
 	Version int32 `json:"version"`
 }
@@ -232,6 +234,38 @@ func (o *EndpointOut) SetRateLimit(v int32) {
 	o.RateLimit = &v
 }
 
+// GetUid returns the Uid field value if set, zero value otherwise.
+func (o *EndpointOut) GetUid() string {
+	if o == nil || o.Uid == nil {
+		var ret string
+		return ret
+	}
+	return *o.Uid
+}
+
+// GetUidOk returns a tuple with the Uid field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *EndpointOut) GetUidOk() (*string, bool) {
+	if o == nil || o.Uid == nil {
+		return nil, false
+	}
+	return o.Uid, true
+}
+
+// HasUid returns a boolean if a field has been set.
+func (o *EndpointOut) HasUid() bool {
+	if o != nil && o.Uid != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetUid gets a reference to the given string and assigns it to the Uid field.
+func (o *EndpointOut) SetUid(v string) {
+	o.Uid = &v
+}
+
 // GetUrl returns the Url field value
 func (o *EndpointOut) GetUrl() string {
 	if o == nil {
@@ -299,6 +333,9 @@ func (o EndpointOut) MarshalJSON() ([]byte, error) {
 	}
 	if o.RateLimit != nil {
 		toSerialize["rateLimit"] = o.RateLimit
+	}
+	if o.Uid != nil {
+		toSerialize["uid"] = o.Uid
 	}
 	if true {
 		toSerialize["url"] = o.Url

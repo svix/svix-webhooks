@@ -17,17 +17,23 @@ import (
 // WebhookTypes All of the webhook types that we support
 type WebhookTypes struct {
 	A EndpointDisabledEvent `json:"a"`
-	B MessageAttemptExhaustedEvent `json:"b"`
+	B EndpointCreatedEvent `json:"b"`
+	C EndpointdUpdatedEvent `json:"c"`
+	D EndpointDeletedEvent `json:"d"`
+	E MessageAttemptExhaustedEvent `json:"e"`
 }
 
 // NewWebhookTypes instantiates a new WebhookTypes object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewWebhookTypes(a EndpointDisabledEvent, b MessageAttemptExhaustedEvent) *WebhookTypes {
+func NewWebhookTypes(a EndpointDisabledEvent, b EndpointCreatedEvent, c EndpointdUpdatedEvent, d EndpointDeletedEvent, e MessageAttemptExhaustedEvent) *WebhookTypes {
 	this := WebhookTypes{}
 	this.A = a
 	this.B = b
+	this.C = c
+	this.D = d
+	this.E = e
 	return &this
 }
 
@@ -64,9 +70,9 @@ func (o *WebhookTypes) SetA(v EndpointDisabledEvent) {
 }
 
 // GetB returns the B field value
-func (o *WebhookTypes) GetB() MessageAttemptExhaustedEvent {
+func (o *WebhookTypes) GetB() EndpointCreatedEvent {
 	if o == nil {
-		var ret MessageAttemptExhaustedEvent
+		var ret EndpointCreatedEvent
 		return ret
 	}
 
@@ -75,7 +81,7 @@ func (o *WebhookTypes) GetB() MessageAttemptExhaustedEvent {
 
 // GetBOk returns a tuple with the B field value
 // and a boolean to check if the value has been set.
-func (o *WebhookTypes) GetBOk() (*MessageAttemptExhaustedEvent, bool) {
+func (o *WebhookTypes) GetBOk() (*EndpointCreatedEvent, bool) {
 	if o == nil  {
 		return nil, false
 	}
@@ -83,8 +89,80 @@ func (o *WebhookTypes) GetBOk() (*MessageAttemptExhaustedEvent, bool) {
 }
 
 // SetB sets field value
-func (o *WebhookTypes) SetB(v MessageAttemptExhaustedEvent) {
+func (o *WebhookTypes) SetB(v EndpointCreatedEvent) {
 	o.B = v
+}
+
+// GetC returns the C field value
+func (o *WebhookTypes) GetC() EndpointdUpdatedEvent {
+	if o == nil {
+		var ret EndpointdUpdatedEvent
+		return ret
+	}
+
+	return o.C
+}
+
+// GetCOk returns a tuple with the C field value
+// and a boolean to check if the value has been set.
+func (o *WebhookTypes) GetCOk() (*EndpointdUpdatedEvent, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.C, true
+}
+
+// SetC sets field value
+func (o *WebhookTypes) SetC(v EndpointdUpdatedEvent) {
+	o.C = v
+}
+
+// GetD returns the D field value
+func (o *WebhookTypes) GetD() EndpointDeletedEvent {
+	if o == nil {
+		var ret EndpointDeletedEvent
+		return ret
+	}
+
+	return o.D
+}
+
+// GetDOk returns a tuple with the D field value
+// and a boolean to check if the value has been set.
+func (o *WebhookTypes) GetDOk() (*EndpointDeletedEvent, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.D, true
+}
+
+// SetD sets field value
+func (o *WebhookTypes) SetD(v EndpointDeletedEvent) {
+	o.D = v
+}
+
+// GetE returns the E field value
+func (o *WebhookTypes) GetE() MessageAttemptExhaustedEvent {
+	if o == nil {
+		var ret MessageAttemptExhaustedEvent
+		return ret
+	}
+
+	return o.E
+}
+
+// GetEOk returns a tuple with the E field value
+// and a boolean to check if the value has been set.
+func (o *WebhookTypes) GetEOk() (*MessageAttemptExhaustedEvent, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.E, true
+}
+
+// SetE sets field value
+func (o *WebhookTypes) SetE(v MessageAttemptExhaustedEvent) {
+	o.E = v
 }
 
 func (o WebhookTypes) MarshalJSON() ([]byte, error) {
@@ -94,6 +172,15 @@ func (o WebhookTypes) MarshalJSON() ([]byte, error) {
 	}
 	if true {
 		toSerialize["b"] = o.B
+	}
+	if true {
+		toSerialize["c"] = o.C
+	}
+	if true {
+		toSerialize["d"] = o.D
+	}
+	if true {
+		toSerialize["e"] = o.E
 	}
 	return json.Marshal(toSerialize)
 }

@@ -2,6 +2,7 @@ package svix
 
 import (
 	"context"
+	"time"
 
 	"github.com/svix/svix-libs/go/internal/openapi"
 )
@@ -20,6 +21,7 @@ type MessageListOptions struct {
 	Iterator   *string
 	Limit      *int32
 	EventTypes *[]string
+	Before     *time.Time
 }
 
 func (m *Message) List(appId string, options *MessageListOptions) (*ListResponseMessageOut, error) {
@@ -33,6 +35,9 @@ func (m *Message) List(appId string, options *MessageListOptions) (*ListResponse
 		}
 		if options.EventTypes != nil {
 			req = req.EventTypes(*options.EventTypes)
+		}
+		if options.Before != nil {
+			req = req.Before(*options.Before)
 		}
 	}
 	out, res, err := req.Execute()

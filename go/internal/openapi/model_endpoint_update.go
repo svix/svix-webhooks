@@ -12,48 +12,40 @@ package openapi
 
 import (
 	"encoding/json"
-	"time"
 )
 
-// MessageEndpointOut struct for MessageEndpointOut
-type MessageEndpointOut struct {
-	CreatedAt time.Time `json:"createdAt"`
+// EndpointUpdate struct for EndpointUpdate
+type EndpointUpdate struct {
 	Description *string `json:"description,omitempty"`
 	Disabled *bool `json:"disabled,omitempty"`
 	FilterTypes *[]string `json:"filterTypes,omitempty"`
-	Id string `json:"id"`
-	NextAttempt *time.Time `json:"nextAttempt,omitempty"`
 	RateLimit *int32 `json:"rateLimit,omitempty"`
-	Status MessageStatus `json:"status"`
 	// Optional unique identifier for the endpoint
 	Uid *string `json:"uid,omitempty"`
 	Url string `json:"url"`
 	Version int32 `json:"version"`
 }
 
-// NewMessageEndpointOut instantiates a new MessageEndpointOut object
+// NewEndpointUpdate instantiates a new EndpointUpdate object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewMessageEndpointOut(createdAt time.Time, id string, status MessageStatus, url string, version int32) *MessageEndpointOut {
-	this := MessageEndpointOut{}
-	this.CreatedAt = createdAt
+func NewEndpointUpdate(url string, version int32) *EndpointUpdate {
+	this := EndpointUpdate{}
 	var description string = ""
 	this.Description = &description
 	var disabled bool = false
 	this.Disabled = &disabled
-	this.Id = id
-	this.Status = status
 	this.Url = url
 	this.Version = version
 	return &this
 }
 
-// NewMessageEndpointOutWithDefaults instantiates a new MessageEndpointOut object
+// NewEndpointUpdateWithDefaults instantiates a new EndpointUpdate object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewMessageEndpointOutWithDefaults() *MessageEndpointOut {
-	this := MessageEndpointOut{}
+func NewEndpointUpdateWithDefaults() *EndpointUpdate {
+	this := EndpointUpdate{}
 	var description string = ""
 	this.Description = &description
 	var disabled bool = false
@@ -61,32 +53,8 @@ func NewMessageEndpointOutWithDefaults() *MessageEndpointOut {
 	return &this
 }
 
-// GetCreatedAt returns the CreatedAt field value
-func (o *MessageEndpointOut) GetCreatedAt() time.Time {
-	if o == nil {
-		var ret time.Time
-		return ret
-	}
-
-	return o.CreatedAt
-}
-
-// GetCreatedAtOk returns a tuple with the CreatedAt field value
-// and a boolean to check if the value has been set.
-func (o *MessageEndpointOut) GetCreatedAtOk() (*time.Time, bool) {
-	if o == nil  {
-		return nil, false
-	}
-	return &o.CreatedAt, true
-}
-
-// SetCreatedAt sets field value
-func (o *MessageEndpointOut) SetCreatedAt(v time.Time) {
-	o.CreatedAt = v
-}
-
 // GetDescription returns the Description field value if set, zero value otherwise.
-func (o *MessageEndpointOut) GetDescription() string {
+func (o *EndpointUpdate) GetDescription() string {
 	if o == nil || o.Description == nil {
 		var ret string
 		return ret
@@ -96,7 +64,7 @@ func (o *MessageEndpointOut) GetDescription() string {
 
 // GetDescriptionOk returns a tuple with the Description field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *MessageEndpointOut) GetDescriptionOk() (*string, bool) {
+func (o *EndpointUpdate) GetDescriptionOk() (*string, bool) {
 	if o == nil || o.Description == nil {
 		return nil, false
 	}
@@ -104,7 +72,7 @@ func (o *MessageEndpointOut) GetDescriptionOk() (*string, bool) {
 }
 
 // HasDescription returns a boolean if a field has been set.
-func (o *MessageEndpointOut) HasDescription() bool {
+func (o *EndpointUpdate) HasDescription() bool {
 	if o != nil && o.Description != nil {
 		return true
 	}
@@ -113,12 +81,12 @@ func (o *MessageEndpointOut) HasDescription() bool {
 }
 
 // SetDescription gets a reference to the given string and assigns it to the Description field.
-func (o *MessageEndpointOut) SetDescription(v string) {
+func (o *EndpointUpdate) SetDescription(v string) {
 	o.Description = &v
 }
 
 // GetDisabled returns the Disabled field value if set, zero value otherwise.
-func (o *MessageEndpointOut) GetDisabled() bool {
+func (o *EndpointUpdate) GetDisabled() bool {
 	if o == nil || o.Disabled == nil {
 		var ret bool
 		return ret
@@ -128,7 +96,7 @@ func (o *MessageEndpointOut) GetDisabled() bool {
 
 // GetDisabledOk returns a tuple with the Disabled field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *MessageEndpointOut) GetDisabledOk() (*bool, bool) {
+func (o *EndpointUpdate) GetDisabledOk() (*bool, bool) {
 	if o == nil || o.Disabled == nil {
 		return nil, false
 	}
@@ -136,7 +104,7 @@ func (o *MessageEndpointOut) GetDisabledOk() (*bool, bool) {
 }
 
 // HasDisabled returns a boolean if a field has been set.
-func (o *MessageEndpointOut) HasDisabled() bool {
+func (o *EndpointUpdate) HasDisabled() bool {
 	if o != nil && o.Disabled != nil {
 		return true
 	}
@@ -145,12 +113,12 @@ func (o *MessageEndpointOut) HasDisabled() bool {
 }
 
 // SetDisabled gets a reference to the given bool and assigns it to the Disabled field.
-func (o *MessageEndpointOut) SetDisabled(v bool) {
+func (o *EndpointUpdate) SetDisabled(v bool) {
 	o.Disabled = &v
 }
 
 // GetFilterTypes returns the FilterTypes field value if set, zero value otherwise.
-func (o *MessageEndpointOut) GetFilterTypes() []string {
+func (o *EndpointUpdate) GetFilterTypes() []string {
 	if o == nil || o.FilterTypes == nil {
 		var ret []string
 		return ret
@@ -160,7 +128,7 @@ func (o *MessageEndpointOut) GetFilterTypes() []string {
 
 // GetFilterTypesOk returns a tuple with the FilterTypes field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *MessageEndpointOut) GetFilterTypesOk() (*[]string, bool) {
+func (o *EndpointUpdate) GetFilterTypesOk() (*[]string, bool) {
 	if o == nil || o.FilterTypes == nil {
 		return nil, false
 	}
@@ -168,7 +136,7 @@ func (o *MessageEndpointOut) GetFilterTypesOk() (*[]string, bool) {
 }
 
 // HasFilterTypes returns a boolean if a field has been set.
-func (o *MessageEndpointOut) HasFilterTypes() bool {
+func (o *EndpointUpdate) HasFilterTypes() bool {
 	if o != nil && o.FilterTypes != nil {
 		return true
 	}
@@ -177,68 +145,12 @@ func (o *MessageEndpointOut) HasFilterTypes() bool {
 }
 
 // SetFilterTypes gets a reference to the given []string and assigns it to the FilterTypes field.
-func (o *MessageEndpointOut) SetFilterTypes(v []string) {
+func (o *EndpointUpdate) SetFilterTypes(v []string) {
 	o.FilterTypes = &v
 }
 
-// GetId returns the Id field value
-func (o *MessageEndpointOut) GetId() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.Id
-}
-
-// GetIdOk returns a tuple with the Id field value
-// and a boolean to check if the value has been set.
-func (o *MessageEndpointOut) GetIdOk() (*string, bool) {
-	if o == nil  {
-		return nil, false
-	}
-	return &o.Id, true
-}
-
-// SetId sets field value
-func (o *MessageEndpointOut) SetId(v string) {
-	o.Id = v
-}
-
-// GetNextAttempt returns the NextAttempt field value if set, zero value otherwise.
-func (o *MessageEndpointOut) GetNextAttempt() time.Time {
-	if o == nil || o.NextAttempt == nil {
-		var ret time.Time
-		return ret
-	}
-	return *o.NextAttempt
-}
-
-// GetNextAttemptOk returns a tuple with the NextAttempt field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *MessageEndpointOut) GetNextAttemptOk() (*time.Time, bool) {
-	if o == nil || o.NextAttempt == nil {
-		return nil, false
-	}
-	return o.NextAttempt, true
-}
-
-// HasNextAttempt returns a boolean if a field has been set.
-func (o *MessageEndpointOut) HasNextAttempt() bool {
-	if o != nil && o.NextAttempt != nil {
-		return true
-	}
-
-	return false
-}
-
-// SetNextAttempt gets a reference to the given time.Time and assigns it to the NextAttempt field.
-func (o *MessageEndpointOut) SetNextAttempt(v time.Time) {
-	o.NextAttempt = &v
-}
-
 // GetRateLimit returns the RateLimit field value if set, zero value otherwise.
-func (o *MessageEndpointOut) GetRateLimit() int32 {
+func (o *EndpointUpdate) GetRateLimit() int32 {
 	if o == nil || o.RateLimit == nil {
 		var ret int32
 		return ret
@@ -248,7 +160,7 @@ func (o *MessageEndpointOut) GetRateLimit() int32 {
 
 // GetRateLimitOk returns a tuple with the RateLimit field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *MessageEndpointOut) GetRateLimitOk() (*int32, bool) {
+func (o *EndpointUpdate) GetRateLimitOk() (*int32, bool) {
 	if o == nil || o.RateLimit == nil {
 		return nil, false
 	}
@@ -256,7 +168,7 @@ func (o *MessageEndpointOut) GetRateLimitOk() (*int32, bool) {
 }
 
 // HasRateLimit returns a boolean if a field has been set.
-func (o *MessageEndpointOut) HasRateLimit() bool {
+func (o *EndpointUpdate) HasRateLimit() bool {
 	if o != nil && o.RateLimit != nil {
 		return true
 	}
@@ -265,36 +177,12 @@ func (o *MessageEndpointOut) HasRateLimit() bool {
 }
 
 // SetRateLimit gets a reference to the given int32 and assigns it to the RateLimit field.
-func (o *MessageEndpointOut) SetRateLimit(v int32) {
+func (o *EndpointUpdate) SetRateLimit(v int32) {
 	o.RateLimit = &v
 }
 
-// GetStatus returns the Status field value
-func (o *MessageEndpointOut) GetStatus() MessageStatus {
-	if o == nil {
-		var ret MessageStatus
-		return ret
-	}
-
-	return o.Status
-}
-
-// GetStatusOk returns a tuple with the Status field value
-// and a boolean to check if the value has been set.
-func (o *MessageEndpointOut) GetStatusOk() (*MessageStatus, bool) {
-	if o == nil  {
-		return nil, false
-	}
-	return &o.Status, true
-}
-
-// SetStatus sets field value
-func (o *MessageEndpointOut) SetStatus(v MessageStatus) {
-	o.Status = v
-}
-
 // GetUid returns the Uid field value if set, zero value otherwise.
-func (o *MessageEndpointOut) GetUid() string {
+func (o *EndpointUpdate) GetUid() string {
 	if o == nil || o.Uid == nil {
 		var ret string
 		return ret
@@ -304,7 +192,7 @@ func (o *MessageEndpointOut) GetUid() string {
 
 // GetUidOk returns a tuple with the Uid field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *MessageEndpointOut) GetUidOk() (*string, bool) {
+func (o *EndpointUpdate) GetUidOk() (*string, bool) {
 	if o == nil || o.Uid == nil {
 		return nil, false
 	}
@@ -312,7 +200,7 @@ func (o *MessageEndpointOut) GetUidOk() (*string, bool) {
 }
 
 // HasUid returns a boolean if a field has been set.
-func (o *MessageEndpointOut) HasUid() bool {
+func (o *EndpointUpdate) HasUid() bool {
 	if o != nil && o.Uid != nil {
 		return true
 	}
@@ -321,12 +209,12 @@ func (o *MessageEndpointOut) HasUid() bool {
 }
 
 // SetUid gets a reference to the given string and assigns it to the Uid field.
-func (o *MessageEndpointOut) SetUid(v string) {
+func (o *EndpointUpdate) SetUid(v string) {
 	o.Uid = &v
 }
 
 // GetUrl returns the Url field value
-func (o *MessageEndpointOut) GetUrl() string {
+func (o *EndpointUpdate) GetUrl() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -337,7 +225,7 @@ func (o *MessageEndpointOut) GetUrl() string {
 
 // GetUrlOk returns a tuple with the Url field value
 // and a boolean to check if the value has been set.
-func (o *MessageEndpointOut) GetUrlOk() (*string, bool) {
+func (o *EndpointUpdate) GetUrlOk() (*string, bool) {
 	if o == nil  {
 		return nil, false
 	}
@@ -345,12 +233,12 @@ func (o *MessageEndpointOut) GetUrlOk() (*string, bool) {
 }
 
 // SetUrl sets field value
-func (o *MessageEndpointOut) SetUrl(v string) {
+func (o *EndpointUpdate) SetUrl(v string) {
 	o.Url = v
 }
 
 // GetVersion returns the Version field value
-func (o *MessageEndpointOut) GetVersion() int32 {
+func (o *EndpointUpdate) GetVersion() int32 {
 	if o == nil {
 		var ret int32
 		return ret
@@ -361,7 +249,7 @@ func (o *MessageEndpointOut) GetVersion() int32 {
 
 // GetVersionOk returns a tuple with the Version field value
 // and a boolean to check if the value has been set.
-func (o *MessageEndpointOut) GetVersionOk() (*int32, bool) {
+func (o *EndpointUpdate) GetVersionOk() (*int32, bool) {
 	if o == nil  {
 		return nil, false
 	}
@@ -369,15 +257,12 @@ func (o *MessageEndpointOut) GetVersionOk() (*int32, bool) {
 }
 
 // SetVersion sets field value
-func (o *MessageEndpointOut) SetVersion(v int32) {
+func (o *EndpointUpdate) SetVersion(v int32) {
 	o.Version = v
 }
 
-func (o MessageEndpointOut) MarshalJSON() ([]byte, error) {
+func (o EndpointUpdate) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["createdAt"] = o.CreatedAt
-	}
 	if o.Description != nil {
 		toSerialize["description"] = o.Description
 	}
@@ -387,17 +272,8 @@ func (o MessageEndpointOut) MarshalJSON() ([]byte, error) {
 	if o.FilterTypes != nil {
 		toSerialize["filterTypes"] = o.FilterTypes
 	}
-	if true {
-		toSerialize["id"] = o.Id
-	}
-	if o.NextAttempt != nil {
-		toSerialize["nextAttempt"] = o.NextAttempt
-	}
 	if o.RateLimit != nil {
 		toSerialize["rateLimit"] = o.RateLimit
-	}
-	if true {
-		toSerialize["status"] = o.Status
 	}
 	if o.Uid != nil {
 		toSerialize["uid"] = o.Uid
@@ -411,38 +287,38 @@ func (o MessageEndpointOut) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-type NullableMessageEndpointOut struct {
-	value *MessageEndpointOut
+type NullableEndpointUpdate struct {
+	value *EndpointUpdate
 	isSet bool
 }
 
-func (v NullableMessageEndpointOut) Get() *MessageEndpointOut {
+func (v NullableEndpointUpdate) Get() *EndpointUpdate {
 	return v.value
 }
 
-func (v *NullableMessageEndpointOut) Set(val *MessageEndpointOut) {
+func (v *NullableEndpointUpdate) Set(val *EndpointUpdate) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableMessageEndpointOut) IsSet() bool {
+func (v NullableEndpointUpdate) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableMessageEndpointOut) Unset() {
+func (v *NullableEndpointUpdate) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableMessageEndpointOut(val *MessageEndpointOut) *NullableMessageEndpointOut {
-	return &NullableMessageEndpointOut{value: val, isSet: true}
+func NewNullableEndpointUpdate(val *EndpointUpdate) *NullableEndpointUpdate {
+	return &NullableEndpointUpdate{value: val, isSet: true}
 }
 
-func (v NullableMessageEndpointOut) MarshalJSON() ([]byte, error) {
+func (v NullableEndpointUpdate) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableMessageEndpointOut) UnmarshalJSON(src []byte) error {
+func (v *NullableEndpointUpdate) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

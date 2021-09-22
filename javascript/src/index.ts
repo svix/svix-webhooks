@@ -11,6 +11,7 @@ import {
   ListResponseEndpointOut,
   EndpointOut,
   EndpointIn,
+  EndpointUpdate,
   EndpointSecretOut,
   MessageApi,
   MessageOut,
@@ -126,10 +127,13 @@ export interface EventTypeListOptions extends ListOptions {
 
 export interface MessageListOptions extends ListOptions {
   eventTypes?: string[];
+  before?: Date;
 }
 
 export interface MessageAttemptListOptions extends ListOptions {
   status?: MessageStatus;
+  eventTypes?: string[];
+  before?: Date;
 }
 
 class Application {
@@ -185,12 +189,12 @@ class Endpoint {
   public update(
     appId: string,
     endpointId: string,
-    endpointIn: EndpointIn
+    endpointUpdate: EndpointUpdate
   ): Promise<EndpointOut> {
     return this.api.updateEndpointApiV1AppAppIdEndpointEndpointIdPut({
       appId,
       endpointId,
-      endpointIn,
+      endpointUpdate,
     });
   }
 

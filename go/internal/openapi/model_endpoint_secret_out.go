@@ -16,6 +16,7 @@ import (
 
 // EndpointSecretOut struct for EndpointSecretOut
 type EndpointSecretOut struct {
+	// The endpoint's verification secret. If `null` is passed, a secret is automatically generated.
 	Key string `json:"key"`
 }
 

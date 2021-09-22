@@ -2,6 +2,7 @@ package svix
 
 import (
 	"context"
+	"time"
 
 	"github.com/svix/svix-libs/go/internal/openapi"
 )
@@ -21,9 +22,11 @@ type (
 )
 
 type MessageAttemptListOptions struct {
-	Iterator *string
-	Limit    *int32
-	Status   *MessageStatus
+	Iterator   *string
+	Limit      *int32
+	Status     *MessageStatus
+	EventTypes *[]string
+	Before     *time.Time
 }
 
 func (m *MessageAttempt) List(appId string, msgId string, options *MessageAttemptListOptions) (*ListResponseMessageAttemptOut, error) {
@@ -75,6 +78,9 @@ func (m *MessageAttempt) ListAttemptedMessages(appId string, endpointId string, 
 		if options.Status != nil {
 			req = req.Status(openapi.MessageStatus(*options.Status))
 		}
+		if options.Before != nil {
+			req = req.Before(*options.Before)
+		}
 	}
 	out, res, err := req.Execute()
 	if err != nil {
@@ -113,6 +119,9 @@ func (m *MessageAttempt) ListAttemptsForEndpoint(appId string, msgId string, end
 		}
 		if options.Status != nil {
 			req = req.Status(openapi.MessageStatus(*options.Status))
+		}
+		if options.EventTypes != nil {
+			req = req.EventTypes(*options.EventTypes)
 		}
 	}
 	out, res, err := req.Execute()

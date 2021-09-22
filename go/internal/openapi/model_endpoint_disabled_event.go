@@ -17,7 +17,7 @@ import (
 // EndpointDisabledEvent Sent when an endpoint has been automatically disabled after continuous failures.
 type EndpointDisabledEvent struct {
 	Data EndpointDisabledEventData `json:"data"`
-	Type *EventType `json:"type,omitempty"`
+	Type *string `json:"type,omitempty"`
 }
 
 // NewEndpointDisabledEvent instantiates a new EndpointDisabledEvent object
@@ -27,6 +27,8 @@ type EndpointDisabledEvent struct {
 func NewEndpointDisabledEvent(data EndpointDisabledEventData) *EndpointDisabledEvent {
 	this := EndpointDisabledEvent{}
 	this.Data = data
+	var type_ string = "endpoint.disabled"
+	this.Type = &type_
 	return &this
 }
 
@@ -35,6 +37,8 @@ func NewEndpointDisabledEvent(data EndpointDisabledEventData) *EndpointDisabledE
 // but it doesn't guarantee that properties required by API are set
 func NewEndpointDisabledEventWithDefaults() *EndpointDisabledEvent {
 	this := EndpointDisabledEvent{}
+	var type_ string = "endpoint.disabled"
+	this.Type = &type_
 	return &this
 }
 
@@ -63,9 +67,9 @@ func (o *EndpointDisabledEvent) SetData(v EndpointDisabledEventData) {
 }
 
 // GetType returns the Type field value if set, zero value otherwise.
-func (o *EndpointDisabledEvent) GetType() EventType {
+func (o *EndpointDisabledEvent) GetType() string {
 	if o == nil || o.Type == nil {
-		var ret EventType
+		var ret string
 		return ret
 	}
 	return *o.Type
@@ -73,7 +77,7 @@ func (o *EndpointDisabledEvent) GetType() EventType {
 
 // GetTypeOk returns a tuple with the Type field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *EndpointDisabledEvent) GetTypeOk() (*EventType, bool) {
+func (o *EndpointDisabledEvent) GetTypeOk() (*string, bool) {
 	if o == nil || o.Type == nil {
 		return nil, false
 	}
@@ -89,8 +93,8 @@ func (o *EndpointDisabledEvent) HasType() bool {
 	return false
 }
 
-// SetType gets a reference to the given EventType and assigns it to the Type field.
-func (o *EndpointDisabledEvent) SetType(v EventType) {
+// SetType gets a reference to the given string and assigns it to the Type field.
+func (o *EndpointDisabledEvent) SetType(v string) {
 	o.Type = &v
 }
 

@@ -15,7 +15,9 @@
                         "type": "integer"
                     },
                     "uid": {
+                        "description": "Optional unique identifier for the application",
                         "example": "unique-app-identifier",
+                        "maxLength": 256,
                         "minLength": 1,
                         "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "title": "Uid",
@@ -52,7 +54,9 @@
                         "type": "integer"
                     },
                     "uid": {
+                        "description": "Optional unique identifier for the application",
                         "example": "unique-app-identifier",
+                        "maxLength": 256,
                         "minLength": 1,
                         "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "title": "Uid",
@@ -90,6 +94,96 @@
                 "title": "DashboardAccessOut",
                 "type": "object"
             },
+            "EndpointCreatedEvent": {
+                "description": "Sent when an endpoint is created.",
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/EndpointCreatedEventData"
+                    },
+                    "type": {
+                        "default": "endpoint.created",
+                        "enum": [
+                            "endpoint.created"
+                        ],
+                        "title": "Type",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "data"
+                ],
+                "title": "EndpointCreatedEvent",
+                "type": "object"
+            },
+            "EndpointCreatedEventData": {
+                "properties": {
+                    "appId": {
+                        "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "title": "Appid",
+                        "type": "string"
+                    },
+                    "appUid": {
+                        "title": "Appuid",
+                        "type": "string"
+                    },
+                    "endpointId": {
+                        "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "title": "Endpointid",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "appId",
+                    "endpointId"
+                ],
+                "title": "EndpointCreatedEventData",
+                "type": "object"
+            },
+            "EndpointDeletedEvent": {
+                "description": "Sent when an endpoint is deleted.",
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/EndpointDeletedEventData"
+                    },
+                    "type": {
+                        "default": "endpoint.deleted",
+                        "enum": [
+                            "endpoint.deleted"
+                        ],
+                        "title": "Type",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "data"
+                ],
+                "title": "EndpointDeletedEvent",
+                "type": "object"
+            },
+            "EndpointDeletedEventData": {
+                "properties": {
+                    "appId": {
+                        "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "title": "Appid",
+                        "type": "string"
+                    },
+                    "appUid": {
+                        "title": "Appuid",
+                        "type": "string"
+                    },
+                    "endpointId": {
+                        "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "title": "Endpointid",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "appId",
+                    "endpointId"
+                ],
+                "title": "EndpointDeletedEventData",
+                "type": "object"
+            },
             "EndpointDisabledEvent": {
                 "description": "Sent when an endpoint has been automatically disabled after continuous failures.",
                 "properties": {
@@ -97,13 +191,12 @@
                         "$ref": "#/components/schemas/EndpointDisabledEventData"
                     },
                     "type": {
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/EventType"
-                            }
-                        ],
                         "default": "endpoint.disabled",
-                        "example": "endpoint.disabled"
+                        "enum": [
+                            "endpoint.disabled"
+                        ],
+                        "title": "Type",
+                        "type": "string"
                     }
                 },
                 "required": [
@@ -174,6 +267,21 @@
                         "title": "Ratelimit",
                         "type": "integer"
                     },
+                    "secret": {
+                        "description": "The endpoint's verification secret. If `null` is passed, a secret is automatically generated.",
+                        "example": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD",
+                        "title": "Secret",
+                        "type": "string"
+                    },
+                    "uid": {
+                        "description": "Optional unique identifier for the endpoint",
+                        "example": "unique-endpoint-identifier",
+                        "maxLength": 256,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "title": "Uid",
+                        "type": "string"
+                    },
                     "url": {
                         "example": "https://example.com/webhook/",
                         "format": "uri",
@@ -199,6 +307,7 @@
             "EndpointMessageOut": {
                 "properties": {
                     "eventId": {
+                        "description": "Optional unique identifier for the message",
                         "example": "evt_pNZKtWg8Azow",
                         "maxLength": 256,
                         "minLength": 1,
@@ -292,6 +401,15 @@
                         "title": "Ratelimit",
                         "type": "integer"
                     },
+                    "uid": {
+                        "description": "Optional unique identifier for the endpoint",
+                        "example": "unique-endpoint-identifier",
+                        "maxLength": 256,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "title": "Uid",
+                        "type": "string"
+                    },
                     "url": {
                         "example": "https://example.com/webhook/",
                         "format": "uri",
@@ -319,6 +437,8 @@
             "EndpointSecretOut": {
                 "properties": {
                     "key": {
+                        "description": "The endpoint's verification secret. If `null` is passed, a secret is automatically generated.",
+                        "example": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD",
                         "title": "Key",
                         "type": "string"
                     }
@@ -357,6 +477,114 @@
                 "title": "EndpointStats",
                 "type": "object"
             },
+            "EndpointUpdate": {
+                "properties": {
+                    "description": {
+                        "default": "",
+                        "example": "An example endpoint name",
+                        "title": "Description",
+                        "type": "string"
+                    },
+                    "disabled": {
+                        "default": false,
+                        "example": false,
+                        "title": "Disabled",
+                        "type": "boolean"
+                    },
+                    "filterTypes": {
+                        "example": [
+                            "user.signup",
+                            "user.deleted"
+                        ],
+                        "items": {
+                            "type": "string"
+                        },
+                        "title": "Filtertypes",
+                        "type": "array",
+                        "uniqueItems": true
+                    },
+                    "rateLimit": {
+                        "example": 1000,
+                        "exclusiveMinimum": 0.0,
+                        "title": "Ratelimit",
+                        "type": "integer"
+                    },
+                    "uid": {
+                        "description": "Optional unique identifier for the endpoint",
+                        "example": "unique-endpoint-identifier",
+                        "maxLength": 256,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "title": "Uid",
+                        "type": "string"
+                    },
+                    "url": {
+                        "example": "https://example.com/webhook/",
+                        "format": "uri",
+                        "maxLength": 65536,
+                        "minLength": 1,
+                        "title": "Url",
+                        "type": "string"
+                    },
+                    "version": {
+                        "example": 1,
+                        "exclusiveMinimum": 0.0,
+                        "title": "Version",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "url",
+                    "version"
+                ],
+                "title": "EndpointUpdate",
+                "type": "object"
+            },
+            "EndpointUpdatedEventData": {
+                "properties": {
+                    "appId": {
+                        "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "title": "Appid",
+                        "type": "string"
+                    },
+                    "appUid": {
+                        "title": "Appuid",
+                        "type": "string"
+                    },
+                    "endpointId": {
+                        "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "title": "Endpointid",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "appId",
+                    "endpointId"
+                ],
+                "title": "EndpointUpdatedEventData",
+                "type": "object"
+            },
+            "EndpointdUpdatedEvent": {
+                "description": "Sent when an endpoint is updated.",
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/EndpointUpdatedEventData"
+                    },
+                    "type": {
+                        "default": "endpoint.updated",
+                        "enum": [
+                            "endpoint.updated"
+                        ],
+                        "title": "Type",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "data"
+                ],
+                "title": "EndpointdUpdatedEvent",
+                "type": "object"
+            },
             "EventExampleIn": {
                 "properties": {
                     "eventType": {
@@ -372,15 +600,6 @@
                 ],
                 "title": "EventExampleIn",
                 "type": "object"
-            },
-            "EventType": {
-                "description": "An enumeration.",
-                "enum": [
-                    "message.attempt.exhausted",
-                    "endpoint.disabled"
-                ],
-                "title": "EventType",
-                "type": "string"
             },
             "EventTypeIn": {
                 "properties": {
@@ -847,6 +1066,9 @@
                         "format": "date-time",
                         "title": "Timestamp",
                         "type": "string"
+                    },
+                    "triggerType": {
+                        "$ref": "#/components/schemas/MessageAttemptTriggerType"
                     }
                 },
                 "required": [
@@ -854,7 +1076,8 @@
                     "response",
                     "responseStatusCode",
                     "timestamp",
-                    "status"
+                    "status",
+                    "triggerType"
                 ],
                 "title": "MessageAttemptEndpointOut",
                 "type": "object"
@@ -866,13 +1089,12 @@
                         "$ref": "#/components/schemas/MessageAttemptExhaustedEventData"
                     },
                     "type": {
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/EventType"
-                            }
-                        ],
                         "default": "message.attempt.exhausted",
-                        "example": "message.attempt.exhausted"
+                        "enum": [
+                            "message.attempt.exhausted"
+                        ],
+                        "title": "Type",
+                        "type": "string"
                     }
                 },
                 "required": [
@@ -970,6 +1192,9 @@
                         "format": "date-time",
                         "title": "Timestamp",
                         "type": "string"
+                    },
+                    "triggerType": {
+                        "$ref": "#/components/schemas/MessageAttemptTriggerType"
                     }
                 },
                 "required": [
@@ -978,10 +1203,20 @@
                     "responseStatusCode",
                     "timestamp",
                     "status",
+                    "triggerType",
                     "endpointId"
                 ],
                 "title": "MessageAttemptOut",
                 "type": "object"
+            },
+            "MessageAttemptTriggerType": {
+                "description": "The reason an attempt was made:\n- Scheduled = 0\n- Manual = 1",
+                "enum": [
+                    0,
+                    1
+                ],
+                "title": "MessageAttemptTriggerType",
+                "type": "integer"
             },
             "MessageEndpointOut": {
                 "properties": {
@@ -1033,6 +1268,15 @@
                     "status": {
                         "$ref": "#/components/schemas/MessageStatus"
                     },
+                    "uid": {
+                        "description": "Optional unique identifier for the endpoint",
+                        "example": "unique-endpoint-identifier",
+                        "maxLength": 256,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "title": "Uid",
+                        "type": "string"
+                    },
                     "url": {
                         "example": "https://example.com/webhook/",
                         "format": "uri",
@@ -1061,6 +1305,7 @@
             "MessageIn": {
                 "properties": {
                     "eventId": {
+                        "description": "Optional unique identifier for the message",
                         "example": "evt_pNZKtWg8Azow",
                         "maxLength": 256,
                         "minLength": 1,
@@ -1094,6 +1339,7 @@
             "MessageOut": {
                 "properties": {
                     "eventId": {
+                        "description": "Optional unique identifier for the message",
                         "example": "evt_pNZKtWg8Azow",
                         "maxLength": 256,
                         "minLength": 1,
@@ -1180,12 +1426,24 @@
                         "$ref": "#/components/schemas/EndpointDisabledEvent"
                     },
                     "b": {
+                        "$ref": "#/components/schemas/EndpointCreatedEvent"
+                    },
+                    "c": {
+                        "$ref": "#/components/schemas/EndpointdUpdatedEvent"
+                    },
+                    "d": {
+                        "$ref": "#/components/schemas/EndpointDeletedEvent"
+                    },
+                    "e": {
                         "$ref": "#/components/schemas/MessageAttemptExhaustedEvent"
                     }
                 },
                 "required": [
                     "a",
-                    "b"
+                    "b",
+                    "c",
+                    "d",
+                    "e"
                 ],
                 "title": "WebhookTypes",
                 "type": "object"
@@ -1488,6 +1746,9 @@
                         "schema": {
                             "description": "The application's ID or UID",
                             "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "App Id",
                             "type": "string"
                         }
@@ -1611,6 +1872,9 @@
                         "schema": {
                             "description": "The application's ID or UID",
                             "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "App Id",
                             "type": "string"
                         }
@@ -1741,6 +2005,9 @@
                         "schema": {
                             "description": "The application's ID or UID",
                             "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "App Id",
                             "type": "string"
                         }
@@ -1883,6 +2150,9 @@
                         "schema": {
                             "description": "The application's ID or UID",
                             "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "App Id",
                             "type": "string"
                         }
@@ -2022,7 +2292,7 @@
                 ]
             },
             "post": {
-                "description": "Create a new endpoint for the application.",
+                "description": "Create a new endpoint for the application.\n\nWhen `secret` is `null` the secret is automatically generated (recommended)",
                 "operationId": "create_endpoint_api_v1_app__app_id__endpoint__post",
                 "parameters": [
                     {
@@ -2032,6 +2302,9 @@
                         "schema": {
                             "description": "The application's ID or UID",
                             "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "App Id",
                             "type": "string"
                         }
@@ -2122,42 +2395,42 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const endpointOut = await svix.endpoint.create('app_id', {\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000\n});"
+                        "source": "const endpointOut = await svix.endpoint.create('app_id', {\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const endpointOut = await svix.endpoint.create('app_id', {\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000\n});"
+                        "source": "const endpointOut = await svix.endpoint.create('app_id', {\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "endpoint_out = svix.endpoint.create('app_id', EndpointIn(\n    url=\"https://example.com/webhook/\",\n    version=1,\n    description=\"An example endpoint name\",\n    filter_types=['user.signup', 'user.deleted'],\n    disabled=False,\n    rate_limit=1000\n))"
+                        "source": "endpoint_out = svix.endpoint.create('app_id', EndpointIn(\n    uid=\"unique-endpoint-identifier\",\n    url=\"https://example.com/webhook/\",\n    version=1,\n    description=\"An example endpoint name\",\n    filter_types=['user.signup', 'user.deleted'],\n    disabled=False,\n    rate_limit=1000,\n    secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "endpointOut, err := svixClient.Endpoint.Create(\"app_id\", &svix.EndpointIn{\n    Url: \"https://example.com/webhook/\",\n    Version: 1,\n    Description: \"An example endpoint name\",\n    FilterTypes: [...]string{\"user.signup\", \"user.deleted\"},\n    Disabled: False,\n    RateLimit: 1000\n})"
+                        "source": "endpointOut, err := svixClient.Endpoint.Create(\"app_id\", &svix.EndpointIn{\n    Uid: \"unique-endpoint-identifier\",\n    Url: \"https://example.com/webhook/\",\n    Version: 1,\n    Description: \"An example endpoint name\",\n    FilterTypes: [...]string{\"user.signup\", \"user.deleted\"},\n    Disabled: False,\n    RateLimit: 1000,\n    Secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val endpointOut = svix.endpoint.create('app_id', EndpointIn()\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\")),\n    .disabled(False),\n    .rateLimit(1000)\n)"
+                        "source": "val endpointOut = svix.endpoint.create('app_id', EndpointIn()\n    .uid(\"unique-endpoint-identifier\"),\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\")),\n    .disabled(False),\n    .rateLimit(1000),\n    .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "EndpointOut endpointOut = svix.getEndpoint().create('app_id', new EndpointIn()\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"}),\n    .disabled(False),\n    .rateLimit(1000)\n)"
+                        "source": "EndpointOut endpointOut = svix.getEndpoint().create('app_id', new EndpointIn()\n    .uid(\"unique-endpoint-identifier\"),\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"}),\n    .disabled(False),\n    .rateLimit(1000),\n    .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n)"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix endpoint create 'app_id' '{\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000\n}'"
+                        "source": "svix endpoint create 'app_id' '{\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'\n  -d '{\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000\n}'"
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'\n  -d '{\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}'"
                     }
                 ]
             }
@@ -2172,7 +2445,11 @@
                         "name": "endpoint_id",
                         "required": true,
                         "schema": {
+                            "description": "The endpoint's ID or UID",
                             "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Endpoint Id",
                             "type": "string"
                         }
@@ -2184,6 +2461,9 @@
                         "schema": {
                             "description": "The application's ID or UID",
                             "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "App Id",
                             "type": "string"
                         }
@@ -2305,7 +2585,11 @@
                         "name": "endpoint_id",
                         "required": true,
                         "schema": {
+                            "description": "The endpoint's ID or UID",
                             "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Endpoint Id",
                             "type": "string"
                         }
@@ -2317,6 +2601,9 @@
                         "schema": {
                             "description": "The application's ID or UID",
                             "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "App Id",
                             "type": "string"
                         }
@@ -2445,7 +2732,11 @@
                         "name": "endpoint_id",
                         "required": true,
                         "schema": {
+                            "description": "The endpoint's ID or UID",
                             "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Endpoint Id",
                             "type": "string"
                         }
@@ -2457,6 +2748,9 @@
                         "schema": {
                             "description": "The application's ID or UID",
                             "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "App Id",
                             "type": "string"
                         }
@@ -2466,7 +2760,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/EndpointIn"
+                                "$ref": "#/components/schemas/EndpointUpdate"
                             }
                         }
                     },
@@ -2547,49 +2841,49 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const endpointOut = await svix.endpoint.update('app_id', 'endpoint_id', {\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000\n});"
+                        "source": "const endpointOut = await svix.endpoint.update('app_id', 'endpoint_id', {\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const endpointOut = await svix.endpoint.update('app_id', 'endpoint_id', {\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000\n});"
+                        "source": "const endpointOut = await svix.endpoint.update('app_id', 'endpoint_id', {\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "endpoint_out = svix.endpoint.update('app_id', 'endpoint_id', EndpointIn(\n    url=\"https://example.com/webhook/\",\n    version=1,\n    description=\"An example endpoint name\",\n    filter_types=['user.signup', 'user.deleted'],\n    disabled=False,\n    rate_limit=1000\n))"
+                        "source": "endpoint_out = svix.endpoint.update('app_id', 'endpoint_id', EndpointUpdate(\n    uid=\"unique-endpoint-identifier\",\n    url=\"https://example.com/webhook/\",\n    version=1,\n    description=\"An example endpoint name\",\n    filter_types=['user.signup', 'user.deleted'],\n    disabled=False,\n    rate_limit=1000\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "endpointOut, err := svixClient.Endpoint.Update(\"app_id\", \"endpoint_id\", &svix.EndpointIn{\n    Url: \"https://example.com/webhook/\",\n    Version: 1,\n    Description: \"An example endpoint name\",\n    FilterTypes: [...]string{\"user.signup\", \"user.deleted\"},\n    Disabled: False,\n    RateLimit: 1000\n})"
+                        "source": "endpointOut, err := svixClient.Endpoint.Update(\"app_id\", \"endpoint_id\", &svix.EndpointUpdate{\n    Uid: \"unique-endpoint-identifier\",\n    Url: \"https://example.com/webhook/\",\n    Version: 1,\n    Description: \"An example endpoint name\",\n    FilterTypes: [...]string{\"user.signup\", \"user.deleted\"},\n    Disabled: False,\n    RateLimit: 1000\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val endpointOut = svix.endpoint.update('app_id', 'endpoint_id', EndpointIn()\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\")),\n    .disabled(False),\n    .rateLimit(1000)\n)"
+                        "source": "val endpointOut = svix.endpoint.update('app_id', 'endpoint_id', EndpointUpdate()\n    .uid(\"unique-endpoint-identifier\"),\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\")),\n    .disabled(False),\n    .rateLimit(1000)\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "EndpointOut endpointOut = svix.getEndpoint().update('app_id', 'endpoint_id', new EndpointIn()\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"}),\n    .disabled(False),\n    .rateLimit(1000)\n)"
+                        "source": "EndpointOut endpointOut = svix.getEndpoint().update('app_id', 'endpoint_id', new EndpointUpdate()\n    .uid(\"unique-endpoint-identifier\"),\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"}),\n    .disabled(False),\n    .rateLimit(1000)\n)"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix endpoint update 'app_id' 'endpoint_id' '{\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000\n}'"
+                        "source": "svix endpoint update 'app_id' 'endpoint_id' '{\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'\n  -d '{\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000\n}'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'\n  -d '{\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000\n}'"
                     }
                 ]
             }
         },
         "/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg/": {
             "get": {
-                "description": "List the message attempts for a particular endpoint.\n\nReturning the message.",
+                "description": "List the message attempts for a particular endpoint.\n\nReturning the message.\n\nThe `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.",
                 "operationId": "list_attempted_messages_api_v1_app__app_id__endpoint__endpoint_id__msg__get",
                 "parameters": [
                     {
@@ -2597,7 +2891,11 @@
                         "name": "endpoint_id",
                         "required": true,
                         "schema": {
+                            "description": "The endpoint's ID or UID",
                             "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Endpoint Id",
                             "type": "string"
                         }
@@ -2609,6 +2907,9 @@
                         "schema": {
                             "description": "The application's ID or UID",
                             "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "App Id",
                             "type": "string"
                         }
@@ -2638,6 +2939,16 @@
                         "required": false,
                         "schema": {
                             "$ref": "#/components/schemas/MessageStatus"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "before",
+                        "required": false,
+                        "schema": {
+                            "format": "date-time",
+                            "title": "Before",
+                            "type": "string"
                         }
                     }
                 ],
@@ -2731,7 +3042,11 @@
                         "name": "endpoint_id",
                         "required": true,
                         "schema": {
+                            "description": "The endpoint's ID or UID",
                             "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Endpoint Id",
                             "type": "string"
                         }
@@ -2743,6 +3058,9 @@
                         "schema": {
                             "description": "The application's ID or UID",
                             "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "App Id",
                             "type": "string"
                         }
@@ -2875,6 +3193,9 @@
                         "schema": {
                             "description": "The application's ID or UID",
                             "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "App Id",
                             "type": "string"
                         }
@@ -2884,7 +3205,11 @@
                         "name": "endpoint_id",
                         "required": true,
                         "schema": {
+                            "description": "The endpoint's ID or UID",
                             "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Endpoint Id",
                             "type": "string"
                         }
@@ -3025,7 +3350,11 @@
                         "name": "endpoint_id",
                         "required": true,
                         "schema": {
+                            "description": "The endpoint's ID or UID",
                             "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Endpoint Id",
                             "type": "string"
                         }
@@ -3037,6 +3366,9 @@
                         "schema": {
                             "description": "The application's ID or UID",
                             "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "App Id",
                             "type": "string"
                         }
@@ -3124,7 +3456,7 @@
         },
         "/api/v1/app/{app_id}/msg/": {
             "get": {
-                "description": "List all of the application's messages.",
+                "description": "List all of the application's messages.\n\nThe `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.",
                 "operationId": "list_messages_api_v1_app__app_id__msg__get",
                 "parameters": [
                     {
@@ -3134,6 +3466,9 @@
                         "schema": {
                             "description": "The application's ID or UID",
                             "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "App Id",
                             "type": "string"
                         }
@@ -3170,6 +3505,16 @@
                             },
                             "title": "Event Types",
                             "type": "array"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "before",
+                        "required": false,
+                        "schema": {
+                            "format": "date-time",
+                            "title": "Before",
+                            "type": "string"
                         }
                     }
                 ],
@@ -3298,6 +3643,9 @@
                         "schema": {
                             "description": "The application's ID or UID",
                             "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "App Id",
                             "type": "string"
                         }
@@ -3450,6 +3798,9 @@
                         "schema": {
                             "description": "The message's ID or eventID",
                             "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Msg Id",
                             "type": "string"
                         }
@@ -3461,6 +3812,9 @@
                         "schema": {
                             "description": "The application's ID or UID",
                             "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "App Id",
                             "type": "string"
                         }
@@ -3593,6 +3947,9 @@
                         "schema": {
                             "description": "The application's ID or UID",
                             "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "App Id",
                             "type": "string"
                         }
@@ -3604,6 +3961,9 @@
                         "schema": {
                             "description": "The message's ID or eventID",
                             "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Msg Id",
                             "type": "string"
                         }
@@ -3773,6 +4133,9 @@
                         "schema": {
                             "description": "The message's ID or eventID",
                             "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Msg Id",
                             "type": "string"
                         }
@@ -3784,6 +4147,9 @@
                         "schema": {
                             "description": "The application's ID or UID",
                             "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "App Id",
                             "type": "string"
                         }
@@ -3916,6 +4282,9 @@
                         "schema": {
                             "description": "The message's ID or eventID",
                             "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Msg Id",
                             "type": "string"
                         }
@@ -3927,6 +4296,9 @@
                         "schema": {
                             "description": "The application's ID or UID",
                             "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "App Id",
                             "type": "string"
                         }
@@ -4033,7 +4405,7 @@
         },
         "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/attempt/": {
             "get": {
-                "description": "List the message attempts for a particular endpoint.\n\nReturning the endpint.",
+                "description": "List the message attempts for a particular endpoint.\n\nReturning the endpint.\n\nThe `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.",
                 "operationId": "list_attempts_for_endpoint_api_v1_app__app_id__msg__msg_id__endpoint__endpoint_id__attempt__get",
                 "parameters": [
                     {
@@ -4043,6 +4415,9 @@
                         "schema": {
                             "description": "The message's ID or eventID",
                             "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Msg Id",
                             "type": "string"
                         }
@@ -4054,6 +4429,9 @@
                         "schema": {
                             "description": "The application's ID or UID",
                             "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "App Id",
                             "type": "string"
                         }
@@ -4063,7 +4441,11 @@
                         "name": "endpoint_id",
                         "required": true,
                         "schema": {
+                            "description": "The endpoint's ID or UID",
                             "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Endpoint Id",
                             "type": "string"
                         }
@@ -4089,10 +4471,35 @@
                     },
                     {
                         "in": "query",
+                        "name": "event_types",
+                        "required": false,
+                        "schema": {
+                            "items": {
+                                "example": "user.signup",
+                                "maxLength": 256,
+                                "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                                "type": "string"
+                            },
+                            "title": "Event Types",
+                            "type": "array"
+                        }
+                    },
+                    {
+                        "in": "query",
                         "name": "status",
                         "required": false,
                         "schema": {
                             "$ref": "#/components/schemas/MessageStatus"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "before",
+                        "required": false,
+                        "schema": {
+                            "format": "date-time",
+                            "title": "Before",
+                            "type": "string"
                         }
                     }
                 ],
@@ -4186,7 +4593,11 @@
                         "name": "endpoint_id",
                         "required": true,
                         "schema": {
+                            "description": "The endpoint's ID or UID",
                             "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Endpoint Id",
                             "type": "string"
                         }
@@ -4198,6 +4609,9 @@
                         "schema": {
                             "description": "The message's ID or eventID",
                             "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Msg Id",
                             "type": "string"
                         }
@@ -4209,6 +4623,9 @@
                         "schema": {
                             "description": "The application's ID or UID",
                             "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "App Id",
                             "type": "string"
                         }
@@ -4334,6 +4751,9 @@
                         "schema": {
                             "description": "The application's ID or UID",
                             "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "App Id",
                             "type": "string"
                         }
@@ -4958,6 +5378,137 @@
                     }
                 ]
             },
+            "get": {
+                "description": "Get an event type.",
+                "operationId": "get_event_type_api_v1_event_type__event_type_name___get",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "event_type_name",
+                        "required": true,
+                        "schema": {
+                            "example": "user.signup",
+                            "maxLength": 256,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "Event Type Name",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EventTypeOut"
+                                }
+                            }
+                        },
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Get Event Type",
+                "tags": [
+                    "Event Type"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const eventTypeOut = await svix.eventType.get('event_type_name');"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const eventTypeOut = await svix.eventType.get('event_type_name');"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "event_type_out = svix.event_type.get('event_type_name')"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "eventTypeOut, err := svixClient.EventType.Get(\"event_type_name\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val eventTypeOut = svix.eventType.get('event_type_name')"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "EventTypeOut eventTypeOut = svix.getEventType().get('event_type_name')"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix event-type get 'event_type_name'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/event-type/{event_type_name}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            },
             "put": {
                 "description": "Update an event type.",
                 "operationId": "update_event_type_api_v1_event_type__event_type_name___put",
@@ -5121,46 +5672,6 @@
                     }
                 ]
             }
-        },
-        "/api/v1/internal-webhook-model-openapi/": {
-            "get": {
-                "deprecated": true,
-                "description": "A helper to automatically generate OpenAPI models for the webhook schemas",
-                "operationId": "webhook_model_api_v1_internal_webhook_model_openapi__get",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/WebhookTypes"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "204": {
-                        "description": "Successful Response"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        },
-                        "description": "Validation Error"
-                    }
-                },
-                "summary": "Webhook Model",
-                "x-codeSamples": [
-                    {
-                        "label": "cURL",
-                        "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/internal-webhook-model-openapi/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'\n  -d '{\n    \"a\": null,\n    \"b\": null\n}'"
-                    }
-                ]
-            }
         }
     },
     "tags": [
@@ -5193,12 +5704,8 @@
             "name": "Health"
         },
         {
-            "description": "<SchemaDefinition schemaRef=\"#/components/schemas/EndpointDisabledEvent\" />",
-            "name": "EndpointDisabledEvent"
-        },
-        {
-            "description": "<SchemaDefinition schemaRef=\"#/components/schemas/MessageAttemptExhaustedEvent\" />",
-            "name": "MessageAttemptExhaustedEvent"
+            "description": "The webhooks the Svix service sends to notify you of events.",
+            "name": "Webhooks"
         }
     ],
     "x-tagGroups": [
@@ -5225,11 +5732,132 @@
             ]
         },
         {
-            "name": "Outgoing Webhook Models",
+            "name": "Webhooks",
             "tags": [
-                "EndpointDisabledEvent",
-                "MessageAttemptExhaustedEvent"
+                "Webhooks"
             ]
         }
-    ]
+    ],
+    "x-webhooks": {
+        "EndpointCreatedEvent": {
+            "post": {
+                "description": "Sent when an endpoint is created.",
+                "operationId": "EndpointCreatedEvent",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EndpointCreatedEvent"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "2XX": {
+                        "description": "Return any 2XX status to indicate that the data was received successfully"
+                    }
+                },
+                "summary": "EndpointCreatedEvent",
+                "tags": [
+                    "Webhooks"
+                ]
+            }
+        },
+        "EndpointDeletedEvent": {
+            "post": {
+                "description": "Sent when an endpoint is deleted.",
+                "operationId": "EndpointDeletedEvent",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EndpointDeletedEvent"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "2XX": {
+                        "description": "Return any 2XX status to indicate that the data was received successfully"
+                    }
+                },
+                "summary": "EndpointDeletedEvent",
+                "tags": [
+                    "Webhooks"
+                ]
+            }
+        },
+        "EndpointDisabledEvent": {
+            "post": {
+                "description": "Sent when an endpoint has been automatically disabled after continuous failures.",
+                "operationId": "EndpointDisabledEvent",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EndpointDisabledEvent"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "2XX": {
+                        "description": "Return any 2XX status to indicate that the data was received successfully"
+                    }
+                },
+                "summary": "EndpointDisabledEvent",
+                "tags": [
+                    "Webhooks"
+                ]
+            }
+        },
+        "EndpointdUpdatedEvent": {
+            "post": {
+                "description": "Sent when an endpoint is updated.",
+                "operationId": "EndpointdUpdatedEvent",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EndpointdUpdatedEvent"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "2XX": {
+                        "description": "Return any 2XX status to indicate that the data was received successfully"
+                    }
+                },
+                "summary": "EndpointdUpdatedEvent",
+                "tags": [
+                    "Webhooks"
+                ]
+            }
+        },
+        "MessageAttemptExhaustedEvent": {
+            "post": {
+                "description": "Sent when a message delivery has failed (all of the retry attempts have been exhausted).",
+                "operationId": "MessageAttemptExhaustedEvent",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MessageAttemptExhaustedEvent"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "2XX": {
+                        "description": "Return any 2XX status to indicate that the data was received successfully"
+                    }
+                },
+                "summary": "MessageAttemptExhaustedEvent",
+                "tags": [
+                    "Webhooks"
+                ]
+            }
+        }
+    }
 }

@@ -46,6 +46,8 @@ func (r ApiCreateEndpointApiV1AppAppIdEndpointPostRequest) Execute() (EndpointOu
 /*
  * CreateEndpointApiV1AppAppIdEndpointPost Create Endpoint
  * Create a new endpoint for the application.
+
+When `secret` is `null` the secret is automatically generated (recommended)
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param appId
  * @return ApiCreateEndpointApiV1AppAppIdEndpointPostRequest
@@ -83,6 +85,12 @@ func (a *EndpointApiService) CreateEndpointApiV1AppAppIdEndpointPostExecute(r Ap
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
+	if strlen(r.appId) < 1 {
+		return localVarReturnValue, nil, reportError("appId must have at least 1 elements")
+	}
+	if strlen(r.appId) > 256 {
+		return localVarReturnValue, nil, reportError("appId must have less than 256 elements")
+	}
 	if r.endpointIn == nil {
 		return localVarReturnValue, nil, reportError("endpointIn is required and must be specified")
 	}
@@ -245,6 +253,18 @@ func (a *EndpointApiService) DeleteEndpointApiV1AppAppIdEndpointEndpointIdDelete
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
+	if strlen(r.endpointId) < 1 {
+		return nil, reportError("endpointId must have at least 1 elements")
+	}
+	if strlen(r.endpointId) > 256 {
+		return nil, reportError("endpointId must have less than 256 elements")
+	}
+	if strlen(r.appId) < 1 {
+		return nil, reportError("appId must have at least 1 elements")
+	}
+	if strlen(r.appId) > 256 {
+		return nil, reportError("appId must have less than 256 elements")
+	}
 
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -395,6 +415,18 @@ func (a *EndpointApiService) GetEndpointApiV1AppAppIdEndpointEndpointIdGetExecut
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
+	if strlen(r.endpointId) < 1 {
+		return localVarReturnValue, nil, reportError("endpointId must have at least 1 elements")
+	}
+	if strlen(r.endpointId) > 256 {
+		return localVarReturnValue, nil, reportError("endpointId must have less than 256 elements")
+	}
+	if strlen(r.appId) < 1 {
+		return localVarReturnValue, nil, reportError("appId must have at least 1 elements")
+	}
+	if strlen(r.appId) > 256 {
+		return localVarReturnValue, nil, reportError("appId must have less than 256 elements")
+	}
 
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -557,6 +589,18 @@ func (a *EndpointApiService) GetEndpointSecretApiV1AppAppIdEndpointEndpointIdSec
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
+	if strlen(r.endpointId) < 1 {
+		return localVarReturnValue, nil, reportError("endpointId must have at least 1 elements")
+	}
+	if strlen(r.endpointId) > 256 {
+		return localVarReturnValue, nil, reportError("endpointId must have less than 256 elements")
+	}
+	if strlen(r.appId) < 1 {
+		return localVarReturnValue, nil, reportError("appId must have at least 1 elements")
+	}
+	if strlen(r.appId) > 256 {
+		return localVarReturnValue, nil, reportError("appId must have less than 256 elements")
+	}
 
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -716,6 +760,18 @@ func (a *EndpointApiService) GetEndpointStatsApiV1AppAppIdEndpointEndpointIdStat
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
+	if strlen(r.endpointId) < 1 {
+		return localVarReturnValue, nil, reportError("endpointId must have at least 1 elements")
+	}
+	if strlen(r.endpointId) > 256 {
+		return localVarReturnValue, nil, reportError("endpointId must have less than 256 elements")
+	}
+	if strlen(r.appId) < 1 {
+		return localVarReturnValue, nil, reportError("appId must have at least 1 elements")
+	}
+	if strlen(r.appId) > 256 {
+		return localVarReturnValue, nil, reportError("appId must have less than 256 elements")
+	}
 
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -881,6 +937,12 @@ func (a *EndpointApiService) ListEndpointsApiV1AppAppIdEndpointGetExecute(r ApiL
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
+	if strlen(r.appId) < 1 {
+		return localVarReturnValue, nil, reportError("appId must have at least 1 elements")
+	}
+	if strlen(r.appId) > 256 {
+		return localVarReturnValue, nil, reportError("appId must have less than 256 elements")
+	}
 
 	if r.iterator != nil {
 		localVarQueryParams.Add("iterator", parameterToString(*r.iterator, ""))
@@ -1051,6 +1113,18 @@ func (a *EndpointApiService) SendEventTypeExampleMessageApiV1AppAppIdEndpointEnd
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
+	if strlen(r.appId) < 1 {
+		return localVarReturnValue, nil, reportError("appId must have at least 1 elements")
+	}
+	if strlen(r.appId) > 256 {
+		return localVarReturnValue, nil, reportError("appId must have less than 256 elements")
+	}
+	if strlen(r.endpointId) < 1 {
+		return localVarReturnValue, nil, reportError("endpointId must have at least 1 elements")
+	}
+	if strlen(r.endpointId) > 256 {
+		return localVarReturnValue, nil, reportError("endpointId must have less than 256 elements")
+	}
 	if r.eventExampleIn == nil {
 		return localVarReturnValue, nil, reportError("eventExampleIn is required and must be specified")
 	}
@@ -1165,11 +1239,11 @@ type ApiUpdateEndpointApiV1AppAppIdEndpointEndpointIdPutRequest struct {
 	ApiService *EndpointApiService
 	endpointId string
 	appId string
-	endpointIn *EndpointIn
+	endpointUpdate *EndpointUpdate
 }
 
-func (r ApiUpdateEndpointApiV1AppAppIdEndpointEndpointIdPutRequest) EndpointIn(endpointIn EndpointIn) ApiUpdateEndpointApiV1AppAppIdEndpointEndpointIdPutRequest {
-	r.endpointIn = &endpointIn
+func (r ApiUpdateEndpointApiV1AppAppIdEndpointEndpointIdPutRequest) EndpointUpdate(endpointUpdate EndpointUpdate) ApiUpdateEndpointApiV1AppAppIdEndpointEndpointIdPutRequest {
+	r.endpointUpdate = &endpointUpdate
 	return r
 }
 
@@ -1220,8 +1294,20 @@ func (a *EndpointApiService) UpdateEndpointApiV1AppAppIdEndpointEndpointIdPutExe
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
-	if r.endpointIn == nil {
-		return localVarReturnValue, nil, reportError("endpointIn is required and must be specified")
+	if strlen(r.endpointId) < 1 {
+		return localVarReturnValue, nil, reportError("endpointId must have at least 1 elements")
+	}
+	if strlen(r.endpointId) > 256 {
+		return localVarReturnValue, nil, reportError("endpointId must have less than 256 elements")
+	}
+	if strlen(r.appId) < 1 {
+		return localVarReturnValue, nil, reportError("appId must have at least 1 elements")
+	}
+	if strlen(r.appId) > 256 {
+		return localVarReturnValue, nil, reportError("appId must have less than 256 elements")
+	}
+	if r.endpointUpdate == nil {
+		return localVarReturnValue, nil, reportError("endpointUpdate is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -1242,7 +1328,7 @@ func (a *EndpointApiService) UpdateEndpointApiV1AppAppIdEndpointEndpointIdPutExe
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.endpointIn
+	localVarPostBody = r.endpointUpdate
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return localVarReturnValue, nil, err

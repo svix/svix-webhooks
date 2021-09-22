@@ -4,6 +4,7 @@ import com.svix.exceptions.ApiException;
 import com.svix.internal.api.EndpointApi;
 import com.svix.models.EndpointIn;
 import com.svix.models.EndpointOut;
+import com.svix.models.EndpointUpdate;
 import com.svix.models.EndpointSecretOut;
 import com.svix.models.ListResponseEndpointOut;
 
@@ -38,9 +39,9 @@ public final class Endpoint {
 		}
 	}
 
-	public EndpointOut update(final String appId, final String endpointId, final EndpointIn endpointIn) throws ApiException {
+	public EndpointOut update(final String appId, final String endpointId, final EndpointUpdate endpointUpdate) throws ApiException {
 		try {
-			return api.updateEndpointApiV1AppAppIdEndpointEndpointIdPut(endpointId, appId, endpointIn);
+			return api.updateEndpointApiV1AppAppIdEndpointEndpointIdPut(endpointId, appId, endpointUpdate);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}

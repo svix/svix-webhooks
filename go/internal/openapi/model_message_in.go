@@ -16,6 +16,7 @@ import (
 
 // MessageIn struct for MessageIn
 type MessageIn struct {
+	// Optional unique identifier for the message
 	EventId *string `json:"eventId,omitempty"`
 	EventType string `json:"eventType"`
 	Payload map[string]interface{} `json:"payload"`

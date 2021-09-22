@@ -17,6 +17,7 @@ import (
 
 // EndpointMessageOut struct for EndpointMessageOut
 type EndpointMessageOut struct {
+	// Optional unique identifier for the message
 	EventId *string `json:"eventId,omitempty"`
 	EventType string `json:"eventType"`
 	Id string `json:"id"`

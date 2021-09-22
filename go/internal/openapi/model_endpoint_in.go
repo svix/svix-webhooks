@@ -20,6 +20,10 @@ type EndpointIn struct {
 	Disabled *bool `json:"disabled,omitempty"`
 	FilterTypes *[]string `json:"filterTypes,omitempty"`
 	RateLimit *int32 `json:"rateLimit,omitempty"`
+	// The endpoint's verification secret. If `null` is passed, a secret is automatically generated.
+	Secret *string `json:"secret,omitempty"`
+	// Optional unique identifier for the endpoint
+	Uid *string `json:"uid,omitempty"`
 	Url string `json:"url"`
 	Version int32 `json:"version"`
 }
@@ -179,6 +183,70 @@ func (o *EndpointIn) SetRateLimit(v int32) {
 	o.RateLimit = &v
 }
 
+// GetSecret returns the Secret field value if set, zero value otherwise.
+func (o *EndpointIn) GetSecret() string {
+	if o == nil || o.Secret == nil {
+		var ret string
+		return ret
+	}
+	return *o.Secret
+}
+
+// GetSecretOk returns a tuple with the Secret field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *EndpointIn) GetSecretOk() (*string, bool) {
+	if o == nil || o.Secret == nil {
+		return nil, false
+	}
+	return o.Secret, true
+}
+
+// HasSecret returns a boolean if a field has been set.
+func (o *EndpointIn) HasSecret() bool {
+	if o != nil && o.Secret != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetSecret gets a reference to the given string and assigns it to the Secret field.
+func (o *EndpointIn) SetSecret(v string) {
+	o.Secret = &v
+}
+
+// GetUid returns the Uid field value if set, zero value otherwise.
+func (o *EndpointIn) GetUid() string {
+	if o == nil || o.Uid == nil {
+		var ret string
+		return ret
+	}
+	return *o.Uid
+}
+
+// GetUidOk returns a tuple with the Uid field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *EndpointIn) GetUidOk() (*string, bool) {
+	if o == nil || o.Uid == nil {
+		return nil, false
+	}
+	return o.Uid, true
+}
+
+// HasUid returns a boolean if a field has been set.
+func (o *EndpointIn) HasUid() bool {
+	if o != nil && o.Uid != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetUid gets a reference to the given string and assigns it to the Uid field.
+func (o *EndpointIn) SetUid(v string) {
+	o.Uid = &v
+}
+
 // GetUrl returns the Url field value
 func (o *EndpointIn) GetUrl() string {
 	if o == nil {
@@ -240,6 +308,12 @@ func (o EndpointIn) MarshalJSON() ([]byte, error) {
 	}
 	if o.RateLimit != nil {
 		toSerialize["rateLimit"] = o.RateLimit
+	}
+	if o.Secret != nil {
+		toSerialize["secret"] = o.Secret
+	}
+	if o.Uid != nil {
+		toSerialize["uid"] = o.Uid
 	}
 	if true {
 		toSerialize["url"] = o.Url
