@@ -21,7 +21,7 @@ class MessageAttempt internal constructor(options: SvixOptions) {
                 options.messageStatus
             )
         } catch (e: Exception) {
-            throw ApiException.wrapInternalApiException(e)
+            throw ApiException.wrap(e)
         }
     }
 
@@ -29,7 +29,7 @@ class MessageAttempt internal constructor(options: SvixOptions) {
         try {
             return api.getAttemptApiV1AppAppIdMsgMsgIdAttemptAttemptIdGet(attemptId, msgId, appId)
         } catch (e: Exception) {
-            throw ApiException.wrapInternalApiException(e)
+            throw ApiException.wrap(e)
         }
     }
 
@@ -37,7 +37,7 @@ class MessageAttempt internal constructor(options: SvixOptions) {
         try {
             api.resendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPost(endpointId, msgId, appId)
         } catch (e: Exception) {
-            throw ApiException.wrapInternalApiException(e)
+            throw ApiException.wrap(e)
         }
     }
 
@@ -56,7 +56,7 @@ class MessageAttempt internal constructor(options: SvixOptions) {
                 options.before
             )
         } catch (e: Exception) {
-            throw ApiException.wrapInternalApiException(e)
+            throw ApiException.wrap(e)
         }
     }
 
@@ -73,7 +73,7 @@ class MessageAttempt internal constructor(options: SvixOptions) {
                 options.limit
             )
         } catch (e: Exception) {
-            throw ApiException.wrapInternalApiException(e)
+            throw ApiException.wrap(e)
         }
     }
 
@@ -95,7 +95,7 @@ class MessageAttempt internal constructor(options: SvixOptions) {
                 options.before
             )
         } catch (e: Exception) {
-            throw ApiException.wrapInternalApiException(e)
+            throw ApiException.wrap(e)
         }
     }
 }

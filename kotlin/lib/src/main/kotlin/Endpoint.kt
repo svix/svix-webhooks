@@ -2,6 +2,7 @@ package com.svix.kotlin
 
 import com.svix.kotlin.exceptions.ApiException
 import com.svix.kotlin.internal.apis.EndpointApi
+import com.svix.kotlin.internal.infrastructure.ServerException
 import com.svix.kotlin.models.EndpointIn
 import com.svix.kotlin.models.EndpointOut
 import com.svix.kotlin.models.EndpointUpdate
@@ -14,7 +15,7 @@ class Endpoint internal constructor(options: SvixOptions) {
         try {
             return api.listEndpointsApiV1AppAppIdEndpointGet(appId, options.iterator, options.limit)
         } catch (e: Exception) {
-            throw ApiException.wrapInternalApiException(e)
+            throw ApiException.wrap(e)
         }
     }
 
@@ -22,7 +23,7 @@ class Endpoint internal constructor(options: SvixOptions) {
         try {
             return api.createEndpointApiV1AppAppIdEndpointPost(appId, applicationIn)
         } catch (e: Exception) {
-            throw ApiException.wrapInternalApiException(e)
+            throw ApiException.wrap(e)
         }
     }
 
@@ -30,7 +31,7 @@ class Endpoint internal constructor(options: SvixOptions) {
         try {
             return api.getEndpointApiV1AppAppIdEndpointEndpointIdGet(appId, endpointIn)
         } catch (e: Exception) {
-            throw ApiException.wrapInternalApiException(e)
+            throw ApiException.wrap(e)
         }
     }
 
@@ -38,7 +39,7 @@ class Endpoint internal constructor(options: SvixOptions) {
         try {
             return api.updateEndpointApiV1AppAppIdEndpointEndpointIdPut(appId, endpointId, endpointUpdate)
         } catch (e: Exception) {
-            throw ApiException.wrapInternalApiException(e)
+            throw ApiException.wrap(e)
         }
     }
 
@@ -46,7 +47,7 @@ class Endpoint internal constructor(options: SvixOptions) {
         try {
             api.deleteEndpointApiV1AppAppIdEndpointEndpointIdDelete(appId, endpointId)
         } catch (e: Exception) {
-            throw ApiException.wrapInternalApiException(e)
+            throw ApiException.wrap(e)
         }
     }
 
@@ -54,7 +55,7 @@ class Endpoint internal constructor(options: SvixOptions) {
         try {
             api.getEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGet(appId, endpointId)
         } catch (e: Exception) {
-            throw ApiException.wrapInternalApiException(e)
+            throw ApiException.wrap(e)
         }
     }
 }

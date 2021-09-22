@@ -11,7 +11,7 @@ class Authentication internal constructor(options: SvixOptions) {
         try {
             return api.getDashboardAccessApiV1AuthDashboardAccessAppIdPost(appId)
         } catch (e: Exception) {
-            throw ApiException.wrapInternalApiException(e)
+            throw ApiException.wrap(e)
         }
     }
 
@@ -19,7 +19,7 @@ class Authentication internal constructor(options: SvixOptions) {
         try {
             api.logoutApiV1AuthLogoutPost()
         } catch (e: Exception) {
-            throw ApiException.wrapInternalApiException(e)
+            throw ApiException.wrap(e)
         }
     }
 }

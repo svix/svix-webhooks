@@ -13,7 +13,7 @@ class Application internal constructor(options: SvixOptions) {
         try {
             return api.listApplicationsApiV1AppGet(options.iterator, options.limit)
         } catch (e: Exception) {
-            throw ApiException.wrapInternalApiException(e)
+            throw ApiException.wrap(e)
         }
     }
 
@@ -21,7 +21,7 @@ class Application internal constructor(options: SvixOptions) {
         try {
             return api.createApplicationApiV1AppPost(applicationIn)
         } catch (e: Exception) {
-            throw ApiException.wrapInternalApiException(e)
+            throw ApiException.wrap(e)
         }
     }
 
@@ -29,7 +29,7 @@ class Application internal constructor(options: SvixOptions) {
         try {
             return api.getApplicationApiV1AppAppIdGet(appId)
         } catch (e: Exception) {
-            throw ApiException.wrapInternalApiException(e)
+            throw ApiException.wrap(e)
         }
     }
 
@@ -37,7 +37,7 @@ class Application internal constructor(options: SvixOptions) {
         try {
             return api.updateApplicationApiV1AppAppIdPut(appId, applicationIn)
         } catch (e: Exception) {
-            throw ApiException.wrapInternalApiException(e)
+            throw ApiException.wrap(e)
         }
     }
 
@@ -45,7 +45,7 @@ class Application internal constructor(options: SvixOptions) {
         try {
             api.deleteApplicationApiV1AppAppIdDelete(appId)
         } catch (e: Exception) {
-            throw ApiException.wrapInternalApiException(e)
+            throw ApiException.wrap(e)
         }
     }
 }

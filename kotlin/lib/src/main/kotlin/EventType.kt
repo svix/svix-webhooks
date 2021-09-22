@@ -14,7 +14,7 @@ class EventType internal constructor(options: SvixOptions) {
         try {
             return api.listEventTypesApiV1EventTypeGet(options.iterator, options.limit, options.withContent)
         } catch (e: Exception) {
-            throw ApiException.wrapInternalApiException(e)
+            throw ApiException.wrap(e)
         }
     }
 
@@ -22,7 +22,7 @@ class EventType internal constructor(options: SvixOptions) {
         try {
             return api.createEventTypeApiV1EventTypePost(eventTypeIn)
         } catch (e: Exception) {
-            throw ApiException.wrapInternalApiException(e)
+            throw ApiException.wrap(e)
         }
     }
 
@@ -30,7 +30,7 @@ class EventType internal constructor(options: SvixOptions) {
         try {
             return api.updateEventTypeApiV1EventTypeEventTypeNamePut(eventTypeName, eventTypeUpdate)
         } catch (e: Exception) {
-            throw ApiException.wrapInternalApiException(e)
+            throw ApiException.wrap(e)
         }
     }
 
@@ -38,7 +38,7 @@ class EventType internal constructor(options: SvixOptions) {
         try {
             api.deleteEventTypeApiV1EventTypeEventTypeNameDelete(eventTypeName)
         } catch (e: Exception) {
-            throw ApiException.wrapInternalApiException(e)
+            throw ApiException.wrap(e)
         }
     }
 }

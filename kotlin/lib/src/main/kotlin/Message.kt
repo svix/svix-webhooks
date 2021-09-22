@@ -13,7 +13,7 @@ class Message internal constructor(options: SvixOptions) {
         try {
             return api.listMessagesApiV1AppAppIdMsgGet(appId, options.iterator, options.limit, options.eventTypes, options.before)
         } catch (e: Exception) {
-            throw ApiException.wrapInternalApiException(e)
+            throw ApiException.wrap(e)
         }
     }
 
@@ -21,7 +21,7 @@ class Message internal constructor(options: SvixOptions) {
         try {
             return api.createMessageApiV1AppAppIdMsgPost(appId, messageIn)
         } catch (e: Exception) {
-            throw ApiException.wrapInternalApiException(e)
+            throw ApiException.wrap(e)
         }
     }
 
@@ -29,7 +29,7 @@ class Message internal constructor(options: SvixOptions) {
         try {
             return api.getMessageApiV1AppAppIdMsgMsgIdGet(msgId, appId)
         } catch (e: Exception) {
-            throw ApiException.wrapInternalApiException(e)
+            throw ApiException.wrap(e)
         }
     }
 }

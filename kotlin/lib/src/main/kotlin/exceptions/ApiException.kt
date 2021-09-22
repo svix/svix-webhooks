@@ -3,20 +3,18 @@ package com.svix.kotlin.exceptions
 import com.svix.kotlin.internal.infrastructure.ClientException
 import com.svix.kotlin.internal.infrastructure.ServerException
 
-class ApiException : Exception {
+class ApiException internal constructor(message: String? = null, val statusCode: Int = -1) : RuntimeException(message) {
     companion object {
-        internal fun wrapInternalApiException(e: Exception): Exception {
+        internal fun wrap(e: Exception): Exception {
             return when (e) {
-                is ServerException, is ClientException, is UnsupportedOperationException -> {
-                    ApiException(e)
+                is ServerException -> {
+                    ApiException(e.message, e.statusCode)
+                }
+                is ClientException -> {
+                    ApiException(e.message, e.statusCode)
                 }
                 else -> e
             }
         }
     }
-
-    constructor() : super()
-    constructor(message: String) : super(message)
-    constructor(message: String, cause: Throwable) : super(message, cause)
-    constructor(cause: Throwable) : super(cause)
 }
