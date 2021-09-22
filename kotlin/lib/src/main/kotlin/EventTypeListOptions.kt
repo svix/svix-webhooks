@@ -1,5 +1,11 @@
 package com.svix.kotlin
 
-abstract class EventTypeListOptions : ListOptions() {
-    abstract var withContent: Boolean?
+class EventTypeListOptions() : ListOptions() {
+    var withContent: Boolean = false
+
+    fun withContent(withContent: Boolean) = apply { this.withContent = withContent }
+
+    override fun iterator(iterator: String) = apply { super.iterator(iterator) }
+
+    override fun limit(limit: Int) = apply { super.limit(limit) }
 }

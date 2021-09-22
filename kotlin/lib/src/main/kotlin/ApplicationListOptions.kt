@@ -1,4 +1,7 @@
 package com.svix.kotlin
 
-abstract class ApplicationListOptions : ListOptions() {
+class ApplicationListOptions : ListOptions() {
+    override fun iterator(iterator: String): ApplicationListOptions = apply { super.iterator(iterator) }
+
+    override fun limit(limit: Int) = apply { super.limit(limit) }
 }
