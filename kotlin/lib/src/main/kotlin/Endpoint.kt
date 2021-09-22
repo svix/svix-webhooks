@@ -23,17 +23,17 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun create(appId: String, applicationIn: EndpointIn): EndpointOut {
+    suspend fun create(appId: String, endpointIn: EndpointIn): EndpointOut {
         try {
-            return api.createEndpointApiV1AppAppIdEndpointPost(appId, applicationIn)
+            return api.createEndpointApiV1AppAppIdEndpointPost(appId, endpointIn)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
     }
 
-    suspend fun get(appId: String, endpointIn: String): EndpointOut {
+    suspend fun get(appId: String, endpointId: String): EndpointOut {
         try {
-            return api.getEndpointApiV1AppAppIdEndpointEndpointIdGet(appId, endpointIn)
+            return api.getEndpointApiV1AppAppIdEndpointEndpointIdGet(endpointId, appId)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -41,7 +41,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
 
     suspend fun update(appId: String, endpointId: String, endpointUpdate: EndpointUpdate): EndpointOut {
         try {
-            return api.updateEndpointApiV1AppAppIdEndpointEndpointIdPut(appId, endpointId, endpointUpdate)
+            return api.updateEndpointApiV1AppAppIdEndpointEndpointIdPut(endpointId, appId, endpointUpdate)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -49,7 +49,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
 
     suspend fun delete(appId: String, endpointId: String) {
         try {
-            api.deleteEndpointApiV1AppAppIdEndpointEndpointIdDelete(appId, endpointId)
+            api.deleteEndpointApiV1AppAppIdEndpointEndpointIdDelete(endpointId, appId)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -57,7 +57,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
 
     suspend fun getSecret(appId: String, endpointId: String) {
         try {
-            api.getEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGet(appId, endpointId)
+            api.getEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGet(endpointId, appId)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }

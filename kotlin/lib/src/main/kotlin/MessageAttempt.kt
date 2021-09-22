@@ -53,8 +53,8 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
     ): ListResponseEndpointMessageOut {
         try {
             return api.listAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGet(
-                appId,
                 endpointId,
+                appId,
                 options.iterator,
                 options.limit,
                 options.messageStatus,
