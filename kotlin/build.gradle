@@ -14,6 +14,7 @@ buildscript {
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.30.0"
     }
 }
 
@@ -60,3 +61,5 @@ javadoc {
     source = sourceSets.main.allJava
     excludes = [ "com/svix/**/*" ]
 }
+
+apply from: "deploy.gradle"

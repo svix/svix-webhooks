@@ -1,0 +1,123 @@
+
+/*
+ * Based on Stripe's java deployment, which is in turn
+ * based on the example at Chris Banes's repository that allows signing
+ * without manually creating a maven file.
+ *
+ * The original can be found at
+ * https://raw.github.com/chrisbanes/gradle-mvn-push/master/gradle-mvn-push.gradle
+ */
+
+apply plugin: "maven"
+apply plugin: "signing"
+apply plugin: "io.codearte.nexus-staging"
+
+nexusStaging {
+    packageGroup = GROUP
+    numberOfRetries = 40
+    delayBetweenRetriesInMillis = 4000
+}
+
+def isReleaseBuild() {
+    return VERSION_NAME.contains("SNAPSHOT") == false
+}
+
+def getReleaseRepositoryUrl() {
+    return hasProperty("RELEASE_REPOSITORY_URL") ? RELEASE_REPOSITORY_URL
+            : "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+}
+
+def getSnapshotRepositoryUrl() {
+    return hasProperty("SNAPSHOT_REPOSITORY_URL") ? SNAPSHOT_REPOSITORY_URL
+            : "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+}
+
+def getRepositoryUsername() {
+    return hasProperty("NEXUS_USERNAME") ? NEXUS_USERNAME : ""
+}
+
+def getRepositoryPassword() {
+    return hasProperty("NEXUS_PASSWORD") ? NEXUS_PASSWORD : ""
+}
+
+afterEvaluate { project ->
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                pom.groupId = GROUP
+                pom.artifactId = POM_ARTIFACT_ID
+                pom.version = VERSION_NAME
+
+                repository(url: getReleaseRepositoryUrl()) {
+                    authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+                }
+
+                snapshotRepository(url: getSnapshotRepositoryUrl()) {
+                    authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+                }
+
+                pom.project {
+                    name POM_NAME
+                    description POM_DESCRIPTION
+                    url POM_URL
+                    packaging POM_PACKAGING
+
+                    scm {
+                        url POM_SCM_URL
+                        connection POM_SCM_CONNECTION
+                        developerConnection POM_SCM_DEV_CONNECTION
+                    }
+
+                    licenses {
+                        license {
+                            name POM_LICENCE_NAME
+                            url POM_LICENCE_URL
+                            distribution POM_LICENCE_DIST
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id POM_DEVELOPER_ID
+                            name POM_DEVELOPER_NAME
+                            email POM_DEVELOPER_EMAIL
+                        }
+                    }
+
+                    organization {
+                        name POM_DEVELOPER_NAME
+                        url POM_ORGANIZATION_URL
+                    }
+                }
+            }
+        }
+    }
+
+    signing {
+        required { isReleaseBuild() &&
+        (gradle.taskGraph.hasTask("uploadArchives") || gradle.taskGraph.hasTask("publish"))}
+        useGpgCmd()
+        sign configurations.archives
+    }
+
+    tasks.withType(Sign) {
+        onlyIf { isReleaseBuild() && project.hasProperty("signing.gnupg.keyName") }
+    }
+
+    task sourcesJar(type: Jar) {
+        classifier = "sources"
+        from sourceSets.main.allSource
+    }
+
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = "javadoc"
+        from javadoc.destinationDir
+    }
+
+    artifacts {
+        archives sourcesJar
+        archives javadocJar
+    }
+}
