@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 0.29.0
+* All: Add before option to message apis
+* Java: Cleanup list options
+* All: Add ability to set signing secret
+* All: add event type filtering to message attempt api
+* All: support for endpoint uids
+
 ## Version 0.28.0
 * All: Adds support for unbranded webhooks 📋
 * PHP: Improve tests and validation for sign function 🐞
