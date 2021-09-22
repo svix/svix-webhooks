@@ -11,6 +11,7 @@ class Application internal constructor(token: String, options: SvixOptions) {
 
     init {
         api.accessToken = token
+        api.userAgent = options.getUA()
     }
 
     suspend fun list(options: ApplicationListOptions = ApplicationListOptions()): ListResponseApplicationOut {

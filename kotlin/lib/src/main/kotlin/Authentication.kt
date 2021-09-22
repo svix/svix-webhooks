@@ -9,6 +9,7 @@ class Authentication internal constructor(token: String, options: SvixOptions) {
 
     init {
         api.accessToken = token
+        api.userAgent = options.getUA()
     }
 
     suspend fun dashboardAccess(appId: String): DashboardAccessOut {

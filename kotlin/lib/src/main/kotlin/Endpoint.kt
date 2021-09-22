@@ -12,6 +12,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
 
     init {
         api.accessToken = token
+        api.userAgent = options.getUA()
     }
 
     suspend fun list(appId: String, options: EndpointListOptions = EndpointListOptions()): ListResponseEndpointOut {

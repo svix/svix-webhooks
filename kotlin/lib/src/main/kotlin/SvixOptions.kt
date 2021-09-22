@@ -6,4 +6,8 @@ data class SvixOptions(val debugUrl: String = DEFAULT_URL) {
     companion object {
         const val DEFAULT_URL = "https://api.svix.com"
     }
+
+    internal fun getUA(): String {
+        return "svix-libs/$VERSION/kotlin"
+    }
 }
