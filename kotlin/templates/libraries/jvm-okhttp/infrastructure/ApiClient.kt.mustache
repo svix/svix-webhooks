@@ -56,7 +56,7 @@ import org.threeten.bp.OffsetDateTime
 import org.threeten.bp.OffsetTime
 {{/threetenbp}}
 
-{{#nonPublicApi}}internal {{/nonPublicApi}}open class ApiClient(val baseUrl: String) {
+{{#nonPublicApi}}internal {{/nonPublicApi}}open class ApiClient(val baseUrl: String, var accessToken: String? = null) {
     {{#nonPublicApi}}internal {{/nonPublicApi}}companion object {
         protected const val ContentType = "Content-Type"
         protected const val Accept = "Accept"
@@ -70,7 +70,6 @@ import org.threeten.bp.OffsetTime
         val apiKeyPrefix: MutableMap<String, String> = mutableMapOf()
         var username: String? = null
         var password: String? = null
-        var accessToken: String? = null
 
         @JvmStatic
         val client: OkHttpClient by lazy {

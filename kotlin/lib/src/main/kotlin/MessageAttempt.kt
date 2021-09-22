@@ -8,8 +8,12 @@ import com.svix.kotlin.models.ListResponseMessageAttemptOut
 import com.svix.kotlin.models.ListResponseMessageEndpointOut
 import com.svix.kotlin.models.MessageAttemptOut
 
-class MessageAttempt internal constructor(options: SvixOptions) {
+class MessageAttempt internal constructor(token: String, options: SvixOptions) {
     val api = MessageAttemptApi(options.debugUrl)
+
+    init {
+        api.accessToken = token
+    }
 
     suspend fun list(appId: String, msgId: String, options: MessageAttemptListOptions): ListResponseMessageAttemptOut {
         try {

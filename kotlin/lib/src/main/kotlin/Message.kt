@@ -6,8 +6,12 @@ import com.svix.kotlin.models.ListResponseMessageOut
 import com.svix.kotlin.models.MessageIn
 import com.svix.kotlin.models.MessageOut
 
-class Message internal constructor(options: SvixOptions) {
+class Message internal constructor(token: String, options: SvixOptions) {
     val api = MessageApi(options.debugUrl)
+
+    init {
+        api.accessToken = token
+    }
 
     suspend fun list(appId: String, options: MessageListOptions = MessageListOptions()): ListResponseMessageOut {
         try {
