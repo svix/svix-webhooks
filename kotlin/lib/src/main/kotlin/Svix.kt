@@ -1,8 +1,6 @@
 package com.svix.kotlin
 
-import com.svix.kotlin.internal.infrastructure.ApiClient
-
-class Svix(token: String, svixOptions: SvixOptions = SvixOptions()) {
+class Svix(token: String, options: SvixOptions = SvixOptions()) {
     companion object {
         val VERSION = "0.29.0"
     }
@@ -15,13 +13,11 @@ class Svix(token: String, svixOptions: SvixOptions = SvixOptions()) {
     private val messageAttempt: MessageAttempt
 
     init {
-        ApiClient.accessToken = token
-
-        application = Application(svixOptions.debugUrl)
-        authentication = Authentication(svixOptions.debugUrl)
-        endpoint = Endpoint(svixOptions.debugUrl)
-        eventType = EventType(svixOptions.debugUrl)
-        message = Message(svixOptions.debugUrl)
-        messageAttempt = MessageAttempt(svixOptions.debugUrl)
+        application = Application(options)
+        authentication = Authentication(options)
+        endpoint = Endpoint(options)
+        eventType = EventType(options)
+        message = Message(options)
+        messageAttempt = MessageAttempt(options)
     }
 }

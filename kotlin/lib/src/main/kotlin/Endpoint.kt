@@ -7,8 +7,8 @@ import com.svix.kotlin.models.EndpointOut
 import com.svix.kotlin.models.EndpointUpdate
 import com.svix.kotlin.models.ListResponseEndpointOut
 
-class Endpoint internal constructor(debugUrl: String) {
-    val api = EndpointApi(debugUrl)
+class Endpoint internal constructor(options: SvixOptions) {
+    val api = EndpointApi(options.debugUrl)
 
     suspend fun list(appId: String, options: EndpointListOptions): ListResponseEndpointOut {
         try {
