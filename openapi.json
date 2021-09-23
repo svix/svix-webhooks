@@ -1216,7 +1216,11 @@
                     1
                 ],
                 "title": "MessageAttemptTriggerType",
-                "type": "integer"
+                "type": "integer",
+                "x-enum-varnames": [
+                    "Scheduled",
+                    "Manual"
+                ]
             },
             "MessageEndpointOut": {
                 "properties": {
@@ -1383,7 +1387,7 @@
                 "type": "object"
             },
             "MessageStatus": {
-                "description": "The sending status of the message:\n- Success = 0\n- Pending = 1\n- Fail = 2",
+                "description": "The sending status of the message:\n- Success = 0\n- Pending = 1\n- Fail = 2\n- Sending = 3",
                 "enum": [
                     0,
                     1,
@@ -1391,7 +1395,13 @@
                     3
                 ],
                 "title": "MessageStatus",
-                "type": "integer"
+                "type": "integer",
+                "x-enum-varnames": [
+                    "Success",
+                    "Pending",
+                    "Fail",
+                    "Sending"
+                ]
             },
             "ValidationError": {
                 "properties": {

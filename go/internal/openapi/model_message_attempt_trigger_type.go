@@ -20,8 +20,8 @@ type MessageAttemptTriggerType int32
 
 // List of MessageAttemptTriggerType
 const (
-	MESSAGEATTEMPTTRIGGERTYPE__0 MessageAttemptTriggerType = 0
-	MESSAGEATTEMPTTRIGGERTYPE__1 MessageAttemptTriggerType = 1
+	MESSAGEATTEMPTTRIGGERTYPE_Scheduled MessageAttemptTriggerType = 0
+	MESSAGEATTEMPTTRIGGERTYPE_Manual MessageAttemptTriggerType = 1
 )
 
 var allowedMessageAttemptTriggerTypeEnumValues = []MessageAttemptTriggerType{
