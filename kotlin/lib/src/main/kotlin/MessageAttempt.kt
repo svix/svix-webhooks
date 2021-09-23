@@ -16,7 +16,7 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
         api.userAgent = options.getUA()
     }
 
-    suspend fun list(appId: String, msgId: String, options: MessageAttemptListOptions): ListResponseMessageAttemptOut {
+    suspend fun list(appId: String, msgId: String, options: MessageAttemptListOptions = MessageAttemptListOptions()): ListResponseMessageAttemptOut {
         try {
             return api.listAttemptsApiV1AppAppIdMsgMsgIdAttemptGet(
                 appId,
@@ -30,7 +30,7 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun get(msgId: String, appId: String, attemptId: String): MessageAttemptOut {
+    suspend fun get(appId: String, msgId: String, attemptId: String): MessageAttemptOut {
         try {
             return api.getAttemptApiV1AppAppIdMsgMsgIdAttemptAttemptIdGet(attemptId, msgId, appId)
         } catch (e: Exception) {
@@ -38,7 +38,7 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun resend(msgId: String, appId: String, endpointId: String) {
+    suspend fun resend(appId: String, msgId: String, endpointId: String) {
         try {
             api.resendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPost(endpointId, msgId, appId)
         } catch (e: Exception) {
@@ -66,8 +66,8 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
     }
 
     suspend fun listAttemptedDestinations(
-        msgId: String,
         appId: String,
+        msgId: String,
         options: MessageAttemptListOptions = MessageAttemptListOptions()
     ): ListResponseMessageEndpointOut {
         try {
@@ -83,9 +83,9 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
     }
 
     suspend fun listAttemptsForEndpoint(
-        msgId: String,
         appId: String,
         endpointId: String,
+        msgId: String,
         options: MessageAttemptListOptions = MessageAttemptListOptions()
     ): ListResponseMessageAttemptEndpointOut {
         return try {
