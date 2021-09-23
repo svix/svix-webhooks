@@ -1,7 +1,7 @@
 # Changelog
 
 ## Version 0.30.0
-* Kotlin: Inital async kotlin library 🚀
+* Kotlin: Initial async kotlin library 🚀
 * All: Improved naming for Integer Enums 📛
 * JS: update dependencies 🆕
 * Java: Cleanup list option code using generics 🤓
