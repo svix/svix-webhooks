@@ -9,14 +9,14 @@ public class ListOptions {
 	public ListOptions() {
 	}
 
-	public ListOptions iterator(final String iterator) {
+	public <T extends ListOptions> T iterator(final String iterator) {
 		this.iterator = iterator;
-		return this;
+		return (T) this;
 	}
 
-	public ListOptions limit(final Integer limit) {
+	public <T extends ListOptions> T  limit(final Integer limit) {
 		this.limit = limit;
-		return this;
+		return (T) this;
 	}
 
 	public void setIterator(final String iterator) {
