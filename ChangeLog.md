@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.30.0
+* Kotlin: Initial async kotlin library 🚀
+* All: Improved naming for Integer Enums 📛
+* JS: Update dependencies 🆕
+* Java: Cleanup list option code using generics 🤓
+
 ## Version 0.29.0
 * All: Add before option to message apis
 * Java: Cleanup list options
