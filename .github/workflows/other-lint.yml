@@ -39,4 +39,4 @@ jobs:
           VALIDATE_PHP_PHPSTAN: false
           VALIDATE_PHP_PSALM: false
           VALIDATE_OPENAPI: false
-          FILTER_REGEX_EXCLUDE: (java/gradlew|javascript/tsconfig.json)
+          FILTER_REGEX_EXCLUDE: (gradlew|javascript/tsconfig.json)

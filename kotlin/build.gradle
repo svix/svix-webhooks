@@ -1,0 +1,65 @@
+group GROUP
+version VERSION_NAME
+
+wrapper {
+    gradleVersion = '6.8.3'
+    distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
+}
+
+buildscript {
+    ext.kotlin_version = '1.5.10'
+
+    repositories {
+        maven { url "https://repo1.maven.org/maven2" }
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.30.0"
+    }
+}
+
+apply plugin: 'kotlin'
+
+repositories {
+    maven { url "https://repo1.maven.org/maven2" }
+}
+
+sourceSets {
+    main.kotlin.srcDirs += 'lib/src/main/kotlin'
+    main.kotlin.srcDirs += 'lib/generated/openapi/src/main/kotlin'        
+    sourceSets.test.kotlin.srcDirs = ["lib/src/test/main/kotlin"]
+    test.kotlin.srcDirs = ['lib/src/test']
+}
+
+test {
+    useJUnitPlatform()
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    implementation "com.squareup.moshi:moshi-kotlin:1.12.0"
+    implementation "com.squareup.okhttp3:okhttp:4.9.1"
+    testCompile 'junit:junit:4.13.2'
+    testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5:1.5.21'
+}
+
+jar {
+    archiveBaseName = POM_ARTIFACT_ID
+    manifest {
+        attributes('Implementation-Title': POM_NAME,
+                   'Implementation-Version': VERSION_NAME,
+                   'Implementation-Vendor': VENDOR_NAME,
+                   'Bundle-SymbolicName': POM_ARTIFACT_ID,
+                   'Export-Package': 'com.svix.kotlin')
+
+        archiveVersion = VERSION_NAME
+    }
+}
+
+javadoc {
+    source = sourceSets.main.allJava
+    excludes = [ "com/svix/**/*" ]
+}
+
+apply from: "deploy.gradle"

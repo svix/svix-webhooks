@@ -1,0 +1,5 @@
+{
+  "packageName": "com.svix.kotlin.internal",
+  "modelPackage": "com.svix.kotlin.models",
+  "useCoroutines": true
+}
