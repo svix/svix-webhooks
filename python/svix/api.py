@@ -22,9 +22,12 @@ from .openapi_client.model.event_type_in import EventTypeIn
 from .openapi_client.model.event_type_out import EventTypeOut
 from .openapi_client.model.event_type_update import EventTypeUpdate
 from .openapi_client.model.list_response_application_out import ListResponseApplicationOut
+from .openapi_client.model.list_response_endpoint_message_out import ListResponseEndpointMessageOut
 from .openapi_client.model.list_response_endpoint_out import ListResponseEndpointOut
 from .openapi_client.model.list_response_event_type_out import ListResponseEventTypeOut
+from .openapi_client.model.list_response_message_attempt_endpoint_out import ListResponseMessageAttemptEndpointOut
 from .openapi_client.model.list_response_message_attempt_out import ListResponseMessageAttemptOut
+from .openapi_client.model.list_response_message_endpoint_out import ListResponseMessageEndpointOut
 from .openapi_client.model.list_response_message_out import ListResponseMessageOut
 from .openapi_client.model.message_attempt_out import MessageAttemptOut
 from .openapi_client.model.message_in import MessageIn
@@ -250,6 +253,34 @@ class MessageAttempt(ApiBase[MessageAttemptApi]):
                 app_id=app_id, msg_id=msg_id, endpoint_id=endpoint_id, _check_return_type=False
             )
 
+    def list_attempted_messages(
+        self, app_id: str, endpoint_id: str, options: MessageAttemptListOptions = MessageAttemptListOptions()
+    ) -> ListResponseEndpointMessageOut:
+        with self._api() as api:
+            return api.list_attempted_messages_api_v1_app_app_id_endpoint_endpoint_id_msg_get(
+                app_id=app_id, endpoint_id=endpoint_id, **options.to_dict(), _check_return_type=False
+            )
+
+    def list_attempted_destinations(
+        self, app_id: str, msg_id: str, options: MessageAttemptListOptions = MessageAttemptListOptions()
+    ) -> ListResponseMessageEndpointOut:
+        with self._api() as api:
+            return api.list_attempted_destinations_api_v1_app_app_id_msg_msg_id_endpoint_get(
+                app_id=app_id, msg_id=msg_id, **options.to_dict(), _check_return_type=False
+            )
+
+    def list_attempts_for_endpoint(
+        self,
+        app_id: str,
+        msg_id: str,
+        endpoint_id: str,
+        options: MessageAttemptListOptions = MessageAttemptListOptions(),
+    ) -> ListResponseMessageAttemptEndpointOut:
+        with self._api() as api:
+            return api.list_attempts_for_endpoint_api_v1_app_app_id_msg_msg_id_endpoint_endpoint_id_attempt_get(
+                app_id=app_id, msg_id=msg_id, endpoint_id=endpoint_id, **options.to_dict(), _check_return_type=False
+            )
+
 
 class Svix:
     _configuration: Configuration
@@ -300,6 +331,9 @@ __all__ = [
     "MessageIn",
     "MessageOut",
     "ListResponseMessageAttemptOut",
+    "ListResponseEndpointMessageOut",
+    "ListResponseMessageEndpointOut",
+    "ListResponseMessageAttemptEndpointOut",
     "MessageAttemptOut",
     "MessageStatus",
     "SvixOptions",
