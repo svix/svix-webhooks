@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.31.0
+* Python: Add additional message-attempt APIs. 🆕
+
 ## Version 0.30.0
 * Kotlin: Initial async kotlin library 🚀
 * All: Improved naming for Integer Enums 📛
