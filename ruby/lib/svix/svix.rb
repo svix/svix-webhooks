@@ -30,6 +30,7 @@ module Svix
             configuration.server_index = nil
 
             api_client = ApiClient.new(configuration)
+            api_client.user_agent = "svix-libs/#{VERSION}/ruby"
 
             @application = ApplicationAPI.new(api_client)
             @authentication = AuthenticationAPI.new(api_client)
