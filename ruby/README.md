@@ -12,11 +12,15 @@ gem 'svix'
 
 And then execute:
 
-    $ bundle
+```sh
+bundle
+```
 
 Or install it yourself as:
 
-    $ gem install svix
+```sh
+gem install svix
+```
 
 ## Development
 
@@ -28,3 +32,12 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 ### Run Tests
 
 bundle exec rspec spec
+
+
+### Build & Upload
+
+```sh
+gem build svix.gemspec
+
+gem push pkg/svix-<VERSION>.gem
+```
