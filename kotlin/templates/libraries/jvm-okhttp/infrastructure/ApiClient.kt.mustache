@@ -55,6 +55,7 @@ import org.threeten.bp.LocalTime
 import org.threeten.bp.OffsetDateTime
 import org.threeten.bp.OffsetTime
 {{/threetenbp}}
+import kotlinx.coroutines.delay
 
 {{#nonPublicApi}}internal {{/nonPublicApi}}open class ApiClient(val baseUrl: String) {
     {{#nonPublicApi}}internal {{/nonPublicApi}}companion object {
@@ -267,7 +268,7 @@ import org.threeten.bp.OffsetTime
     }
     {{/hasAuthMethods}}
 
-    protected inline fun <reified I, reified T: Any?> request(requestConfig: RequestConfig<I>): ApiInfrastructureResponse<T?> {
+    protected inline suspend fun <reified I, reified T: Any?> request(requestConfig: RequestConfig<I>): ApiInfrastructureResponse<T?> {
         {{#jvm-okhttp3}}
         val httpUrl = HttpUrl.parse(baseUrl) ?: throw IllegalStateException("baseUrl is invalid.")
         {{/jvm-okhttp3}}
@@ -329,7 +330,19 @@ import org.threeten.bp.OffsetTime
             headers.forEach { header -> addHeader(header.key, header.value) }
         }.build()
 
-        val response = client.newCall(request).execute()
+        var response = client.newCall(request).execute()
+
+        var sleepTime = 50L
+        val numRetries = 3
+        for (i in 0 until numRetries) {
+            if (response.isSuccessful && response.code < 500) {
+                break
+            }
+            delay(sleepTime)
+            sleepTime = sleepTime * 2
+            response = client.newCall(request).execute()
+        }
+
         val accept = response.header(ContentType)?.substringBefore(";")?.lowercase(Locale.getDefault())
 
         // TODO: handle specific mapping types. e.g. Map<int, Class<?>>
