@@ -6,7 +6,7 @@ module Svix
             @api = EventTypeApi.new(api_client)
         end
 
-        def list(options = EventTypeListOptions.new)
+        def list(options = {})
             return @api.list_event_types_api_v1_event_type_get(options)
         end
 

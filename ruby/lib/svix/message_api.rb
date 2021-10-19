@@ -6,7 +6,7 @@ module Svix
             @api = MessageApi.new(api_client)
         end
 
-        def list(app_id, options = MessageListOptions.new)
+        def list(app_id, options = {})
             return @api.list_messages_api_v1_app_app_id_msg_get(app_id, options)
         end
 

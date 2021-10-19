@@ -11,4 +11,7 @@ module Svix
     private_constant :MessageApi
     private_constant :MessageAttemptApi
     private_constant :WebhookTypes
+    private_constant :HttpErrorOut
+    private_constant :HTTPValidationError
+    private_constant :ValidationError
 end

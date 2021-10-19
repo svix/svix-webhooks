@@ -6,8 +6,8 @@ module Svix
             @api = ApplicationApi.new(api_client)
         end
 
-        def list(options = ApplicationListOptions.new)
-            return @api.list_applications_api_v1_app_get(opts)
+        def list(options = {})
+            return @api.list_applications_api_v1_app_get(options)
         end
 
         def create(application_in)
