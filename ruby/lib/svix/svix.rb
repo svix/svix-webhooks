@@ -5,7 +5,7 @@ module Svix
         attr_accessor :debug
         attr_accessor :debug_url
 
-        def initialize(debug = false, debug_url="https://api.svix.com")
+        def initialize(debug = false, debug_url = "https://api.svix.com")
             @debug=debug
             @debug_url=debug_url
         end
@@ -30,7 +30,7 @@ module Svix
             configuration.server_index = nil
 
             api_client = ApiClient.new(configuration)
-            
+
             @application = ApplicationAPI.new(api_client)
             @authentication = AuthenticationAPI.new(api_client)
             @endpoint = EndpointAPI.new(api_client)

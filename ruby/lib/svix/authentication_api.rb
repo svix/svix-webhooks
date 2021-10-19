@@ -9,9 +9,9 @@ module Svix
         def dashboard_access(app_id)
             return @api.get_dashboard_access_api_v1_auth_dashboard_access_app_id_post(app_id)
         end
-    
+
         def logout
-            return @api.logout_api_v1_auth_logout_post()
+            return @api.logout_api_v1_auth_logout_post
         end
     end
 end

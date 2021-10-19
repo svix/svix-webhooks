@@ -9,12 +9,12 @@ module Svix
         def list(options = ApplicationListOptions.new)
             return @api.list_applications_api_v1_app_get(opts)
         end
-    
+
         def create(application_in)
             return @api.create_application_api_v1_app_post(application_in)
         end
 
-        def get(app_id) 
+        def get(app_id)
             return @api.get_application_api_v1_app_app_id_get(app_id)
         end
 
