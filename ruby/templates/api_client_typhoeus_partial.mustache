@@ -6,6 +6,15 @@
       request = build_request(http_method, path, opts)
       response = request.run
 
+      # retry 500s
+      sleep_time = 0.05
+      (0..1).each do |n|
+        break if response.success? && response.code < 500
+        sleep(sleep_time)
+        sleep_time = sleep_time * 2
+        response = request.run
+      end
+
       if @config.debugging
         @config.logger.debug "HTTP response body ~BEGIN~\n#{response.body}\n~END~\n"
       end
