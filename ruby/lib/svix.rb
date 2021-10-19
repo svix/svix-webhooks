@@ -8,14 +8,19 @@ require "svix/webhook"
 require "svix/util"
 require "svix/svix"
 
-require "svix/fetch_options"
-require "svix/fetch_options_message_attempt"
+require "svix/internal"
+require "svix/list_options"
 require "svix/application_api"
+require "svix/application_list_options"
 require "svix/authentication_api"
 require "svix/endpoint_api"
+require "svix/endpoint_list_options"
 require "svix/message_api"
+require "svix/message_list_options"
 require "svix/event_type_api"
+require "svix/event_type_list_options"
 require "svix/message_attempt_api"
+require "svix/message_attempt_list_options"
 
 # Common files
 require 'svix/api_client'

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Svix
-    class FetchOptions
+    class MessageListOptions
         attr_reader :limit
         attr_reader :iterator
 

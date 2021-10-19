@@ -6,12 +6,12 @@ module Svix
             @api = EventTypeApi.new(api_client)
         end
 
-        def list(options = FetchOptions.new)
-            return @api.list_event_types_api_v1_event_type_get({})
+        def list(options = EventTypeListOptions.new)
+            return @api.list_event_types_api_v1_event_type_get(options)
         end
     
-        def create(event_type_in_out)
-            return @api.create_event_type_api_v1_event_type_post(event_type_in_out)
+        def create(event_type_in)
+            return @api.create_event_type_api_v1_event_type_post(event_type_in)
         end
     
         def update(event_type_name, event_type_update)

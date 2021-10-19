@@ -6,8 +6,8 @@ module Svix
             @api = MessageApi.new(api_client)
         end
 
-        def list(app_id, options = FetchOptions.new)
-            return @api.list_messages_api_v1_app_app_id_msg_get(app_id, {})
+        def list(app_id, options = MessageListOptions.new)
+            return @api.list_messages_api_v1_app_app_id_msg_get(app_id, options)
         end
 
         def create(app_id, message_in)
@@ -15,7 +15,7 @@ module Svix
         end
 
         def get(app_id, msg_id)
-            return @api.get_message_api_v1_app_app_id_msg_msg_id_get(app_id, msg_id)
+            return @api.get_message_api_v1_app_app_id_msg_msg_id_get(msg_id, app_id)
         end
     end
 end
