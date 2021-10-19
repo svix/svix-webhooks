@@ -23,7 +23,7 @@ module Svix
             uri = URI(options.debug_url)
 
             configuration = Configuration.new
-            # configuration.debugging = options.debug
+            configuration.debugging = options.debug
             configuration.scheme = uri.scheme
             configuration.host = uri.port ? "#{uri.host}:#{uri.port}" : uri.host
             configuration.access_token = auth_token
