@@ -23,7 +23,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Svix\\": "php/src/"
+            "Svix\\": "php/lib/"
         }
     },
     "autoload-dev": {

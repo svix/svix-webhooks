@@ -1,0 +1,6 @@
+{
+  "invokerPackage": "Svix",
+  "apiPackage": "Svix\\Internal\\API",
+  "modelPackage": "Svix\\Models",
+  "disallowAdditionalPropertiesIfNotPresent": false
+}
