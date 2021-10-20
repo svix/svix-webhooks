@@ -1,5 +1,10 @@
 # Changelog
 
+
+## Version 0.32.0
+* Ruby: Initial API bindings! 🚀
+* Kotlin: Add client side retries 🔁
+
 ## Version 0.31.0
 * Python: Add additional message-attempt APIs. 🆕
 
