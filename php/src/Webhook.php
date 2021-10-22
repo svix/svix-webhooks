@@ -4,13 +4,13 @@ namespace Svix;
 
 class Webhook
 {
-    private const SECRET_PREFIX = "whsec_";
-    private const TOLERANCE = 5 * 60;
+    const SECRET_PREFIX = "whsec_";
+    const TOLERANCE = 5 * 60;
     private $secret;
 
-    public function __construct(string $secret)
+    public function __construct($secret)
     {
-        if (str_starts_with($secret, Webhook::SECRET_PREFIX)) {
+        if (substr($secret, 0, strlen(Webhook::SECRET_PREFIX)) === Webhook::SECRET_PREFIX) {
             $secret = substr($secret, strlen(Webhook::SECRET_PREFIX));
         }
         $this->secret = base64_decode($secret);
