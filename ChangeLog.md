@@ -1,5 +1,7 @@
 # Changelog
 
+## Version 0.33.0
+* PHP: Fix 5.6 compatibility issue 🐞
 
 ## Version 0.32.0
 * Ruby: Initial API bindings! 🚀
