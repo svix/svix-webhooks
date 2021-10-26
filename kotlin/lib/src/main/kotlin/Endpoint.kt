@@ -4,6 +4,8 @@ import com.svix.kotlin.exceptions.ApiException
 import com.svix.kotlin.internal.apis.EndpointApi
 import com.svix.kotlin.models.EndpointIn
 import com.svix.kotlin.models.EndpointOut
+import com.svix.kotlin.models.EndpointSecretOut
+import com.svix.kotlin.models.EndpointSecretRotateIn
 import com.svix.kotlin.models.EndpointUpdate
 import com.svix.kotlin.models.ListResponseEndpointOut
 
@@ -55,9 +57,17 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun getSecret(appId: String, endpointId: String) {
+    suspend fun getSecret(appId: String, endpointId: String): EndpointSecretOut {
         try {
-            api.getEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGet(endpointId, appId)
+            return api.getEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGet(endpointId, appId)
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
+
+    suspend fun rotateSecret(appId: String, endpointId: String, endpointSecretRotateIn: EndpointSecretRotateIn) {
+        try {
+            api.rotateEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretRotatePost(endpointId, appId, endpointSecretRotateIn)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
