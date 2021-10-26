@@ -66,6 +66,7 @@ class ApplicationListOptions(ListOptions):
 @dataclass
 class EventTypeListOptions(ListOptions):
     with_content: t.Optional[bool] = None
+    include_archived: t.Optional[bool] = None
 
 
 @dataclass

@@ -123,6 +123,7 @@ export type EndpointListOptions = ListOptions;
 
 export interface EventTypeListOptions extends ListOptions {
   withContent?: boolean;
+  includeArchived?: boolean;
 }
 
 export interface MessageListOptions extends ListOptions {
