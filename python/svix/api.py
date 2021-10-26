@@ -17,6 +17,7 @@ from .openapi_client.model.dashboard_access_out import DashboardAccessOut
 from .openapi_client.model.endpoint_in import EndpointIn
 from .openapi_client.model.endpoint_out import EndpointOut
 from .openapi_client.model.endpoint_secret_out import EndpointSecretOut
+from .openapi_client.model.endpoint_secret_rotate_in import EndpointSecretRotateIn
 from .openapi_client.model.endpoint_update import EndpointUpdate
 from .openapi_client.model.event_type_in import EventTypeIn
 from .openapi_client.model.event_type_out import EventTypeOut
@@ -184,6 +185,15 @@ class Endpoint(ApiBase[EndpointApi]):
                 app_id=app_id, endpoint_id=endpoint_id, _check_return_type=False
             )
 
+    def rotate_secret(self, app_id: str, endpoint_id: str, endpoint_secret_rotate_in: EndpointSecretRotateIn) -> None:
+        with self._api() as api:
+            return api.rotate_endpoint_secret_api_v1_app_app_id_endpoint_endpoint_id_secret_rotate_post(
+                app_id=app_id,
+                endpoint_id=endpoint_id,
+                endpoint_secret_rotate_in=endpoint_secret_rotate_in,
+                _check_return_type=False,
+            )
+
 
 class EventType(ApiBase[EventTypeApi]):
     _ApiClass = EventTypeApi
@@ -323,6 +333,7 @@ __all__ = [
     "EndpointIn",
     "EndpointOut",
     "EndpointSecretOut",
+    "EndpointSecretRotateIn",
     "ListResponseEndpointOut",
     "EventTypeIn",
     "EventTypeOut",
