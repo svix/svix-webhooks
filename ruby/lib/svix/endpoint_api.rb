@@ -30,5 +30,9 @@ module Svix
             return @api.get_endpoint_secret_api_v1_app_app_id_endpoint_endpoint_id_secret_get(endpoint_id, app_id)
         end
 
+        def rotate_secret(app_id, endpoint_id, endpoint_secret_rotate_in)
+            return @api.rotate_endpoint_secret_api_v1_app_app_id_endpoint_endpoint_id_secret_rotate_post(endpoint_id, app_id, endpoint_secret_rotate_in)
+        end
+
     end
 end
