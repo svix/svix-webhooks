@@ -6,6 +6,7 @@ import com.svix.models.EndpointIn;
 import com.svix.models.EndpointOut;
 import com.svix.models.EndpointUpdate;
 import com.svix.models.EndpointSecretOut;
+import com.svix.models.EndpointSecretRotateIn;
 import com.svix.models.ListResponseEndpointOut;
 
 public final class Endpoint {
@@ -58,6 +59,14 @@ public final class Endpoint {
 	public EndpointSecretOut getSecret(final String appId, final String endpointId) throws ApiException {
 		try {
 			return api.getEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGet(endpointId, appId);
+		} catch (com.svix.internal.ApiException e) {
+			throw Utils.wrapInternalApiException(e);
+		}
+	}
+
+	public void rotateSecret(final String appId, final String endpointId, final EndpointSecretRotateIn endpointSecretRotateIn) throws ApiException {
+		try {
+			api.rotateEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretRotatePost(endpointId, appId, endpointSecretRotateIn);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}

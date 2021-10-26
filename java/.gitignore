@@ -29,3 +29,5 @@ lib/generated/
 
 .classpath
 .settings
+
+.idea/
