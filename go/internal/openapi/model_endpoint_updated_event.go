@@ -14,36 +14,36 @@ import (
 	"encoding/json"
 )
 
-// EndpointdUpdatedEvent Sent when an endpoint is updated.
-type EndpointdUpdatedEvent struct {
+// EndpointUpdatedEvent Sent when an endpoint is updated.
+type EndpointUpdatedEvent struct {
 	Data EndpointUpdatedEventData `json:"data"`
 	Type *string `json:"type,omitempty"`
 }
 
-// NewEndpointdUpdatedEvent instantiates a new EndpointdUpdatedEvent object
+// NewEndpointUpdatedEvent instantiates a new EndpointUpdatedEvent object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEndpointdUpdatedEvent(data EndpointUpdatedEventData) *EndpointdUpdatedEvent {
-	this := EndpointdUpdatedEvent{}
+func NewEndpointUpdatedEvent(data EndpointUpdatedEventData) *EndpointUpdatedEvent {
+	this := EndpointUpdatedEvent{}
 	this.Data = data
 	var type_ string = "endpoint.updated"
 	this.Type = &type_
 	return &this
 }
 
-// NewEndpointdUpdatedEventWithDefaults instantiates a new EndpointdUpdatedEvent object
+// NewEndpointUpdatedEventWithDefaults instantiates a new EndpointUpdatedEvent object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewEndpointdUpdatedEventWithDefaults() *EndpointdUpdatedEvent {
-	this := EndpointdUpdatedEvent{}
+func NewEndpointUpdatedEventWithDefaults() *EndpointUpdatedEvent {
+	this := EndpointUpdatedEvent{}
 	var type_ string = "endpoint.updated"
 	this.Type = &type_
 	return &this
 }
 
 // GetData returns the Data field value
-func (o *EndpointdUpdatedEvent) GetData() EndpointUpdatedEventData {
+func (o *EndpointUpdatedEvent) GetData() EndpointUpdatedEventData {
 	if o == nil {
 		var ret EndpointUpdatedEventData
 		return ret
@@ -54,7 +54,7 @@ func (o *EndpointdUpdatedEvent) GetData() EndpointUpdatedEventData {
 
 // GetDataOk returns a tuple with the Data field value
 // and a boolean to check if the value has been set.
-func (o *EndpointdUpdatedEvent) GetDataOk() (*EndpointUpdatedEventData, bool) {
+func (o *EndpointUpdatedEvent) GetDataOk() (*EndpointUpdatedEventData, bool) {
 	if o == nil  {
 		return nil, false
 	}
@@ -62,12 +62,12 @@ func (o *EndpointdUpdatedEvent) GetDataOk() (*EndpointUpdatedEventData, bool) {
 }
 
 // SetData sets field value
-func (o *EndpointdUpdatedEvent) SetData(v EndpointUpdatedEventData) {
+func (o *EndpointUpdatedEvent) SetData(v EndpointUpdatedEventData) {
 	o.Data = v
 }
 
 // GetType returns the Type field value if set, zero value otherwise.
-func (o *EndpointdUpdatedEvent) GetType() string {
+func (o *EndpointUpdatedEvent) GetType() string {
 	if o == nil || o.Type == nil {
 		var ret string
 		return ret
@@ -77,7 +77,7 @@ func (o *EndpointdUpdatedEvent) GetType() string {
 
 // GetTypeOk returns a tuple with the Type field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *EndpointdUpdatedEvent) GetTypeOk() (*string, bool) {
+func (o *EndpointUpdatedEvent) GetTypeOk() (*string, bool) {
 	if o == nil || o.Type == nil {
 		return nil, false
 	}
@@ -85,7 +85,7 @@ func (o *EndpointdUpdatedEvent) GetTypeOk() (*string, bool) {
 }
 
 // HasType returns a boolean if a field has been set.
-func (o *EndpointdUpdatedEvent) HasType() bool {
+func (o *EndpointUpdatedEvent) HasType() bool {
 	if o != nil && o.Type != nil {
 		return true
 	}
@@ -94,11 +94,11 @@ func (o *EndpointdUpdatedEvent) HasType() bool {
 }
 
 // SetType gets a reference to the given string and assigns it to the Type field.
-func (o *EndpointdUpdatedEvent) SetType(v string) {
+func (o *EndpointUpdatedEvent) SetType(v string) {
 	o.Type = &v
 }
 
-func (o EndpointdUpdatedEvent) MarshalJSON() ([]byte, error) {
+func (o EndpointUpdatedEvent) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
 		toSerialize["data"] = o.Data
@@ -109,38 +109,38 @@ func (o EndpointdUpdatedEvent) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-type NullableEndpointdUpdatedEvent struct {
-	value *EndpointdUpdatedEvent
+type NullableEndpointUpdatedEvent struct {
+	value *EndpointUpdatedEvent
 	isSet bool
 }
 
-func (v NullableEndpointdUpdatedEvent) Get() *EndpointdUpdatedEvent {
+func (v NullableEndpointUpdatedEvent) Get() *EndpointUpdatedEvent {
 	return v.value
 }
 
-func (v *NullableEndpointdUpdatedEvent) Set(val *EndpointdUpdatedEvent) {
+func (v *NullableEndpointUpdatedEvent) Set(val *EndpointUpdatedEvent) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableEndpointdUpdatedEvent) IsSet() bool {
+func (v NullableEndpointUpdatedEvent) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableEndpointdUpdatedEvent) Unset() {
+func (v *NullableEndpointUpdatedEvent) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableEndpointdUpdatedEvent(val *EndpointdUpdatedEvent) *NullableEndpointdUpdatedEvent {
-	return &NullableEndpointdUpdatedEvent{value: val, isSet: true}
+func NewNullableEndpointUpdatedEvent(val *EndpointUpdatedEvent) *NullableEndpointUpdatedEvent {
+	return &NullableEndpointUpdatedEvent{value: val, isSet: true}
 }
 
-func (v NullableEndpointdUpdatedEvent) MarshalJSON() ([]byte, error) {
+func (v NullableEndpointUpdatedEvent) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableEndpointdUpdatedEvent) UnmarshalJSON(src []byte) error {
+func (v *NullableEndpointUpdatedEvent) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

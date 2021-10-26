@@ -18,7 +18,7 @@ import (
 type WebhookTypes struct {
 	A EndpointDisabledEvent `json:"a"`
 	B EndpointCreatedEvent `json:"b"`
-	C EndpointdUpdatedEvent `json:"c"`
+	C EndpointUpdatedEvent `json:"c"`
 	D EndpointDeletedEvent `json:"d"`
 	E MessageAttemptExhaustedEvent `json:"e"`
 }
@@ -27,7 +27,7 @@ type WebhookTypes struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewWebhookTypes(a EndpointDisabledEvent, b EndpointCreatedEvent, c EndpointdUpdatedEvent, d EndpointDeletedEvent, e MessageAttemptExhaustedEvent) *WebhookTypes {
+func NewWebhookTypes(a EndpointDisabledEvent, b EndpointCreatedEvent, c EndpointUpdatedEvent, d EndpointDeletedEvent, e MessageAttemptExhaustedEvent) *WebhookTypes {
 	this := WebhookTypes{}
 	this.A = a
 	this.B = b
@@ -94,9 +94,9 @@ func (o *WebhookTypes) SetB(v EndpointCreatedEvent) {
 }
 
 // GetC returns the C field value
-func (o *WebhookTypes) GetC() EndpointdUpdatedEvent {
+func (o *WebhookTypes) GetC() EndpointUpdatedEvent {
 	if o == nil {
-		var ret EndpointdUpdatedEvent
+		var ret EndpointUpdatedEvent
 		return ret
 	}
 
@@ -105,7 +105,7 @@ func (o *WebhookTypes) GetC() EndpointdUpdatedEvent {
 
 // GetCOk returns a tuple with the C field value
 // and a boolean to check if the value has been set.
-func (o *WebhookTypes) GetCOk() (*EndpointdUpdatedEvent, bool) {
+func (o *WebhookTypes) GetCOk() (*EndpointUpdatedEvent, bool) {
 	if o == nil  {
 		return nil, false
 	}
@@ -113,7 +113,7 @@ func (o *WebhookTypes) GetCOk() (*EndpointdUpdatedEvent, bool) {
 }
 
 // SetC sets field value
-func (o *WebhookTypes) SetC(v EndpointdUpdatedEvent) {
+func (o *WebhookTypes) SetC(v EndpointUpdatedEvent) {
 	o.C = v
 }
 

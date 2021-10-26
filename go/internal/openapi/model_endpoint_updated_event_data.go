@@ -17,6 +17,7 @@ import (
 // EndpointUpdatedEventData struct for EndpointUpdatedEventData
 type EndpointUpdatedEventData struct {
 	AppId string `json:"appId"`
+	// Optional unique identifier for the application
 	AppUid *string `json:"appUid,omitempty"`
 	EndpointId string `json:"endpointId"`
 }

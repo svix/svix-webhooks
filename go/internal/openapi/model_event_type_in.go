@@ -16,6 +16,7 @@ import (
 
 // EventTypeIn struct for EventTypeIn
 type EventTypeIn struct {
+	Archived *bool `json:"archived,omitempty"`
 	Description string `json:"description"`
 	Name string `json:"name"`
 	// The schema for the event type for a specific version as a JSON schema.
@@ -28,6 +29,8 @@ type EventTypeIn struct {
 // will change when the set of required properties is changed
 func NewEventTypeIn(description string, name string) *EventTypeIn {
 	this := EventTypeIn{}
+	var archived bool = false
+	this.Archived = &archived
 	this.Description = description
 	this.Name = name
 	return &this
@@ -38,7 +41,41 @@ func NewEventTypeIn(description string, name string) *EventTypeIn {
 // but it doesn't guarantee that properties required by API are set
 func NewEventTypeInWithDefaults() *EventTypeIn {
 	this := EventTypeIn{}
+	var archived bool = false
+	this.Archived = &archived
 	return &this
+}
+
+// GetArchived returns the Archived field value if set, zero value otherwise.
+func (o *EventTypeIn) GetArchived() bool {
+	if o == nil || o.Archived == nil {
+		var ret bool
+		return ret
+	}
+	return *o.Archived
+}
+
+// GetArchivedOk returns a tuple with the Archived field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *EventTypeIn) GetArchivedOk() (*bool, bool) {
+	if o == nil || o.Archived == nil {
+		return nil, false
+	}
+	return o.Archived, true
+}
+
+// HasArchived returns a boolean if a field has been set.
+func (o *EventTypeIn) HasArchived() bool {
+	if o != nil && o.Archived != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetArchived gets a reference to the given bool and assigns it to the Archived field.
+func (o *EventTypeIn) SetArchived(v bool) {
+	o.Archived = &v
 }
 
 // GetDescription returns the Description field value
@@ -123,6 +160,9 @@ func (o *EventTypeIn) SetSchemas(v map[string]map[string]interface{}) {
 
 func (o EventTypeIn) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
+	if o.Archived != nil {
+		toSerialize["archived"] = o.Archived
+	}
 	if true {
 		toSerialize["description"] = o.Description
 	}

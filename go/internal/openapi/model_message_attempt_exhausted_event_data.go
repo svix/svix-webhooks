@@ -17,6 +17,7 @@ import (
 // MessageAttemptExhaustedEventData struct for MessageAttemptExhaustedEventData
 type MessageAttemptExhaustedEventData struct {
 	AppId string `json:"appId"`
+	// Optional unique identifier for the application
 	AppUid *string `json:"appUid,omitempty"`
 	EndpointId string `json:"endpointId"`
 	LastAttempt MessageAttemptFailedEvent `json:"lastAttempt"`

@@ -18,6 +18,7 @@ import (
 // EndpointDisabledEventData struct for EndpointDisabledEventData
 type EndpointDisabledEventData struct {
 	AppId string `json:"appId"`
+	// Optional unique identifier for the application
 	AppUid *string `json:"appUid,omitempty"`
 	EndpointId string `json:"endpointId"`
 	FailSince time.Time `json:"failSince"`
