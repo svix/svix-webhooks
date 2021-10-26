@@ -13,6 +13,7 @@ import {
   EndpointIn,
   EndpointUpdate,
   EndpointSecretOut,
+  EndpointSecretRotateIn,
   MessageApi,
   MessageOut,
   MessageIn,
@@ -210,6 +211,14 @@ class Endpoint {
     return this.api.getEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGet({
       endpointId,
       appId,
+    });
+  }
+
+  public rotateSecret(appId: string, endpointId: string, endpointSecretRotateIn: EndpointSecretRotateIn): Promise<void> {
+    return this.api.rotateEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretRotatePost({
+      endpointId,
+      appId,
+      endpointSecretRotateIn
     });
   }
 }
