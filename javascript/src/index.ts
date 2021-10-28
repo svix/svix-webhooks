@@ -13,6 +13,7 @@ import {
   EndpointIn,
   EndpointUpdate,
   EndpointSecretOut,
+  EndpointSecretRotateIn,
   MessageApi,
   MessageOut,
   MessageIn,
@@ -123,6 +124,7 @@ export type EndpointListOptions = ListOptions;
 
 export interface EventTypeListOptions extends ListOptions {
   withContent?: boolean;
+  includeArchived?: boolean;
 }
 
 export interface MessageListOptions extends ListOptions {
@@ -209,6 +211,14 @@ class Endpoint {
     return this.api.getEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGet({
       endpointId,
       appId,
+    });
+  }
+
+  public rotateSecret(appId: string, endpointId: string, endpointSecretRotateIn: EndpointSecretRotateIn): Promise<void> {
+    return this.api.rotateEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretRotatePost({
+      endpointId,
+      appId,
+      endpointSecretRotateIn
     });
   }
 }

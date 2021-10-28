@@ -17,7 +17,7 @@ class EventType internal constructor(token: String, options: SvixOptions) {
 
     suspend fun list(options: EventTypeListOptions = EventTypeListOptions()): ListResponseEventTypeOut {
         try {
-            return api.listEventTypesApiV1EventTypeGet(options.iterator, options.limit, options.withContent)
+            return api.listEventTypesApiV1EventTypeGet(options.iterator, options.limit, options.withContent, options.includeAchived)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }

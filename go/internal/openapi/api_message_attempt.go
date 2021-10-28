@@ -425,9 +425,7 @@ func (r ApiListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGetRequest) Ex
 
 /*
  * ListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGet List Attempted Messages
- * List the message attempts for a particular endpoint.
-
-Returning the message.
+ * List messages for a particular endpoint. Additionally includes metadata about the latest message attempt.
 
 The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
@@ -835,7 +833,7 @@ func (r ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttempt
  * ListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGet List Attempts For Endpoint
  * List the message attempts for a particular endpoint.
 
-Returning the endpint.
+Returning the endpoint.
 
 The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().

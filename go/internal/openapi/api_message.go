@@ -47,9 +47,10 @@ func (r ApiCreateMessageApiV1AppAppIdMsgPostRequest) Execute() (MessageOut, *_ne
 
 /*
  * CreateMessageApiV1AppAppIdMsgPost Create Message
- * Creates a new message and dispatch it to all of the application's endpoints. The message will be delivered following the organizations delivery and retry policy.
-`eventId` Is an optional global unique ID accross all applications.
-If a message with the same `eventId` already exists, a 409 conflict error will be returned.
+ * Creates a new message and dispatches it to all of the application's endpoints.
+
+The `eventId` is an optional custom unique ID.
+If a message with the same `eventId` already exists for any application in your environment, a 409 conflict error will be returned.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param appId
  * @return ApiCreateMessageApiV1AppAppIdMsgPostRequest

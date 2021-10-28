@@ -44,7 +44,11 @@ func (r ApiCreateEventTypeApiV1EventTypePostRequest) Execute() (EventTypeOut, *_
 
 /*
  * CreateEventTypeApiV1EventTypePost Create Event Type
- * Create an event type.
+ * Create new or unarchive existing event type.
+
+Unarchiving an event type will allow endpoints to filter on it and messages to be sent with it.
+Endpoints filtering on the event type before archival will continue to filter on it.
+This operation does not preserve the description and schemas.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @return ApiCreateEventTypeApiV1EventTypePostRequest
  */
@@ -200,8 +204,13 @@ func (r ApiDeleteEventTypeApiV1EventTypeEventTypeNameDeleteRequest) Execute() (*
 }
 
 /*
- * DeleteEventTypeApiV1EventTypeEventTypeNameDelete Delete Event Type
- * Delete an event type.
+ * DeleteEventTypeApiV1EventTypeEventTypeNameDelete Archive Event Type
+ * Archive an event type.
+
+Endpoints already configured to filter on an event type will continue to do so after archival.
+However, new messages can not be sent with it and endpoints can not filter on it.
+An event type can be unarchived with the
+[create operation](#operation/create_event_type_api_v1_event_type__post).
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param eventTypeName
  * @return ApiDeleteEventTypeApiV1EventTypeEventTypeNameDeleteRequest
@@ -333,6 +342,167 @@ func (a *EventTypeApiService) DeleteEventTypeApiV1EventTypeEventTypeNameDeleteEx
 	}
 
 	return localVarHTTPResponse, nil
+}
+
+type ApiGenerateSchemaExampleApiV1EventTypeSchemaGenerateExamplePostRequest struct {
+	ctx _context.Context
+	ApiService *EventTypeApiService
+	eventTypeSchemaIn *EventTypeSchemaIn
+}
+
+func (r ApiGenerateSchemaExampleApiV1EventTypeSchemaGenerateExamplePostRequest) EventTypeSchemaIn(eventTypeSchemaIn EventTypeSchemaIn) ApiGenerateSchemaExampleApiV1EventTypeSchemaGenerateExamplePostRequest {
+	r.eventTypeSchemaIn = &eventTypeSchemaIn
+	return r
+}
+
+func (r ApiGenerateSchemaExampleApiV1EventTypeSchemaGenerateExamplePostRequest) Execute() (EventTypeExampleOut, *_nethttp.Response, error) {
+	return r.ApiService.GenerateSchemaExampleApiV1EventTypeSchemaGenerateExamplePostExecute(r)
+}
+
+/*
+ * GenerateSchemaExampleApiV1EventTypeSchemaGenerateExamplePost Generate Schema Example
+ * Generates a fake example from the given JSONSchema
+ * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ * @return ApiGenerateSchemaExampleApiV1EventTypeSchemaGenerateExamplePostRequest
+ */
+func (a *EventTypeApiService) GenerateSchemaExampleApiV1EventTypeSchemaGenerateExamplePost(ctx _context.Context) ApiGenerateSchemaExampleApiV1EventTypeSchemaGenerateExamplePostRequest {
+	return ApiGenerateSchemaExampleApiV1EventTypeSchemaGenerateExamplePostRequest{
+		ApiService: a,
+		ctx: ctx,
+	}
+}
+
+/*
+ * Execute executes the request
+ * @return EventTypeExampleOut
+ */
+func (a *EventTypeApiService) GenerateSchemaExampleApiV1EventTypeSchemaGenerateExamplePostExecute(r ApiGenerateSchemaExampleApiV1EventTypeSchemaGenerateExamplePostRequest) (EventTypeExampleOut, *_nethttp.Response, error) {
+	var (
+		localVarHTTPMethod   = _nethttp.MethodPost
+		localVarPostBody     interface{}
+		localVarFormFileName string
+		localVarFileName     string
+		localVarFileBytes    []byte
+		localVarReturnValue  EventTypeExampleOut
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "EventTypeApiService.GenerateSchemaExampleApiV1EventTypeSchemaGenerateExamplePost")
+	if err != nil {
+		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/api/v1/event-type/schema/generate-example/"
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := _neturl.Values{}
+	localVarFormParams := _neturl.Values{}
+	if r.eventTypeSchemaIn == nil {
+		return localVarReturnValue, nil, reportError("eventTypeSchemaIn is required and must be specified")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	// body params
+	localVarPostBody = r.eventTypeSchemaIn
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := _ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = _ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 401 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 403 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 404 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 409 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 422 {
+			var v HTTPValidationError
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
 type ApiGetEventTypeApiV1EventTypeEventTypeNameGetRequest struct {
@@ -499,6 +669,7 @@ type ApiListEventTypesApiV1EventTypeGetRequest struct {
 	iterator *string
 	limit *int32
 	withContent *bool
+	includeArchived *bool
 }
 
 func (r ApiListEventTypesApiV1EventTypeGetRequest) Iterator(iterator string) ApiListEventTypesApiV1EventTypeGetRequest {
@@ -511,6 +682,10 @@ func (r ApiListEventTypesApiV1EventTypeGetRequest) Limit(limit int32) ApiListEve
 }
 func (r ApiListEventTypesApiV1EventTypeGetRequest) WithContent(withContent bool) ApiListEventTypesApiV1EventTypeGetRequest {
 	r.withContent = &withContent
+	return r
+}
+func (r ApiListEventTypesApiV1EventTypeGetRequest) IncludeArchived(includeArchived bool) ApiListEventTypesApiV1EventTypeGetRequest {
+	r.includeArchived = &includeArchived
 	return r
 }
 
@@ -564,6 +739,9 @@ func (a *EventTypeApiService) ListEventTypesApiV1EventTypeGetExecute(r ApiListEv
 	}
 	if r.withContent != nil {
 		localVarQueryParams.Add("with_content", parameterToString(*r.withContent, ""))
+	}
+	if r.includeArchived != nil {
+		localVarQueryParams.Add("include_archived", parameterToString(*r.includeArchived, ""))
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}

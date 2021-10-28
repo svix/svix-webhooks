@@ -96,6 +96,14 @@
             },
             "EndpointCreatedEvent": {
                 "description": "Sent when an endpoint is created.",
+                "example": {
+                    "data": {
+                        "appId": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "appUid": "unique-app-identifier",
+                        "endpointId": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2"
+                    },
+                    "type": "endpoint.created"
+                },
                 "properties": {
                     "data": {
                         "$ref": "#/components/schemas/EndpointCreatedEventData"
@@ -123,6 +131,11 @@
                         "type": "string"
                     },
                     "appUid": {
+                        "description": "Optional unique identifier for the application",
+                        "example": "unique-app-identifier",
+                        "maxLength": 256,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "title": "Appuid",
                         "type": "string"
                     },
@@ -141,6 +154,14 @@
             },
             "EndpointDeletedEvent": {
                 "description": "Sent when an endpoint is deleted.",
+                "example": {
+                    "data": {
+                        "appId": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "appUid": "unique-app-identifier",
+                        "endpointId": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2"
+                    },
+                    "type": "endpoint.deleted"
+                },
                 "properties": {
                     "data": {
                         "$ref": "#/components/schemas/EndpointDeletedEventData"
@@ -168,6 +189,11 @@
                         "type": "string"
                     },
                     "appUid": {
+                        "description": "Optional unique identifier for the application",
+                        "example": "unique-app-identifier",
+                        "maxLength": 256,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "title": "Appuid",
                         "type": "string"
                     },
@@ -186,6 +212,15 @@
             },
             "EndpointDisabledEvent": {
                 "description": "Sent when an endpoint has been automatically disabled after continuous failures.",
+                "example": {
+                    "data": {
+                        "appId": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "appUid": "unique-app-identifier",
+                        "endpointId": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "failSince": "1970-01-01T00:00:00"
+                    },
+                    "type": "endpoint.disabled"
+                },
                 "properties": {
                     "data": {
                         "$ref": "#/components/schemas/EndpointDisabledEventData"
@@ -213,6 +248,11 @@
                         "type": "string"
                     },
                     "appUid": {
+                        "description": "Optional unique identifier for the application",
+                        "example": "unique-app-identifier",
+                        "maxLength": 256,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "title": "Appuid",
                         "type": "string"
                     },
@@ -257,6 +297,7 @@
                         "items": {
                             "type": "string"
                         },
+                        "minItems": 1,
                         "title": "Filtertypes",
                         "type": "array",
                         "uniqueItems": true
@@ -270,6 +311,7 @@
                     "secret": {
                         "description": "The endpoint's verification secret. If `null` is passed, a secret is automatically generated.",
                         "example": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD",
+                        "pattern": "^whsec_[a-zA-Z0-9+\\/]{32}$",
                         "title": "Secret",
                         "type": "string"
                     },
@@ -386,6 +428,7 @@
                         "items": {
                             "type": "string"
                         },
+                        "minItems": 1,
                         "title": "Filtertypes",
                         "type": "array",
                         "uniqueItems": true
@@ -439,6 +482,7 @@
                     "key": {
                         "description": "The endpoint's verification secret. If `null` is passed, a secret is automatically generated.",
                         "example": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD",
+                        "pattern": "^whsec_[a-zA-Z0-9+\\/]{32}$",
                         "title": "Key",
                         "type": "string"
                     }
@@ -447,6 +491,19 @@
                     "key"
                 ],
                 "title": "EndpointSecretOut",
+                "type": "object"
+            },
+            "EndpointSecretRotateIn": {
+                "properties": {
+                    "key": {
+                        "description": "The endpoint's verification secret. If `null` is passed, a secret is automatically generated.",
+                        "example": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD",
+                        "pattern": "^whsec_[a-zA-Z0-9+\\/]{32}$",
+                        "title": "Key",
+                        "type": "string"
+                    }
+                },
+                "title": "EndpointSecretRotateIn",
                 "type": "object"
             },
             "EndpointStats": {
@@ -499,6 +556,7 @@
                         "items": {
                             "type": "string"
                         },
+                        "minItems": 1,
                         "title": "Filtertypes",
                         "type": "array",
                         "uniqueItems": true
@@ -540,32 +598,16 @@
                 "title": "EndpointUpdate",
                 "type": "object"
             },
-            "EndpointUpdatedEventData": {
-                "properties": {
-                    "appId": {
-                        "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                        "title": "Appid",
-                        "type": "string"
-                    },
-                    "appUid": {
-                        "title": "Appuid",
-                        "type": "string"
-                    },
-                    "endpointId": {
-                        "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                        "title": "Endpointid",
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "appId",
-                    "endpointId"
-                ],
-                "title": "EndpointUpdatedEventData",
-                "type": "object"
-            },
-            "EndpointdUpdatedEvent": {
+            "EndpointUpdatedEvent": {
                 "description": "Sent when an endpoint is updated.",
+                "example": {
+                    "data": {
+                        "appId": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "appUid": "unique-app-identifier",
+                        "endpointId": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2"
+                    },
+                    "type": "endpoint.updated"
+                },
                 "properties": {
                     "data": {
                         "$ref": "#/components/schemas/EndpointUpdatedEventData"
@@ -582,7 +624,36 @@
                 "required": [
                     "data"
                 ],
-                "title": "EndpointdUpdatedEvent",
+                "title": "EndpointUpdatedEvent",
+                "type": "object"
+            },
+            "EndpointUpdatedEventData": {
+                "properties": {
+                    "appId": {
+                        "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "title": "Appid",
+                        "type": "string"
+                    },
+                    "appUid": {
+                        "description": "Optional unique identifier for the application",
+                        "example": "unique-app-identifier",
+                        "maxLength": 256,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "title": "Appuid",
+                        "type": "string"
+                    },
+                    "endpointId": {
+                        "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "title": "Endpointid",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "appId",
+                    "endpointId"
+                ],
+                "title": "EndpointUpdatedEventData",
                 "type": "object"
             },
             "EventExampleIn": {
@@ -601,8 +672,34 @@
                 "title": "EventExampleIn",
                 "type": "object"
             },
+            "EventTypeExampleOut": {
+                "properties": {
+                    "example": {
+                        "example": {
+                            "data": {
+                                "email": "test@example.com",
+                                "username": "test_user"
+                            },
+                            "type": "user.created"
+                        },
+                        "title": "Example",
+                        "type": "object"
+                    }
+                },
+                "required": [
+                    "example"
+                ],
+                "title": "EventTypeExampleOut",
+                "type": "object"
+            },
             "EventTypeIn": {
                 "properties": {
+                    "archived": {
+                        "default": false,
+                        "example": false,
+                        "title": "Archived",
+                        "type": "boolean"
+                    },
                     "description": {
                         "example": "A user has signed up",
                         "title": "Description",
@@ -673,6 +770,12 @@
             },
             "EventTypeOut": {
                 "properties": {
+                    "archived": {
+                        "default": false,
+                        "example": false,
+                        "title": "Archived",
+                        "type": "boolean"
+                    },
                     "description": {
                         "example": "A user has signed up",
                         "title": "Description",
@@ -741,8 +844,47 @@
                 "title": "EventTypeOut",
                 "type": "object"
             },
+            "EventTypeSchemaIn": {
+                "properties": {
+                    "schema": {
+                        "description": "The schema for an event type",
+                        "example": {
+                            "description": "An invoice was paid by a user",
+                            "properties": {
+                                "invoiceId": {
+                                    "description": "The invoice id",
+                                    "type": "string"
+                                },
+                                "userId": {
+                                    "description": "The user id",
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "invoiceId",
+                                "userId"
+                            ],
+                            "title": "Invoice Paid Event",
+                            "type": "object"
+                        },
+                        "title": "Schema",
+                        "type": "object"
+                    }
+                },
+                "required": [
+                    "schema"
+                ],
+                "title": "EventTypeSchemaIn",
+                "type": "object"
+            },
             "EventTypeUpdate": {
                 "properties": {
+                    "archived": {
+                        "default": false,
+                        "example": false,
+                        "title": "Archived",
+                        "type": "boolean"
+                    },
                     "description": {
                         "example": "A user has signed up",
                         "title": "Description",
@@ -1084,6 +1226,20 @@
             },
             "MessageAttemptExhaustedEvent": {
                 "description": "Sent when a message delivery has failed (all of the retry attempts have been exhausted).",
+                "example": {
+                    "data": {
+                        "appId": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "appUid": "unique-app-identifier",
+                        "endpointId": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "lastAttempt": {
+                            "id": "atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "responseStatusCode": 500,
+                            "timestamp": "1970-01-01T00:00:00"
+                        },
+                        "msgId": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2"
+                    },
+                    "type": "message.attempt.exhausted"
+                },
                 "properties": {
                     "data": {
                         "$ref": "#/components/schemas/MessageAttemptExhaustedEventData"
@@ -1111,6 +1267,11 @@
                         "type": "string"
                     },
                     "appUid": {
+                        "description": "Optional unique identifier for the application",
+                        "example": "unique-app-identifier",
+                        "maxLength": 256,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "title": "Appuid",
                         "type": "string"
                     },
@@ -1249,6 +1410,7 @@
                         "items": {
                             "type": "string"
                         },
+                        "minItems": 1,
                         "title": "Filtertypes",
                         "type": "array",
                         "uniqueItems": true
@@ -1439,7 +1601,7 @@
                         "$ref": "#/components/schemas/EndpointCreatedEvent"
                     },
                     "c": {
-                        "$ref": "#/components/schemas/EndpointdUpdatedEvent"
+                        "$ref": "#/components/schemas/EndpointUpdatedEvent"
                     },
                     "d": {
                         "$ref": "#/components/schemas/EndpointDeletedEvent"
@@ -1487,6 +1649,7 @@
                         "name": "iterator",
                         "required": false,
                         "schema": {
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                             "title": "Iterator",
                             "type": "string"
                         }
@@ -1603,6 +1766,11 @@
                         "label": "Java",
                         "lang": "Java",
                         "source": "ListResponseApplicationOut listResponseApplicationOut = svix.getApplication().list(new FetchOptions())"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "list_response_application_out = svix.application.list"
                     },
                     {
                         "label": "CLI",
@@ -1732,6 +1900,11 @@
                         "source": "ApplicationOut applicationOut = svix.getApplication().create(new ApplicationIn()\n    .uid(\"unique-app-identifier\"),\n    .name(\"My first application\"),\n    .rateLimit(1000)\n)"
                     },
                     {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "application_out = svix.application.create(Svix::ApplicationIn.new({\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\",\n    \"rate_limit\": 1000\n}))"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix application create '{\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\",\n    \"rateLimit\": 1000\n}'"
@@ -1739,7 +1912,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'\n  -d '{\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\",\n    \"rateLimit\": 1000\n}'"
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\",\n    \"rateLimit\": 1000\n}'"
                     }
                 ]
             }
@@ -1858,6 +2031,11 @@
                         "label": "Java",
                         "lang": "Java",
                         "source": "svix.getApplication().delete('app_id')"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "svix.application.delete('app_id')"
                     },
                     {
                         "label": "CLI",
@@ -1991,6 +2169,11 @@
                         "label": "Java",
                         "lang": "Java",
                         "source": "ApplicationOut applicationOut = svix.getApplication().get('app_id')"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "application_out = svix.application.get('app_id')"
                     },
                     {
                         "label": "CLI",
@@ -2136,6 +2319,11 @@
                         "source": "ApplicationOut applicationOut = svix.getApplication().update('app_id', new ApplicationIn()\n    .uid(\"unique-app-identifier\"),\n    .name(\"My first application\"),\n    .rateLimit(1000)\n)"
                     },
                     {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "application_out = svix.application.update('app_id', Svix::ApplicationIn.new({\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\",\n    \"rate_limit\": 1000\n}))"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix application update 'app_id' '{\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\",\n    \"rateLimit\": 1000\n}'"
@@ -2143,7 +2331,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.svix.com/api/v1/app/{app_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'\n  -d '{\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\",\n    \"rateLimit\": 1000\n}'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.svix.com/api/v1/app/{app_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\",\n    \"rateLimit\": 1000\n}'"
                     }
                 ]
             }
@@ -2172,6 +2360,7 @@
                         "name": "iterator",
                         "required": false,
                         "schema": {
+                            "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                             "title": "Iterator",
                             "type": "string"
                         }
@@ -2288,6 +2477,11 @@
                         "label": "Java",
                         "lang": "Java",
                         "source": "ListResponseEndpointOut listResponseEndpointOut = svix.getEndpoint().list('app_id', new FetchOptions())"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "list_response_endpoint_out = svix.endpoint.list('app_id')"
                     },
                     {
                         "label": "CLI",
@@ -2433,6 +2627,11 @@
                         "source": "EndpointOut endpointOut = svix.getEndpoint().create('app_id', new EndpointIn()\n    .uid(\"unique-endpoint-identifier\"),\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"}),\n    .disabled(False),\n    .rateLimit(1000),\n    .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n)"
                     },
                     {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "endpoint_out = svix.endpoint.create('app_id', Svix::EndpointIn.new({\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filter_types\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rate_limit\": 1000,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}))"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix endpoint create 'app_id' '{\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}'"
@@ -2440,7 +2639,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'\n  -d '{\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}'"
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}'"
                     }
                 ]
             }
@@ -2573,6 +2772,11 @@
                         "label": "Java",
                         "lang": "Java",
                         "source": "svix.getEndpoint().delete('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "svix.endpoint.delete('app_id', 'endpoint_id')"
                     },
                     {
                         "label": "CLI",
@@ -2720,6 +2924,11 @@
                         "label": "Java",
                         "lang": "Java",
                         "source": "EndpointOut endpointOut = svix.getEndpoint().get('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "endpoint_out = svix.endpoint.get('app_id', 'endpoint_id')"
                     },
                     {
                         "label": "CLI",
@@ -2879,6 +3088,11 @@
                         "source": "EndpointOut endpointOut = svix.getEndpoint().update('app_id', 'endpoint_id', new EndpointUpdate()\n    .uid(\"unique-endpoint-identifier\"),\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"}),\n    .disabled(False),\n    .rateLimit(1000)\n)"
                     },
                     {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "endpoint_out = svix.endpoint.update('app_id', 'endpoint_id', Svix::EndpointUpdate.new({\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filter_types\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rate_limit\": 1000\n}))"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix endpoint update 'app_id' 'endpoint_id' '{\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000\n}'"
@@ -2886,14 +3100,14 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'\n  -d '{\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000\n}'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000\n}'"
                     }
                 ]
             }
         },
         "/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg/": {
             "get": {
-                "description": "List the message attempts for a particular endpoint.\n\nReturning the message.\n\nThe `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.",
+                "description": "List messages for a particular endpoint. Additionally includes metadata about the latest message attempt.\n\nThe `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.",
                 "operationId": "list_attempted_messages_api_v1_app__app_id__endpoint__endpoint_id__msg__get",
                 "parameters": [
                     {
@@ -2929,6 +3143,7 @@
                         "name": "iterator",
                         "required": false,
                         "schema": {
+                            "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                             "title": "Iterator",
                             "type": "string"
                         }
@@ -3179,6 +3394,11 @@
                         "source": "EndpointSecretOut endpointSecretOut = svix.getEndpoint().secret('app_id', 'endpoint_id')"
                     },
                     {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "endpoint_secret_out = svix.endpoint.secret('app_id', 'endpoint_id')"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix endpoint secret 'app_id' 'endpoint_id'"
@@ -3187,6 +3407,163 @@
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate/": {
+            "post": {
+                "description": "Rotates the endpoint's signing secret.  The previous secret will be valid for the next 24 hours.",
+                "operationId": "rotate_endpoint_secret_api_v1_app__app_id__endpoint__endpoint_id__secret_rotate__post",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The endpoint's ID or UID",
+                            "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "Endpoint Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "App Id",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EndpointSecretRotateIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Rotate Endpoint Secret",
+                "tags": [
+                    "Endpoint"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.endpoint.rotate('app_id', 'endpoint_id', {\n    \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.endpoint.rotate('app_id', 'endpoint_id', {\n    \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "svix.endpoint.rotate('app_id', 'endpoint_id', EndpointSecretRotateIn(\n    key=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n))"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "err := svixClient.Endpoint.Rotate(\"app_id\", \"endpoint_id\", &svix.EndpointSecretRotateIn{\n    Key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "svix.endpoint.rotate('app_id', 'endpoint_id', EndpointSecretRotateIn()\n    .key(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "svix.getEndpoint().rotate('app_id', 'endpoint_id', new EndpointSecretRotateIn()\n    .key(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n)"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "svix.endpoint.rotate('app_id', 'endpoint_id', Svix::EndpointSecretRotateIn.new({\n    \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}))"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix endpoint rotate 'app_id' 'endpoint_id' '{\n    \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}'"
                     }
                 ]
             }
@@ -3338,6 +3715,11 @@
                         "source": "MessageOut messageOut = svix.getEndpoint().send('app_id', 'endpoint_id', new EventExampleIn()\n    .eventType(\"user.signup\")\n)"
                     },
                     {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "message_out = svix.endpoint.send('app_id', 'endpoint_id', Svix::EventExampleIn.new({\n    \"event_type\": \"user.signup\"\n}))"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix endpoint send 'app_id' 'endpoint_id' '{\n    \"eventType\": \"user.signup\"\n}'"
@@ -3345,7 +3727,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/send-example/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'\n  -d '{\n    \"eventType\": \"user.signup\"\n}'"
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/send-example/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"eventType\": \"user.signup\"\n}'"
                     }
                 ]
             }
@@ -3488,6 +3870,7 @@
                         "name": "iterator",
                         "required": false,
                         "schema": {
+                            "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                             "title": "Iterator",
                             "type": "string"
                         }
@@ -3631,6 +4014,11 @@
                         "source": "ListResponseMessageOut listResponseMessageOut = svix.getMessage().list('app_id', new FetchOptions())"
                     },
                     {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "list_response_message_out = svix.message.list('app_id')"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix message list 'app_id'"
@@ -3643,7 +4031,7 @@
                 ]
             },
             "post": {
-                "description": "Creates a new message and dispatch it to all of the application's endpoints. The message will be delivered following the organizations delivery and retry policy.\n`eventId` Is an optional global unique ID accross all applications.\nIf a message with the same `eventId` already exists, a 409 conflict error will be returned.",
+                "description": "Creates a new message and dispatches it to all of the application's endpoints.\n\nThe `eventId` is an optional custom unique ID.\nIf a message with the same `eventId` already exists for any application in your environment, a 409 conflict error will be returned.",
                 "operationId": "create_message_api_v1_app__app_id__msg__post",
                 "parameters": [
                     {
@@ -3784,6 +4172,11 @@
                         "source": "MessageOut messageOut = svix.getMessage().create('app_id', new MessageIn()\n    .eventType(\"user.signup\"),\n    .eventId(\"evt_pNZKtWg8Azow\"),\n    .payload(\"{\" +\n        \"\\\"username\\\": \\\"test_user\\\",\" +\n        \"\\\"email\\\": \\\"test@example.com\\\"\" +\n    \"}\")\n)"
                     },
                     {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "message_out = svix.message.create('app_id', Svix::MessageIn.new({\n    \"event_type\": \"user.signup\",\n    \"event_id\": \"evt_pNZKtWg8Azow\",\n    \"payload\": {\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    }\n}))"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix message create 'app_id' '{\n    \"eventType\": \"user.signup\",\n    \"eventId\": \"evt_pNZKtWg8Azow\",\n    \"payload\": {\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    }\n}'"
@@ -3791,7 +4184,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/msg/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'\n  -d '{\n    \"eventType\": \"user.signup\",\n    \"eventId\": \"evt_pNZKtWg8Azow\",\n    \"payload\": {\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    }\n}'"
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/msg/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"eventType\": \"user.signup\",\n    \"eventId\": \"evt_pNZKtWg8Azow\",\n    \"payload\": {\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    }\n}'"
                     }
                 ]
             }
@@ -3933,6 +4326,11 @@
                         "source": "MessageOut messageOut = svix.getMessage().get('app_id', 'msg_id')"
                     },
                     {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "message_out = svix.message.get('app_id', 'msg_id')"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix message get 'app_id' 'msg_id'"
@@ -3983,6 +4381,7 @@
                         "name": "iterator",
                         "required": false,
                         "schema": {
+                            "example": "atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                             "title": "Iterator",
                             "type": "string"
                         }
@@ -4107,6 +4506,11 @@
                         "label": "Java",
                         "lang": "Java",
                         "source": "ListResponseMessageAttemptOut listResponseMessageAttemptOut = svix.getMessageAttempt().list('app_id', 'msg_id', new FetchOptionsMessageAttempt())"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "list_response_message_attempt_out = svix.message_attempt.list('app_id', 'msg_id')"
                     },
                     {
                         "label": "CLI",
@@ -4268,6 +4672,11 @@
                         "source": "MessageAttemptOut messageAttemptOut = svix.getMessageAttempt().get('app_id', 'msg_id', 'attempt_id')"
                     },
                     {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "message_attempt_out = svix.message_attempt.get('app_id', 'msg_id', 'attempt_id')"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix message-attempt get 'app_id' 'msg_id' 'attempt_id'"
@@ -4318,6 +4727,7 @@
                         "name": "iterator",
                         "required": false,
                         "schema": {
+                            "example": "msgep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                             "title": "Iterator",
                             "type": "string"
                         }
@@ -4415,7 +4825,7 @@
         },
         "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/attempt/": {
             "get": {
-                "description": "List the message attempts for a particular endpoint.\n\nReturning the endpint.\n\nThe `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.",
+                "description": "List the message attempts for a particular endpoint.\n\nReturning the endpoint.\n\nThe `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.",
                 "operationId": "list_attempts_for_endpoint_api_v1_app__app_id__msg__msg_id__endpoint__endpoint_id__attempt__get",
                 "parameters": [
                     {
@@ -4465,6 +4875,7 @@
                         "name": "iterator",
                         "required": false,
                         "schema": {
+                            "example": "atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                             "title": "Iterator",
                             "type": "string"
                         }
@@ -4737,6 +5148,11 @@
                         "source": "svix.getMessageAttempt().resend('app_id', 'msg_id', 'endpoint_id')"
                     },
                     {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "svix.message_attempt.resend('app_id', 'msg_id', 'endpoint_id')"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix message-attempt resend 'app_id' 'msg_id' 'endpoint_id'"
@@ -4872,6 +5288,11 @@
                         "source": "DashboardAccessOut dashboardAccessOut = svix.getAuthentication().get('app_id')"
                     },
                     {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "dashboard_access_out = svix.authentication.get('app_id')"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix authentication get 'app_id'"
@@ -4974,6 +5395,11 @@
                         "source": "svix.getAuthentication().logout()"
                     },
                     {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "svix.authentication.logout"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix authentication logout "
@@ -4996,6 +5422,9 @@
                         "name": "iterator",
                         "required": false,
                         "schema": {
+                            "example": "user.signup",
+                            "maxLength": 256,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Iterator",
                             "type": "string"
                         }
@@ -5017,6 +5446,16 @@
                         "schema": {
                             "default": false,
                             "title": "With Content",
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "include_archived",
+                        "required": false,
+                        "schema": {
+                            "default": false,
+                            "title": "Include Archived",
                             "type": "boolean"
                         }
                     }
@@ -5124,6 +5563,11 @@
                         "source": "ListResponseEventTypeOut listResponseEventTypeOut = svix.getEventType().list(new FetchOptions())"
                     },
                     {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "list_response_event_type_out = svix.event_type.list"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix event-type list "
@@ -5136,7 +5580,7 @@
                 ]
             },
             "post": {
-                "description": "Create an event type.",
+                "description": "Create new or unarchive existing event type.\n\nUnarchiving an event type will allow endpoints to filter on it and messages to be sent with it.\nEndpoints filtering on the event type before archival will continue to filter on it.\nThis operation does not preserve the description and schemas.",
                 "operationId": "create_event_type_api_v1_event_type__post",
                 "requestBody": {
                     "content": {
@@ -5223,49 +5667,183 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const eventTypeOut = await svix.eventType.create({\n    \"description\": \"A user has signed up\",\n    \"schemas\": {\n        \"1\": {\n            \"title\": \"Invoice Paid Event\",\n            \"description\": \"An invoice was paid by a user\",\n            \"type\": \"object\",\n            \"properties\": {\n                \"invoiceId\": {\n                    \"description\": \"The invoice id\",\n                    \"type\": \"string\"\n                },\n                \"userId\": {\n                    \"description\": \"The user id\",\n                    \"type\": \"string\"\n                }\n            },\n            \"required\": [\n                \"invoiceId\",\n                \"userId\"\n            ]\n        }\n    },\n    \"name\": \"user.signup\"\n});"
+                        "source": "const eventTypeOut = await svix.eventType.create({\n    \"description\": \"A user has signed up\",\n    \"schemas\": {\n        \"1\": {\n            \"title\": \"Invoice Paid Event\",\n            \"description\": \"An invoice was paid by a user\",\n            \"type\": \"object\",\n            \"properties\": {\n                \"invoiceId\": {\n                    \"description\": \"The invoice id\",\n                    \"type\": \"string\"\n                },\n                \"userId\": {\n                    \"description\": \"The user id\",\n                    \"type\": \"string\"\n                }\n            },\n            \"required\": [\n                \"invoiceId\",\n                \"userId\"\n            ]\n        }\n    },\n    \"archived\": false,\n    \"name\": \"user.signup\"\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const eventTypeOut = await svix.eventType.create({\n    \"description\": \"A user has signed up\",\n    \"schemas\": {\n        \"1\": {\n            \"title\": \"Invoice Paid Event\",\n            \"description\": \"An invoice was paid by a user\",\n            \"type\": \"object\",\n            \"properties\": {\n                \"invoiceId\": {\n                    \"description\": \"The invoice id\",\n                    \"type\": \"string\"\n                },\n                \"userId\": {\n                    \"description\": \"The user id\",\n                    \"type\": \"string\"\n                }\n            },\n            \"required\": [\n                \"invoiceId\",\n                \"userId\"\n            ]\n        }\n    },\n    \"name\": \"user.signup\"\n});"
+                        "source": "const eventTypeOut = await svix.eventType.create({\n    \"description\": \"A user has signed up\",\n    \"schemas\": {\n        \"1\": {\n            \"title\": \"Invoice Paid Event\",\n            \"description\": \"An invoice was paid by a user\",\n            \"type\": \"object\",\n            \"properties\": {\n                \"invoiceId\": {\n                    \"description\": \"The invoice id\",\n                    \"type\": \"string\"\n                },\n                \"userId\": {\n                    \"description\": \"The user id\",\n                    \"type\": \"string\"\n                }\n            },\n            \"required\": [\n                \"invoiceId\",\n                \"userId\"\n            ]\n        }\n    },\n    \"archived\": false,\n    \"name\": \"user.signup\"\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "event_type_out = svix.event_type.create(EventTypeIn(\n    description=\"A user has signed up\",\n    schemas={'1': {'title': 'Invoice Paid Event', 'description': 'An invoice was paid by a user', 'type': 'object', 'properties': {'invoiceId': {'description': 'The invoice id', 'type': 'string'}, 'userId': {'description': 'The user id', 'type': 'string'}}, 'required': ['invoiceId', 'userId']}},\n    name=\"user.signup\"\n))"
+                        "source": "event_type_out = svix.event_type.create(EventTypeIn(\n    description=\"A user has signed up\",\n    schemas={'1': {'title': 'Invoice Paid Event', 'description': 'An invoice was paid by a user', 'type': 'object', 'properties': {'invoiceId': {'description': 'The invoice id', 'type': 'string'}, 'userId': {'description': 'The user id', 'type': 'string'}}, 'required': ['invoiceId', 'userId']}},\n    archived=False,\n    name=\"user.signup\"\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "eventTypeOut, err := svixClient.EventType.Create(&svix.EventTypeIn{\n    Description: \"A user has signed up\",\n    Schemas: map[string]interface{}{\n        \"1\": {\n                \"title\": \"Invoice Paid Event\",\n                \"description\": \"An invoice was paid by a user\",\n                \"type\": \"object\",\n                \"properties\": {\n                        \"invoiceId\": {\n                                \"description\": \"The invoice id\",\n                                \"type\": \"string\"\n                        },\n                        \"userId\": {\n                                \"description\": \"The user id\",\n                                \"type\": \"string\"\n                        }\n                },\n                \"required\": [\n                        \"invoiceId\",\n                        \"userId\"\n                ]\n        }\n    },\n    Name: \"user.signup\"\n})"
+                        "source": "eventTypeOut, err := svixClient.EventType.Create(&svix.EventTypeIn{\n    Description: \"A user has signed up\",\n    Schemas: map[string]interface{}{\n        \"1\": {\n                \"title\": \"Invoice Paid Event\",\n                \"description\": \"An invoice was paid by a user\",\n                \"type\": \"object\",\n                \"properties\": {\n                        \"invoiceId\": {\n                                \"description\": \"The invoice id\",\n                                \"type\": \"string\"\n                        },\n                        \"userId\": {\n                                \"description\": \"The user id\",\n                                \"type\": \"string\"\n                        }\n                },\n                \"required\": [\n                        \"invoiceId\",\n                        \"userId\"\n                ]\n        }\n    },\n    Archived: False,\n    Name: \"user.signup\"\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val eventTypeOut = svix.eventType.create(EventTypeIn()\n    .description(\"A user has signed up\"),\n    .schemas(\"\"\"{\n        \"1\": {\n                \"title\": \"Invoice Paid Event\",\n                \"description\": \"An invoice was paid by a user\",\n                \"type\": \"object\",\n                \"properties\": {\n                        \"invoiceId\": {\n                                \"description\": \"The invoice id\",\n                                \"type\": \"string\"\n                        },\n                        \"userId\": {\n                                \"description\": \"The user id\",\n                                \"type\": \"string\"\n                        }\n                },\n                \"required\": [\n                        \"invoiceId\",\n                        \"userId\"\n                ]\n        }\n    }\"\"\"),\n    .name(\"user.signup\")\n)"
+                        "source": "val eventTypeOut = svix.eventType.create(EventTypeIn()\n    .description(\"A user has signed up\"),\n    .schemas(\"\"\"{\n        \"1\": {\n                \"title\": \"Invoice Paid Event\",\n                \"description\": \"An invoice was paid by a user\",\n                \"type\": \"object\",\n                \"properties\": {\n                        \"invoiceId\": {\n                                \"description\": \"The invoice id\",\n                                \"type\": \"string\"\n                        },\n                        \"userId\": {\n                                \"description\": \"The user id\",\n                                \"type\": \"string\"\n                        }\n                },\n                \"required\": [\n                        \"invoiceId\",\n                        \"userId\"\n                ]\n        }\n    }\"\"\"),\n    .archived(False),\n    .name(\"user.signup\")\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "EventTypeOut eventTypeOut = svix.getEventType().create(new EventTypeIn()\n    .description(\"A user has signed up\"),\n    .schemas(\"{\" +\n        \"\\\"1\\\": {\" +\n                \"\\\"title\\\": \\\"Invoice Paid Event\\\",\" +\n                \"\\\"description\\\": \\\"An invoice was paid by a user\\\",\" +\n                \"\\\"type\\\": \\\"object\\\",\" +\n                \"\\\"properties\\\": {\" +\n                        \"\\\"invoiceId\\\": {\" +\n                                \"\\\"description\\\": \\\"The invoice id\\\",\" +\n                                \"\\\"type\\\": \\\"string\\\"\" +\n                        \"},\" +\n                        \"\\\"userId\\\": {\" +\n                                \"\\\"description\\\": \\\"The user id\\\",\" +\n                                \"\\\"type\\\": \\\"string\\\"\" +\n                        \"}\" +\n                \"},\" +\n                \"\\\"required\\\": [\" +\n                        \"\\\"invoiceId\\\",\" +\n                        \"\\\"userId\\\"\" +\n                \"]\" +\n        \"}\" +\n    \"}\"),\n    .name(\"user.signup\")\n)"
+                        "source": "EventTypeOut eventTypeOut = svix.getEventType().create(new EventTypeIn()\n    .description(\"A user has signed up\"),\n    .schemas(\"{\" +\n        \"\\\"1\\\": {\" +\n                \"\\\"title\\\": \\\"Invoice Paid Event\\\",\" +\n                \"\\\"description\\\": \\\"An invoice was paid by a user\\\",\" +\n                \"\\\"type\\\": \\\"object\\\",\" +\n                \"\\\"properties\\\": {\" +\n                        \"\\\"invoiceId\\\": {\" +\n                                \"\\\"description\\\": \\\"The invoice id\\\",\" +\n                                \"\\\"type\\\": \\\"string\\\"\" +\n                        \"},\" +\n                        \"\\\"userId\\\": {\" +\n                                \"\\\"description\\\": \\\"The user id\\\",\" +\n                                \"\\\"type\\\": \\\"string\\\"\" +\n                        \"}\" +\n                \"},\" +\n                \"\\\"required\\\": [\" +\n                        \"\\\"invoiceId\\\",\" +\n                        \"\\\"userId\\\"\" +\n                \"]\" +\n        \"}\" +\n    \"}\"),\n    .archived(False),\n    .name(\"user.signup\")\n)"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "event_type_out = svix.event_type.create(Svix::EventTypeIn.new({\n    \"description\": \"A user has signed up\",\n    \"schemas\": {\n        \"1\": {\n            \"title\": \"Invoice Paid Event\",\n            \"description\": \"An invoice was paid by a user\",\n            \"type\": \"object\",\n            \"properties\": {\n                \"invoiceId\": {\n                    \"description\": \"The invoice id\",\n                    \"type\": \"string\"\n                },\n                \"userId\": {\n                    \"description\": \"The user id\",\n                    \"type\": \"string\"\n                }\n            },\n            \"required\": [\n                \"invoiceId\",\n                \"userId\"\n            ]\n        }\n    },\n    \"archived\": false,\n    \"name\": \"user.signup\"\n}))"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix event-type create '{\n    \"description\": \"A user has signed up\",\n    \"schemas\": {\n        \"1\": {\n            \"title\": \"Invoice Paid Event\",\n            \"description\": \"An invoice was paid by a user\",\n            \"type\": \"object\",\n            \"properties\": {\n                \"invoiceId\": {\n                    \"description\": \"The invoice id\",\n                    \"type\": \"string\"\n                },\n                \"userId\": {\n                    \"description\": \"The user id\",\n                    \"type\": \"string\"\n                }\n            },\n            \"required\": [\n                \"invoiceId\",\n                \"userId\"\n            ]\n        }\n    },\n    \"name\": \"user.signup\"\n}'"
+                        "source": "svix event-type create '{\n    \"description\": \"A user has signed up\",\n    \"schemas\": {\n        \"1\": {\n            \"title\": \"Invoice Paid Event\",\n            \"description\": \"An invoice was paid by a user\",\n            \"type\": \"object\",\n            \"properties\": {\n                \"invoiceId\": {\n                    \"description\": \"The invoice id\",\n                    \"type\": \"string\"\n                },\n                \"userId\": {\n                    \"description\": \"The user id\",\n                    \"type\": \"string\"\n                }\n            },\n            \"required\": [\n                \"invoiceId\",\n                \"userId\"\n            ]\n        }\n    },\n    \"archived\": false,\n    \"name\": \"user.signup\"\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/event-type/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'\n  -d '{\n    \"description\": \"A user has signed up\",\n    \"schemas\": {\n        \"1\": {\n            \"title\": \"Invoice Paid Event\",\n            \"description\": \"An invoice was paid by a user\",\n            \"type\": \"object\",\n            \"properties\": {\n                \"invoiceId\": {\n                    \"description\": \"The invoice id\",\n                    \"type\": \"string\"\n                },\n                \"userId\": {\n                    \"description\": \"The user id\",\n                    \"type\": \"string\"\n                }\n            },\n            \"required\": [\n                \"invoiceId\",\n                \"userId\"\n            ]\n        }\n    },\n    \"name\": \"user.signup\"\n}'"
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/event-type/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"description\": \"A user has signed up\",\n    \"schemas\": {\n        \"1\": {\n            \"title\": \"Invoice Paid Event\",\n            \"description\": \"An invoice was paid by a user\",\n            \"type\": \"object\",\n            \"properties\": {\n                \"invoiceId\": {\n                    \"description\": \"The invoice id\",\n                    \"type\": \"string\"\n                },\n                \"userId\": {\n                    \"description\": \"The user id\",\n                    \"type\": \"string\"\n                }\n            },\n            \"required\": [\n                \"invoiceId\",\n                \"userId\"\n            ]\n        }\n    },\n    \"archived\": false,\n    \"name\": \"user.signup\"\n}'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/event-type/schema/generate-example/": {
+            "post": {
+                "description": "Generates a fake example from the given JSONSchema",
+                "operationId": "generate_schema_example_api_v1_event_type_schema_generate_example__post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EventTypeSchemaIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EventTypeExampleOut"
+                                }
+                            }
+                        },
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    }
+                },
+                "summary": "Generate Schema Example",
+                "tags": [
+                    "Event Type"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const eventTypeExampleOut = await svix.eventType.generate({\n    \"schema\": {\n        \"title\": \"Invoice Paid Event\",\n        \"description\": \"An invoice was paid by a user\",\n        \"type\": \"object\",\n        \"properties\": {\n            \"invoiceId\": {\n                \"description\": \"The invoice id\",\n                \"type\": \"string\"\n            },\n            \"userId\": {\n                \"description\": \"The user id\",\n                \"type\": \"string\"\n            }\n        },\n        \"required\": [\n            \"invoiceId\",\n            \"userId\"\n        ]\n    }\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const eventTypeExampleOut = await svix.eventType.generate({\n    \"schema\": {\n        \"title\": \"Invoice Paid Event\",\n        \"description\": \"An invoice was paid by a user\",\n        \"type\": \"object\",\n        \"properties\": {\n            \"invoiceId\": {\n                \"description\": \"The invoice id\",\n                \"type\": \"string\"\n            },\n            \"userId\": {\n                \"description\": \"The user id\",\n                \"type\": \"string\"\n            }\n        },\n        \"required\": [\n            \"invoiceId\",\n            \"userId\"\n        ]\n    }\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "event_type_example_out = svix.event_type.generate(EventTypeSchemaIn(\n    schema={'title': 'Invoice Paid Event', 'description': 'An invoice was paid by a user', 'type': 'object', 'properties': {'invoiceId': {'description': 'The invoice id', 'type': 'string'}, 'userId': {'description': 'The user id', 'type': 'string'}}, 'required': ['invoiceId', 'userId']}\n))"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "eventTypeExampleOut, err := svixClient.EventType.Generate(&svix.EventTypeSchemaIn{\n    Schema: map[string]interface{}{\n        \"title\": \"Invoice Paid Event\",\n        \"description\": \"An invoice was paid by a user\",\n        \"type\": \"object\",\n        \"properties\": {\n                \"invoiceId\": {\n                        \"description\": \"The invoice id\",\n                        \"type\": \"string\"\n                },\n                \"userId\": {\n                        \"description\": \"The user id\",\n                        \"type\": \"string\"\n                }\n        },\n        \"required\": [\n                \"invoiceId\",\n                \"userId\"\n        ]\n    }\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val eventTypeExampleOut = svix.eventType.generate(EventTypeSchemaIn()\n    .schema(\"\"\"{\n        \"title\": \"Invoice Paid Event\",\n        \"description\": \"An invoice was paid by a user\",\n        \"type\": \"object\",\n        \"properties\": {\n                \"invoiceId\": {\n                        \"description\": \"The invoice id\",\n                        \"type\": \"string\"\n                },\n                \"userId\": {\n                        \"description\": \"The user id\",\n                        \"type\": \"string\"\n                }\n        },\n        \"required\": [\n                \"invoiceId\",\n                \"userId\"\n        ]\n    }\"\"\")\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "EventTypeExampleOut eventTypeExampleOut = svix.getEventType().generate(new EventTypeSchemaIn()\n    .schema(\"{\" +\n        \"\\\"title\\\": \\\"Invoice Paid Event\\\",\" +\n        \"\\\"description\\\": \\\"An invoice was paid by a user\\\",\" +\n        \"\\\"type\\\": \\\"object\\\",\" +\n        \"\\\"properties\\\": {\" +\n                \"\\\"invoiceId\\\": {\" +\n                        \"\\\"description\\\": \\\"The invoice id\\\",\" +\n                        \"\\\"type\\\": \\\"string\\\"\" +\n                \"},\" +\n                \"\\\"userId\\\": {\" +\n                        \"\\\"description\\\": \\\"The user id\\\",\" +\n                        \"\\\"type\\\": \\\"string\\\"\" +\n                \"}\" +\n        \"},\" +\n        \"\\\"required\\\": [\" +\n                \"\\\"invoiceId\\\",\" +\n                \"\\\"userId\\\"\" +\n        \"]\" +\n    \"}\")\n)"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "event_type_example_out = svix.event_type.generate(Svix::EventTypeSchemaIn.new({\n    \"schema\": {\n        \"title\": \"Invoice Paid Event\",\n        \"description\": \"An invoice was paid by a user\",\n        \"type\": \"object\",\n        \"properties\": {\n            \"invoiceId\": {\n                \"description\": \"The invoice id\",\n                \"type\": \"string\"\n            },\n            \"userId\": {\n                \"description\": \"The user id\",\n                \"type\": \"string\"\n            }\n        },\n        \"required\": [\n            \"invoiceId\",\n            \"userId\"\n        ]\n    }\n}))"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix event-type generate '{\n    \"schema\": {\n        \"title\": \"Invoice Paid Event\",\n        \"description\": \"An invoice was paid by a user\",\n        \"type\": \"object\",\n        \"properties\": {\n            \"invoiceId\": {\n                \"description\": \"The invoice id\",\n                \"type\": \"string\"\n            },\n            \"userId\": {\n                \"description\": \"The user id\",\n                \"type\": \"string\"\n            }\n        },\n        \"required\": [\n            \"invoiceId\",\n            \"userId\"\n        ]\n    }\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/event-type/schema/generate-example/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"schema\": {\n        \"title\": \"Invoice Paid Event\",\n        \"description\": \"An invoice was paid by a user\",\n        \"type\": \"object\",\n        \"properties\": {\n            \"invoiceId\": {\n                \"description\": \"The invoice id\",\n                \"type\": \"string\"\n            },\n            \"userId\": {\n                \"description\": \"The user id\",\n                \"type\": \"string\"\n            }\n        },\n        \"required\": [\n            \"invoiceId\",\n            \"userId\"\n        ]\n    }\n}'"
                     }
                 ]
             }
         },
         "/api/v1/event-type/{event_type_name}/": {
             "delete": {
-                "description": "Delete an event type.",
+                "description": "Archive an event type.\n\nEndpoints already configured to filter on an event type will continue to do so after archival.\nHowever, new messages can not be sent with it and endpoints can not filter on it.\nAn event type can be unarchived with the\n[create operation](#operation/create_event_type_api_v1_event_type__post).",
                 "operationId": "delete_event_type_api_v1_event_type__event_type_name___delete",
                 "parameters": [
                     {
@@ -5341,7 +5919,7 @@
                         "HTTPBearer": []
                     }
                 ],
-                "summary": "Delete Event Type",
+                "summary": "Archive Event Type",
                 "tags": [
                     "Event Type"
                 ],
@@ -5375,6 +5953,11 @@
                         "label": "Java",
                         "lang": "Java",
                         "source": "svix.getEventType().delete('event_type_name')"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "svix.event_type.delete('event_type_name')"
                     },
                     {
                         "label": "CLI",
@@ -5508,6 +6091,11 @@
                         "source": "EventTypeOut eventTypeOut = svix.getEventType().get('event_type_name')"
                     },
                     {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "event_type_out = svix.event_type.get('event_type_name')"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix event-type get 'event_type_name'"
@@ -5621,42 +6209,47 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const eventTypeOut = await svix.eventType.update('event_type_name', {\n    \"description\": \"A user has signed up\",\n    \"schemas\": {\n        \"1\": {\n            \"title\": \"Invoice Paid Event\",\n            \"description\": \"An invoice was paid by a user\",\n            \"type\": \"object\",\n            \"properties\": {\n                \"invoiceId\": {\n                    \"description\": \"The invoice id\",\n                    \"type\": \"string\"\n                },\n                \"userId\": {\n                    \"description\": \"The user id\",\n                    \"type\": \"string\"\n                }\n            },\n            \"required\": [\n                \"invoiceId\",\n                \"userId\"\n            ]\n        }\n    }\n});"
+                        "source": "const eventTypeOut = await svix.eventType.update('event_type_name', {\n    \"description\": \"A user has signed up\",\n    \"schemas\": {\n        \"1\": {\n            \"title\": \"Invoice Paid Event\",\n            \"description\": \"An invoice was paid by a user\",\n            \"type\": \"object\",\n            \"properties\": {\n                \"invoiceId\": {\n                    \"description\": \"The invoice id\",\n                    \"type\": \"string\"\n                },\n                \"userId\": {\n                    \"description\": \"The user id\",\n                    \"type\": \"string\"\n                }\n            },\n            \"required\": [\n                \"invoiceId\",\n                \"userId\"\n            ]\n        }\n    },\n    \"archived\": false\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const eventTypeOut = await svix.eventType.update('event_type_name', {\n    \"description\": \"A user has signed up\",\n    \"schemas\": {\n        \"1\": {\n            \"title\": \"Invoice Paid Event\",\n            \"description\": \"An invoice was paid by a user\",\n            \"type\": \"object\",\n            \"properties\": {\n                \"invoiceId\": {\n                    \"description\": \"The invoice id\",\n                    \"type\": \"string\"\n                },\n                \"userId\": {\n                    \"description\": \"The user id\",\n                    \"type\": \"string\"\n                }\n            },\n            \"required\": [\n                \"invoiceId\",\n                \"userId\"\n            ]\n        }\n    }\n});"
+                        "source": "const eventTypeOut = await svix.eventType.update('event_type_name', {\n    \"description\": \"A user has signed up\",\n    \"schemas\": {\n        \"1\": {\n            \"title\": \"Invoice Paid Event\",\n            \"description\": \"An invoice was paid by a user\",\n            \"type\": \"object\",\n            \"properties\": {\n                \"invoiceId\": {\n                    \"description\": \"The invoice id\",\n                    \"type\": \"string\"\n                },\n                \"userId\": {\n                    \"description\": \"The user id\",\n                    \"type\": \"string\"\n                }\n            },\n            \"required\": [\n                \"invoiceId\",\n                \"userId\"\n            ]\n        }\n    },\n    \"archived\": false\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "event_type_out = svix.event_type.update('event_type_name', EventTypeUpdate(\n    description=\"A user has signed up\",\n    schemas={'1': {'title': 'Invoice Paid Event', 'description': 'An invoice was paid by a user', 'type': 'object', 'properties': {'invoiceId': {'description': 'The invoice id', 'type': 'string'}, 'userId': {'description': 'The user id', 'type': 'string'}}, 'required': ['invoiceId', 'userId']}}\n))"
+                        "source": "event_type_out = svix.event_type.update('event_type_name', EventTypeUpdate(\n    description=\"A user has signed up\",\n    schemas={'1': {'title': 'Invoice Paid Event', 'description': 'An invoice was paid by a user', 'type': 'object', 'properties': {'invoiceId': {'description': 'The invoice id', 'type': 'string'}, 'userId': {'description': 'The user id', 'type': 'string'}}, 'required': ['invoiceId', 'userId']}},\n    archived=False\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "eventTypeOut, err := svixClient.EventType.Update(\"event_type_name\", &svix.EventTypeUpdate{\n    Description: \"A user has signed up\",\n    Schemas: map[string]interface{}{\n        \"1\": {\n                \"title\": \"Invoice Paid Event\",\n                \"description\": \"An invoice was paid by a user\",\n                \"type\": \"object\",\n                \"properties\": {\n                        \"invoiceId\": {\n                                \"description\": \"The invoice id\",\n                                \"type\": \"string\"\n                        },\n                        \"userId\": {\n                                \"description\": \"The user id\",\n                                \"type\": \"string\"\n                        }\n                },\n                \"required\": [\n                        \"invoiceId\",\n                        \"userId\"\n                ]\n        }\n    }\n})"
+                        "source": "eventTypeOut, err := svixClient.EventType.Update(\"event_type_name\", &svix.EventTypeUpdate{\n    Description: \"A user has signed up\",\n    Schemas: map[string]interface{}{\n        \"1\": {\n                \"title\": \"Invoice Paid Event\",\n                \"description\": \"An invoice was paid by a user\",\n                \"type\": \"object\",\n                \"properties\": {\n                        \"invoiceId\": {\n                                \"description\": \"The invoice id\",\n                                \"type\": \"string\"\n                        },\n                        \"userId\": {\n                                \"description\": \"The user id\",\n                                \"type\": \"string\"\n                        }\n                },\n                \"required\": [\n                        \"invoiceId\",\n                        \"userId\"\n                ]\n        }\n    },\n    Archived: False\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val eventTypeOut = svix.eventType.update('event_type_name', EventTypeUpdate()\n    .description(\"A user has signed up\"),\n    .schemas(\"\"\"{\n        \"1\": {\n                \"title\": \"Invoice Paid Event\",\n                \"description\": \"An invoice was paid by a user\",\n                \"type\": \"object\",\n                \"properties\": {\n                        \"invoiceId\": {\n                                \"description\": \"The invoice id\",\n                                \"type\": \"string\"\n                        },\n                        \"userId\": {\n                                \"description\": \"The user id\",\n                                \"type\": \"string\"\n                        }\n                },\n                \"required\": [\n                        \"invoiceId\",\n                        \"userId\"\n                ]\n        }\n    }\"\"\")\n)"
+                        "source": "val eventTypeOut = svix.eventType.update('event_type_name', EventTypeUpdate()\n    .description(\"A user has signed up\"),\n    .schemas(\"\"\"{\n        \"1\": {\n                \"title\": \"Invoice Paid Event\",\n                \"description\": \"An invoice was paid by a user\",\n                \"type\": \"object\",\n                \"properties\": {\n                        \"invoiceId\": {\n                                \"description\": \"The invoice id\",\n                                \"type\": \"string\"\n                        },\n                        \"userId\": {\n                                \"description\": \"The user id\",\n                                \"type\": \"string\"\n                        }\n                },\n                \"required\": [\n                        \"invoiceId\",\n                        \"userId\"\n                ]\n        }\n    }\"\"\"),\n    .archived(False)\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "EventTypeOut eventTypeOut = svix.getEventType().update('event_type_name', new EventTypeUpdate()\n    .description(\"A user has signed up\"),\n    .schemas(\"{\" +\n        \"\\\"1\\\": {\" +\n                \"\\\"title\\\": \\\"Invoice Paid Event\\\",\" +\n                \"\\\"description\\\": \\\"An invoice was paid by a user\\\",\" +\n                \"\\\"type\\\": \\\"object\\\",\" +\n                \"\\\"properties\\\": {\" +\n                        \"\\\"invoiceId\\\": {\" +\n                                \"\\\"description\\\": \\\"The invoice id\\\",\" +\n                                \"\\\"type\\\": \\\"string\\\"\" +\n                        \"},\" +\n                        \"\\\"userId\\\": {\" +\n                                \"\\\"description\\\": \\\"The user id\\\",\" +\n                                \"\\\"type\\\": \\\"string\\\"\" +\n                        \"}\" +\n                \"},\" +\n                \"\\\"required\\\": [\" +\n                        \"\\\"invoiceId\\\",\" +\n                        \"\\\"userId\\\"\" +\n                \"]\" +\n        \"}\" +\n    \"}\")\n)"
+                        "source": "EventTypeOut eventTypeOut = svix.getEventType().update('event_type_name', new EventTypeUpdate()\n    .description(\"A user has signed up\"),\n    .schemas(\"{\" +\n        \"\\\"1\\\": {\" +\n                \"\\\"title\\\": \\\"Invoice Paid Event\\\",\" +\n                \"\\\"description\\\": \\\"An invoice was paid by a user\\\",\" +\n                \"\\\"type\\\": \\\"object\\\",\" +\n                \"\\\"properties\\\": {\" +\n                        \"\\\"invoiceId\\\": {\" +\n                                \"\\\"description\\\": \\\"The invoice id\\\",\" +\n                                \"\\\"type\\\": \\\"string\\\"\" +\n                        \"},\" +\n                        \"\\\"userId\\\": {\" +\n                                \"\\\"description\\\": \\\"The user id\\\",\" +\n                                \"\\\"type\\\": \\\"string\\\"\" +\n                        \"}\" +\n                \"},\" +\n                \"\\\"required\\\": [\" +\n                        \"\\\"invoiceId\\\",\" +\n                        \"\\\"userId\\\"\" +\n                \"]\" +\n        \"}\" +\n    \"}\"),\n    .archived(False)\n)"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "event_type_out = svix.event_type.update('event_type_name', Svix::EventTypeUpdate.new({\n    \"description\": \"A user has signed up\",\n    \"schemas\": {\n        \"1\": {\n            \"title\": \"Invoice Paid Event\",\n            \"description\": \"An invoice was paid by a user\",\n            \"type\": \"object\",\n            \"properties\": {\n                \"invoiceId\": {\n                    \"description\": \"The invoice id\",\n                    \"type\": \"string\"\n                },\n                \"userId\": {\n                    \"description\": \"The user id\",\n                    \"type\": \"string\"\n                }\n            },\n            \"required\": [\n                \"invoiceId\",\n                \"userId\"\n            ]\n        }\n    },\n    \"archived\": false\n}))"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix event-type update 'event_type_name' '{\n    \"description\": \"A user has signed up\",\n    \"schemas\": {\n        \"1\": {\n            \"title\": \"Invoice Paid Event\",\n            \"description\": \"An invoice was paid by a user\",\n            \"type\": \"object\",\n            \"properties\": {\n                \"invoiceId\": {\n                    \"description\": \"The invoice id\",\n                    \"type\": \"string\"\n                },\n                \"userId\": {\n                    \"description\": \"The user id\",\n                    \"type\": \"string\"\n                }\n            },\n            \"required\": [\n                \"invoiceId\",\n                \"userId\"\n            ]\n        }\n    }\n}'"
+                        "source": "svix event-type update 'event_type_name' '{\n    \"description\": \"A user has signed up\",\n    \"schemas\": {\n        \"1\": {\n            \"title\": \"Invoice Paid Event\",\n            \"description\": \"An invoice was paid by a user\",\n            \"type\": \"object\",\n            \"properties\": {\n                \"invoiceId\": {\n                    \"description\": \"The invoice id\",\n                    \"type\": \"string\"\n                },\n                \"userId\": {\n                    \"description\": \"The user id\",\n                    \"type\": \"string\"\n                }\n            },\n            \"required\": [\n                \"invoiceId\",\n                \"userId\"\n            ]\n        }\n    },\n    \"archived\": false\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.svix.com/api/v1/event-type/{event_type_name}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'\n  -d '{\n    \"description\": \"A user has signed up\",\n    \"schemas\": {\n        \"1\": {\n            \"title\": \"Invoice Paid Event\",\n            \"description\": \"An invoice was paid by a user\",\n            \"type\": \"object\",\n            \"properties\": {\n                \"invoiceId\": {\n                    \"description\": \"The invoice id\",\n                    \"type\": \"string\"\n                },\n                \"userId\": {\n                    \"description\": \"The user id\",\n                    \"type\": \"string\"\n                }\n            },\n            \"required\": [\n                \"invoiceId\",\n                \"userId\"\n            ]\n        }\n    }\n}'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.svix.com/api/v1/event-type/{event_type_name}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"description\": \"A user has signed up\",\n    \"schemas\": {\n        \"1\": {\n            \"title\": \"Invoice Paid Event\",\n            \"description\": \"An invoice was paid by a user\",\n            \"type\": \"object\",\n            \"properties\": {\n                \"invoiceId\": {\n                    \"description\": \"The invoice id\",\n                    \"type\": \"string\"\n                },\n                \"userId\": {\n                    \"description\": \"The user id\",\n                    \"type\": \"string\"\n                }\n            },\n            \"required\": [\n                \"invoiceId\",\n                \"userId\"\n            ]\n        }\n    },\n    \"archived\": false\n}'"
                     }
                 ]
             }
@@ -5821,15 +6414,15 @@
                 ]
             }
         },
-        "EndpointdUpdatedEvent": {
+        "EndpointUpdatedEvent": {
             "post": {
                 "description": "Sent when an endpoint is updated.",
-                "operationId": "EndpointdUpdatedEvent",
+                "operationId": "EndpointUpdatedEvent",
                 "requestBody": {
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/EndpointdUpdatedEvent"
+                                "$ref": "#/components/schemas/EndpointUpdatedEvent"
                             }
                         }
                     }
@@ -5839,7 +6432,7 @@
                         "description": "Return any 2XX status to indicate that the data was received successfully"
                     }
                 },
-                "summary": "EndpointdUpdatedEvent",
+                "summary": "EndpointUpdatedEvent",
                 "tags": [
                     "Webhooks"
                 ]

@@ -16,7 +16,7 @@ public final class EventType {
 
 	public ListResponseEventTypeOut list(final EventTypeListOptions options) throws ApiException {
 		try {
-			return api.listEventTypesApiV1EventTypeGet(options.getIterator(), options.getLimit(), options.getWithContent());
+			return api.listEventTypesApiV1EventTypeGet(options.getIterator(), options.getLimit(), options.getWithContent(), options.getIncludeArchived());
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
