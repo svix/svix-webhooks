@@ -3459,6 +3459,16 @@
                     "204": {
                         "description": "Successful Response"
                     },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad Request"
+                    },
                     "401": {
                         "content": {
                             "application/json": {
