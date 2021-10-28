@@ -311,7 +311,7 @@
                     "secret": {
                         "description": "The endpoint's verification secret. If `null` is passed, a secret is automatically generated.",
                         "example": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD",
-                        "pattern": "^whsec_[a-zA-Z0-9+\\/]{32}$",
+                        "pattern": "^whsec_[a-zA-Z0-9+/]{32}$",
                         "title": "Secret",
                         "type": "string"
                     },
@@ -482,7 +482,7 @@
                     "key": {
                         "description": "The endpoint's verification secret. If `null` is passed, a secret is automatically generated.",
                         "example": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD",
-                        "pattern": "^whsec_[a-zA-Z0-9+\\/]{32}$",
+                        "pattern": "^whsec_[a-zA-Z0-9+/]{32}$",
                         "title": "Key",
                         "type": "string"
                     }
@@ -498,7 +498,7 @@
                     "key": {
                         "description": "The endpoint's verification secret. If `null` is passed, a secret is automatically generated.",
                         "example": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD",
-                        "pattern": "^whsec_[a-zA-Z0-9+\\/]{32}$",
+                        "pattern": "^whsec_[a-zA-Z0-9+/]{32}$",
                         "title": "Key",
                         "type": "string"
                     }
