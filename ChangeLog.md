@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.34.1
+* Ruby: Fix endpoint list function input 🐞
+
 ## Version 0.34.0
 * All: Add include_archived option to event_type api ➕
 * All: Support secret rotation for endpoints 🔁
