@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.34.2
+* All: Better client side handling of rotateSecret errors 🆕
+
 ## Version 0.34.1
 * Ruby: Fix endpoint list function input 🐞
 
