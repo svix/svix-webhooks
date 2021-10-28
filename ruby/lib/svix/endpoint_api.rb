@@ -6,7 +6,7 @@ module Svix
             @api = EndpointApi.new(api_client)
         end
 
-        def list(str, options = {})
+        def list(app_id, options = {})
             return @api.list_endpoints_api_v1_app_app_id_endpoint_get(app_id, options)
         end
 
