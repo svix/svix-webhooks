@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.34.0
+* All: Add include_archived option to event_type api ➕
+* All: Support secret rotation for endpoints 🔁
+* Kolin: Fix getSecret return type 🐞
+
 ## Version 0.33.0
 * PHP: Fix 5.6 compatibility issue 🐞
 
