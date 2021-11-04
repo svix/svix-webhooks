@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.35.0
+* All: Add updatedAt fields to Application, Endpoint & EventType 🆕
+
 ## Version 0.34.2
 * All: Better client side handling of rotateSecret errors 🆕
 
