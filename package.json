@@ -1,5 +1,10 @@
 {
+  "private": true,
+  "scripts": {
+    "bump-version": "node tools/bump_version.js"
+  },
   "devDependencies": {
-    "@openapitools/openapi-generator-cli": "^2.1.23"
+    "@openapitools/openapi-generator-cli": "^2.1.23",
+    "semver": "^7.3.5"
   }
 }
