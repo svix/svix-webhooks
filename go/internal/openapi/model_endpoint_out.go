@@ -25,6 +25,7 @@ type EndpointOut struct {
 	RateLimit *int32 `json:"rateLimit,omitempty"`
 	// Optional unique identifier for the endpoint
 	Uid *string `json:"uid,omitempty"`
+	UpdatedAt time.Time `json:"updatedAt"`
 	Url string `json:"url"`
 	Version int32 `json:"version"`
 }
@@ -33,7 +34,7 @@ type EndpointOut struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEndpointOut(createdAt time.Time, id string, url string, version int32) *EndpointOut {
+func NewEndpointOut(createdAt time.Time, id string, updatedAt time.Time, url string, version int32) *EndpointOut {
 	this := EndpointOut{}
 	this.CreatedAt = createdAt
 	var description string = ""
@@ -41,6 +42,7 @@ func NewEndpointOut(createdAt time.Time, id string, url string, version int32) *
 	var disabled bool = false
 	this.Disabled = &disabled
 	this.Id = id
+	this.UpdatedAt = updatedAt
 	this.Url = url
 	this.Version = version
 	return &this
@@ -266,6 +268,30 @@ func (o *EndpointOut) SetUid(v string) {
 	o.Uid = &v
 }
 
+// GetUpdatedAt returns the UpdatedAt field value
+func (o *EndpointOut) GetUpdatedAt() time.Time {
+	if o == nil {
+		var ret time.Time
+		return ret
+	}
+
+	return o.UpdatedAt
+}
+
+// GetUpdatedAtOk returns a tuple with the UpdatedAt field value
+// and a boolean to check if the value has been set.
+func (o *EndpointOut) GetUpdatedAtOk() (*time.Time, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.UpdatedAt, true
+}
+
+// SetUpdatedAt sets field value
+func (o *EndpointOut) SetUpdatedAt(v time.Time) {
+	o.UpdatedAt = v
+}
+
 // GetUrl returns the Url field value
 func (o *EndpointOut) GetUrl() string {
 	if o == nil {
@@ -336,6 +362,9 @@ func (o EndpointOut) MarshalJSON() ([]byte, error) {
 	}
 	if o.Uid != nil {
 		toSerialize["uid"] = o.Uid
+	}
+	if true {
+		toSerialize["updatedAt"] = o.UpdatedAt
 	}
 	if true {
 		toSerialize["url"] = o.Url

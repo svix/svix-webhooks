@@ -23,17 +23,19 @@ type ApplicationOut struct {
 	RateLimit *int32 `json:"rateLimit,omitempty"`
 	// Optional unique identifier for the application
 	Uid *string `json:"uid,omitempty"`
+	UpdatedAt time.Time `json:"updatedAt"`
 }
 
 // NewApplicationOut instantiates a new ApplicationOut object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewApplicationOut(createdAt time.Time, id string, name string) *ApplicationOut {
+func NewApplicationOut(createdAt time.Time, id string, name string, updatedAt time.Time) *ApplicationOut {
 	this := ApplicationOut{}
 	this.CreatedAt = createdAt
 	this.Id = id
 	this.Name = name
+	this.UpdatedAt = updatedAt
 	return &this
 }
 
@@ -181,6 +183,30 @@ func (o *ApplicationOut) SetUid(v string) {
 	o.Uid = &v
 }
 
+// GetUpdatedAt returns the UpdatedAt field value
+func (o *ApplicationOut) GetUpdatedAt() time.Time {
+	if o == nil {
+		var ret time.Time
+		return ret
+	}
+
+	return o.UpdatedAt
+}
+
+// GetUpdatedAtOk returns a tuple with the UpdatedAt field value
+// and a boolean to check if the value has been set.
+func (o *ApplicationOut) GetUpdatedAtOk() (*time.Time, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.UpdatedAt, true
+}
+
+// SetUpdatedAt sets field value
+func (o *ApplicationOut) SetUpdatedAt(v time.Time) {
+	o.UpdatedAt = v
+}
+
 func (o ApplicationOut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
@@ -197,6 +223,9 @@ func (o ApplicationOut) MarshalJSON() ([]byte, error) {
 	}
 	if o.Uid != nil {
 		toSerialize["uid"] = o.Uid
+	}
+	if true {
+		toSerialize["updatedAt"] = o.UpdatedAt
 	}
 	return json.Marshal(toSerialize)
 }

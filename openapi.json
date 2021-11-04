@@ -61,12 +61,18 @@
                         "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "title": "Uid",
                         "type": "string"
+                    },
+                    "updatedAt": {
+                        "format": "date-time",
+                        "title": "Updatedat",
+                        "type": "string"
                     }
                 },
                 "required": [
                     "name",
                     "id",
-                    "createdAt"
+                    "createdAt",
+                    "updatedAt"
                 ],
                 "title": "ApplicationOut",
                 "type": "object"
@@ -453,6 +459,11 @@
                         "title": "Uid",
                         "type": "string"
                     },
+                    "updatedAt": {
+                        "format": "date-time",
+                        "title": "Updatedat",
+                        "type": "string"
+                    },
                     "url": {
                         "example": "https://example.com/webhook/",
                         "format": "uri",
@@ -472,7 +483,8 @@
                     "url",
                     "version",
                     "id",
-                    "createdAt"
+                    "createdAt",
+                    "updatedAt"
                 ],
                 "title": "EndpointOut",
                 "type": "object"
@@ -776,6 +788,11 @@
                         "title": "Archived",
                         "type": "boolean"
                     },
+                    "createdAt": {
+                        "format": "date-time",
+                        "title": "Createdat",
+                        "type": "string"
+                    },
                     "description": {
                         "example": "A user has signed up",
                         "title": "Description",
@@ -835,11 +852,18 @@
                         },
                         "title": "Schemas",
                         "type": "object"
+                    },
+                    "updatedAt": {
+                        "format": "date-time",
+                        "title": "Updatedat",
+                        "type": "string"
                     }
                 },
                 "required": [
                     "description",
-                    "name"
+                    "name",
+                    "createdAt",
+                    "updatedAt"
                 ],
                 "title": "EventTypeOut",
                 "type": "object"
