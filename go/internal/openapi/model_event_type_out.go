@@ -12,27 +12,32 @@ package openapi
 
 import (
 	"encoding/json"
+	"time"
 )
 
 // EventTypeOut struct for EventTypeOut
 type EventTypeOut struct {
 	Archived *bool `json:"archived,omitempty"`
+	CreatedAt time.Time `json:"createdAt"`
 	Description string `json:"description"`
 	Name string `json:"name"`
 	// The schema for the event type for a specific version as a JSON schema.
 	Schemas *map[string]map[string]interface{} `json:"schemas,omitempty"`
+	UpdatedAt time.Time `json:"updatedAt"`
 }
 
 // NewEventTypeOut instantiates a new EventTypeOut object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEventTypeOut(description string, name string) *EventTypeOut {
+func NewEventTypeOut(createdAt time.Time, description string, name string, updatedAt time.Time) *EventTypeOut {
 	this := EventTypeOut{}
 	var archived bool = false
 	this.Archived = &archived
+	this.CreatedAt = createdAt
 	this.Description = description
 	this.Name = name
+	this.UpdatedAt = updatedAt
 	return &this
 }
 
@@ -76,6 +81,30 @@ func (o *EventTypeOut) HasArchived() bool {
 // SetArchived gets a reference to the given bool and assigns it to the Archived field.
 func (o *EventTypeOut) SetArchived(v bool) {
 	o.Archived = &v
+}
+
+// GetCreatedAt returns the CreatedAt field value
+func (o *EventTypeOut) GetCreatedAt() time.Time {
+	if o == nil {
+		var ret time.Time
+		return ret
+	}
+
+	return o.CreatedAt
+}
+
+// GetCreatedAtOk returns a tuple with the CreatedAt field value
+// and a boolean to check if the value has been set.
+func (o *EventTypeOut) GetCreatedAtOk() (*time.Time, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.CreatedAt, true
+}
+
+// SetCreatedAt sets field value
+func (o *EventTypeOut) SetCreatedAt(v time.Time) {
+	o.CreatedAt = v
 }
 
 // GetDescription returns the Description field value
@@ -158,10 +187,37 @@ func (o *EventTypeOut) SetSchemas(v map[string]map[string]interface{}) {
 	o.Schemas = &v
 }
 
+// GetUpdatedAt returns the UpdatedAt field value
+func (o *EventTypeOut) GetUpdatedAt() time.Time {
+	if o == nil {
+		var ret time.Time
+		return ret
+	}
+
+	return o.UpdatedAt
+}
+
+// GetUpdatedAtOk returns a tuple with the UpdatedAt field value
+// and a boolean to check if the value has been set.
+func (o *EventTypeOut) GetUpdatedAtOk() (*time.Time, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.UpdatedAt, true
+}
+
+// SetUpdatedAt sets field value
+func (o *EventTypeOut) SetUpdatedAt(v time.Time) {
+	o.UpdatedAt = v
+}
+
 func (o EventTypeOut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if o.Archived != nil {
 		toSerialize["archived"] = o.Archived
+	}
+	if true {
+		toSerialize["createdAt"] = o.CreatedAt
 	}
 	if true {
 		toSerialize["description"] = o.Description
@@ -171,6 +227,9 @@ func (o EventTypeOut) MarshalJSON() ([]byte, error) {
 	}
 	if o.Schemas != nil {
 		toSerialize["schemas"] = o.Schemas
+	}
+	if true {
+		toSerialize["updatedAt"] = o.UpdatedAt
 	}
 	return json.Marshal(toSerialize)
 }
