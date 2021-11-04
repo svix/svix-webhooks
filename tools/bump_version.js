@@ -35,7 +35,7 @@ if (process.argv.length !== 3 || !semver.valid(process.argv[2])) {
 const newVersion = process.argv[2];
 const currentVersion = execSync("git describe --abbrev=0 --tags").toString().trim().replace("v", "");
 
-if (semver.lt(newVersion, currentVersion)) {
+if (semver.lte(newVersion, currentVersion)) {
     console.error("supplied version must be greater than current version");
     return;
 }
