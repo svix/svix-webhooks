@@ -34,6 +34,7 @@ from .openapi_client.model.message_attempt_out import MessageAttemptOut
 from .openapi_client.model.message_in import MessageIn
 from .openapi_client.model.message_out import MessageOut
 from .openapi_client.model.message_status import MessageStatus
+from .openapi_client.model.recover_in import RecoverIn
 
 DEFAULT_SERVER_URL = "https://api.svix.com"
 
@@ -191,6 +192,15 @@ class Endpoint(ApiBase[EndpointApi]):
                 app_id=app_id,
                 endpoint_id=endpoint_id,
                 endpoint_secret_rotate_in=endpoint_secret_rotate_in,
+                _check_return_type=False,
+            )
+
+    def recover(self, app_id: str, endpoint_id: str, recover_in: RecoverIn) -> None:
+        with self._api() as api:
+            api.resend_failed_webhooks_api_v1_app_app_id_endpoint_endpoint_id_recover_post(
+                app_id=app_id,
+                endpoint_id=endpoint_id,
+                recover_in=recover_in,
                 _check_return_type=False,
             )
 
@@ -353,5 +363,6 @@ __all__ = [
     "EventTypeListOptions",
     "EndpointListOptions",
     "MessageAttemptListOptions",
+    "RecoverIn",
     "Svix",
 ]
