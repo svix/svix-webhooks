@@ -1589,6 +1589,25 @@
                     "Sending"
                 ]
             },
+            "RecoverIn": {
+                "properties": {
+                    "since": {
+                        "format": "date-time",
+                        "title": "Since",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "since"
+                ],
+                "title": "RecoverIn",
+                "type": "object"
+            },
+            "RecoverOut": {
+                "properties": {},
+                "title": "RecoverOut",
+                "type": "object"
+            },
             "ValidationError": {
                 "properties": {
                     "loc": {
@@ -3281,6 +3300,170 @@
                 ]
             }
         },
+        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover/": {
+            "post": {
+                "description": "Resend all failed messages since a given time.",
+                "operationId": "resend_failed_webhooks_api_v1_app__app_id__endpoint__endpoint_id__recover__post",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "App Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The endpoint's ID or UID",
+                            "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "Endpoint Id",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RecoverIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "202": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RecoverOut"
+                                }
+                            }
+                        },
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Resend Failed Webhooks",
+                "tags": [
+                    "Endpoint"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const recoverOut = await svix.endpoint.resend('app_id', 'endpoint_id', {\n    \"since\": \"2019-08-24T14:15:22Z\"\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const recoverOut = await svix.endpoint.resend('app_id', 'endpoint_id', {\n    \"since\": \"2019-08-24T14:15:22Z\"\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "recover_out = svix.endpoint.resend('app_id', 'endpoint_id', RecoverIn(\n    since=\"2019-08-24T14:15:22Z\"\n))"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "recoverOut, err := svixClient.Endpoint.Resend(\"app_id\", \"endpoint_id\", &svix.RecoverIn{\n    Since: \"2019-08-24T14:15:22Z\"\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val recoverOut = svix.endpoint.resend('app_id', 'endpoint_id', RecoverIn()\n    .since(\"2019-08-24T14:15:22Z\")\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "RecoverOut recoverOut = svix.getEndpoint().resend('app_id', 'endpoint_id', new RecoverIn()\n    .since(\"2019-08-24T14:15:22Z\")\n)"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "recover_out = svix.endpoint.resend('app_id', 'endpoint_id', Svix::RecoverIn.new({\n    \"since\": \"2019-08-24T14:15:22Z\"\n}))"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix endpoint resend 'app_id' 'endpoint_id' '{\n    \"since\": \"2019-08-24T14:15:22Z\"\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"since\": \"2019-08-24T14:15:22Z\"\n}'"
+                    }
+                ]
+            }
+        },
         "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/": {
             "get": {
                 "description": "Get the endpoint's signing secret.\n\nThis is used to verify the authenticity of the webhook.\nFor more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).",
@@ -3656,6 +3839,16 @@
                             }
                         },
                         "description": "Successful Response"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad Request"
                     },
                     "401": {
                         "content": {
