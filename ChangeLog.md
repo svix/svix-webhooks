@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.36.0
+* All: Add endpoint recover function ❤️‍🩹
+
 ## Version 0.35.0
 * All: Add updatedAt fields to Application, Endpoint & EventType 🆕
 
