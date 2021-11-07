@@ -56,6 +56,7 @@ require "svix/models/message_endpoint_out"
 require "svix/models/message_in"
 require "svix/models/message_out"
 require "svix/models/message_status"
+require "svix/models/recover_in"
 require "svix/models/validation_error"
 require "svix/models/webhook_types"
 

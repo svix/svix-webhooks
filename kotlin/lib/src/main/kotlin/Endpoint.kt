@@ -8,6 +8,7 @@ import com.svix.kotlin.models.EndpointSecretOut
 import com.svix.kotlin.models.EndpointSecretRotateIn
 import com.svix.kotlin.models.EndpointUpdate
 import com.svix.kotlin.models.ListResponseEndpointOut
+import com.svix.kotlin.models.RecoverIn
 
 class Endpoint internal constructor(token: String, options: SvixOptions) {
     val api = EndpointApi(options.debugUrl)
@@ -68,6 +69,14 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
     suspend fun rotateSecret(appId: String, endpointId: String, endpointSecretRotateIn: EndpointSecretRotateIn) {
         try {
             api.rotateEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretRotatePost(endpointId, appId, endpointSecretRotateIn)
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
+
+    suspend fun recover(appId: String, endpointId: String, recoverIn: RecoverIn) {
+        try {
+            api.resendFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPost(appId, endpointId, recoverIn)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }

@@ -13,6 +13,7 @@ type (
 	EndpointOut             openapi.EndpointOut
 	EndpointSecretOut       openapi.EndpointSecretOut
 	EndpointSecretRotateIn  openapi.EndpointSecretRotateIn
+	RecoverIn               openapi.RecoverIn
 )
 
 type Endpoint struct {
@@ -94,6 +95,16 @@ func (e *Endpoint) RotateSecret(appId string, endpointId string, endpointSecretR
 	req := e.api.EndpointApi.RotateEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretRotatePost(context.Background(), endpointId, appId)
 	req = req.EndpointSecretRotateIn(openapi.EndpointSecretRotateIn(*endpointSecretRotateIn))
 	res, err := req.Execute()
+	if err != nil {
+		return wrapError(err, res)
+	}
+	return nil
+}
+
+func (e *Endpoint) Recover(appId string, endpointId string, recoverIn *RecoverIn) error {
+	req := e.api.EndpointApi.ResendFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPost(context.Background(), appId, endpointId)
+	req = req.RecoverIn(openapi.RecoverIn(*recoverIn))
+	_, res, err := req.Execute()
 	if err != nil {
 		return wrapError(err, res)
 	}

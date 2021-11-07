@@ -8,6 +8,7 @@ import com.svix.models.EndpointUpdate;
 import com.svix.models.EndpointSecretOut;
 import com.svix.models.EndpointSecretRotateIn;
 import com.svix.models.ListResponseEndpointOut;
+import com.svix.models.RecoverIn;
 
 public final class Endpoint {
 	private final EndpointApi api;
@@ -67,6 +68,14 @@ public final class Endpoint {
 	public void rotateSecret(final String appId, final String endpointId, final EndpointSecretRotateIn endpointSecretRotateIn) throws ApiException {
 		try {
 			api.rotateEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretRotatePost(endpointId, appId, endpointSecretRotateIn);
+		} catch (com.svix.internal.ApiException e) {
+			throw Utils.wrapInternalApiException(e);
+		}
+	}
+
+	public void recover(final String appId, final String endpointId, final RecoverIn recoverIn) throws ApiException {
+		try {
+			api.resendFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPost(appId, endpointId, recoverIn);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}

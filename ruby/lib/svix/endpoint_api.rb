@@ -34,5 +34,10 @@ module Svix
             return @api.rotate_endpoint_secret_api_v1_app_app_id_endpoint_endpoint_id_secret_rotate_post(endpoint_id, app_id, endpoint_secret_rotate_in)
         end
 
+        def recover(app_id, endpoint_id, recover_in)
+            @api.resend_failed_webhooks_api_v1_app_app_id_endpoint_endpoint_id_recover_post(app_id, endpoint_id, recover_in)
+            nil
+        end
+
     end
 end

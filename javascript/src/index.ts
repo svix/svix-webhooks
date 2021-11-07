@@ -14,6 +14,7 @@ import {
   EndpointUpdate,
   EndpointSecretOut,
   EndpointSecretRotateIn,
+  RecoverIn,
   MessageApi,
   MessageOut,
   MessageIn,
@@ -214,12 +215,26 @@ class Endpoint {
     });
   }
 
-  public rotateSecret(appId: string, endpointId: string, endpointSecretRotateIn: EndpointSecretRotateIn): Promise<void> {
+  public rotateSecret(
+    appId: string,
+    endpointId: string,
+    endpointSecretRotateIn: EndpointSecretRotateIn
+  ): Promise<void> {
     return this.api.rotateEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretRotatePost({
       endpointId,
       appId,
-      endpointSecretRotateIn
+      endpointSecretRotateIn,
     });
+  }
+
+  public recover(appId: string, endpointId: string, recoverIn: RecoverIn): Promise<void> {
+    return this.api
+      .resendFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPost({
+        appId,
+        endpointId,
+        recoverIn,
+      })
+      .then(() => Promise.resolve());
   }
 }
 
