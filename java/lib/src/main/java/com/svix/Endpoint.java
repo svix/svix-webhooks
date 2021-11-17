@@ -2,6 +2,8 @@ package com.svix;
 
 import com.svix.exceptions.ApiException;
 import com.svix.internal.api.EndpointApi;
+import com.svix.models.EndpointHeadersIn;
+import com.svix.models.EndpointHeadersOut;
 import com.svix.models.EndpointIn;
 import com.svix.models.EndpointOut;
 import com.svix.models.EndpointUpdate;
@@ -76,6 +78,30 @@ public final class Endpoint {
 	public void recover(final String appId, final String endpointId, final RecoverIn recoverIn) throws ApiException {
 		try {
 			api.resendFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPost(appId, endpointId, recoverIn);
+		} catch (com.svix.internal.ApiException e) {
+			throw Utils.wrapInternalApiException(e);
+		}
+	}
+
+	public EndpointHeadersOut getHeaders(final String appId, final String endpointId) throws ApiException {
+		try {
+			return api.getEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersGet(endpointId, appId);
+		} catch (com.svix.internal.ApiException e) {
+			throw Utils.wrapInternalApiException(e);
+		}
+	}
+
+	public void updateHeaders(final String appId, final String endpointId, final EndpointHeadersIn endpointHeadersIn) throws ApiException {
+		try {
+			api.updateEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPut(appId, endpointId, endpointHeadersIn);
+		} catch (com.svix.internal.ApiException e) {
+			throw Utils.wrapInternalApiException(e);
+		}
+	}
+
+	public void patchHeaders(final String appId, final String endpointId, final EndpointHeadersIn endpointHeadersIn) throws ApiException {
+		try {
+			api.patchEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPatch(appId, endpointId, endpointHeadersIn);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
