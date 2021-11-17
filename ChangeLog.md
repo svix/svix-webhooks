@@ -1,7 +1,7 @@
 # Changelog
 
 ## Version 0.37.0
-* All: Add support for custom endpoint header api 🆕
+* All: Add support for custom endpoint header API 🆕
 
 ## Version 0.36.0
 * All: Add endpoint recover function ❤️‍🩹
@@ -10,13 +10,13 @@
 * All: Add updatedAt fields to Application, Endpoint & EventType 🆕
 
 ## Version 0.34.2
-* All: Better client side handling of rotateSecret errors 🆕
+* All: Better client-side handling of rotateSecret errors 🆕
 
 ## Version 0.34.1
 * Ruby: Fix endpoint list function input 🐞
 
 ## Version 0.34.0
-* All: Add include_archived option to event_type api ➕
+* All: Add include_archived option to event_type API ➕
 * All: Support secret rotation for endpoints 🔁
 * Kolin: Fix getSecret return type 🐞
 
@@ -25,7 +25,7 @@
 
 ## Version 0.32.0
 * Ruby: Initial API bindings! 🚀
-* Kotlin: Add client side retries 🔁
+* Kotlin: Add client-side retries 🔁
 
 ## Version 0.31.0
 * Python: Add additional message-attempt APIs. 🆕
@@ -37,10 +37,10 @@
 * Java: Cleanup list option code using generics 🤓
 
 ## Version 0.29.0
-* All: Add before option to message apis
+* All: Add before option to message APIs
 * Java: Cleanup list options
 * All: Add ability to set signing secret
-* All: add event type filtering to message attempt api
+* All: add event type filtering to message attempt API
 * All: support for endpoint uids
 
 ## Version 0.28.0
@@ -100,13 +100,13 @@
 ## Version 0.18.0
 * All: Enforce timestamp tolerance when verifying
 * All: Support new webhook signature prefixes when verifying
-* Go: Expose new error class for checking api errors
+* Go: Expose new error class for checking API errors
 * PHP: Fix issue with psr-4 autoloading
 * Python: Properly export WebhookVerificationError
 * Python: Fix bug in event_type create function
 
 ## Version 0.17.0
-* Migrate to new github org `svix`! :rocket:
+* Migrate to new GitHub org `svix`! :rocket:
 
 ## Version 0.16.0
 * Update the OpenAPI spec and change structures accordingly
