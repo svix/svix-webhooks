@@ -2,6 +2,8 @@ package com.svix.kotlin
 
 import com.svix.kotlin.exceptions.ApiException
 import com.svix.kotlin.internal.apis.EndpointApi
+import com.svix.kotlin.models.EndpointHeadersIn
+import com.svix.kotlin.models.EndpointHeadersOut
 import com.svix.kotlin.models.EndpointIn
 import com.svix.kotlin.models.EndpointOut
 import com.svix.kotlin.models.EndpointSecretOut
@@ -77,6 +79,30 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
     suspend fun recover(appId: String, endpointId: String, recoverIn: RecoverIn) {
         try {
             api.resendFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPost(appId, endpointId, recoverIn)
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
+
+    suspend fun getHeaders(appId: String, endpointId: String): EndpointHeadersOut {
+        try {
+            return api.getEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersGet(endpointId, appId)
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
+
+    suspend fun updateHeaders(appId: String, endpointId: String, endpointHeadersIn: EndpointHeadersIn) {
+        try {
+            api.updateEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPut(appId, endpointId, endpointHeadersIn)
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
+
+    suspend fun patchHeaders(appId: String, endpointId: String, endpointHeadersIn: EndpointHeadersIn) {
+        try {
+            api.patchEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPatch(appId, endpointId, endpointHeadersIn)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }

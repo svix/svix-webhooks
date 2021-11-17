@@ -39,5 +39,17 @@ module Svix
             nil
         end
 
+        def get_headers(app_id, endpoint_id)
+            return @api.get_endpoint_headers_api_v1_app_app_id_endpoint_endpoint_id_headers_get(endpoint_id app_id)
+        end
+
+        def update_headers(app_id, endpoint_id, endpoint_headers_in)
+            return @api.update_endpoint_headers_api_v1_app_app_id_endpoint_endpoint_id_headers_put(app_id, endpoint_id, endpoint_headers_in)
+        end
+
+        def patch_headers(app_id, endpoint_id, endpoint_headers_in)
+            return @api.patch_endpoint_headers_api_v1_app_app_id_endpoint_endpoint_id_headers_patch(app_id, endpoint_id, endpoint_headers_in)
+        end
+
     end
 end

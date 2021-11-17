@@ -14,6 +14,8 @@ from .openapi_client.configuration import Configuration
 from .openapi_client.model.application_in import ApplicationIn
 from .openapi_client.model.application_out import ApplicationOut
 from .openapi_client.model.dashboard_access_out import DashboardAccessOut
+from .openapi_client.model.endpoint_headers_in import EndpointHeadersIn
+from .openapi_client.model.endpoint_headers_out import EndpointHeadersOut
 from .openapi_client.model.endpoint_in import EndpointIn
 from .openapi_client.model.endpoint_out import EndpointOut
 from .openapi_client.model.endpoint_secret_out import EndpointSecretOut
@@ -204,6 +206,32 @@ class Endpoint(ApiBase[EndpointApi]):
                 _check_return_type=False,
             )
 
+    def get_headers(self, app_id: str, endpoint_id: str) -> EndpointHeadersOut:
+        with self._api() as api:
+            return api.get_endpoint_headers_api_v1_app_app_id_endpoint_endpoint_id_headers_get(
+                app_id=app_id,
+                endpoint_id=endpoint_id,
+                _check_return_type=False,
+            )
+
+    def update_headers(self, app_id: str, endpoint_id: str, endpoint_headers_in: EndpointHeadersIn) -> None:
+        with self._api() as api:
+            api.update_endpoint_headers_api_v1_app_app_id_endpoint_endpoint_id_headers_put(
+                app_id=app_id,
+                endpoint_id=endpoint_id,
+                endpoint_headers_in=endpoint_headers_in,
+                _check_return_type=False,
+            )
+
+    def patch_headers(self, app_id: str, endpoint_id: str, endpoint_headers_in: EndpointHeadersIn) -> None:
+        with self._api() as api:
+            api.patch_endpoint_headers_api_v1_app_app_id_endpoint_endpoint_id_headers_patch(
+                app_id=app_id,
+                endpoint_id=endpoint_id,
+                endpoint_headers_in=endpoint_headers_in,
+                _check_return_type=False,
+            )
+
 
 class EventType(ApiBase[EventTypeApi]):
     _ApiClass = EventTypeApi
@@ -340,6 +368,8 @@ __all__ = [
     "ApplicationOut",
     "ListResponseApplicationOut",
     "DashboardAccessOut",
+    "EndpointHeadersIn",
+    "EndpointHeadersOut",
     "EndpointIn",
     "EndpointOut",
     "EndpointSecretOut",

@@ -14,6 +14,8 @@ import {
   EndpointUpdate,
   EndpointSecretOut,
   EndpointSecretRotateIn,
+  EndpointHeadersIn,
+  EndpointHeadersOut,
   RecoverIn,
   MessageApi,
   MessageOut,
@@ -235,6 +237,29 @@ class Endpoint {
         recoverIn,
       })
       .then(() => Promise.resolve());
+  }
+
+  public getHeaders(appId: string, endpointId: string): Promise<EndpointHeadersOut> {
+    return this.api.getEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersGet({
+      appId,
+      endpointId,
+    })
+  }
+
+  public updateHeaders(appId: string, endpointId: string, endpointHeadersIn: EndpointHeadersIn): Promise<void> {
+    return this.api.updateEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPut({
+      appId,
+      endpointId,
+      endpointHeadersIn,
+    })
+  }
+
+  public patchHeaders(appId: string, endpointId: string, endpointHeadersIn: EndpointHeadersIn): Promise<void> {
+    return this.api.patchEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPatch({
+      appId,
+      endpointId,
+      endpointHeadersIn,
+    })
   }
 }
 
