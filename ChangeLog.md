@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.37.0
+* All: Add support for custom endpoint header api 🆕
+
 ## Version 0.36.0
 * All: Add endpoint recover function ❤️‍🩹
 
