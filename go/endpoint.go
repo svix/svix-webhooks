@@ -14,6 +14,8 @@ type (
 	EndpointSecretOut       openapi.EndpointSecretOut
 	EndpointSecretRotateIn  openapi.EndpointSecretRotateIn
 	RecoverIn               openapi.RecoverIn
+	EndpointHeadersIn       openapi.EndpointHeadersIn
+	EndpointHeadersOut      openapi.EndpointHeadersOut
 )
 
 type Endpoint struct {
@@ -105,6 +107,36 @@ func (e *Endpoint) Recover(appId string, endpointId string, recoverIn *RecoverIn
 	req := e.api.EndpointApi.ResendFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPost(context.Background(), appId, endpointId)
 	req = req.RecoverIn(openapi.RecoverIn(*recoverIn))
 	_, res, err := req.Execute()
+	if err != nil {
+		return wrapError(err, res)
+	}
+	return nil
+}
+
+func (e *Endpoint) GetHeaders(appId string, endpointId string) (*EndpointHeadersOut, error) {
+	req := e.api.EndpointApi.GetEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersGet(context.Background(), endpointId, appId)
+	out, res, err := req.Execute()
+	if err != nil {
+		return nil, wrapError(err, res)
+	}
+	ret := EndpointHeadersOut(out)
+	return &ret, nil
+}
+
+func (e *Endpoint) UpdateHeaders(appId string, endpointId string, endpointHeadersIn *EndpointHeadersIn) error {
+	req := e.api.EndpointApi.UpdateEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPut(context.Background(), appId, endpointId)
+	req = req.EndpointHeadersIn(openapi.EndpointHeadersIn(*endpointHeadersIn))
+	res, err := req.Execute()
+	if err != nil {
+		return wrapError(err, res)
+	}
+	return nil
+}
+
+func (e *Endpoint) PatchHeaders(appId string, endpointId string, endpointHeadersIn *EndpointHeadersIn) error {
+	req := e.api.EndpointApi.PatchEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPatch(context.Background(), appId, endpointId)
+	req = req.EndpointHeadersIn(openapi.EndpointHeadersIn(*endpointHeadersIn))
+	res, err := req.Execute()
 	if err != nil {
 		return wrapError(err, res)
 	}
