@@ -77,6 +77,54 @@
                 "title": "ApplicationOut",
                 "type": "object"
             },
+            "AttemptStatisticsData": {
+                "properties": {
+                    "failureCount": {
+                        "items": {
+                            "type": "integer"
+                        },
+                        "title": "Failurecount",
+                        "type": "array"
+                    },
+                    "successCount": {
+                        "items": {
+                            "type": "integer"
+                        },
+                        "title": "Successcount",
+                        "type": "array"
+                    }
+                },
+                "title": "AttemptStatisticsData",
+                "type": "object"
+            },
+            "AttemptStatisticsResponse": {
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/AttemptStatisticsData"
+                    },
+                    "endDate": {
+                        "format": "date-time",
+                        "title": "Enddate",
+                        "type": "string"
+                    },
+                    "period": {
+                        "$ref": "#/components/schemas/StatisticsPeriod"
+                    },
+                    "startDate": {
+                        "format": "date-time",
+                        "title": "Startdate",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "startDate",
+                    "endDate",
+                    "period",
+                    "data"
+                ],
+                "title": "AttemptStatisticsResponse",
+                "type": "object"
+            },
             "DashboardAccessOut": {
                 "properties": {
                     "token": {
@@ -279,6 +327,57 @@
                     "failSince"
                 ],
                 "title": "EndpointDisabledEventData",
+                "type": "object"
+            },
+            "EndpointHeadersIn": {
+                "properties": {
+                    "headers": {
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "example": {
+                            "X-Example": "123",
+                            "X-Foobar": "Bar"
+                        },
+                        "title": "Headers",
+                        "type": "object"
+                    }
+                },
+                "required": [
+                    "headers"
+                ],
+                "title": "EndpointHeadersIn",
+                "type": "object"
+            },
+            "EndpointHeadersOut": {
+                "description": "The value of the headers is returned in the `headers` field.\n\nSensitive headers that have been redacted are returned in the sensitive field.",
+                "properties": {
+                    "headers": {
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "example": {
+                            "X-Example": "123",
+                            "X-Foobar": "Bar"
+                        },
+                        "title": "Headers",
+                        "type": "object"
+                    },
+                    "sensitive": {
+                        "items": {
+                            "example": "X-Foobar",
+                            "type": "string"
+                        },
+                        "title": "Sensitive",
+                        "type": "array",
+                        "uniqueItems": true
+                    }
+                },
+                "required": [
+                    "headers",
+                    "sensitive"
+                ],
+                "title": "EndpointHeadersOut",
                 "type": "object"
             },
             "EndpointIn": {
@@ -1607,6 +1706,15 @@
                 "properties": {},
                 "title": "RecoverOut",
                 "type": "object"
+            },
+            "StatisticsPeriod": {
+                "description": "Period length for a statistics data point",
+                "enum": [
+                    "OneDay",
+                    "FiveMinutes"
+                ],
+                "title": "StatisticsPeriod",
+                "type": "string"
             },
             "ValidationError": {
                 "properties": {
@@ -3144,6 +3252,470 @@
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'PUT' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000\n}'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers/": {
+            "get": {
+                "description": "Get the additional headers to be sent with the webhook",
+                "operationId": "get_endpoint_headers_api_v1_app__app_id__endpoint__endpoint_id__headers__get",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The endpoint's ID or UID",
+                            "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "Endpoint Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "App Id",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EndpointHeadersOut"
+                                }
+                            }
+                        },
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Get Endpoint Headers",
+                "tags": [
+                    "Endpoint"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const endpointHeadersOut = await svix.endpoint.getHeaders('app_id', 'endpoint_id');"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const endpointHeadersOut = await svix.endpoint.getHeaders('app_id', 'endpoint_id');"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "endpoint_headers_out = svix.endpoint.get_headers('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "endpointHeadersOut, err := svixClient.Endpoint.GetHeaders(\"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val endpointHeadersOut = svix.endpoint.getHeaders('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "EndpointHeadersOut endpointHeadersOut = svix.getEndpoint().getHeaders('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "endpoint_headers_out = svix.endpoint.get_headers('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix endpoint get-headers 'app_id' 'endpoint_id'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            },
+            "patch": {
+                "description": "Partially set the additional headers to be sent with the webhook",
+                "operationId": "patch_endpoint_headers_api_v1_app__app_id__endpoint__endpoint_id__headers__patch",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "App Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The endpoint's ID or UID",
+                            "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "Endpoint Id",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EndpointHeadersIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Patch Endpoint Headers",
+                "tags": [
+                    "Endpoint"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.endpoint.patchHeaders('app_id', 'endpoint_id', {\n    \"headers\": {\n        \"X-Foobar\": \"Bar\",\n        \"X-Example\": \"123\"\n    }\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.endpoint.patchHeaders('app_id', 'endpoint_id', {\n    \"headers\": {\n        \"X-Foobar\": \"Bar\",\n        \"X-Example\": \"123\"\n    }\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "svix.endpoint.patch_headers('app_id', 'endpoint_id', EndpointHeadersIn(\n    headers={'X-Foobar': 'Bar', 'X-Example': '123'}\n))"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "err := svixClient.Endpoint.PatchHeaders(\"app_id\", \"endpoint_id\", &svix.EndpointHeadersIn{\n    Headers: map[string]string{\n        \"X-Foobar\": \"Bar\",\n        \"X-Example\": \"123\"\n    }\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "svix.endpoint.patchHeaders('app_id', 'endpoint_id', EndpointHeadersIn()\n    .headers(\"\"\"{\n        \"X-Foobar\": \"Bar\",\n        \"X-Example\": \"123\"\n    }\"\"\")\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "svix.getEndpoint().patchHeaders('app_id', 'endpoint_id', new EndpointHeadersIn()\n    .headers(\"{\" +\n        \"\\\"X-Foobar\\\": \\\"Bar\\\",\" +\n        \"\\\"X-Example\\\": \\\"123\\\"\" +\n    \"}\")\n)"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "svix.endpoint.patch_headers('app_id', 'endpoint_id', Svix::EndpointHeadersIn.new({\n    \"headers\": {\n        \"X-Foobar\": \"Bar\",\n        \"X-Example\": \"123\"\n    }\n}))"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix endpoint patch-headers 'app_id' 'endpoint_id' '{\n    \"headers\": {\n        \"X-Foobar\": \"Bar\",\n        \"X-Example\": \"123\"\n    }\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'PATCH' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"headers\": {\n        \"X-Foobar\": \"Bar\",\n        \"X-Example\": \"123\"\n    }\n}'"
+                    }
+                ]
+            },
+            "put": {
+                "description": "Set the additional headers to be sent with the webhook",
+                "operationId": "update_endpoint_headers_api_v1_app__app_id__endpoint__endpoint_id__headers__put",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "App Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The endpoint's ID or UID",
+                            "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "Endpoint Id",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EndpointHeadersIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Update Endpoint Headers",
+                "tags": [
+                    "Endpoint"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.endpoint.updateHeaders('app_id', 'endpoint_id', {\n    \"headers\": {\n        \"X-Foobar\": \"Bar\",\n        \"X-Example\": \"123\"\n    }\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.endpoint.updateHeaders('app_id', 'endpoint_id', {\n    \"headers\": {\n        \"X-Foobar\": \"Bar\",\n        \"X-Example\": \"123\"\n    }\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "svix.endpoint.update_headers('app_id', 'endpoint_id', EndpointHeadersIn(\n    headers={'X-Foobar': 'Bar', 'X-Example': '123'}\n))"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "err := svixClient.Endpoint.UpdateHeaders(\"app_id\", \"endpoint_id\", &svix.EndpointHeadersIn{\n    Headers: map[string]string{\n        \"X-Foobar\": \"Bar\",\n        \"X-Example\": \"123\"\n    }\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "svix.endpoint.updateHeaders('app_id', 'endpoint_id', EndpointHeadersIn()\n    .headers(\"\"\"{\n        \"X-Foobar\": \"Bar\",\n        \"X-Example\": \"123\"\n    }\"\"\")\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "svix.getEndpoint().updateHeaders('app_id', 'endpoint_id', new EndpointHeadersIn()\n    .headers(\"{\" +\n        \"\\\"X-Foobar\\\": \\\"Bar\\\",\" +\n        \"\\\"X-Example\\\": \\\"123\\\"\" +\n    \"}\")\n)"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "svix.endpoint.update_headers('app_id', 'endpoint_id', Svix::EndpointHeadersIn.new({\n    \"headers\": {\n        \"X-Foobar\": \"Bar\",\n        \"X-Example\": \"123\"\n    }\n}))"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix endpoint update-headers 'app_id' 'endpoint_id' '{\n    \"headers\": {\n        \"X-Foobar\": \"Bar\",\n        \"X-Example\": \"123\"\n    }\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'PUT' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"headers\": {\n        \"X-Foobar\": \"Bar\",\n        \"X-Example\": \"123\"\n    }\n}'"
                     }
                 ]
             }
@@ -6499,6 +7071,260 @@
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/health/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/stats/app/{app_id}/attempt/": {
+            "get": {
+                "description": "Returns application-level statistics on message attempts",
+                "operationId": "get_app_attempt_stats_api_v1_stats_app__app_id__attempt__get",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "App Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "startDate",
+                        "required": false,
+                        "schema": {
+                            "format": "date-time",
+                            "title": "Startdate",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "endDate",
+                        "required": false,
+                        "schema": {
+                            "format": "date-time",
+                            "title": "Enddate",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AttemptStatisticsResponse"
+                                }
+                            }
+                        },
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Get App Attempt Stats",
+                "tags": [
+                    "Statistics"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/stats/app/{app_id}/attempt/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/stats/app/{app_id}/ep/{endpoint_id}/attempt/": {
+            "get": {
+                "description": "Returns endpoint-level statistics on message attempts",
+                "operationId": "get_ep_stats_api_v1_stats_app__app_id__ep__endpoint_id__attempt__get",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The endpoint's ID or UID",
+                            "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "Endpoint Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "App Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "startDate",
+                        "required": false,
+                        "schema": {
+                            "format": "date-time",
+                            "title": "Startdate",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "endDate",
+                        "required": false,
+                        "schema": {
+                            "format": "date-time",
+                            "title": "Enddate",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AttemptStatisticsResponse"
+                                }
+                            }
+                        },
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Get Ep Stats",
+                "tags": [
+                    "Statistics"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/stats/app/{app_id}/ep/{endpoint_id}/attempt/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }

@@ -64,6 +64,8 @@ type APIClient struct {
 	MessageApi *MessageApiService
 
 	MessageAttemptApi *MessageAttemptApiService
+
+	StatisticsApi *StatisticsApiService
 }
 
 type service struct {
@@ -89,6 +91,7 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.HealthApi = (*HealthApiService)(&c.common)
 	c.MessageApi = (*MessageApiService)(&c.common)
 	c.MessageAttemptApi = (*MessageAttemptApiService)(&c.common)
+	c.StatisticsApi = (*StatisticsApiService)(&c.common)
 
 	return c
 }
