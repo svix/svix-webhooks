@@ -15,6 +15,14 @@ Library for interacting with the Svix API and verifying webhook signatures
 The docs are available at <https://docs.svix.com>.
 
 
+## ⚙️ Installation
+
+```sh
+npm install svix
+# or
+yarn add svix
+```
+
 ## ⚡️ Usage
 
 ```js
