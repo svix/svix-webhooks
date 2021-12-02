@@ -14,6 +14,10 @@ module Svix
             return @api.create_event_type_api_v1_event_type_post(event_type_in)
         end
 
+        def get(event_type_name)
+            return @api.get_event_type_api_v1_event_type_event_type_name_get(event_type_name)
+        end
+
         def update(event_type_name, event_type_update)
             return @api.update_event_type_api_v1_event_type_event_type_name_put(event_type_name, event_type_update)
         end
