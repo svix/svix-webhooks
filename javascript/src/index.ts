@@ -243,23 +243,31 @@ class Endpoint {
     return this.api.getEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersGet({
       appId,
       endpointId,
-    })
+    });
   }
 
-  public updateHeaders(appId: string, endpointId: string, endpointHeadersIn: EndpointHeadersIn): Promise<void> {
+  public updateHeaders(
+    appId: string,
+    endpointId: string,
+    endpointHeadersIn: EndpointHeadersIn
+  ): Promise<void> {
     return this.api.updateEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPut({
       appId,
       endpointId,
       endpointHeadersIn,
-    })
+    });
   }
 
-  public patchHeaders(appId: string, endpointId: string, endpointHeadersIn: EndpointHeadersIn): Promise<void> {
+  public patchHeaders(
+    appId: string,
+    endpointId: string,
+    endpointHeadersIn: EndpointHeadersIn
+  ): Promise<void> {
     return this.api.patchEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPatch({
       appId,
       endpointId,
       endpointHeadersIn,
-    })
+    });
   }
 }
 
@@ -272,6 +280,10 @@ class EventType {
 
   public list(options?: EventTypeListOptions): Promise<ListResponseEventTypeOut> {
     return this.api.listEventTypesApiV1EventTypeGet({ ...options });
+  }
+
+  public get(eventTypeName: string): Promise<EventTypeOut> {
+    return this.api.getEventTypeApiV1EventTypeEventTypeNameGet({ eventTypeName });
   }
 
   public create(eventTypeIn: EventTypeIn): Promise<EventTypeOut> {
