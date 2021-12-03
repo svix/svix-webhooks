@@ -39,7 +39,28 @@ func NewWebhook(secret string) (*Webhook, error) {
 	}, nil
 }
 
+// Verify validates the payload against the svix signature headers
+// using the webhooks signing secret.
+//
+// Returns an error if the body or headers are missing/unreadable
+// or if the signature doesn't match.
 func (wh *Webhook) Verify(payload []byte, headers http.Header) error {
+	return wh.verify(payload, headers, true)
+}
+
+// VerifyIgnoringTimestamp validates the payload against the svix signature headers
+// using the webhooks signing secret.
+//
+// Returns an error if the body or headers are missing/unreadable
+// or if the signature doesn't match.
+//
+// WARNING: This function does not check the signature's timestamp.
+// We recommend using the `Verify` function instead.
+func (wh *Webhook) VerifyIgnoringTimestamp(payload []byte, headers http.Header) error {
+	return wh.verify(payload, headers, false)
+}
+
+func (wh *Webhook) verify(payload []byte, headers http.Header, enforceTolerance bool) error {
 	msgId := headers.Get("svix-id")
 	msgSignature := headers.Get("svix-signature")
 	msgTimestamp := headers.Get("svix-timestamp")
@@ -53,8 +74,8 @@ func (wh *Webhook) Verify(payload []byte, headers http.Header) error {
 		}
 	}
 
-	// enforce timestamp tolerance
-	timestamp, err := verifyTimestamp(msgTimestamp)
+	// parse timestamp and enforce tolerance
+	timestamp, err := verifyTimestamp(msgTimestamp, enforceTolerance)
 	if err != nil {
 		return err
 	}
@@ -96,7 +117,7 @@ func (wh *Webhook) Sign(msgId string, timestamp time.Time, payload []byte) (stri
 
 }
 
-func verifyTimestamp(timestampHeader string) (time.Time, error) {
+func verifyTimestamp(timestampHeader string, enforceTolerance bool) (time.Time, error) {
 	now := time.Now()
 	timeInt, err := strconv.ParseInt(timestampHeader, 10, 64)
 	if err != nil {
@@ -104,11 +125,13 @@ func verifyTimestamp(timestampHeader string) (time.Time, error) {
 	}
 	timestamp := time.Unix(timeInt, 0)
 
-	if now.Sub(timestamp) > tolerance {
-		return time.Time{}, errMessageTooOld
-	}
-	if timestamp.Unix() > now.Add(tolerance).Unix() {
-		return time.Time{}, errMessageTooNew
+	if enforceTolerance {
+		if now.Sub(timestamp) > tolerance {
+			return time.Time{}, errMessageTooOld
+		}
+		if timestamp.Unix() > now.Add(tolerance).Unix() {
+			return time.Time{}, errMessageTooNew
+		}
 	}
 
 	return timestamp, nil
