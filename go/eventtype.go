@@ -59,6 +59,16 @@ func (e *EventType) Create(eventTypeIn *EventTypeIn) (*EventTypeOut, error) {
 	return &ret, nil
 }
 
+func (e *EventType) Get(eventTypeName string) (*EventTypeOut, error) {
+	req := e.api.EventTypeApi.GetEventTypeApiV1EventTypeEventTypeNameGet(context.Background(), eventTypeName)
+	out, res, err := req.Execute()
+	if err != nil {
+		return nil, wrapError(err, res)
+	}
+	ret := EventTypeOut(out)
+	return &ret, nil
+}
+
 func (e *EventType) Update(eventTypeName string, eventTypeUpdate *EventTypeUpdate) (*EventTypeOut, error) {
 	req := e.api.EventTypeApi.UpdateEventTypeApiV1EventTypeEventTypeNamePut(context.Background(), eventTypeName)
 	req = req.EventTypeUpdate(openapi.EventTypeUpdate(*eventTypeUpdate))

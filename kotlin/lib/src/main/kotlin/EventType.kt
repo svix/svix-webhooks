@@ -31,6 +31,14 @@ class EventType internal constructor(token: String, options: SvixOptions) {
         }
     }
 
+    suspend fun get(eventTypeName: String): EventTypeOut {
+        try {
+            return api.getEventTypeApiV1EventTypeEventTypeNameGet(eventTypeName)
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
+
     suspend fun update(eventTypeName: String, eventTypeUpdate: EventTypeUpdate): EventTypeOut {
         try {
             return api.updateEventTypeApiV1EventTypeEventTypeNamePut(eventTypeName, eventTypeUpdate)

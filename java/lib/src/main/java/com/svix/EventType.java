@@ -30,6 +30,14 @@ public final class EventType {
 		}
 	}
 
+	public EventTypeOut get(final String eventTypeName) throws ApiException {
+		try {
+			return api.getEventTypeApiV1EventTypeEventTypeNameGet(eventTypeName);
+		} catch (com.svix.internal.ApiException e) {
+			throw Utils.wrapInternalApiException(e);
+		}
+	}
+
 	public EventTypeOut update(final String eventTypeName, final EventTypeUpdate eventTypeUpdate) throws ApiException {
 		try {
 			return api.updateEventTypeApiV1EventTypeEventTypeNamePut(eventTypeName, eventTypeUpdate);

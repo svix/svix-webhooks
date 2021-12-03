@@ -244,6 +244,12 @@ class EventType(ApiBase[EventTypeApi]):
         with self._api() as api:
             return api.create_event_type_api_v1_event_type_post(event_type_in=event_type_in, _check_return_type=False)
 
+    def get(self, event_type_name: str) -> EventTypeOut:
+        with self._api() as api:
+            return api.get_event_type_api_v1_event_type_event_type_name_get(
+                event_type_name=event_type_name, _check_return_type=False
+            )
+
     def update(self, event_type_name: str, event_type_update: EventTypeUpdate) -> EventTypeOut:
         with self._api() as api:
             return api.update_event_type_api_v1_event_type_event_type_name_put(
