@@ -3,6 +3,7 @@
 ## Version 0.38.0
 * All: Add support for retrieving a single event type 🆕
 * Javascript: Add readme for npm 📚
+* Ruby: Fix base64 import on case-sensitive file systems 🐞  (thanks [mikelarkin](https://github.com/mikelarkin)!)
 
 ## Version 0.37.0
 * All: Add support for custom endpoint header API 🆕
