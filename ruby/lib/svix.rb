@@ -2,7 +2,7 @@
 
 require "json"
 require "openssl"
-require "Base64"
+require "base64"
 
 # API
 require "svix/api/application_api"
