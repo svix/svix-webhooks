@@ -125,6 +125,45 @@
                 "title": "AttemptStatisticsResponse",
                 "type": "object"
             },
+            "BorderRadiusConfig": {
+                "properties": {
+                    "button": {
+                        "$ref": "#/components/schemas/BorderRadiusEnum"
+                    },
+                    "card": {
+                        "$ref": "#/components/schemas/BorderRadiusEnum"
+                    },
+                    "input": {
+                        "$ref": "#/components/schemas/BorderRadiusEnum"
+                    }
+                },
+                "title": "BorderRadiusConfig",
+                "type": "object"
+            },
+            "BorderRadiusEnum": {
+                "description": "An enumeration.",
+                "enum": [
+                    "none",
+                    "lg",
+                    "md",
+                    "sm",
+                    "full"
+                ],
+                "title": "BorderRadiusEnum",
+                "type": "string"
+            },
+            "CustomThemeOverride": {
+                "properties": {
+                    "borderRadius": {
+                        "$ref": "#/components/schemas/BorderRadiusConfig"
+                    },
+                    "fontSize": {
+                        "$ref": "#/components/schemas/FontSizeConfig"
+                    }
+                },
+                "title": "CustomThemeOverride",
+                "type": "object"
+            },
             "DashboardAccessOut": {
                 "properties": {
                     "token": {
@@ -364,6 +403,7 @@
                         "type": "object"
                     },
                     "sensitive": {
+                        "example": "Authorization",
                         "items": {
                             "example": "X-Foobar",
                             "type": "string"
@@ -1068,6 +1108,16 @@
                 "title": "EventTypeUpdate",
                 "type": "object"
             },
+            "FontSizeConfig": {
+                "properties": {
+                    "base": {
+                        "title": "Base",
+                        "type": "integer"
+                    }
+                },
+                "title": "FontSizeConfig",
+                "type": "object"
+            },
             "HTTPValidationError": {
                 "properties": {
                     "detail": {
@@ -1687,6 +1737,33 @@
                     "Fail",
                     "Sending"
                 ]
+            },
+            "PortalSettingsOut": {
+                "properties": {
+                    "customColor": {
+                        "format": "color",
+                        "title": "Customcolor",
+                        "type": "string"
+                    },
+                    "customFontFamily": {
+                        "example": "Open Sans",
+                        "pattern": "^[a-zA-Z0-9\\-_ ]+$",
+                        "title": "Customfontfamily",
+                        "type": "string"
+                    },
+                    "customLogoUrl": {
+                        "format": "uri",
+                        "maxLength": 65536,
+                        "minLength": 1,
+                        "title": "Customlogourl",
+                        "type": "string"
+                    },
+                    "customThemeOverride": {
+                        "$ref": "#/components/schemas/CustomThemeOverride"
+                    }
+                },
+                "title": "PortalSettingsOut",
+                "type": "object"
             },
             "RecoverIn": {
                 "properties": {
@@ -6059,42 +6136,42 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const dashboardAccessOut = await svix.authentication.get('app_id');"
+                        "source": "const dashboardAccessOut = await svix.authentication.dashboardAccess('app_id');"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const dashboardAccessOut = await svix.authentication.get('app_id');"
+                        "source": "const dashboardAccessOut = await svix.authentication.dashboardAccess('app_id');"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "dashboard_access_out = svix.authentication.get('app_id')"
+                        "source": "dashboard_access_out = svix.authentication.dashboard_access('app_id')"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "dashboardAccessOut, err := svixClient.Authentication.Get(\"app_id\")"
+                        "source": "dashboardAccessOut, err := svixClient.Authentication.DashboardAccess(\"app_id\")"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val dashboardAccessOut = svix.authentication.get('app_id')"
+                        "source": "val dashboardAccessOut = svix.authentication.dashboardAccess('app_id')"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "DashboardAccessOut dashboardAccessOut = svix.getAuthentication().get('app_id')"
+                        "source": "DashboardAccessOut dashboardAccessOut = svix.getAuthentication().dashboardAccess('app_id')"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "dashboard_access_out = svix.authentication.get('app_id')"
+                        "source": "dashboard_access_out = svix.authentication.dashboard_access('app_id')"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix authentication get 'app_id'"
+                        "source": "svix authentication dashboard-access 'app_id'"
                     },
                     {
                         "label": "cURL",
@@ -7071,6 +7148,80 @@
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/health/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/org/settings/": {
+            "get": {
+                "description": "Get the organization's settings",
+                "operationId": "get_org_settings_api_v1_org_settings__get",
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PortalSettingsOut"
+                                }
+                            }
+                        },
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Get Org Settings",
+                "tags": [
+                    "Organization-Settings"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/org/settings/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
