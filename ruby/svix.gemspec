@@ -47,7 +47,7 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency 'typhoeus', '~> 1.0', '>= 1.0.1'
 
-  spec.add_development_dependency "bundler", "~> 1.17"
+  spec.add_development_dependency "bundler", ">= 2.2.10"
   spec.add_development_dependency "rake", "~> 13.0"
   spec.add_development_dependency "rspec", "~> 3.2"
 end
