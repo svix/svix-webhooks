@@ -32,10 +32,10 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  bundler (~> 1.17)
+  bundler (>= 2.2.10)
   rake (~> 13.0)
   rspec (~> 3.2)
   svix!
 
 BUNDLED WITH
-   1.17.2
+   2.2.33
