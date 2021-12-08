@@ -18,7 +18,7 @@ module Svix
             return @api.get_endpoint_api_v1_app_app_id_endpoint_endpoint_id_get(endpoint_id, app_id)
         end
 
-        def update(app_id, endpoint_id, endpoint_in)
+        def update(app_id, endpoint_id, endpoint_update)
             return @api.update_endpoint_api_v1_app_app_id_endpoint_endpoint_id_put(endpoint_id, app_id, endpoint_update)
         end
 
