@@ -74,10 +74,15 @@ func (wh *Webhook) verify(payload []byte, headers http.Header, enforceTolerance 
 		}
 	}
 
-	// parse timestamp and enforce tolerance
-	timestamp, err := verifyTimestamp(msgTimestamp, enforceTolerance)
+	timestamp, err := parseTimestampHeader(msgTimestamp)
 	if err != nil {
 		return err
+	}
+
+	if enforceTolerance {
+		if err := verifyTimestamp(timestamp); err != nil {
+			return err
+		}
 	}
 
 	computedSignature, err := wh.Sign(msgId, timestamp, payload)
@@ -117,22 +122,24 @@ func (wh *Webhook) Sign(msgId string, timestamp time.Time, payload []byte) (stri
 
 }
 
-func verifyTimestamp(timestampHeader string, enforceTolerance bool) (time.Time, error) {
-	now := time.Now()
+func parseTimestampHeader(timestampHeader string) (time.Time, error) {
 	timeInt, err := strconv.ParseInt(timestampHeader, 10, 64)
 	if err != nil {
 		return time.Time{}, errInvalidHeaders
 	}
 	timestamp := time.Unix(timeInt, 0)
+	return timestamp, nil
+}
 
-	if enforceTolerance {
-		if now.Sub(timestamp) > tolerance {
-			return time.Time{}, errMessageTooOld
-		}
-		if timestamp.Unix() > now.Add(tolerance).Unix() {
-			return time.Time{}, errMessageTooNew
-		}
+func verifyTimestamp(timestamp time.Time) error {
+	now := time.Now()
+
+	if now.Sub(timestamp) > tolerance {
+		return errMessageTooOld
+	}
+	if timestamp.Unix() > now.Add(tolerance).Unix() {
+		return errMessageTooNew
 	}
 
-	return timestamp, nil
+	return nil
 }
