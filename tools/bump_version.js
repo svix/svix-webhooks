@@ -1,9 +1,11 @@
 const { readFileSync, writeFileSync } = require('fs');
 const { join } = require('path');
 const semver = require('semver')
-const { execSync } = require("child_process");
+
+const versionFilePath = ".version";
 
 const filesPaths = [
+    versionFilePath,
     // CSharp
     "csharp/Svix/Svix.csproj",
     // Go
@@ -33,7 +35,7 @@ if (process.argv.length !== 3 || !semver.valid(process.argv[2])) {
     return;
 }
 const newVersion = process.argv[2];
-const currentVersion = execSync("git describe --abbrev=0 --tags").toString().trim().replace("v", "");
+const currentVersion = readFileSync(join(rootDir, versionFilePath), 'utf8').trim();
 
 if (semver.lte(newVersion, currentVersion)) {
     console.error("supplied version must be greater than current version");
