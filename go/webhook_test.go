@@ -46,10 +46,11 @@ func newTestPayload(timestamp time.Time) *testPayload {
 func TestWebhook(t *testing.T) {
 
 	testCases := []struct {
-		name          string
-		testPayload   *testPayload
-		modifyPayload func(*testPayload)
-		expectedErr   bool
+		name               string
+		testPayload        *testPayload
+		modifyPayload      func(*testPayload)
+		noEnforceTimestamp bool
+		expectedErr        bool
 	}{
 		{
 			name:        "valid signature is valid",
@@ -124,6 +125,33 @@ func TestWebhook(t *testing.T) {
 			},
 			expectedErr: false,
 		},
+		{
+			name:               "old timestamp passes when ignoring tolerance",
+			testPayload:        newTestPayload(time.Now().Add(tolerance * -1)),
+			noEnforceTimestamp: true,
+			expectedErr:        false,
+		},
+		{
+			name:               "new timestamp passes when ignoring tolerance",
+			testPayload:        newTestPayload(time.Now().Add(tolerance * 1)),
+			noEnforceTimestamp: true,
+			expectedErr:        false,
+		},
+		{
+			name:               "valid timestamp passes when ignoring tolerance",
+			testPayload:        newTestPayload(time.Now()),
+			noEnforceTimestamp: true,
+			expectedErr:        false,
+		},
+		{
+			name:        "invalid timestamp fails when ignoring tolerance",
+			testPayload: newTestPayload(time.Now()),
+			modifyPayload: func(tp *testPayload) {
+				tp.header.Set("svix-timestamp", fmt.Sprint(time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC).Unix()))
+			},
+			noEnforceTimestamp: true,
+			expectedErr:        true,
+		},
 	}
 
 	for _, tc := range testCases {
@@ -136,7 +164,11 @@ func TestWebhook(t *testing.T) {
 			t.Error(err)
 			continue
 		}
-		err = wh.Verify(tc.testPayload.payload, tc.testPayload.header)
+		if tc.noEnforceTimestamp {
+			err = wh.VerifyIgnoringTimestamp(tc.testPayload.payload, tc.testPayload.header)
+		} else {
+			err = wh.Verify(tc.testPayload.payload, tc.testPayload.header)
+		}
 		if err != nil && !tc.expectedErr {
 			t.Errorf("%s: failed with err %s but shouldn't have", tc.name, err.Error())
 		} else if err == nil && tc.expectedErr {

@@ -39,7 +39,28 @@ func NewWebhook(secret string) (*Webhook, error) {
 	}, nil
 }
 
+// Verify validates the payload against the svix signature headers
+// using the webhooks signing secret.
+//
+// Returns an error if the body or headers are missing/unreadable
+// or if the signature doesn't match.
 func (wh *Webhook) Verify(payload []byte, headers http.Header) error {
+	return wh.verify(payload, headers, true)
+}
+
+// VerifyIgnoringTimestamp validates the payload against the svix signature headers
+// using the webhooks signing secret.
+//
+// Returns an error if the body or headers are missing/unreadable
+// or if the signature doesn't match.
+//
+// WARNING: This function does not check the signature's timestamp.
+// We recommend using the `Verify` function instead.
+func (wh *Webhook) VerifyIgnoringTimestamp(payload []byte, headers http.Header) error {
+	return wh.verify(payload, headers, false)
+}
+
+func (wh *Webhook) verify(payload []byte, headers http.Header, enforceTolerance bool) error {
 	msgId := headers.Get("svix-id")
 	msgSignature := headers.Get("svix-signature")
 	msgTimestamp := headers.Get("svix-timestamp")
@@ -53,10 +74,15 @@ func (wh *Webhook) Verify(payload []byte, headers http.Header) error {
 		}
 	}
 
-	// enforce timestamp tolerance
-	timestamp, err := verifyTimestamp(msgTimestamp)
+	timestamp, err := parseTimestampHeader(msgTimestamp)
 	if err != nil {
 		return err
+	}
+
+	if enforceTolerance {
+		if err := verifyTimestamp(timestamp); err != nil {
+			return err
+		}
 	}
 
 	computedSignature, err := wh.Sign(msgId, timestamp, payload)
@@ -96,20 +122,24 @@ func (wh *Webhook) Sign(msgId string, timestamp time.Time, payload []byte) (stri
 
 }
 
-func verifyTimestamp(timestampHeader string) (time.Time, error) {
-	now := time.Now()
+func parseTimestampHeader(timestampHeader string) (time.Time, error) {
 	timeInt, err := strconv.ParseInt(timestampHeader, 10, 64)
 	if err != nil {
 		return time.Time{}, errInvalidHeaders
 	}
 	timestamp := time.Unix(timeInt, 0)
+	return timestamp, nil
+}
+
+func verifyTimestamp(timestamp time.Time) error {
+	now := time.Now()
 
 	if now.Sub(timestamp) > tolerance {
-		return time.Time{}, errMessageTooOld
+		return errMessageTooOld
 	}
 	if timestamp.Unix() > now.Add(tolerance).Unix() {
-		return time.Time{}, errMessageTooNew
+		return errMessageTooNew
 	}
 
-	return timestamp, nil
+	return nil
 }
