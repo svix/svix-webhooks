@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.39.0
+* Ruby: Upgrade to bundler 2 🆕
+* Ruby: Fix endpoint.update parameters 🐞 (thanks [sevensidedmarble](https://github.com/sevensidedmarble)!)
+* Go: Add ability to verify webhook payloads while ignoring timestamp enforcement ❌🕝
+* Go: Regenerate OpenAPI Spec
+
 ## Version 0.38.0
 * All: Add support for retrieving a single event type 🆕
 * Javascript: Add readme for npm 📚
