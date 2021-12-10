@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.39.1
+* 
+
 ## Version 0.39.0
 * Ruby: Upgrade to bundler 2 🆕
 * Ruby: Fix endpoint.update parameters 🐞 (thanks [sevensidedmarble](https://github.com/sevensidedmarble)!)
