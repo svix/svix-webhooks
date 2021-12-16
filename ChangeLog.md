@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.40.0
+* All: Support for `payload_content_ttl` in message api. 🆕
+
 ## Version 0.39.0
 * Ruby: Upgrade to bundler 2 🆕
 * Ruby: Fix endpoint.update parameters 🐞 (thanks [sevensidedmarble](https://github.com/sevensidedmarble)!)
