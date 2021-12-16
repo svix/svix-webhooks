@@ -1,7 +1,7 @@
 # Changelog
 
 ## Version 0.40.0
-* All: Support for `payload_content_ttl` in message api. 🆕
+* All: Support for `payload_retention_period` in message api. 🆕
 
 ## Version 0.39.0
 * Ruby: Upgrade to bundler 2 🆕
