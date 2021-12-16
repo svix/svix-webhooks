@@ -1666,6 +1666,15 @@
                         },
                         "title": "Payload",
                         "type": "object"
+                    },
+                    "payloadRetentionPeriod": {
+                        "default": 90,
+                        "description": "The retention period for the payload (in days).",
+                        "example": 90,
+                        "maximum": 90.0,
+                        "minimum": 5.0,
+                        "title": "Payloadretentionperiod",
+                        "type": "integer"
                     }
                 },
                 "required": [
@@ -1857,7 +1866,7 @@
         }
     },
     "info": {
-        "description": "Welcome to the Svix API documentation!\n\nUseful links: [Homepage](https://www.svix.com) | [Support email](mailto:support+docs@svix.com) | [Blog](https://www.svix.com/blog/) | [Slack Community](https://www.svix.com/slack/)\n\n# Introduction\n\nThis is the reference documentation and schemas for the [Svix webhook service](https://www.svix.com) API. For tutorials and other documentation please refer to [the documentation](https://docs.svix.com).\n\n## Main concepts\n\nIn Svix you have four important entities you will be interacting with:\n\n- `messages`: these are the webhooks being sent. They can have contents and a few other properties.\n- `application`: this is where `messages` are sent to. Usually you want to create one application for each of your users.\n- `endpoint`: endpoints are the URLs messages will be sent to. Each application can have multiple `endpoints` and each message sent to that application will be sent to all of them (unless they are not subscribed to the sent event type).\n- `event-type`: event types are identifiers denoting the type of the message being sent. Event types are primarily used to decide which events are sent to which endpoint.\n\n\n## Authentication\n\nGet your authentication token (`AUTH_TOKEN`) from the [Svix dashboard](https://dashboard.svix.com) and use it as part of the `Authorization` header as such: `Authorization: Bearer ${AUTH_TOKEN}`.\n\n<SecurityDefinitions />\n\n\n## Code samples\n\nThe code samples assume you already have the respective libraries installed and you know how to use them. For the latest information on how to do that, please refer to [the documentation](https://docs.svix.com/).\n\n\n## Cross-Origin Resource Sharing\n\nThis API features Cross-Origin Resource Sharing (CORS) implemented in compliance with [W3C spec](https://www.w3.org/TR/cors/). And that allows cross-domain communication from the browser. All responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site.\n",
+        "description": "Welcome to the Svix API documentation!\n\nUseful links: [Homepage](https://www.svix.com) | [Support email](mailto:support+docs@svix.com) | [Blog](https://www.svix.com/blog/) | [Slack Community](https://www.svix.com/slack/)\n\n# Introduction\n\nThis is the reference documentation and schemas for the [Svix webhook service](https://www.svix.com) API. For tutorials and other documentation please refer to [the documentation](https://docs.svix.com).\n\n## Main concepts\n\nIn Svix you have four important entities you will be interacting with:\n\n- `messages`: these are the webhooks being sent. They can have contents and a few other properties.\n- `application`: this is where `messages` are sent to. Usually you want to create one application for each user on your platform.\n- `endpoint`: endpoints are the URLs messages will be sent to. Each application can have multiple `endpoints` and each message sent to that application will be sent to all of them (unless they are not subscribed to the sent event type).\n- `event-type`: event types are identifiers denoting the type of the message being sent. Event types are primarily used to decide which events are sent to which endpoint.\n\n\n## Authentication\n\nGet your authentication token (`AUTH_TOKEN`) from the [Svix dashboard](https://dashboard.svix.com) and use it as part of the `Authorization` header as such: `Authorization: Bearer ${AUTH_TOKEN}`.\n\n<SecurityDefinitions />\n\n\n## Code samples\n\nThe code samples assume you already have the respective libraries installed and you know how to use them. For the latest information on how to do that, please refer to [the documentation](https://docs.svix.com/).\n\n\n## Cross-Origin Resource Sharing\n\nThis API features Cross-Origin Resource Sharing (CORS) implemented in compliance with [W3C spec](https://www.w3.org/TR/cors/). And that allows cross-domain communication from the browser. All responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site.\n",
         "title": "Svix API",
         "version": "1.4",
         "x-logo": {
@@ -5020,47 +5029,47 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const messageOut = await svix.message.create('app_id', {\n    \"eventType\": \"user.signup\",\n    \"eventId\": \"evt_pNZKtWg8Azow\",\n    \"payload\": {\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    }\n});"
+                        "source": "const messageOut = await svix.message.create('app_id', {\n    \"eventType\": \"user.signup\",\n    \"eventId\": \"evt_pNZKtWg8Azow\",\n    \"payload\": {\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    },\n    \"payloadRetentionPeriod\": 90\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const messageOut = await svix.message.create('app_id', {\n    \"eventType\": \"user.signup\",\n    \"eventId\": \"evt_pNZKtWg8Azow\",\n    \"payload\": {\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    }\n});"
+                        "source": "const messageOut = await svix.message.create('app_id', {\n    \"eventType\": \"user.signup\",\n    \"eventId\": \"evt_pNZKtWg8Azow\",\n    \"payload\": {\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    },\n    \"payloadRetentionPeriod\": 90\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "message_out = svix.message.create('app_id', MessageIn(\n    event_type=\"user.signup\",\n    event_id=\"evt_pNZKtWg8Azow\",\n    payload={'username': 'test_user', 'email': 'test@example.com'}\n))"
+                        "source": "message_out = svix.message.create('app_id', MessageIn(\n    event_type=\"user.signup\",\n    event_id=\"evt_pNZKtWg8Azow\",\n    payload={'username': 'test_user', 'email': 'test@example.com'},\n    payload_retention_period=90\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "messageOut, err := svixClient.Message.Create(\"app_id\", &svix.MessageIn{\n    EventType: \"user.signup\",\n    EventId: \"evt_pNZKtWg8Azow\",\n    Payload: map[string]interface{}{\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    }\n})"
+                        "source": "messageOut, err := svixClient.Message.Create(\"app_id\", &svix.MessageIn{\n    EventType: \"user.signup\",\n    EventId: \"evt_pNZKtWg8Azow\",\n    Payload: map[string]interface{}{\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    },\n    PayloadRetentionPeriod: 90\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val messageOut = svix.message.create('app_id', MessageIn()\n    .eventType(\"user.signup\"),\n    .eventId(\"evt_pNZKtWg8Azow\"),\n    .payload(\"\"\"{\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    }\"\"\")\n)"
+                        "source": "val messageOut = svix.message.create('app_id', MessageIn()\n    .eventType(\"user.signup\"),\n    .eventId(\"evt_pNZKtWg8Azow\"),\n    .payload(\"\"\"{\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    }\"\"\"),\n    .payloadRetentionPeriod(90)\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "MessageOut messageOut = svix.getMessage().create('app_id', new MessageIn()\n    .eventType(\"user.signup\"),\n    .eventId(\"evt_pNZKtWg8Azow\"),\n    .payload(\"{\" +\n        \"\\\"username\\\": \\\"test_user\\\",\" +\n        \"\\\"email\\\": \\\"test@example.com\\\"\" +\n    \"}\")\n)"
+                        "source": "MessageOut messageOut = svix.getMessage().create('app_id', new MessageIn()\n    .eventType(\"user.signup\"),\n    .eventId(\"evt_pNZKtWg8Azow\"),\n    .payload(\"{\" +\n        \"\\\"username\\\": \\\"test_user\\\",\" +\n        \"\\\"email\\\": \\\"test@example.com\\\"\" +\n    \"}\"),\n    .payloadRetentionPeriod(90)\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "message_out = svix.message.create('app_id', Svix::MessageIn.new({\n    \"event_type\": \"user.signup\",\n    \"event_id\": \"evt_pNZKtWg8Azow\",\n    \"payload\": {\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    }\n}))"
+                        "source": "message_out = svix.message.create('app_id', Svix::MessageIn.new({\n    \"event_type\": \"user.signup\",\n    \"event_id\": \"evt_pNZKtWg8Azow\",\n    \"payload\": {\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    },\n    \"payload_retention_period\": 90\n}))"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix message create 'app_id' '{\n    \"eventType\": \"user.signup\",\n    \"eventId\": \"evt_pNZKtWg8Azow\",\n    \"payload\": {\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    }\n}'"
+                        "source": "svix message create 'app_id' '{\n    \"eventType\": \"user.signup\",\n    \"eventId\": \"evt_pNZKtWg8Azow\",\n    \"payload\": {\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    },\n    \"payloadRetentionPeriod\": 90\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/msg/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"eventType\": \"user.signup\",\n    \"eventId\": \"evt_pNZKtWg8Azow\",\n    \"payload\": {\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    }\n}'"
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/msg/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"eventType\": \"user.signup\",\n    \"eventId\": \"evt_pNZKtWg8Azow\",\n    \"payload\": {\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    },\n    \"payloadRetentionPeriod\": 90\n}'"
                     }
                 ]
             }
