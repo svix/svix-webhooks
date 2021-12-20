@@ -8,7 +8,7 @@ import com.svix.kotlin.models.EventTypeUpdate
 import com.svix.kotlin.models.ListResponseEventTypeOut
 
 class EventType internal constructor(token: String, options: SvixOptions) {
-    val api = EventTypeApi(options.debugUrl)
+    val api = EventTypeApi(options.serverUrl)
 
     init {
         api.accessToken = token

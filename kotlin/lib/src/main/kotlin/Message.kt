@@ -7,7 +7,7 @@ import com.svix.kotlin.models.MessageIn
 import com.svix.kotlin.models.MessageOut
 
 class Message internal constructor(token: String, options: SvixOptions) {
-    val api = MessageApi(options.debugUrl)
+    val api = MessageApi(options.serverUrl)
 
     init {
         api.accessToken = token

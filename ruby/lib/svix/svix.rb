@@ -3,11 +3,11 @@
 module Svix
     class SvixOptions
         attr_accessor :debug
-        attr_accessor :debug_url
+        attr_accessor :server_url
 
-        def initialize(debug = false, debug_url = "https://api.svix.com")
+        def initialize(debug = false, server_url = "https://api.svix.com")
             @debug=debug
-            @debug_url=debug_url
+            @server_url=server_url
         end
     end
 
@@ -20,7 +20,7 @@ module Svix
         attr_accessor :message_attempt
 
         def initialize(auth_token, options = SvixOptions.new)
-            uri = URI(options.debug_url)
+            uri = URI(options.server_url)
 
             configuration = Configuration.new
             configuration.debugging = options.debug

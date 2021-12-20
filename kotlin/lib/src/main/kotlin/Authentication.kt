@@ -5,7 +5,7 @@ import com.svix.kotlin.internal.apis.AuthenticationApi
 import com.svix.kotlin.models.DashboardAccessOut
 
 class Authentication internal constructor(token: String, options: SvixOptions) {
-    val api = AuthenticationApi(options.debugUrl)
+    val api = AuthenticationApi(options.serverUrl)
 
     init {
         api.accessToken = token

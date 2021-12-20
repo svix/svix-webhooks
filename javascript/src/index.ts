@@ -61,6 +61,7 @@ class UserAgentMiddleware implements Middleware {
 
 export interface SvixOptions {
   debug?: boolean;
+  serverUrl?: string;
 }
 
 export class Svix {
@@ -73,7 +74,7 @@ export class Svix {
   public readonly messageAttempt: MessageAttempt;
 
   public constructor(token: string, options: SvixOptions = {}) {
-    const baseUrl: string = (options as any)._testUrl ?? "https://api.svix.com";
+    const baseUrl: string = options.serverUrl ?? "https://api.svix.com";
 
     const baseServer = new ServerConfiguration<any>(baseUrl, {});
 

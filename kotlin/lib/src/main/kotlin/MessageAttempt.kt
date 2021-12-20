@@ -9,7 +9,7 @@ import com.svix.kotlin.models.ListResponseMessageEndpointOut
 import com.svix.kotlin.models.MessageAttemptOut
 
 class MessageAttempt internal constructor(token: String, options: SvixOptions) {
-    val api = MessageAttemptApi(options.debugUrl)
+    val api = MessageAttemptApi(options.serverUrl)
 
     init {
         api.accessToken = token
