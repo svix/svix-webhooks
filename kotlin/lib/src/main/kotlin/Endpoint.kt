@@ -13,7 +13,7 @@ import com.svix.kotlin.models.ListResponseEndpointOut
 import com.svix.kotlin.models.RecoverIn
 
 class Endpoint internal constructor(token: String, options: SvixOptions) {
-    val api = EndpointApi(options.debugUrl)
+    val api = EndpointApi(options.serverUrl)
 
     init {
         api.accessToken = token

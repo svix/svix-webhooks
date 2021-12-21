@@ -4,7 +4,7 @@ public final class SvixOptions {
 	private static final String DEFAULT_URL = "https://api.svix.com";
 
 	private boolean debug = false;
-	private String debugUrl = DEFAULT_URL;
+	private String serverUrl = DEFAULT_URL;
 
 	public SvixOptions() {
 	}
@@ -14,8 +14,8 @@ public final class SvixOptions {
 		return this;
 	}
 
-	public SvixOptions debugUrl(final String debugUrl) {
-		this.debugUrl = debugUrl;
+	public SvixOptions serverUrl(final String serverUrl) {
+		this.serverUrl = serverUrl;
 		return this;
 	}
 
@@ -23,15 +23,15 @@ public final class SvixOptions {
 		this.debug = debug;
 	}
 
-	public void setDebugUrl(final String debugUrl) {
-		this.debugUrl = debugUrl;
+	public void setServerUrl(final String serverUrl) {
+		this.serverUrl = serverUrl;
 	}
 
 	public boolean getDebug() {
 		return debug;
 	}
 
-	public String getDebugUrl() {
-		return debugUrl;
+	public String getServerUrl() {
+		return serverUrl;
 	}
 }

@@ -44,7 +44,7 @@ DEFAULT_SERVER_URL = "https://api.svix.com"
 @dataclass
 class SvixOptions:
     debug: bool = False
-    _test_url: t.Optional[str] = None
+    server_url: t.Optional[str] = None
 
 
 @dataclass
@@ -341,7 +341,7 @@ class Svix:
     _configuration: Configuration
 
     def __init__(self, auth_token: str, options: SvixOptions = SvixOptions()) -> None:
-        host = options._test_url or DEFAULT_SERVER_URL
+        host = options.server_url or DEFAULT_SERVER_URL
         self._configuration = Configuration(host=host, access_token=auth_token)  # type: ignore
 
     @property

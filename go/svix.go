@@ -15,7 +15,7 @@ type (
 		Debug bool
 
 		// Overrides the base URL (protocol + hostname) used for all requests sent by this Svix client. (Useful for testing)
-		DebugURL   *url.URL
+		ServerUrl   *url.URL
 		HTTPClient *http.Client
 	}
 	Svix struct {
@@ -46,9 +46,9 @@ func New(token string, options *SvixOptions) *Svix {
 	conf.HTTPClient = defaultHTTPClient
 	if options != nil {
 		conf.Debug = options.Debug
-		if options.DebugURL != nil {
-			conf.Scheme = options.DebugURL.Scheme
-			conf.Host = options.DebugURL.Host
+		if options.ServerUrl != nil {
+			conf.Scheme = options.ServerUrl.Scheme
+			conf.Host = options.ServerUrl.Host
 		}
 		if options.HTTPClient != nil {
 			conf.HTTPClient = options.HTTPClient

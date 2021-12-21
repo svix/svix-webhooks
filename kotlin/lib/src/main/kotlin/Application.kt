@@ -7,7 +7,7 @@ import com.svix.kotlin.models.ApplicationOut
 import com.svix.kotlin.models.ListResponseApplicationOut
 
 class Application internal constructor(token: String, options: SvixOptions) {
-    private val api = ApplicationApi(options.debugUrl)
+    private val api = ApplicationApi(options.serverUrl)
 
     init {
         api.accessToken = token
