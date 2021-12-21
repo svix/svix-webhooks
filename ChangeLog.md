@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.41.0
+* All: Add new `ServerUrl` option for overriding the APIs base URL (Useful for testing) 🆕
+
 ## Version 0.40.0
 * All: Support for `payload_retention_period` in message API. 🆕
 
