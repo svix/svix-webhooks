@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.41.1
+* Kotlin: Ensure response bodies are properly closed 🐞
+
 ## Version 0.41.0
 * All: Add new `ServerUrl` option for overriding the APIs base URL (Useful for testing) 🆕
 
