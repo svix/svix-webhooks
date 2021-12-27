@@ -338,6 +338,7 @@ import kotlinx.coroutines.delay
             if (response.isSuccessful && response.code < 500) {
                 break
             }
+            response.close()
             delay(sleepTime)
             sleepTime = sleepTime * 2
             response = client.newCall(request).execute()
