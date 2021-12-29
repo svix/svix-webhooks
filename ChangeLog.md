@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.41.2
+* Javascript: Enable keepalives for improved performance 🚀
+
 ## Version 0.41.1
 * Kotlin: Ensure response bodies are properly closed 🐞
 
