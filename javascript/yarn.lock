@@ -1775,10 +1775,9 @@ isexe@^2.0.0:
   resolved "https://registry.yarnpkg.com/isexe/-/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
   integrity sha1-6PvzdNxVb/iUehDcsFctYz8s+hA=
 
-isomorphic-fetch@^3.0.0:
+"isomorphic-fetch@https://github.com/svix-frank/isomorphic-fetch.git#fa230b6d27d2d6de1861d4edef58ca116eff38bf":
   version "3.0.0"
-  resolved "https://registry.yarnpkg.com/isomorphic-fetch/-/isomorphic-fetch-3.0.0.tgz#0267b005049046d2421207215d45d6a262b8b8b4"
-  integrity sha512-qvUtwJ3j6qwsF3jLxkZ72qCgjMysPzDfeV240JHiGZsANBYd+EEuu35v7dfrJ9Up0Ak07D7GGSkGhCHTqg/5wA==
+  resolved "https://github.com/svix-frank/isomorphic-fetch.git#fa230b6d27d2d6de1861d4edef58ca116eff38bf"
   dependencies:
     node-fetch "^2.6.1"
     whatwg-fetch "^3.4.1"
