@@ -104,7 +104,7 @@ func (e *Endpoint) RotateSecret(appId string, endpointId string, endpointSecretR
 }
 
 func (e *Endpoint) Recover(appId string, endpointId string, recoverIn *RecoverIn) error {
-	req := e.api.EndpointApi.ResendFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPost(context.Background(), appId, endpointId)
+	req := e.api.EndpointApi.RecoverFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPost(context.Background(), appId, endpointId)
 	req = req.RecoverIn(openapi.RecoverIn(*recoverIn))
 	_, res, err := req.Execute()
 	if err != nil {

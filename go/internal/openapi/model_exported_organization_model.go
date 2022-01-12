@@ -12,172 +12,161 @@ package openapi
 
 import (
 	"encoding/json"
+	"time"
 )
 
-// EventTypeUpdate struct for EventTypeUpdate
-type EventTypeUpdate struct {
-	Archived *bool `json:"archived,omitempty"`
-	Description string `json:"description"`
-	// The schema for the event type for a specific version as a JSON schema.
-	Schemas *map[string]map[string]interface{} `json:"schemas,omitempty"`
+// ExportedOrganizationModel struct for ExportedOrganizationModel
+type ExportedOrganizationModel struct {
+	CreatedAt time.Time `json:"createdAt"`
+	EventTypes []EventTypeOut `json:"eventTypes"`
+	Settings *SettingsOut `json:"settings,omitempty"`
 }
 
-// NewEventTypeUpdate instantiates a new EventTypeUpdate object
+// NewExportedOrganizationModel instantiates a new ExportedOrganizationModel object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEventTypeUpdate(description string) *EventTypeUpdate {
-	this := EventTypeUpdate{}
-	var archived bool = false
-	this.Archived = &archived
-	this.Description = description
+func NewExportedOrganizationModel(createdAt time.Time, eventTypes []EventTypeOut) *ExportedOrganizationModel {
+	this := ExportedOrganizationModel{}
+	this.CreatedAt = createdAt
+	this.EventTypes = eventTypes
 	return &this
 }
 
-// NewEventTypeUpdateWithDefaults instantiates a new EventTypeUpdate object
+// NewExportedOrganizationModelWithDefaults instantiates a new ExportedOrganizationModel object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewEventTypeUpdateWithDefaults() *EventTypeUpdate {
-	this := EventTypeUpdate{}
-	var archived bool = false
-	this.Archived = &archived
+func NewExportedOrganizationModelWithDefaults() *ExportedOrganizationModel {
+	this := ExportedOrganizationModel{}
 	return &this
 }
 
-// GetArchived returns the Archived field value if set, zero value otherwise.
-func (o *EventTypeUpdate) GetArchived() bool {
-	if o == nil || o.Archived == nil {
-		var ret bool
-		return ret
-	}
-	return *o.Archived
-}
-
-// GetArchivedOk returns a tuple with the Archived field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *EventTypeUpdate) GetArchivedOk() (*bool, bool) {
-	if o == nil || o.Archived == nil {
-		return nil, false
-	}
-	return o.Archived, true
-}
-
-// HasArchived returns a boolean if a field has been set.
-func (o *EventTypeUpdate) HasArchived() bool {
-	if o != nil && o.Archived != nil {
-		return true
-	}
-
-	return false
-}
-
-// SetArchived gets a reference to the given bool and assigns it to the Archived field.
-func (o *EventTypeUpdate) SetArchived(v bool) {
-	o.Archived = &v
-}
-
-// GetDescription returns the Description field value
-func (o *EventTypeUpdate) GetDescription() string {
+// GetCreatedAt returns the CreatedAt field value
+func (o *ExportedOrganizationModel) GetCreatedAt() time.Time {
 	if o == nil {
-		var ret string
+		var ret time.Time
 		return ret
 	}
 
-	return o.Description
+	return o.CreatedAt
 }
 
-// GetDescriptionOk returns a tuple with the Description field value
+// GetCreatedAtOk returns a tuple with the CreatedAt field value
 // and a boolean to check if the value has been set.
-func (o *EventTypeUpdate) GetDescriptionOk() (*string, bool) {
+func (o *ExportedOrganizationModel) GetCreatedAtOk() (*time.Time, bool) {
 	if o == nil  {
 		return nil, false
 	}
-	return &o.Description, true
+	return &o.CreatedAt, true
 }
 
-// SetDescription sets field value
-func (o *EventTypeUpdate) SetDescription(v string) {
-	o.Description = v
+// SetCreatedAt sets field value
+func (o *ExportedOrganizationModel) SetCreatedAt(v time.Time) {
+	o.CreatedAt = v
 }
 
-// GetSchemas returns the Schemas field value if set, zero value otherwise.
-func (o *EventTypeUpdate) GetSchemas() map[string]map[string]interface{} {
-	if o == nil || o.Schemas == nil {
-		var ret map[string]map[string]interface{}
+// GetEventTypes returns the EventTypes field value
+func (o *ExportedOrganizationModel) GetEventTypes() []EventTypeOut {
+	if o == nil {
+		var ret []EventTypeOut
 		return ret
 	}
-	return *o.Schemas
+
+	return o.EventTypes
 }
 
-// GetSchemasOk returns a tuple with the Schemas field value if set, nil otherwise
+// GetEventTypesOk returns a tuple with the EventTypes field value
 // and a boolean to check if the value has been set.
-func (o *EventTypeUpdate) GetSchemasOk() (*map[string]map[string]interface{}, bool) {
-	if o == nil || o.Schemas == nil {
+func (o *ExportedOrganizationModel) GetEventTypesOk() (*[]EventTypeOut, bool) {
+	if o == nil  {
 		return nil, false
 	}
-	return o.Schemas, true
+	return &o.EventTypes, true
 }
 
-// HasSchemas returns a boolean if a field has been set.
-func (o *EventTypeUpdate) HasSchemas() bool {
-	if o != nil && o.Schemas != nil {
+// SetEventTypes sets field value
+func (o *ExportedOrganizationModel) SetEventTypes(v []EventTypeOut) {
+	o.EventTypes = v
+}
+
+// GetSettings returns the Settings field value if set, zero value otherwise.
+func (o *ExportedOrganizationModel) GetSettings() SettingsOut {
+	if o == nil || o.Settings == nil {
+		var ret SettingsOut
+		return ret
+	}
+	return *o.Settings
+}
+
+// GetSettingsOk returns a tuple with the Settings field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ExportedOrganizationModel) GetSettingsOk() (*SettingsOut, bool) {
+	if o == nil || o.Settings == nil {
+		return nil, false
+	}
+	return o.Settings, true
+}
+
+// HasSettings returns a boolean if a field has been set.
+func (o *ExportedOrganizationModel) HasSettings() bool {
+	if o != nil && o.Settings != nil {
 		return true
 	}
 
 	return false
 }
 
-// SetSchemas gets a reference to the given map[string]map[string]interface{} and assigns it to the Schemas field.
-func (o *EventTypeUpdate) SetSchemas(v map[string]map[string]interface{}) {
-	o.Schemas = &v
+// SetSettings gets a reference to the given SettingsOut and assigns it to the Settings field.
+func (o *ExportedOrganizationModel) SetSettings(v SettingsOut) {
+	o.Settings = &v
 }
 
-func (o EventTypeUpdate) MarshalJSON() ([]byte, error) {
+func (o ExportedOrganizationModel) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Archived != nil {
-		toSerialize["archived"] = o.Archived
+	if true {
+		toSerialize["createdAt"] = o.CreatedAt
 	}
 	if true {
-		toSerialize["description"] = o.Description
+		toSerialize["eventTypes"] = o.EventTypes
 	}
-	if o.Schemas != nil {
-		toSerialize["schemas"] = o.Schemas
+	if o.Settings != nil {
+		toSerialize["settings"] = o.Settings
 	}
 	return json.Marshal(toSerialize)
 }
 
-type NullableEventTypeUpdate struct {
-	value *EventTypeUpdate
+type NullableExportedOrganizationModel struct {
+	value *ExportedOrganizationModel
 	isSet bool
 }
 
-func (v NullableEventTypeUpdate) Get() *EventTypeUpdate {
+func (v NullableExportedOrganizationModel) Get() *ExportedOrganizationModel {
 	return v.value
 }
 
-func (v *NullableEventTypeUpdate) Set(val *EventTypeUpdate) {
+func (v *NullableExportedOrganizationModel) Set(val *ExportedOrganizationModel) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableEventTypeUpdate) IsSet() bool {
+func (v NullableExportedOrganizationModel) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableEventTypeUpdate) Unset() {
+func (v *NullableExportedOrganizationModel) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableEventTypeUpdate(val *EventTypeUpdate) *NullableEventTypeUpdate {
-	return &NullableEventTypeUpdate{value: val, isSet: true}
+func NewNullableExportedOrganizationModel(val *ExportedOrganizationModel) *NullableExportedOrganizationModel {
+	return &NullableExportedOrganizationModel{value: val, isSet: true}
 }
 
-func (v NullableEventTypeUpdate) MarshalJSON() ([]byte, error) {
+func (v NullableExportedOrganizationModel) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableEventTypeUpdate) UnmarshalJSON(src []byte) error {
+func (v *NullableExportedOrganizationModel) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

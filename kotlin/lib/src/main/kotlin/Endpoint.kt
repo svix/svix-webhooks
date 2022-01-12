@@ -78,7 +78,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
 
     suspend fun recover(appId: String, endpointId: String, recoverIn: RecoverIn) {
         try {
-            api.resendFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPost(appId, endpointId, recoverIn)
+            api.recoverFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPost(appId, endpointId, recoverIn)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }

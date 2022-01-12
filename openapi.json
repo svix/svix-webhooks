@@ -403,7 +403,9 @@
                         "type": "object"
                     },
                     "sensitive": {
-                        "example": "Authorization",
+                        "example": [
+                            "Authorization"
+                        ],
                         "items": {
                             "example": "X-Foobar",
                             "type": "string"
@@ -422,6 +424,24 @@
             },
             "EndpointIn": {
                 "properties": {
+                    "channels": {
+                        "description": "List of message channels this endpoint listens to (omit for all)",
+                        "example": [
+                            "project_123",
+                            "group_2"
+                        ],
+                        "items": {
+                            "example": "project_1337",
+                            "maxLength": 128,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "maxItems": 10,
+                        "minItems": 1,
+                        "title": "Channels",
+                        "type": "array",
+                        "uniqueItems": true
+                    },
                     "description": {
                         "default": "",
                         "example": "An example endpoint name",
@@ -493,6 +513,24 @@
             },
             "EndpointMessageOut": {
                 "properties": {
+                    "channels": {
+                        "description": "List of free-form identifiers that endpoints can filter by",
+                        "example": [
+                            "project_123",
+                            "group_2"
+                        ],
+                        "items": {
+                            "example": "project_1337",
+                            "maxLength": 128,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "maxItems": 5,
+                        "minItems": 1,
+                        "title": "Channels",
+                        "type": "array",
+                        "uniqueItems": true
+                    },
                     "eventId": {
                         "description": "Optional unique identifier for the message",
                         "example": "evt_pNZKtWg8Azow",
@@ -548,6 +586,24 @@
             },
             "EndpointOut": {
                 "properties": {
+                    "channels": {
+                        "description": "List of message channels this endpoint listens to (omit for all)",
+                        "example": [
+                            "project_123",
+                            "group_2"
+                        ],
+                        "items": {
+                            "example": "project_1337",
+                            "maxLength": 128,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "maxItems": 10,
+                        "minItems": 1,
+                        "title": "Channels",
+                        "type": "array",
+                        "uniqueItems": true
+                    },
                     "createdAt": {
                         "format": "date-time",
                         "title": "Createdat",
@@ -687,6 +743,24 @@
             },
             "EndpointUpdate": {
                 "properties": {
+                    "channels": {
+                        "description": "List of message channels this endpoint listens to (omit for all)",
+                        "example": [
+                            "project_123",
+                            "group_2"
+                        ],
+                        "items": {
+                            "example": "project_1337",
+                            "maxLength": 128,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "maxItems": 10,
+                        "minItems": 1,
+                        "title": "Channels",
+                        "type": "array",
+                        "uniqueItems": true
+                    },
                     "description": {
                         "default": "",
                         "example": "An example endpoint name",
@@ -1106,6 +1180,31 @@
                     "description"
                 ],
                 "title": "EventTypeUpdate",
+                "type": "object"
+            },
+            "ExportedOrganizationModel": {
+                "properties": {
+                    "createdAt": {
+                        "format": "date-time",
+                        "title": "Createdat",
+                        "type": "string"
+                    },
+                    "eventTypes": {
+                        "items": {
+                            "$ref": "#/components/schemas/EventTypeOut"
+                        },
+                        "title": "Eventtypes",
+                        "type": "array"
+                    },
+                    "settings": {
+                        "$ref": "#/components/schemas/SettingsOut"
+                    }
+                },
+                "required": [
+                    "createdAt",
+                    "eventTypes"
+                ],
+                "title": "ExportedOrganizationModel",
                 "type": "object"
             },
             "FontSizeConfig": {
@@ -1558,6 +1657,24 @@
             },
             "MessageEndpointOut": {
                 "properties": {
+                    "channels": {
+                        "description": "List of message channels this endpoint listens to (omit for all)",
+                        "example": [
+                            "project_123",
+                            "group_2"
+                        ],
+                        "items": {
+                            "example": "project_1337",
+                            "maxLength": 128,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "maxItems": 10,
+                        "minItems": 1,
+                        "title": "Channels",
+                        "type": "array",
+                        "uniqueItems": true
+                    },
                     "createdAt": {
                         "format": "date-time",
                         "title": "Createdat",
@@ -1643,6 +1760,24 @@
             },
             "MessageIn": {
                 "properties": {
+                    "channels": {
+                        "description": "List of free-form identifiers that endpoints can filter by",
+                        "example": [
+                            "project_123",
+                            "group_2"
+                        ],
+                        "items": {
+                            "example": "project_1337",
+                            "maxLength": 128,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "maxItems": 5,
+                        "minItems": 1,
+                        "title": "Channels",
+                        "type": "array",
+                        "uniqueItems": true
+                    },
                     "eventId": {
                         "description": "Optional unique identifier for the message",
                         "example": "evt_pNZKtWg8Azow",
@@ -1686,6 +1821,24 @@
             },
             "MessageOut": {
                 "properties": {
+                    "channels": {
+                        "description": "List of free-form identifiers that endpoints can filter by",
+                        "example": [
+                            "project_123",
+                            "group_2"
+                        ],
+                        "items": {
+                            "example": "project_1337",
+                            "maxLength": 128,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "maxItems": 5,
+                        "minItems": 1,
+                        "title": "Channels",
+                        "type": "array",
+                        "uniqueItems": true
+                    },
                     "eventId": {
                         "description": "Optional unique identifier for the message",
                         "example": "evt_pNZKtWg8Azow",
@@ -1793,6 +1946,46 @@
                 "title": "RecoverOut",
                 "type": "object"
             },
+            "SettingsOut": {
+                "properties": {
+                    "customBaseFontSize": {
+                        "title": "Custombasefontsize",
+                        "type": "integer"
+                    },
+                    "customColor": {
+                        "format": "color",
+                        "title": "Customcolor",
+                        "type": "string"
+                    },
+                    "customFontFamily": {
+                        "example": "Open Sans",
+                        "pattern": "^[a-zA-Z0-9\\-_ ]+$",
+                        "title": "Customfontfamily",
+                        "type": "string"
+                    },
+                    "customLogoUrl": {
+                        "format": "uri",
+                        "maxLength": 65536,
+                        "minLength": 1,
+                        "title": "Customlogourl",
+                        "type": "string"
+                    },
+                    "customThemeOverride": {
+                        "$ref": "#/components/schemas/CustomThemeOverride"
+                    },
+                    "disableEndpointOnFailure": {
+                        "title": "Disableendpointonfailure",
+                        "type": "boolean"
+                    },
+                    "enforceHttps": {
+                        "default": true,
+                        "title": "Enforcehttps",
+                        "type": "boolean"
+                    }
+                },
+                "title": "SettingsOut",
+                "type": "object"
+            },
             "StatisticsPeriod": {
                 "description": "Period length for a statistics data point",
                 "enum": [
@@ -1866,7 +2059,7 @@
         }
     },
     "info": {
-        "description": "Welcome to the Svix API documentation!\n\nUseful links: [Homepage](https://www.svix.com) | [Support email](mailto:support+docs@svix.com) | [Blog](https://www.svix.com/blog/) | [Slack Community](https://www.svix.com/slack/)\n\n# Introduction\n\nThis is the reference documentation and schemas for the [Svix webhook service](https://www.svix.com) API. For tutorials and other documentation please refer to [the documentation](https://docs.svix.com).\n\n## Main concepts\n\nIn Svix you have four important entities you will be interacting with:\n\n- `messages`: these are the webhooks being sent. They can have contents and a few other properties.\n- `application`: this is where `messages` are sent to. Usually you want to create one application for each user on your platform.\n- `endpoint`: endpoints are the URLs messages will be sent to. Each application can have multiple `endpoints` and each message sent to that application will be sent to all of them (unless they are not subscribed to the sent event type).\n- `event-type`: event types are identifiers denoting the type of the message being sent. Event types are primarily used to decide which events are sent to which endpoint.\n\n\n## Authentication\n\nGet your authentication token (`AUTH_TOKEN`) from the [Svix dashboard](https://dashboard.svix.com) and use it as part of the `Authorization` header as such: `Authorization: Bearer ${AUTH_TOKEN}`.\n\n<SecurityDefinitions />\n\n\n## Code samples\n\nThe code samples assume you already have the respective libraries installed and you know how to use them. For the latest information on how to do that, please refer to [the documentation](https://docs.svix.com/).\n\n\n## Cross-Origin Resource Sharing\n\nThis API features Cross-Origin Resource Sharing (CORS) implemented in compliance with [W3C spec](https://www.w3.org/TR/cors/). And that allows cross-domain communication from the browser. All responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site.\n",
+        "description": "Welcome to the Svix API documentation!\n\nUseful links: [Homepage](https://www.svix.com) | [Support email](mailto:support+docs@svix.com) | [Blog](https://www.svix.com/blog/) | [Slack Community](https://www.svix.com/slack/)\n\n# Introduction\n\nThis is the reference documentation and schemas for the [Svix webhook service](https://www.svix.com) API. For tutorials and other documentation please refer to [the documentation](https://docs.svix.com).\n\n## Main concepts\n\nIn Svix you have four important entities you will be interacting with:\n\n- `messages`: these are the webhooks being sent. They can have contents and a few other properties.\n- `application`: this is where `messages` are sent to. Usually you want to create one application for each user on your platform.\n- `endpoint`: endpoints are the URLs messages will be sent to. Each application can have multiple `endpoints` and each message sent to that application will be sent to all of them (unless they are not subscribed to the sent event type).\n- `event-type`: event types are identifiers denoting the type of the message being sent. Event types are primarily used to decide which events are sent to which endpoint.\n\n\n## Authentication\n\nGet your authentication token (`AUTH_TOKEN`) from the [Svix dashboard](https://dashboard.svix.com) and use it as part of the `Authorization` header as such: `Authorization: Bearer ${AUTH_TOKEN}`.\n\n<SecurityDefinitions />\n\n\n## Code samples\n\nThe code samples assume you already have the respective libraries installed and you know how to use them. For the latest information on how to do that, please refer to [the documentation](https://docs.svix.com/).\n\n\n## Idempotency\n\nSvix supports [idempotency](https://en.wikipedia.org/wiki/Idempotence) for safely retrying requests without accidentally performing the same operation twice. This is useful when an API call is disrupted in transit and you do not receive a response.\n\nTo perform an idempotent request, pass the idempotency key in the `Idempotency-Key` header to the request. The idempotency key should be a unique value generated by the client. You can create the key in however way you like, though we suggest using UUID v4, or any other string with enough entropy to avoid collisions.\n\nSvix's idempotency works by saving the resulting status code and body of the first request made for any given idempotency key for any successful request. Subsequent requests with the same key return the same result.\n\nPlease note that idempotency is only supported for `POST` requests.\n\n\n## Cross-Origin Resource Sharing\n\nThis API features Cross-Origin Resource Sharing (CORS) implemented in compliance with [W3C spec](https://www.w3.org/TR/cors/). And that allows cross-domain communication from the browser. All responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site.\n",
         "title": "Svix API",
         "version": "1.4",
         "x-logo": {
@@ -1897,6 +2090,7 @@
                         "required": false,
                         "schema": {
                             "default": 50,
+                            "maximum": 250.0,
                             "title": "Limit",
                             "type": "integer"
                         }
@@ -2109,12 +2303,12 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const applicationOut = await svix.application.create({\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\",\n    \"rateLimit\": 1000\n});"
+                        "source": "const applicationOut = await svix.application.create({\n    uid: \"unique-app-identifier\",\n    name: \"My first application\",\n    rateLimit: 1000\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const applicationOut = await svix.application.create({\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\",\n    \"rateLimit\": 1000\n});"
+                        "source": "const applicationOut = await svix.application.create({\n    uid: \"unique-app-identifier\",\n    name: \"My first application\",\n    rateLimit: 1000\n});"
                     },
                     {
                         "label": "Python",
@@ -2528,12 +2722,12 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const applicationOut = await svix.application.update('app_id', {\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\",\n    \"rateLimit\": 1000\n});"
+                        "source": "const applicationOut = await svix.application.update('app_id', {\n    uid: \"unique-app-identifier\",\n    name: \"My first application\",\n    rateLimit: 1000\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const applicationOut = await svix.application.update('app_id', {\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\",\n    \"rateLimit\": 1000\n});"
+                        "source": "const applicationOut = await svix.application.update('app_id', {\n    uid: \"unique-app-identifier\",\n    name: \"My first application\",\n    rateLimit: 1000\n});"
                     },
                     {
                         "label": "Python",
@@ -2608,6 +2802,7 @@
                         "required": false,
                         "schema": {
                             "default": 50,
+                            "maximum": 250.0,
                             "title": "Limit",
                             "type": "integer"
                         }
@@ -2836,47 +3031,47 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const endpointOut = await svix.endpoint.create('app_id', {\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
+                        "source": "const endpointOut = await svix.endpoint.create('app_id', {\n    uid: \"unique-endpoint-identifier\",\n    url: \"https://example.com/webhook/\",\n    version: 1,\n    description: \"An example endpoint name\",\n    filterTypes: [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    channels: [\n        \"project_123\",\n        \"group_2\"\n    ],\n    disabled: false,\n    rateLimit: 1000,\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const endpointOut = await svix.endpoint.create('app_id', {\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
+                        "source": "const endpointOut = await svix.endpoint.create('app_id', {\n    uid: \"unique-endpoint-identifier\",\n    url: \"https://example.com/webhook/\",\n    version: 1,\n    description: \"An example endpoint name\",\n    filterTypes: [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    channels: [\n        \"project_123\",\n        \"group_2\"\n    ],\n    disabled: false,\n    rateLimit: 1000,\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "endpoint_out = svix.endpoint.create('app_id', EndpointIn(\n    uid=\"unique-endpoint-identifier\",\n    url=\"https://example.com/webhook/\",\n    version=1,\n    description=\"An example endpoint name\",\n    filter_types=['user.signup', 'user.deleted'],\n    disabled=False,\n    rate_limit=1000,\n    secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n))"
+                        "source": "endpoint_out = svix.endpoint.create('app_id', EndpointIn(\n    uid=\"unique-endpoint-identifier\",\n    url=\"https://example.com/webhook/\",\n    version=1,\n    description=\"An example endpoint name\",\n    filter_types=['user.signup', 'user.deleted'],\n    channels=['project_123', 'group_2'],\n    disabled=False,\n    rate_limit=1000,\n    secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "endpointOut, err := svixClient.Endpoint.Create(\"app_id\", &svix.EndpointIn{\n    Uid: \"unique-endpoint-identifier\",\n    Url: \"https://example.com/webhook/\",\n    Version: 1,\n    Description: \"An example endpoint name\",\n    FilterTypes: [...]string{\"user.signup\", \"user.deleted\"},\n    Disabled: False,\n    RateLimit: 1000,\n    Secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n})"
+                        "source": "endpointOut, err := svixClient.Endpoint.Create(\"app_id\", &svix.EndpointIn{\n    Uid: \"unique-endpoint-identifier\",\n    Url: \"https://example.com/webhook/\",\n    Version: 1,\n    Description: \"An example endpoint name\",\n    FilterTypes: [...]string{\"user.signup\", \"user.deleted\"},\n    Channels: [...]string{\"project_123\", \"group_2\"},\n    Disabled: False,\n    RateLimit: 1000,\n    Secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val endpointOut = svix.endpoint.create('app_id', EndpointIn()\n    .uid(\"unique-endpoint-identifier\"),\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\")),\n    .disabled(False),\n    .rateLimit(1000),\n    .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n)"
+                        "source": "val endpointOut = svix.endpoint.create('app_id', EndpointIn()\n    .uid(\"unique-endpoint-identifier\"),\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\")),\n    .channels(arrayOf(\"project_123\", \"group_2\")),\n    .disabled(False),\n    .rateLimit(1000),\n    .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "EndpointOut endpointOut = svix.getEndpoint().create('app_id', new EndpointIn()\n    .uid(\"unique-endpoint-identifier\"),\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"}),\n    .disabled(False),\n    .rateLimit(1000),\n    .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n)"
+                        "source": "EndpointOut endpointOut = svix.getEndpoint().create('app_id', new EndpointIn()\n    .uid(\"unique-endpoint-identifier\"),\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"}),\n    .channels(new String[]{\"project_123\", \"group_2\"}),\n    .disabled(False),\n    .rateLimit(1000),\n    .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "endpoint_out = svix.endpoint.create('app_id', Svix::EndpointIn.new({\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filter_types\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rate_limit\": 1000,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}))"
+                        "source": "endpoint_out = svix.endpoint.create('app_id', Svix::EndpointIn.new({\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filter_types\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"channels\": [\n        \"project_123\",\n        \"group_2\"\n    ],\n    \"disabled\": false,\n    \"rate_limit\": 1000,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}))"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix endpoint create 'app_id' '{\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}'"
+                        "source": "svix endpoint create 'app_id' '{\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"channels\": [\n        \"project_123\",\n        \"group_2\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}'"
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"channels\": [\n        \"project_123\",\n        \"group_2\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}'"
                     }
                 ]
             }
@@ -3297,47 +3492,47 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const endpointOut = await svix.endpoint.update('app_id', 'endpoint_id', {\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000\n});"
+                        "source": "const endpointOut = await svix.endpoint.update('app_id', 'endpoint_id', {\n    uid: \"unique-endpoint-identifier\",\n    url: \"https://example.com/webhook/\",\n    version: 1,\n    description: \"An example endpoint name\",\n    filterTypes: [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    channels: [\n        \"project_123\",\n        \"group_2\"\n    ],\n    disabled: false,\n    rateLimit: 1000\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const endpointOut = await svix.endpoint.update('app_id', 'endpoint_id', {\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000\n});"
+                        "source": "const endpointOut = await svix.endpoint.update('app_id', 'endpoint_id', {\n    uid: \"unique-endpoint-identifier\",\n    url: \"https://example.com/webhook/\",\n    version: 1,\n    description: \"An example endpoint name\",\n    filterTypes: [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    channels: [\n        \"project_123\",\n        \"group_2\"\n    ],\n    disabled: false,\n    rateLimit: 1000\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "endpoint_out = svix.endpoint.update('app_id', 'endpoint_id', EndpointUpdate(\n    uid=\"unique-endpoint-identifier\",\n    url=\"https://example.com/webhook/\",\n    version=1,\n    description=\"An example endpoint name\",\n    filter_types=['user.signup', 'user.deleted'],\n    disabled=False,\n    rate_limit=1000\n))"
+                        "source": "endpoint_out = svix.endpoint.update('app_id', 'endpoint_id', EndpointUpdate(\n    uid=\"unique-endpoint-identifier\",\n    url=\"https://example.com/webhook/\",\n    version=1,\n    description=\"An example endpoint name\",\n    filter_types=['user.signup', 'user.deleted'],\n    channels=['project_123', 'group_2'],\n    disabled=False,\n    rate_limit=1000\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "endpointOut, err := svixClient.Endpoint.Update(\"app_id\", \"endpoint_id\", &svix.EndpointUpdate{\n    Uid: \"unique-endpoint-identifier\",\n    Url: \"https://example.com/webhook/\",\n    Version: 1,\n    Description: \"An example endpoint name\",\n    FilterTypes: [...]string{\"user.signup\", \"user.deleted\"},\n    Disabled: False,\n    RateLimit: 1000\n})"
+                        "source": "endpointOut, err := svixClient.Endpoint.Update(\"app_id\", \"endpoint_id\", &svix.EndpointUpdate{\n    Uid: \"unique-endpoint-identifier\",\n    Url: \"https://example.com/webhook/\",\n    Version: 1,\n    Description: \"An example endpoint name\",\n    FilterTypes: [...]string{\"user.signup\", \"user.deleted\"},\n    Channels: [...]string{\"project_123\", \"group_2\"},\n    Disabled: False,\n    RateLimit: 1000\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val endpointOut = svix.endpoint.update('app_id', 'endpoint_id', EndpointUpdate()\n    .uid(\"unique-endpoint-identifier\"),\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\")),\n    .disabled(False),\n    .rateLimit(1000)\n)"
+                        "source": "val endpointOut = svix.endpoint.update('app_id', 'endpoint_id', EndpointUpdate()\n    .uid(\"unique-endpoint-identifier\"),\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\")),\n    .channels(arrayOf(\"project_123\", \"group_2\")),\n    .disabled(False),\n    .rateLimit(1000)\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "EndpointOut endpointOut = svix.getEndpoint().update('app_id', 'endpoint_id', new EndpointUpdate()\n    .uid(\"unique-endpoint-identifier\"),\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"}),\n    .disabled(False),\n    .rateLimit(1000)\n)"
+                        "source": "EndpointOut endpointOut = svix.getEndpoint().update('app_id', 'endpoint_id', new EndpointUpdate()\n    .uid(\"unique-endpoint-identifier\"),\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"}),\n    .channels(new String[]{\"project_123\", \"group_2\"}),\n    .disabled(False),\n    .rateLimit(1000)\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "endpoint_out = svix.endpoint.update('app_id', 'endpoint_id', Svix::EndpointUpdate.new({\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filter_types\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rate_limit\": 1000\n}))"
+                        "source": "endpoint_out = svix.endpoint.update('app_id', 'endpoint_id', Svix::EndpointUpdate.new({\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filter_types\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"channels\": [\n        \"project_123\",\n        \"group_2\"\n    ],\n    \"disabled\": false,\n    \"rate_limit\": 1000\n}))"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix endpoint update 'app_id' 'endpoint_id' '{\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000\n}'"
+                        "source": "svix endpoint update 'app_id' 'endpoint_id' '{\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"channels\": [\n        \"project_123\",\n        \"group_2\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000\n}'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"channels\": [\n        \"project_123\",\n        \"group_2\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000\n}'"
                     }
                 ]
             }
@@ -3606,12 +3801,12 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "await svix.endpoint.patchHeaders('app_id', 'endpoint_id', {\n    \"headers\": {\n        \"X-Foobar\": \"Bar\",\n        \"X-Example\": \"123\"\n    }\n});"
+                        "source": "await svix.endpoint.patchHeaders('app_id', 'endpoint_id', {\n    headers: {\n        \"X-Foobar\": \"Bar\",\n        \"X-Example\": \"123\"\n    }\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "await svix.endpoint.patchHeaders('app_id', 'endpoint_id', {\n    \"headers\": {\n        \"X-Foobar\": \"Bar\",\n        \"X-Example\": \"123\"\n    }\n});"
+                        "source": "await svix.endpoint.patchHeaders('app_id', 'endpoint_id', {\n    headers: {\n        \"X-Foobar\": \"Bar\",\n        \"X-Example\": \"123\"\n    }\n});"
                     },
                     {
                         "label": "Python",
@@ -3761,12 +3956,12 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "await svix.endpoint.updateHeaders('app_id', 'endpoint_id', {\n    \"headers\": {\n        \"X-Foobar\": \"Bar\",\n        \"X-Example\": \"123\"\n    }\n});"
+                        "source": "await svix.endpoint.updateHeaders('app_id', 'endpoint_id', {\n    headers: {\n        \"X-Foobar\": \"Bar\",\n        \"X-Example\": \"123\"\n    }\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "await svix.endpoint.updateHeaders('app_id', 'endpoint_id', {\n    \"headers\": {\n        \"X-Foobar\": \"Bar\",\n        \"X-Example\": \"123\"\n    }\n});"
+                        "source": "await svix.endpoint.updateHeaders('app_id', 'endpoint_id', {\n    headers: {\n        \"X-Foobar\": \"Bar\",\n        \"X-Example\": \"123\"\n    }\n});"
                     },
                     {
                         "label": "Python",
@@ -3855,6 +4050,7 @@
                         "required": false,
                         "schema": {
                             "default": 50,
+                            "maximum": 250.0,
                             "title": "Limit",
                             "type": "integer"
                         }
@@ -3961,7 +4157,7 @@
         "/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover/": {
             "post": {
                 "description": "Resend all failed messages since a given time.",
-                "operationId": "resend_failed_webhooks_api_v1_app__app_id__endpoint__endpoint_id__recover__post",
+                "operationId": "recover_failed_webhooks_api_v1_app__app_id__endpoint__endpoint_id__recover__post",
                 "parameters": [
                     {
                         "in": "path",
@@ -4069,7 +4265,7 @@
                         "HTTPBearer": []
                     }
                 ],
-                "summary": "Resend Failed Webhooks",
+                "summary": "Recover Failed Webhooks",
                 "tags": [
                     "Endpoint"
                 ],
@@ -4077,42 +4273,42 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const recoverOut = await svix.endpoint.resend('app_id', 'endpoint_id', {\n    \"since\": \"2019-08-24T14:15:22Z\"\n});"
+                        "source": "const recoverOut = await svix.endpoint.recover('app_id', 'endpoint_id', {\n    since: new Date(\"2019-08-24T14:15:22Z\")\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const recoverOut = await svix.endpoint.resend('app_id', 'endpoint_id', {\n    \"since\": \"2019-08-24T14:15:22Z\"\n});"
+                        "source": "const recoverOut = await svix.endpoint.recover('app_id', 'endpoint_id', {\n    since: new Date(\"2019-08-24T14:15:22Z\")\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "recover_out = svix.endpoint.resend('app_id', 'endpoint_id', RecoverIn(\n    since=\"2019-08-24T14:15:22Z\"\n))"
+                        "source": "recover_out = svix.endpoint.recover('app_id', 'endpoint_id', RecoverIn(\n    since=datetime.datetime(2019, 8, 24, 14, 15, 22, timezone.utc)\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "recoverOut, err := svixClient.Endpoint.Resend(\"app_id\", \"endpoint_id\", &svix.RecoverIn{\n    Since: \"2019-08-24T14:15:22Z\"\n})"
+                        "source": "recoverOut, err := svixClient.Endpoint.Recover(\"app_id\", \"endpoint_id\", &svix.RecoverIn{\n    Since: \"2019-08-24T14:15:22Z\"\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val recoverOut = svix.endpoint.resend('app_id', 'endpoint_id', RecoverIn()\n    .since(\"2019-08-24T14:15:22Z\")\n)"
+                        "source": "val recoverOut = svix.endpoint.recover('app_id', 'endpoint_id', RecoverIn()\n    .since(\"2019-08-24T14:15:22Z\")\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "RecoverOut recoverOut = svix.getEndpoint().resend('app_id', 'endpoint_id', new RecoverIn()\n    .since(\"2019-08-24T14:15:22Z\")\n)"
+                        "source": "RecoverOut recoverOut = svix.getEndpoint().recover('app_id', 'endpoint_id', new RecoverIn()\n    .since(\"2019-08-24T14:15:22Z\")\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "recover_out = svix.endpoint.resend('app_id', 'endpoint_id', Svix::RecoverIn.new({\n    \"since\": \"2019-08-24T14:15:22Z\"\n}))"
+                        "source": "recover_out = svix.endpoint.recover('app_id', 'endpoint_id', Svix::RecoverIn.new({\n    \"since\": \"2019-08-24T14:15:22Z\"\n}))"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix endpoint resend 'app_id' 'endpoint_id' '{\n    \"since\": \"2019-08-24T14:15:22Z\"\n}'"
+                        "source": "svix endpoint recover 'app_id' 'endpoint_id' '{\n    \"since\": \"2019-08-24T14:15:22Z\"\n}'"
                     },
                     {
                         "label": "cURL",
@@ -4398,12 +4594,12 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "await svix.endpoint.rotate('app_id', 'endpoint_id', {\n    \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
+                        "source": "await svix.endpoint.rotate('app_id', 'endpoint_id', {\n    key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "await svix.endpoint.rotate('app_id', 'endpoint_id', {\n    \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
+                        "source": "await svix.endpoint.rotate('app_id', 'endpoint_id', {\n    key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
                     },
                     {
                         "label": "Python",
@@ -4572,12 +4768,12 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const messageOut = await svix.endpoint.send('app_id', 'endpoint_id', {\n    \"eventType\": \"user.signup\"\n});"
+                        "source": "const messageOut = await svix.endpoint.send('app_id', 'endpoint_id', {\n    eventType: \"user.signup\"\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const messageOut = await svix.endpoint.send('app_id', 'endpoint_id', {\n    \"eventType\": \"user.signup\"\n});"
+                        "source": "const messageOut = await svix.endpoint.send('app_id', 'endpoint_id', {\n    eventType: \"user.signup\"\n});"
                     },
                     {
                         "label": "Python",
@@ -4766,6 +4962,7 @@
                         "required": false,
                         "schema": {
                             "default": 50,
+                            "maximum": 250.0,
                             "title": "Limit",
                             "type": "integer"
                         }
@@ -4916,7 +5113,7 @@
                 ]
             },
             "post": {
-                "description": "Creates a new message and dispatches it to all of the application's endpoints.\n\nThe `eventId` is an optional custom unique ID.\nIf a message with the same `eventId` already exists for any application in your environment, a 409 conflict error will be returned.",
+                "description": "Creates a new message and dispatches it to all of the application's endpoints.\n\nThe `eventId` is an optional custom unique ID. It's verified to be unique only up to a day, after that no verification will be made.\nIf a message with the same `eventId` already exists for any application in your environment, a 409 conflict error will be returned.\n\nThe `eventType` indicates the type and schema of the event. All messages of a certain `eventType` are expected to have the same schema. Endpoints can choose to only listen to specific event types.\nMessages can also have `channels`, which similar to event types let endpoints filter by them. Unlike event types, messages can have multiple channels, and channels don't imply a specific message content or schema.",
                 "operationId": "create_message_api_v1_app__app_id__msg__post",
                 "parameters": [
                     {
@@ -5029,47 +5226,47 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const messageOut = await svix.message.create('app_id', {\n    \"eventType\": \"user.signup\",\n    \"eventId\": \"evt_pNZKtWg8Azow\",\n    \"payload\": {\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    },\n    \"payloadRetentionPeriod\": 90\n});"
+                        "source": "const messageOut = await svix.message.create('app_id', {\n    eventType: \"user.signup\",\n    eventId: \"evt_pNZKtWg8Azow\",\n    channels: [\n        \"project_123\",\n        \"group_2\"\n    ],\n    payload: {\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    },\n    payloadRetentionPeriod: 90\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const messageOut = await svix.message.create('app_id', {\n    \"eventType\": \"user.signup\",\n    \"eventId\": \"evt_pNZKtWg8Azow\",\n    \"payload\": {\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    },\n    \"payloadRetentionPeriod\": 90\n});"
+                        "source": "const messageOut = await svix.message.create('app_id', {\n    eventType: \"user.signup\",\n    eventId: \"evt_pNZKtWg8Azow\",\n    channels: [\n        \"project_123\",\n        \"group_2\"\n    ],\n    payload: {\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    },\n    payloadRetentionPeriod: 90\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "message_out = svix.message.create('app_id', MessageIn(\n    event_type=\"user.signup\",\n    event_id=\"evt_pNZKtWg8Azow\",\n    payload={'username': 'test_user', 'email': 'test@example.com'},\n    payload_retention_period=90\n))"
+                        "source": "message_out = svix.message.create('app_id', MessageIn(\n    event_type=\"user.signup\",\n    event_id=\"evt_pNZKtWg8Azow\",\n    channels=['project_123', 'group_2'],\n    payload={'username': 'test_user', 'email': 'test@example.com'},\n    payload_retention_period=90\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "messageOut, err := svixClient.Message.Create(\"app_id\", &svix.MessageIn{\n    EventType: \"user.signup\",\n    EventId: \"evt_pNZKtWg8Azow\",\n    Payload: map[string]interface{}{\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    },\n    PayloadRetentionPeriod: 90\n})"
+                        "source": "messageOut, err := svixClient.Message.Create(\"app_id\", &svix.MessageIn{\n    EventType: \"user.signup\",\n    EventId: \"evt_pNZKtWg8Azow\",\n    Channels: [...]string{\"project_123\", \"group_2\"},\n    Payload: map[string]interface{}{\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    },\n    PayloadRetentionPeriod: 90\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val messageOut = svix.message.create('app_id', MessageIn()\n    .eventType(\"user.signup\"),\n    .eventId(\"evt_pNZKtWg8Azow\"),\n    .payload(\"\"\"{\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    }\"\"\"),\n    .payloadRetentionPeriod(90)\n)"
+                        "source": "val messageOut = svix.message.create('app_id', MessageIn()\n    .eventType(\"user.signup\"),\n    .eventId(\"evt_pNZKtWg8Azow\"),\n    .channels(arrayOf(\"project_123\", \"group_2\")),\n    .payload(\"\"\"{\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    }\"\"\"),\n    .payloadRetentionPeriod(90)\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "MessageOut messageOut = svix.getMessage().create('app_id', new MessageIn()\n    .eventType(\"user.signup\"),\n    .eventId(\"evt_pNZKtWg8Azow\"),\n    .payload(\"{\" +\n        \"\\\"username\\\": \\\"test_user\\\",\" +\n        \"\\\"email\\\": \\\"test@example.com\\\"\" +\n    \"}\"),\n    .payloadRetentionPeriod(90)\n)"
+                        "source": "MessageOut messageOut = svix.getMessage().create('app_id', new MessageIn()\n    .eventType(\"user.signup\"),\n    .eventId(\"evt_pNZKtWg8Azow\"),\n    .channels(new String[]{\"project_123\", \"group_2\"}),\n    .payload(\"{\" +\n        \"\\\"username\\\": \\\"test_user\\\",\" +\n        \"\\\"email\\\": \\\"test@example.com\\\"\" +\n    \"}\"),\n    .payloadRetentionPeriod(90)\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "message_out = svix.message.create('app_id', Svix::MessageIn.new({\n    \"event_type\": \"user.signup\",\n    \"event_id\": \"evt_pNZKtWg8Azow\",\n    \"payload\": {\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    },\n    \"payload_retention_period\": 90\n}))"
+                        "source": "message_out = svix.message.create('app_id', Svix::MessageIn.new({\n    \"event_type\": \"user.signup\",\n    \"event_id\": \"evt_pNZKtWg8Azow\",\n    \"channels\": [\n        \"project_123\",\n        \"group_2\"\n    ],\n    \"payload\": {\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    },\n    \"payload_retention_period\": 90\n}))"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix message create 'app_id' '{\n    \"eventType\": \"user.signup\",\n    \"eventId\": \"evt_pNZKtWg8Azow\",\n    \"payload\": {\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    },\n    \"payloadRetentionPeriod\": 90\n}'"
+                        "source": "svix message create 'app_id' '{\n    \"eventType\": \"user.signup\",\n    \"eventId\": \"evt_pNZKtWg8Azow\",\n    \"channels\": [\n        \"project_123\",\n        \"group_2\"\n    ],\n    \"payload\": {\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    },\n    \"payloadRetentionPeriod\": 90\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/msg/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"eventType\": \"user.signup\",\n    \"eventId\": \"evt_pNZKtWg8Azow\",\n    \"payload\": {\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    },\n    \"payloadRetentionPeriod\": 90\n}'"
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/msg/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"eventType\": \"user.signup\",\n    \"eventId\": \"evt_pNZKtWg8Azow\",\n    \"channels\": [\n        \"project_123\",\n        \"group_2\"\n    ],\n    \"payload\": {\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    },\n    \"payloadRetentionPeriod\": 90\n}'"
                     }
                 ]
             }
@@ -5084,11 +5281,7 @@
                         "name": "msg_id",
                         "required": true,
                         "schema": {
-                            "description": "The message's ID or eventID",
                             "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                            "maxLength": 256,
-                            "minLength": 1,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Msg Id",
                             "type": "string"
                         }
@@ -5252,11 +5445,7 @@
                         "name": "msg_id",
                         "required": true,
                         "schema": {
-                            "description": "The message's ID or eventID",
                             "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                            "maxLength": 256,
-                            "minLength": 1,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Msg Id",
                             "type": "string"
                         }
@@ -5277,6 +5466,7 @@
                         "required": false,
                         "schema": {
                             "default": 50,
+                            "maximum": 250.0,
                             "title": "Limit",
                             "type": "integer"
                         }
@@ -5430,11 +5620,7 @@
                         "name": "msg_id",
                         "required": true,
                         "schema": {
-                            "description": "The message's ID or eventID",
                             "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                            "maxLength": 256,
-                            "minLength": 1,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Msg Id",
                             "type": "string"
                         }
@@ -5584,11 +5770,7 @@
                         "name": "msg_id",
                         "required": true,
                         "schema": {
-                            "description": "The message's ID or eventID",
                             "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                            "maxLength": 256,
-                            "minLength": 1,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Msg Id",
                             "type": "string"
                         }
@@ -5623,6 +5805,7 @@
                         "required": false,
                         "schema": {
                             "default": 50,
+                            "maximum": 250.0,
                             "title": "Limit",
                             "type": "integer"
                         }
@@ -5718,11 +5901,7 @@
                         "name": "msg_id",
                         "required": true,
                         "schema": {
-                            "description": "The message's ID or eventID",
                             "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                            "maxLength": 256,
-                            "minLength": 1,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Msg Id",
                             "type": "string"
                         }
@@ -5771,6 +5950,7 @@
                         "required": false,
                         "schema": {
                             "default": 50,
+                            "maximum": 250.0,
                             "title": "Limit",
                             "type": "integer"
                         }
@@ -5913,11 +6093,7 @@
                         "name": "msg_id",
                         "required": true,
                         "schema": {
-                            "description": "The message's ID or eventID",
                             "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                            "maxLength": 256,
-                            "minLength": 1,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Msg Id",
                             "type": "string"
                         }
@@ -6320,6 +6496,7 @@
                         "required": false,
                         "schema": {
                             "default": 50,
+                            "maximum": 250.0,
                             "title": "Limit",
                             "type": "integer"
                         }
@@ -6552,12 +6729,12 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const eventTypeOut = await svix.eventType.create({\n    \"description\": \"A user has signed up\",\n    \"schemas\": {\n        \"1\": {\n            \"title\": \"Invoice Paid Event\",\n            \"description\": \"An invoice was paid by a user\",\n            \"type\": \"object\",\n            \"properties\": {\n                \"invoiceId\": {\n                    \"description\": \"The invoice id\",\n                    \"type\": \"string\"\n                },\n                \"userId\": {\n                    \"description\": \"The user id\",\n                    \"type\": \"string\"\n                }\n            },\n            \"required\": [\n                \"invoiceId\",\n                \"userId\"\n            ]\n        }\n    },\n    \"archived\": false,\n    \"name\": \"user.signup\"\n});"
+                        "source": "const eventTypeOut = await svix.eventType.create({\n    description: \"A user has signed up\",\n    schemas: {\n        \"1\": {\n                \"title\": \"Invoice Paid Event\",\n                \"description\": \"An invoice was paid by a user\",\n                \"type\": \"object\",\n                \"properties\": {\n                        \"invoiceId\": {\n                                \"description\": \"The invoice id\",\n                                \"type\": \"string\"\n                        },\n                        \"userId\": {\n                                \"description\": \"The user id\",\n                                \"type\": \"string\"\n                        }\n                },\n                \"required\": [\n                        \"invoiceId\",\n                        \"userId\"\n                ]\n        }\n    },\n    archived: false,\n    name: \"user.signup\"\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const eventTypeOut = await svix.eventType.create({\n    \"description\": \"A user has signed up\",\n    \"schemas\": {\n        \"1\": {\n            \"title\": \"Invoice Paid Event\",\n            \"description\": \"An invoice was paid by a user\",\n            \"type\": \"object\",\n            \"properties\": {\n                \"invoiceId\": {\n                    \"description\": \"The invoice id\",\n                    \"type\": \"string\"\n                },\n                \"userId\": {\n                    \"description\": \"The user id\",\n                    \"type\": \"string\"\n                }\n            },\n            \"required\": [\n                \"invoiceId\",\n                \"userId\"\n            ]\n        }\n    },\n    \"archived\": false,\n    \"name\": \"user.signup\"\n});"
+                        "source": "const eventTypeOut = await svix.eventType.create({\n    description: \"A user has signed up\",\n    schemas: {\n        \"1\": {\n                \"title\": \"Invoice Paid Event\",\n                \"description\": \"An invoice was paid by a user\",\n                \"type\": \"object\",\n                \"properties\": {\n                        \"invoiceId\": {\n                                \"description\": \"The invoice id\",\n                                \"type\": \"string\"\n                        },\n                        \"userId\": {\n                                \"description\": \"The user id\",\n                                \"type\": \"string\"\n                        }\n                },\n                \"required\": [\n                        \"invoiceId\",\n                        \"userId\"\n                ]\n        }\n    },\n    archived: false,\n    name: \"user.signup\"\n});"
                     },
                     {
                         "label": "Python",
@@ -6681,12 +6858,12 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const eventTypeExampleOut = await svix.eventType.generate({\n    \"schema\": {\n        \"title\": \"Invoice Paid Event\",\n        \"description\": \"An invoice was paid by a user\",\n        \"type\": \"object\",\n        \"properties\": {\n            \"invoiceId\": {\n                \"description\": \"The invoice id\",\n                \"type\": \"string\"\n            },\n            \"userId\": {\n                \"description\": \"The user id\",\n                \"type\": \"string\"\n            }\n        },\n        \"required\": [\n            \"invoiceId\",\n            \"userId\"\n        ]\n    }\n});"
+                        "source": "const eventTypeExampleOut = await svix.eventType.generate({\n    schema: {\n        \"title\": \"Invoice Paid Event\",\n        \"description\": \"An invoice was paid by a user\",\n        \"type\": \"object\",\n        \"properties\": {\n                \"invoiceId\": {\n                        \"description\": \"The invoice id\",\n                        \"type\": \"string\"\n                },\n                \"userId\": {\n                        \"description\": \"The user id\",\n                        \"type\": \"string\"\n                }\n        },\n        \"required\": [\n                \"invoiceId\",\n                \"userId\"\n        ]\n    }\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const eventTypeExampleOut = await svix.eventType.generate({\n    \"schema\": {\n        \"title\": \"Invoice Paid Event\",\n        \"description\": \"An invoice was paid by a user\",\n        \"type\": \"object\",\n        \"properties\": {\n            \"invoiceId\": {\n                \"description\": \"The invoice id\",\n                \"type\": \"string\"\n            },\n            \"userId\": {\n                \"description\": \"The user id\",\n                \"type\": \"string\"\n            }\n        },\n        \"required\": [\n            \"invoiceId\",\n            \"userId\"\n        ]\n    }\n});"
+                        "source": "const eventTypeExampleOut = await svix.eventType.generate({\n    schema: {\n        \"title\": \"Invoice Paid Event\",\n        \"description\": \"An invoice was paid by a user\",\n        \"type\": \"object\",\n        \"properties\": {\n                \"invoiceId\": {\n                        \"description\": \"The invoice id\",\n                        \"type\": \"string\"\n                },\n                \"userId\": {\n                        \"description\": \"The user id\",\n                        \"type\": \"string\"\n                }\n        },\n        \"required\": [\n                \"invoiceId\",\n                \"userId\"\n        ]\n    }\n});"
                     },
                     {
                         "label": "Python",
@@ -7094,12 +7271,12 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const eventTypeOut = await svix.eventType.update('event_type_name', {\n    \"description\": \"A user has signed up\",\n    \"schemas\": {\n        \"1\": {\n            \"title\": \"Invoice Paid Event\",\n            \"description\": \"An invoice was paid by a user\",\n            \"type\": \"object\",\n            \"properties\": {\n                \"invoiceId\": {\n                    \"description\": \"The invoice id\",\n                    \"type\": \"string\"\n                },\n                \"userId\": {\n                    \"description\": \"The user id\",\n                    \"type\": \"string\"\n                }\n            },\n            \"required\": [\n                \"invoiceId\",\n                \"userId\"\n            ]\n        }\n    },\n    \"archived\": false\n});"
+                        "source": "const eventTypeOut = await svix.eventType.update('event_type_name', {\n    description: \"A user has signed up\",\n    schemas: {\n        \"1\": {\n                \"title\": \"Invoice Paid Event\",\n                \"description\": \"An invoice was paid by a user\",\n                \"type\": \"object\",\n                \"properties\": {\n                        \"invoiceId\": {\n                                \"description\": \"The invoice id\",\n                                \"type\": \"string\"\n                        },\n                        \"userId\": {\n                                \"description\": \"The user id\",\n                                \"type\": \"string\"\n                        }\n                },\n                \"required\": [\n                        \"invoiceId\",\n                        \"userId\"\n                ]\n        }\n    },\n    archived: false\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const eventTypeOut = await svix.eventType.update('event_type_name', {\n    \"description\": \"A user has signed up\",\n    \"schemas\": {\n        \"1\": {\n            \"title\": \"Invoice Paid Event\",\n            \"description\": \"An invoice was paid by a user\",\n            \"type\": \"object\",\n            \"properties\": {\n                \"invoiceId\": {\n                    \"description\": \"The invoice id\",\n                    \"type\": \"string\"\n                },\n                \"userId\": {\n                    \"description\": \"The user id\",\n                    \"type\": \"string\"\n                }\n            },\n            \"required\": [\n                \"invoiceId\",\n                \"userId\"\n            ]\n        }\n    },\n    \"archived\": false\n});"
+                        "source": "const eventTypeOut = await svix.eventType.update('event_type_name', {\n    description: \"A user has signed up\",\n    schemas: {\n        \"1\": {\n                \"title\": \"Invoice Paid Event\",\n                \"description\": \"An invoice was paid by a user\",\n                \"type\": \"object\",\n                \"properties\": {\n                        \"invoiceId\": {\n                                \"description\": \"The invoice id\",\n                                \"type\": \"string\"\n                        },\n                        \"userId\": {\n                                \"description\": \"The user id\",\n                                \"type\": \"string\"\n                        }\n                },\n                \"required\": [\n                        \"invoiceId\",\n                        \"userId\"\n                ]\n        }\n    },\n    archived: false\n});"
                     },
                     {
                         "label": "Python",
@@ -7157,6 +7334,80 @@
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/health/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/org/export/": {
+            "get": {
+                "description": "Download a JSON file containing all org-settings and event types",
+                "operationId": "export_organization_configuration_api_v1_org_export__get",
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExportedOrganizationModel"
+                                }
+                            }
+                        },
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Export Organization Configuration",
+                "tags": [
+                    "Organization"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/org/export/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }

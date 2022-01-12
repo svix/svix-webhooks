@@ -232,7 +232,7 @@ class Endpoint {
 
   public recover(appId: string, endpointId: string, recoverIn: RecoverIn): Promise<void> {
     return this.api
-      .resendFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPost({
+      .recoverFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPost({
         appId,
         endpointId,
         recoverIn,

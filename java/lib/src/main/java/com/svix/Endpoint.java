@@ -77,7 +77,7 @@ public final class Endpoint {
 
 	public void recover(final String appId, final String endpointId, final RecoverIn recoverIn) throws ApiException {
 		try {
-			api.resendFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPost(appId, endpointId, recoverIn);
+			api.recoverFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPost(appId, endpointId, recoverIn);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
