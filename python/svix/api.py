@@ -199,7 +199,7 @@ class Endpoint(ApiBase[EndpointApi]):
 
     def recover(self, app_id: str, endpoint_id: str, recover_in: RecoverIn) -> None:
         with self._api() as api:
-            api.resend_failed_webhooks_api_v1_app_app_id_endpoint_endpoint_id_recover_post(
+            api.recover_failed_webhooks_api_v1_app_app_id_endpoint_endpoint_id_recover_post(
                 app_id=app_id,
                 endpoint_id=endpoint_id,
                 recover_in=recover_in,

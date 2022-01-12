@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.42.0
+* All: Support new Channels API 📺
+
 ## Version 0.41.2
 * Javascript: Enable keepalives for improved performance 🚀
 
