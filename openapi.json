@@ -1182,7 +1182,12 @@
                 "title": "EventTypeUpdate",
                 "type": "object"
             },
-            "ExportedOrganizationModel": {
+            "ExportOrganizationIn": {
+                "properties": {},
+                "title": "ExportOrganizationIn",
+                "type": "object"
+            },
+            "ExportOrganizationOut": {
                 "properties": {
                     "createdAt": {
                         "format": "date-time",
@@ -1198,13 +1203,18 @@
                     },
                     "settings": {
                         "$ref": "#/components/schemas/SettingsOut"
+                    },
+                    "version": {
+                        "default": 1,
+                        "title": "Version",
+                        "type": "integer"
                     }
                 },
                 "required": [
                     "createdAt",
                     "eventTypes"
                 ],
-                "title": "ExportedOrganizationModel",
+                "title": "ExportOrganizationOut",
                 "type": "object"
             },
             "FontSizeConfig": {
@@ -1246,6 +1256,35 @@
                     "detail"
                 ],
                 "title": "HttpError",
+                "type": "object"
+            },
+            "ImportOrganizationIn": {
+                "properties": {
+                    "createdAt": {
+                        "format": "date-time",
+                        "title": "Createdat",
+                        "type": "string"
+                    },
+                    "eventTypes": {
+                        "items": {
+                            "$ref": "#/components/schemas/EventTypeIn"
+                        },
+                        "title": "Eventtypes",
+                        "type": "array"
+                    },
+                    "settings": {
+                        "$ref": "#/components/schemas/SettingsIn"
+                    },
+                    "version": {
+                        "title": "Version",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "version",
+                    "createdAt"
+                ],
+                "title": "ImportOrganizationIn",
                 "type": "object"
             },
             "ListResponse_ApplicationOut_": {
@@ -1922,6 +1961,11 @@
                     },
                     "customThemeOverride": {
                         "$ref": "#/components/schemas/CustomThemeOverride"
+                    },
+                    "enableChannels": {
+                        "default": false,
+                        "title": "Enablechannels",
+                        "type": "boolean"
                     }
                 },
                 "title": "PortalSettingsOut",
@@ -1944,6 +1988,52 @@
             "RecoverOut": {
                 "properties": {},
                 "title": "RecoverOut",
+                "type": "object"
+            },
+            "SettingsIn": {
+                "properties": {
+                    "customBaseFontSize": {
+                        "title": "Custombasefontsize",
+                        "type": "integer"
+                    },
+                    "customColor": {
+                        "format": "color",
+                        "title": "Customcolor",
+                        "type": "string"
+                    },
+                    "customFontFamily": {
+                        "example": "Open Sans",
+                        "pattern": "^[a-zA-Z0-9\\-_ ]+$",
+                        "title": "Customfontfamily",
+                        "type": "string"
+                    },
+                    "customLogoUrl": {
+                        "format": "uri",
+                        "maxLength": 65536,
+                        "minLength": 1,
+                        "title": "Customlogourl",
+                        "type": "string"
+                    },
+                    "customThemeOverride": {
+                        "$ref": "#/components/schemas/CustomThemeOverride"
+                    },
+                    "disableEndpointOnFailure": {
+                        "default": true,
+                        "title": "Disableendpointonfailure",
+                        "type": "boolean"
+                    },
+                    "enableChannels": {
+                        "default": false,
+                        "title": "Enablechannels",
+                        "type": "boolean"
+                    },
+                    "enforceHttps": {
+                        "default": true,
+                        "title": "Enforcehttps",
+                        "type": "boolean"
+                    }
+                },
+                "title": "SettingsIn",
                 "type": "object"
             },
             "SettingsOut": {
@@ -1974,7 +2064,13 @@
                         "$ref": "#/components/schemas/CustomThemeOverride"
                     },
                     "disableEndpointOnFailure": {
+                        "default": true,
                         "title": "Disableendpointonfailure",
+                        "type": "boolean"
+                    },
+                    "enableChannels": {
+                        "default": false,
+                        "title": "Enablechannels",
                         "type": "boolean"
                     },
                     "enforceHttps": {
@@ -5129,6 +5225,16 @@
                             "title": "App Id",
                             "type": "string"
                         }
+                    },
+                    {
+                        "in": "query",
+                        "name": "with_content",
+                        "required": false,
+                        "schema": {
+                            "default": true,
+                            "title": "With Content",
+                            "type": "boolean"
+                        }
                     }
                 ],
                 "requestBody": {
@@ -7339,15 +7445,25 @@
             }
         },
         "/api/v1/org/export/": {
-            "get": {
+            "post": {
                 "description": "Download a JSON file containing all org-settings and event types",
-                "operationId": "export_organization_configuration_api_v1_org_export__get",
+                "operationId": "export_organization_configuration_api_v1_org_export__post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ExportOrganizationIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
                 "responses": {
                     "200": {
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ExportedOrganizationModel"
+                                    "$ref": "#/components/schemas/ExportOrganizationOut"
                                 }
                             }
                         },
@@ -7392,6 +7508,16 @@
                             }
                         },
                         "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
                     }
                 },
                 "security": [
@@ -7407,7 +7533,94 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/org/export/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/org/export/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{}'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/org/import/": {
+            "post": {
+                "description": "Import a configuration into the active organization.\nIt doesn't delete anything, only adds/updates what was passed to it.",
+                "operationId": "import_organization_configuration_api_v1_org_import__post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ImportOrganizationIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Import Organization Configuration",
+                "tags": [
+                    "Organization"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/org/import/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"version\": null,\n    \"createdAt\": \"2019-08-24T14:15:22Z\",\n    \"eventTypes\": null,\n    \"settings\": null\n}'"
                     }
                 ]
             }

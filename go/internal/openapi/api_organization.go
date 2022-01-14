@@ -26,24 +26,29 @@ var (
 // OrganizationApiService OrganizationApi service
 type OrganizationApiService service
 
-type ApiExportOrganizationConfigurationApiV1OrgExportGetRequest struct {
+type ApiExportOrganizationConfigurationApiV1OrgExportPostRequest struct {
 	ctx _context.Context
 	ApiService *OrganizationApiService
+	body *map[string]interface{}
 }
 
+func (r ApiExportOrganizationConfigurationApiV1OrgExportPostRequest) Body(body map[string]interface{}) ApiExportOrganizationConfigurationApiV1OrgExportPostRequest {
+	r.body = &body
+	return r
+}
 
-func (r ApiExportOrganizationConfigurationApiV1OrgExportGetRequest) Execute() (ExportedOrganizationModel, *_nethttp.Response, error) {
-	return r.ApiService.ExportOrganizationConfigurationApiV1OrgExportGetExecute(r)
+func (r ApiExportOrganizationConfigurationApiV1OrgExportPostRequest) Execute() (ExportOrganizationOut, *_nethttp.Response, error) {
+	return r.ApiService.ExportOrganizationConfigurationApiV1OrgExportPostExecute(r)
 }
 
 /*
- * ExportOrganizationConfigurationApiV1OrgExportGet Export Organization Configuration
+ * ExportOrganizationConfigurationApiV1OrgExportPost Export Organization Configuration
  * Download a JSON file containing all org-settings and event types
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @return ApiExportOrganizationConfigurationApiV1OrgExportGetRequest
+ * @return ApiExportOrganizationConfigurationApiV1OrgExportPostRequest
  */
-func (a *OrganizationApiService) ExportOrganizationConfigurationApiV1OrgExportGet(ctx _context.Context) ApiExportOrganizationConfigurationApiV1OrgExportGetRequest {
-	return ApiExportOrganizationConfigurationApiV1OrgExportGetRequest{
+func (a *OrganizationApiService) ExportOrganizationConfigurationApiV1OrgExportPost(ctx _context.Context) ApiExportOrganizationConfigurationApiV1OrgExportPostRequest {
+	return ApiExportOrganizationConfigurationApiV1OrgExportPostRequest{
 		ApiService: a,
 		ctx: ctx,
 	}
@@ -51,19 +56,19 @@ func (a *OrganizationApiService) ExportOrganizationConfigurationApiV1OrgExportGe
 
 /*
  * Execute executes the request
- * @return ExportedOrganizationModel
+ * @return ExportOrganizationOut
  */
-func (a *OrganizationApiService) ExportOrganizationConfigurationApiV1OrgExportGetExecute(r ApiExportOrganizationConfigurationApiV1OrgExportGetRequest) (ExportedOrganizationModel, *_nethttp.Response, error) {
+func (a *OrganizationApiService) ExportOrganizationConfigurationApiV1OrgExportPostExecute(r ApiExportOrganizationConfigurationApiV1OrgExportPostRequest) (ExportOrganizationOut, *_nethttp.Response, error) {
 	var (
-		localVarHTTPMethod   = _nethttp.MethodGet
+		localVarHTTPMethod   = _nethttp.MethodPost
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  ExportedOrganizationModel
+		localVarReturnValue  ExportOrganizationOut
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "OrganizationApiService.ExportOrganizationConfigurationApiV1OrgExportGet")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "OrganizationApiService.ExportOrganizationConfigurationApiV1OrgExportPost")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
@@ -73,9 +78,12 @@ func (a *OrganizationApiService) ExportOrganizationConfigurationApiV1OrgExportGe
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
+	if r.body == nil {
+		return localVarReturnValue, nil, reportError("body is required and must be specified")
+	}
 
 	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{}
+	localVarHTTPContentTypes := []string{"application/json"}
 
 	// set Content-Type header
 	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
@@ -91,6 +99,8 @@ func (a *OrganizationApiService) ExportOrganizationConfigurationApiV1OrgExportGe
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
+	// body params
+	localVarPostBody = r.body
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -151,6 +161,16 @@ func (a *OrganizationApiService) ExportOrganizationConfigurationApiV1OrgExportGe
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
 			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 422 {
+			var v HTTPValidationError
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -165,4 +185,155 @@ func (a *OrganizationApiService) ExportOrganizationConfigurationApiV1OrgExportGe
 	}
 
 	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiImportOrganizationConfigurationApiV1OrgImportPostRequest struct {
+	ctx _context.Context
+	ApiService *OrganizationApiService
+	importOrganizationIn *ImportOrganizationIn
+}
+
+func (r ApiImportOrganizationConfigurationApiV1OrgImportPostRequest) ImportOrganizationIn(importOrganizationIn ImportOrganizationIn) ApiImportOrganizationConfigurationApiV1OrgImportPostRequest {
+	r.importOrganizationIn = &importOrganizationIn
+	return r
+}
+
+func (r ApiImportOrganizationConfigurationApiV1OrgImportPostRequest) Execute() (*_nethttp.Response, error) {
+	return r.ApiService.ImportOrganizationConfigurationApiV1OrgImportPostExecute(r)
+}
+
+/*
+ * ImportOrganizationConfigurationApiV1OrgImportPost Import Organization Configuration
+ * Import a configuration into the active organization.
+It doesn't delete anything, only adds/updates what was passed to it.
+ * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ * @return ApiImportOrganizationConfigurationApiV1OrgImportPostRequest
+ */
+func (a *OrganizationApiService) ImportOrganizationConfigurationApiV1OrgImportPost(ctx _context.Context) ApiImportOrganizationConfigurationApiV1OrgImportPostRequest {
+	return ApiImportOrganizationConfigurationApiV1OrgImportPostRequest{
+		ApiService: a,
+		ctx: ctx,
+	}
+}
+
+/*
+ * Execute executes the request
+ */
+func (a *OrganizationApiService) ImportOrganizationConfigurationApiV1OrgImportPostExecute(r ApiImportOrganizationConfigurationApiV1OrgImportPostRequest) (*_nethttp.Response, error) {
+	var (
+		localVarHTTPMethod   = _nethttp.MethodPost
+		localVarPostBody     interface{}
+		localVarFormFileName string
+		localVarFileName     string
+		localVarFileBytes    []byte
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "OrganizationApiService.ImportOrganizationConfigurationApiV1OrgImportPost")
+	if err != nil {
+		return nil, GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/api/v1/org/import/"
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := _neturl.Values{}
+	localVarFormParams := _neturl.Values{}
+	if r.importOrganizationIn == nil {
+		return nil, reportError("importOrganizationIn is required and must be specified")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	// body params
+	localVarPostBody = r.importOrganizationIn
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarHTTPResponse, err
+	}
+
+	localVarBody, err := _ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = _ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 401 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 403 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 404 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 409 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 422 {
+			var v HTTPValidationError
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+		}
+		return localVarHTTPResponse, newErr
+	}
+
+	return localVarHTTPResponse, nil
 }

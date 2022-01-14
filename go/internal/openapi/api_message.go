@@ -34,10 +34,15 @@ type ApiCreateMessageApiV1AppAppIdMsgPostRequest struct {
 	ApiService *MessageApiService
 	appId string
 	messageIn *MessageIn
+	withContent *bool
 }
 
 func (r ApiCreateMessageApiV1AppAppIdMsgPostRequest) MessageIn(messageIn MessageIn) ApiCreateMessageApiV1AppAppIdMsgPostRequest {
 	r.messageIn = &messageIn
+	return r
+}
+func (r ApiCreateMessageApiV1AppAppIdMsgPostRequest) WithContent(withContent bool) ApiCreateMessageApiV1AppAppIdMsgPostRequest {
+	r.withContent = &withContent
 	return r
 }
 
@@ -101,6 +106,9 @@ func (a *MessageApiService) CreateMessageApiV1AppAppIdMsgPostExecute(r ApiCreate
 		return localVarReturnValue, nil, reportError("messageIn is required and must be specified")
 	}
 
+	if r.withContent != nil {
+		localVarQueryParams.Add("with_content", parameterToString(*r.withContent, ""))
+	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}
 

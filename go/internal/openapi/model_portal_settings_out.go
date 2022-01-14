@@ -20,6 +20,7 @@ type PortalSettingsOut struct {
 	CustomFontFamily *string `json:"customFontFamily,omitempty"`
 	CustomLogoUrl *string `json:"customLogoUrl,omitempty"`
 	CustomThemeOverride *CustomThemeOverride `json:"customThemeOverride,omitempty"`
+	EnableChannels *bool `json:"enableChannels,omitempty"`
 }
 
 // NewPortalSettingsOut instantiates a new PortalSettingsOut object
@@ -28,6 +29,8 @@ type PortalSettingsOut struct {
 // will change when the set of required properties is changed
 func NewPortalSettingsOut() *PortalSettingsOut {
 	this := PortalSettingsOut{}
+	var enableChannels bool = false
+	this.EnableChannels = &enableChannels
 	return &this
 }
 
@@ -36,6 +39,8 @@ func NewPortalSettingsOut() *PortalSettingsOut {
 // but it doesn't guarantee that properties required by API are set
 func NewPortalSettingsOutWithDefaults() *PortalSettingsOut {
 	this := PortalSettingsOut{}
+	var enableChannels bool = false
+	this.EnableChannels = &enableChannels
 	return &this
 }
 
@@ -167,6 +172,38 @@ func (o *PortalSettingsOut) SetCustomThemeOverride(v CustomThemeOverride) {
 	o.CustomThemeOverride = &v
 }
 
+// GetEnableChannels returns the EnableChannels field value if set, zero value otherwise.
+func (o *PortalSettingsOut) GetEnableChannels() bool {
+	if o == nil || o.EnableChannels == nil {
+		var ret bool
+		return ret
+	}
+	return *o.EnableChannels
+}
+
+// GetEnableChannelsOk returns a tuple with the EnableChannels field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *PortalSettingsOut) GetEnableChannelsOk() (*bool, bool) {
+	if o == nil || o.EnableChannels == nil {
+		return nil, false
+	}
+	return o.EnableChannels, true
+}
+
+// HasEnableChannels returns a boolean if a field has been set.
+func (o *PortalSettingsOut) HasEnableChannels() bool {
+	if o != nil && o.EnableChannels != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetEnableChannels gets a reference to the given bool and assigns it to the EnableChannels field.
+func (o *PortalSettingsOut) SetEnableChannels(v bool) {
+	o.EnableChannels = &v
+}
+
 func (o PortalSettingsOut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if o.CustomColor != nil {
@@ -180,6 +217,9 @@ func (o PortalSettingsOut) MarshalJSON() ([]byte, error) {
 	}
 	if o.CustomThemeOverride != nil {
 		toSerialize["customThemeOverride"] = o.CustomThemeOverride
+	}
+	if o.EnableChannels != nil {
+		toSerialize["enableChannels"] = o.EnableChannels
 	}
 	return json.Marshal(toSerialize)
 }
