@@ -19,6 +19,7 @@ module Svix
         attr_accessor :integration
         attr_accessor :message
         attr_accessor :message_attempt
+        attr_accessor :environment
 
         def initialize(auth_token, options = SvixOptions.new)
             uri = URI(options.server_url)
@@ -40,6 +41,7 @@ module Svix
             @integration = IntegrationAPI.new(api_client)
             @message = MessageAPI.new(api_client)
             @message_attempt = MessageAttemptAPI.new(api_client)
+            @environment = EnvironmentAPI.new(api_client)
         end
     end
 end
