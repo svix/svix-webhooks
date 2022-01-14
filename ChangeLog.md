@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.42.1
+* 
+
 ## Version 0.42.0
 * All: Support new Channels API 📺
 
