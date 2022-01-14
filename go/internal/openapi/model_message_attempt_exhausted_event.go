@@ -16,8 +16,8 @@ import (
 
 // MessageAttemptExhaustedEvent Sent when a message delivery has failed (all of the retry attempts have been exhausted).
 type MessageAttemptExhaustedEvent struct {
-	Data MessageAttemptExhaustedEventData `json:"data"`
 	Type *string `json:"type,omitempty"`
+	Data MessageAttemptExhaustedEventData `json:"data"`
 }
 
 // NewMessageAttemptExhaustedEvent instantiates a new MessageAttemptExhaustedEvent object
@@ -26,9 +26,9 @@ type MessageAttemptExhaustedEvent struct {
 // will change when the set of required properties is changed
 func NewMessageAttemptExhaustedEvent(data MessageAttemptExhaustedEventData) *MessageAttemptExhaustedEvent {
 	this := MessageAttemptExhaustedEvent{}
-	this.Data = data
 	var type_ string = "message.attempt.exhausted"
 	this.Type = &type_
+	this.Data = data
 	return &this
 }
 
@@ -40,30 +40,6 @@ func NewMessageAttemptExhaustedEventWithDefaults() *MessageAttemptExhaustedEvent
 	var type_ string = "message.attempt.exhausted"
 	this.Type = &type_
 	return &this
-}
-
-// GetData returns the Data field value
-func (o *MessageAttemptExhaustedEvent) GetData() MessageAttemptExhaustedEventData {
-	if o == nil {
-		var ret MessageAttemptExhaustedEventData
-		return ret
-	}
-
-	return o.Data
-}
-
-// GetDataOk returns a tuple with the Data field value
-// and a boolean to check if the value has been set.
-func (o *MessageAttemptExhaustedEvent) GetDataOk() (*MessageAttemptExhaustedEventData, bool) {
-	if o == nil  {
-		return nil, false
-	}
-	return &o.Data, true
-}
-
-// SetData sets field value
-func (o *MessageAttemptExhaustedEvent) SetData(v MessageAttemptExhaustedEventData) {
-	o.Data = v
 }
 
 // GetType returns the Type field value if set, zero value otherwise.
@@ -98,13 +74,37 @@ func (o *MessageAttemptExhaustedEvent) SetType(v string) {
 	o.Type = &v
 }
 
+// GetData returns the Data field value
+func (o *MessageAttemptExhaustedEvent) GetData() MessageAttemptExhaustedEventData {
+	if o == nil {
+		var ret MessageAttemptExhaustedEventData
+		return ret
+	}
+
+	return o.Data
+}
+
+// GetDataOk returns a tuple with the Data field value
+// and a boolean to check if the value has been set.
+func (o *MessageAttemptExhaustedEvent) GetDataOk() (*MessageAttemptExhaustedEventData, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.Data, true
+}
+
+// SetData sets field value
+func (o *MessageAttemptExhaustedEvent) SetData(v MessageAttemptExhaustedEventData) {
+	o.Data = v
+}
+
 func (o MessageAttemptExhaustedEvent) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["data"] = o.Data
-	}
 	if o.Type != nil {
 		toSerialize["type"] = o.Type
+	}
+	if true {
+		toSerialize["data"] = o.Data
 	}
 	return json.Marshal(toSerialize)
 }

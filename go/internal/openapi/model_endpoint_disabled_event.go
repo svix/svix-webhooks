@@ -16,8 +16,8 @@ import (
 
 // EndpointDisabledEvent Sent when an endpoint has been automatically disabled after continuous failures.
 type EndpointDisabledEvent struct {
-	Data EndpointDisabledEventData `json:"data"`
 	Type *string `json:"type,omitempty"`
+	Data EndpointDisabledEventData `json:"data"`
 }
 
 // NewEndpointDisabledEvent instantiates a new EndpointDisabledEvent object
@@ -26,9 +26,9 @@ type EndpointDisabledEvent struct {
 // will change when the set of required properties is changed
 func NewEndpointDisabledEvent(data EndpointDisabledEventData) *EndpointDisabledEvent {
 	this := EndpointDisabledEvent{}
-	this.Data = data
 	var type_ string = "endpoint.disabled"
 	this.Type = &type_
+	this.Data = data
 	return &this
 }
 
@@ -40,30 +40,6 @@ func NewEndpointDisabledEventWithDefaults() *EndpointDisabledEvent {
 	var type_ string = "endpoint.disabled"
 	this.Type = &type_
 	return &this
-}
-
-// GetData returns the Data field value
-func (o *EndpointDisabledEvent) GetData() EndpointDisabledEventData {
-	if o == nil {
-		var ret EndpointDisabledEventData
-		return ret
-	}
-
-	return o.Data
-}
-
-// GetDataOk returns a tuple with the Data field value
-// and a boolean to check if the value has been set.
-func (o *EndpointDisabledEvent) GetDataOk() (*EndpointDisabledEventData, bool) {
-	if o == nil  {
-		return nil, false
-	}
-	return &o.Data, true
-}
-
-// SetData sets field value
-func (o *EndpointDisabledEvent) SetData(v EndpointDisabledEventData) {
-	o.Data = v
 }
 
 // GetType returns the Type field value if set, zero value otherwise.
@@ -98,13 +74,37 @@ func (o *EndpointDisabledEvent) SetType(v string) {
 	o.Type = &v
 }
 
+// GetData returns the Data field value
+func (o *EndpointDisabledEvent) GetData() EndpointDisabledEventData {
+	if o == nil {
+		var ret EndpointDisabledEventData
+		return ret
+	}
+
+	return o.Data
+}
+
+// GetDataOk returns a tuple with the Data field value
+// and a boolean to check if the value has been set.
+func (o *EndpointDisabledEvent) GetDataOk() (*EndpointDisabledEventData, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.Data, true
+}
+
+// SetData sets field value
+func (o *EndpointDisabledEvent) SetData(v EndpointDisabledEventData) {
+	o.Data = v
+}
+
 func (o EndpointDisabledEvent) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["data"] = o.Data
-	}
 	if o.Type != nil {
 		toSerialize["type"] = o.Type
+	}
+	if true {
+		toSerialize["data"] = o.Data
 	}
 	return json.Marshal(toSerialize)
 }

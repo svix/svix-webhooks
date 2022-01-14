@@ -16,8 +16,8 @@ import (
 
 // EndpointCreatedEvent Sent when an endpoint is created.
 type EndpointCreatedEvent struct {
-	Data EndpointCreatedEventData `json:"data"`
 	Type *string `json:"type,omitempty"`
+	Data EndpointCreatedEventData `json:"data"`
 }
 
 // NewEndpointCreatedEvent instantiates a new EndpointCreatedEvent object
@@ -26,9 +26,9 @@ type EndpointCreatedEvent struct {
 // will change when the set of required properties is changed
 func NewEndpointCreatedEvent(data EndpointCreatedEventData) *EndpointCreatedEvent {
 	this := EndpointCreatedEvent{}
-	this.Data = data
 	var type_ string = "endpoint.created"
 	this.Type = &type_
+	this.Data = data
 	return &this
 }
 
@@ -40,30 +40,6 @@ func NewEndpointCreatedEventWithDefaults() *EndpointCreatedEvent {
 	var type_ string = "endpoint.created"
 	this.Type = &type_
 	return &this
-}
-
-// GetData returns the Data field value
-func (o *EndpointCreatedEvent) GetData() EndpointCreatedEventData {
-	if o == nil {
-		var ret EndpointCreatedEventData
-		return ret
-	}
-
-	return o.Data
-}
-
-// GetDataOk returns a tuple with the Data field value
-// and a boolean to check if the value has been set.
-func (o *EndpointCreatedEvent) GetDataOk() (*EndpointCreatedEventData, bool) {
-	if o == nil  {
-		return nil, false
-	}
-	return &o.Data, true
-}
-
-// SetData sets field value
-func (o *EndpointCreatedEvent) SetData(v EndpointCreatedEventData) {
-	o.Data = v
 }
 
 // GetType returns the Type field value if set, zero value otherwise.
@@ -98,13 +74,37 @@ func (o *EndpointCreatedEvent) SetType(v string) {
 	o.Type = &v
 }
 
+// GetData returns the Data field value
+func (o *EndpointCreatedEvent) GetData() EndpointCreatedEventData {
+	if o == nil {
+		var ret EndpointCreatedEventData
+		return ret
+	}
+
+	return o.Data
+}
+
+// GetDataOk returns a tuple with the Data field value
+// and a boolean to check if the value has been set.
+func (o *EndpointCreatedEvent) GetDataOk() (*EndpointCreatedEventData, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.Data, true
+}
+
+// SetData sets field value
+func (o *EndpointCreatedEvent) SetData(v EndpointCreatedEventData) {
+	o.Data = v
+}
+
 func (o EndpointCreatedEvent) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["data"] = o.Data
-	}
 	if o.Type != nil {
 		toSerialize["type"] = o.Type
+	}
+	if true {
+		toSerialize["data"] = o.Data
 	}
 	return json.Marshal(toSerialize)
 }

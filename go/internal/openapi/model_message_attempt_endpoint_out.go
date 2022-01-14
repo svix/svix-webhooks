@@ -20,8 +20,8 @@ type MessageAttemptEndpointOut struct {
 	Id string `json:"id"`
 	Response string `json:"response"`
 	ResponseStatusCode int32 `json:"responseStatusCode"`
-	Status MessageStatus `json:"status"`
 	Timestamp time.Time `json:"timestamp"`
+	Status MessageStatus `json:"status"`
 	TriggerType MessageAttemptTriggerType `json:"triggerType"`
 }
 
@@ -29,13 +29,13 @@ type MessageAttemptEndpointOut struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewMessageAttemptEndpointOut(id string, response string, responseStatusCode int32, status MessageStatus, timestamp time.Time, triggerType MessageAttemptTriggerType) *MessageAttemptEndpointOut {
+func NewMessageAttemptEndpointOut(id string, response string, responseStatusCode int32, timestamp time.Time, status MessageStatus, triggerType MessageAttemptTriggerType) *MessageAttemptEndpointOut {
 	this := MessageAttemptEndpointOut{}
 	this.Id = id
 	this.Response = response
 	this.ResponseStatusCode = responseStatusCode
-	this.Status = status
 	this.Timestamp = timestamp
+	this.Status = status
 	this.TriggerType = triggerType
 	return &this
 }
@@ -120,30 +120,6 @@ func (o *MessageAttemptEndpointOut) SetResponseStatusCode(v int32) {
 	o.ResponseStatusCode = v
 }
 
-// GetStatus returns the Status field value
-func (o *MessageAttemptEndpointOut) GetStatus() MessageStatus {
-	if o == nil {
-		var ret MessageStatus
-		return ret
-	}
-
-	return o.Status
-}
-
-// GetStatusOk returns a tuple with the Status field value
-// and a boolean to check if the value has been set.
-func (o *MessageAttemptEndpointOut) GetStatusOk() (*MessageStatus, bool) {
-	if o == nil  {
-		return nil, false
-	}
-	return &o.Status, true
-}
-
-// SetStatus sets field value
-func (o *MessageAttemptEndpointOut) SetStatus(v MessageStatus) {
-	o.Status = v
-}
-
 // GetTimestamp returns the Timestamp field value
 func (o *MessageAttemptEndpointOut) GetTimestamp() time.Time {
 	if o == nil {
@@ -166,6 +142,30 @@ func (o *MessageAttemptEndpointOut) GetTimestampOk() (*time.Time, bool) {
 // SetTimestamp sets field value
 func (o *MessageAttemptEndpointOut) SetTimestamp(v time.Time) {
 	o.Timestamp = v
+}
+
+// GetStatus returns the Status field value
+func (o *MessageAttemptEndpointOut) GetStatus() MessageStatus {
+	if o == nil {
+		var ret MessageStatus
+		return ret
+	}
+
+	return o.Status
+}
+
+// GetStatusOk returns a tuple with the Status field value
+// and a boolean to check if the value has been set.
+func (o *MessageAttemptEndpointOut) GetStatusOk() (*MessageStatus, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.Status, true
+}
+
+// SetStatus sets field value
+func (o *MessageAttemptEndpointOut) SetStatus(v MessageStatus) {
+	o.Status = v
 }
 
 // GetTriggerType returns the TriggerType field value
@@ -204,10 +204,10 @@ func (o MessageAttemptEndpointOut) MarshalJSON() ([]byte, error) {
 		toSerialize["responseStatusCode"] = o.ResponseStatusCode
 	}
 	if true {
-		toSerialize["status"] = o.Status
+		toSerialize["timestamp"] = o.Timestamp
 	}
 	if true {
-		toSerialize["timestamp"] = o.Timestamp
+		toSerialize["status"] = o.Status
 	}
 	if true {
 		toSerialize["triggerType"] = o.TriggerType

@@ -16,11 +16,11 @@ import (
 
 // MessageIn struct for MessageIn
 type MessageIn struct {
-	// List of free-form identifiers that endpoints can filter by
-	Channels *[]string `json:"channels,omitempty"`
+	EventType string `json:"eventType"`
 	// Optional unique identifier for the message
 	EventId *string `json:"eventId,omitempty"`
-	EventType string `json:"eventType"`
+	// List of free-form identifiers that endpoints can filter by
+	Channels *[]string `json:"channels,omitempty"`
 	Payload map[string]interface{} `json:"payload"`
 	// The retention period for the payload (in days).
 	PayloadRetentionPeriod *int32 `json:"payloadRetentionPeriod,omitempty"`
@@ -49,36 +49,28 @@ func NewMessageInWithDefaults() *MessageIn {
 	return &this
 }
 
-// GetChannels returns the Channels field value if set, zero value otherwise.
-func (o *MessageIn) GetChannels() []string {
-	if o == nil || o.Channels == nil {
-		var ret []string
+// GetEventType returns the EventType field value
+func (o *MessageIn) GetEventType() string {
+	if o == nil {
+		var ret string
 		return ret
 	}
-	return *o.Channels
+
+	return o.EventType
 }
 
-// GetChannelsOk returns a tuple with the Channels field value if set, nil otherwise
+// GetEventTypeOk returns a tuple with the EventType field value
 // and a boolean to check if the value has been set.
-func (o *MessageIn) GetChannelsOk() (*[]string, bool) {
-	if o == nil || o.Channels == nil {
+func (o *MessageIn) GetEventTypeOk() (*string, bool) {
+	if o == nil  {
 		return nil, false
 	}
-	return o.Channels, true
+	return &o.EventType, true
 }
 
-// HasChannels returns a boolean if a field has been set.
-func (o *MessageIn) HasChannels() bool {
-	if o != nil && o.Channels != nil {
-		return true
-	}
-
-	return false
-}
-
-// SetChannels gets a reference to the given []string and assigns it to the Channels field.
-func (o *MessageIn) SetChannels(v []string) {
-	o.Channels = &v
+// SetEventType sets field value
+func (o *MessageIn) SetEventType(v string) {
+	o.EventType = v
 }
 
 // GetEventId returns the EventId field value if set, zero value otherwise.
@@ -113,28 +105,36 @@ func (o *MessageIn) SetEventId(v string) {
 	o.EventId = &v
 }
 
-// GetEventType returns the EventType field value
-func (o *MessageIn) GetEventType() string {
-	if o == nil {
-		var ret string
+// GetChannels returns the Channels field value if set, zero value otherwise.
+func (o *MessageIn) GetChannels() []string {
+	if o == nil || o.Channels == nil {
+		var ret []string
 		return ret
 	}
-
-	return o.EventType
+	return *o.Channels
 }
 
-// GetEventTypeOk returns a tuple with the EventType field value
+// GetChannelsOk returns a tuple with the Channels field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *MessageIn) GetEventTypeOk() (*string, bool) {
-	if o == nil  {
+func (o *MessageIn) GetChannelsOk() (*[]string, bool) {
+	if o == nil || o.Channels == nil {
 		return nil, false
 	}
-	return &o.EventType, true
+	return o.Channels, true
 }
 
-// SetEventType sets field value
-func (o *MessageIn) SetEventType(v string) {
-	o.EventType = v
+// HasChannels returns a boolean if a field has been set.
+func (o *MessageIn) HasChannels() bool {
+	if o != nil && o.Channels != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetChannels gets a reference to the given []string and assigns it to the Channels field.
+func (o *MessageIn) SetChannels(v []string) {
+	o.Channels = &v
 }
 
 // GetPayload returns the Payload field value
@@ -195,14 +195,14 @@ func (o *MessageIn) SetPayloadRetentionPeriod(v int32) {
 
 func (o MessageIn) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Channels != nil {
-		toSerialize["channels"] = o.Channels
+	if true {
+		toSerialize["eventType"] = o.EventType
 	}
 	if o.EventId != nil {
 		toSerialize["eventId"] = o.EventId
 	}
-	if true {
-		toSerialize["eventType"] = o.EventType
+	if o.Channels != nil {
+		toSerialize["channels"] = o.Channels
 	}
 	if true {
 		toSerialize["payload"] = o.Payload
