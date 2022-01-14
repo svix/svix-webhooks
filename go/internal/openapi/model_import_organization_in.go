@@ -12,160 +12,197 @@ package openapi
 
 import (
 	"encoding/json"
+	"time"
 )
 
-// ListResponseMessageAttemptEndpointOut struct for ListResponseMessageAttemptEndpointOut
-type ListResponseMessageAttemptEndpointOut struct {
-	Data []MessageAttemptEndpointOut `json:"data"`
-	Done bool `json:"done"`
-	Iterator *string `json:"iterator,omitempty"`
+// ImportOrganizationIn struct for ImportOrganizationIn
+type ImportOrganizationIn struct {
+	CreatedAt time.Time `json:"createdAt"`
+	EventTypes *[]EventTypeIn `json:"eventTypes,omitempty"`
+	Settings *SettingsIn `json:"settings,omitempty"`
+	Version int32 `json:"version"`
 }
 
-// NewListResponseMessageAttemptEndpointOut instantiates a new ListResponseMessageAttemptEndpointOut object
+// NewImportOrganizationIn instantiates a new ImportOrganizationIn object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewListResponseMessageAttemptEndpointOut(data []MessageAttemptEndpointOut, done bool) *ListResponseMessageAttemptEndpointOut {
-	this := ListResponseMessageAttemptEndpointOut{}
-	this.Data = data
-	this.Done = done
+func NewImportOrganizationIn(createdAt time.Time, version int32) *ImportOrganizationIn {
+	this := ImportOrganizationIn{}
+	this.CreatedAt = createdAt
+	this.Version = version
 	return &this
 }
 
-// NewListResponseMessageAttemptEndpointOutWithDefaults instantiates a new ListResponseMessageAttemptEndpointOut object
+// NewImportOrganizationInWithDefaults instantiates a new ImportOrganizationIn object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewListResponseMessageAttemptEndpointOutWithDefaults() *ListResponseMessageAttemptEndpointOut {
-	this := ListResponseMessageAttemptEndpointOut{}
+func NewImportOrganizationInWithDefaults() *ImportOrganizationIn {
+	this := ImportOrganizationIn{}
 	return &this
 }
 
-// GetData returns the Data field value
-func (o *ListResponseMessageAttemptEndpointOut) GetData() []MessageAttemptEndpointOut {
+// GetCreatedAt returns the CreatedAt field value
+func (o *ImportOrganizationIn) GetCreatedAt() time.Time {
 	if o == nil {
-		var ret []MessageAttemptEndpointOut
+		var ret time.Time
 		return ret
 	}
 
-	return o.Data
+	return o.CreatedAt
 }
 
-// GetDataOk returns a tuple with the Data field value
+// GetCreatedAtOk returns a tuple with the CreatedAt field value
 // and a boolean to check if the value has been set.
-func (o *ListResponseMessageAttemptEndpointOut) GetDataOk() (*[]MessageAttemptEndpointOut, bool) {
+func (o *ImportOrganizationIn) GetCreatedAtOk() (*time.Time, bool) {
 	if o == nil  {
 		return nil, false
 	}
-	return &o.Data, true
+	return &o.CreatedAt, true
 }
 
-// SetData sets field value
-func (o *ListResponseMessageAttemptEndpointOut) SetData(v []MessageAttemptEndpointOut) {
-	o.Data = v
+// SetCreatedAt sets field value
+func (o *ImportOrganizationIn) SetCreatedAt(v time.Time) {
+	o.CreatedAt = v
 }
 
-// GetDone returns the Done field value
-func (o *ListResponseMessageAttemptEndpointOut) GetDone() bool {
-	if o == nil {
-		var ret bool
+// GetEventTypes returns the EventTypes field value if set, zero value otherwise.
+func (o *ImportOrganizationIn) GetEventTypes() []EventTypeIn {
+	if o == nil || o.EventTypes == nil {
+		var ret []EventTypeIn
 		return ret
 	}
-
-	return o.Done
+	return *o.EventTypes
 }
 
-// GetDoneOk returns a tuple with the Done field value
+// GetEventTypesOk returns a tuple with the EventTypes field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ListResponseMessageAttemptEndpointOut) GetDoneOk() (*bool, bool) {
-	if o == nil  {
+func (o *ImportOrganizationIn) GetEventTypesOk() (*[]EventTypeIn, bool) {
+	if o == nil || o.EventTypes == nil {
 		return nil, false
 	}
-	return &o.Done, true
+	return o.EventTypes, true
 }
 
-// SetDone sets field value
-func (o *ListResponseMessageAttemptEndpointOut) SetDone(v bool) {
-	o.Done = v
-}
-
-// GetIterator returns the Iterator field value if set, zero value otherwise.
-func (o *ListResponseMessageAttemptEndpointOut) GetIterator() string {
-	if o == nil || o.Iterator == nil {
-		var ret string
-		return ret
-	}
-	return *o.Iterator
-}
-
-// GetIteratorOk returns a tuple with the Iterator field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *ListResponseMessageAttemptEndpointOut) GetIteratorOk() (*string, bool) {
-	if o == nil || o.Iterator == nil {
-		return nil, false
-	}
-	return o.Iterator, true
-}
-
-// HasIterator returns a boolean if a field has been set.
-func (o *ListResponseMessageAttemptEndpointOut) HasIterator() bool {
-	if o != nil && o.Iterator != nil {
+// HasEventTypes returns a boolean if a field has been set.
+func (o *ImportOrganizationIn) HasEventTypes() bool {
+	if o != nil && o.EventTypes != nil {
 		return true
 	}
 
 	return false
 }
 
-// SetIterator gets a reference to the given string and assigns it to the Iterator field.
-func (o *ListResponseMessageAttemptEndpointOut) SetIterator(v string) {
-	o.Iterator = &v
+// SetEventTypes gets a reference to the given []EventTypeIn and assigns it to the EventTypes field.
+func (o *ImportOrganizationIn) SetEventTypes(v []EventTypeIn) {
+	o.EventTypes = &v
 }
 
-func (o ListResponseMessageAttemptEndpointOut) MarshalJSON() ([]byte, error) {
+// GetSettings returns the Settings field value if set, zero value otherwise.
+func (o *ImportOrganizationIn) GetSettings() SettingsIn {
+	if o == nil || o.Settings == nil {
+		var ret SettingsIn
+		return ret
+	}
+	return *o.Settings
+}
+
+// GetSettingsOk returns a tuple with the Settings field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ImportOrganizationIn) GetSettingsOk() (*SettingsIn, bool) {
+	if o == nil || o.Settings == nil {
+		return nil, false
+	}
+	return o.Settings, true
+}
+
+// HasSettings returns a boolean if a field has been set.
+func (o *ImportOrganizationIn) HasSettings() bool {
+	if o != nil && o.Settings != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetSettings gets a reference to the given SettingsIn and assigns it to the Settings field.
+func (o *ImportOrganizationIn) SetSettings(v SettingsIn) {
+	o.Settings = &v
+}
+
+// GetVersion returns the Version field value
+func (o *ImportOrganizationIn) GetVersion() int32 {
+	if o == nil {
+		var ret int32
+		return ret
+	}
+
+	return o.Version
+}
+
+// GetVersionOk returns a tuple with the Version field value
+// and a boolean to check if the value has been set.
+func (o *ImportOrganizationIn) GetVersionOk() (*int32, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.Version, true
+}
+
+// SetVersion sets field value
+func (o *ImportOrganizationIn) SetVersion(v int32) {
+	o.Version = v
+}
+
+func (o ImportOrganizationIn) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
-		toSerialize["data"] = o.Data
+		toSerialize["createdAt"] = o.CreatedAt
+	}
+	if o.EventTypes != nil {
+		toSerialize["eventTypes"] = o.EventTypes
+	}
+	if o.Settings != nil {
+		toSerialize["settings"] = o.Settings
 	}
 	if true {
-		toSerialize["done"] = o.Done
-	}
-	if o.Iterator != nil {
-		toSerialize["iterator"] = o.Iterator
+		toSerialize["version"] = o.Version
 	}
 	return json.Marshal(toSerialize)
 }
 
-type NullableListResponseMessageAttemptEndpointOut struct {
-	value *ListResponseMessageAttemptEndpointOut
+type NullableImportOrganizationIn struct {
+	value *ImportOrganizationIn
 	isSet bool
 }
 
-func (v NullableListResponseMessageAttemptEndpointOut) Get() *ListResponseMessageAttemptEndpointOut {
+func (v NullableImportOrganizationIn) Get() *ImportOrganizationIn {
 	return v.value
 }
 
-func (v *NullableListResponseMessageAttemptEndpointOut) Set(val *ListResponseMessageAttemptEndpointOut) {
+func (v *NullableImportOrganizationIn) Set(val *ImportOrganizationIn) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableListResponseMessageAttemptEndpointOut) IsSet() bool {
+func (v NullableImportOrganizationIn) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableListResponseMessageAttemptEndpointOut) Unset() {
+func (v *NullableImportOrganizationIn) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableListResponseMessageAttemptEndpointOut(val *ListResponseMessageAttemptEndpointOut) *NullableListResponseMessageAttemptEndpointOut {
-	return &NullableListResponseMessageAttemptEndpointOut{value: val, isSet: true}
+func NewNullableImportOrganizationIn(val *ImportOrganizationIn) *NullableImportOrganizationIn {
+	return &NullableImportOrganizationIn{value: val, isSet: true}
 }
 
-func (v NullableListResponseMessageAttemptEndpointOut) MarshalJSON() ([]byte, error) {
+func (v NullableImportOrganizationIn) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableListResponseMessageAttemptEndpointOut) UnmarshalJSON(src []byte) error {
+func (v *NullableImportOrganizationIn) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

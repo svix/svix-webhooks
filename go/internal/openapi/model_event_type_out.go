@@ -17,12 +17,12 @@ import (
 
 // EventTypeOut struct for EventTypeOut
 type EventTypeOut struct {
+	Archived *bool `json:"archived,omitempty"`
+	CreatedAt time.Time `json:"createdAt"`
 	Description string `json:"description"`
+	Name string `json:"name"`
 	// The schema for the event type for a specific version as a JSON schema.
 	Schemas *map[string]map[string]interface{} `json:"schemas,omitempty"`
-	Archived *bool `json:"archived,omitempty"`
-	Name string `json:"name"`
-	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
@@ -30,13 +30,13 @@ type EventTypeOut struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEventTypeOut(description string, name string, createdAt time.Time, updatedAt time.Time) *EventTypeOut {
+func NewEventTypeOut(createdAt time.Time, description string, name string, updatedAt time.Time) *EventTypeOut {
 	this := EventTypeOut{}
-	this.Description = description
 	var archived bool = false
 	this.Archived = &archived
-	this.Name = name
 	this.CreatedAt = createdAt
+	this.Description = description
+	this.Name = name
 	this.UpdatedAt = updatedAt
 	return &this
 }
@@ -49,62 +49,6 @@ func NewEventTypeOutWithDefaults() *EventTypeOut {
 	var archived bool = false
 	this.Archived = &archived
 	return &this
-}
-
-// GetDescription returns the Description field value
-func (o *EventTypeOut) GetDescription() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.Description
-}
-
-// GetDescriptionOk returns a tuple with the Description field value
-// and a boolean to check if the value has been set.
-func (o *EventTypeOut) GetDescriptionOk() (*string, bool) {
-	if o == nil  {
-		return nil, false
-	}
-	return &o.Description, true
-}
-
-// SetDescription sets field value
-func (o *EventTypeOut) SetDescription(v string) {
-	o.Description = v
-}
-
-// GetSchemas returns the Schemas field value if set, zero value otherwise.
-func (o *EventTypeOut) GetSchemas() map[string]map[string]interface{} {
-	if o == nil || o.Schemas == nil {
-		var ret map[string]map[string]interface{}
-		return ret
-	}
-	return *o.Schemas
-}
-
-// GetSchemasOk returns a tuple with the Schemas field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *EventTypeOut) GetSchemasOk() (*map[string]map[string]interface{}, bool) {
-	if o == nil || o.Schemas == nil {
-		return nil, false
-	}
-	return o.Schemas, true
-}
-
-// HasSchemas returns a boolean if a field has been set.
-func (o *EventTypeOut) HasSchemas() bool {
-	if o != nil && o.Schemas != nil {
-		return true
-	}
-
-	return false
-}
-
-// SetSchemas gets a reference to the given map[string]map[string]interface{} and assigns it to the Schemas field.
-func (o *EventTypeOut) SetSchemas(v map[string]map[string]interface{}) {
-	o.Schemas = &v
 }
 
 // GetArchived returns the Archived field value if set, zero value otherwise.
@@ -139,6 +83,54 @@ func (o *EventTypeOut) SetArchived(v bool) {
 	o.Archived = &v
 }
 
+// GetCreatedAt returns the CreatedAt field value
+func (o *EventTypeOut) GetCreatedAt() time.Time {
+	if o == nil {
+		var ret time.Time
+		return ret
+	}
+
+	return o.CreatedAt
+}
+
+// GetCreatedAtOk returns a tuple with the CreatedAt field value
+// and a boolean to check if the value has been set.
+func (o *EventTypeOut) GetCreatedAtOk() (*time.Time, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.CreatedAt, true
+}
+
+// SetCreatedAt sets field value
+func (o *EventTypeOut) SetCreatedAt(v time.Time) {
+	o.CreatedAt = v
+}
+
+// GetDescription returns the Description field value
+func (o *EventTypeOut) GetDescription() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Description
+}
+
+// GetDescriptionOk returns a tuple with the Description field value
+// and a boolean to check if the value has been set.
+func (o *EventTypeOut) GetDescriptionOk() (*string, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.Description, true
+}
+
+// SetDescription sets field value
+func (o *EventTypeOut) SetDescription(v string) {
+	o.Description = v
+}
+
 // GetName returns the Name field value
 func (o *EventTypeOut) GetName() string {
 	if o == nil {
@@ -163,28 +155,36 @@ func (o *EventTypeOut) SetName(v string) {
 	o.Name = v
 }
 
-// GetCreatedAt returns the CreatedAt field value
-func (o *EventTypeOut) GetCreatedAt() time.Time {
-	if o == nil {
-		var ret time.Time
+// GetSchemas returns the Schemas field value if set, zero value otherwise.
+func (o *EventTypeOut) GetSchemas() map[string]map[string]interface{} {
+	if o == nil || o.Schemas == nil {
+		var ret map[string]map[string]interface{}
 		return ret
 	}
-
-	return o.CreatedAt
+	return *o.Schemas
 }
 
-// GetCreatedAtOk returns a tuple with the CreatedAt field value
+// GetSchemasOk returns a tuple with the Schemas field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *EventTypeOut) GetCreatedAtOk() (*time.Time, bool) {
-	if o == nil  {
+func (o *EventTypeOut) GetSchemasOk() (*map[string]map[string]interface{}, bool) {
+	if o == nil || o.Schemas == nil {
 		return nil, false
 	}
-	return &o.CreatedAt, true
+	return o.Schemas, true
 }
 
-// SetCreatedAt sets field value
-func (o *EventTypeOut) SetCreatedAt(v time.Time) {
-	o.CreatedAt = v
+// HasSchemas returns a boolean if a field has been set.
+func (o *EventTypeOut) HasSchemas() bool {
+	if o != nil && o.Schemas != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetSchemas gets a reference to the given map[string]map[string]interface{} and assigns it to the Schemas field.
+func (o *EventTypeOut) SetSchemas(v map[string]map[string]interface{}) {
+	o.Schemas = &v
 }
 
 // GetUpdatedAt returns the UpdatedAt field value
@@ -213,20 +213,20 @@ func (o *EventTypeOut) SetUpdatedAt(v time.Time) {
 
 func (o EventTypeOut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["description"] = o.Description
-	}
-	if o.Schemas != nil {
-		toSerialize["schemas"] = o.Schemas
-	}
 	if o.Archived != nil {
 		toSerialize["archived"] = o.Archived
 	}
 	if true {
-		toSerialize["name"] = o.Name
+		toSerialize["createdAt"] = o.CreatedAt
 	}
 	if true {
-		toSerialize["createdAt"] = o.CreatedAt
+		toSerialize["description"] = o.Description
+	}
+	if true {
+		toSerialize["name"] = o.Name
+	}
+	if o.Schemas != nil {
+		toSerialize["schemas"] = o.Schemas
 	}
 	if true {
 		toSerialize["updatedAt"] = o.UpdatedAt
