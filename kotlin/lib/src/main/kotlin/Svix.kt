@@ -8,4 +8,5 @@ class Svix(token: String, options: SvixOptions = SvixOptions()) {
     val integration = Integration(token, options)
     val message = Message(token, options)
     val messageAttempt = MessageAttempt(token, options)
+    val environment = Environment(token, options)
 }
