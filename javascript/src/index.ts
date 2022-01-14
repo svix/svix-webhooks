@@ -44,6 +44,9 @@ import {
   Middleware,
   RequestContext,
   ResponseContext,
+  EnvironmentApi,
+  EnvironmentOut,
+  EnvironmentIn,
 } from "./openapi/index";
 export * from "./openapi/models/all";
 export * from "./openapi/apis/exception";
@@ -79,6 +82,7 @@ export class Svix {
   public readonly integration: Integration;
   public readonly message: Message;
   public readonly messageAttempt: MessageAttempt;
+  public readonly environment: Environment;
 
   public constructor(token: string, options: SvixOptions = {}) {
     const baseUrl: string = options.serverUrl ?? "https://api.svix.com";
@@ -106,6 +110,7 @@ export class Svix {
     this.integration = new Integration(config);
     this.message = new Message(config);
     this.messageAttempt = new MessageAttempt(config);
+    this.environment = new Environment(config);
   }
 }
 
@@ -470,6 +475,26 @@ class MessageAttempt {
     return this.api.listAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGet(
       { appId, msgId, endpointId, ...options }
     );
+  }
+}
+
+class Environment {
+  private readonly api: EnvironmentApi;
+
+  public constructor(config: Configuration) {
+    this.api = new EnvironmentApi(config);
+  }
+
+  public export(): Promise<EnvironmentOut> {
+    return this.api.exportEnvironmentConfigurationApiV1EnvironmentExportPost({
+      body: {}
+    });
+  }
+
+  public import(environmentIn: EnvironmentIn): Promise<void> {
+    return this.api.importEnvironmentConfigurationApiV1EnvironmentImportPost({
+      environmentIn,
+    });
   }
 }
 
