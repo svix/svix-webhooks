@@ -2928,9 +2928,10 @@ supports-hyperlinks@^2.0.0:
     has-flag "^4.0.0"
     supports-color "^7.0.0"
 
-"svix-fetch@https://github.com/svix-frank/isomorphic-fetch.git#fa230b6d27d2d6de1861d4edef58ca116eff38bf":
+svix-fetch@^3.0.0:
   version "3.0.0"
-  resolved "https://github.com/svix-frank/isomorphic-fetch.git#fa230b6d27d2d6de1861d4edef58ca116eff38bf"
+  resolved "https://registry.yarnpkg.com/svix-fetch/-/svix-fetch-3.0.0.tgz#c13e20b69ceb3ad43b52dd3933ec30bf278c571d"
+  integrity sha512-rcADxEFhSqHbraZIsjyZNh4TF6V+koloX1OzZ+AQuObX9mZ2LIMhm1buZeuc5BIZPftZpJCMBsSiBaeszo9tRw==
   dependencies:
     node-fetch "^2.6.1"
     whatwg-fetch "^3.4.1"
