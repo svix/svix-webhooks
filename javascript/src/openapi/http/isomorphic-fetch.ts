@@ -1,6 +1,6 @@
 import {HttpLibrary, RequestContext, ResponseContext} from './http';
 import { from, Observable } from '../rxjsStub';
-import "isomorphic-fetch";
+import "svix-fetch";
 
 const numRetries = 2;
 const sleep = (interval: number) => new Promise(resolve => setTimeout(resolve, interval));

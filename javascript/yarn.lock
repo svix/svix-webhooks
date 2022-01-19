@@ -1775,13 +1775,6 @@ isexe@^2.0.0:
   resolved "https://registry.yarnpkg.com/isexe/-/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
   integrity sha1-6PvzdNxVb/iUehDcsFctYz8s+hA=
 
-"isomorphic-fetch@https://github.com/svix-frank/isomorphic-fetch.git#fa230b6d27d2d6de1861d4edef58ca116eff38bf":
-  version "3.0.0"
-  resolved "https://github.com/svix-frank/isomorphic-fetch.git#fa230b6d27d2d6de1861d4edef58ca116eff38bf"
-  dependencies:
-    node-fetch "^2.6.1"
-    whatwg-fetch "^3.4.1"
-
 istanbul-lib-coverage@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/istanbul-lib-coverage/-/istanbul-lib-coverage-3.0.0.tgz#f5944a37c70b550b02a78a5c3b2055b280cec8ec"
@@ -2934,6 +2927,13 @@ supports-hyperlinks@^2.0.0:
   dependencies:
     has-flag "^4.0.0"
     supports-color "^7.0.0"
+
+"svix-fetch@https://github.com/svix-frank/isomorphic-fetch.git#fa230b6d27d2d6de1861d4edef58ca116eff38bf":
+  version "3.0.0"
+  resolved "https://github.com/svix-frank/isomorphic-fetch.git#fa230b6d27d2d6de1861d4edef58ca116eff38bf"
+  dependencies:
+    node-fetch "^2.6.1"
+    whatwg-fetch "^3.4.1"
 
 symbol-tree@^3.2.4:
   version "3.2.4"
