@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.42.3
+* JS: Use fetch fork from npm to avoid cache/name clashes 🐞
+
 ## Version 0.42.2
 * JS: Rename dependency to avoid name-clashes 🐞
 
