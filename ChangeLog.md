@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.42.2
+* JS: Rename dependency to avoid name-clashes 🐞
+
 ## Version 0.42.1
 * All: Update Schema
 
