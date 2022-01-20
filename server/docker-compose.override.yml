@@ -1,0 +1,8 @@
+version: "3.7"
+services:
+  pgbouncer:
+    ports:
+      - "8079:5432" # Needed for sqlx
+  redis:
+    ports:
+      - "8078:6379" # Needed for sqlx

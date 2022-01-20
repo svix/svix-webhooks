@@ -1,0 +1,36 @@
+version: "3.7"
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: svix/svix-server
+    environment:
+      SVIX_REDIS_SERVER: "redis://redis:6379"
+      SVIX_DB_DSN: "postgresql://postgres:postgres@pgbouncer/postgres"
+    ports:
+      - "8071:8071"
+  postgres:
+    image: postgres:13.4
+    volumes:
+      - "postgres-data:/var/lib/postgresql/data/"
+    environment:
+      POSTGRES_PASSWORD: postgres
+
+  pgbouncer:
+    image: edoburu/pgbouncer:1.15.0
+    healthcheck:
+      test: "pg_isready -h localhost"
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    environment:
+      DB_HOST: "postgres"
+      DB_USER: "postgres"
+      DB_PASSWORD: "postgres"
+      MAX_CLIENT_CONN: 500
+  redis:
+    image: "redis:6.2-alpine"
+
+volumes:
+  postgres-data:

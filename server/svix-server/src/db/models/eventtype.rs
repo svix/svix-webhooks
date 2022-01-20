@@ -1,0 +1,57 @@
+// SPDX-FileCopyrightText: © 2022 Svix Authors
+// SPDX-License-Identifier: MIT
+
+use crate::core::types::{BaseId, EventTypeId, EventTypeName, OrganizationId};
+use chrono::Utc;
+use sea_orm::entity::prelude::*;
+use sea_orm::ActiveValue::Set;
+
+#[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
+#[sea_orm(table_name = "eventtype")]
+pub struct Model {
+    pub created_at: DateTimeWithTimeZone,
+    pub updated_at: DateTimeWithTimeZone,
+    #[sea_orm(primary_key, auto_increment = false)]
+    pub id: EventTypeId,
+    pub org_id: OrganizationId,
+    pub description: String,
+    pub deleted: bool,
+    pub schemas: Option<Json>,
+    pub name: EventTypeName,
+}
+
+#[derive(Copy, Clone, Debug, EnumIter)]
+pub enum Relation {}
+
+impl RelationTrait for Relation {
+    fn def(&self) -> RelationDef {
+        panic!("No RelationDef")
+    }
+}
+
+impl ActiveModelBehavior for ActiveModel {
+    fn new() -> Self {
+        Self {
+            id: Set(EventTypeId::new(None, None)),
+            created_at: Set(Utc::now().into()),
+            updated_at: Set(Utc::now().into()),
+            deleted: Set(false),
+            ..ActiveModelTrait::default()
+        }
+    }
+
+    fn before_save(mut self, _insert: bool) -> Result<Self, DbErr> {
+        self.updated_at = Set(Utc::now().into());
+        Ok(self)
+    }
+}
+
+impl Entity {
+    pub fn secure_find(org_id: OrganizationId) -> Select<Entity> {
+        Self::find().filter(Column::OrgId.eq(org_id))
+    }
+
+    pub fn secure_find_by_name(org_id: OrganizationId, name: EventTypeName) -> Select<Entity> {
+        Self::secure_find(org_id).filter(Column::Name.eq(name))
+    }
+}

@@ -1,0 +1,2 @@
+[workspace]
+members = ["svix-server", "svix-server_derive"]

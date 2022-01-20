@@ -9,6 +9,7 @@
 <h2>
 
 ![GitHub tag](https://img.shields.io/github/tag/svix/svix-webhooks.svg)
+[![Build Status](https://github.com/svix/svix-webhooks/workflows/Server%20CI/badge.svg)](https://github.com/svix/svix-webhooks/actions)
 [![Join our slack](https://img.shields.io/badge/Slack-join%20the%20community-blue?logo=slack&style=social)](https://www.svix.com/slack/)
 
 ## Svix is the enterprise ready webhook service
@@ -110,11 +111,14 @@ To stay up-to-date with new features and improvements be sure to watch our repo!
   </th>
 </table>
 
+# Running the server
+
 # Development
 
 Checkout our project specific development guides to get started hacking on Svix!
 
 - [Svix libs README](./DEVELOPMENT_LIBS.md)
+- [Svix server README](./server/)
 
 # Contributing
 
