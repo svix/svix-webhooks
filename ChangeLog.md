@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.43.0
+* Python: Allow explicit `None` to be passed for optional fields ❌
+
 ## Version 0.42.3
 * JS: Use fetch fork from npm to avoid cache/name clashes 🐞
 
