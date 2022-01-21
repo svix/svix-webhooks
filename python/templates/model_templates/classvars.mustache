@@ -109,7 +109,7 @@
             '{{name}}': ({{{dataType}}},),  # noqa: E501
 {{/requiredVars}}
 {{#optionalVars}}
-            '{{name}}': ({{{dataType}}},),  # noqa: E501
+            '{{name}}': ({{{dataType}}}, none_type),  # noqa: E501
 {{/optionalVars}}
         }
 
