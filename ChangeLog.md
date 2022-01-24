@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.43.1
+* Java & Kotlin: Minor internal fix to restore version number parity with other libs
+
 ## Version 0.43.0
 * Python: Allow explicit `None` to be passed for optional fields ❌
 
