@@ -65,46 +65,50 @@ export interface SvixOptions {
 }
 
 export class Svix {
-  public readonly _configuration: Configuration;
-  public readonly authentication: Authentication;
-  public readonly application: Application;
-  public readonly endpoint: Endpoint;
-  public readonly eventType: EventType;
-  public readonly message: Message;
-  public readonly messageAttempt: MessageAttempt;
+  public readonly authentication: AuthenticationClient;
+  public readonly application: ApplicationClient;
+  public readonly endpoint: EndpointClient;
+  public readonly eventType: EventTypeClient;
+  public readonly message: MessageClient;
+  public readonly messageAttempt: MessageAttemptClient;
 
   public constructor(token: string, options: SvixOptions = {}) {
-    const baseUrl: string = options.serverUrl ?? "https://api.svix.com";
-
-    const baseServer = new ServerConfiguration<any>(baseUrl, {});
-
-    const bearerConfiguration: HttpBearerConfiguration = {
-      tokenProvider: {
-        getToken: () => token,
-      },
-    };
-    const config = createConfiguration({
-      baseServer,
-      promiseMiddleware: [new UserAgentMiddleware()],
-      authMethods: {
-        HTTPBearer: bearerConfiguration,
-      },
-    });
-
-    this._configuration = config;
-    this.authentication = new Authentication(config);
-    this.application = new Application(config);
-    this.endpoint = new Endpoint(config);
-    this.eventType = new EventType(config);
-    this.message = new Message(config);
-    this.messageAttempt = new MessageAttempt(config);
+    this.authentication = new AuthenticationClient(token, options);
+    this.application = new ApplicationClient(token, options);
+    this.endpoint = new EndpointClient(token, options);
+    this.eventType = new EventTypeClient(token, options);
+    this.message = new MessageClient(token, options);
+    this.messageAttempt = new MessageAttemptClient(token, options);
   }
 }
 
-class Authentication {
+function genConfig(token: string, options: SvixOptions = {}): Configuration {
+  const baseUrl: string = options.serverUrl ?? "https://api.svix.com";
+
+  const baseServer = new ServerConfiguration<any>(baseUrl, {});
+
+  const bearerConfiguration: HttpBearerConfiguration = {
+    tokenProvider: {
+      getToken: () => token,
+    },
+  };
+  const config = createConfiguration({
+    baseServer,
+    promiseMiddleware: [new UserAgentMiddleware()],
+    authMethods: {
+      HTTPBearer: bearerConfiguration,
+    },
+  });
+
+  return config;
+}
+
+export class AuthenticationClient {
   private readonly api: AuthenticationApi;
 
-  public constructor(config: Configuration) {
+  public constructor(token: string, options: SvixOptions = {}) {
+    const config = genConfig(token, options);
+
     this.api = new AuthenticationApi(config);
   }
 
@@ -142,10 +146,12 @@ export interface MessageAttemptListOptions extends ListOptions {
   before?: Date;
 }
 
-class Application {
+export class ApplicationClient {
   private readonly api: ApplicationApi;
 
-  public constructor(config: Configuration) {
+  public constructor(token: string, options: SvixOptions = {}) {
+    const config = genConfig(token, options);
+
     this.api = new ApplicationApi(config);
   }
 
@@ -170,10 +176,12 @@ class Application {
   }
 }
 
-class Endpoint {
+export class EndpointClient {
   private readonly api: EndpointApi;
 
-  public constructor(config: Configuration) {
+  public constructor(token: string, options: SvixOptions = {}) {
+    const config = genConfig(token, options);
+
     this.api = new EndpointApi(config);
   }
 
@@ -272,10 +280,12 @@ class Endpoint {
   }
 }
 
-class EventType {
+export class EventTypeClient {
   private readonly api: EventTypeApi;
 
-  public constructor(config: Configuration) {
+  public constructor(token: string, options: SvixOptions = {}) {
+    const config = genConfig(token, options);
+
     this.api = new EventTypeApi(config);
   }
 
@@ -306,10 +316,12 @@ class EventType {
   }
 }
 
-class Message {
+export class MessageClient {
   private readonly api: MessageApi;
 
-  public constructor(config: Configuration) {
+  public constructor(token: string, options: SvixOptions = {}) {
+    const config = genConfig(token, options);
+
     this.api = new MessageApi(config);
   }
 
@@ -329,10 +341,12 @@ class Message {
   }
 }
 
-class MessageAttempt {
+export class MessageAttemptClient {
   private readonly api: MessageAttemptApi;
 
-  public constructor(config: Configuration) {
+  public constructor(token: string, options: SvixOptions = {}) {
+    const config = genConfig(token, options);
+
     this.api = new MessageAttemptApi(config);
   }
 
