@@ -24,7 +24,7 @@ public final class Message {
 
 	public MessageOut create(final String appId, final MessageIn messageIn) throws ApiException {
 		try {
-			return api.createMessageApiV1AppAppIdMsgPost(appId, messageIn.payload(getPayload(messageIn.getPayload())));
+			return api.createMessageApiV1AppAppIdMsgPost(appId, messageIn.payload(getPayload(messageIn.getPayload())), null);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
