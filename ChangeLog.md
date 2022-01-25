@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.43.2
+* JS: Bump vulnerable dependency 👮
+* Ruby: Cleanup gem level imports 💅
+
 ## Version 0.43.1
 * Java & Kotlin: Minor internal fix to restore version number parity with other libs
 
