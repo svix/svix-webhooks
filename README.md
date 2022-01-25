@@ -10,7 +10,13 @@ Libraries for interacting with the Svix API and verifying webhook signatures
 ![GitHub tag](https://img.shields.io/github/tag/svix/svix-libs.svg)
 [![PyPI](https://img.shields.io/pypi/v/svix.svg)](https://pypi.python.org/pypi/svix/)
 [![NPM version](https://img.shields.io/npm/v/svix.svg)](https://www.npmjs.com/package/svix)
-[![PkgGoDev](https://pkg.go.dev/badge/github.com/svix/svix-libs)](https://pkg.go.dev/github.com/svix/svix-libs)
+![Gem](https://img.shields.io/gem/v/svix)
+![Maven Central (Java)](https://img.shields.io/maven-central/v/com.svix/svix?label=maven-central%20(java))
+![Maven Central (Kotlin)](https://img.shields.io/maven-central/v/com.svix.kotlin/svix-kotlin?label=maven-central%20(kotlin))
+![Nuget](https://img.shields.io/nuget/v/svix)
+![Packagist Version](https://img.shields.io/packagist/v/svix/svix)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/svix/svix-libs)](https://pkg.go.dev/github.com/svix/svix-libs/go)
+
 [![Join our slack](https://img.shields.io/badge/Slack-join%20the%20community-blue?logo=slack&style=social)](https://www.svix.com/slack/)
 
 # Documentation
