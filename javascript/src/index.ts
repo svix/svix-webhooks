@@ -17,6 +17,12 @@ import {
   EndpointHeadersIn,
   EndpointHeadersOut,
   RecoverIn,
+  IntegrationApi,
+  ListResponseIntegrationOut,
+  IntegrationOut,
+  IntegrationIn,
+  IntegrationUpdate,
+  IntegrationKeyOut,
   MessageApi,
   MessageOut,
   MessageIn,
@@ -70,6 +76,7 @@ export class Svix {
   public readonly application: Application;
   public readonly endpoint: Endpoint;
   public readonly eventType: EventType;
+  public readonly integration: Integration;
   public readonly message: Message;
   public readonly messageAttempt: MessageAttempt;
 
@@ -96,6 +103,7 @@ export class Svix {
     this.application = new Application(config);
     this.endpoint = new Endpoint(config);
     this.eventType = new EventType(config);
+    this.integration = new Integration(config);
     this.message = new Message(config);
     this.messageAttempt = new MessageAttempt(config);
   }
@@ -125,6 +133,8 @@ interface ListOptions {
 export type ApplicationListOptions = ListOptions;
 
 export type EndpointListOptions = ListOptions;
+
+export type IntegrationListOptions = ListOptions;
 
 export interface EventTypeListOptions extends ListOptions {
   withContent?: boolean;
@@ -303,6 +313,65 @@ class EventType {
 
   public delete(eventTypeName: string): Promise<void> {
     return this.api.deleteEventTypeApiV1EventTypeEventTypeNameDelete({ eventTypeName });
+  }
+}
+
+class Integration {
+  private readonly api: IntegrationApi;
+
+  public constructor(config: Configuration) {
+    this.api = new IntegrationApi(config);
+  }
+
+  public list(
+    appId: string,
+    options?: IntegrationListOptions
+  ): Promise<ListResponseIntegrationOut> {
+    return this.api.listIntegrationsApiV1AppAppIdIntegrationGet({ appId, ...options });
+  }
+
+  public create(appId: string, integrationIn: IntegrationIn): Promise<IntegrationOut> {
+    return this.api.createIntegrationApiV1AppAppIdIntegrationPost({
+      appId,
+      integrationIn,
+    });
+  }
+
+  public get(appId: string, integId: string): Promise<IntegrationOut> {
+    return this.api.getIntegrationApiV1AppAppIdIntegrationIntegIdGet({ integId, appId });
+  }
+
+  public update(
+    appId: string,
+    integId: string,
+    integrationUpdate: IntegrationUpdate
+  ): Promise<IntegrationOut> {
+    return this.api.updateIntegrationApiV1AppAppIdIntegrationIntegIdPut({
+      appId,
+      integId,
+      integrationUpdate,
+    });
+  }
+
+  public delete(appId: string, integId: string): Promise<void> {
+    return this.api.deleteIntegrationApiV1AppAppIdIntegrationIntegIdDelete({
+      integId,
+      appId,
+    });
+  }
+
+  public getKey(appId: string, integId: string): Promise<IntegrationKeyOut> {
+    return this.api.getIntegrationKeyApiV1AppAppIdIntegrationIntegIdKeyGet({
+      integId,
+      appId,
+    });
+  }
+
+  public rotateKey(appId: string, integId: string): Promise<IntegrationKeyOut> {
+    return this.api.rotateIntegrationKeyApiV1AppAppIdIntegrationIntegIdKeyRotatePost({
+      integId,
+      appId,
+    });
   }
 }
 
