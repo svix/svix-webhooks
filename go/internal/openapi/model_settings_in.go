@@ -23,6 +23,7 @@ type SettingsIn struct {
 	CustomThemeOverride *CustomThemeOverride `json:"customThemeOverride,omitempty"`
 	DisableEndpointOnFailure *bool `json:"disableEndpointOnFailure,omitempty"`
 	EnableChannels *bool `json:"enableChannels,omitempty"`
+	EnableIntegrationManagement *bool `json:"enableIntegrationManagement,omitempty"`
 	EnforceHttps *bool `json:"enforceHttps,omitempty"`
 }
 
@@ -36,6 +37,8 @@ func NewSettingsIn() *SettingsIn {
 	this.DisableEndpointOnFailure = &disableEndpointOnFailure
 	var enableChannels bool = false
 	this.EnableChannels = &enableChannels
+	var enableIntegrationManagement bool = false
+	this.EnableIntegrationManagement = &enableIntegrationManagement
 	var enforceHttps bool = true
 	this.EnforceHttps = &enforceHttps
 	return &this
@@ -50,6 +53,8 @@ func NewSettingsInWithDefaults() *SettingsIn {
 	this.DisableEndpointOnFailure = &disableEndpointOnFailure
 	var enableChannels bool = false
 	this.EnableChannels = &enableChannels
+	var enableIntegrationManagement bool = false
+	this.EnableIntegrationManagement = &enableIntegrationManagement
 	var enforceHttps bool = true
 	this.EnforceHttps = &enforceHttps
 	return &this
@@ -279,6 +284,38 @@ func (o *SettingsIn) SetEnableChannels(v bool) {
 	o.EnableChannels = &v
 }
 
+// GetEnableIntegrationManagement returns the EnableIntegrationManagement field value if set, zero value otherwise.
+func (o *SettingsIn) GetEnableIntegrationManagement() bool {
+	if o == nil || o.EnableIntegrationManagement == nil {
+		var ret bool
+		return ret
+	}
+	return *o.EnableIntegrationManagement
+}
+
+// GetEnableIntegrationManagementOk returns a tuple with the EnableIntegrationManagement field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *SettingsIn) GetEnableIntegrationManagementOk() (*bool, bool) {
+	if o == nil || o.EnableIntegrationManagement == nil {
+		return nil, false
+	}
+	return o.EnableIntegrationManagement, true
+}
+
+// HasEnableIntegrationManagement returns a boolean if a field has been set.
+func (o *SettingsIn) HasEnableIntegrationManagement() bool {
+	if o != nil && o.EnableIntegrationManagement != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetEnableIntegrationManagement gets a reference to the given bool and assigns it to the EnableIntegrationManagement field.
+func (o *SettingsIn) SetEnableIntegrationManagement(v bool) {
+	o.EnableIntegrationManagement = &v
+}
+
 // GetEnforceHttps returns the EnforceHttps field value if set, zero value otherwise.
 func (o *SettingsIn) GetEnforceHttps() bool {
 	if o == nil || o.EnforceHttps == nil {
@@ -333,6 +370,9 @@ func (o SettingsIn) MarshalJSON() ([]byte, error) {
 	}
 	if o.EnableChannels != nil {
 		toSerialize["enableChannels"] = o.EnableChannels
+	}
+	if o.EnableIntegrationManagement != nil {
+		toSerialize["enableIntegrationManagement"] = o.EnableIntegrationManagement
 	}
 	if o.EnforceHttps != nil {
 		toSerialize["enforceHttps"] = o.EnforceHttps

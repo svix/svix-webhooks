@@ -31,10 +31,15 @@ type ApiCreateApplicationApiV1AppPostRequest struct {
 	ctx _context.Context
 	ApiService *ApplicationApiService
 	applicationIn *ApplicationIn
+	getIfExists *bool
 }
 
 func (r ApiCreateApplicationApiV1AppPostRequest) ApplicationIn(applicationIn ApplicationIn) ApiCreateApplicationApiV1AppPostRequest {
 	r.applicationIn = &applicationIn
+	return r
+}
+func (r ApiCreateApplicationApiV1AppPostRequest) GetIfExists(getIfExists bool) ApiCreateApplicationApiV1AppPostRequest {
+	r.getIfExists = &getIfExists
 	return r
 }
 
@@ -83,6 +88,9 @@ func (a *ApplicationApiService) CreateApplicationApiV1AppPostExecute(r ApiCreate
 		return localVarReturnValue, nil, reportError("applicationIn is required and must be specified")
 	}
 
+	if r.getIfExists != nil {
+		localVarQueryParams.Add("get_if_exists", parameterToString(*r.getIfExists, ""))
+	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}
 
