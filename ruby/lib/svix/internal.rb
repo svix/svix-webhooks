@@ -7,6 +7,7 @@ module Svix
     private_constant :AuthenticationApi
     private_constant :EndpointApi
     private_constant :HealthApi
+    private_constant :IntegrationApi
     private_constant :MessageApi
     private_constant :MessageAttemptApi
     private_constant :WebhookTypes

@@ -16,6 +16,7 @@ module Svix
         attr_accessor :authentication
         attr_accessor :endpoint
         attr_accessor :event_type
+        attr_accessor :integration
         attr_accessor :message
         attr_accessor :message_attempt
 
@@ -36,6 +37,7 @@ module Svix
             @authentication = AuthenticationAPI.new(api_client)
             @endpoint = EndpointAPI.new(api_client)
             @event_type = EventTypeAPI.new(api_client)
+            @integration = IntegrationAPI.new(api_client)
             @message = MessageAPI.new(api_client)
             @message_attempt = MessageAttemptAPI.new(api_client)
         end
