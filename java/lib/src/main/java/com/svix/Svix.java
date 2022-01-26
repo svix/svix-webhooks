@@ -10,6 +10,7 @@ public final class Svix {
 	private final Authentication authentication;
 	private final Endpoint endpoint;
 	private final EventType eventType;
+	private final Integration integration;
 	private final Message message;
 	private final MessageAttempt messageAttempt;
 
@@ -31,6 +32,7 @@ public final class Svix {
 		authentication = new Authentication();
 		endpoint = new Endpoint();
 		eventType = new EventType();
+		integration = new Integration();
 		message = new Message();
 		messageAttempt = new MessageAttempt();
 	}
@@ -49,6 +51,10 @@ public final class Svix {
 
 	public EventType getEventType() {
 		return eventType;
+	}
+
+	public Integration getIntegration() {
+		return integration;
 	}
 
 	public Message getMessage() {
