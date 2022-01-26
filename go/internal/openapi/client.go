@@ -57,17 +57,19 @@ type APIClient struct {
 
 	EndpointApi *EndpointApiService
 
+	EnvironmentApi *EnvironmentApiService
+
+	EnvironmentSettingsApi *EnvironmentSettingsApiService
+
 	EventTypeApi *EventTypeApiService
 
 	HealthApi *HealthApiService
 
+	IntegrationApi *IntegrationApiService
+
 	MessageApi *MessageApiService
 
 	MessageAttemptApi *MessageAttemptApiService
-
-	OrganizationApi *OrganizationApiService
-
-	OrganizationSettingsApi *OrganizationSettingsApiService
 
 	StatisticsApi *StatisticsApiService
 }
@@ -91,12 +93,13 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.ApplicationApi = (*ApplicationApiService)(&c.common)
 	c.AuthenticationApi = (*AuthenticationApiService)(&c.common)
 	c.EndpointApi = (*EndpointApiService)(&c.common)
+	c.EnvironmentApi = (*EnvironmentApiService)(&c.common)
+	c.EnvironmentSettingsApi = (*EnvironmentSettingsApiService)(&c.common)
 	c.EventTypeApi = (*EventTypeApiService)(&c.common)
 	c.HealthApi = (*HealthApiService)(&c.common)
+	c.IntegrationApi = (*IntegrationApiService)(&c.common)
 	c.MessageApi = (*MessageApiService)(&c.common)
 	c.MessageAttemptApi = (*MessageAttemptApiService)(&c.common)
-	c.OrganizationApi = (*OrganizationApiService)(&c.common)
-	c.OrganizationSettingsApi = (*OrganizationSettingsApiService)(&c.common)
 	c.StatisticsApi = (*StatisticsApiService)(&c.common)
 
 	return c

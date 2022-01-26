@@ -14,86 +14,43 @@ import (
 	"encoding/json"
 )
 
-// SettingsOut struct for SettingsOut
-type SettingsOut struct {
-	CustomBaseFontSize *int32 `json:"customBaseFontSize,omitempty"`
+// EnvironmentSettingsOut struct for EnvironmentSettingsOut
+type EnvironmentSettingsOut struct {
 	CustomColor *string `json:"customColor,omitempty"`
 	CustomFontFamily *string `json:"customFontFamily,omitempty"`
 	CustomLogoUrl *string `json:"customLogoUrl,omitempty"`
 	CustomThemeOverride *CustomThemeOverride `json:"customThemeOverride,omitempty"`
-	DisableEndpointOnFailure *bool `json:"disableEndpointOnFailure,omitempty"`
 	EnableChannels *bool `json:"enableChannels,omitempty"`
 	EnableIntegrationManagement *bool `json:"enableIntegrationManagement,omitempty"`
-	EnforceHttps *bool `json:"enforceHttps,omitempty"`
 }
 
-// NewSettingsOut instantiates a new SettingsOut object
+// NewEnvironmentSettingsOut instantiates a new EnvironmentSettingsOut object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewSettingsOut() *SettingsOut {
-	this := SettingsOut{}
-	var disableEndpointOnFailure bool = true
-	this.DisableEndpointOnFailure = &disableEndpointOnFailure
+func NewEnvironmentSettingsOut() *EnvironmentSettingsOut {
+	this := EnvironmentSettingsOut{}
 	var enableChannels bool = false
 	this.EnableChannels = &enableChannels
 	var enableIntegrationManagement bool = false
 	this.EnableIntegrationManagement = &enableIntegrationManagement
-	var enforceHttps bool = true
-	this.EnforceHttps = &enforceHttps
 	return &this
 }
 
-// NewSettingsOutWithDefaults instantiates a new SettingsOut object
+// NewEnvironmentSettingsOutWithDefaults instantiates a new EnvironmentSettingsOut object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewSettingsOutWithDefaults() *SettingsOut {
-	this := SettingsOut{}
-	var disableEndpointOnFailure bool = true
-	this.DisableEndpointOnFailure = &disableEndpointOnFailure
+func NewEnvironmentSettingsOutWithDefaults() *EnvironmentSettingsOut {
+	this := EnvironmentSettingsOut{}
 	var enableChannels bool = false
 	this.EnableChannels = &enableChannels
 	var enableIntegrationManagement bool = false
 	this.EnableIntegrationManagement = &enableIntegrationManagement
-	var enforceHttps bool = true
-	this.EnforceHttps = &enforceHttps
 	return &this
-}
-
-// GetCustomBaseFontSize returns the CustomBaseFontSize field value if set, zero value otherwise.
-func (o *SettingsOut) GetCustomBaseFontSize() int32 {
-	if o == nil || o.CustomBaseFontSize == nil {
-		var ret int32
-		return ret
-	}
-	return *o.CustomBaseFontSize
-}
-
-// GetCustomBaseFontSizeOk returns a tuple with the CustomBaseFontSize field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *SettingsOut) GetCustomBaseFontSizeOk() (*int32, bool) {
-	if o == nil || o.CustomBaseFontSize == nil {
-		return nil, false
-	}
-	return o.CustomBaseFontSize, true
-}
-
-// HasCustomBaseFontSize returns a boolean if a field has been set.
-func (o *SettingsOut) HasCustomBaseFontSize() bool {
-	if o != nil && o.CustomBaseFontSize != nil {
-		return true
-	}
-
-	return false
-}
-
-// SetCustomBaseFontSize gets a reference to the given int32 and assigns it to the CustomBaseFontSize field.
-func (o *SettingsOut) SetCustomBaseFontSize(v int32) {
-	o.CustomBaseFontSize = &v
 }
 
 // GetCustomColor returns the CustomColor field value if set, zero value otherwise.
-func (o *SettingsOut) GetCustomColor() string {
+func (o *EnvironmentSettingsOut) GetCustomColor() string {
 	if o == nil || o.CustomColor == nil {
 		var ret string
 		return ret
@@ -103,7 +60,7 @@ func (o *SettingsOut) GetCustomColor() string {
 
 // GetCustomColorOk returns a tuple with the CustomColor field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *SettingsOut) GetCustomColorOk() (*string, bool) {
+func (o *EnvironmentSettingsOut) GetCustomColorOk() (*string, bool) {
 	if o == nil || o.CustomColor == nil {
 		return nil, false
 	}
@@ -111,7 +68,7 @@ func (o *SettingsOut) GetCustomColorOk() (*string, bool) {
 }
 
 // HasCustomColor returns a boolean if a field has been set.
-func (o *SettingsOut) HasCustomColor() bool {
+func (o *EnvironmentSettingsOut) HasCustomColor() bool {
 	if o != nil && o.CustomColor != nil {
 		return true
 	}
@@ -120,12 +77,12 @@ func (o *SettingsOut) HasCustomColor() bool {
 }
 
 // SetCustomColor gets a reference to the given string and assigns it to the CustomColor field.
-func (o *SettingsOut) SetCustomColor(v string) {
+func (o *EnvironmentSettingsOut) SetCustomColor(v string) {
 	o.CustomColor = &v
 }
 
 // GetCustomFontFamily returns the CustomFontFamily field value if set, zero value otherwise.
-func (o *SettingsOut) GetCustomFontFamily() string {
+func (o *EnvironmentSettingsOut) GetCustomFontFamily() string {
 	if o == nil || o.CustomFontFamily == nil {
 		var ret string
 		return ret
@@ -135,7 +92,7 @@ func (o *SettingsOut) GetCustomFontFamily() string {
 
 // GetCustomFontFamilyOk returns a tuple with the CustomFontFamily field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *SettingsOut) GetCustomFontFamilyOk() (*string, bool) {
+func (o *EnvironmentSettingsOut) GetCustomFontFamilyOk() (*string, bool) {
 	if o == nil || o.CustomFontFamily == nil {
 		return nil, false
 	}
@@ -143,7 +100,7 @@ func (o *SettingsOut) GetCustomFontFamilyOk() (*string, bool) {
 }
 
 // HasCustomFontFamily returns a boolean if a field has been set.
-func (o *SettingsOut) HasCustomFontFamily() bool {
+func (o *EnvironmentSettingsOut) HasCustomFontFamily() bool {
 	if o != nil && o.CustomFontFamily != nil {
 		return true
 	}
@@ -152,12 +109,12 @@ func (o *SettingsOut) HasCustomFontFamily() bool {
 }
 
 // SetCustomFontFamily gets a reference to the given string and assigns it to the CustomFontFamily field.
-func (o *SettingsOut) SetCustomFontFamily(v string) {
+func (o *EnvironmentSettingsOut) SetCustomFontFamily(v string) {
 	o.CustomFontFamily = &v
 }
 
 // GetCustomLogoUrl returns the CustomLogoUrl field value if set, zero value otherwise.
-func (o *SettingsOut) GetCustomLogoUrl() string {
+func (o *EnvironmentSettingsOut) GetCustomLogoUrl() string {
 	if o == nil || o.CustomLogoUrl == nil {
 		var ret string
 		return ret
@@ -167,7 +124,7 @@ func (o *SettingsOut) GetCustomLogoUrl() string {
 
 // GetCustomLogoUrlOk returns a tuple with the CustomLogoUrl field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *SettingsOut) GetCustomLogoUrlOk() (*string, bool) {
+func (o *EnvironmentSettingsOut) GetCustomLogoUrlOk() (*string, bool) {
 	if o == nil || o.CustomLogoUrl == nil {
 		return nil, false
 	}
@@ -175,7 +132,7 @@ func (o *SettingsOut) GetCustomLogoUrlOk() (*string, bool) {
 }
 
 // HasCustomLogoUrl returns a boolean if a field has been set.
-func (o *SettingsOut) HasCustomLogoUrl() bool {
+func (o *EnvironmentSettingsOut) HasCustomLogoUrl() bool {
 	if o != nil && o.CustomLogoUrl != nil {
 		return true
 	}
@@ -184,12 +141,12 @@ func (o *SettingsOut) HasCustomLogoUrl() bool {
 }
 
 // SetCustomLogoUrl gets a reference to the given string and assigns it to the CustomLogoUrl field.
-func (o *SettingsOut) SetCustomLogoUrl(v string) {
+func (o *EnvironmentSettingsOut) SetCustomLogoUrl(v string) {
 	o.CustomLogoUrl = &v
 }
 
 // GetCustomThemeOverride returns the CustomThemeOverride field value if set, zero value otherwise.
-func (o *SettingsOut) GetCustomThemeOverride() CustomThemeOverride {
+func (o *EnvironmentSettingsOut) GetCustomThemeOverride() CustomThemeOverride {
 	if o == nil || o.CustomThemeOverride == nil {
 		var ret CustomThemeOverride
 		return ret
@@ -199,7 +156,7 @@ func (o *SettingsOut) GetCustomThemeOverride() CustomThemeOverride {
 
 // GetCustomThemeOverrideOk returns a tuple with the CustomThemeOverride field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *SettingsOut) GetCustomThemeOverrideOk() (*CustomThemeOverride, bool) {
+func (o *EnvironmentSettingsOut) GetCustomThemeOverrideOk() (*CustomThemeOverride, bool) {
 	if o == nil || o.CustomThemeOverride == nil {
 		return nil, false
 	}
@@ -207,7 +164,7 @@ func (o *SettingsOut) GetCustomThemeOverrideOk() (*CustomThemeOverride, bool) {
 }
 
 // HasCustomThemeOverride returns a boolean if a field has been set.
-func (o *SettingsOut) HasCustomThemeOverride() bool {
+func (o *EnvironmentSettingsOut) HasCustomThemeOverride() bool {
 	if o != nil && o.CustomThemeOverride != nil {
 		return true
 	}
@@ -216,44 +173,12 @@ func (o *SettingsOut) HasCustomThemeOverride() bool {
 }
 
 // SetCustomThemeOverride gets a reference to the given CustomThemeOverride and assigns it to the CustomThemeOverride field.
-func (o *SettingsOut) SetCustomThemeOverride(v CustomThemeOverride) {
+func (o *EnvironmentSettingsOut) SetCustomThemeOverride(v CustomThemeOverride) {
 	o.CustomThemeOverride = &v
 }
 
-// GetDisableEndpointOnFailure returns the DisableEndpointOnFailure field value if set, zero value otherwise.
-func (o *SettingsOut) GetDisableEndpointOnFailure() bool {
-	if o == nil || o.DisableEndpointOnFailure == nil {
-		var ret bool
-		return ret
-	}
-	return *o.DisableEndpointOnFailure
-}
-
-// GetDisableEndpointOnFailureOk returns a tuple with the DisableEndpointOnFailure field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *SettingsOut) GetDisableEndpointOnFailureOk() (*bool, bool) {
-	if o == nil || o.DisableEndpointOnFailure == nil {
-		return nil, false
-	}
-	return o.DisableEndpointOnFailure, true
-}
-
-// HasDisableEndpointOnFailure returns a boolean if a field has been set.
-func (o *SettingsOut) HasDisableEndpointOnFailure() bool {
-	if o != nil && o.DisableEndpointOnFailure != nil {
-		return true
-	}
-
-	return false
-}
-
-// SetDisableEndpointOnFailure gets a reference to the given bool and assigns it to the DisableEndpointOnFailure field.
-func (o *SettingsOut) SetDisableEndpointOnFailure(v bool) {
-	o.DisableEndpointOnFailure = &v
-}
-
 // GetEnableChannels returns the EnableChannels field value if set, zero value otherwise.
-func (o *SettingsOut) GetEnableChannels() bool {
+func (o *EnvironmentSettingsOut) GetEnableChannels() bool {
 	if o == nil || o.EnableChannels == nil {
 		var ret bool
 		return ret
@@ -263,7 +188,7 @@ func (o *SettingsOut) GetEnableChannels() bool {
 
 // GetEnableChannelsOk returns a tuple with the EnableChannels field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *SettingsOut) GetEnableChannelsOk() (*bool, bool) {
+func (o *EnvironmentSettingsOut) GetEnableChannelsOk() (*bool, bool) {
 	if o == nil || o.EnableChannels == nil {
 		return nil, false
 	}
@@ -271,7 +196,7 @@ func (o *SettingsOut) GetEnableChannelsOk() (*bool, bool) {
 }
 
 // HasEnableChannels returns a boolean if a field has been set.
-func (o *SettingsOut) HasEnableChannels() bool {
+func (o *EnvironmentSettingsOut) HasEnableChannels() bool {
 	if o != nil && o.EnableChannels != nil {
 		return true
 	}
@@ -280,12 +205,12 @@ func (o *SettingsOut) HasEnableChannels() bool {
 }
 
 // SetEnableChannels gets a reference to the given bool and assigns it to the EnableChannels field.
-func (o *SettingsOut) SetEnableChannels(v bool) {
+func (o *EnvironmentSettingsOut) SetEnableChannels(v bool) {
 	o.EnableChannels = &v
 }
 
 // GetEnableIntegrationManagement returns the EnableIntegrationManagement field value if set, zero value otherwise.
-func (o *SettingsOut) GetEnableIntegrationManagement() bool {
+func (o *EnvironmentSettingsOut) GetEnableIntegrationManagement() bool {
 	if o == nil || o.EnableIntegrationManagement == nil {
 		var ret bool
 		return ret
@@ -295,7 +220,7 @@ func (o *SettingsOut) GetEnableIntegrationManagement() bool {
 
 // GetEnableIntegrationManagementOk returns a tuple with the EnableIntegrationManagement field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *SettingsOut) GetEnableIntegrationManagementOk() (*bool, bool) {
+func (o *EnvironmentSettingsOut) GetEnableIntegrationManagementOk() (*bool, bool) {
 	if o == nil || o.EnableIntegrationManagement == nil {
 		return nil, false
 	}
@@ -303,7 +228,7 @@ func (o *SettingsOut) GetEnableIntegrationManagementOk() (*bool, bool) {
 }
 
 // HasEnableIntegrationManagement returns a boolean if a field has been set.
-func (o *SettingsOut) HasEnableIntegrationManagement() bool {
+func (o *EnvironmentSettingsOut) HasEnableIntegrationManagement() bool {
 	if o != nil && o.EnableIntegrationManagement != nil {
 		return true
 	}
@@ -312,47 +237,12 @@ func (o *SettingsOut) HasEnableIntegrationManagement() bool {
 }
 
 // SetEnableIntegrationManagement gets a reference to the given bool and assigns it to the EnableIntegrationManagement field.
-func (o *SettingsOut) SetEnableIntegrationManagement(v bool) {
+func (o *EnvironmentSettingsOut) SetEnableIntegrationManagement(v bool) {
 	o.EnableIntegrationManagement = &v
 }
 
-// GetEnforceHttps returns the EnforceHttps field value if set, zero value otherwise.
-func (o *SettingsOut) GetEnforceHttps() bool {
-	if o == nil || o.EnforceHttps == nil {
-		var ret bool
-		return ret
-	}
-	return *o.EnforceHttps
-}
-
-// GetEnforceHttpsOk returns a tuple with the EnforceHttps field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *SettingsOut) GetEnforceHttpsOk() (*bool, bool) {
-	if o == nil || o.EnforceHttps == nil {
-		return nil, false
-	}
-	return o.EnforceHttps, true
-}
-
-// HasEnforceHttps returns a boolean if a field has been set.
-func (o *SettingsOut) HasEnforceHttps() bool {
-	if o != nil && o.EnforceHttps != nil {
-		return true
-	}
-
-	return false
-}
-
-// SetEnforceHttps gets a reference to the given bool and assigns it to the EnforceHttps field.
-func (o *SettingsOut) SetEnforceHttps(v bool) {
-	o.EnforceHttps = &v
-}
-
-func (o SettingsOut) MarshalJSON() ([]byte, error) {
+func (o EnvironmentSettingsOut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if o.CustomBaseFontSize != nil {
-		toSerialize["customBaseFontSize"] = o.CustomBaseFontSize
-	}
 	if o.CustomColor != nil {
 		toSerialize["customColor"] = o.CustomColor
 	}
@@ -365,53 +255,47 @@ func (o SettingsOut) MarshalJSON() ([]byte, error) {
 	if o.CustomThemeOverride != nil {
 		toSerialize["customThemeOverride"] = o.CustomThemeOverride
 	}
-	if o.DisableEndpointOnFailure != nil {
-		toSerialize["disableEndpointOnFailure"] = o.DisableEndpointOnFailure
-	}
 	if o.EnableChannels != nil {
 		toSerialize["enableChannels"] = o.EnableChannels
 	}
 	if o.EnableIntegrationManagement != nil {
 		toSerialize["enableIntegrationManagement"] = o.EnableIntegrationManagement
 	}
-	if o.EnforceHttps != nil {
-		toSerialize["enforceHttps"] = o.EnforceHttps
-	}
 	return json.Marshal(toSerialize)
 }
 
-type NullableSettingsOut struct {
-	value *SettingsOut
+type NullableEnvironmentSettingsOut struct {
+	value *EnvironmentSettingsOut
 	isSet bool
 }
 
-func (v NullableSettingsOut) Get() *SettingsOut {
+func (v NullableEnvironmentSettingsOut) Get() *EnvironmentSettingsOut {
 	return v.value
 }
 
-func (v *NullableSettingsOut) Set(val *SettingsOut) {
+func (v *NullableEnvironmentSettingsOut) Set(val *EnvironmentSettingsOut) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableSettingsOut) IsSet() bool {
+func (v NullableEnvironmentSettingsOut) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableSettingsOut) Unset() {
+func (v *NullableEnvironmentSettingsOut) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableSettingsOut(val *SettingsOut) *NullableSettingsOut {
-	return &NullableSettingsOut{value: val, isSet: true}
+func NewNullableEnvironmentSettingsOut(val *EnvironmentSettingsOut) *NullableEnvironmentSettingsOut {
+	return &NullableEnvironmentSettingsOut{value: val, isSet: true}
 }
 
-func (v NullableSettingsOut) MarshalJSON() ([]byte, error) {
+func (v NullableEnvironmentSettingsOut) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableSettingsOut) UnmarshalJSON(src []byte) error {
+func (v *NullableEnvironmentSettingsOut) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

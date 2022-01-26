@@ -881,6 +881,102 @@
                 "title": "EndpointUpdatedEventData",
                 "type": "object"
             },
+            "EnvironmentIn": {
+                "properties": {
+                    "createdAt": {
+                        "format": "date-time",
+                        "title": "Createdat",
+                        "type": "string"
+                    },
+                    "eventTypes": {
+                        "items": {
+                            "$ref": "#/components/schemas/EventTypeIn"
+                        },
+                        "title": "Eventtypes",
+                        "type": "array"
+                    },
+                    "settings": {
+                        "$ref": "#/components/schemas/SettingsIn"
+                    },
+                    "version": {
+                        "title": "Version",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "version",
+                    "createdAt"
+                ],
+                "title": "EnvironmentIn",
+                "type": "object"
+            },
+            "EnvironmentOut": {
+                "properties": {
+                    "createdAt": {
+                        "format": "date-time",
+                        "title": "Createdat",
+                        "type": "string"
+                    },
+                    "eventTypes": {
+                        "items": {
+                            "$ref": "#/components/schemas/EventTypeOut"
+                        },
+                        "title": "Eventtypes",
+                        "type": "array"
+                    },
+                    "settings": {
+                        "$ref": "#/components/schemas/SettingsOut"
+                    },
+                    "version": {
+                        "default": 1,
+                        "title": "Version",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "createdAt",
+                    "eventTypes"
+                ],
+                "title": "EnvironmentOut",
+                "type": "object"
+            },
+            "EnvironmentSettingsOut": {
+                "properties": {
+                    "customColor": {
+                        "format": "color",
+                        "title": "Customcolor",
+                        "type": "string"
+                    },
+                    "customFontFamily": {
+                        "example": "Open Sans",
+                        "pattern": "^[a-zA-Z0-9\\-_ ]+$",
+                        "title": "Customfontfamily",
+                        "type": "string"
+                    },
+                    "customLogoUrl": {
+                        "format": "uri",
+                        "maxLength": 65536,
+                        "minLength": 1,
+                        "title": "Customlogourl",
+                        "type": "string"
+                    },
+                    "customThemeOverride": {
+                        "$ref": "#/components/schemas/CustomThemeOverride"
+                    },
+                    "enableChannels": {
+                        "default": false,
+                        "title": "Enablechannels",
+                        "type": "boolean"
+                    },
+                    "enableIntegrationManagement": {
+                        "default": false,
+                        "title": "Enableintegrationmanagement",
+                        "type": "boolean"
+                    }
+                },
+                "title": "EnvironmentSettingsOut",
+                "type": "object"
+            },
             "EventExampleIn": {
                 "properties": {
                     "eventType": {
@@ -1182,39 +1278,9 @@
                 "title": "EventTypeUpdate",
                 "type": "object"
             },
-            "ExportOrganizationIn": {
+            "ExportEnvironmentIn": {
                 "properties": {},
-                "title": "ExportOrganizationIn",
-                "type": "object"
-            },
-            "ExportOrganizationOut": {
-                "properties": {
-                    "createdAt": {
-                        "format": "date-time",
-                        "title": "Createdat",
-                        "type": "string"
-                    },
-                    "eventTypes": {
-                        "items": {
-                            "$ref": "#/components/schemas/EventTypeOut"
-                        },
-                        "title": "Eventtypes",
-                        "type": "array"
-                    },
-                    "settings": {
-                        "$ref": "#/components/schemas/SettingsOut"
-                    },
-                    "version": {
-                        "default": 1,
-                        "title": "Version",
-                        "type": "integer"
-                    }
-                },
-                "required": [
-                    "createdAt",
-                    "eventTypes"
-                ],
-                "title": "ExportOrganizationOut",
+                "title": "ExportEnvironmentIn",
                 "type": "object"
             },
             "FontSizeConfig": {
@@ -1258,33 +1324,78 @@
                 "title": "HttpError",
                 "type": "object"
             },
-            "ImportOrganizationIn": {
+            "IntegrationIn": {
+                "properties": {
+                    "name": {
+                        "example": "Example Integration",
+                        "title": "Name",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "name"
+                ],
+                "title": "IntegrationIn",
+                "type": "object"
+            },
+            "IntegrationKeyOut": {
+                "properties": {
+                    "key": {
+                        "example": "integsk_kV3ts5tKPNJN4Dl25cMTfUNdmabxbX0O",
+                        "title": "Key",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "key"
+                ],
+                "title": "IntegrationKeyOut",
+                "type": "object"
+            },
+            "IntegrationOut": {
                 "properties": {
                     "createdAt": {
                         "format": "date-time",
                         "title": "Createdat",
                         "type": "string"
                     },
-                    "eventTypes": {
-                        "items": {
-                            "$ref": "#/components/schemas/EventTypeIn"
-                        },
-                        "title": "Eventtypes",
-                        "type": "array"
+                    "id": {
+                        "example": "integ_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "title": "Id",
+                        "type": "string"
                     },
-                    "settings": {
-                        "$ref": "#/components/schemas/SettingsIn"
+                    "name": {
+                        "example": "Example Integration",
+                        "title": "Name",
+                        "type": "string"
                     },
-                    "version": {
-                        "title": "Version",
-                        "type": "integer"
+                    "updatedAt": {
+                        "format": "date-time",
+                        "title": "Updatedat",
+                        "type": "string"
                     }
                 },
                 "required": [
-                    "version",
-                    "createdAt"
+                    "name",
+                    "id",
+                    "createdAt",
+                    "updatedAt"
                 ],
-                "title": "ImportOrganizationIn",
+                "title": "IntegrationOut",
+                "type": "object"
+            },
+            "IntegrationUpdate": {
+                "properties": {
+                    "name": {
+                        "example": "Example Integration",
+                        "title": "Name",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "name"
+                ],
+                "title": "IntegrationUpdate",
                 "type": "object"
             },
             "ListResponse_ApplicationOut_": {
@@ -1389,6 +1500,32 @@
                     "done"
                 ],
                 "title": "ListResponse[EventTypeOut]",
+                "type": "object"
+            },
+            "ListResponse_IntegrationOut_": {
+                "properties": {
+                    "data": {
+                        "items": {
+                            "$ref": "#/components/schemas/IntegrationOut"
+                        },
+                        "title": "Data",
+                        "type": "array"
+                    },
+                    "done": {
+                        "title": "Done",
+                        "type": "boolean"
+                    },
+                    "iterator": {
+                        "example": "iterator",
+                        "title": "Iterator",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "data",
+                    "done"
+                ],
+                "title": "ListResponse[IntegrationOut]",
                 "type": "object"
             },
             "ListResponse_MessageAttemptEndpointOut_": {
@@ -1939,38 +2076,6 @@
                     "Sending"
                 ]
             },
-            "PortalSettingsOut": {
-                "properties": {
-                    "customColor": {
-                        "format": "color",
-                        "title": "Customcolor",
-                        "type": "string"
-                    },
-                    "customFontFamily": {
-                        "example": "Open Sans",
-                        "pattern": "^[a-zA-Z0-9\\-_ ]+$",
-                        "title": "Customfontfamily",
-                        "type": "string"
-                    },
-                    "customLogoUrl": {
-                        "format": "uri",
-                        "maxLength": 65536,
-                        "minLength": 1,
-                        "title": "Customlogourl",
-                        "type": "string"
-                    },
-                    "customThemeOverride": {
-                        "$ref": "#/components/schemas/CustomThemeOverride"
-                    },
-                    "enableChannels": {
-                        "default": false,
-                        "title": "Enablechannels",
-                        "type": "boolean"
-                    }
-                },
-                "title": "PortalSettingsOut",
-                "type": "object"
-            },
             "RecoverIn": {
                 "properties": {
                     "since": {
@@ -2027,6 +2132,11 @@
                         "title": "Enablechannels",
                         "type": "boolean"
                     },
+                    "enableIntegrationManagement": {
+                        "default": false,
+                        "title": "Enableintegrationmanagement",
+                        "type": "boolean"
+                    },
                     "enforceHttps": {
                         "default": true,
                         "title": "Enforcehttps",
@@ -2071,6 +2181,11 @@
                     "enableChannels": {
                         "default": false,
                         "title": "Enablechannels",
+                        "type": "boolean"
+                    },
+                    "enableIntegrationManagement": {
+                        "default": false,
+                        "title": "Enableintegrationmanagement",
                         "type": "boolean"
                     },
                     "enforceHttps": {
@@ -2314,6 +2429,18 @@
             "post": {
                 "description": "Create a new application.",
                 "operationId": "create_application_api_v1_app__post",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "get_if_exists",
+                        "required": false,
+                        "schema": {
+                            "default": false,
+                            "title": "Get If Exists",
+                            "type": "boolean"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -2325,6 +2452,16 @@
                     "required": true
                 },
                 "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApplicationOut"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
                     "201": {
                         "content": {
                             "application/json": {
@@ -5023,6 +5160,1063 @@
                 ]
             }
         },
+        "/api/v1/app/{app_id}/integration/": {
+            "get": {
+                "description": "List the application's integrations.",
+                "operationId": "list_integrations_api_v1_app__app_id__integration__get",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "App Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "iterator",
+                        "required": false,
+                        "schema": {
+                            "example": "integ_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "title": "Iterator",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "limit",
+                        "required": false,
+                        "schema": {
+                            "default": 50,
+                            "title": "Limit",
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListResponse_IntegrationOut_"
+                                }
+                            }
+                        },
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "List Integrations",
+                "tags": [
+                    "Integration"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const listResponseIntegrationOut = await svix.integration.list('app_id');"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const listResponseIntegrationOut = await svix.integration.list('app_id');"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "list_response_integration_out = svix.integration.list('app_id')"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "listResponseIntegrationOut, err := svixClient.Integration.List(\"app_id\", nil)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val listResponseIntegrationOut = svix.integration.list('app_id', FetchOptions())"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "ListResponseIntegrationOut listResponseIntegrationOut = svix.getIntegration().list('app_id', new FetchOptions())"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "list_response_integration_out = svix.integration.list('app_id')"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix integration list 'app_id'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/integration/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            },
+            "post": {
+                "description": "Create an integration.",
+                "operationId": "create_integration_api_v1_app__app_id__integration__post",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "App Id",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/IntegrationIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/IntegrationOut"
+                                }
+                            }
+                        },
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Create Integration",
+                "tags": [
+                    "Integration"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const integrationOut = await svix.integration.create('app_id', {\n    name: \"Example Integration\"\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const integrationOut = await svix.integration.create('app_id', {\n    name: \"Example Integration\"\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "integration_out = svix.integration.create('app_id', IntegrationIn(\n    name=\"Example Integration\"\n))"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "integrationOut, err := svixClient.Integration.Create(\"app_id\", &svix.IntegrationIn{\n    Name: \"Example Integration\"\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val integrationOut = svix.integration.create('app_id', IntegrationIn()\n    .name(\"Example Integration\")\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "IntegrationOut integrationOut = svix.getIntegration().create('app_id', new IntegrationIn()\n    .name(\"Example Integration\")\n)"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "integration_out = svix.integration.create('app_id', Svix::IntegrationIn.new({\n    \"name\": \"Example Integration\"\n}))"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix integration create 'app_id' '{\n    \"name\": \"Example Integration\"\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/integration/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"name\": \"Example Integration\"\n}'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/app/{app_id}/integration/{integ_id}/": {
+            "delete": {
+                "description": "Delete an integration and revoke it's key.",
+                "operationId": "delete_integration_api_v1_app__app_id__integration__integ_id___delete",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "integ_id",
+                        "required": true,
+                        "schema": {
+                            "example": "integ_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "title": "Integ Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "App Id",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Delete Integration",
+                "tags": [
+                    "Integration"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.integration.delete('app_id', 'integ_id');"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.integration.delete('app_id', 'integ_id');"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "svix.integration.delete('app_id', 'integ_id')"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "err := svixClient.Integration.Delete(\"app_id\", \"integ_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "svix.integration.delete('app_id', 'integ_id')"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "svix.getIntegration().delete('app_id', 'integ_id')"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "svix.integration.delete('app_id', 'integ_id')"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix integration delete 'app_id' 'integ_id'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'DELETE' \\\n  'https://api.svix.com/api/v1/app/{app_id}/integration/{integ_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            },
+            "get": {
+                "description": "Get an integration.",
+                "operationId": "get_integration_api_v1_app__app_id__integration__integ_id___get",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "integ_id",
+                        "required": true,
+                        "schema": {
+                            "example": "integ_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "title": "Integ Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "App Id",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/IntegrationOut"
+                                }
+                            }
+                        },
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Get Integration",
+                "tags": [
+                    "Integration"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const integrationOut = await svix.integration.get('app_id', 'integ_id');"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const integrationOut = await svix.integration.get('app_id', 'integ_id');"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "integration_out = svix.integration.get('app_id', 'integ_id')"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "integrationOut, err := svixClient.Integration.Get(\"app_id\", \"integ_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val integrationOut = svix.integration.get('app_id', 'integ_id')"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "IntegrationOut integrationOut = svix.getIntegration().get('app_id', 'integ_id')"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "integration_out = svix.integration.get('app_id', 'integ_id')"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix integration get 'app_id' 'integ_id'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/integration/{integ_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            },
+            "put": {
+                "description": "Update an integration.",
+                "operationId": "update_integration_api_v1_app__app_id__integration__integ_id___put",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "integ_id",
+                        "required": true,
+                        "schema": {
+                            "example": "integ_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "title": "Integ Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "App Id",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/IntegrationUpdate"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/IntegrationOut"
+                                }
+                            }
+                        },
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Update Integration",
+                "tags": [
+                    "Integration"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const integrationOut = await svix.integration.update('app_id', 'integ_id', {\n    name: \"Example Integration\"\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const integrationOut = await svix.integration.update('app_id', 'integ_id', {\n    name: \"Example Integration\"\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "integration_out = svix.integration.update('app_id', 'integ_id', IntegrationUpdate(\n    name=\"Example Integration\"\n))"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "integrationOut, err := svixClient.Integration.Update(\"app_id\", \"integ_id\", &svix.IntegrationUpdate{\n    Name: \"Example Integration\"\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val integrationOut = svix.integration.update('app_id', 'integ_id', IntegrationUpdate()\n    .name(\"Example Integration\")\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "IntegrationOut integrationOut = svix.getIntegration().update('app_id', 'integ_id', new IntegrationUpdate()\n    .name(\"Example Integration\")\n)"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "integration_out = svix.integration.update('app_id', 'integ_id', Svix::IntegrationUpdate.new({\n    \"name\": \"Example Integration\"\n}))"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix integration update 'app_id' 'integ_id' '{\n    \"name\": \"Example Integration\"\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'PUT' \\\n  'https://api.svix.com/api/v1/app/{app_id}/integration/{integ_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"name\": \"Example Integration\"\n}'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/app/{app_id}/integration/{integ_id}/key/": {
+            "get": {
+                "description": "Get an integration's key.",
+                "operationId": "get_integration_key_api_v1_app__app_id__integration__integ_id__key__get",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "integ_id",
+                        "required": true,
+                        "schema": {
+                            "example": "integ_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "title": "Integ Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "App Id",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/IntegrationKeyOut"
+                                }
+                            }
+                        },
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Get Integration Key",
+                "tags": [
+                    "Integration"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const integrationKeyOut = await svix.integration.getKey('app_id', 'integ_id');"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const integrationKeyOut = await svix.integration.getKey('app_id', 'integ_id');"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "integration_key_out = svix.integration.get_key('app_id', 'integ_id')"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "integrationKeyOut, err := svixClient.Integration.GetKey(\"app_id\", \"integ_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val integrationKeyOut = svix.integration.getKey('app_id', 'integ_id')"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "IntegrationKeyOut integrationKeyOut = svix.getIntegration().getKey('app_id', 'integ_id')"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "integration_key_out = svix.integration.get_key('app_id', 'integ_id')"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix integration get-key 'app_id' 'integ_id'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/integration/{integ_id}/key/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/app/{app_id}/integration/{integ_id}/key/rotate/": {
+            "post": {
+                "description": "Rotate the integration's key. The previous key will be immediately revoked.",
+                "operationId": "rotate_integration_key_api_v1_app__app_id__integration__integ_id__key_rotate__post",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "integ_id",
+                        "required": true,
+                        "schema": {
+                            "example": "integ_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "title": "Integ Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "App Id",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/IntegrationKeyOut"
+                                }
+                            }
+                        },
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Rotate Integration Key",
+                "tags": [
+                    "Integration"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const integrationKeyOut = await svix.integration.rotateKey('app_id', 'integ_id');"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const integrationKeyOut = await svix.integration.rotateKey('app_id', 'integ_id');"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "integration_key_out = svix.integration.rotate_key('app_id', 'integ_id')"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "integrationKeyOut, err := svixClient.Integration.RotateKey(\"app_id\", \"integ_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val integrationKeyOut = svix.integration.rotateKey('app_id', 'integ_id')"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "IntegrationKeyOut integrationKeyOut = svix.getIntegration().rotateKey('app_id', 'integ_id')"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "integration_key_out = svix.integration.rotate_key('app_id', 'integ_id')"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix integration rotate-key 'app_id' 'integ_id'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/integration/{integ_id}/key/rotate/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            }
+        },
         "/api/v1/app/{app_id}/msg/": {
             "get": {
                 "description": "List all of the application's messages.\n\nThe `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.",
@@ -5387,7 +6581,11 @@
                         "name": "msg_id",
                         "required": true,
                         "schema": {
+                            "description": "The message's ID or eventID",
                             "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Msg Id",
                             "type": "string"
                         }
@@ -5551,7 +6749,11 @@
                         "name": "msg_id",
                         "required": true,
                         "schema": {
+                            "description": "The message's ID or eventID",
                             "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Msg Id",
                             "type": "string"
                         }
@@ -5726,7 +6928,11 @@
                         "name": "msg_id",
                         "required": true,
                         "schema": {
+                            "description": "The message's ID or eventID",
                             "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Msg Id",
                             "type": "string"
                         }
@@ -5876,7 +7082,11 @@
                         "name": "msg_id",
                         "required": true,
                         "schema": {
+                            "description": "The message's ID or eventID",
                             "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Msg Id",
                             "type": "string"
                         }
@@ -6007,7 +7217,11 @@
                         "name": "msg_id",
                         "required": true,
                         "schema": {
+                            "description": "The message's ID or eventID",
                             "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Msg Id",
                             "type": "string"
                         }
@@ -6199,7 +7413,11 @@
                         "name": "msg_id",
                         "required": true,
                         "schema": {
+                            "description": "The message's ID or eventID",
                             "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Msg Id",
                             "type": "string"
                         }
@@ -6575,6 +7793,261 @@
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/auth/logout/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/environment/export/": {
+            "post": {
+                "description": "Download a JSON file containing all org-settings and event types",
+                "operationId": "export_environment_configuration_api_v1_environment_export__post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ExportEnvironmentIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EnvironmentOut"
+                                }
+                            }
+                        },
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Export Environment Configuration",
+                "tags": [
+                    "Environment"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/environment/export/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{}'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/environment/import/": {
+            "post": {
+                "description": "Import a configuration into the active organization.\nIt doesn't delete anything, only adds/updates what was passed to it.",
+                "operationId": "import_environment_configuration_api_v1_environment_import__post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EnvironmentIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Import Environment Configuration",
+                "tags": [
+                    "Environment"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/environment/import/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"version\": null,\n    \"createdAt\": \"2019-08-24T14:15:22Z\",\n    \"eventTypes\": null,\n    \"settings\": null\n}'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/environment/settings/": {
+            "get": {
+                "description": "Get the environment's settings",
+                "operationId": "get_org_settings_api_v1_environment_settings__get",
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EnvironmentSettingsOut"
+                                }
+                            }
+                        },
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Get Org Settings",
+                "tags": [
+                    "Environment-Settings"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/environment/settings/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -7444,261 +8917,6 @@
                 ]
             }
         },
-        "/api/v1/org/export/": {
-            "post": {
-                "description": "Download a JSON file containing all org-settings and event types",
-                "operationId": "export_organization_configuration_api_v1_org_export__post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ExportOrganizationIn"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ExportOrganizationOut"
-                                }
-                            }
-                        },
-                        "description": "Successful Response"
-                    },
-                    "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Not Found"
-                    },
-                    "409": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Conflict"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        },
-                        "description": "Validation Error"
-                    }
-                },
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ],
-                "summary": "Export Organization Configuration",
-                "tags": [
-                    "Organization"
-                ],
-                "x-codeSamples": [
-                    {
-                        "label": "cURL",
-                        "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/org/export/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{}'"
-                    }
-                ]
-            }
-        },
-        "/api/v1/org/import/": {
-            "post": {
-                "description": "Import a configuration into the active organization.\nIt doesn't delete anything, only adds/updates what was passed to it.",
-                "operationId": "import_organization_configuration_api_v1_org_import__post",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ImportOrganizationIn"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "204": {
-                        "description": "Successful Response"
-                    },
-                    "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Not Found"
-                    },
-                    "409": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Conflict"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        },
-                        "description": "Validation Error"
-                    }
-                },
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ],
-                "summary": "Import Organization Configuration",
-                "tags": [
-                    "Organization"
-                ],
-                "x-codeSamples": [
-                    {
-                        "label": "cURL",
-                        "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/org/import/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"version\": null,\n    \"createdAt\": \"2019-08-24T14:15:22Z\",\n    \"eventTypes\": null,\n    \"settings\": null\n}'"
-                    }
-                ]
-            }
-        },
-        "/api/v1/org/settings/": {
-            "get": {
-                "description": "Get the organization's settings",
-                "operationId": "get_org_settings_api_v1_org_settings__get",
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/PortalSettingsOut"
-                                }
-                            }
-                        },
-                        "description": "Successful Response"
-                    },
-                    "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Not Found"
-                    },
-                    "409": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Conflict"
-                    }
-                },
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ],
-                "summary": "Get Org Settings",
-                "tags": [
-                    "Organization-Settings"
-                ],
-                "x-codeSamples": [
-                    {
-                        "label": "cURL",
-                        "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/org/settings/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
-                    }
-                ]
-            }
-        },
         "/api/v1/stats/app/{app_id}/attempt/": {
             "get": {
                 "description": "Returns application-level statistics on message attempts",
@@ -7972,6 +9190,10 @@
             "name": "Endpoint"
         },
         {
+            "description": "Integrations are services your users connect an application to. An integration can manage the application and it's endpoints.",
+            "name": "Integration"
+        },
+        {
             "description": "Event types are identifiers denoting the type of message being sent. Event types are primarily used to decide which events are sent to which endpoint.",
             "name": "Event Type"
         },
@@ -8002,7 +9224,8 @@
                 "Authentication",
                 "Endpoint",
                 "Message",
-                "Message Attempt"
+                "Message Attempt",
+                "Integration"
             ]
         },
         {

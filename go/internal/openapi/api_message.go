@@ -279,6 +279,12 @@ func (a *MessageApiService) GetMessageApiV1AppAppIdMsgMsgIdGetExecute(r ApiGetMe
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
+	if strlen(r.msgId) < 1 {
+		return localVarReturnValue, nil, reportError("msgId must have at least 1 elements")
+	}
+	if strlen(r.msgId) > 256 {
+		return localVarReturnValue, nil, reportError("msgId must have less than 256 elements")
+	}
 	if strlen(r.appId) < 1 {
 		return localVarReturnValue, nil, reportError("appId must have at least 1 elements")
 	}
