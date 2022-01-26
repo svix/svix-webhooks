@@ -15,7 +15,7 @@ type (
 		Debug bool
 
 		// Overrides the base URL (protocol + hostname) used for all requests sent by this Svix client. (Useful for testing)
-		ServerUrl   *url.URL
+		ServerUrl  *url.URL
 		HTTPClient *http.Client
 	}
 	Svix struct {
@@ -23,6 +23,7 @@ type (
 		Application    *Application
 		Endpoint       *Endpoint
 		EventType      *EventType
+		Integration    *Integration
 		Message        *Message
 		MessageAttempt *MessageAttempt
 	}
@@ -71,6 +72,9 @@ func New(token string, options *SvixOptions) *Svix {
 			api: apiClient,
 		},
 		Message: &Message{
+			api: apiClient,
+		},
+		Integration: &Integration{
 			api: apiClient,
 		},
 		MessageAttempt: &MessageAttempt{
