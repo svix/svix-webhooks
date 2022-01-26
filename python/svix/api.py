@@ -7,6 +7,7 @@ from .openapi_client.api.application_api import ApplicationApi
 from .openapi_client.api.authentication_api import AuthenticationApi
 from .openapi_client.api.endpoint_api import EndpointApi
 from .openapi_client.api.event_type_api import EventTypeApi
+from .openapi_client.api.integration_api import IntegrationApi
 from .openapi_client.api.message_api import MessageApi
 from .openapi_client.api.message_attempt_api import MessageAttemptApi
 from .openapi_client.api_client import ApiClient
@@ -24,10 +25,15 @@ from .openapi_client.model.endpoint_update import EndpointUpdate
 from .openapi_client.model.event_type_in import EventTypeIn
 from .openapi_client.model.event_type_out import EventTypeOut
 from .openapi_client.model.event_type_update import EventTypeUpdate
+from .openapi_client.model.integration_in import IntegrationIn
+from .openapi_client.model.integration_key_out import IntegrationKeyOut
+from .openapi_client.model.integration_out import IntegrationOut
+from .openapi_client.model.integration_update import IntegrationUpdate
 from .openapi_client.model.list_response_application_out import ListResponseApplicationOut
 from .openapi_client.model.list_response_endpoint_message_out import ListResponseEndpointMessageOut
 from .openapi_client.model.list_response_endpoint_out import ListResponseEndpointOut
 from .openapi_client.model.list_response_event_type_out import ListResponseEventTypeOut
+from .openapi_client.model.list_response_integration_out import ListResponseIntegrationOut
 from .openapi_client.model.list_response_message_attempt_endpoint_out import ListResponseMessageAttemptEndpointOut
 from .openapi_client.model.list_response_message_attempt_out import ListResponseMessageAttemptOut
 from .openapi_client.model.list_response_message_endpoint_out import ListResponseMessageEndpointOut
@@ -79,6 +85,11 @@ class EndpointListOptions(ListOptions):
 
 
 @dataclass
+class IntegrationListOptions(ListOptions):
+    pass
+
+
+@dataclass
 class MessageAttemptListOptions(ListOptions):
     status: t.Optional[MessageStatus] = None
     event_types: t.Optional[t.List[str]] = None
@@ -87,7 +98,9 @@ class MessageAttemptListOptions(ListOptions):
 
 ApiClass = t.TypeVar(
     "ApiClass",
-    bound=t.Union[AuthenticationApi, ApplicationApi, EndpointApi, EventTypeApi, MessageApi, MessageAttemptApi],
+    bound=t.Union[
+        AuthenticationApi, ApplicationApi, EndpointApi, EventTypeApi, IntegrationApi, MessageApi, MessageAttemptApi
+    ],
 )
 
 
@@ -263,6 +276,56 @@ class EventType(ApiBase[EventTypeApi]):
             )
 
 
+class Integration(ApiBase[IntegrationApi]):
+    _ApiClass = IntegrationApi
+
+    def list(
+        self, app_id: str, options: IntegrationListOptions = IntegrationListOptions()
+    ) -> ListResponseIntegrationOut:
+        with self._api() as api:
+            return api.list_integrations_api_v1_app_app_id_integration_get(
+                app_id=app_id, **options.to_dict(), _check_return_type=False
+            )
+
+    def create(self, app_id: str, integ_in: IntegrationIn) -> IntegrationOut:
+        with self._api() as api:
+            return api.create_integration_api_v1_app_app_id_integration_post(
+                app_id, integration_in=integ_in, _check_return_type=False
+            )
+
+    def get(self, app_id: str, integ_id: str) -> IntegrationOut:
+        with self._api() as api:
+            return api.get_integration_api_v1_app_app_id_integration_integ_id_get(
+                app_id=app_id, integ_id=integ_id, _check_return_type=False
+            )
+
+    def update(self, app_id: str, integ_id: str, integ_update: IntegrationUpdate) -> IntegrationOut:
+        with self._api() as api:
+            return api.update_integration_api_v1_app_app_id_integration_integ_id_put(
+                app_id=app_id, integ_id=integ_id, integration_update=integ_update, _check_return_type=False
+            )
+
+    def delete(self, app_id: str, integ_id: str) -> None:
+        with self._api() as api:
+            return api.delete_integration_api_v1_app_app_id_integration_integ_id_delete(
+                app_id=app_id, integ_id=integ_id, _check_return_type=False
+            )
+
+    def get_key(self, app_id: str, integ_id: str) -> IntegrationKeyOut:
+        with self._api() as api:
+            return api.get_integration_key_api_v1_app_app_id_integration_integ_id_key_get(
+                app_id=app_id, integ_id=integ_id, _check_return_type=False
+            )
+
+    def rotate_key(self, app_id: str, integ_id: str) -> IntegrationKeyOut:
+        with self._api() as api:
+            return api.rotate_integration_key_api_v1_app_app_id_integration_integ_id_key_rotate_post(
+                app_id=app_id,
+                integ_id=integ_id,
+                _check_return_type=False,
+            )
+
+
 class Message(ApiBase[MessageApi]):
     _ApiClass = MessageApi
 
@@ -359,6 +422,10 @@ class Svix:
     @property
     def event_type(self) -> EventType:
         return EventType(self._configuration)
+
+    @property
+    def integration(self) -> Integration:
+        return Integration(self._configuration)
 
     @property
     def message(self) -> Message:
