@@ -24,7 +24,7 @@ class Application internal constructor(token: String, options: SvixOptions) {
 
     suspend fun create(applicationIn: ApplicationIn): ApplicationOut {
         try {
-            return api.createApplicationApiV1AppPost(applicationIn)
+            return api.createApplicationApiV1AppPost(applicationIn, null)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
