@@ -23,7 +23,7 @@ public final class Application {
 
 	public ApplicationOut create(final ApplicationIn applicationIn) throws ApiException {
 		try {
-			return api.createApplicationApiV1AppPost(applicationIn);
+			return api.createApplicationApiV1AppPost(applicationIn, null);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
