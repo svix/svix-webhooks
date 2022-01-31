@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.44.0
+* All: Add support for the new Integration API 🆕
+
 ## Version 0.43.2
 * JS: Bump vulnerable dependency 👮
 * Ruby: Cleanup gem level imports 💅
