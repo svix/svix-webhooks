@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.45.0
+* Python: Add new get_or_create function for application API 🆕
+
 ## Version 0.44.0
 * All: Add support for the new Integration API 🆕
 
