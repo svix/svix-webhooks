@@ -151,6 +151,12 @@ class Application(ApiBase[ApplicationApi]):
         with self._api() as api:
             return api.get_application_api_v1_app_app_id_get(app_id=app_id, _check_return_type=False)
 
+    def get_or_create(self, application_in: ApplicationIn) -> ApplicationOut:
+        with self._api() as api:
+            return api.create_application_api_v1_app_post(
+                application_in=application_in, get_if_exists=True, _check_return_type=False
+            )
+
     def update(self, app_id: str, application_in: ApplicationIn) -> ApplicationOut:
         with self._api() as api:
             return api.update_application_api_v1_app_app_id_put(
