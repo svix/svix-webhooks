@@ -66,6 +66,7 @@ class ListOptions:
 class MessageListOptions(ListOptions):
     event_types: t.Optional[t.List[str]] = None
     before: t.Optional[datetime] = None
+    channel: t.Optional[str] = None
 
 
 @dataclass
@@ -94,6 +95,7 @@ class MessageAttemptListOptions(ListOptions):
     status: t.Optional[MessageStatus] = None
     event_types: t.Optional[t.List[str]] = None
     before: t.Optional[datetime] = None
+    channel: t.Optional[str] = None
 
 
 ApiClass = t.TypeVar(
