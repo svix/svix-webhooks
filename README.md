@@ -1,9 +1,12 @@
 <h1 align="center">
-  <a href="https://www.svix.com">
-    <img width="120" src="https://avatars.githubusercontent.com/u/80175132?s=200&v=4" />
-    <p align="center">Svix - Webhooks as a service</p>
-  </a>
+    <a style="text-decoration: none" href="https://www.svix.com">
+      <img width="120" src="https://avatars.githubusercontent.com/u/80175132?s=200&v=4" />
+      <p align="center">Svix - Webhooks as a service</p>
+    </a>
 </h1>
+<h2 align="center">
+  <a href="https://svix.com">Website</a> | <a href="https://docs.svix.com">Documentation</a> | <a href="https://svix.com/slack">Community Slack</a>
+<h2>
 
 Libraries for interacting with the Svix API and verifying webhook signatures
 
