@@ -24,19 +24,18 @@ Libraries for interacting with the Svix API and verifying webhook signatures
 
 # Documentation
 
-The docs are available at <https://docs.svix.com>
+You can find general usage documentation at <https://docs.svix.com>.  For complete API documentation with code examples for each endpoint in all of our official client libraries head over to our API documentation site at <https://api.svix.com>.
 
-# Structure
 
-Each subdirectory has a library for a different language.
-The code is a combination of code auto-generated from the OpenAPI spec, and manually written wrappers.
+# Development
+## Building the client libraries
 
-# Building
+We use [openapi-generator](https://github.com/OpenAPITools/openapi-generator) to autogenerate bindings in each language which we use as the building blocks for the exposed API.  To generate these bindings from the root directory of the project run:
 
 ```sh
 # Install deps
 yarn
-./regen_openapi.sh https://api.svix.com/api/v1/openapi.json
+./regen_openapi.sh
 ```
 
-Followed by running the build for each of the libraries (subdirectories).
+Once you have completed this step you can head over to the README of the language of your choice (found in the language's subdirectory) for detailed steps on building that particular library.
