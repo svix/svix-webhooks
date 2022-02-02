@@ -65,7 +65,7 @@ You can find general usage documentation at <https://docs.svix.com>.  For comple
     <th>✅</th>
     <th>✅</th>
     <th>✅</th>
-    <th colspan="4">Async support planned. (If you use kotlin checkout our kotlin library for coroutine support.</th>
+    <th colspan="4">Async support planned. (If you use kotlin checkout our kotlin library for coroutine support.)</th>
   </tr>
   <tr>
     <th><a href="https://github.com/svix/svix-libs/blob/main/kotlin/README.md">Kotlin</a></th>
