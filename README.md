@@ -1,9 +1,12 @@
 <h1 align="center">
-  <a href="https://www.svix.com">
-    <img width="120" src="https://avatars.githubusercontent.com/u/80175132?s=200&v=4" />
-    <p align="center">Svix - Webhooks as a service</p>
-  </a>
+    <a style="text-decoration: none" href="https://www.svix.com">
+      <img width="120" src="https://avatars.githubusercontent.com/u/80175132?s=200&v=4" />
+      <p align="center">Svix - Webhooks as a service</p>
+    </a>
 </h1>
+<h2 align="center">
+  <a href="https://svix.com">Website</a> | <a href="https://docs.svix.com">Documentation</a> | <a href="https://svix.com/slack">Community Slack</a>
+<h2>
 
 Libraries for interacting with the Svix API and verifying webhook signatures
 
@@ -19,21 +22,92 @@ Libraries for interacting with the Svix API and verifying webhook signatures
 
 [![Join our slack](https://img.shields.io/badge/Slack-join%20the%20community-blue?logo=slack&style=social)](https://www.svix.com/slack/)
 
-# Documentation
+# Usage Documentation
 
-The docs are available at <https://docs.svix.com>
+You can find general usage documentation at <https://docs.svix.com>.  For complete API documentation with code examples for each endpoint in all of our official client libraries head over to our API documentation site at <https://api.svix.com>.
 
-# Structure
+# Client Library Overview
 
-Each subdirectory has a library for a different language.
-The code is a combination of code auto-generated from the OpenAPI spec, and manually written wrappers.
+<table style="table-layout:fixed; white-space: nowrap;">
+  <th colspan="6">⚡️ Feature Breakdown ⚡️</th>
+  <tr>
+    <th>Language</th>
+    <th>Officially Supported</th>
+    <th>API Support</th>
+    <th>Webhook Verification</th>
+    <th colspan="4">Other Notes</th>
+  </tr>
+  <tr>
+    <th><a href="https://github.com/svix/svix-libs/blob/main/go/README.md">Go</a></th>
+    <th>✅</th>
+    <th>✅</th>
+    <th>✅</th>
+    <th colspan="4"></th>
+  </tr>
+  </tr>
+    <tr>
+    <th><a href="https://github.com/svix/svix-libs/blob/main/python/README.md">Python</a></th>
+    <th>✅</th>
+    <th>✅</th>
+    <th>✅</th>
+    <th colspan="4">Async Support planned.</th>
+  </tr>
+    </tr>
+    <tr>
+    <th><a href="https://github.com/svix/svix-libs/blob/main/javascript/README.md">Typescript/Javascript</a></th>
+    <th>✅</th>
+    <th>✅</th>
+    <th>✅</th>
+    <th colspan="4"></th>
+  </tr>
+  <tr>
+    <th><a href="https://github.com/svix/svix-libs/blob/main/java/README.md">Java</a></th>
+    <th>✅</th>
+    <th>✅</th>
+    <th>✅</th>
+    <th colspan="4">Async support planned. (If you use kotlin, checkout our kotlin library for coroutine support.)</th>
+  </tr>
+  <tr>
+    <th><a href="https://github.com/svix/svix-libs/blob/main/kotlin/README.md">Kotlin</a></th>
+    <th>✅</th>
+    <th>✅</th>
+    <th>✅</th>
+    <th colspan="4">
+  </th>
+  <tr>
+    <th><a href="https://github.com/svix/svix-libs/blob/main/ruby/README.md">Ruby</a></th>
+    <th>✅</th>
+    <th>✅</th>
+    <th>✅</th>
+    <th colspan="4">
+  </th>
+  <tr>
+    <th><a href="https://github.com/svix/svix-libs/blob/main/csharp/README.md">C# (dotnet)</a></th>
+    <th>✅</th>
+    <th>🔜</th>
+    <th>✅</th>
+    <th colspan="4">
+  </th>
+  <tr>
+    <th><a href="https://github.com/svix/svix-libs/blob/main/php/README.md">PHP</a></th>
+    <th>✅</th>
+    <th>🔜</th>
+    <th>✅</th>
+    <th colspan="4">
+  </th>
+</table>
 
-# Building
+# Development
+## Building the client libraries
+
+We use [openapi-generator](https://github.com/OpenAPITools/openapi-generator) to autogenerate bindings in each language. We then use these bindings as the building blocks for our exposed API.  To generate these bindings from the root directory of the project run:
 
 ```sh
 # Install deps
 yarn
-./regen_openapi.sh https://api.svix.com/api/v1/openapi.json
+
+# Generate bindings for every language
+./regen_openapi.sh
 ```
 
-Followed by running the build for each of the libraries (subdirectories).
+Once you have completed this step you can checkout the README of the language of your choice (found in the language's subdirectory) for detailed steps on building that particular library.

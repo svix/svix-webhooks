@@ -8,10 +8,10 @@
   <a href="https://svix.com">Website</a> | <a href="https://docs.svix.com">Documentation</a> | <a href="https://svix.com/slack">Community Slack</a>
 <h2>
 
-Java library for interacting with the Svix API and verifying webhook signatures
+Go library for interacting with the Svix API and verifying webhook signatures
 
 ![GitHub tag](https://img.shields.io/github/tag/svix/svix-libs.svg)
-[![Maven Central (Java)](https://img.shields.io/maven-central/v/com.svix/svix?label=maven-central%20(java))](https://search.maven.org/artifact/com.svix/svix)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/svix/svix-libs)](https://pkg.go.dev/github.com/svix/svix-libs/go)
 
 [![Join our slack](https://img.shields.io/badge/Slack-join%20the%20community-blue?logo=slack&style=social)](https://www.svix.com/slack/)
 
@@ -37,45 +37,25 @@ You can find general usage documentation at <https://docs.svix.com>.  For comple
   </tr>
   <tr>
     <th>Caveats</th>
-    <th>Async support planned. (If you use kotlin, checkout our kotlin library for coroutine support.)</th>
+    <th>None! 🚀</th>
   </tr>
 </table>
 
-# Installation
-
-### Maven users
-
-Add this dependency to your project's POM:
-
-```xml
-<dependency>
-  <groupId>com.svix</groupId>
-  <artifactId>svix</artifactId>
-  <version>0.45.0</version>
-  <scope>compile</scope>
-</dependency>
-```
-
-### Gradle users
-
-Add this dependency to your project's build file:
-
-```groovy
-implementation "com.svix:svix:0.45.0"
-```
-
 # Development
+
 
 First checkout the [core README](../README.md#development) for details on how to generate our API bindings, then follow the steps below.
 
 ## Requirements
 
- - Java 1.8+
- - Gradle
+ - go >= 1.16
 
-## Building the library
+## Contributing
+
+Before opening a PR be sure to format your code!
+
 ```sh
-./gradlew build
+go fmt ./...
 ```
 
 ## Running Tests
@@ -83,12 +63,9 @@ First checkout the [core README](../README.md#development) for details on how to
 Simply run:
 
 ```sh
-./gradlew test
+go test ./...
 ```
 
-## Publishing to Maven
+## Publishing
 
-```sh
-./gradlew uploadArchives
-```
-
+Releases use go modules and are automatically published by tagging the release commit.
