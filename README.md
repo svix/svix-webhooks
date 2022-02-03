@@ -26,7 +26,7 @@ Libraries for interacting with the Svix API and verifying webhook signatures
 
 You can find general usage documentation at <https://docs.svix.com>.  For complete API documentation with code examples for each endpoint in all of our official client libraries head over to our API documentation site at <https://api.svix.com>.
 
-# Overview
+# Client Library Overview
 
 <table style="table-layout:fixed; white-space: nowrap;">
   <th colspan="6">⚡️ Feature Breakdown ⚡️</th>
@@ -65,7 +65,7 @@ You can find general usage documentation at <https://docs.svix.com>.  For comple
     <th>✅</th>
     <th>✅</th>
     <th>✅</th>
-    <th colspan="4">Async support planned. (If you use kotlin checkout our kotlin library for coroutine support.)</th>
+    <th colspan="4">Async support planned. (If you use kotlin, checkout our kotlin library for coroutine support.)</th>
   </tr>
   <tr>
     <th><a href="https://github.com/svix/svix-libs/blob/main/kotlin/README.md">Kotlin</a></th>
@@ -100,12 +100,14 @@ You can find general usage documentation at <https://docs.svix.com>.  For comple
 # Development
 ## Building the client libraries
 
-We use [openapi-generator](https://github.com/OpenAPITools/openapi-generator) to autogenerate bindings in each language which we use as the building blocks for the exposed API.  To generate these bindings from the root directory of the project run:
+We use [openapi-generator](https://github.com/OpenAPITools/openapi-generator) to autogenerate bindings in each language. We then use these bindings as the building blocks for our exposed API.  To generate these bindings from the root directory of the project run:
 
 ```sh
 # Install deps
 yarn
+
+# Generate bindings for every language
 ./regen_openapi.sh
 ```
 
-Once you have completed this step you can head over to the README of the language of your choice (found in the language's subdirectory) for detailed steps on building that particular library.
+Once you have completed this step you can checkout the README of the language of your choice (found in the language's subdirectory) for detailed steps on building that particular library.
