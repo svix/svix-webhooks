@@ -29,7 +29,7 @@ You can find general usage documentation at <https://docs.svix.com>.  For comple
   </tr>
   <tr>
     <th>API Support</th>
-    <th>🔜</th>
+    <th>✅</th>
   </tr>
   <tr>
     <th>Signature Verification</th>
