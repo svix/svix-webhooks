@@ -1,14 +1,47 @@
-# Svix Kolin
+<h1 align="center">
+    <a style="text-decoration: none" href="https://www.svix.com">
+      <img width="120" src="https://avatars.githubusercontent.com/u/80175132?s=200&v=4" />
+      <p align="center">Svix - Webhooks as a service</p>
+    </a>
+</h1>
+<h2 align="center">
+  <a href="https://svix.com">Website</a> | <a href="https://docs.svix.com">Documentation</a> | <a href="https://svix.com/slack">Community Slack</a>
+<h2>
 
-Please refer to [the documentation](https://docs.svix.com) for usage instructions.
+Kotlin library for interacting with the Svix API and verifying webhook signatures
 
-## Requirements
+![GitHub tag](https://img.shields.io/github/tag/svix/svix-libs.svg)
+[![Maven Central (svix-kotlin)](https://img.shields.io/maven-central/v/com.svix/svix?label=maven-central%20(svix-kotlin))](https://search.maven.org/artifact/com.svix.kotlin/svix-kotlin)
 
-Building the API client library requires:
-1. kotlin 1.5.10+
-2. Gradle
+[![Join our slack](https://img.shields.io/badge/Slack-join%20the%20community-blue?logo=slack&style=social)](https://www.svix.com/slack/)
 
-## Installation
+# Usage Documentation
+
+You can find general usage documentation at <https://docs.svix.com>.  For complete API documentation with code examples for each endpoint in all of our official client libraries head over to our API documentation site at <https://api.svix.com>.
+
+# Language Support
+
+<table style="table-layout:fixed; white-space: nowrap;">
+  <th colspan="2">⚡️ Features ⚡️</th>
+  <tr>
+    <th>Officially Supported</th>
+    <th>✅</th>
+  </tr>
+  <tr>
+    <th>API Support</th>
+    <th>✅</th>
+  </tr>
+  <tr>
+    <th>Signature Verification</th>
+    <th>✅</th>
+  </tr>
+  <tr>
+    <th>Caveats</th>
+    <th>None! 🚀</th>
+  </tr>
+</table>
+
+# Installation
 
 ### Maven users
 
@@ -31,17 +64,30 @@ Add this dependency to your project's build file:
 implementation "com.svix.kotlin:svix-kotlin:0.45.0"
 ```
 
+# Development
 
-## Development
+First checkout the [core README](../README.md#development) for details on how to generate our API bindings, then follow the steps below.
 
-### Build
+## Requirements
 
+ -  Kotlin 1.5.10+
+ - Gradle
+
+## Building the library
+```sh
 ./gradlew build
+```
 
-### Test
+## Running Tests
 
+Simply run:
+
+```sh
 ./gradlew test
+```
 
-### Publish
+## Publishing to Maven
 
+```sh
 ./gradlew uploadArchives
+```
