@@ -66,6 +66,9 @@ class ListOptions:
 class CreateOptions:
     idempotency_key: t.Optional[str] = None
 
+    def to_dict(self) -> t.Dict[str, t.Any]:
+        return {k: v for k, v in asdict(self).items() if v is not None}
+
 
 @dataclass
 class MessageListOptions(ListOptions):
@@ -133,12 +136,12 @@ class Authentication(ApiBase[AuthenticationApi]):
     def dashboard_access(self, app_id: str, options: CreateOptions = CreateOptions()) -> DashboardAccessOut:
         with self._api() as api:
             return api.get_dashboard_access_api_v1_auth_dashboard_access_app_id_post(
-                app_id=app_id, _check_return_type=False, **asdict(options)
+                app_id=app_id, _check_return_type=False, **options.to_dict()
             )
 
     def logout(self, options: CreateOptions = CreateOptions()) -> None:
         with self._api() as api:
-            return api.logout_api_v1_auth_logout_post(_check_return_type=False, **asdict(options))
+            return api.logout_api_v1_auth_logout_post(_check_return_type=False, **options.to_dict())
 
 
 class Application(ApiBase[ApplicationApi]):
@@ -151,7 +154,7 @@ class Application(ApiBase[ApplicationApi]):
     def create(self, application_in: ApplicationIn, options: CreateOptions = CreateOptions()) -> ApplicationOut:
         with self._api() as api:
             return api.create_application_api_v1_app_post(
-                application_in=application_in, _check_return_type=False, **asdict(options)
+                application_in=application_in, _check_return_type=False, **options.to_dict()
             )
 
     def get(self, app_id: str) -> ApplicationOut:
@@ -161,7 +164,7 @@ class Application(ApiBase[ApplicationApi]):
     def get_or_create(self, application_in: ApplicationIn, options: CreateOptions = CreateOptions()) -> ApplicationOut:
         with self._api() as api:
             return api.create_application_api_v1_app_post(
-                application_in=application_in, get_if_exists=True, _check_return_type=False, **asdict(options)
+                application_in=application_in, get_if_exists=True, _check_return_type=False, **options.to_dict()
             )
 
     def update(self, app_id: str, application_in: ApplicationIn) -> ApplicationOut:
@@ -187,7 +190,7 @@ class Endpoint(ApiBase[EndpointApi]):
     def create(self, app_id: str, endpoint_in: EndpointIn, options: CreateOptions = CreateOptions()) -> EndpointOut:
         with self._api() as api:
             return api.create_endpoint_api_v1_app_app_id_endpoint_post(
-                app_id, endpoint_in=endpoint_in, _check_return_type=False, **asdict(options)
+                app_id, endpoint_in=endpoint_in, _check_return_type=False, **options.to_dict()
             )
 
     def get(self, app_id: str, endpoint_id: str) -> EndpointOut:
@@ -227,7 +230,7 @@ class Endpoint(ApiBase[EndpointApi]):
                 endpoint_id=endpoint_id,
                 endpoint_secret_rotate_in=endpoint_secret_rotate_in,
                 _check_return_type=False,
-                **asdict(options),
+                **options.to_dict(),
             )
 
     def recover(
@@ -239,7 +242,7 @@ class Endpoint(ApiBase[EndpointApi]):
                 endpoint_id=endpoint_id,
                 recover_in=recover_in,
                 _check_return_type=False,
-                **asdict(options),
+                **options.to_dict(),
             )
 
     def get_headers(self, app_id: str, endpoint_id: str) -> EndpointHeadersOut:
@@ -279,7 +282,7 @@ class EventType(ApiBase[EventTypeApi]):
     def create(self, event_type_in: EventTypeIn, options: CreateOptions = CreateOptions()) -> EventTypeOut:
         with self._api() as api:
             return api.create_event_type_api_v1_event_type_post(
-                event_type_in=event_type_in, _check_return_type=False, **asdict(options)
+                event_type_in=event_type_in, _check_return_type=False, **options.to_dict()
             )
 
     def get(self, event_type_name: str) -> EventTypeOut:
@@ -315,7 +318,7 @@ class Integration(ApiBase[IntegrationApi]):
     def create(self, app_id: str, integ_in: IntegrationIn, options: CreateOptions = CreateOptions()) -> IntegrationOut:
         with self._api() as api:
             return api.create_integration_api_v1_app_app_id_integration_post(
-                app_id, integration_in=integ_in, _check_return_type=False, **asdict(options)
+                app_id, integration_in=integ_in, _check_return_type=False, **options.to_dict()
             )
 
     def get(self, app_id: str, integ_id: str) -> IntegrationOut:
@@ -345,7 +348,7 @@ class Integration(ApiBase[IntegrationApi]):
     def rotate_key(self, app_id: str, integ_id: str, options: CreateOptions = CreateOptions()) -> IntegrationKeyOut:
         with self._api() as api:
             return api.rotate_integration_key_api_v1_app_app_id_integration_integ_id_key_rotate_post(
-                app_id=app_id, integ_id=integ_id, _check_return_type=False, **asdict(options)
+                app_id=app_id, integ_id=integ_id, _check_return_type=False, **options.to_dict()
             )
 
 
@@ -361,7 +364,7 @@ class Message(ApiBase[MessageApi]):
     def create(self, app_id: str, message_in: MessageIn, options: CreateOptions = CreateOptions()) -> MessageOut:
         with self._api() as api:
             return api.create_message_api_v1_app_app_id_msg_post(
-                app_id=app_id, message_in=message_in, _check_return_type=False, **asdict(options)
+                app_id=app_id, message_in=message_in, _check_return_type=False, **options.to_dict()
             )
 
     def get(self, app_id: str, msg_id: str) -> MessageOut:
@@ -391,7 +394,7 @@ class MessageAttempt(ApiBase[MessageAttemptApi]):
     def resend(self, app_id: str, msg_id: str, endpoint_id: str, options: CreateOptions = CreateOptions()) -> None:
         with self._api() as api:
             return api.resend_webhook_api_v1_app_app_id_msg_msg_id_endpoint_endpoint_id_resend_post(
-                app_id=app_id, msg_id=msg_id, endpoint_id=endpoint_id, _check_return_type=False, **asdict(options)
+                app_id=app_id, msg_id=msg_id, endpoint_id=endpoint_id, _check_return_type=False, **options.to_dict()
             )
 
     def list_attempted_messages(
