@@ -17,9 +17,9 @@ import (
 
 // IntegrationOut struct for IntegrationOut
 type IntegrationOut struct {
-	CreatedAt time.Time `json:"createdAt"`
-	Id string `json:"id"`
 	Name string `json:"name"`
+	Id string `json:"id"`
+	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
@@ -27,11 +27,11 @@ type IntegrationOut struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewIntegrationOut(createdAt time.Time, id string, name string, updatedAt time.Time) *IntegrationOut {
+func NewIntegrationOut(name string, id string, createdAt time.Time, updatedAt time.Time) *IntegrationOut {
 	this := IntegrationOut{}
-	this.CreatedAt = createdAt
-	this.Id = id
 	this.Name = name
+	this.Id = id
+	this.CreatedAt = createdAt
 	this.UpdatedAt = updatedAt
 	return &this
 }
@@ -44,28 +44,28 @@ func NewIntegrationOutWithDefaults() *IntegrationOut {
 	return &this
 }
 
-// GetCreatedAt returns the CreatedAt field value
-func (o *IntegrationOut) GetCreatedAt() time.Time {
+// GetName returns the Name field value
+func (o *IntegrationOut) GetName() string {
 	if o == nil {
-		var ret time.Time
+		var ret string
 		return ret
 	}
 
-	return o.CreatedAt
+	return o.Name
 }
 
-// GetCreatedAtOk returns a tuple with the CreatedAt field value
+// GetNameOk returns a tuple with the Name field value
 // and a boolean to check if the value has been set.
-func (o *IntegrationOut) GetCreatedAtOk() (*time.Time, bool) {
+func (o *IntegrationOut) GetNameOk() (*string, bool) {
 	if o == nil  {
 		return nil, false
 	}
-	return &o.CreatedAt, true
+	return &o.Name, true
 }
 
-// SetCreatedAt sets field value
-func (o *IntegrationOut) SetCreatedAt(v time.Time) {
-	o.CreatedAt = v
+// SetName sets field value
+func (o *IntegrationOut) SetName(v string) {
+	o.Name = v
 }
 
 // GetId returns the Id field value
@@ -92,28 +92,28 @@ func (o *IntegrationOut) SetId(v string) {
 	o.Id = v
 }
 
-// GetName returns the Name field value
-func (o *IntegrationOut) GetName() string {
+// GetCreatedAt returns the CreatedAt field value
+func (o *IntegrationOut) GetCreatedAt() time.Time {
 	if o == nil {
-		var ret string
+		var ret time.Time
 		return ret
 	}
 
-	return o.Name
+	return o.CreatedAt
 }
 
-// GetNameOk returns a tuple with the Name field value
+// GetCreatedAtOk returns a tuple with the CreatedAt field value
 // and a boolean to check if the value has been set.
-func (o *IntegrationOut) GetNameOk() (*string, bool) {
+func (o *IntegrationOut) GetCreatedAtOk() (*time.Time, bool) {
 	if o == nil  {
 		return nil, false
 	}
-	return &o.Name, true
+	return &o.CreatedAt, true
 }
 
-// SetName sets field value
-func (o *IntegrationOut) SetName(v string) {
-	o.Name = v
+// SetCreatedAt sets field value
+func (o *IntegrationOut) SetCreatedAt(v time.Time) {
+	o.CreatedAt = v
 }
 
 // GetUpdatedAt returns the UpdatedAt field value
@@ -143,13 +143,13 @@ func (o *IntegrationOut) SetUpdatedAt(v time.Time) {
 func (o IntegrationOut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
-		toSerialize["createdAt"] = o.CreatedAt
+		toSerialize["name"] = o.Name
 	}
 	if true {
 		toSerialize["id"] = o.Id
 	}
 	if true {
-		toSerialize["name"] = o.Name
+		toSerialize["createdAt"] = o.CreatedAt
 	}
 	if true {
 		toSerialize["updatedAt"] = o.UpdatedAt

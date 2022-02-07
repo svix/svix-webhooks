@@ -16,18 +16,18 @@ import (
 
 // DashboardAccessOut struct for DashboardAccessOut
 type DashboardAccessOut struct {
-	Token string `json:"token"`
 	Url string `json:"url"`
+	Token string `json:"token"`
 }
 
 // NewDashboardAccessOut instantiates a new DashboardAccessOut object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewDashboardAccessOut(token string, url string) *DashboardAccessOut {
+func NewDashboardAccessOut(url string, token string) *DashboardAccessOut {
 	this := DashboardAccessOut{}
-	this.Token = token
 	this.Url = url
+	this.Token = token
 	return &this
 }
 
@@ -37,30 +37,6 @@ func NewDashboardAccessOut(token string, url string) *DashboardAccessOut {
 func NewDashboardAccessOutWithDefaults() *DashboardAccessOut {
 	this := DashboardAccessOut{}
 	return &this
-}
-
-// GetToken returns the Token field value
-func (o *DashboardAccessOut) GetToken() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.Token
-}
-
-// GetTokenOk returns a tuple with the Token field value
-// and a boolean to check if the value has been set.
-func (o *DashboardAccessOut) GetTokenOk() (*string, bool) {
-	if o == nil  {
-		return nil, false
-	}
-	return &o.Token, true
-}
-
-// SetToken sets field value
-func (o *DashboardAccessOut) SetToken(v string) {
-	o.Token = v
 }
 
 // GetUrl returns the Url field value
@@ -87,13 +63,37 @@ func (o *DashboardAccessOut) SetUrl(v string) {
 	o.Url = v
 }
 
+// GetToken returns the Token field value
+func (o *DashboardAccessOut) GetToken() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Token
+}
+
+// GetTokenOk returns a tuple with the Token field value
+// and a boolean to check if the value has been set.
+func (o *DashboardAccessOut) GetTokenOk() (*string, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.Token, true
+}
+
+// SetToken sets field value
+func (o *DashboardAccessOut) SetToken(v string) {
+	o.Token = v
+}
+
 func (o DashboardAccessOut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
-		toSerialize["token"] = o.Token
+		toSerialize["url"] = o.Url
 	}
 	if true {
-		toSerialize["url"] = o.Url
+		toSerialize["token"] = o.Token
 	}
 	return json.Marshal(toSerialize)
 }

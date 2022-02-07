@@ -17,8 +17,8 @@ import (
 // EnvironmentSettingsOut struct for EnvironmentSettingsOut
 type EnvironmentSettingsOut struct {
 	CustomColor *string `json:"customColor,omitempty"`
-	CustomFontFamily *string `json:"customFontFamily,omitempty"`
 	CustomLogoUrl *string `json:"customLogoUrl,omitempty"`
+	CustomFontFamily *string `json:"customFontFamily,omitempty"`
 	CustomThemeOverride *CustomThemeOverride `json:"customThemeOverride,omitempty"`
 	EnableChannels *bool `json:"enableChannels,omitempty"`
 	EnableIntegrationManagement *bool `json:"enableIntegrationManagement,omitempty"`
@@ -81,38 +81,6 @@ func (o *EnvironmentSettingsOut) SetCustomColor(v string) {
 	o.CustomColor = &v
 }
 
-// GetCustomFontFamily returns the CustomFontFamily field value if set, zero value otherwise.
-func (o *EnvironmentSettingsOut) GetCustomFontFamily() string {
-	if o == nil || o.CustomFontFamily == nil {
-		var ret string
-		return ret
-	}
-	return *o.CustomFontFamily
-}
-
-// GetCustomFontFamilyOk returns a tuple with the CustomFontFamily field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *EnvironmentSettingsOut) GetCustomFontFamilyOk() (*string, bool) {
-	if o == nil || o.CustomFontFamily == nil {
-		return nil, false
-	}
-	return o.CustomFontFamily, true
-}
-
-// HasCustomFontFamily returns a boolean if a field has been set.
-func (o *EnvironmentSettingsOut) HasCustomFontFamily() bool {
-	if o != nil && o.CustomFontFamily != nil {
-		return true
-	}
-
-	return false
-}
-
-// SetCustomFontFamily gets a reference to the given string and assigns it to the CustomFontFamily field.
-func (o *EnvironmentSettingsOut) SetCustomFontFamily(v string) {
-	o.CustomFontFamily = &v
-}
-
 // GetCustomLogoUrl returns the CustomLogoUrl field value if set, zero value otherwise.
 func (o *EnvironmentSettingsOut) GetCustomLogoUrl() string {
 	if o == nil || o.CustomLogoUrl == nil {
@@ -143,6 +111,38 @@ func (o *EnvironmentSettingsOut) HasCustomLogoUrl() bool {
 // SetCustomLogoUrl gets a reference to the given string and assigns it to the CustomLogoUrl field.
 func (o *EnvironmentSettingsOut) SetCustomLogoUrl(v string) {
 	o.CustomLogoUrl = &v
+}
+
+// GetCustomFontFamily returns the CustomFontFamily field value if set, zero value otherwise.
+func (o *EnvironmentSettingsOut) GetCustomFontFamily() string {
+	if o == nil || o.CustomFontFamily == nil {
+		var ret string
+		return ret
+	}
+	return *o.CustomFontFamily
+}
+
+// GetCustomFontFamilyOk returns a tuple with the CustomFontFamily field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *EnvironmentSettingsOut) GetCustomFontFamilyOk() (*string, bool) {
+	if o == nil || o.CustomFontFamily == nil {
+		return nil, false
+	}
+	return o.CustomFontFamily, true
+}
+
+// HasCustomFontFamily returns a boolean if a field has been set.
+func (o *EnvironmentSettingsOut) HasCustomFontFamily() bool {
+	if o != nil && o.CustomFontFamily != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetCustomFontFamily gets a reference to the given string and assigns it to the CustomFontFamily field.
+func (o *EnvironmentSettingsOut) SetCustomFontFamily(v string) {
+	o.CustomFontFamily = &v
 }
 
 // GetCustomThemeOverride returns the CustomThemeOverride field value if set, zero value otherwise.
@@ -246,11 +246,11 @@ func (o EnvironmentSettingsOut) MarshalJSON() ([]byte, error) {
 	if o.CustomColor != nil {
 		toSerialize["customColor"] = o.CustomColor
 	}
-	if o.CustomFontFamily != nil {
-		toSerialize["customFontFamily"] = o.CustomFontFamily
-	}
 	if o.CustomLogoUrl != nil {
 		toSerialize["customLogoUrl"] = o.CustomLogoUrl
+	}
+	if o.CustomFontFamily != nil {
+		toSerialize["customFontFamily"] = o.CustomFontFamily
 	}
 	if o.CustomThemeOverride != nil {
 		toSerialize["customThemeOverride"] = o.CustomThemeOverride

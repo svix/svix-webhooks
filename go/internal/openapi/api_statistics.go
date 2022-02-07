@@ -34,6 +34,7 @@ type ApiGetAppAttemptStatsApiV1StatsAppAppIdAttemptGetRequest struct {
 	appId string
 	startDate *time.Time
 	endDate *time.Time
+	idempotencyKey *string
 }
 
 func (r ApiGetAppAttemptStatsApiV1StatsAppAppIdAttemptGetRequest) StartDate(startDate time.Time) ApiGetAppAttemptStatsApiV1StatsAppAppIdAttemptGetRequest {
@@ -42,6 +43,10 @@ func (r ApiGetAppAttemptStatsApiV1StatsAppAppIdAttemptGetRequest) StartDate(star
 }
 func (r ApiGetAppAttemptStatsApiV1StatsAppAppIdAttemptGetRequest) EndDate(endDate time.Time) ApiGetAppAttemptStatsApiV1StatsAppAppIdAttemptGetRequest {
 	r.endDate = &endDate
+	return r
+}
+func (r ApiGetAppAttemptStatsApiV1StatsAppAppIdAttemptGetRequest) IdempotencyKey(idempotencyKey string) ApiGetAppAttemptStatsApiV1StatsAppAppIdAttemptGetRequest {
+	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
@@ -118,6 +123,9 @@ func (a *StatisticsApiService) GetAppAttemptStatsApiV1StatsAppAppIdAttemptGetExe
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
@@ -212,6 +220,7 @@ type ApiGetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetRequest struct {
 	appId string
 	startDate *time.Time
 	endDate *time.Time
+	idempotencyKey *string
 }
 
 func (r ApiGetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetRequest) StartDate(startDate time.Time) ApiGetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetRequest {
@@ -220,6 +229,10 @@ func (r ApiGetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetRequest) StartDate(
 }
 func (r ApiGetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetRequest) EndDate(endDate time.Time) ApiGetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetRequest {
 	r.endDate = &endDate
+	return r
+}
+func (r ApiGetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetRequest) IdempotencyKey(idempotencyKey string) ApiGetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetRequest {
+	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
@@ -305,6 +318,9 @@ func (a *StatisticsApiService) GetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGe
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {

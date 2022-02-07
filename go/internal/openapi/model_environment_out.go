@@ -17,10 +17,10 @@ import (
 
 // EnvironmentOut struct for EnvironmentOut
 type EnvironmentOut struct {
+	Version *int32 `json:"version,omitempty"`
 	CreatedAt time.Time `json:"createdAt"`
 	EventTypes []EventTypeOut `json:"eventTypes"`
 	Settings *SettingsOut `json:"settings,omitempty"`
-	Version *int32 `json:"version,omitempty"`
 }
 
 // NewEnvironmentOut instantiates a new EnvironmentOut object
@@ -29,10 +29,10 @@ type EnvironmentOut struct {
 // will change when the set of required properties is changed
 func NewEnvironmentOut(createdAt time.Time, eventTypes []EventTypeOut) *EnvironmentOut {
 	this := EnvironmentOut{}
-	this.CreatedAt = createdAt
-	this.EventTypes = eventTypes
 	var version int32 = 1
 	this.Version = &version
+	this.CreatedAt = createdAt
+	this.EventTypes = eventTypes
 	return &this
 }
 
@@ -44,6 +44,38 @@ func NewEnvironmentOutWithDefaults() *EnvironmentOut {
 	var version int32 = 1
 	this.Version = &version
 	return &this
+}
+
+// GetVersion returns the Version field value if set, zero value otherwise.
+func (o *EnvironmentOut) GetVersion() int32 {
+	if o == nil || o.Version == nil {
+		var ret int32
+		return ret
+	}
+	return *o.Version
+}
+
+// GetVersionOk returns a tuple with the Version field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *EnvironmentOut) GetVersionOk() (*int32, bool) {
+	if o == nil || o.Version == nil {
+		return nil, false
+	}
+	return o.Version, true
+}
+
+// HasVersion returns a boolean if a field has been set.
+func (o *EnvironmentOut) HasVersion() bool {
+	if o != nil && o.Version != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetVersion gets a reference to the given int32 and assigns it to the Version field.
+func (o *EnvironmentOut) SetVersion(v int32) {
+	o.Version = &v
 }
 
 // GetCreatedAt returns the CreatedAt field value
@@ -126,40 +158,11 @@ func (o *EnvironmentOut) SetSettings(v SettingsOut) {
 	o.Settings = &v
 }
 
-// GetVersion returns the Version field value if set, zero value otherwise.
-func (o *EnvironmentOut) GetVersion() int32 {
-	if o == nil || o.Version == nil {
-		var ret int32
-		return ret
-	}
-	return *o.Version
-}
-
-// GetVersionOk returns a tuple with the Version field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *EnvironmentOut) GetVersionOk() (*int32, bool) {
-	if o == nil || o.Version == nil {
-		return nil, false
-	}
-	return o.Version, true
-}
-
-// HasVersion returns a boolean if a field has been set.
-func (o *EnvironmentOut) HasVersion() bool {
-	if o != nil && o.Version != nil {
-		return true
-	}
-
-	return false
-}
-
-// SetVersion gets a reference to the given int32 and assigns it to the Version field.
-func (o *EnvironmentOut) SetVersion(v int32) {
-	o.Version = &v
-}
-
 func (o EnvironmentOut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
+	if o.Version != nil {
+		toSerialize["version"] = o.Version
+	}
 	if true {
 		toSerialize["createdAt"] = o.CreatedAt
 	}
@@ -168,9 +171,6 @@ func (o EnvironmentOut) MarshalJSON() ([]byte, error) {
 	}
 	if o.Settings != nil {
 		toSerialize["settings"] = o.Settings
-	}
-	if o.Version != nil {
-		toSerialize["version"] = o.Version
 	}
 	return json.Marshal(toSerialize)
 }

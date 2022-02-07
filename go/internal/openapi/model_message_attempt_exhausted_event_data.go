@@ -19,21 +19,21 @@ type MessageAttemptExhaustedEventData struct {
 	AppId string `json:"appId"`
 	// Optional unique identifier for the application
 	AppUid *string `json:"appUid,omitempty"`
+	MsgId string `json:"msgId"`
 	EndpointId string `json:"endpointId"`
 	LastAttempt MessageAttemptFailedEvent `json:"lastAttempt"`
-	MsgId string `json:"msgId"`
 }
 
 // NewMessageAttemptExhaustedEventData instantiates a new MessageAttemptExhaustedEventData object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewMessageAttemptExhaustedEventData(appId string, endpointId string, lastAttempt MessageAttemptFailedEvent, msgId string) *MessageAttemptExhaustedEventData {
+func NewMessageAttemptExhaustedEventData(appId string, msgId string, endpointId string, lastAttempt MessageAttemptFailedEvent) *MessageAttemptExhaustedEventData {
 	this := MessageAttemptExhaustedEventData{}
 	this.AppId = appId
+	this.MsgId = msgId
 	this.EndpointId = endpointId
 	this.LastAttempt = lastAttempt
-	this.MsgId = msgId
 	return &this
 }
 
@@ -101,6 +101,30 @@ func (o *MessageAttemptExhaustedEventData) SetAppUid(v string) {
 	o.AppUid = &v
 }
 
+// GetMsgId returns the MsgId field value
+func (o *MessageAttemptExhaustedEventData) GetMsgId() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.MsgId
+}
+
+// GetMsgIdOk returns a tuple with the MsgId field value
+// and a boolean to check if the value has been set.
+func (o *MessageAttemptExhaustedEventData) GetMsgIdOk() (*string, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.MsgId, true
+}
+
+// SetMsgId sets field value
+func (o *MessageAttemptExhaustedEventData) SetMsgId(v string) {
+	o.MsgId = v
+}
+
 // GetEndpointId returns the EndpointId field value
 func (o *MessageAttemptExhaustedEventData) GetEndpointId() string {
 	if o == nil {
@@ -149,30 +173,6 @@ func (o *MessageAttemptExhaustedEventData) SetLastAttempt(v MessageAttemptFailed
 	o.LastAttempt = v
 }
 
-// GetMsgId returns the MsgId field value
-func (o *MessageAttemptExhaustedEventData) GetMsgId() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.MsgId
-}
-
-// GetMsgIdOk returns a tuple with the MsgId field value
-// and a boolean to check if the value has been set.
-func (o *MessageAttemptExhaustedEventData) GetMsgIdOk() (*string, bool) {
-	if o == nil  {
-		return nil, false
-	}
-	return &o.MsgId, true
-}
-
-// SetMsgId sets field value
-func (o *MessageAttemptExhaustedEventData) SetMsgId(v string) {
-	o.MsgId = v
-}
-
 func (o MessageAttemptExhaustedEventData) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
@@ -182,13 +182,13 @@ func (o MessageAttemptExhaustedEventData) MarshalJSON() ([]byte, error) {
 		toSerialize["appUid"] = o.AppUid
 	}
 	if true {
+		toSerialize["msgId"] = o.MsgId
+	}
+	if true {
 		toSerialize["endpointId"] = o.EndpointId
 	}
 	if true {
 		toSerialize["lastAttempt"] = o.LastAttempt
-	}
-	if true {
-		toSerialize["msgId"] = o.MsgId
 	}
 	return json.Marshal(toSerialize)
 }

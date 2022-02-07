@@ -16,15 +16,15 @@ import (
 
 // SettingsIn struct for SettingsIn
 type SettingsIn struct {
-	CustomBaseFontSize *int32 `json:"customBaseFontSize,omitempty"`
 	CustomColor *string `json:"customColor,omitempty"`
-	CustomFontFamily *string `json:"customFontFamily,omitempty"`
 	CustomLogoUrl *string `json:"customLogoUrl,omitempty"`
 	CustomThemeOverride *CustomThemeOverride `json:"customThemeOverride,omitempty"`
+	CustomBaseFontSize *int32 `json:"customBaseFontSize,omitempty"`
+	CustomFontFamily *string `json:"customFontFamily,omitempty"`
 	DisableEndpointOnFailure *bool `json:"disableEndpointOnFailure,omitempty"`
+	EnforceHttps *bool `json:"enforceHttps,omitempty"`
 	EnableChannels *bool `json:"enableChannels,omitempty"`
 	EnableIntegrationManagement *bool `json:"enableIntegrationManagement,omitempty"`
-	EnforceHttps *bool `json:"enforceHttps,omitempty"`
 }
 
 // NewSettingsIn instantiates a new SettingsIn object
@@ -35,12 +35,12 @@ func NewSettingsIn() *SettingsIn {
 	this := SettingsIn{}
 	var disableEndpointOnFailure bool = true
 	this.DisableEndpointOnFailure = &disableEndpointOnFailure
+	var enforceHttps bool = true
+	this.EnforceHttps = &enforceHttps
 	var enableChannels bool = false
 	this.EnableChannels = &enableChannels
 	var enableIntegrationManagement bool = false
 	this.EnableIntegrationManagement = &enableIntegrationManagement
-	var enforceHttps bool = true
-	this.EnforceHttps = &enforceHttps
 	return &this
 }
 
@@ -51,45 +51,13 @@ func NewSettingsInWithDefaults() *SettingsIn {
 	this := SettingsIn{}
 	var disableEndpointOnFailure bool = true
 	this.DisableEndpointOnFailure = &disableEndpointOnFailure
+	var enforceHttps bool = true
+	this.EnforceHttps = &enforceHttps
 	var enableChannels bool = false
 	this.EnableChannels = &enableChannels
 	var enableIntegrationManagement bool = false
 	this.EnableIntegrationManagement = &enableIntegrationManagement
-	var enforceHttps bool = true
-	this.EnforceHttps = &enforceHttps
 	return &this
-}
-
-// GetCustomBaseFontSize returns the CustomBaseFontSize field value if set, zero value otherwise.
-func (o *SettingsIn) GetCustomBaseFontSize() int32 {
-	if o == nil || o.CustomBaseFontSize == nil {
-		var ret int32
-		return ret
-	}
-	return *o.CustomBaseFontSize
-}
-
-// GetCustomBaseFontSizeOk returns a tuple with the CustomBaseFontSize field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *SettingsIn) GetCustomBaseFontSizeOk() (*int32, bool) {
-	if o == nil || o.CustomBaseFontSize == nil {
-		return nil, false
-	}
-	return o.CustomBaseFontSize, true
-}
-
-// HasCustomBaseFontSize returns a boolean if a field has been set.
-func (o *SettingsIn) HasCustomBaseFontSize() bool {
-	if o != nil && o.CustomBaseFontSize != nil {
-		return true
-	}
-
-	return false
-}
-
-// SetCustomBaseFontSize gets a reference to the given int32 and assigns it to the CustomBaseFontSize field.
-func (o *SettingsIn) SetCustomBaseFontSize(v int32) {
-	o.CustomBaseFontSize = &v
 }
 
 // GetCustomColor returns the CustomColor field value if set, zero value otherwise.
@@ -122,38 +90,6 @@ func (o *SettingsIn) HasCustomColor() bool {
 // SetCustomColor gets a reference to the given string and assigns it to the CustomColor field.
 func (o *SettingsIn) SetCustomColor(v string) {
 	o.CustomColor = &v
-}
-
-// GetCustomFontFamily returns the CustomFontFamily field value if set, zero value otherwise.
-func (o *SettingsIn) GetCustomFontFamily() string {
-	if o == nil || o.CustomFontFamily == nil {
-		var ret string
-		return ret
-	}
-	return *o.CustomFontFamily
-}
-
-// GetCustomFontFamilyOk returns a tuple with the CustomFontFamily field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *SettingsIn) GetCustomFontFamilyOk() (*string, bool) {
-	if o == nil || o.CustomFontFamily == nil {
-		return nil, false
-	}
-	return o.CustomFontFamily, true
-}
-
-// HasCustomFontFamily returns a boolean if a field has been set.
-func (o *SettingsIn) HasCustomFontFamily() bool {
-	if o != nil && o.CustomFontFamily != nil {
-		return true
-	}
-
-	return false
-}
-
-// SetCustomFontFamily gets a reference to the given string and assigns it to the CustomFontFamily field.
-func (o *SettingsIn) SetCustomFontFamily(v string) {
-	o.CustomFontFamily = &v
 }
 
 // GetCustomLogoUrl returns the CustomLogoUrl field value if set, zero value otherwise.
@@ -220,6 +156,70 @@ func (o *SettingsIn) SetCustomThemeOverride(v CustomThemeOverride) {
 	o.CustomThemeOverride = &v
 }
 
+// GetCustomBaseFontSize returns the CustomBaseFontSize field value if set, zero value otherwise.
+func (o *SettingsIn) GetCustomBaseFontSize() int32 {
+	if o == nil || o.CustomBaseFontSize == nil {
+		var ret int32
+		return ret
+	}
+	return *o.CustomBaseFontSize
+}
+
+// GetCustomBaseFontSizeOk returns a tuple with the CustomBaseFontSize field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *SettingsIn) GetCustomBaseFontSizeOk() (*int32, bool) {
+	if o == nil || o.CustomBaseFontSize == nil {
+		return nil, false
+	}
+	return o.CustomBaseFontSize, true
+}
+
+// HasCustomBaseFontSize returns a boolean if a field has been set.
+func (o *SettingsIn) HasCustomBaseFontSize() bool {
+	if o != nil && o.CustomBaseFontSize != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetCustomBaseFontSize gets a reference to the given int32 and assigns it to the CustomBaseFontSize field.
+func (o *SettingsIn) SetCustomBaseFontSize(v int32) {
+	o.CustomBaseFontSize = &v
+}
+
+// GetCustomFontFamily returns the CustomFontFamily field value if set, zero value otherwise.
+func (o *SettingsIn) GetCustomFontFamily() string {
+	if o == nil || o.CustomFontFamily == nil {
+		var ret string
+		return ret
+	}
+	return *o.CustomFontFamily
+}
+
+// GetCustomFontFamilyOk returns a tuple with the CustomFontFamily field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *SettingsIn) GetCustomFontFamilyOk() (*string, bool) {
+	if o == nil || o.CustomFontFamily == nil {
+		return nil, false
+	}
+	return o.CustomFontFamily, true
+}
+
+// HasCustomFontFamily returns a boolean if a field has been set.
+func (o *SettingsIn) HasCustomFontFamily() bool {
+	if o != nil && o.CustomFontFamily != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetCustomFontFamily gets a reference to the given string and assigns it to the CustomFontFamily field.
+func (o *SettingsIn) SetCustomFontFamily(v string) {
+	o.CustomFontFamily = &v
+}
+
 // GetDisableEndpointOnFailure returns the DisableEndpointOnFailure field value if set, zero value otherwise.
 func (o *SettingsIn) GetDisableEndpointOnFailure() bool {
 	if o == nil || o.DisableEndpointOnFailure == nil {
@@ -250,6 +250,38 @@ func (o *SettingsIn) HasDisableEndpointOnFailure() bool {
 // SetDisableEndpointOnFailure gets a reference to the given bool and assigns it to the DisableEndpointOnFailure field.
 func (o *SettingsIn) SetDisableEndpointOnFailure(v bool) {
 	o.DisableEndpointOnFailure = &v
+}
+
+// GetEnforceHttps returns the EnforceHttps field value if set, zero value otherwise.
+func (o *SettingsIn) GetEnforceHttps() bool {
+	if o == nil || o.EnforceHttps == nil {
+		var ret bool
+		return ret
+	}
+	return *o.EnforceHttps
+}
+
+// GetEnforceHttpsOk returns a tuple with the EnforceHttps field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *SettingsIn) GetEnforceHttpsOk() (*bool, bool) {
+	if o == nil || o.EnforceHttps == nil {
+		return nil, false
+	}
+	return o.EnforceHttps, true
+}
+
+// HasEnforceHttps returns a boolean if a field has been set.
+func (o *SettingsIn) HasEnforceHttps() bool {
+	if o != nil && o.EnforceHttps != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetEnforceHttps gets a reference to the given bool and assigns it to the EnforceHttps field.
+func (o *SettingsIn) SetEnforceHttps(v bool) {
+	o.EnforceHttps = &v
 }
 
 // GetEnableChannels returns the EnableChannels field value if set, zero value otherwise.
@@ -316,48 +348,10 @@ func (o *SettingsIn) SetEnableIntegrationManagement(v bool) {
 	o.EnableIntegrationManagement = &v
 }
 
-// GetEnforceHttps returns the EnforceHttps field value if set, zero value otherwise.
-func (o *SettingsIn) GetEnforceHttps() bool {
-	if o == nil || o.EnforceHttps == nil {
-		var ret bool
-		return ret
-	}
-	return *o.EnforceHttps
-}
-
-// GetEnforceHttpsOk returns a tuple with the EnforceHttps field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *SettingsIn) GetEnforceHttpsOk() (*bool, bool) {
-	if o == nil || o.EnforceHttps == nil {
-		return nil, false
-	}
-	return o.EnforceHttps, true
-}
-
-// HasEnforceHttps returns a boolean if a field has been set.
-func (o *SettingsIn) HasEnforceHttps() bool {
-	if o != nil && o.EnforceHttps != nil {
-		return true
-	}
-
-	return false
-}
-
-// SetEnforceHttps gets a reference to the given bool and assigns it to the EnforceHttps field.
-func (o *SettingsIn) SetEnforceHttps(v bool) {
-	o.EnforceHttps = &v
-}
-
 func (o SettingsIn) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if o.CustomBaseFontSize != nil {
-		toSerialize["customBaseFontSize"] = o.CustomBaseFontSize
-	}
 	if o.CustomColor != nil {
 		toSerialize["customColor"] = o.CustomColor
-	}
-	if o.CustomFontFamily != nil {
-		toSerialize["customFontFamily"] = o.CustomFontFamily
 	}
 	if o.CustomLogoUrl != nil {
 		toSerialize["customLogoUrl"] = o.CustomLogoUrl
@@ -365,17 +359,23 @@ func (o SettingsIn) MarshalJSON() ([]byte, error) {
 	if o.CustomThemeOverride != nil {
 		toSerialize["customThemeOverride"] = o.CustomThemeOverride
 	}
+	if o.CustomBaseFontSize != nil {
+		toSerialize["customBaseFontSize"] = o.CustomBaseFontSize
+	}
+	if o.CustomFontFamily != nil {
+		toSerialize["customFontFamily"] = o.CustomFontFamily
+	}
 	if o.DisableEndpointOnFailure != nil {
 		toSerialize["disableEndpointOnFailure"] = o.DisableEndpointOnFailure
+	}
+	if o.EnforceHttps != nil {
+		toSerialize["enforceHttps"] = o.EnforceHttps
 	}
 	if o.EnableChannels != nil {
 		toSerialize["enableChannels"] = o.EnableChannels
 	}
 	if o.EnableIntegrationManagement != nil {
 		toSerialize["enableIntegrationManagement"] = o.EnableIntegrationManagement
-	}
-	if o.EnforceHttps != nil {
-		toSerialize["enforceHttps"] = o.EnforceHttps
 	}
 	return json.Marshal(toSerialize)
 }

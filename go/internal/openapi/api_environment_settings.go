@@ -29,8 +29,13 @@ type EnvironmentSettingsApiService service
 type ApiGetOrgSettingsApiV1EnvironmentSettingsGetRequest struct {
 	ctx _context.Context
 	ApiService *EnvironmentSettingsApiService
+	idempotencyKey *string
 }
 
+func (r ApiGetOrgSettingsApiV1EnvironmentSettingsGetRequest) IdempotencyKey(idempotencyKey string) ApiGetOrgSettingsApiV1EnvironmentSettingsGetRequest {
+	r.idempotencyKey = &idempotencyKey
+	return r
+}
 
 func (r ApiGetOrgSettingsApiV1EnvironmentSettingsGetRequest) Execute() (EnvironmentSettingsOut, *_nethttp.Response, error) {
 	return r.ApiService.GetOrgSettingsApiV1EnvironmentSettingsGetExecute(r)
@@ -91,6 +96,9 @@ func (a *EnvironmentSettingsApiService) GetOrgSettingsApiV1EnvironmentSettingsGe
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
+	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -145,6 +153,16 @@ func (a *EnvironmentSettingsApiService) GetOrgSettingsApiV1EnvironmentSettingsGe
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
 			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 422 {
+			var v HTTPValidationError
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()

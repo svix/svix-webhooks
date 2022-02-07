@@ -17,8 +17,8 @@ import (
 // ListResponseEventTypeOut struct for ListResponseEventTypeOut
 type ListResponseEventTypeOut struct {
 	Data []EventTypeOut `json:"data"`
-	Done bool `json:"done"`
 	Iterator *string `json:"iterator,omitempty"`
+	Done bool `json:"done"`
 }
 
 // NewListResponseEventTypeOut instantiates a new ListResponseEventTypeOut object
@@ -64,30 +64,6 @@ func (o *ListResponseEventTypeOut) SetData(v []EventTypeOut) {
 	o.Data = v
 }
 
-// GetDone returns the Done field value
-func (o *ListResponseEventTypeOut) GetDone() bool {
-	if o == nil {
-		var ret bool
-		return ret
-	}
-
-	return o.Done
-}
-
-// GetDoneOk returns a tuple with the Done field value
-// and a boolean to check if the value has been set.
-func (o *ListResponseEventTypeOut) GetDoneOk() (*bool, bool) {
-	if o == nil  {
-		return nil, false
-	}
-	return &o.Done, true
-}
-
-// SetDone sets field value
-func (o *ListResponseEventTypeOut) SetDone(v bool) {
-	o.Done = v
-}
-
 // GetIterator returns the Iterator field value if set, zero value otherwise.
 func (o *ListResponseEventTypeOut) GetIterator() string {
 	if o == nil || o.Iterator == nil {
@@ -120,16 +96,40 @@ func (o *ListResponseEventTypeOut) SetIterator(v string) {
 	o.Iterator = &v
 }
 
+// GetDone returns the Done field value
+func (o *ListResponseEventTypeOut) GetDone() bool {
+	if o == nil {
+		var ret bool
+		return ret
+	}
+
+	return o.Done
+}
+
+// GetDoneOk returns a tuple with the Done field value
+// and a boolean to check if the value has been set.
+func (o *ListResponseEventTypeOut) GetDoneOk() (*bool, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.Done, true
+}
+
+// SetDone sets field value
+func (o *ListResponseEventTypeOut) SetDone(v bool) {
+	o.Done = v
+}
+
 func (o ListResponseEventTypeOut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
 		toSerialize["data"] = o.Data
 	}
-	if true {
-		toSerialize["done"] = o.Done
-	}
 	if o.Iterator != nil {
 		toSerialize["iterator"] = o.Iterator
+	}
+	if true {
+		toSerialize["done"] = o.Done
 	}
 	return json.Marshal(toSerialize)
 }

@@ -17,22 +17,22 @@ import (
 
 // AttemptStatisticsResponse struct for AttemptStatisticsResponse
 type AttemptStatisticsResponse struct {
-	Data AttemptStatisticsData `json:"data"`
+	StartDate time.Time `json:"startDate"`
 	EndDate time.Time `json:"endDate"`
 	Period StatisticsPeriod `json:"period"`
-	StartDate time.Time `json:"startDate"`
+	Data AttemptStatisticsData `json:"data"`
 }
 
 // NewAttemptStatisticsResponse instantiates a new AttemptStatisticsResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewAttemptStatisticsResponse(data AttemptStatisticsData, endDate time.Time, period StatisticsPeriod, startDate time.Time) *AttemptStatisticsResponse {
+func NewAttemptStatisticsResponse(startDate time.Time, endDate time.Time, period StatisticsPeriod, data AttemptStatisticsData) *AttemptStatisticsResponse {
 	this := AttemptStatisticsResponse{}
-	this.Data = data
+	this.StartDate = startDate
 	this.EndDate = endDate
 	this.Period = period
-	this.StartDate = startDate
+	this.Data = data
 	return &this
 }
 
@@ -44,28 +44,28 @@ func NewAttemptStatisticsResponseWithDefaults() *AttemptStatisticsResponse {
 	return &this
 }
 
-// GetData returns the Data field value
-func (o *AttemptStatisticsResponse) GetData() AttemptStatisticsData {
+// GetStartDate returns the StartDate field value
+func (o *AttemptStatisticsResponse) GetStartDate() time.Time {
 	if o == nil {
-		var ret AttemptStatisticsData
+		var ret time.Time
 		return ret
 	}
 
-	return o.Data
+	return o.StartDate
 }
 
-// GetDataOk returns a tuple with the Data field value
+// GetStartDateOk returns a tuple with the StartDate field value
 // and a boolean to check if the value has been set.
-func (o *AttemptStatisticsResponse) GetDataOk() (*AttemptStatisticsData, bool) {
+func (o *AttemptStatisticsResponse) GetStartDateOk() (*time.Time, bool) {
 	if o == nil  {
 		return nil, false
 	}
-	return &o.Data, true
+	return &o.StartDate, true
 }
 
-// SetData sets field value
-func (o *AttemptStatisticsResponse) SetData(v AttemptStatisticsData) {
-	o.Data = v
+// SetStartDate sets field value
+func (o *AttemptStatisticsResponse) SetStartDate(v time.Time) {
+	o.StartDate = v
 }
 
 // GetEndDate returns the EndDate field value
@@ -116,34 +116,34 @@ func (o *AttemptStatisticsResponse) SetPeriod(v StatisticsPeriod) {
 	o.Period = v
 }
 
-// GetStartDate returns the StartDate field value
-func (o *AttemptStatisticsResponse) GetStartDate() time.Time {
+// GetData returns the Data field value
+func (o *AttemptStatisticsResponse) GetData() AttemptStatisticsData {
 	if o == nil {
-		var ret time.Time
+		var ret AttemptStatisticsData
 		return ret
 	}
 
-	return o.StartDate
+	return o.Data
 }
 
-// GetStartDateOk returns a tuple with the StartDate field value
+// GetDataOk returns a tuple with the Data field value
 // and a boolean to check if the value has been set.
-func (o *AttemptStatisticsResponse) GetStartDateOk() (*time.Time, bool) {
+func (o *AttemptStatisticsResponse) GetDataOk() (*AttemptStatisticsData, bool) {
 	if o == nil  {
 		return nil, false
 	}
-	return &o.StartDate, true
+	return &o.Data, true
 }
 
-// SetStartDate sets field value
-func (o *AttemptStatisticsResponse) SetStartDate(v time.Time) {
-	o.StartDate = v
+// SetData sets field value
+func (o *AttemptStatisticsResponse) SetData(v AttemptStatisticsData) {
+	o.Data = v
 }
 
 func (o AttemptStatisticsResponse) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
-		toSerialize["data"] = o.Data
+		toSerialize["startDate"] = o.StartDate
 	}
 	if true {
 		toSerialize["endDate"] = o.EndDate
@@ -152,7 +152,7 @@ func (o AttemptStatisticsResponse) MarshalJSON() ([]byte, error) {
 		toSerialize["period"] = o.Period
 	}
 	if true {
-		toSerialize["startDate"] = o.StartDate
+		toSerialize["data"] = o.Data
 	}
 	return json.Marshal(toSerialize)
 }

@@ -16,22 +16,22 @@ import (
 
 // EndpointStats struct for EndpointStats
 type EndpointStats struct {
-	Fail int32 `json:"fail"`
-	Pending int32 `json:"pending"`
 	Sending int32 `json:"sending"`
 	Success int32 `json:"success"`
+	Pending int32 `json:"pending"`
+	Fail int32 `json:"fail"`
 }
 
 // NewEndpointStats instantiates a new EndpointStats object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEndpointStats(fail int32, pending int32, sending int32, success int32) *EndpointStats {
+func NewEndpointStats(sending int32, success int32, pending int32, fail int32) *EndpointStats {
 	this := EndpointStats{}
-	this.Fail = fail
-	this.Pending = pending
 	this.Sending = sending
 	this.Success = success
+	this.Pending = pending
+	this.Fail = fail
 	return &this
 }
 
@@ -41,54 +41,6 @@ func NewEndpointStats(fail int32, pending int32, sending int32, success int32) *
 func NewEndpointStatsWithDefaults() *EndpointStats {
 	this := EndpointStats{}
 	return &this
-}
-
-// GetFail returns the Fail field value
-func (o *EndpointStats) GetFail() int32 {
-	if o == nil {
-		var ret int32
-		return ret
-	}
-
-	return o.Fail
-}
-
-// GetFailOk returns a tuple with the Fail field value
-// and a boolean to check if the value has been set.
-func (o *EndpointStats) GetFailOk() (*int32, bool) {
-	if o == nil  {
-		return nil, false
-	}
-	return &o.Fail, true
-}
-
-// SetFail sets field value
-func (o *EndpointStats) SetFail(v int32) {
-	o.Fail = v
-}
-
-// GetPending returns the Pending field value
-func (o *EndpointStats) GetPending() int32 {
-	if o == nil {
-		var ret int32
-		return ret
-	}
-
-	return o.Pending
-}
-
-// GetPendingOk returns a tuple with the Pending field value
-// and a boolean to check if the value has been set.
-func (o *EndpointStats) GetPendingOk() (*int32, bool) {
-	if o == nil  {
-		return nil, false
-	}
-	return &o.Pending, true
-}
-
-// SetPending sets field value
-func (o *EndpointStats) SetPending(v int32) {
-	o.Pending = v
 }
 
 // GetSending returns the Sending field value
@@ -139,19 +91,67 @@ func (o *EndpointStats) SetSuccess(v int32) {
 	o.Success = v
 }
 
+// GetPending returns the Pending field value
+func (o *EndpointStats) GetPending() int32 {
+	if o == nil {
+		var ret int32
+		return ret
+	}
+
+	return o.Pending
+}
+
+// GetPendingOk returns a tuple with the Pending field value
+// and a boolean to check if the value has been set.
+func (o *EndpointStats) GetPendingOk() (*int32, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.Pending, true
+}
+
+// SetPending sets field value
+func (o *EndpointStats) SetPending(v int32) {
+	o.Pending = v
+}
+
+// GetFail returns the Fail field value
+func (o *EndpointStats) GetFail() int32 {
+	if o == nil {
+		var ret int32
+		return ret
+	}
+
+	return o.Fail
+}
+
+// GetFailOk returns a tuple with the Fail field value
+// and a boolean to check if the value has been set.
+func (o *EndpointStats) GetFailOk() (*int32, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.Fail, true
+}
+
+// SetFail sets field value
+func (o *EndpointStats) SetFail(v int32) {
+	o.Fail = v
+}
+
 func (o EndpointStats) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["fail"] = o.Fail
-	}
-	if true {
-		toSerialize["pending"] = o.Pending
-	}
 	if true {
 		toSerialize["sending"] = o.Sending
 	}
 	if true {
 		toSerialize["success"] = o.Success
+	}
+	if true {
+		toSerialize["pending"] = o.Pending
+	}
+	if true {
+		toSerialize["fail"] = o.Fail
 	}
 	return json.Marshal(toSerialize)
 }

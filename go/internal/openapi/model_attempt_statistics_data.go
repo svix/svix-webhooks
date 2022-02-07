@@ -16,8 +16,8 @@ import (
 
 // AttemptStatisticsData struct for AttemptStatisticsData
 type AttemptStatisticsData struct {
-	FailureCount *[]int32 `json:"failureCount,omitempty"`
 	SuccessCount *[]int32 `json:"successCount,omitempty"`
+	FailureCount *[]int32 `json:"failureCount,omitempty"`
 }
 
 // NewAttemptStatisticsData instantiates a new AttemptStatisticsData object
@@ -35,38 +35,6 @@ func NewAttemptStatisticsData() *AttemptStatisticsData {
 func NewAttemptStatisticsDataWithDefaults() *AttemptStatisticsData {
 	this := AttemptStatisticsData{}
 	return &this
-}
-
-// GetFailureCount returns the FailureCount field value if set, zero value otherwise.
-func (o *AttemptStatisticsData) GetFailureCount() []int32 {
-	if o == nil || o.FailureCount == nil {
-		var ret []int32
-		return ret
-	}
-	return *o.FailureCount
-}
-
-// GetFailureCountOk returns a tuple with the FailureCount field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *AttemptStatisticsData) GetFailureCountOk() (*[]int32, bool) {
-	if o == nil || o.FailureCount == nil {
-		return nil, false
-	}
-	return o.FailureCount, true
-}
-
-// HasFailureCount returns a boolean if a field has been set.
-func (o *AttemptStatisticsData) HasFailureCount() bool {
-	if o != nil && o.FailureCount != nil {
-		return true
-	}
-
-	return false
-}
-
-// SetFailureCount gets a reference to the given []int32 and assigns it to the FailureCount field.
-func (o *AttemptStatisticsData) SetFailureCount(v []int32) {
-	o.FailureCount = &v
 }
 
 // GetSuccessCount returns the SuccessCount field value if set, zero value otherwise.
@@ -101,13 +69,45 @@ func (o *AttemptStatisticsData) SetSuccessCount(v []int32) {
 	o.SuccessCount = &v
 }
 
+// GetFailureCount returns the FailureCount field value if set, zero value otherwise.
+func (o *AttemptStatisticsData) GetFailureCount() []int32 {
+	if o == nil || o.FailureCount == nil {
+		var ret []int32
+		return ret
+	}
+	return *o.FailureCount
+}
+
+// GetFailureCountOk returns a tuple with the FailureCount field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *AttemptStatisticsData) GetFailureCountOk() (*[]int32, bool) {
+	if o == nil || o.FailureCount == nil {
+		return nil, false
+	}
+	return o.FailureCount, true
+}
+
+// HasFailureCount returns a boolean if a field has been set.
+func (o *AttemptStatisticsData) HasFailureCount() bool {
+	if o != nil && o.FailureCount != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetFailureCount gets a reference to the given []int32 and assigns it to the FailureCount field.
+func (o *AttemptStatisticsData) SetFailureCount(v []int32) {
+	o.FailureCount = &v
+}
+
 func (o AttemptStatisticsData) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if o.FailureCount != nil {
-		toSerialize["failureCount"] = o.FailureCount
-	}
 	if o.SuccessCount != nil {
 		toSerialize["successCount"] = o.SuccessCount
+	}
+	if o.FailureCount != nil {
+		toSerialize["failureCount"] = o.FailureCount
 	}
 	return json.Marshal(toSerialize)
 }

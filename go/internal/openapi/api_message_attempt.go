@@ -35,8 +35,13 @@ type ApiGetAttemptApiV1AppAppIdMsgMsgIdAttemptAttemptIdGetRequest struct {
 	attemptId string
 	msgId string
 	appId string
+	idempotencyKey *string
 }
 
+func (r ApiGetAttemptApiV1AppAppIdMsgMsgIdAttemptAttemptIdGetRequest) IdempotencyKey(idempotencyKey string) ApiGetAttemptApiV1AppAppIdMsgMsgIdAttemptAttemptIdGetRequest {
+	r.idempotencyKey = &idempotencyKey
+	return r
+}
 
 func (r ApiGetAttemptApiV1AppAppIdMsgMsgIdAttemptAttemptIdGetRequest) Execute() (MessageAttemptOut, *_nethttp.Response, error) {
 	return r.ApiService.GetAttemptApiV1AppAppIdMsgMsgIdAttemptAttemptIdGetExecute(r)
@@ -117,6 +122,9 @@ func (a *MessageAttemptApiService) GetAttemptApiV1AppAppIdMsgMsgIdAttemptAttempt
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
@@ -211,6 +219,7 @@ type ApiListAttemptedDestinationsApiV1AppAppIdMsgMsgIdEndpointGetRequest struct 
 	appId string
 	iterator *string
 	limit *int32
+	idempotencyKey *string
 }
 
 func (r ApiListAttemptedDestinationsApiV1AppAppIdMsgMsgIdEndpointGetRequest) Iterator(iterator string) ApiListAttemptedDestinationsApiV1AppAppIdMsgMsgIdEndpointGetRequest {
@@ -219,6 +228,10 @@ func (r ApiListAttemptedDestinationsApiV1AppAppIdMsgMsgIdEndpointGetRequest) Ite
 }
 func (r ApiListAttemptedDestinationsApiV1AppAppIdMsgMsgIdEndpointGetRequest) Limit(limit int32) ApiListAttemptedDestinationsApiV1AppAppIdMsgMsgIdEndpointGetRequest {
 	r.limit = &limit
+	return r
+}
+func (r ApiListAttemptedDestinationsApiV1AppAppIdMsgMsgIdEndpointGetRequest) IdempotencyKey(idempotencyKey string) ApiListAttemptedDestinationsApiV1AppAppIdMsgMsgIdEndpointGetRequest {
+	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
@@ -304,6 +317,9 @@ func (a *MessageAttemptApiService) ListAttemptedDestinationsApiV1AppAppIdMsgMsgI
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
@@ -400,6 +416,7 @@ type ApiListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGetRequest struct
 	limit *int32
 	status *MessageStatus
 	before *time.Time
+	idempotencyKey *string
 }
 
 func (r ApiListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGetRequest) Iterator(iterator string) ApiListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGetRequest {
@@ -416,6 +433,10 @@ func (r ApiListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGetRequest) St
 }
 func (r ApiListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGetRequest) Before(before time.Time) ApiListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGetRequest {
 	r.before = &before
+	return r
+}
+func (r ApiListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGetRequest) IdempotencyKey(idempotencyKey string) ApiListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGetRequest {
+	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
@@ -509,6 +530,9 @@ func (a *MessageAttemptApiService) ListAttemptedMessagesApiV1AppAppIdEndpointEnd
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
@@ -604,6 +628,7 @@ type ApiListAttemptsApiV1AppAppIdMsgMsgIdAttemptGetRequest struct {
 	iterator *string
 	limit *int32
 	status *MessageStatus
+	idempotencyKey *string
 }
 
 func (r ApiListAttemptsApiV1AppAppIdMsgMsgIdAttemptGetRequest) Iterator(iterator string) ApiListAttemptsApiV1AppAppIdMsgMsgIdAttemptGetRequest {
@@ -616,6 +641,10 @@ func (r ApiListAttemptsApiV1AppAppIdMsgMsgIdAttemptGetRequest) Limit(limit int32
 }
 func (r ApiListAttemptsApiV1AppAppIdMsgMsgIdAttemptGetRequest) Status(status MessageStatus) ApiListAttemptsApiV1AppAppIdMsgMsgIdAttemptGetRequest {
 	r.status = &status
+	return r
+}
+func (r ApiListAttemptsApiV1AppAppIdMsgMsgIdAttemptGetRequest) IdempotencyKey(idempotencyKey string) ApiListAttemptsApiV1AppAppIdMsgMsgIdAttemptGetRequest {
+	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
@@ -704,6 +733,9 @@ func (a *MessageAttemptApiService) ListAttemptsApiV1AppAppIdMsgMsgIdAttemptGetEx
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
@@ -800,8 +832,10 @@ type ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGet
 	iterator *string
 	limit *int32
 	eventTypes *[]string
+	channel *string
 	status *MessageStatus
 	before *time.Time
+	idempotencyKey *string
 }
 
 func (r ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGetRequest) Iterator(iterator string) ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGetRequest {
@@ -816,12 +850,20 @@ func (r ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttempt
 	r.eventTypes = &eventTypes
 	return r
 }
+func (r ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGetRequest) Channel(channel string) ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGetRequest {
+	r.channel = &channel
+	return r
+}
 func (r ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGetRequest) Status(status MessageStatus) ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGetRequest {
 	r.status = &status
 	return r
 }
 func (r ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGetRequest) Before(before time.Time) ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGetRequest {
 	r.before = &before
+	return r
+}
+func (r ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGetRequest) IdempotencyKey(idempotencyKey string) ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGetRequest {
+	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
@@ -915,6 +957,9 @@ func (a *MessageAttemptApiService) ListAttemptsForEndpointApiV1AppAppIdMsgMsgIdE
 			localVarQueryParams.Add("event_types", parameterToString(t, "multi"))
 		}
 	}
+	if r.channel != nil {
+		localVarQueryParams.Add("channel", parameterToString(*r.channel, ""))
+	}
 	if r.status != nil {
 		localVarQueryParams.Add("status", parameterToString(*r.status, ""))
 	}
@@ -937,6 +982,9 @@ func (a *MessageAttemptApiService) ListAttemptsForEndpointApiV1AppAppIdMsgMsgIdE
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
@@ -1030,8 +1078,13 @@ type ApiResendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPostRequest st
 	endpointId string
 	msgId string
 	appId string
+	idempotencyKey *string
 }
 
+func (r ApiResendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPostRequest) IdempotencyKey(idempotencyKey string) ApiResendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPostRequest {
+	r.idempotencyKey = &idempotencyKey
+	return r
+}
 
 func (r ApiResendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPostRequest) Execute() (*_nethttp.Response, error) {
 	return r.ApiService.ResendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPostExecute(r)
@@ -1116,6 +1169,9 @@ func (a *MessageAttemptApiService) ResendWebhookApiV1AppAppIdMsgMsgIdEndpointEnd
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {

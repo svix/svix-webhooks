@@ -31,10 +31,15 @@ type ApiCreateEventTypeApiV1EventTypePostRequest struct {
 	ctx _context.Context
 	ApiService *EventTypeApiService
 	eventTypeIn *EventTypeIn
+	idempotencyKey *string
 }
 
 func (r ApiCreateEventTypeApiV1EventTypePostRequest) EventTypeIn(eventTypeIn EventTypeIn) ApiCreateEventTypeApiV1EventTypePostRequest {
 	r.eventTypeIn = &eventTypeIn
+	return r
+}
+func (r ApiCreateEventTypeApiV1EventTypePostRequest) IdempotencyKey(idempotencyKey string) ApiCreateEventTypeApiV1EventTypePostRequest {
+	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
@@ -103,6 +108,9 @@ func (a *EventTypeApiService) CreateEventTypeApiV1EventTypePostExecute(r ApiCrea
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	// body params
 	localVarPostBody = r.eventTypeIn
@@ -196,8 +204,13 @@ type ApiDeleteEventTypeApiV1EventTypeEventTypeNameDeleteRequest struct {
 	ctx _context.Context
 	ApiService *EventTypeApiService
 	eventTypeName string
+	idempotencyKey *string
 }
 
+func (r ApiDeleteEventTypeApiV1EventTypeEventTypeNameDeleteRequest) IdempotencyKey(idempotencyKey string) ApiDeleteEventTypeApiV1EventTypeEventTypeNameDeleteRequest {
+	r.idempotencyKey = &idempotencyKey
+	return r
+}
 
 func (r ApiDeleteEventTypeApiV1EventTypeEventTypeNameDeleteRequest) Execute() (*_nethttp.Response, error) {
 	return r.ApiService.DeleteEventTypeApiV1EventTypeEventTypeNameDeleteExecute(r)
@@ -266,6 +279,9 @@ func (a *EventTypeApiService) DeleteEventTypeApiV1EventTypeEventTypeNameDeleteEx
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
@@ -348,10 +364,15 @@ type ApiGenerateSchemaExampleApiV1EventTypeSchemaGenerateExamplePostRequest stru
 	ctx _context.Context
 	ApiService *EventTypeApiService
 	eventTypeSchemaIn *EventTypeSchemaIn
+	idempotencyKey *string
 }
 
 func (r ApiGenerateSchemaExampleApiV1EventTypeSchemaGenerateExamplePostRequest) EventTypeSchemaIn(eventTypeSchemaIn EventTypeSchemaIn) ApiGenerateSchemaExampleApiV1EventTypeSchemaGenerateExamplePostRequest {
 	r.eventTypeSchemaIn = &eventTypeSchemaIn
+	return r
+}
+func (r ApiGenerateSchemaExampleApiV1EventTypeSchemaGenerateExamplePostRequest) IdempotencyKey(idempotencyKey string) ApiGenerateSchemaExampleApiV1EventTypeSchemaGenerateExamplePostRequest {
+	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
@@ -416,6 +437,9 @@ func (a *EventTypeApiService) GenerateSchemaExampleApiV1EventTypeSchemaGenerateE
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	// body params
 	localVarPostBody = r.eventTypeSchemaIn
@@ -509,8 +533,13 @@ type ApiGetEventTypeApiV1EventTypeEventTypeNameGetRequest struct {
 	ctx _context.Context
 	ApiService *EventTypeApiService
 	eventTypeName string
+	idempotencyKey *string
 }
 
+func (r ApiGetEventTypeApiV1EventTypeEventTypeNameGetRequest) IdempotencyKey(idempotencyKey string) ApiGetEventTypeApiV1EventTypeEventTypeNameGetRequest {
+	r.idempotencyKey = &idempotencyKey
+	return r
+}
 
 func (r ApiGetEventTypeApiV1EventTypeEventTypeNameGetRequest) Execute() (EventTypeOut, *_nethttp.Response, error) {
 	return r.ApiService.GetEventTypeApiV1EventTypeEventTypeNameGetExecute(r)
@@ -576,6 +605,9 @@ func (a *EventTypeApiService) GetEventTypeApiV1EventTypeEventTypeNameGetExecute(
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
@@ -670,6 +702,7 @@ type ApiListEventTypesApiV1EventTypeGetRequest struct {
 	limit *int32
 	withContent *bool
 	includeArchived *bool
+	idempotencyKey *string
 }
 
 func (r ApiListEventTypesApiV1EventTypeGetRequest) Iterator(iterator string) ApiListEventTypesApiV1EventTypeGetRequest {
@@ -686,6 +719,10 @@ func (r ApiListEventTypesApiV1EventTypeGetRequest) WithContent(withContent bool)
 }
 func (r ApiListEventTypesApiV1EventTypeGetRequest) IncludeArchived(includeArchived bool) ApiListEventTypesApiV1EventTypeGetRequest {
 	r.includeArchived = &includeArchived
+	return r
+}
+func (r ApiListEventTypesApiV1EventTypeGetRequest) IdempotencyKey(idempotencyKey string) ApiListEventTypesApiV1EventTypeGetRequest {
+	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
@@ -759,6 +796,9 @@ func (a *EventTypeApiService) ListEventTypesApiV1EventTypeGetExecute(r ApiListEv
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
@@ -851,10 +891,15 @@ type ApiUpdateEventTypeApiV1EventTypeEventTypeNamePutRequest struct {
 	ApiService *EventTypeApiService
 	eventTypeName string
 	eventTypeUpdate *EventTypeUpdate
+	idempotencyKey *string
 }
 
 func (r ApiUpdateEventTypeApiV1EventTypeEventTypeNamePutRequest) EventTypeUpdate(eventTypeUpdate EventTypeUpdate) ApiUpdateEventTypeApiV1EventTypeEventTypeNamePutRequest {
 	r.eventTypeUpdate = &eventTypeUpdate
+	return r
+}
+func (r ApiUpdateEventTypeApiV1EventTypeEventTypeNamePutRequest) IdempotencyKey(idempotencyKey string) ApiUpdateEventTypeApiV1EventTypeEventTypeNamePutRequest {
+	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
@@ -925,6 +970,9 @@ func (a *EventTypeApiService) UpdateEventTypeApiV1EventTypeEventTypeNamePutExecu
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	// body params
 	localVarPostBody = r.eventTypeUpdate

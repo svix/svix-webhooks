@@ -32,6 +32,7 @@ type ApiCreateApplicationApiV1AppPostRequest struct {
 	ApiService *ApplicationApiService
 	applicationIn *ApplicationIn
 	getIfExists *bool
+	idempotencyKey *string
 }
 
 func (r ApiCreateApplicationApiV1AppPostRequest) ApplicationIn(applicationIn ApplicationIn) ApiCreateApplicationApiV1AppPostRequest {
@@ -40,6 +41,10 @@ func (r ApiCreateApplicationApiV1AppPostRequest) ApplicationIn(applicationIn App
 }
 func (r ApiCreateApplicationApiV1AppPostRequest) GetIfExists(getIfExists bool) ApiCreateApplicationApiV1AppPostRequest {
 	r.getIfExists = &getIfExists
+	return r
+}
+func (r ApiCreateApplicationApiV1AppPostRequest) IdempotencyKey(idempotencyKey string) ApiCreateApplicationApiV1AppPostRequest {
+	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
@@ -107,6 +112,9 @@ func (a *ApplicationApiService) CreateApplicationApiV1AppPostExecute(r ApiCreate
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	// body params
 	localVarPostBody = r.applicationIn
@@ -200,8 +208,13 @@ type ApiDeleteApplicationApiV1AppAppIdDeleteRequest struct {
 	ctx _context.Context
 	ApiService *ApplicationApiService
 	appId string
+	idempotencyKey *string
 }
 
+func (r ApiDeleteApplicationApiV1AppAppIdDeleteRequest) IdempotencyKey(idempotencyKey string) ApiDeleteApplicationApiV1AppAppIdDeleteRequest {
+	r.idempotencyKey = &idempotencyKey
+	return r
+}
 
 func (r ApiDeleteApplicationApiV1AppAppIdDeleteRequest) Execute() (*_nethttp.Response, error) {
 	return r.ApiService.DeleteApplicationApiV1AppAppIdDeleteExecute(r)
@@ -268,6 +281,9 @@ func (a *ApplicationApiService) DeleteApplicationApiV1AppAppIdDeleteExecute(r Ap
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
@@ -350,8 +366,13 @@ type ApiGetApplicationApiV1AppAppIdGetRequest struct {
 	ctx _context.Context
 	ApiService *ApplicationApiService
 	appId string
+	idempotencyKey *string
 }
 
+func (r ApiGetApplicationApiV1AppAppIdGetRequest) IdempotencyKey(idempotencyKey string) ApiGetApplicationApiV1AppAppIdGetRequest {
+	r.idempotencyKey = &idempotencyKey
+	return r
+}
 
 func (r ApiGetApplicationApiV1AppAppIdGetRequest) Execute() (ApplicationOut, *_nethttp.Response, error) {
 	return r.ApiService.GetApplicationApiV1AppAppIdGetExecute(r)
@@ -420,6 +441,9 @@ func (a *ApplicationApiService) GetApplicationApiV1AppAppIdGetExecute(r ApiGetAp
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
@@ -512,6 +536,7 @@ type ApiListApplicationsApiV1AppGetRequest struct {
 	ApiService *ApplicationApiService
 	iterator *string
 	limit *int32
+	idempotencyKey *string
 }
 
 func (r ApiListApplicationsApiV1AppGetRequest) Iterator(iterator string) ApiListApplicationsApiV1AppGetRequest {
@@ -520,6 +545,10 @@ func (r ApiListApplicationsApiV1AppGetRequest) Iterator(iterator string) ApiList
 }
 func (r ApiListApplicationsApiV1AppGetRequest) Limit(limit int32) ApiListApplicationsApiV1AppGetRequest {
 	r.limit = &limit
+	return r
+}
+func (r ApiListApplicationsApiV1AppGetRequest) IdempotencyKey(idempotencyKey string) ApiListApplicationsApiV1AppGetRequest {
+	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
@@ -587,6 +616,9 @@ func (a *ApplicationApiService) ListApplicationsApiV1AppGetExecute(r ApiListAppl
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
@@ -679,10 +711,15 @@ type ApiUpdateApplicationApiV1AppAppIdPutRequest struct {
 	ApiService *ApplicationApiService
 	appId string
 	applicationIn *ApplicationIn
+	idempotencyKey *string
 }
 
 func (r ApiUpdateApplicationApiV1AppAppIdPutRequest) ApplicationIn(applicationIn ApplicationIn) ApiUpdateApplicationApiV1AppAppIdPutRequest {
 	r.applicationIn = &applicationIn
+	return r
+}
+func (r ApiUpdateApplicationApiV1AppAppIdPutRequest) IdempotencyKey(idempotencyKey string) ApiUpdateApplicationApiV1AppAppIdPutRequest {
+	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
@@ -756,6 +793,9 @@ func (a *ApplicationApiService) UpdateApplicationApiV1AppAppIdPutExecute(r ApiUp
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	// body params
 	localVarPostBody = r.applicationIn

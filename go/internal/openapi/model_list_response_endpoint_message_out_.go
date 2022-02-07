@@ -17,8 +17,8 @@ import (
 // ListResponseEndpointMessageOut struct for ListResponseEndpointMessageOut
 type ListResponseEndpointMessageOut struct {
 	Data []EndpointMessageOut `json:"data"`
-	Done bool `json:"done"`
 	Iterator *string `json:"iterator,omitempty"`
+	Done bool `json:"done"`
 }
 
 // NewListResponseEndpointMessageOut instantiates a new ListResponseEndpointMessageOut object
@@ -64,30 +64,6 @@ func (o *ListResponseEndpointMessageOut) SetData(v []EndpointMessageOut) {
 	o.Data = v
 }
 
-// GetDone returns the Done field value
-func (o *ListResponseEndpointMessageOut) GetDone() bool {
-	if o == nil {
-		var ret bool
-		return ret
-	}
-
-	return o.Done
-}
-
-// GetDoneOk returns a tuple with the Done field value
-// and a boolean to check if the value has been set.
-func (o *ListResponseEndpointMessageOut) GetDoneOk() (*bool, bool) {
-	if o == nil  {
-		return nil, false
-	}
-	return &o.Done, true
-}
-
-// SetDone sets field value
-func (o *ListResponseEndpointMessageOut) SetDone(v bool) {
-	o.Done = v
-}
-
 // GetIterator returns the Iterator field value if set, zero value otherwise.
 func (o *ListResponseEndpointMessageOut) GetIterator() string {
 	if o == nil || o.Iterator == nil {
@@ -120,16 +96,40 @@ func (o *ListResponseEndpointMessageOut) SetIterator(v string) {
 	o.Iterator = &v
 }
 
+// GetDone returns the Done field value
+func (o *ListResponseEndpointMessageOut) GetDone() bool {
+	if o == nil {
+		var ret bool
+		return ret
+	}
+
+	return o.Done
+}
+
+// GetDoneOk returns a tuple with the Done field value
+// and a boolean to check if the value has been set.
+func (o *ListResponseEndpointMessageOut) GetDoneOk() (*bool, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.Done, true
+}
+
+// SetDone sets field value
+func (o *ListResponseEndpointMessageOut) SetDone(v bool) {
+	o.Done = v
+}
+
 func (o ListResponseEndpointMessageOut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
 		toSerialize["data"] = o.Data
 	}
-	if true {
-		toSerialize["done"] = o.Done
-	}
 	if o.Iterator != nil {
 		toSerialize["iterator"] = o.Iterator
+	}
+	if true {
+		toSerialize["done"] = o.Done
 	}
 	return json.Marshal(toSerialize)
 }

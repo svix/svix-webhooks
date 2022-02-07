@@ -17,29 +17,29 @@ import (
 
 // EndpointMessageOut struct for EndpointMessageOut
 type EndpointMessageOut struct {
-	// List of free-form identifiers that endpoints can filter by
-	Channels *[]string `json:"channels,omitempty"`
+	EventType string `json:"eventType"`
 	// Optional unique identifier for the message
 	EventId *string `json:"eventId,omitempty"`
-	EventType string `json:"eventType"`
-	Id string `json:"id"`
-	NextAttempt *time.Time `json:"nextAttempt,omitempty"`
+	// List of free-form identifiers that endpoints can filter by
+	Channels *[]string `json:"channels,omitempty"`
 	Payload map[string]interface{} `json:"payload"`
-	Status MessageStatus `json:"status"`
+	Id string `json:"id"`
 	Timestamp time.Time `json:"timestamp"`
+	Status MessageStatus `json:"status"`
+	NextAttempt *time.Time `json:"nextAttempt,omitempty"`
 }
 
 // NewEndpointMessageOut instantiates a new EndpointMessageOut object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEndpointMessageOut(eventType string, id string, payload map[string]interface{}, status MessageStatus, timestamp time.Time) *EndpointMessageOut {
+func NewEndpointMessageOut(eventType string, payload map[string]interface{}, id string, timestamp time.Time, status MessageStatus) *EndpointMessageOut {
 	this := EndpointMessageOut{}
 	this.EventType = eventType
-	this.Id = id
 	this.Payload = payload
-	this.Status = status
+	this.Id = id
 	this.Timestamp = timestamp
+	this.Status = status
 	return &this
 }
 
@@ -51,36 +51,28 @@ func NewEndpointMessageOutWithDefaults() *EndpointMessageOut {
 	return &this
 }
 
-// GetChannels returns the Channels field value if set, zero value otherwise.
-func (o *EndpointMessageOut) GetChannels() []string {
-	if o == nil || o.Channels == nil {
-		var ret []string
+// GetEventType returns the EventType field value
+func (o *EndpointMessageOut) GetEventType() string {
+	if o == nil {
+		var ret string
 		return ret
 	}
-	return *o.Channels
+
+	return o.EventType
 }
 
-// GetChannelsOk returns a tuple with the Channels field value if set, nil otherwise
+// GetEventTypeOk returns a tuple with the EventType field value
 // and a boolean to check if the value has been set.
-func (o *EndpointMessageOut) GetChannelsOk() (*[]string, bool) {
-	if o == nil || o.Channels == nil {
+func (o *EndpointMessageOut) GetEventTypeOk() (*string, bool) {
+	if o == nil  {
 		return nil, false
 	}
-	return o.Channels, true
+	return &o.EventType, true
 }
 
-// HasChannels returns a boolean if a field has been set.
-func (o *EndpointMessageOut) HasChannels() bool {
-	if o != nil && o.Channels != nil {
-		return true
-	}
-
-	return false
-}
-
-// SetChannels gets a reference to the given []string and assigns it to the Channels field.
-func (o *EndpointMessageOut) SetChannels(v []string) {
-	o.Channels = &v
+// SetEventType sets field value
+func (o *EndpointMessageOut) SetEventType(v string) {
+	o.EventType = v
 }
 
 // GetEventId returns the EventId field value if set, zero value otherwise.
@@ -115,28 +107,60 @@ func (o *EndpointMessageOut) SetEventId(v string) {
 	o.EventId = &v
 }
 
-// GetEventType returns the EventType field value
-func (o *EndpointMessageOut) GetEventType() string {
+// GetChannels returns the Channels field value if set, zero value otherwise.
+func (o *EndpointMessageOut) GetChannels() []string {
+	if o == nil || o.Channels == nil {
+		var ret []string
+		return ret
+	}
+	return *o.Channels
+}
+
+// GetChannelsOk returns a tuple with the Channels field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *EndpointMessageOut) GetChannelsOk() (*[]string, bool) {
+	if o == nil || o.Channels == nil {
+		return nil, false
+	}
+	return o.Channels, true
+}
+
+// HasChannels returns a boolean if a field has been set.
+func (o *EndpointMessageOut) HasChannels() bool {
+	if o != nil && o.Channels != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetChannels gets a reference to the given []string and assigns it to the Channels field.
+func (o *EndpointMessageOut) SetChannels(v []string) {
+	o.Channels = &v
+}
+
+// GetPayload returns the Payload field value
+func (o *EndpointMessageOut) GetPayload() map[string]interface{} {
 	if o == nil {
-		var ret string
+		var ret map[string]interface{}
 		return ret
 	}
 
-	return o.EventType
+	return o.Payload
 }
 
-// GetEventTypeOk returns a tuple with the EventType field value
+// GetPayloadOk returns a tuple with the Payload field value
 // and a boolean to check if the value has been set.
-func (o *EndpointMessageOut) GetEventTypeOk() (*string, bool) {
+func (o *EndpointMessageOut) GetPayloadOk() (*map[string]interface{}, bool) {
 	if o == nil  {
 		return nil, false
 	}
-	return &o.EventType, true
+	return &o.Payload, true
 }
 
-// SetEventType sets field value
-func (o *EndpointMessageOut) SetEventType(v string) {
-	o.EventType = v
+// SetPayload sets field value
+func (o *EndpointMessageOut) SetPayload(v map[string]interface{}) {
+	o.Payload = v
 }
 
 // GetId returns the Id field value
@@ -161,6 +185,54 @@ func (o *EndpointMessageOut) GetIdOk() (*string, bool) {
 // SetId sets field value
 func (o *EndpointMessageOut) SetId(v string) {
 	o.Id = v
+}
+
+// GetTimestamp returns the Timestamp field value
+func (o *EndpointMessageOut) GetTimestamp() time.Time {
+	if o == nil {
+		var ret time.Time
+		return ret
+	}
+
+	return o.Timestamp
+}
+
+// GetTimestampOk returns a tuple with the Timestamp field value
+// and a boolean to check if the value has been set.
+func (o *EndpointMessageOut) GetTimestampOk() (*time.Time, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.Timestamp, true
+}
+
+// SetTimestamp sets field value
+func (o *EndpointMessageOut) SetTimestamp(v time.Time) {
+	o.Timestamp = v
+}
+
+// GetStatus returns the Status field value
+func (o *EndpointMessageOut) GetStatus() MessageStatus {
+	if o == nil {
+		var ret MessageStatus
+		return ret
+	}
+
+	return o.Status
+}
+
+// GetStatusOk returns a tuple with the Status field value
+// and a boolean to check if the value has been set.
+func (o *EndpointMessageOut) GetStatusOk() (*MessageStatus, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.Status, true
+}
+
+// SetStatus sets field value
+func (o *EndpointMessageOut) SetStatus(v MessageStatus) {
+	o.Status = v
 }
 
 // GetNextAttempt returns the NextAttempt field value if set, zero value otherwise.
@@ -195,103 +267,31 @@ func (o *EndpointMessageOut) SetNextAttempt(v time.Time) {
 	o.NextAttempt = &v
 }
 
-// GetPayload returns the Payload field value
-func (o *EndpointMessageOut) GetPayload() map[string]interface{} {
-	if o == nil {
-		var ret map[string]interface{}
-		return ret
-	}
-
-	return o.Payload
-}
-
-// GetPayloadOk returns a tuple with the Payload field value
-// and a boolean to check if the value has been set.
-func (o *EndpointMessageOut) GetPayloadOk() (*map[string]interface{}, bool) {
-	if o == nil  {
-		return nil, false
-	}
-	return &o.Payload, true
-}
-
-// SetPayload sets field value
-func (o *EndpointMessageOut) SetPayload(v map[string]interface{}) {
-	o.Payload = v
-}
-
-// GetStatus returns the Status field value
-func (o *EndpointMessageOut) GetStatus() MessageStatus {
-	if o == nil {
-		var ret MessageStatus
-		return ret
-	}
-
-	return o.Status
-}
-
-// GetStatusOk returns a tuple with the Status field value
-// and a boolean to check if the value has been set.
-func (o *EndpointMessageOut) GetStatusOk() (*MessageStatus, bool) {
-	if o == nil  {
-		return nil, false
-	}
-	return &o.Status, true
-}
-
-// SetStatus sets field value
-func (o *EndpointMessageOut) SetStatus(v MessageStatus) {
-	o.Status = v
-}
-
-// GetTimestamp returns the Timestamp field value
-func (o *EndpointMessageOut) GetTimestamp() time.Time {
-	if o == nil {
-		var ret time.Time
-		return ret
-	}
-
-	return o.Timestamp
-}
-
-// GetTimestampOk returns a tuple with the Timestamp field value
-// and a boolean to check if the value has been set.
-func (o *EndpointMessageOut) GetTimestampOk() (*time.Time, bool) {
-	if o == nil  {
-		return nil, false
-	}
-	return &o.Timestamp, true
-}
-
-// SetTimestamp sets field value
-func (o *EndpointMessageOut) SetTimestamp(v time.Time) {
-	o.Timestamp = v
-}
-
 func (o EndpointMessageOut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Channels != nil {
-		toSerialize["channels"] = o.Channels
+	if true {
+		toSerialize["eventType"] = o.EventType
 	}
 	if o.EventId != nil {
 		toSerialize["eventId"] = o.EventId
 	}
-	if true {
-		toSerialize["eventType"] = o.EventType
-	}
-	if true {
-		toSerialize["id"] = o.Id
-	}
-	if o.NextAttempt != nil {
-		toSerialize["nextAttempt"] = o.NextAttempt
+	if o.Channels != nil {
+		toSerialize["channels"] = o.Channels
 	}
 	if true {
 		toSerialize["payload"] = o.Payload
 	}
 	if true {
-		toSerialize["status"] = o.Status
+		toSerialize["id"] = o.Id
 	}
 	if true {
 		toSerialize["timestamp"] = o.Timestamp
+	}
+	if true {
+		toSerialize["status"] = o.Status
+	}
+	if o.NextAttempt != nil {
+		toSerialize["nextAttempt"] = o.NextAttempt
 	}
 	return json.Marshal(toSerialize)
 }

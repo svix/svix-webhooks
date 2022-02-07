@@ -16,8 +16,8 @@ import (
 
 // EndpointDeletedEvent Sent when an endpoint is deleted.
 type EndpointDeletedEvent struct {
-	Data EndpointDeletedEventData `json:"data"`
 	Type *string `json:"type,omitempty"`
+	Data EndpointDeletedEventData `json:"data"`
 }
 
 // NewEndpointDeletedEvent instantiates a new EndpointDeletedEvent object
@@ -26,9 +26,9 @@ type EndpointDeletedEvent struct {
 // will change when the set of required properties is changed
 func NewEndpointDeletedEvent(data EndpointDeletedEventData) *EndpointDeletedEvent {
 	this := EndpointDeletedEvent{}
-	this.Data = data
 	var type_ string = "endpoint.deleted"
 	this.Type = &type_
+	this.Data = data
 	return &this
 }
 
@@ -40,30 +40,6 @@ func NewEndpointDeletedEventWithDefaults() *EndpointDeletedEvent {
 	var type_ string = "endpoint.deleted"
 	this.Type = &type_
 	return &this
-}
-
-// GetData returns the Data field value
-func (o *EndpointDeletedEvent) GetData() EndpointDeletedEventData {
-	if o == nil {
-		var ret EndpointDeletedEventData
-		return ret
-	}
-
-	return o.Data
-}
-
-// GetDataOk returns a tuple with the Data field value
-// and a boolean to check if the value has been set.
-func (o *EndpointDeletedEvent) GetDataOk() (*EndpointDeletedEventData, bool) {
-	if o == nil  {
-		return nil, false
-	}
-	return &o.Data, true
-}
-
-// SetData sets field value
-func (o *EndpointDeletedEvent) SetData(v EndpointDeletedEventData) {
-	o.Data = v
 }
 
 // GetType returns the Type field value if set, zero value otherwise.
@@ -98,13 +74,37 @@ func (o *EndpointDeletedEvent) SetType(v string) {
 	o.Type = &v
 }
 
+// GetData returns the Data field value
+func (o *EndpointDeletedEvent) GetData() EndpointDeletedEventData {
+	if o == nil {
+		var ret EndpointDeletedEventData
+		return ret
+	}
+
+	return o.Data
+}
+
+// GetDataOk returns a tuple with the Data field value
+// and a boolean to check if the value has been set.
+func (o *EndpointDeletedEvent) GetDataOk() (*EndpointDeletedEventData, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.Data, true
+}
+
+// SetData sets field value
+func (o *EndpointDeletedEvent) SetData(v EndpointDeletedEventData) {
+	o.Data = v
+}
+
 func (o EndpointDeletedEvent) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["data"] = o.Data
-	}
 	if o.Type != nil {
 		toSerialize["type"] = o.Type
+	}
+	if true {
+		toSerialize["data"] = o.Data
 	}
 	return json.Marshal(toSerialize)
 }

@@ -17,36 +17,36 @@ import (
 
 // EndpointOut struct for EndpointOut
 type EndpointOut struct {
-	// List of message channels this endpoint listens to (omit for all)
-	Channels *[]string `json:"channels,omitempty"`
-	CreatedAt time.Time `json:"createdAt"`
-	Description *string `json:"description,omitempty"`
-	Disabled *bool `json:"disabled,omitempty"`
-	FilterTypes *[]string `json:"filterTypes,omitempty"`
-	Id string `json:"id"`
-	RateLimit *int32 `json:"rateLimit,omitempty"`
 	// Optional unique identifier for the endpoint
 	Uid *string `json:"uid,omitempty"`
-	UpdatedAt time.Time `json:"updatedAt"`
 	Url string `json:"url"`
 	Version int32 `json:"version"`
+	Description *string `json:"description,omitempty"`
+	FilterTypes *[]string `json:"filterTypes,omitempty"`
+	// List of message channels this endpoint listens to (omit for all)
+	Channels *[]string `json:"channels,omitempty"`
+	Disabled *bool `json:"disabled,omitempty"`
+	RateLimit *int32 `json:"rateLimit,omitempty"`
+	Id string `json:"id"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
 }
 
 // NewEndpointOut instantiates a new EndpointOut object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEndpointOut(createdAt time.Time, id string, updatedAt time.Time, url string, version int32) *EndpointOut {
+func NewEndpointOut(url string, version int32, id string, createdAt time.Time, updatedAt time.Time) *EndpointOut {
 	this := EndpointOut{}
-	this.CreatedAt = createdAt
+	this.Url = url
+	this.Version = version
 	var description string = ""
 	this.Description = &description
 	var disabled bool = false
 	this.Disabled = &disabled
 	this.Id = id
+	this.CreatedAt = createdAt
 	this.UpdatedAt = updatedAt
-	this.Url = url
-	this.Version = version
 	return &this
 }
 
@@ -60,214 +60,6 @@ func NewEndpointOutWithDefaults() *EndpointOut {
 	var disabled bool = false
 	this.Disabled = &disabled
 	return &this
-}
-
-// GetChannels returns the Channels field value if set, zero value otherwise.
-func (o *EndpointOut) GetChannels() []string {
-	if o == nil || o.Channels == nil {
-		var ret []string
-		return ret
-	}
-	return *o.Channels
-}
-
-// GetChannelsOk returns a tuple with the Channels field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *EndpointOut) GetChannelsOk() (*[]string, bool) {
-	if o == nil || o.Channels == nil {
-		return nil, false
-	}
-	return o.Channels, true
-}
-
-// HasChannels returns a boolean if a field has been set.
-func (o *EndpointOut) HasChannels() bool {
-	if o != nil && o.Channels != nil {
-		return true
-	}
-
-	return false
-}
-
-// SetChannels gets a reference to the given []string and assigns it to the Channels field.
-func (o *EndpointOut) SetChannels(v []string) {
-	o.Channels = &v
-}
-
-// GetCreatedAt returns the CreatedAt field value
-func (o *EndpointOut) GetCreatedAt() time.Time {
-	if o == nil {
-		var ret time.Time
-		return ret
-	}
-
-	return o.CreatedAt
-}
-
-// GetCreatedAtOk returns a tuple with the CreatedAt field value
-// and a boolean to check if the value has been set.
-func (o *EndpointOut) GetCreatedAtOk() (*time.Time, bool) {
-	if o == nil  {
-		return nil, false
-	}
-	return &o.CreatedAt, true
-}
-
-// SetCreatedAt sets field value
-func (o *EndpointOut) SetCreatedAt(v time.Time) {
-	o.CreatedAt = v
-}
-
-// GetDescription returns the Description field value if set, zero value otherwise.
-func (o *EndpointOut) GetDescription() string {
-	if o == nil || o.Description == nil {
-		var ret string
-		return ret
-	}
-	return *o.Description
-}
-
-// GetDescriptionOk returns a tuple with the Description field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *EndpointOut) GetDescriptionOk() (*string, bool) {
-	if o == nil || o.Description == nil {
-		return nil, false
-	}
-	return o.Description, true
-}
-
-// HasDescription returns a boolean if a field has been set.
-func (o *EndpointOut) HasDescription() bool {
-	if o != nil && o.Description != nil {
-		return true
-	}
-
-	return false
-}
-
-// SetDescription gets a reference to the given string and assigns it to the Description field.
-func (o *EndpointOut) SetDescription(v string) {
-	o.Description = &v
-}
-
-// GetDisabled returns the Disabled field value if set, zero value otherwise.
-func (o *EndpointOut) GetDisabled() bool {
-	if o == nil || o.Disabled == nil {
-		var ret bool
-		return ret
-	}
-	return *o.Disabled
-}
-
-// GetDisabledOk returns a tuple with the Disabled field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *EndpointOut) GetDisabledOk() (*bool, bool) {
-	if o == nil || o.Disabled == nil {
-		return nil, false
-	}
-	return o.Disabled, true
-}
-
-// HasDisabled returns a boolean if a field has been set.
-func (o *EndpointOut) HasDisabled() bool {
-	if o != nil && o.Disabled != nil {
-		return true
-	}
-
-	return false
-}
-
-// SetDisabled gets a reference to the given bool and assigns it to the Disabled field.
-func (o *EndpointOut) SetDisabled(v bool) {
-	o.Disabled = &v
-}
-
-// GetFilterTypes returns the FilterTypes field value if set, zero value otherwise.
-func (o *EndpointOut) GetFilterTypes() []string {
-	if o == nil || o.FilterTypes == nil {
-		var ret []string
-		return ret
-	}
-	return *o.FilterTypes
-}
-
-// GetFilterTypesOk returns a tuple with the FilterTypes field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *EndpointOut) GetFilterTypesOk() (*[]string, bool) {
-	if o == nil || o.FilterTypes == nil {
-		return nil, false
-	}
-	return o.FilterTypes, true
-}
-
-// HasFilterTypes returns a boolean if a field has been set.
-func (o *EndpointOut) HasFilterTypes() bool {
-	if o != nil && o.FilterTypes != nil {
-		return true
-	}
-
-	return false
-}
-
-// SetFilterTypes gets a reference to the given []string and assigns it to the FilterTypes field.
-func (o *EndpointOut) SetFilterTypes(v []string) {
-	o.FilterTypes = &v
-}
-
-// GetId returns the Id field value
-func (o *EndpointOut) GetId() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.Id
-}
-
-// GetIdOk returns a tuple with the Id field value
-// and a boolean to check if the value has been set.
-func (o *EndpointOut) GetIdOk() (*string, bool) {
-	if o == nil  {
-		return nil, false
-	}
-	return &o.Id, true
-}
-
-// SetId sets field value
-func (o *EndpointOut) SetId(v string) {
-	o.Id = v
-}
-
-// GetRateLimit returns the RateLimit field value if set, zero value otherwise.
-func (o *EndpointOut) GetRateLimit() int32 {
-	if o == nil || o.RateLimit == nil {
-		var ret int32
-		return ret
-	}
-	return *o.RateLimit
-}
-
-// GetRateLimitOk returns a tuple with the RateLimit field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *EndpointOut) GetRateLimitOk() (*int32, bool) {
-	if o == nil || o.RateLimit == nil {
-		return nil, false
-	}
-	return o.RateLimit, true
-}
-
-// HasRateLimit returns a boolean if a field has been set.
-func (o *EndpointOut) HasRateLimit() bool {
-	if o != nil && o.RateLimit != nil {
-		return true
-	}
-
-	return false
-}
-
-// SetRateLimit gets a reference to the given int32 and assigns it to the RateLimit field.
-func (o *EndpointOut) SetRateLimit(v int32) {
-	o.RateLimit = &v
 }
 
 // GetUid returns the Uid field value if set, zero value otherwise.
@@ -300,30 +92,6 @@ func (o *EndpointOut) HasUid() bool {
 // SetUid gets a reference to the given string and assigns it to the Uid field.
 func (o *EndpointOut) SetUid(v string) {
 	o.Uid = &v
-}
-
-// GetUpdatedAt returns the UpdatedAt field value
-func (o *EndpointOut) GetUpdatedAt() time.Time {
-	if o == nil {
-		var ret time.Time
-		return ret
-	}
-
-	return o.UpdatedAt
-}
-
-// GetUpdatedAtOk returns a tuple with the UpdatedAt field value
-// and a boolean to check if the value has been set.
-func (o *EndpointOut) GetUpdatedAtOk() (*time.Time, bool) {
-	if o == nil  {
-		return nil, false
-	}
-	return &o.UpdatedAt, true
-}
-
-// SetUpdatedAt sets field value
-func (o *EndpointOut) SetUpdatedAt(v time.Time) {
-	o.UpdatedAt = v
 }
 
 // GetUrl returns the Url field value
@@ -374,40 +142,272 @@ func (o *EndpointOut) SetVersion(v int32) {
 	o.Version = v
 }
 
+// GetDescription returns the Description field value if set, zero value otherwise.
+func (o *EndpointOut) GetDescription() string {
+	if o == nil || o.Description == nil {
+		var ret string
+		return ret
+	}
+	return *o.Description
+}
+
+// GetDescriptionOk returns a tuple with the Description field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *EndpointOut) GetDescriptionOk() (*string, bool) {
+	if o == nil || o.Description == nil {
+		return nil, false
+	}
+	return o.Description, true
+}
+
+// HasDescription returns a boolean if a field has been set.
+func (o *EndpointOut) HasDescription() bool {
+	if o != nil && o.Description != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetDescription gets a reference to the given string and assigns it to the Description field.
+func (o *EndpointOut) SetDescription(v string) {
+	o.Description = &v
+}
+
+// GetFilterTypes returns the FilterTypes field value if set, zero value otherwise.
+func (o *EndpointOut) GetFilterTypes() []string {
+	if o == nil || o.FilterTypes == nil {
+		var ret []string
+		return ret
+	}
+	return *o.FilterTypes
+}
+
+// GetFilterTypesOk returns a tuple with the FilterTypes field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *EndpointOut) GetFilterTypesOk() (*[]string, bool) {
+	if o == nil || o.FilterTypes == nil {
+		return nil, false
+	}
+	return o.FilterTypes, true
+}
+
+// HasFilterTypes returns a boolean if a field has been set.
+func (o *EndpointOut) HasFilterTypes() bool {
+	if o != nil && o.FilterTypes != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetFilterTypes gets a reference to the given []string and assigns it to the FilterTypes field.
+func (o *EndpointOut) SetFilterTypes(v []string) {
+	o.FilterTypes = &v
+}
+
+// GetChannels returns the Channels field value if set, zero value otherwise.
+func (o *EndpointOut) GetChannels() []string {
+	if o == nil || o.Channels == nil {
+		var ret []string
+		return ret
+	}
+	return *o.Channels
+}
+
+// GetChannelsOk returns a tuple with the Channels field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *EndpointOut) GetChannelsOk() (*[]string, bool) {
+	if o == nil || o.Channels == nil {
+		return nil, false
+	}
+	return o.Channels, true
+}
+
+// HasChannels returns a boolean if a field has been set.
+func (o *EndpointOut) HasChannels() bool {
+	if o != nil && o.Channels != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetChannels gets a reference to the given []string and assigns it to the Channels field.
+func (o *EndpointOut) SetChannels(v []string) {
+	o.Channels = &v
+}
+
+// GetDisabled returns the Disabled field value if set, zero value otherwise.
+func (o *EndpointOut) GetDisabled() bool {
+	if o == nil || o.Disabled == nil {
+		var ret bool
+		return ret
+	}
+	return *o.Disabled
+}
+
+// GetDisabledOk returns a tuple with the Disabled field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *EndpointOut) GetDisabledOk() (*bool, bool) {
+	if o == nil || o.Disabled == nil {
+		return nil, false
+	}
+	return o.Disabled, true
+}
+
+// HasDisabled returns a boolean if a field has been set.
+func (o *EndpointOut) HasDisabled() bool {
+	if o != nil && o.Disabled != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetDisabled gets a reference to the given bool and assigns it to the Disabled field.
+func (o *EndpointOut) SetDisabled(v bool) {
+	o.Disabled = &v
+}
+
+// GetRateLimit returns the RateLimit field value if set, zero value otherwise.
+func (o *EndpointOut) GetRateLimit() int32 {
+	if o == nil || o.RateLimit == nil {
+		var ret int32
+		return ret
+	}
+	return *o.RateLimit
+}
+
+// GetRateLimitOk returns a tuple with the RateLimit field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *EndpointOut) GetRateLimitOk() (*int32, bool) {
+	if o == nil || o.RateLimit == nil {
+		return nil, false
+	}
+	return o.RateLimit, true
+}
+
+// HasRateLimit returns a boolean if a field has been set.
+func (o *EndpointOut) HasRateLimit() bool {
+	if o != nil && o.RateLimit != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetRateLimit gets a reference to the given int32 and assigns it to the RateLimit field.
+func (o *EndpointOut) SetRateLimit(v int32) {
+	o.RateLimit = &v
+}
+
+// GetId returns the Id field value
+func (o *EndpointOut) GetId() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Id
+}
+
+// GetIdOk returns a tuple with the Id field value
+// and a boolean to check if the value has been set.
+func (o *EndpointOut) GetIdOk() (*string, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.Id, true
+}
+
+// SetId sets field value
+func (o *EndpointOut) SetId(v string) {
+	o.Id = v
+}
+
+// GetCreatedAt returns the CreatedAt field value
+func (o *EndpointOut) GetCreatedAt() time.Time {
+	if o == nil {
+		var ret time.Time
+		return ret
+	}
+
+	return o.CreatedAt
+}
+
+// GetCreatedAtOk returns a tuple with the CreatedAt field value
+// and a boolean to check if the value has been set.
+func (o *EndpointOut) GetCreatedAtOk() (*time.Time, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.CreatedAt, true
+}
+
+// SetCreatedAt sets field value
+func (o *EndpointOut) SetCreatedAt(v time.Time) {
+	o.CreatedAt = v
+}
+
+// GetUpdatedAt returns the UpdatedAt field value
+func (o *EndpointOut) GetUpdatedAt() time.Time {
+	if o == nil {
+		var ret time.Time
+		return ret
+	}
+
+	return o.UpdatedAt
+}
+
+// GetUpdatedAtOk returns a tuple with the UpdatedAt field value
+// and a boolean to check if the value has been set.
+func (o *EndpointOut) GetUpdatedAtOk() (*time.Time, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.UpdatedAt, true
+}
+
+// SetUpdatedAt sets field value
+func (o *EndpointOut) SetUpdatedAt(v time.Time) {
+	o.UpdatedAt = v
+}
+
 func (o EndpointOut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Channels != nil {
-		toSerialize["channels"] = o.Channels
-	}
-	if true {
-		toSerialize["createdAt"] = o.CreatedAt
-	}
-	if o.Description != nil {
-		toSerialize["description"] = o.Description
-	}
-	if o.Disabled != nil {
-		toSerialize["disabled"] = o.Disabled
-	}
-	if o.FilterTypes != nil {
-		toSerialize["filterTypes"] = o.FilterTypes
-	}
-	if true {
-		toSerialize["id"] = o.Id
-	}
-	if o.RateLimit != nil {
-		toSerialize["rateLimit"] = o.RateLimit
-	}
 	if o.Uid != nil {
 		toSerialize["uid"] = o.Uid
-	}
-	if true {
-		toSerialize["updatedAt"] = o.UpdatedAt
 	}
 	if true {
 		toSerialize["url"] = o.Url
 	}
 	if true {
 		toSerialize["version"] = o.Version
+	}
+	if o.Description != nil {
+		toSerialize["description"] = o.Description
+	}
+	if o.FilterTypes != nil {
+		toSerialize["filterTypes"] = o.FilterTypes
+	}
+	if o.Channels != nil {
+		toSerialize["channels"] = o.Channels
+	}
+	if o.Disabled != nil {
+		toSerialize["disabled"] = o.Disabled
+	}
+	if o.RateLimit != nil {
+		toSerialize["rateLimit"] = o.RateLimit
+	}
+	if true {
+		toSerialize["id"] = o.Id
+	}
+	if true {
+		toSerialize["createdAt"] = o.CreatedAt
+	}
+	if true {
+		toSerialize["updatedAt"] = o.UpdatedAt
 	}
 	return json.Marshal(toSerialize)
 }

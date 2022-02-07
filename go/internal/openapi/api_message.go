@@ -35,6 +35,7 @@ type ApiCreateMessageApiV1AppAppIdMsgPostRequest struct {
 	appId string
 	messageIn *MessageIn
 	withContent *bool
+	idempotencyKey *string
 }
 
 func (r ApiCreateMessageApiV1AppAppIdMsgPostRequest) MessageIn(messageIn MessageIn) ApiCreateMessageApiV1AppAppIdMsgPostRequest {
@@ -43,6 +44,10 @@ func (r ApiCreateMessageApiV1AppAppIdMsgPostRequest) MessageIn(messageIn Message
 }
 func (r ApiCreateMessageApiV1AppAppIdMsgPostRequest) WithContent(withContent bool) ApiCreateMessageApiV1AppAppIdMsgPostRequest {
 	r.withContent = &withContent
+	return r
+}
+func (r ApiCreateMessageApiV1AppAppIdMsgPostRequest) IdempotencyKey(idempotencyKey string) ApiCreateMessageApiV1AppAppIdMsgPostRequest {
+	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
@@ -125,6 +130,9 @@ func (a *MessageApiService) CreateMessageApiV1AppAppIdMsgPostExecute(r ApiCreate
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	// body params
 	localVarPostBody = r.messageIn
@@ -229,8 +237,13 @@ type ApiGetMessageApiV1AppAppIdMsgMsgIdGetRequest struct {
 	ApiService *MessageApiService
 	msgId string
 	appId string
+	idempotencyKey *string
 }
 
+func (r ApiGetMessageApiV1AppAppIdMsgMsgIdGetRequest) IdempotencyKey(idempotencyKey string) ApiGetMessageApiV1AppAppIdMsgMsgIdGetRequest {
+	r.idempotencyKey = &idempotencyKey
+	return r
+}
 
 func (r ApiGetMessageApiV1AppAppIdMsgMsgIdGetRequest) Execute() (MessageOut, *_nethttp.Response, error) {
 	return r.ApiService.GetMessageApiV1AppAppIdMsgMsgIdGetExecute(r)
@@ -308,6 +321,9 @@ func (a *MessageApiService) GetMessageApiV1AppAppIdMsgMsgIdGetExecute(r ApiGetMe
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
@@ -402,7 +418,9 @@ type ApiListMessagesApiV1AppAppIdMsgGetRequest struct {
 	iterator *string
 	limit *int32
 	eventTypes *[]string
+	channel *string
 	before *time.Time
+	idempotencyKey *string
 }
 
 func (r ApiListMessagesApiV1AppAppIdMsgGetRequest) Iterator(iterator string) ApiListMessagesApiV1AppAppIdMsgGetRequest {
@@ -417,8 +435,16 @@ func (r ApiListMessagesApiV1AppAppIdMsgGetRequest) EventTypes(eventTypes []strin
 	r.eventTypes = &eventTypes
 	return r
 }
+func (r ApiListMessagesApiV1AppAppIdMsgGetRequest) Channel(channel string) ApiListMessagesApiV1AppAppIdMsgGetRequest {
+	r.channel = &channel
+	return r
+}
 func (r ApiListMessagesApiV1AppAppIdMsgGetRequest) Before(before time.Time) ApiListMessagesApiV1AppAppIdMsgGetRequest {
 	r.before = &before
+	return r
+}
+func (r ApiListMessagesApiV1AppAppIdMsgGetRequest) IdempotencyKey(idempotencyKey string) ApiListMessagesApiV1AppAppIdMsgGetRequest {
+	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
@@ -492,6 +518,9 @@ func (a *MessageApiService) ListMessagesApiV1AppAppIdMsgGetExecute(r ApiListMess
 			localVarQueryParams.Add("event_types", parameterToString(t, "multi"))
 		}
 	}
+	if r.channel != nil {
+		localVarQueryParams.Add("channel", parameterToString(*r.channel, ""))
+	}
 	if r.before != nil {
 		localVarQueryParams.Add("before", parameterToString(*r.before, ""))
 	}
@@ -511,6 +540,9 @@ func (a *MessageApiService) ListMessagesApiV1AppAppIdMsgGetExecute(r ApiListMess
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
