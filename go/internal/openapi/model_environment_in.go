@@ -17,20 +17,20 @@ import (
 
 // EnvironmentIn struct for EnvironmentIn
 type EnvironmentIn struct {
-	Version int32 `json:"version"`
 	CreatedAt time.Time `json:"createdAt"`
 	EventTypes *[]EventTypeIn `json:"eventTypes,omitempty"`
 	Settings *SettingsIn `json:"settings,omitempty"`
+	Version int32 `json:"version"`
 }
 
 // NewEnvironmentIn instantiates a new EnvironmentIn object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEnvironmentIn(version int32, createdAt time.Time) *EnvironmentIn {
+func NewEnvironmentIn(createdAt time.Time, version int32) *EnvironmentIn {
 	this := EnvironmentIn{}
-	this.Version = version
 	this.CreatedAt = createdAt
+	this.Version = version
 	return &this
 }
 
@@ -40,30 +40,6 @@ func NewEnvironmentIn(version int32, createdAt time.Time) *EnvironmentIn {
 func NewEnvironmentInWithDefaults() *EnvironmentIn {
 	this := EnvironmentIn{}
 	return &this
-}
-
-// GetVersion returns the Version field value
-func (o *EnvironmentIn) GetVersion() int32 {
-	if o == nil {
-		var ret int32
-		return ret
-	}
-
-	return o.Version
-}
-
-// GetVersionOk returns a tuple with the Version field value
-// and a boolean to check if the value has been set.
-func (o *EnvironmentIn) GetVersionOk() (*int32, bool) {
-	if o == nil  {
-		return nil, false
-	}
-	return &o.Version, true
-}
-
-// SetVersion sets field value
-func (o *EnvironmentIn) SetVersion(v int32) {
-	o.Version = v
 }
 
 // GetCreatedAt returns the CreatedAt field value
@@ -154,11 +130,32 @@ func (o *EnvironmentIn) SetSettings(v SettingsIn) {
 	o.Settings = &v
 }
 
+// GetVersion returns the Version field value
+func (o *EnvironmentIn) GetVersion() int32 {
+	if o == nil {
+		var ret int32
+		return ret
+	}
+
+	return o.Version
+}
+
+// GetVersionOk returns a tuple with the Version field value
+// and a boolean to check if the value has been set.
+func (o *EnvironmentIn) GetVersionOk() (*int32, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.Version, true
+}
+
+// SetVersion sets field value
+func (o *EnvironmentIn) SetVersion(v int32) {
+	o.Version = v
+}
+
 func (o EnvironmentIn) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["version"] = o.Version
-	}
 	if true {
 		toSerialize["createdAt"] = o.CreatedAt
 	}
@@ -167,6 +164,9 @@ func (o EnvironmentIn) MarshalJSON() ([]byte, error) {
 	}
 	if o.Settings != nil {
 		toSerialize["settings"] = o.Settings
+	}
+	if true {
+		toSerialize["version"] = o.Version
 	}
 	return json.Marshal(toSerialize)
 }

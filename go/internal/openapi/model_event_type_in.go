@@ -16,11 +16,11 @@ import (
 
 // EventTypeIn struct for EventTypeIn
 type EventTypeIn struct {
+	Archived *bool `json:"archived,omitempty"`
 	Description string `json:"description"`
+	Name string `json:"name"`
 	// The schema for the event type for a specific version as a JSON schema.
 	Schemas *map[string]map[string]interface{} `json:"schemas,omitempty"`
-	Archived *bool `json:"archived,omitempty"`
-	Name string `json:"name"`
 }
 
 // NewEventTypeIn instantiates a new EventTypeIn object
@@ -29,9 +29,9 @@ type EventTypeIn struct {
 // will change when the set of required properties is changed
 func NewEventTypeIn(description string, name string) *EventTypeIn {
 	this := EventTypeIn{}
-	this.Description = description
 	var archived bool = false
 	this.Archived = &archived
+	this.Description = description
 	this.Name = name
 	return &this
 }
@@ -44,62 +44,6 @@ func NewEventTypeInWithDefaults() *EventTypeIn {
 	var archived bool = false
 	this.Archived = &archived
 	return &this
-}
-
-// GetDescription returns the Description field value
-func (o *EventTypeIn) GetDescription() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.Description
-}
-
-// GetDescriptionOk returns a tuple with the Description field value
-// and a boolean to check if the value has been set.
-func (o *EventTypeIn) GetDescriptionOk() (*string, bool) {
-	if o == nil  {
-		return nil, false
-	}
-	return &o.Description, true
-}
-
-// SetDescription sets field value
-func (o *EventTypeIn) SetDescription(v string) {
-	o.Description = v
-}
-
-// GetSchemas returns the Schemas field value if set, zero value otherwise.
-func (o *EventTypeIn) GetSchemas() map[string]map[string]interface{} {
-	if o == nil || o.Schemas == nil {
-		var ret map[string]map[string]interface{}
-		return ret
-	}
-	return *o.Schemas
-}
-
-// GetSchemasOk returns a tuple with the Schemas field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *EventTypeIn) GetSchemasOk() (*map[string]map[string]interface{}, bool) {
-	if o == nil || o.Schemas == nil {
-		return nil, false
-	}
-	return o.Schemas, true
-}
-
-// HasSchemas returns a boolean if a field has been set.
-func (o *EventTypeIn) HasSchemas() bool {
-	if o != nil && o.Schemas != nil {
-		return true
-	}
-
-	return false
-}
-
-// SetSchemas gets a reference to the given map[string]map[string]interface{} and assigns it to the Schemas field.
-func (o *EventTypeIn) SetSchemas(v map[string]map[string]interface{}) {
-	o.Schemas = &v
 }
 
 // GetArchived returns the Archived field value if set, zero value otherwise.
@@ -134,6 +78,30 @@ func (o *EventTypeIn) SetArchived(v bool) {
 	o.Archived = &v
 }
 
+// GetDescription returns the Description field value
+func (o *EventTypeIn) GetDescription() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Description
+}
+
+// GetDescriptionOk returns a tuple with the Description field value
+// and a boolean to check if the value has been set.
+func (o *EventTypeIn) GetDescriptionOk() (*string, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.Description, true
+}
+
+// SetDescription sets field value
+func (o *EventTypeIn) SetDescription(v string) {
+	o.Description = v
+}
+
 // GetName returns the Name field value
 func (o *EventTypeIn) GetName() string {
 	if o == nil {
@@ -158,19 +126,51 @@ func (o *EventTypeIn) SetName(v string) {
 	o.Name = v
 }
 
+// GetSchemas returns the Schemas field value if set, zero value otherwise.
+func (o *EventTypeIn) GetSchemas() map[string]map[string]interface{} {
+	if o == nil || o.Schemas == nil {
+		var ret map[string]map[string]interface{}
+		return ret
+	}
+	return *o.Schemas
+}
+
+// GetSchemasOk returns a tuple with the Schemas field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *EventTypeIn) GetSchemasOk() (*map[string]map[string]interface{}, bool) {
+	if o == nil || o.Schemas == nil {
+		return nil, false
+	}
+	return o.Schemas, true
+}
+
+// HasSchemas returns a boolean if a field has been set.
+func (o *EventTypeIn) HasSchemas() bool {
+	if o != nil && o.Schemas != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetSchemas gets a reference to the given map[string]map[string]interface{} and assigns it to the Schemas field.
+func (o *EventTypeIn) SetSchemas(v map[string]map[string]interface{}) {
+	o.Schemas = &v
+}
+
 func (o EventTypeIn) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["description"] = o.Description
-	}
-	if o.Schemas != nil {
-		toSerialize["schemas"] = o.Schemas
-	}
 	if o.Archived != nil {
 		toSerialize["archived"] = o.Archived
 	}
 	if true {
+		toSerialize["description"] = o.Description
+	}
+	if true {
 		toSerialize["name"] = o.Name
+	}
+	if o.Schemas != nil {
+		toSerialize["schemas"] = o.Schemas
 	}
 	return json.Marshal(toSerialize)
 }

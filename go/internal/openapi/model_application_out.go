@@ -17,12 +17,12 @@ import (
 
 // ApplicationOut struct for ApplicationOut
 type ApplicationOut struct {
-	// Optional unique identifier for the application
-	Uid *string `json:"uid,omitempty"`
+	CreatedAt time.Time `json:"createdAt"`
+	Id string `json:"id"`
 	Name string `json:"name"`
 	RateLimit *int32 `json:"rateLimit,omitempty"`
-	Id string `json:"id"`
-	CreatedAt time.Time `json:"createdAt"`
+	// Optional unique identifier for the application
+	Uid *string `json:"uid,omitempty"`
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
@@ -30,11 +30,11 @@ type ApplicationOut struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewApplicationOut(name string, id string, createdAt time.Time, updatedAt time.Time) *ApplicationOut {
+func NewApplicationOut(createdAt time.Time, id string, name string, updatedAt time.Time) *ApplicationOut {
 	this := ApplicationOut{}
-	this.Name = name
-	this.Id = id
 	this.CreatedAt = createdAt
+	this.Id = id
+	this.Name = name
 	this.UpdatedAt = updatedAt
 	return &this
 }
@@ -47,36 +47,52 @@ func NewApplicationOutWithDefaults() *ApplicationOut {
 	return &this
 }
 
-// GetUid returns the Uid field value if set, zero value otherwise.
-func (o *ApplicationOut) GetUid() string {
-	if o == nil || o.Uid == nil {
+// GetCreatedAt returns the CreatedAt field value
+func (o *ApplicationOut) GetCreatedAt() time.Time {
+	if o == nil {
+		var ret time.Time
+		return ret
+	}
+
+	return o.CreatedAt
+}
+
+// GetCreatedAtOk returns a tuple with the CreatedAt field value
+// and a boolean to check if the value has been set.
+func (o *ApplicationOut) GetCreatedAtOk() (*time.Time, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.CreatedAt, true
+}
+
+// SetCreatedAt sets field value
+func (o *ApplicationOut) SetCreatedAt(v time.Time) {
+	o.CreatedAt = v
+}
+
+// GetId returns the Id field value
+func (o *ApplicationOut) GetId() string {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Uid
+
+	return o.Id
 }
 
-// GetUidOk returns a tuple with the Uid field value if set, nil otherwise
+// GetIdOk returns a tuple with the Id field value
 // and a boolean to check if the value has been set.
-func (o *ApplicationOut) GetUidOk() (*string, bool) {
-	if o == nil || o.Uid == nil {
+func (o *ApplicationOut) GetIdOk() (*string, bool) {
+	if o == nil  {
 		return nil, false
 	}
-	return o.Uid, true
+	return &o.Id, true
 }
 
-// HasUid returns a boolean if a field has been set.
-func (o *ApplicationOut) HasUid() bool {
-	if o != nil && o.Uid != nil {
-		return true
-	}
-
-	return false
-}
-
-// SetUid gets a reference to the given string and assigns it to the Uid field.
-func (o *ApplicationOut) SetUid(v string) {
-	o.Uid = &v
+// SetId sets field value
+func (o *ApplicationOut) SetId(v string) {
+	o.Id = v
 }
 
 // GetName returns the Name field value
@@ -135,52 +151,36 @@ func (o *ApplicationOut) SetRateLimit(v int32) {
 	o.RateLimit = &v
 }
 
-// GetId returns the Id field value
-func (o *ApplicationOut) GetId() string {
-	if o == nil {
+// GetUid returns the Uid field value if set, zero value otherwise.
+func (o *ApplicationOut) GetUid() string {
+	if o == nil || o.Uid == nil {
 		var ret string
 		return ret
 	}
-
-	return o.Id
+	return *o.Uid
 }
 
-// GetIdOk returns a tuple with the Id field value
+// GetUidOk returns a tuple with the Uid field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ApplicationOut) GetIdOk() (*string, bool) {
-	if o == nil  {
+func (o *ApplicationOut) GetUidOk() (*string, bool) {
+	if o == nil || o.Uid == nil {
 		return nil, false
 	}
-	return &o.Id, true
+	return o.Uid, true
 }
 
-// SetId sets field value
-func (o *ApplicationOut) SetId(v string) {
-	o.Id = v
-}
-
-// GetCreatedAt returns the CreatedAt field value
-func (o *ApplicationOut) GetCreatedAt() time.Time {
-	if o == nil {
-		var ret time.Time
-		return ret
+// HasUid returns a boolean if a field has been set.
+func (o *ApplicationOut) HasUid() bool {
+	if o != nil && o.Uid != nil {
+		return true
 	}
 
-	return o.CreatedAt
+	return false
 }
 
-// GetCreatedAtOk returns a tuple with the CreatedAt field value
-// and a boolean to check if the value has been set.
-func (o *ApplicationOut) GetCreatedAtOk() (*time.Time, bool) {
-	if o == nil  {
-		return nil, false
-	}
-	return &o.CreatedAt, true
-}
-
-// SetCreatedAt sets field value
-func (o *ApplicationOut) SetCreatedAt(v time.Time) {
-	o.CreatedAt = v
+// SetUid gets a reference to the given string and assigns it to the Uid field.
+func (o *ApplicationOut) SetUid(v string) {
+	o.Uid = &v
 }
 
 // GetUpdatedAt returns the UpdatedAt field value
@@ -209,8 +209,11 @@ func (o *ApplicationOut) SetUpdatedAt(v time.Time) {
 
 func (o ApplicationOut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Uid != nil {
-		toSerialize["uid"] = o.Uid
+	if true {
+		toSerialize["createdAt"] = o.CreatedAt
+	}
+	if true {
+		toSerialize["id"] = o.Id
 	}
 	if true {
 		toSerialize["name"] = o.Name
@@ -218,11 +221,8 @@ func (o ApplicationOut) MarshalJSON() ([]byte, error) {
 	if o.RateLimit != nil {
 		toSerialize["rateLimit"] = o.RateLimit
 	}
-	if true {
-		toSerialize["id"] = o.Id
-	}
-	if true {
-		toSerialize["createdAt"] = o.CreatedAt
+	if o.Uid != nil {
+		toSerialize["uid"] = o.Uid
 	}
 	if true {
 		toSerialize["updatedAt"] = o.UpdatedAt

@@ -17,13 +17,13 @@ import (
 
 // MessageOut struct for MessageOut
 type MessageOut struct {
-	EventType string `json:"eventType"`
-	// Optional unique identifier for the message
-	EventId *string `json:"eventId,omitempty"`
 	// List of free-form identifiers that endpoints can filter by
 	Channels *[]string `json:"channels,omitempty"`
-	Payload map[string]interface{} `json:"payload"`
+	// Optional unique identifier for the message
+	EventId *string `json:"eventId,omitempty"`
+	EventType string `json:"eventType"`
 	Id string `json:"id"`
+	Payload map[string]interface{} `json:"payload"`
 	Timestamp time.Time `json:"timestamp"`
 }
 
@@ -31,11 +31,11 @@ type MessageOut struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewMessageOut(eventType string, payload map[string]interface{}, id string, timestamp time.Time) *MessageOut {
+func NewMessageOut(eventType string, id string, payload map[string]interface{}, timestamp time.Time) *MessageOut {
 	this := MessageOut{}
 	this.EventType = eventType
-	this.Payload = payload
 	this.Id = id
+	this.Payload = payload
 	this.Timestamp = timestamp
 	return &this
 }
@@ -46,62 +46,6 @@ func NewMessageOut(eventType string, payload map[string]interface{}, id string, 
 func NewMessageOutWithDefaults() *MessageOut {
 	this := MessageOut{}
 	return &this
-}
-
-// GetEventType returns the EventType field value
-func (o *MessageOut) GetEventType() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.EventType
-}
-
-// GetEventTypeOk returns a tuple with the EventType field value
-// and a boolean to check if the value has been set.
-func (o *MessageOut) GetEventTypeOk() (*string, bool) {
-	if o == nil  {
-		return nil, false
-	}
-	return &o.EventType, true
-}
-
-// SetEventType sets field value
-func (o *MessageOut) SetEventType(v string) {
-	o.EventType = v
-}
-
-// GetEventId returns the EventId field value if set, zero value otherwise.
-func (o *MessageOut) GetEventId() string {
-	if o == nil || o.EventId == nil {
-		var ret string
-		return ret
-	}
-	return *o.EventId
-}
-
-// GetEventIdOk returns a tuple with the EventId field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *MessageOut) GetEventIdOk() (*string, bool) {
-	if o == nil || o.EventId == nil {
-		return nil, false
-	}
-	return o.EventId, true
-}
-
-// HasEventId returns a boolean if a field has been set.
-func (o *MessageOut) HasEventId() bool {
-	if o != nil && o.EventId != nil {
-		return true
-	}
-
-	return false
-}
-
-// SetEventId gets a reference to the given string and assigns it to the EventId field.
-func (o *MessageOut) SetEventId(v string) {
-	o.EventId = &v
 }
 
 // GetChannels returns the Channels field value if set, zero value otherwise.
@@ -136,28 +80,60 @@ func (o *MessageOut) SetChannels(v []string) {
 	o.Channels = &v
 }
 
-// GetPayload returns the Payload field value
-func (o *MessageOut) GetPayload() map[string]interface{} {
+// GetEventId returns the EventId field value if set, zero value otherwise.
+func (o *MessageOut) GetEventId() string {
+	if o == nil || o.EventId == nil {
+		var ret string
+		return ret
+	}
+	return *o.EventId
+}
+
+// GetEventIdOk returns a tuple with the EventId field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *MessageOut) GetEventIdOk() (*string, bool) {
+	if o == nil || o.EventId == nil {
+		return nil, false
+	}
+	return o.EventId, true
+}
+
+// HasEventId returns a boolean if a field has been set.
+func (o *MessageOut) HasEventId() bool {
+	if o != nil && o.EventId != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetEventId gets a reference to the given string and assigns it to the EventId field.
+func (o *MessageOut) SetEventId(v string) {
+	o.EventId = &v
+}
+
+// GetEventType returns the EventType field value
+func (o *MessageOut) GetEventType() string {
 	if o == nil {
-		var ret map[string]interface{}
+		var ret string
 		return ret
 	}
 
-	return o.Payload
+	return o.EventType
 }
 
-// GetPayloadOk returns a tuple with the Payload field value
+// GetEventTypeOk returns a tuple with the EventType field value
 // and a boolean to check if the value has been set.
-func (o *MessageOut) GetPayloadOk() (*map[string]interface{}, bool) {
+func (o *MessageOut) GetEventTypeOk() (*string, bool) {
 	if o == nil  {
 		return nil, false
 	}
-	return &o.Payload, true
+	return &o.EventType, true
 }
 
-// SetPayload sets field value
-func (o *MessageOut) SetPayload(v map[string]interface{}) {
-	o.Payload = v
+// SetEventType sets field value
+func (o *MessageOut) SetEventType(v string) {
+	o.EventType = v
 }
 
 // GetId returns the Id field value
@@ -182,6 +158,30 @@ func (o *MessageOut) GetIdOk() (*string, bool) {
 // SetId sets field value
 func (o *MessageOut) SetId(v string) {
 	o.Id = v
+}
+
+// GetPayload returns the Payload field value
+func (o *MessageOut) GetPayload() map[string]interface{} {
+	if o == nil {
+		var ret map[string]interface{}
+		return ret
+	}
+
+	return o.Payload
+}
+
+// GetPayloadOk returns a tuple with the Payload field value
+// and a boolean to check if the value has been set.
+func (o *MessageOut) GetPayloadOk() (*map[string]interface{}, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.Payload, true
+}
+
+// SetPayload sets field value
+func (o *MessageOut) SetPayload(v map[string]interface{}) {
+	o.Payload = v
 }
 
 // GetTimestamp returns the Timestamp field value
@@ -210,20 +210,20 @@ func (o *MessageOut) SetTimestamp(v time.Time) {
 
 func (o MessageOut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["eventType"] = o.EventType
+	if o.Channels != nil {
+		toSerialize["channels"] = o.Channels
 	}
 	if o.EventId != nil {
 		toSerialize["eventId"] = o.EventId
 	}
-	if o.Channels != nil {
-		toSerialize["channels"] = o.Channels
-	}
 	if true {
-		toSerialize["payload"] = o.Payload
+		toSerialize["eventType"] = o.EventType
 	}
 	if true {
 		toSerialize["id"] = o.Id
+	}
+	if true {
+		toSerialize["payload"] = o.Payload
 	}
 	if true {
 		toSerialize["timestamp"] = o.Timestamp
