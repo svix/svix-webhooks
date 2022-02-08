@@ -32,10 +32,15 @@ type ApiCreateIntegrationApiV1AppAppIdIntegrationPostRequest struct {
 	ApiService *IntegrationApiService
 	appId string
 	integrationIn *IntegrationIn
+	idempotencyKey *string
 }
 
 func (r ApiCreateIntegrationApiV1AppAppIdIntegrationPostRequest) IntegrationIn(integrationIn IntegrationIn) ApiCreateIntegrationApiV1AppAppIdIntegrationPostRequest {
 	r.integrationIn = &integrationIn
+	return r
+}
+func (r ApiCreateIntegrationApiV1AppAppIdIntegrationPostRequest) IdempotencyKey(idempotencyKey string) ApiCreateIntegrationApiV1AppAppIdIntegrationPostRequest {
+	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
@@ -109,6 +114,9 @@ func (a *IntegrationApiService) CreateIntegrationApiV1AppAppIdIntegrationPostExe
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	// body params
 	localVarPostBody = r.integrationIn
@@ -203,8 +211,13 @@ type ApiDeleteIntegrationApiV1AppAppIdIntegrationIntegIdDeleteRequest struct {
 	ApiService *IntegrationApiService
 	integId string
 	appId string
+	idempotencyKey *string
 }
 
+func (r ApiDeleteIntegrationApiV1AppAppIdIntegrationIntegIdDeleteRequest) IdempotencyKey(idempotencyKey string) ApiDeleteIntegrationApiV1AppAppIdIntegrationIntegIdDeleteRequest {
+	r.idempotencyKey = &idempotencyKey
+	return r
+}
 
 func (r ApiDeleteIntegrationApiV1AppAppIdIntegrationIntegIdDeleteRequest) Execute() (*_nethttp.Response, error) {
 	return r.ApiService.DeleteIntegrationApiV1AppAppIdIntegrationIntegIdDeleteExecute(r)
@@ -274,6 +287,9 @@ func (a *IntegrationApiService) DeleteIntegrationApiV1AppAppIdIntegrationIntegId
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
@@ -357,8 +373,13 @@ type ApiGetIntegrationApiV1AppAppIdIntegrationIntegIdGetRequest struct {
 	ApiService *IntegrationApiService
 	integId string
 	appId string
+	idempotencyKey *string
 }
 
+func (r ApiGetIntegrationApiV1AppAppIdIntegrationIntegIdGetRequest) IdempotencyKey(idempotencyKey string) ApiGetIntegrationApiV1AppAppIdIntegrationIntegIdGetRequest {
+	r.idempotencyKey = &idempotencyKey
+	return r
+}
 
 func (r ApiGetIntegrationApiV1AppAppIdIntegrationIntegIdGetRequest) Execute() (IntegrationOut, *_nethttp.Response, error) {
 	return r.ApiService.GetIntegrationApiV1AppAppIdIntegrationIntegIdGetExecute(r)
@@ -430,6 +451,9 @@ func (a *IntegrationApiService) GetIntegrationApiV1AppAppIdIntegrationIntegIdGet
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
@@ -522,8 +546,13 @@ type ApiGetIntegrationKeyApiV1AppAppIdIntegrationIntegIdKeyGetRequest struct {
 	ApiService *IntegrationApiService
 	integId string
 	appId string
+	idempotencyKey *string
 }
 
+func (r ApiGetIntegrationKeyApiV1AppAppIdIntegrationIntegIdKeyGetRequest) IdempotencyKey(idempotencyKey string) ApiGetIntegrationKeyApiV1AppAppIdIntegrationIntegIdKeyGetRequest {
+	r.idempotencyKey = &idempotencyKey
+	return r
+}
 
 func (r ApiGetIntegrationKeyApiV1AppAppIdIntegrationIntegIdKeyGetRequest) Execute() (IntegrationKeyOut, *_nethttp.Response, error) {
 	return r.ApiService.GetIntegrationKeyApiV1AppAppIdIntegrationIntegIdKeyGetExecute(r)
@@ -595,6 +624,9 @@ func (a *IntegrationApiService) GetIntegrationKeyApiV1AppAppIdIntegrationIntegId
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
@@ -688,6 +720,7 @@ type ApiListIntegrationsApiV1AppAppIdIntegrationGetRequest struct {
 	appId string
 	iterator *string
 	limit *int32
+	idempotencyKey *string
 }
 
 func (r ApiListIntegrationsApiV1AppAppIdIntegrationGetRequest) Iterator(iterator string) ApiListIntegrationsApiV1AppAppIdIntegrationGetRequest {
@@ -696,6 +729,10 @@ func (r ApiListIntegrationsApiV1AppAppIdIntegrationGetRequest) Iterator(iterator
 }
 func (r ApiListIntegrationsApiV1AppAppIdIntegrationGetRequest) Limit(limit int32) ApiListIntegrationsApiV1AppAppIdIntegrationGetRequest {
 	r.limit = &limit
+	return r
+}
+func (r ApiListIntegrationsApiV1AppAppIdIntegrationGetRequest) IdempotencyKey(idempotencyKey string) ApiListIntegrationsApiV1AppAppIdIntegrationGetRequest {
+	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
@@ -772,6 +809,9 @@ func (a *IntegrationApiService) ListIntegrationsApiV1AppAppIdIntegrationGetExecu
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
@@ -864,8 +904,13 @@ type ApiRotateIntegrationKeyApiV1AppAppIdIntegrationIntegIdKeyRotatePostRequest 
 	ApiService *IntegrationApiService
 	integId string
 	appId string
+	idempotencyKey *string
 }
 
+func (r ApiRotateIntegrationKeyApiV1AppAppIdIntegrationIntegIdKeyRotatePostRequest) IdempotencyKey(idempotencyKey string) ApiRotateIntegrationKeyApiV1AppAppIdIntegrationIntegIdKeyRotatePostRequest {
+	r.idempotencyKey = &idempotencyKey
+	return r
+}
 
 func (r ApiRotateIntegrationKeyApiV1AppAppIdIntegrationIntegIdKeyRotatePostRequest) Execute() (IntegrationKeyOut, *_nethttp.Response, error) {
 	return r.ApiService.RotateIntegrationKeyApiV1AppAppIdIntegrationIntegIdKeyRotatePostExecute(r)
@@ -937,6 +982,9 @@ func (a *IntegrationApiService) RotateIntegrationKeyApiV1AppAppIdIntegrationInte
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
@@ -1030,10 +1078,15 @@ type ApiUpdateIntegrationApiV1AppAppIdIntegrationIntegIdPutRequest struct {
 	integId string
 	appId string
 	integrationUpdate *IntegrationUpdate
+	idempotencyKey *string
 }
 
 func (r ApiUpdateIntegrationApiV1AppAppIdIntegrationIntegIdPutRequest) IntegrationUpdate(integrationUpdate IntegrationUpdate) ApiUpdateIntegrationApiV1AppAppIdIntegrationIntegIdPutRequest {
 	r.integrationUpdate = &integrationUpdate
+	return r
+}
+func (r ApiUpdateIntegrationApiV1AppAppIdIntegrationIntegIdPutRequest) IdempotencyKey(idempotencyKey string) ApiUpdateIntegrationApiV1AppAppIdIntegrationIntegIdPutRequest {
+	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
@@ -1110,6 +1163,9 @@ func (a *IntegrationApiService) UpdateIntegrationApiV1AppAppIdIntegrationIntegId
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	// body params
 	localVarPostBody = r.integrationUpdate

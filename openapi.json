@@ -2305,6 +2305,17 @@
                             "title": "Limit",
                             "type": "integer"
                         }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
@@ -2439,6 +2450,17 @@
                             "title": "Get If Exists",
                             "type": "boolean"
                         }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        }
                     }
                 ],
                 "requestBody": {
@@ -2546,7 +2568,7 @@
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "application_out = svix.application.create(ApplicationIn(\n    uid=\"unique-app-identifier\",\n    name=\"My first application\",\n    rate_limit=1000\n))"
+                        "source": "application_out = svix.application.create(ApplicationIn(\n    uid=\"unique-app-identifier\",\n    name=\"My first application\",\n    rate_limit=1000\n))\n# Or \napplication_out = svix.application.get_or_create(ApplicationIn(\n    uid=\"unique-app-identifier\",\n    name=\"My first application\",\n    rate_limit=1000\n))"
                     },
                     {
                         "label": "Go",
@@ -2597,6 +2619,17 @@
                             "minLength": 1,
                             "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "App Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
                             "type": "string"
                         }
                     }
@@ -2728,6 +2761,17 @@
                             "minLength": 1,
                             "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "App Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
                             "type": "string"
                         }
                     }
@@ -2866,6 +2910,17 @@
                             "minLength": 1,
                             "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "App Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
                             "type": "string"
                         }
                     }
@@ -3039,6 +3094,17 @@
                             "title": "Limit",
                             "type": "integer"
                         }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
@@ -3175,6 +3241,17 @@
                             "minLength": 1,
                             "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "App Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
                             "type": "string"
                         }
                     }
@@ -3341,6 +3418,17 @@
                             "title": "App Id",
                             "type": "string"
                         }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
@@ -3484,6 +3572,17 @@
                             "minLength": 1,
                             "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "App Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
                             "type": "string"
                         }
                     }
@@ -3636,6 +3735,17 @@
                             "minLength": 1,
                             "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "App Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
                             "type": "string"
                         }
                     }
@@ -3802,6 +3912,17 @@
                             "title": "App Id",
                             "type": "string"
                         }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
@@ -3952,6 +4073,17 @@
                             "minLength": 1,
                             "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Endpoint Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
                             "type": "string"
                         }
                     }
@@ -4107,6 +4239,17 @@
                             "minLength": 1,
                             "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Endpoint Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
                             "type": "string"
                         }
                     }
@@ -4305,6 +4448,17 @@
                             "title": "Before",
                             "type": "string"
                         }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
@@ -4417,6 +4571,17 @@
                             "minLength": 1,
                             "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Endpoint Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
                             "type": "string"
                         }
                     }
@@ -4583,6 +4748,17 @@
                             "title": "App Id",
                             "type": "string"
                         }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
@@ -4735,6 +4911,17 @@
                             "minLength": 1,
                             "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "App Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
                             "type": "string"
                         }
                     }
@@ -4902,6 +5089,17 @@
                             "minLength": 1,
                             "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Endpoint Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
                             "type": "string"
                         }
                     }
@@ -5078,6 +5276,17 @@
                             "title": "App Id",
                             "type": "string"
                         }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
@@ -5197,6 +5406,17 @@
                             "default": 50,
                             "title": "Limit",
                             "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
+                            "type": "string"
                         }
                     }
                 ],
@@ -5334,6 +5554,17 @@
                             "minLength": 1,
                             "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "App Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
                             "type": "string"
                         }
                     }
@@ -5496,6 +5727,17 @@
                             "title": "App Id",
                             "type": "string"
                         }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
@@ -5635,6 +5877,17 @@
                             "minLength": 1,
                             "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "App Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
                             "type": "string"
                         }
                     }
@@ -5783,6 +6036,17 @@
                             "minLength": 1,
                             "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "App Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
                             "type": "string"
                         }
                     }
@@ -5945,6 +6209,17 @@
                             "title": "App Id",
                             "type": "string"
                         }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
@@ -6093,6 +6368,17 @@
                             "minLength": 1,
                             "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "App Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
                             "type": "string"
                         }
                     }
@@ -6274,11 +6560,34 @@
                     },
                     {
                         "in": "query",
+                        "name": "channel",
+                        "required": false,
+                        "schema": {
+                            "example": "project_1337",
+                            "maxLength": 128,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "Channel",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
                         "name": "before",
                         "required": false,
                         "schema": {
                             "format": "date-time",
                             "title": "Before",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
                             "type": "string"
                         }
                     }
@@ -6428,6 +6737,17 @@
                             "default": true,
                             "title": "With Content",
                             "type": "boolean"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
+                            "type": "string"
                         }
                     }
                 ],
@@ -6601,6 +6921,17 @@
                             "minLength": 1,
                             "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "App Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
                             "type": "string"
                         }
                     }
@@ -6786,6 +7117,17 @@
                         "schema": {
                             "$ref": "#/components/schemas/MessageStatus"
                         }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
@@ -6948,6 +7290,17 @@
                             "minLength": 1,
                             "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "App Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
                             "type": "string"
                         }
                     }
@@ -7125,6 +7478,17 @@
                             "title": "Limit",
                             "type": "integer"
                         }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
@@ -7292,6 +7656,18 @@
                     },
                     {
                         "in": "query",
+                        "name": "channel",
+                        "required": false,
+                        "schema": {
+                            "example": "project_1337",
+                            "maxLength": 128,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "Channel",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
                         "name": "status",
                         "required": false,
                         "schema": {
@@ -7305,6 +7681,17 @@
                         "schema": {
                             "format": "date-time",
                             "title": "Before",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
                             "type": "string"
                         }
                     }
@@ -7433,6 +7820,17 @@
                             "minLength": 1,
                             "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "App Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
                             "type": "string"
                         }
                     }
@@ -7568,6 +7966,17 @@
                             "title": "App Id",
                             "type": "string"
                         }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
@@ -7694,6 +8103,19 @@
             "post": {
                 "description": "Logout an app token.\n\nTrying to log out other tokens will fail.",
                 "operationId": "logout_api_v1_auth_logout__post",
+                "parameters": [
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "204": {
                         "description": "Successful Response"
@@ -7737,6 +8159,16 @@
                             }
                         },
                         "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
                     }
                 },
                 "security": [
@@ -7801,6 +8233,19 @@
             "post": {
                 "description": "Download a JSON file containing all org-settings and event types",
                 "operationId": "export_environment_configuration_api_v1_environment_export__post",
+                "parameters": [
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -7895,6 +8340,19 @@
             "post": {
                 "description": "Import a configuration into the active organization.\nIt doesn't delete anything, only adds/updates what was passed to it.",
                 "operationId": "import_environment_configuration_api_v1_environment_import__post",
+                "parameters": [
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -7982,6 +8440,19 @@
             "get": {
                 "description": "Get the environment's settings",
                 "operationId": "get_org_settings_api_v1_environment_settings__get",
+                "parameters": [
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -8032,6 +8503,16 @@
                             }
                         },
                         "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
                     }
                 },
                 "security": [
@@ -8098,6 +8579,17 @@
                             "default": false,
                             "title": "Include Archived",
                             "type": "boolean"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
+                            "type": "string"
                         }
                     }
                 ],
@@ -8223,6 +8715,19 @@
             "post": {
                 "description": "Create new or unarchive existing event type.\n\nUnarchiving an event type will allow endpoints to filter on it and messages to be sent with it.\nEndpoints filtering on the event type before archival will continue to filter on it.\nThis operation does not preserve the description and schemas.",
                 "operationId": "create_event_type_api_v1_event_type__post",
+                "parameters": [
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -8357,6 +8862,19 @@
             "post": {
                 "description": "Generates a fake example from the given JSONSchema",
                 "operationId": "generate_schema_example_api_v1_event_type_schema_generate_example__post",
+                "parameters": [
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -8498,6 +9016,17 @@
                             "title": "Event Type Name",
                             "type": "string"
                         }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
@@ -8625,6 +9154,17 @@
                             "maxLength": 256,
                             "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Event Type Name",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
                             "type": "string"
                         }
                     }
@@ -8763,6 +9303,17 @@
                             "title": "Event Type Name",
                             "type": "string"
                         }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        }
                     }
                 ],
                 "requestBody": {
@@ -8899,9 +9450,32 @@
             "get": {
                 "description": "Verify the API server is up and running.",
                 "operationId": "health_api_v1_health__get",
+                "parameters": [
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "204": {
                         "description": "Successful Response"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
                     }
                 },
                 "summary": "Health",
@@ -8953,6 +9527,17 @@
                         "schema": {
                             "format": "date-time",
                             "title": "Enddate",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
                             "type": "string"
                         }
                     }
@@ -9087,6 +9672,17 @@
                         "schema": {
                             "format": "date-time",
                             "title": "Enddate",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
                             "type": "string"
                         }
                     }

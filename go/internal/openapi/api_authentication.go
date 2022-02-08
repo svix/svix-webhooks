@@ -31,8 +31,13 @@ type ApiGetDashboardAccessApiV1AuthDashboardAccessAppIdPostRequest struct {
 	ctx _context.Context
 	ApiService *AuthenticationApiService
 	appId string
+	idempotencyKey *string
 }
 
+func (r ApiGetDashboardAccessApiV1AuthDashboardAccessAppIdPostRequest) IdempotencyKey(idempotencyKey string) ApiGetDashboardAccessApiV1AuthDashboardAccessAppIdPostRequest {
+	r.idempotencyKey = &idempotencyKey
+	return r
+}
 
 func (r ApiGetDashboardAccessApiV1AuthDashboardAccessAppIdPostRequest) Execute() (DashboardAccessOut, *_nethttp.Response, error) {
 	return r.ApiService.GetDashboardAccessApiV1AuthDashboardAccessAppIdPostExecute(r)
@@ -101,6 +106,9 @@ func (a *AuthenticationApiService) GetDashboardAccessApiV1AuthDashboardAccessApp
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
@@ -191,8 +199,13 @@ func (a *AuthenticationApiService) GetDashboardAccessApiV1AuthDashboardAccessApp
 type ApiLogoutApiV1AuthLogoutPostRequest struct {
 	ctx _context.Context
 	ApiService *AuthenticationApiService
+	idempotencyKey *string
 }
 
+func (r ApiLogoutApiV1AuthLogoutPostRequest) IdempotencyKey(idempotencyKey string) ApiLogoutApiV1AuthLogoutPostRequest {
+	r.idempotencyKey = &idempotencyKey
+	return r
+}
 
 func (r ApiLogoutApiV1AuthLogoutPostRequest) Execute() (*_nethttp.Response, error) {
 	return r.ApiService.LogoutApiV1AuthLogoutPostExecute(r)
@@ -253,6 +266,9 @@ func (a *AuthenticationApiService) LogoutApiV1AuthLogoutPostExecute(r ApiLogoutA
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
+	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return nil, err
@@ -307,6 +323,16 @@ func (a *AuthenticationApiService) LogoutApiV1AuthLogoutPostExecute(r ApiLogoutA
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
 			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 422 {
+			var v HTTPValidationError
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()

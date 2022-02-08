@@ -29,8 +29,13 @@ type HealthApiService service
 type ApiHealthApiV1HealthGetRequest struct {
 	ctx _context.Context
 	ApiService *HealthApiService
+	idempotencyKey *string
 }
 
+func (r ApiHealthApiV1HealthGetRequest) IdempotencyKey(idempotencyKey string) ApiHealthApiV1HealthGetRequest {
+	r.idempotencyKey = &idempotencyKey
+	return r
+}
 
 func (r ApiHealthApiV1HealthGetRequest) Execute() (*_nethttp.Response, error) {
 	return r.ApiService.HealthApiV1HealthGetExecute(r)
@@ -82,12 +87,15 @@ func (a *HealthApiService) HealthApiV1HealthGetExecute(r ApiHealthApiV1HealthGet
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{}
+	localVarHTTPHeaderAccepts := []string{"application/json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
@@ -110,6 +118,15 @@ func (a *HealthApiService) HealthApiV1HealthGetExecute(r ApiHealthApiV1HealthGet
 		newErr := GenericOpenAPIError{
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 422 {
+			var v HTTPValidationError
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.model = v
 		}
 		return localVarHTTPResponse, newErr
 	}

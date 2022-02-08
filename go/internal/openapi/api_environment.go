@@ -30,10 +30,15 @@ type ApiExportEnvironmentConfigurationApiV1EnvironmentExportPostRequest struct {
 	ctx _context.Context
 	ApiService *EnvironmentApiService
 	body *map[string]interface{}
+	idempotencyKey *string
 }
 
 func (r ApiExportEnvironmentConfigurationApiV1EnvironmentExportPostRequest) Body(body map[string]interface{}) ApiExportEnvironmentConfigurationApiV1EnvironmentExportPostRequest {
 	r.body = &body
+	return r
+}
+func (r ApiExportEnvironmentConfigurationApiV1EnvironmentExportPostRequest) IdempotencyKey(idempotencyKey string) ApiExportEnvironmentConfigurationApiV1EnvironmentExportPostRequest {
+	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
@@ -98,6 +103,9 @@ func (a *EnvironmentApiService) ExportEnvironmentConfigurationApiV1EnvironmentEx
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	// body params
 	localVarPostBody = r.body
@@ -191,10 +199,15 @@ type ApiImportEnvironmentConfigurationApiV1EnvironmentImportPostRequest struct {
 	ctx _context.Context
 	ApiService *EnvironmentApiService
 	environmentIn *EnvironmentIn
+	idempotencyKey *string
 }
 
 func (r ApiImportEnvironmentConfigurationApiV1EnvironmentImportPostRequest) EnvironmentIn(environmentIn EnvironmentIn) ApiImportEnvironmentConfigurationApiV1EnvironmentImportPostRequest {
 	r.environmentIn = &environmentIn
+	return r
+}
+func (r ApiImportEnvironmentConfigurationApiV1EnvironmentImportPostRequest) IdempotencyKey(idempotencyKey string) ApiImportEnvironmentConfigurationApiV1EnvironmentImportPostRequest {
+	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
@@ -258,6 +271,9 @@ func (a *EnvironmentApiService) ImportEnvironmentConfigurationApiV1EnvironmentIm
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	// body params
 	localVarPostBody = r.environmentIn
