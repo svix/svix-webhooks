@@ -6,8 +6,8 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/svix/svix-libs/go/internal/openapi"
-	"github.com/svix/svix-libs/go/internal/version"
+	"github.com/svix/svix-webhooks/go/internal/openapi"
+	"github.com/svix/svix-webhooks/go/internal/version"
 )
 
 type (

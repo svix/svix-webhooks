@@ -3,7 +3,7 @@ package svix
 import (
 	"context"
 
-	"github.com/svix/svix-libs/go/internal/openapi"
+	"github.com/svix/svix-webhooks/go/internal/openapi"
 )
 
 type Authentication struct {

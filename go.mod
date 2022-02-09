@@ -1,4 +1,4 @@
-module github.com/svix/svix-libs
+module github.com/svix/svix-webhooks
 
 go 1.16
 
