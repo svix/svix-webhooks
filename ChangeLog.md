@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.46.0
+* Go: **Breaking**, Changed module name to `github.com/svix/svix-webhooks` 💥
+  (We're sorry for any inconvience this may cause you.)
+* Python: Add support for passing a custom `idempotency-key` for POST actions 🔂
+* All: Add support for filtering by `channel` for message list APIs 🆕
+
 ## Version 0.45.0
 * Python: Add new get_or_create function for application API 🆕
 
