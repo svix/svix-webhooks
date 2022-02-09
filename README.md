@@ -11,7 +11,7 @@
 ![GitHub tag](https://img.shields.io/github/tag/svix/svix-webhooks.svg)
 [![Join our slack](https://img.shields.io/badge/Slack-join%20the%20community-blue?logo=slack&style=social)](https://www.svix.com/slack/)
 
-#### [Svix](https://svix.com) is the enterprise ready webhook service
+## Svix is the enterprise ready webhook service
 
 Svix makes it easy for developers to send webhooks. Developers make one API call, and Svix takes care of deliverability, retries, security, and more. For more information, please refer to the [Svix homepage](https://www.svix.com).
 
@@ -31,9 +31,9 @@ You can find general usage documentation at <https://docs.svix.com>. For complet
 
 # Support & Community
 
-  - [Slack](https://www.svix.com/slack/) - come and chat with us!
-  - [GitHub Discussions](https://github.com/svix/svix-webhooks/discussions) - ask questions, and start discussions!
   - [GitHub Issues](https://github.com/svix/svix-webhooks/issues) - report issues and make suggestions.
+  - [Community Forum](https://github.com/svix/svix-webhooks/discussions) - ask questions, and start discussions!
+  - [Slack](https://www.svix.com/slack/) - come and chat with us!
 
 To stay up-to-date with new features and improvements be sure to watch our repo!
 
