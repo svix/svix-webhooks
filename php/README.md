@@ -10,7 +10,7 @@
 
 PHP library for interacting with the Svix API and verifying webhook signatures
 
-![GitHub tag](https://img.shields.io/github/tag/svix/svix-libs.svg)
+![GitHub tag](https://img.shields.io/github/tag/svix/svix-webhooks.svg)
 [![Packagist Version](https://img.shields.io/packagist/v/svix/svix)](https://packagist.org/packages/svix/svix)
 
 [![Join our slack](https://img.shields.io/badge/Slack-join%20the%20community-blue?logo=slack&style=social)](https://www.svix.com/slack/)
@@ -58,7 +58,7 @@ require __DIR__ . '/vendor/autoload.php';
 
 ## Manual Installation
 
-For now you can download the [latest release](https://github.com/svix/svix-libs/releases). Then, to use the bindings, include the `init.php` file.
+For now you can download the [latest release](https://github.com/svix/svix-webhooks/releases). Then, to use the bindings, include the `init.php` file.
 
 ```php
 require_once('/path/to/svix-php/init.php');

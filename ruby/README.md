@@ -10,7 +10,7 @@
 
 Ruby library for interacting with the Svix API and verifying webhook signatures
 
-![GitHub tag](https://img.shields.io/github/tag/svix/svix-libs.svg)
+![GitHub tag](https://img.shields.io/github/tag/svix/svix-webhooks.svg)
 [![Gem](https://img.shields.io/gem/v/svix)](https://rubygems.org/gems/svix)
 
 
