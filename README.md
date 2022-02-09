@@ -117,6 +117,10 @@ Checkout our project specific development guides to get started hacking on Svix!
 - [Contribution guide](./CONTRIBUTING.md)
 - [Svix libs README](./DEVELOPMENT_LIBS.md)
 
+# License
+
+Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
+
 # Backed By
 
 ![Backed By YC & Aleph](/static-assets/backed-by.png)
