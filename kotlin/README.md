@@ -10,7 +10,7 @@
 
 Kotlin library for interacting with the Svix API and verifying webhook signatures
 
-![GitHub tag](https://img.shields.io/github/tag/svix/svix-libs.svg)
+![GitHub tag](https://img.shields.io/github/tag/svix/svix-webhooks.svg)
 [![Maven Central (svix-kotlin)](https://img.shields.io/maven-central/v/com.svix/svix?label=maven-central%20(svix-kotlin))](https://search.maven.org/artifact/com.svix.kotlin/svix-kotlin)
 
 [![Join our slack](https://img.shields.io/badge/Slack-join%20the%20community-blue?logo=slack&style=social)](https://www.svix.com/slack/)
