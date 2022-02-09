@@ -110,12 +110,27 @@ To stay up-to-date with new features and improvements be sure to watch our repo!
   </th>
 </table>
 
-# Development / Contributions
+# Development
 
 Checkout our project specific development guides to get started hacking on Svix!
 
-- [Contribution guide](./CONTRIBUTING.md)
 - [Svix libs README](./DEVELOPMENT_LIBS.md)
+
+# Contributing
+
+Contributions are what makes the open source world go round! All contributions are very much welcomed and are greatly appreciated.
+
+Please refer to the [contribution guide](./CONTRIBUTING.md) for information on how to contribute.
+
+To contribute code, just:
+
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/some-feature`)
+3. Make your changes
+4. Commit your changes (`git commit -m 'Implement an amazing feature.'`)
+5. Push to the branch (`git push origin feature/some-feature`)
+6. Open a pull request
+
 
 # License
 
