@@ -17,7 +17,7 @@ class EventType internal constructor(token: String, options: SvixOptions) {
 
     suspend fun list(options: EventTypeListOptions = EventTypeListOptions()): ListResponseEventTypeOut {
         try {
-            return api.listEventTypesApiV1EventTypeGet(options.iterator, options.limit, options.withContent, options.includeAchived)
+            return api.listEventTypesApiV1EventTypeGet(options.iterator, options.limit, options.withContent, options.includeAchived, null)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -25,7 +25,7 @@ class EventType internal constructor(token: String, options: SvixOptions) {
 
     suspend fun create(eventTypeIn: EventTypeIn): EventTypeOut {
         try {
-            return api.createEventTypeApiV1EventTypePost(eventTypeIn)
+            return api.createEventTypeApiV1EventTypePost(eventTypeIn, null)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -33,7 +33,7 @@ class EventType internal constructor(token: String, options: SvixOptions) {
 
     suspend fun get(eventTypeName: String): EventTypeOut {
         try {
-            return api.getEventTypeApiV1EventTypeEventTypeNameGet(eventTypeName)
+            return api.getEventTypeApiV1EventTypeEventTypeNameGet(eventTypeName, null)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -41,7 +41,7 @@ class EventType internal constructor(token: String, options: SvixOptions) {
 
     suspend fun update(eventTypeName: String, eventTypeUpdate: EventTypeUpdate): EventTypeOut {
         try {
-            return api.updateEventTypeApiV1EventTypeEventTypeNamePut(eventTypeName, eventTypeUpdate)
+            return api.updateEventTypeApiV1EventTypeEventTypeNamePut(eventTypeName, eventTypeUpdate, null)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -49,7 +49,7 @@ class EventType internal constructor(token: String, options: SvixOptions) {
 
     suspend fun delete(eventTypeName: String) {
         try {
-            api.deleteEventTypeApiV1EventTypeEventTypeNameDelete(eventTypeName)
+            api.deleteEventTypeApiV1EventTypeEventTypeNameDelete(eventTypeName, null)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }

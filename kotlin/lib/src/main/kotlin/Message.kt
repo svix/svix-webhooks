@@ -16,7 +16,7 @@ class Message internal constructor(token: String, options: SvixOptions) {
 
     suspend fun list(appId: String, options: MessageListOptions = MessageListOptions()): ListResponseMessageOut {
         try {
-            return api.listMessagesApiV1AppAppIdMsgGet(appId, options.iterator, options.limit, options.eventTypes, options.before)
+            return api.listMessagesApiV1AppAppIdMsgGet(appId, options.iterator, options.limit, options.eventTypes, null, options.before, null)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -24,7 +24,7 @@ class Message internal constructor(token: String, options: SvixOptions) {
 
     suspend fun create(appId: String, messageIn: MessageIn): MessageOut {
         try {
-            return api.createMessageApiV1AppAppIdMsgPost(appId, messageIn, null)
+            return api.createMessageApiV1AppAppIdMsgPost(appId, messageIn, null, null)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -32,7 +32,7 @@ class Message internal constructor(token: String, options: SvixOptions) {
 
     suspend fun get(msgId: String, appId: String): MessageOut {
         try {
-            return api.getMessageApiV1AppAppIdMsgMsgIdGet(msgId, appId)
+            return api.getMessageApiV1AppAppIdMsgMsgIdGet(msgId, appId, null)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }

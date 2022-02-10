@@ -22,7 +22,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
 
     suspend fun list(appId: String, options: EndpointListOptions = EndpointListOptions()): ListResponseEndpointOut {
         try {
-            return api.listEndpointsApiV1AppAppIdEndpointGet(appId, options.iterator, options.limit)
+            return api.listEndpointsApiV1AppAppIdEndpointGet(appId, options.iterator, options.limit, null)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -30,7 +30,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
 
     suspend fun create(appId: String, endpointIn: EndpointIn): EndpointOut {
         try {
-            return api.createEndpointApiV1AppAppIdEndpointPost(appId, endpointIn)
+            return api.createEndpointApiV1AppAppIdEndpointPost(appId, endpointIn, null)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -38,7 +38,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
 
     suspend fun get(appId: String, endpointId: String): EndpointOut {
         try {
-            return api.getEndpointApiV1AppAppIdEndpointEndpointIdGet(endpointId, appId)
+            return api.getEndpointApiV1AppAppIdEndpointEndpointIdGet(endpointId, appId, null)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -46,7 +46,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
 
     suspend fun update(appId: String, endpointId: String, endpointUpdate: EndpointUpdate): EndpointOut {
         try {
-            return api.updateEndpointApiV1AppAppIdEndpointEndpointIdPut(endpointId, appId, endpointUpdate)
+            return api.updateEndpointApiV1AppAppIdEndpointEndpointIdPut(endpointId, appId, endpointUpdate, null)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -54,7 +54,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
 
     suspend fun delete(appId: String, endpointId: String) {
         try {
-            api.deleteEndpointApiV1AppAppIdEndpointEndpointIdDelete(endpointId, appId)
+            api.deleteEndpointApiV1AppAppIdEndpointEndpointIdDelete(endpointId, appId, null)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -62,7 +62,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
 
     suspend fun getSecret(appId: String, endpointId: String): EndpointSecretOut {
         try {
-            return api.getEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGet(endpointId, appId)
+            return api.getEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGet(endpointId, appId, null)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -70,7 +70,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
 
     suspend fun rotateSecret(appId: String, endpointId: String, endpointSecretRotateIn: EndpointSecretRotateIn) {
         try {
-            api.rotateEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretRotatePost(endpointId, appId, endpointSecretRotateIn)
+            api.rotateEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretRotatePost(endpointId, appId, endpointSecretRotateIn, null)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -78,7 +78,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
 
     suspend fun recover(appId: String, endpointId: String, recoverIn: RecoverIn) {
         try {
-            api.recoverFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPost(appId, endpointId, recoverIn)
+            api.recoverFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPost(appId, endpointId, recoverIn, null)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -86,7 +86,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
 
     suspend fun getHeaders(appId: String, endpointId: String): EndpointHeadersOut {
         try {
-            return api.getEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersGet(endpointId, appId)
+            return api.getEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersGet(endpointId, appId, null)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -94,7 +94,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
 
     suspend fun updateHeaders(appId: String, endpointId: String, endpointHeadersIn: EndpointHeadersIn) {
         try {
-            api.updateEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPut(appId, endpointId, endpointHeadersIn)
+            api.updateEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPut(appId, endpointId, endpointHeadersIn, null)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -102,7 +102,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
 
     suspend fun patchHeaders(appId: String, endpointId: String, endpointHeadersIn: EndpointHeadersIn) {
         try {
-            api.patchEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPatch(appId, endpointId, endpointHeadersIn)
+            api.patchEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPatch(appId, endpointId, endpointHeadersIn, null)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
