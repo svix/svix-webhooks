@@ -90,7 +90,12 @@ async fn main() {
     tracing::debug!("Queue type: {:?}", cfg.queue_type);
     let (queue_tx, queue_rx) = match cfg.queue_type {
         QueueType::Memory => queue::memory::new_pair().await,
-        QueueType::Redis => queue::redis::new_pair(redis_pool.as_ref().unwrap().clone()).await,
+        QueueType::Redis => {
+            queue::redis::new_pair(redis_pool.clone().unwrap_or_else(|| {
+                panic!("Choosing queue_type=Redis requires setting a redis DSN.")
+            }))
+            .await
+        }
     };
 
     // build our application with a route

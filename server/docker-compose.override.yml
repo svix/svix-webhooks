@@ -1,5 +1,8 @@
 version: "3.7"
 services:
+  backend:
+    environment:
+      SVIX_JWT_SECRET: "x"
   pgbouncer:
     ports:
       - "8079:5432" # Needed for sqlx

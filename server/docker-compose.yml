@@ -6,7 +6,8 @@ services:
       dockerfile: Dockerfile
     image: svix/svix-server
     environment:
-      SVIX_REDIS_SERVER: "redis://redis:6379"
+      WAIT_FOR: "true"  # We want to wait for the default services
+      SVIX_REDIS_DSN: "redis://redis:6379"
       SVIX_DB_DSN: "postgresql://postgres:postgres@pgbouncer/postgres"
     ports:
       - "8071:8071"

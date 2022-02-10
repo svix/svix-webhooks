@@ -31,6 +31,13 @@ RUN set -ex ; \
 USER appuser
 EXPOSE 8080
 
+COPY ./wait-for /usr/local/bin/wait-for
 COPY --from=build /usr/local/cargo/bin/svix-server /usr/local/bin/svix-server
 
-CMD "svix-server"
+CMD \
+    set -ex ; \
+    if [ ! -z "$WAIT_FOR" ]; then \
+        wait-for -t 15 pgbouncer:5432 -- echo "Postgres ready" ; \
+        wait-for -t 15 redis:6379 -- echo "Redis ready" ; \
+    fi ; \
+    svix-server
