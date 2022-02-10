@@ -113,6 +113,128 @@ To stay up-to-date with new features and improvements be sure to watch our repo!
 
 # Running the server
 
+There are multiple ways to get the Svix server up running. Docker is probably the most common one, but you can choose the one that works best for you.
+
+Please refer to the [server configuration](#server-configuration) section below for more information regarding the available settings.
+
+## Deployment
+
+### Docker
+
+You can use the official Svix Docker image from [Docker Hub](https://hub.docker.com/r/svix/svix-server).
+
+You can either use the example [docker-compose.yml](./server/docker-compose.yml) file with `docker-compose` (easiest), `docker swarm` (advanced), or run the container standalone.
+
+#### With Docker Compose
+
+This alternative is the easiest because it will also boot up and configure `redis` and `postgresql`.
+
+This assumes you have docker-compose installed.
+
+```
+cd server
+docker-compose up
+```
+
+#### Standalone container
+
+Running a standalone container is slightly more advanced, as it requires you to set some environment variables and have them pointing to your `redis` and `postgres` instances.
+You can pass individual environment variables to docker using the `-e` flag, or just create a file like [development.env](./server/svix-server/development.env) and use the `--env-file` flag like in the example below:
+
+```
+docker run \
+  --name svix-server \
+  -p 8071:8071 \
+  --env-file development.env \
+  svix/svix-server
+```
+
+### Pre-compiled binaries
+
+Pre-compiled binaries are available for released versions in the [releases section](https://github.com/svix/svix-webhooks/releases).
+
+### Building from source
+
+For more information on how to build from source please refer to the [Svix server README](./server/).
+
+## Runtime dependencies
+
+The server requires the following runtime dependencies to work correctly:
+
+- A PostgreSQL server - for the storage of events.
+- An *optional* Redis server - for the task queue and cache. Please note that it's recommended to enable persistence in Redis so that tasks are persisted across Redis server restarts and upgrades.
+
+## Server configuration
+
+There are three ways to configure `svix-server`: environment vars, `.env` file, and a configuration file.
+
+### Configuration file
+
+You can put a file called `config.toml` in the current working directory of `svix-server` and it will automatically pick it up.
+You can take a look at the example file for more information and a full list of supported settings: [config.toml](./server/svix-server/config.example.toml).
+
+Here's a quick example of the most important configurations:
+
+```toml
+# The JWT secret for authentication - should be secret and securely generated
+jwt_secret = "8KjzRXrKkd9YFcNyqLSIY8JwiaCeRc6WK4UkMnSW"
+
+# The DSN for the database. Only postgres is currently supported.
+db_dsn = "postgresql://postgres:postgres@pgbouncer/postgres"
+
+# The DSN for redis (can be left empty if not using redis)
+redis_dsn = "redis://redis:6379"
+
+# What kind of message queue to use.
+queue_type = "redis"
+```
+
+
+### Environment (variables or `.env`)
+
+Alternatively, you can configure `svix-server` by setting the equivalent environment variables for each of the supported settings. The environment variables can either be passed directly or by setting them in a `.env` file.
+
+The environment variables have the name name as the config names, but they are all upper case and are prefixed with `SVIX_`.
+
+For example, the above example configuration would look like this if it was passed in the env:
+
+```
+# The JWT secret for authentication - should be secret and securely generated
+SVIX_JWT_SECRET = "8KjzRXrKkd9YFcNyqLSIY8JwiaCeRc6WK4UkMnSW"
+
+# The DSN for the database. Only postgres is currently supported.
+SVIX_DB_DSN = "postgresql://postgres:postgres@pgbouncer/postgres"
+
+# The DSN for redis (can be left empty if not using redis)
+SVIX_REDIS_DSN = "redis://redis:6379"
+
+# What kind of message queue to use.
+SVIX_QUEUE_TYPE = "redis"
+```
+
+## Authentication
+
+Use valid JWTs generated with the correct secret as `Bearer`.
+
+E.g:
+```
+Authorization: Bearer <JWT_TOKEN_HERE>
+```
+
+Either generate one using
+```
+cargo run jwt generate
+```
+
+Or if you are generating your own, make sure to use `org_23rb8YdGqMT0qIzpgGwdXfHirMu` as the `sub` field.
+
+
+# Differences to the Svix hosted service
+
+One of our main goals with open sourcing the Svix dispatcher is ease of use. The hosted Svix service, however, is quite complex due to our scale and the infrastructure it requires. This complexity is not useful for the vast majority of people and would make this project much harder to use and much more limited.
+This is why this code has been adjusted before being released, and some of the features, optimizations, and behaviors supported by the hosted dispatcher are not yet available in this repo. With that being said, other than some known incompatibilities, the internal Svix test suite passes. This makes them are already mostly compatible, and we are working hard on bringing them to full feature parity.
+
+
 # Development
 
 Checkout our project specific development guides to get started hacking on Svix!

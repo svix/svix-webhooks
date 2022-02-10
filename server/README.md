@@ -14,34 +14,9 @@
 
 Svix makes it easy for developers to send webhooks. Developers make one API call, and Svix takes care of deliverability, retries, security, and more. For more information, please refer to the [Svix homepage](https://www.svix.com).
 
-# Documentation
+# Running the server
 
-The docs are available at <https://docs.svix.com>
-
-
-# Configuration
-
-- env vars (incl. `.env`) or `config.toml` (there's an example in the repo)
-- Pointing to the database
-- Need to set SVIX_JWT_SECRET and then use JWT auth tokens
-
-
-# Authentication
-
-Use valid JWTs generated with the correct secret as `Bearer`.
-
-E.g:
-```
-Authorization: Bearer <JWT_TOKEN_HERE>
-```
-
-Either generate one using
-```
-cargo run jwt generate
-```
-
-Or if you are generating your own, make sure to use `org_23rb8YdGqMT0qIzpgGwdXfHirMu` as the `sub` field.
-
+For information on how to use this server please refer to the [running the server](../README.md#running-the-server) in the main README.
 
 # Building from source
 
