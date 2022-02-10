@@ -23,7 +23,8 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
                 msgId,
                 options.iterator,
                 options.limit,
-                options.messageStatus
+                options.messageStatus,
+                null
             )
         } catch (e: Exception) {
             throw ApiException.wrap(e)
@@ -32,7 +33,7 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
 
     suspend fun get(appId: String, msgId: String, attemptId: String): MessageAttemptOut {
         try {
-            return api.getAttemptApiV1AppAppIdMsgMsgIdAttemptAttemptIdGet(attemptId, msgId, appId)
+            return api.getAttemptApiV1AppAppIdMsgMsgIdAttemptAttemptIdGet(attemptId, msgId, appId, null)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -40,7 +41,7 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
 
     suspend fun resend(appId: String, msgId: String, endpointId: String) {
         try {
-            api.resendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPost(endpointId, msgId, appId)
+            api.resendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPost(endpointId, msgId, appId, null)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -58,7 +59,8 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
                 options.iterator,
                 options.limit,
                 options.messageStatus,
-                options.before
+                options.before,
+                null
             )
         } catch (e: Exception) {
             throw ApiException.wrap(e)
@@ -75,7 +77,8 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
                 msgId,
                 appId,
                 options.iterator,
-                options.limit
+                options.limit,
+                null
             )
         } catch (e: Exception) {
             throw ApiException.wrap(e)
@@ -96,8 +99,10 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
                 options.iterator,
                 options.limit,
                 options.eventTypes,
+                null,
                 options.messageStatus,
-                options.before
+                options.before,
+                null
             )
         } catch (e: Exception) {
             throw ApiException.wrap(e)

@@ -15,7 +15,7 @@ public final class Application {
 
 	public ListResponseApplicationOut list(final ApplicationListOptions options) throws ApiException {
 		try {
-			return api.listApplicationsApiV1AppGet(options.getIterator(), options.getLimit());
+			return api.listApplicationsApiV1AppGet(options.getIterator(), options.getLimit(), null);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
@@ -23,7 +23,7 @@ public final class Application {
 
 	public ApplicationOut create(final ApplicationIn applicationIn) throws ApiException {
 		try {
-			return api.createApplicationApiV1AppPost(applicationIn, null);
+			return api.createApplicationApiV1AppPost(applicationIn, null, null);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
@@ -31,7 +31,7 @@ public final class Application {
 
 	public ApplicationOut get(final String appId) throws ApiException {
 		try {
-			return api.getApplicationApiV1AppAppIdGet(appId);
+			return api.getApplicationApiV1AppAppIdGet(appId, null);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
@@ -39,7 +39,7 @@ public final class Application {
 
 	public ApplicationOut update(final String appId, final ApplicationIn applicationIn) throws ApiException {
 		try {
-			return api.updateApplicationApiV1AppAppIdPut(appId, applicationIn);
+			return api.updateApplicationApiV1AppAppIdPut(appId, applicationIn, null);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
@@ -47,7 +47,7 @@ public final class Application {
 
 	public void delete(final String appId) throws ApiException {
 		try {
-			api.deleteApplicationApiV1AppAppIdDelete(appId);
+			api.deleteApplicationApiV1AppAppIdDelete(appId, null);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}

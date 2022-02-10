@@ -14,7 +14,7 @@ class Authentication internal constructor(token: String, options: SvixOptions) {
 
     suspend fun dashboardAccess(appId: String): DashboardAccessOut {
         try {
-            return api.getDashboardAccessApiV1AuthDashboardAccessAppIdPost(appId)
+            return api.getDashboardAccessApiV1AuthDashboardAccessAppIdPost(appId, null)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -22,7 +22,7 @@ class Authentication internal constructor(token: String, options: SvixOptions) {
 
     suspend fun logout() {
         try {
-            api.logoutApiV1AuthLogoutPost()
+            api.logoutApiV1AuthLogoutPost(null)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }

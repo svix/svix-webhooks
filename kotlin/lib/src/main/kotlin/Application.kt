@@ -16,7 +16,7 @@ class Application internal constructor(token: String, options: SvixOptions) {
 
     suspend fun list(options: ApplicationListOptions = ApplicationListOptions()): ListResponseApplicationOut {
         try {
-            return api.listApplicationsApiV1AppGet(options.iterator, options.limit)
+            return api.listApplicationsApiV1AppGet(options.iterator, options.limit, null)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -24,7 +24,7 @@ class Application internal constructor(token: String, options: SvixOptions) {
 
     suspend fun create(applicationIn: ApplicationIn): ApplicationOut {
         try {
-            return api.createApplicationApiV1AppPost(applicationIn, null)
+            return api.createApplicationApiV1AppPost(applicationIn, null, null)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -32,7 +32,7 @@ class Application internal constructor(token: String, options: SvixOptions) {
 
     suspend fun get(appId: String): ApplicationOut {
         try {
-            return api.getApplicationApiV1AppAppIdGet(appId)
+            return api.getApplicationApiV1AppAppIdGet(appId, null)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -40,7 +40,7 @@ class Application internal constructor(token: String, options: SvixOptions) {
 
     suspend fun update(appId: String, applicationIn: ApplicationIn): ApplicationOut {
         try {
-            return api.updateApplicationApiV1AppAppIdPut(appId, applicationIn)
+            return api.updateApplicationApiV1AppAppIdPut(appId, applicationIn, null)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -48,7 +48,7 @@ class Application internal constructor(token: String, options: SvixOptions) {
 
     suspend fun delete(appId: String) {
         try {
-            api.deleteApplicationApiV1AppAppIdDelete(appId)
+            api.deleteApplicationApiV1AppAppIdDelete(appId, null)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }

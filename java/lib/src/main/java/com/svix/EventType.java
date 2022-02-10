@@ -16,7 +16,7 @@ public final class EventType {
 
 	public ListResponseEventTypeOut list(final EventTypeListOptions options) throws ApiException {
 		try {
-			return api.listEventTypesApiV1EventTypeGet(options.getIterator(), options.getLimit(), options.getWithContent(), options.getIncludeArchived());
+			return api.listEventTypesApiV1EventTypeGet(options.getIterator(), options.getLimit(), options.getWithContent(), options.getIncludeArchived(), null);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
@@ -24,7 +24,7 @@ public final class EventType {
 
 	public EventTypeOut create(final EventTypeIn eventTypeIn) throws ApiException {
 		try {
-			return api.createEventTypeApiV1EventTypePost(eventTypeIn);
+			return api.createEventTypeApiV1EventTypePost(eventTypeIn, null);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
@@ -32,7 +32,7 @@ public final class EventType {
 
 	public EventTypeOut get(final String eventTypeName) throws ApiException {
 		try {
-			return api.getEventTypeApiV1EventTypeEventTypeNameGet(eventTypeName);
+			return api.getEventTypeApiV1EventTypeEventTypeNameGet(eventTypeName, null);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
@@ -40,7 +40,7 @@ public final class EventType {
 
 	public EventTypeOut update(final String eventTypeName, final EventTypeUpdate eventTypeUpdate) throws ApiException {
 		try {
-			return api.updateEventTypeApiV1EventTypeEventTypeNamePut(eventTypeName, eventTypeUpdate);
+			return api.updateEventTypeApiV1EventTypeEventTypeNamePut(eventTypeName, eventTypeUpdate, null);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
@@ -48,7 +48,7 @@ public final class EventType {
 
 	public void delete(final String eventTypeName) throws ApiException {
 		try {
-			api.deleteEventTypeApiV1EventTypeEventTypeNameDelete(eventTypeName);
+			api.deleteEventTypeApiV1EventTypeEventTypeNameDelete(eventTypeName, null);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}

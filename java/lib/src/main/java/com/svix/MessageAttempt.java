@@ -17,7 +17,7 @@ public final class MessageAttempt {
 
 	public ListResponseMessageAttemptOut list(final String appId, final String msgId, final MessageAttemptListOptions options) throws ApiException {
 		try {
-			return api.listAttemptsApiV1AppAppIdMsgMsgIdAttemptGet(appId, msgId, options.getIterator(), options.getLimit(), options.getMessageStatus());
+			return api.listAttemptsApiV1AppAppIdMsgMsgIdAttemptGet(appId, msgId, options.getIterator(), options.getLimit(), options.getMessageStatus(), null);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
@@ -25,7 +25,7 @@ public final class MessageAttempt {
 
 	public MessageAttemptOut get(final String msgId, final String appId, final String attemptId) throws ApiException {
 		try {
-			return api.getAttemptApiV1AppAppIdMsgMsgIdAttemptAttemptIdGet(attemptId, msgId, appId);
+			return api.getAttemptApiV1AppAppIdMsgMsgIdAttemptAttemptIdGet(attemptId, msgId, appId, null);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
@@ -33,7 +33,7 @@ public final class MessageAttempt {
 
 	public void resend(final String msgId, final String appId, final String endpointId) throws ApiException {
 		try {
-			api.resendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPost(endpointId, msgId, appId);
+			api.resendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPost(endpointId, msgId, appId, null);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
@@ -41,7 +41,7 @@ public final class MessageAttempt {
 
 	public ListResponseEndpointMessageOut listAttemptedMessages(final String appId, final String endpointId, final MessageAttemptListOptions options) throws ApiException {
 		try {
-			return api.listAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGet(endpointId, appId, options.getIterator(), options.getLimit(), options.getMessageStatus(), options.getBefore());
+			return api.listAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGet(endpointId, appId, options.getIterator(), options.getLimit(), options.getMessageStatus(), options.getBefore(), null);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
@@ -49,7 +49,7 @@ public final class MessageAttempt {
 
 	public ListResponseMessageEndpointOut listAttemptedDestinations(final String appId, final String msgId, final MessageAttemptListOptions options) throws ApiException {
 		try {
-			return api.listAttemptedDestinationsApiV1AppAppIdMsgMsgIdEndpointGet(msgId, appId, options.getIterator(), options.getLimit());
+			return api.listAttemptedDestinationsApiV1AppAppIdMsgMsgIdEndpointGet(msgId, appId, options.getIterator(), options.getLimit(), null);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
@@ -59,7 +59,7 @@ public final class MessageAttempt {
 		final MessageAttemptListOptions options) throws ApiException {
 			try {
 				return api.listAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGet(msgId, appId, endpointId,
-					options.getIterator(), options.getLimit(), options.getEventTypes(), options.getMessageStatus(), options.getBefore());
+					options.getIterator(), options.getLimit(), options.getEventTypes(), null, options.getMessageStatus(), options.getBefore(), null);
 			} catch (com.svix.internal.ApiException e) {
 				throw Utils.wrapInternalApiException(e);
 			}
