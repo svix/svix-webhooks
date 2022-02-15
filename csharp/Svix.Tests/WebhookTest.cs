@@ -4,6 +4,7 @@ using System;
 using System.Net;
 
 using Svix.Exceptions;
+using Svix.Models;
 
 namespace Svix.Tests
 {
