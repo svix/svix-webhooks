@@ -6,6 +6,8 @@ const versionFilePath = ".version";
 
 const filesPaths = [
     versionFilePath,
+    // Rust Server
+    "server/svix-server/Cargo.toml",
     // CSharp
     "csharp/Svix/Svix.csproj",
     // Go
