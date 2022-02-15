@@ -1,3 +1,5 @@
+name: Server Release
+
 on:
   release:
     types: [created]
