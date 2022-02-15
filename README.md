@@ -159,7 +159,7 @@ Pre-compiled binaries are available for released versions in the [releases secti
 
 The Svix server is written in Rust 🦀 and requires a Rust build environment.
 
-If you already have one, you just need to run `cargo build`, otherwise, please please refer to the [Svix server README](./server/) for more information about building the server from source.
+If you already have one, you just need to run `cargo build`, otherwise, please please refer to the [Svix server README](./server/#readme) for more information about building the server from source.
 
 ## Runtime dependencies
 
