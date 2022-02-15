@@ -1,0 +1,7 @@
+{
+    "library": "httpclient",
+    "optionalProjectFile": false,    
+    "packageName": "Svix",
+    "sourceFolder": "Svix/Generated/OpenApi",
+    "targetFramework": "netstandard2.1"
+}
