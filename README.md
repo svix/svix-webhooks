@@ -115,6 +115,8 @@ To stay up-to-date with new features and improvements be sure to watch our repo!
 
 There are multiple ways to get the Svix server up running. Docker is probably the most common one, but you can choose the one that works best for you.
 
+The Svix server is written in Rust 🦀, which means you can compile it into a static library for a variety of targets. Please refer to the building from source section below for more information.
+
 Please refer to the [server configuration](#server-configuration) section below for more information regarding the available settings.
 
 ## Deployment
@@ -155,7 +157,9 @@ Pre-compiled binaries are available for released versions in the [releases secti
 
 ### Building from source
 
-For more information on how to build from source please refer to the [Svix server README](./server/).
+The Svix server is written in Rust 🦀 and requires a Rust build environment.
+
+If you already have one, you just need to run `cargo build`, otherwise, please please refer to the [Svix server README](./server/) for more information about building the server from source.
 
 ## Runtime dependencies
 
