@@ -14,11 +14,7 @@ jobs:
             archive: zip
           - target: x86_64-unknown-linux-musl
             archive: tar.gz tar.xz
-          - target: aarch64-unknown-linux-musl
-            archive: tar.gz tar.xz
           - target: x86_64-apple-darwin
-            archive: zip
-          - target: aarch64-apple-darwin
             archive: zip
     steps:
       - uses: actions/checkout@master
