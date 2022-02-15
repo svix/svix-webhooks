@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.47.1
+* CI: Autorelease server artifacts on github releases 🆕
+
 ## Version 0.47.0
 * **Initial OSS release of Svix Server!** 🚀
 * Java & Kotlin: Minor binding fixes to bring them up to date with other libs 🐞
