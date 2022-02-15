@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.47.0
+* **Initial OSS release of Svix Server!** 🚀
+* Java & Kotlin: Minor binding fixes to bring them up to date with other libs 🐞
+
 ## Version 0.46.0
 * Go: **Breaking**, Changed module name to `github.com/svix/svix-webhooks` 💥
   (We're sorry for any inconvenience this may cause you.)
