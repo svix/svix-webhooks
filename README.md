@@ -10,6 +10,7 @@
 
 ![GitHub tag](https://img.shields.io/github/tag/svix/svix-webhooks.svg)
 [![Build Status](https://github.com/svix/svix-webhooks/workflows/Server%20CI/badge.svg)](https://github.com/svix/svix-webhooks/actions)
+![Twitter Follow](https://img.shields.io/twitter/follow/SvixHQ?style=social)
 [![Join our slack](https://img.shields.io/badge/Slack-join%20the%20community-blue?logo=slack&style=social)](https://www.svix.com/slack/)
 
 ## Svix is the enterprise ready webhook service
