@@ -35,3 +35,7 @@ msbuild.wrn
 
 # Visual Studio 2015
 .vs/
+
+# Svix OpenApi generated content
+.openapi-generator/
+/Svix/Generated/OpenApi/Svix/

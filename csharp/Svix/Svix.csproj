@@ -10,6 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Generated\OpenApi" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Polly" Version="7.2.3" />
   </ItemGroup>
