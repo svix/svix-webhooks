@@ -92,8 +92,7 @@ async fn list_messageattempts(
     let limit = pagination.limit;
     let iterator = pagination
         .iterator
-        .as_ref()
-        .cloned()
+        .clone()
         .or_else(|| list_filter.before.map(MessageAttemptId::start_id));
 
     let msg = message::Entity::secure_find_by_id_or_uid(app.id.clone(), msg_id)

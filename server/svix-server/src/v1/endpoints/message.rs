@@ -123,8 +123,7 @@ async fn list_messages(
     let limit = pagination.limit;
     let iterator = pagination
         .iterator
-        .as_ref()
-        .cloned()
+        .clone()
         .or_else(|| list_filter.before.map(MessageId::start_id));
 
     let mut query = message::Entity::secure_find(app.id)
