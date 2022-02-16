@@ -5,10 +5,10 @@ on:
     branches:
       - main
     paths:
-      - 'server/'
+      - 'server/**'
   pull_request:
     paths:
-      - 'server/'
+      - 'server/**'
 
 jobs:
   check:
