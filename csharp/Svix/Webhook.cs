@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 
 using Svix.Exceptions;
 
-namespace Svix.Models
+namespace Svix
 {
     public sealed class Webhook
     {
