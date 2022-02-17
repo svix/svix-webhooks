@@ -1,9 +1,7 @@
 ﻿namespace Svix.Models
 {
-    public sealed class SvixClientOptions
+    public sealed class SvixOptions
     {
-        public string AccessToken { get; set; }
-        
         public string ServerUrl { get; set; }
 
         public bool Throw { get; set; }

@@ -1,54 +1,44 @@
-﻿using System;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Svix.Abstractions;
 using Svix.Api;
 using Svix.Client;
+using System;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
-using Svix.Models;
 
 namespace Svix
 {
     public sealed class Health : IHealth
     {
-        private readonly ILogger _logger;
+        private Configuration Config => new Configuration
+        {
+            BasePath = _svixClient.ServerUrl,
+            AccessToken = _svixClient.Token
+        };
+        
+        private readonly SvixClient _svixClient;
+        
+        public Health(SvixClient svixClient)
+        {
+            _svixClient = svixClient ?? throw new ArgumentNullException(nameof(svixClient));
+        }
 
-        private readonly SvixClientOptions _options;
-        
-        public Health(SvixClientOptions options, ILogger logger)
-        {
-            _logger = logger;
-            _options = options ?? throw new ArgumentNullException(nameof(options));
-        }
-        
-        public Health(IOptions<SvixClientOptions> options, ILogger<Health> logger)
-            : this(options?.Value, logger)
-        {
-            // empty
-        }
-        
         public bool IsHealthy(string idempotencyKey = default)
         {
             try
             {
-                var lConfig = new Configuration
-                {
-                    BasePath = _options.ServerUrl,
-                    AccessToken = _options.AccessToken
-                };
-                
-                using var lHealthApi = new HealthApi(lConfig);
+                using var lHealthApi = new HealthApi(Config);
                 var lResponse = lHealthApi.HealthApiV1HealthGetWithHttpInfo(idempotencyKey);
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
             }
             catch (ApiException e)
             {
-                _logger?.LogError(e, $"{nameof(IsHealthy)} failed");
+                _svixClient.Logger
+                    ?.LogError(e, $"{nameof(IsHealthy)} failed");
 
-                if (_options.Throw)
+                if (_svixClient.Throw)
                     throw;
                 
                 return false;
@@ -59,13 +49,7 @@ namespace Svix
         {
             try
             {
-                var lConfig = new Configuration
-                {
-                    BasePath = _options.ServerUrl,
-                    AccessToken = _options.AccessToken
-                };
-                
-                using var lHealthApi = new HealthApi(lConfig);
+                using var lHealthApi = new HealthApi(Config);
                 var lResponse = await lHealthApi.HealthApiV1HealthGetWithHttpInfoAsync(idempotencyKey, cancellationToken)
                     .ConfigureAwait(false);
 
@@ -73,9 +57,10 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                _logger?.LogError(e, $"{nameof(IsHealthyAsync)} failed");
+                _svixClient.Logger
+                    ?.LogError(e, $"{nameof(IsHealthyAsync)} failed");
                 
-                if (_options.Throw)
+                if (_svixClient.Throw)
                     throw;
                 
                 return false;

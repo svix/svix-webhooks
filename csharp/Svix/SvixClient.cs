@@ -1,36 +1,31 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+﻿using System;
+using Microsoft.Extensions.Logging;
 using Svix.Abstractions;
-using Svix.Api;
-using Svix.Client;
 using Svix.Models;
-using System;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Svix
 {
     public sealed class SvixClient : ISvixClient
     {
-        public Health Health { get; init; }
+        public Health Health { get; }
         
-        private readonly ILogger _logger;
-        
-        private readonly SvixClientOptions _options;
+        public ILogger Logger { get; }
 
-        public SvixClient(SvixClientOptions options, ILogger<SvixClient> logger = null)
+        public string ServerUrl => _options?.ServerUrl;
+
+        public bool Throw => _options?.Throw ?? false;
+        
+        public string Token { get; }
+
+        private readonly SvixOptions _options;
+
+        public SvixClient(string token, SvixOptions options, ILogger<SvixClient> logger = null)
         {
+            Logger = logger;
             _options = options ?? throw new ArgumentNullException(nameof(options));
-            _logger = logger;
-
-            Health = new Health(options, logger);
-        }
-
-        public SvixClient(IOptions<SvixClientOptions> options, ILogger<SvixClient> logger)
-            : this(options?.Value, logger)
-        {
-            // empty
+            Token = token ?? throw new ArgumentNullException(nameof(token));
+            
+            Health = new Health(this);
         }
     }
 }
