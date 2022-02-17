@@ -4,7 +4,7 @@
     {
         public string AccessToken { get; set; }
         
-        public string ServiceUrl { get; set; }
+        public string ServerUrl { get; set; }
 
         public bool Throw { get; set; }
     }

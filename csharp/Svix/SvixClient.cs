@@ -37,7 +37,7 @@ namespace Svix
             {
                 var lConfig = new Configuration
                 {
-                    BasePath = _options.ServiceUrl,
+                    BasePath = _options.ServerUrl,
                     AccessToken = _options.AccessToken
                 };
                 
@@ -63,7 +63,7 @@ namespace Svix
             {
                 var lConfig = new Configuration
                 {
-                    BasePath = _options.ServiceUrl,
+                    BasePath = _options.ServerUrl,
                     AccessToken = _options.AccessToken
                 };
                 
