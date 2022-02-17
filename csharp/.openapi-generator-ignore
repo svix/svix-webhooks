@@ -24,6 +24,7 @@
 
 # Do not overwrite existing Visual Studio generated files 
 Svix.csproj
+Svix.Tests.csproj
 Svix.sln
 
 # Do not overwrite readme
@@ -35,4 +36,4 @@ Svix.sln
 /git_push.sh
 
 docs/
-api/
+src/
