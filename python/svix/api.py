@@ -117,9 +117,11 @@ ApiClass = t.TypeVar(
 class ApiBase(t.Generic[ApiClass]):
     _configuration: Configuration
     _ApiClass: t.Type[ApiClass]
+    _async_mode: bool
 
-    def __init__(self, configuration: Configuration) -> None:
+    def __init__(self, configuration: Configuration, async_mode: bool = False) -> None:
         self._configuration = configuration
+        self._async_mode = async_mode
 
     @contextmanager
     def _api(self) -> t.Generator[ApiClass, None, None]:
@@ -138,12 +140,14 @@ class Authentication(ApiBase[AuthenticationApi]):
     def dashboard_access(self, app_id: str, options: PostOptions = PostOptions()) -> DashboardAccessOut:
         with self._api() as api:
             return api.get_dashboard_access_api_v1_auth_dashboard_access_app_id_post(
-                app_id=app_id, **options.to_dict(), _check_return_type=False
+                app_id=app_id, **options.to_dict(), _check_return_type=False, async_req=self._async_mode
             )
 
     def logout(self, options: PostOptions = PostOptions()) -> None:
         with self._api() as api:
-            return api.logout_api_v1_auth_logout_post(**options.to_dict(), _check_return_type=False)
+            return api.logout_api_v1_auth_logout_post(
+                **options.to_dict(), _check_return_type=False, async_req=self._async_mode
+            )
 
 
 class Application(ApiBase[ApplicationApi]):
@@ -151,33 +155,43 @@ class Application(ApiBase[ApplicationApi]):
 
     def list(self, options: ApplicationListOptions = ApplicationListOptions()) -> ListResponseApplicationOut:
         with self._api() as api:
-            return api.list_applications_api_v1_app_get(**options.to_dict(), _check_return_type=False)
+            return api.list_applications_api_v1_app_get(
+                **options.to_dict(), _check_return_type=False, async_req=self._async_mode
+            )
 
     def create(self, application_in: ApplicationIn, options: PostOptions = PostOptions()) -> ApplicationOut:
         with self._api() as api:
             return api.create_application_api_v1_app_post(
-                application_in=application_in, **options.to_dict(), _check_return_type=False
+                application_in=application_in, **options.to_dict(), _check_return_type=False, async_req=self._async_mode
             )
 
     def get(self, app_id: str) -> ApplicationOut:
         with self._api() as api:
-            return api.get_application_api_v1_app_app_id_get(app_id=app_id, _check_return_type=False)
+            return api.get_application_api_v1_app_app_id_get(
+                app_id=app_id, _check_return_type=False, async_req=self._async_mode
+            )
 
     def get_or_create(self, application_in: ApplicationIn, options: PostOptions = PostOptions()) -> ApplicationOut:
         with self._api() as api:
             return api.create_application_api_v1_app_post(
-                application_in=application_in, get_if_exists=True, **options.to_dict(), _check_return_type=False
+                application_in=application_in,
+                get_if_exists=True,
+                **options.to_dict(),
+                _check_return_type=False,
+                async_req=self._async_mode,
             )
 
     def update(self, app_id: str, application_in: ApplicationIn) -> ApplicationOut:
         with self._api() as api:
             return api.update_application_api_v1_app_app_id_put(
-                app_id=app_id, application_in=application_in, _check_return_type=False
+                app_id=app_id, application_in=application_in, _check_return_type=False, async_req=self._async_mode
             )
 
     def delete(self, app_id: str) -> None:
         with self._api() as api:
-            return api.delete_application_api_v1_app_app_id_delete(app_id=app_id, _check_return_type=False)
+            return api.delete_application_api_v1_app_app_id_delete(
+                app_id=app_id, _check_return_type=False, async_req=self._async_mode
+            )
 
 
 class Endpoint(ApiBase[EndpointApi]):
@@ -186,37 +200,41 @@ class Endpoint(ApiBase[EndpointApi]):
     def list(self, app_id: str, options: EndpointListOptions = EndpointListOptions()) -> ListResponseEndpointOut:
         with self._api() as api:
             return api.list_endpoints_api_v1_app_app_id_endpoint_get(
-                app_id=app_id, **options.to_dict(), _check_return_type=False
+                app_id=app_id, **options.to_dict(), _check_return_type=False, async_req=self._async_mode
             )
 
     def create(self, app_id: str, endpoint_in: EndpointIn, options: PostOptions = PostOptions()) -> EndpointOut:
         with self._api() as api:
             return api.create_endpoint_api_v1_app_app_id_endpoint_post(
-                app_id, endpoint_in=endpoint_in, **options.to_dict(), _check_return_type=False
+                app_id, endpoint_in=endpoint_in, **options.to_dict(), _check_return_type=False, async_req=self._async_mode
             )
 
     def get(self, app_id: str, endpoint_id: str) -> EndpointOut:
         with self._api() as api:
             return api.get_endpoint_api_v1_app_app_id_endpoint_endpoint_id_get(
-                app_id=app_id, endpoint_id=endpoint_id, _check_return_type=False
+                app_id=app_id, endpoint_id=endpoint_id, _check_return_type=False, async_req=self._async_mode
             )
 
     def update(self, app_id: str, endpoint_id: str, endpoint_update: EndpointUpdate) -> EndpointOut:
         with self._api() as api:
             return api.update_endpoint_api_v1_app_app_id_endpoint_endpoint_id_put(
-                app_id=app_id, endpoint_id=endpoint_id, endpoint_update=endpoint_update, _check_return_type=False
+                app_id=app_id,
+                endpoint_id=endpoint_id,
+                endpoint_update=endpoint_update,
+                _check_return_type=False,
+                async_req=self._async_mode,
             )
 
     def delete(self, app_id: str, endpoint_id: str) -> None:
         with self._api() as api:
             return api.delete_endpoint_api_v1_app_app_id_endpoint_endpoint_id_delete(
-                app_id=app_id, endpoint_id=endpoint_id, _check_return_type=False
+                app_id=app_id, endpoint_id=endpoint_id, _check_return_type=False, async_req=self._async_mode
             )
 
     def get_secret(self, app_id: str, endpoint_id: str) -> EndpointSecretOut:
         with self._api() as api:
             return api.get_endpoint_secret_api_v1_app_app_id_endpoint_endpoint_id_secret_get(
-                app_id=app_id, endpoint_id=endpoint_id, _check_return_type=False
+                app_id=app_id, endpoint_id=endpoint_id, _check_return_type=False, async_req=self._async_mode
             )
 
     def rotate_secret(
@@ -233,6 +251,7 @@ class Endpoint(ApiBase[EndpointApi]):
                 endpoint_secret_rotate_in=endpoint_secret_rotate_in,
                 **options.to_dict(),
                 _check_return_type=False,
+                async_req=self._async_mode,
             )
 
     def recover(
@@ -245,14 +264,13 @@ class Endpoint(ApiBase[EndpointApi]):
                 recover_in=recover_in,
                 **options.to_dict(),
                 _check_return_type=False,
+                async_req=self._async_mode,
             )
 
     def get_headers(self, app_id: str, endpoint_id: str) -> EndpointHeadersOut:
         with self._api() as api:
             return api.get_endpoint_headers_api_v1_app_app_id_endpoint_endpoint_id_headers_get(
-                app_id=app_id,
-                endpoint_id=endpoint_id,
-                _check_return_type=False,
+                app_id=app_id, endpoint_id=endpoint_id, _check_return_type=False, async_req=self._async_mode
             )
 
     def update_headers(self, app_id: str, endpoint_id: str, endpoint_headers_in: EndpointHeadersIn) -> None:
@@ -262,6 +280,7 @@ class Endpoint(ApiBase[EndpointApi]):
                 endpoint_id=endpoint_id,
                 endpoint_headers_in=endpoint_headers_in,
                 _check_return_type=False,
+                async_req=self._async_mode,
             )
 
     def patch_headers(self, app_id: str, endpoint_id: str, endpoint_headers_in: EndpointHeadersIn) -> None:
@@ -271,6 +290,7 @@ class Endpoint(ApiBase[EndpointApi]):
                 endpoint_id=endpoint_id,
                 endpoint_headers_in=endpoint_headers_in,
                 _check_return_type=False,
+                async_req=self._async_mode,
             )
 
 
@@ -279,30 +299,35 @@ class EventType(ApiBase[EventTypeApi]):
 
     def list(self, options: EventTypeListOptions = EventTypeListOptions()) -> ListResponseEventTypeOut:
         with self._api() as api:
-            return api.list_event_types_api_v1_event_type_get(**options.to_dict(), _check_return_type=False)
+            return api.list_event_types_api_v1_event_type_get(
+                **options.to_dict(), _check_return_type=False, async_req=self._async_mode
+            )
 
     def create(self, event_type_in: EventTypeIn, options: PostOptions = PostOptions()) -> EventTypeOut:
         with self._api() as api:
             return api.create_event_type_api_v1_event_type_post(
-                event_type_in=event_type_in, **options.to_dict(), _check_return_type=False
+                event_type_in=event_type_in, **options.to_dict(), _check_return_type=False, async_req=self._async_mode
             )
 
     def get(self, event_type_name: str) -> EventTypeOut:
         with self._api() as api:
             return api.get_event_type_api_v1_event_type_event_type_name_get(
-                event_type_name=event_type_name, _check_return_type=False
+                event_type_name=event_type_name, _check_return_type=False, async_req=self._async_mode
             )
 
     def update(self, event_type_name: str, event_type_update: EventTypeUpdate) -> EventTypeOut:
         with self._api() as api:
             return api.update_event_type_api_v1_event_type_event_type_name_put(
-                event_type_name=event_type_name, event_type_update=event_type_update, _check_return_type=False
+                event_type_name=event_type_name,
+                event_type_update=event_type_update,
+                _check_return_type=False,
+                async_req=self._async_mode,
             )
 
     def delete(self, event_type_name: str) -> None:
         with self._api() as api:
             return api.delete_event_type_api_v1_event_type_event_type_name_delete(
-                event_type_name=event_type_name, _check_return_type=False
+                event_type_name=event_type_name, _check_return_type=False, async_req=self._async_mode
             )
 
 
@@ -314,43 +339,51 @@ class Integration(ApiBase[IntegrationApi]):
     ) -> ListResponseIntegrationOut:
         with self._api() as api:
             return api.list_integrations_api_v1_app_app_id_integration_get(
-                app_id=app_id, **options.to_dict(), _check_return_type=False
+                app_id=app_id, **options.to_dict(), _check_return_type=False, async_req=self._async_mode
             )
 
     def create(self, app_id: str, integ_in: IntegrationIn, options: PostOptions = PostOptions()) -> IntegrationOut:
         with self._api() as api:
             return api.create_integration_api_v1_app_app_id_integration_post(
-                app_id, integration_in=integ_in, **options.to_dict(), _check_return_type=False
+                app_id, integration_in=integ_in, **options.to_dict(), _check_return_type=False, async_req=self._async_mode
             )
 
     def get(self, app_id: str, integ_id: str) -> IntegrationOut:
         with self._api() as api:
             return api.get_integration_api_v1_app_app_id_integration_integ_id_get(
-                app_id=app_id, integ_id=integ_id, _check_return_type=False
+                app_id=app_id, integ_id=integ_id, _check_return_type=False, async_req=self._async_mode
             )
 
     def update(self, app_id: str, integ_id: str, integ_update: IntegrationUpdate) -> IntegrationOut:
         with self._api() as api:
             return api.update_integration_api_v1_app_app_id_integration_integ_id_put(
-                app_id=app_id, integ_id=integ_id, integration_update=integ_update, _check_return_type=False
+                app_id=app_id,
+                integ_id=integ_id,
+                integration_update=integ_update,
+                _check_return_type=False,
+                async_req=self._async_mode,
             )
 
     def delete(self, app_id: str, integ_id: str) -> None:
         with self._api() as api:
             return api.delete_integration_api_v1_app_app_id_integration_integ_id_delete(
-                app_id=app_id, integ_id=integ_id, _check_return_type=False
+                app_id=app_id, integ_id=integ_id, _check_return_type=False, async_req=self._async_mode
             )
 
     def get_key(self, app_id: str, integ_id: str) -> IntegrationKeyOut:
         with self._api() as api:
             return api.get_integration_key_api_v1_app_app_id_integration_integ_id_key_get(
-                app_id=app_id, integ_id=integ_id, _check_return_type=False
+                app_id=app_id, integ_id=integ_id, _check_return_type=False, async_req=self._async_mode
             )
 
     def rotate_key(self, app_id: str, integ_id: str, options: PostOptions = PostOptions()) -> IntegrationKeyOut:
         with self._api() as api:
             return api.rotate_integration_key_api_v1_app_app_id_integration_integ_id_key_rotate_post(
-                app_id=app_id, integ_id=integ_id, **options.to_dict(), _check_return_type=False
+                app_id=app_id,
+                integ_id=integ_id,
+                **options.to_dict(),
+                _check_return_type=False,
+                async_req=self._async_mode,
             )
 
 
@@ -360,19 +393,23 @@ class Message(ApiBase[MessageApi]):
     def list(self, app_id: str, options: MessageListOptions = MessageListOptions()) -> ListResponseMessageOut:
         with self._api() as api:
             return api.list_messages_api_v1_app_app_id_msg_get(
-                app_id=app_id, **options.to_dict(), _check_return_type=False
+                app_id=app_id, **options.to_dict(), _check_return_type=False, async_req=self._async_mode
             )
 
     def create(self, app_id: str, message_in: MessageIn, options: PostOptions = PostOptions()) -> MessageOut:
         with self._api() as api:
             return api.create_message_api_v1_app_app_id_msg_post(
-                app_id=app_id, message_in=message_in, **options.to_dict(), _check_return_type=False
+                app_id=app_id,
+                message_in=message_in,
+                **options.to_dict(),
+                _check_return_type=False,
+                async_req=self._async_mode,
             )
 
     def get(self, app_id: str, msg_id: str) -> MessageOut:
         with self._api() as api:
             return api.get_message_api_v1_app_app_id_msg_msg_id_get(
-                app_id=app_id, msg_id=msg_id, _check_return_type=False
+                app_id=app_id, msg_id=msg_id, _check_return_type=False, async_req=self._async_mode
             )
 
 
@@ -384,19 +421,24 @@ class MessageAttempt(ApiBase[MessageAttemptApi]):
     ) -> ListResponseMessageAttemptOut:
         with self._api() as api:
             return api.list_attempts_api_v1_app_app_id_msg_msg_id_attempt_get(
-                app_id=app_id, msg_id=msg_id, **options.to_dict(), _check_return_type=False
+                app_id=app_id, msg_id=msg_id, **options.to_dict(), _check_return_type=False, async_req=self._async_mode
             )
 
     def get(self, app_id: str, msg_id: str, attempt_id: str) -> MessageAttemptOut:
         with self._api() as api:
             return api.get_attempt_api_v1_app_app_id_msg_msg_id_attempt_attempt_id_get(
-                app_id=app_id, msg_id=msg_id, attempt_id=attempt_id, _check_return_type=False
+                app_id=app_id, msg_id=msg_id, attempt_id=attempt_id, _check_return_type=False, async_req=self._async_mode
             )
 
     def resend(self, app_id: str, msg_id: str, endpoint_id: str, options: PostOptions = PostOptions()) -> None:
         with self._api() as api:
             return api.resend_webhook_api_v1_app_app_id_msg_msg_id_endpoint_endpoint_id_resend_post(
-                app_id=app_id, msg_id=msg_id, endpoint_id=endpoint_id, **options.to_dict(), _check_return_type=False
+                app_id=app_id,
+                msg_id=msg_id,
+                endpoint_id=endpoint_id,
+                **options.to_dict(),
+                _check_return_type=False,
+                async_req=self._async_mode,
             )
 
     def list_attempted_messages(
@@ -404,7 +446,11 @@ class MessageAttempt(ApiBase[MessageAttemptApi]):
     ) -> ListResponseEndpointMessageOut:
         with self._api() as api:
             return api.list_attempted_messages_api_v1_app_app_id_endpoint_endpoint_id_msg_get(
-                app_id=app_id, endpoint_id=endpoint_id, **options.to_dict(), _check_return_type=False
+                app_id=app_id,
+                endpoint_id=endpoint_id,
+                **options.to_dict(),
+                _check_return_type=False,
+                async_req=self._async_mode,
             )
 
     def list_attempted_destinations(
@@ -412,7 +458,7 @@ class MessageAttempt(ApiBase[MessageAttemptApi]):
     ) -> ListResponseMessageEndpointOut:
         with self._api() as api:
             return api.list_attempted_destinations_api_v1_app_app_id_msg_msg_id_endpoint_get(
-                app_id=app_id, msg_id=msg_id, **options.to_dict(), _check_return_type=False
+                app_id=app_id, msg_id=msg_id, **options.to_dict(), _check_return_type=False, async_req=self._async_mode
             )
 
     def list_attempts_for_endpoint(
@@ -424,7 +470,12 @@ class MessageAttempt(ApiBase[MessageAttemptApi]):
     ) -> ListResponseMessageAttemptEndpointOut:
         with self._api() as api:
             return api.list_attempts_for_endpoint_api_v1_app_app_id_msg_msg_id_endpoint_endpoint_id_attempt_get(
-                app_id=app_id, msg_id=msg_id, endpoint_id=endpoint_id, **options.to_dict(), _check_return_type=False
+                app_id=app_id,
+                msg_id=msg_id,
+                endpoint_id=endpoint_id,
+                **options.to_dict(),
+                _check_return_type=False,
+                async_req=self._async_mode,
             )
 
 
@@ -464,6 +515,42 @@ class Svix:
         return MessageAttempt(self._configuration)
 
 
+class SvixAsync(Svix):
+    _async_mode: bool
+
+    def __init__(self, auth_token: str, options: SvixOptions = SvixOptions()) -> None:
+        super().__init__(auth_token, options)
+        self._async_mode = True
+
+    @property
+    def authentication(self) -> Authentication:
+        return Authentication(self._configuration, self._async_mode)
+
+    @property
+    def application(self) -> Application:
+        return Application(self._configuration, self._async_mode)
+
+    @property
+    def endpoint(self) -> Endpoint:
+        return Endpoint(self._configuration, self._async_mode)
+
+    @property
+    def event_type(self) -> EventType:
+        return EventType(self._configuration, self._async_mode)
+
+    @property
+    def integration(self) -> Integration:
+        return Integration(self._configuration, self._async_mode)
+
+    @property
+    def message(self) -> Message:
+        return Message(self._configuration, self._async_mode)
+
+    @property
+    def message_attempt(self) -> MessageAttempt:
+        return MessageAttempt(self._configuration, self._async_mode)
+
+
 __all__ = [
     "ApplicationIn",
     "ApplicationOut",
@@ -496,4 +583,5 @@ __all__ = [
     "MessageAttemptListOptions",
     "RecoverIn",
     "Svix",
+    "SvixAsync",
 ]
