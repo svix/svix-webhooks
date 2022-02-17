@@ -13,6 +13,8 @@ namespace Svix
 {
     public sealed class SvixClient : ISvixClient
     {
+        public Health Health { get; init; }
+        
         private readonly ILogger _logger;
         
         private readonly SvixClientOptions _options;
@@ -21,6 +23,8 @@ namespace Svix
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
             _logger = logger;
+
+            Health = new Health(options, logger);
         }
 
         public SvixClient(IOptions<SvixClientOptions> options, ILogger<SvixClient> logger)
@@ -28,62 +32,5 @@ namespace Svix
         {
             // empty
         }
-        
-        #region " Health "
-        
-        public bool IsHealthy(string idempotencyKey = default)
-        {
-            try
-            {
-                var lConfig = new Configuration
-                {
-                    BasePath = _options.ServerUrl,
-                    AccessToken = _options.AccessToken
-                };
-                
-                using var lHealthApi = new HealthApi(lConfig);
-                var lResponse = lHealthApi.HealthApiV1HealthGetWithHttpInfo(idempotencyKey);
-
-                return lResponse.StatusCode == HttpStatusCode.NoContent;
-            }
-            catch (ApiException e)
-            {
-                _logger?.LogError(e, $"{nameof(IsHealthy)} failed");
-
-                if (_options.Throw)
-                    throw;
-                
-                return false;
-            }
-        }
-
-        public async Task<bool> IsHealthyAsync(string idempotencyKey = default, CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                var lConfig = new Configuration
-                {
-                    BasePath = _options.ServerUrl,
-                    AccessToken = _options.AccessToken
-                };
-                
-                using var lHealthApi = new HealthApi(lConfig);
-                var lResponse = await lHealthApi.HealthApiV1HealthGetWithHttpInfoAsync(idempotencyKey, cancellationToken)
-                    .ConfigureAwait(false);
-
-                return lResponse.StatusCode == HttpStatusCode.NoContent;
-            }
-            catch (ApiException e)
-            {
-                _logger?.LogError(e, $"{nameof(IsHealthyAsync)} failed");
-                
-                if (_options.Throw)
-                    throw;
-                
-                return false;
-            }
-        }
-        
-        #endregion
     }
 }

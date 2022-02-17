@@ -1,4 +1,4 @@
-﻿using Svix.Models;
+using Svix.Models;
 using Xunit;
 
 namespace Svix.Tests
@@ -18,7 +18,7 @@ namespace Svix.Tests
             var lSvixClient = new SvixClient(ClientOptions);
             
             // Act
-            var lIsHealthy = lSvixClient.IsHealthy();
+            var lIsHealthy = lSvixClient.Health.IsHealthy();
 
             // Assert
             Assert.True(lIsHealthy);
@@ -31,7 +31,7 @@ namespace Svix.Tests
             var lSvixClient = new SvixClient(ClientOptions);
             
             // Act
-            var lIsHealthy = await lSvixClient.IsHealthyAsync()
+            var lIsHealthy = await lSvixClient.Health.IsHealthyAsync()
                 .ConfigureAwait(false);
 
             // Assert
