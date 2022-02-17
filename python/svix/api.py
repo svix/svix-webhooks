@@ -206,7 +206,11 @@ class Endpoint(ApiBase[EndpointApi]):
     def create(self, app_id: str, endpoint_in: EndpointIn, options: PostOptions = PostOptions()) -> EndpointOut:
         with self._api() as api:
             return api.create_endpoint_api_v1_app_app_id_endpoint_post(
-                app_id, endpoint_in=endpoint_in, **options.to_dict(), _check_return_type=False, async_req=self._async_mode
+                app_id,
+                endpoint_in=endpoint_in,
+                **options.to_dict(),
+                _check_return_type=False,
+                async_req=self._async_mode,
             )
 
     def get(self, app_id: str, endpoint_id: str) -> EndpointOut:
@@ -345,7 +349,11 @@ class Integration(ApiBase[IntegrationApi]):
     def create(self, app_id: str, integ_in: IntegrationIn, options: PostOptions = PostOptions()) -> IntegrationOut:
         with self._api() as api:
             return api.create_integration_api_v1_app_app_id_integration_post(
-                app_id, integration_in=integ_in, **options.to_dict(), _check_return_type=False, async_req=self._async_mode
+                app_id,
+                integration_in=integ_in,
+                **options.to_dict(),
+                _check_return_type=False,
+                async_req=self._async_mode,
             )
 
     def get(self, app_id: str, integ_id: str) -> IntegrationOut:
@@ -427,7 +435,11 @@ class MessageAttempt(ApiBase[MessageAttemptApi]):
     def get(self, app_id: str, msg_id: str, attempt_id: str) -> MessageAttemptOut:
         with self._api() as api:
             return api.get_attempt_api_v1_app_app_id_msg_msg_id_attempt_attempt_id_get(
-                app_id=app_id, msg_id=msg_id, attempt_id=attempt_id, _check_return_type=False, async_req=self._async_mode
+                app_id=app_id,
+                msg_id=msg_id,
+                attempt_id=attempt_id,
+                _check_return_type=False,
+                async_req=self._async_mode,
             )
 
     def resend(self, app_id: str, msg_id: str, endpoint_id: str, options: PostOptions = PostOptions()) -> None:
