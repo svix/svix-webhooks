@@ -1634,6 +1634,11 @@
             },
             "MessageAttemptEndpointOut": {
                 "properties": {
+                    "endpointId": {
+                        "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "title": "Endpointid",
+                        "type": "string"
+                    },
                     "id": {
                         "example": "atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                         "title": "Id",
@@ -1663,6 +1668,7 @@
                 },
                 "required": [
                     "id",
+                    "endpointId",
                     "response",
                     "responseStatusCode",
                     "timestamp",
@@ -1808,12 +1814,12 @@
                 },
                 "required": [
                     "id",
+                    "endpointId",
                     "response",
                     "responseStatusCode",
                     "timestamp",
                     "status",
-                    "triggerType",
-                    "endpointId"
+                    "triggerType"
                 ],
                 "title": "MessageAttemptOut",
                 "type": "object"
@@ -3051,6 +3057,482 @@
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'PUT' \\\n  'https://api.svix.com/api/v1/app/{app_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\",\n    \"rateLimit\": 1000\n}'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/app/{app_id}/attempt/endpoint/{endpoint_id}/": {
+            "get": {
+                "description": "List attempts by endpoint id",
+                "operationId": "list_attempted_destinations_by_endpoint_api_v1_app__app_id__attempt_endpoint__endpoint_id___get",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "App Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The endpoint's ID or UID",
+                            "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "Endpoint Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "iterator",
+                        "required": false,
+                        "schema": {
+                            "example": "atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "title": "Iterator",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "limit",
+                        "required": false,
+                        "schema": {
+                            "default": 50,
+                            "maximum": 250.0,
+                            "title": "Limit",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "status",
+                        "required": false,
+                        "schema": {
+                            "$ref": "#/components/schemas/MessageStatus"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "event_types",
+                        "required": false,
+                        "schema": {
+                            "items": {
+                                "example": "user.signup",
+                                "maxLength": 256,
+                                "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                                "type": "string"
+                            },
+                            "title": "Event Types",
+                            "type": "array"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "channel",
+                        "required": false,
+                        "schema": {
+                            "example": "project_1337",
+                            "maxLength": 128,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "Channel",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "before",
+                        "required": false,
+                        "schema": {
+                            "format": "date-time",
+                            "title": "Before",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListResponse_MessageAttemptOut_"
+                                }
+                            }
+                        },
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "List Attempted Destinations By Endpoint",
+                "tags": [
+                    "Message Attempt"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const listResponseMessageAttemptOut = await svix.messageAttempt.listByEndpoint('app_id', 'endpoint_id');"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const listResponseMessageAttemptOut = await svix.messageAttempt.listByEndpoint('app_id', 'endpoint_id');"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "list_response_message_attempt_out = svix.message_attempt.list_by_endpoint('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "listResponseMessageAttemptOut, err := svixClient.MessageAttempt.ListByEndpoint(\"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val listResponseMessageAttemptOut = svix.messageAttempt.listByEndpoint('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "ListResponseMessageAttemptOut listResponseMessageAttemptOut = svix.getMessageAttempt().listByEndpoint('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "list_response_message_attempt_out = svix.message_attempt.list_by_endpoint('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix message-attempt list-by-endpoint 'app_id' 'endpoint_id'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/attempt/endpoint/{endpoint_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/app/{app_id}/attempt/msg/{msg_id}/": {
+            "get": {
+                "description": "List attempts by message id",
+                "operationId": "list_attempted_destinations_by_msg_api_v1_app__app_id__attempt_msg__msg_id___get",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "App Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "name": "msg_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The message's ID or eventID",
+                            "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "Msg Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "endpoint_id",
+                        "required": false,
+                        "schema": {
+                            "description": "The endpoint's ID or UID",
+                            "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "Endpoint Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "iterator",
+                        "required": false,
+                        "schema": {
+                            "example": "atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "title": "Iterator",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "limit",
+                        "required": false,
+                        "schema": {
+                            "default": 50,
+                            "maximum": 250.0,
+                            "title": "Limit",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "status",
+                        "required": false,
+                        "schema": {
+                            "$ref": "#/components/schemas/MessageStatus"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "event_types",
+                        "required": false,
+                        "schema": {
+                            "items": {
+                                "example": "user.signup",
+                                "maxLength": 256,
+                                "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                                "type": "string"
+                            },
+                            "title": "Event Types",
+                            "type": "array"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "channel",
+                        "required": false,
+                        "schema": {
+                            "example": "project_1337",
+                            "maxLength": 128,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "Channel",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "before",
+                        "required": false,
+                        "schema": {
+                            "format": "date-time",
+                            "title": "Before",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListResponse_MessageAttemptOut_"
+                                }
+                            }
+                        },
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "List Attempted Destinations By Msg",
+                "tags": [
+                    "Message Attempt"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const listResponseMessageAttemptOut = await svix.messageAttempt.listByMsg('app_id', 'msg_id');"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const listResponseMessageAttemptOut = await svix.messageAttempt.listByMsg('app_id', 'msg_id');"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "list_response_message_attempt_out = svix.message_attempt.list_by_msg('app_id', 'msg_id')"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "listResponseMessageAttemptOut, err := svixClient.MessageAttempt.ListByMsg(\"app_id\", \"msg_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val listResponseMessageAttemptOut = svix.messageAttempt.listByMsg('app_id', 'msg_id')"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "ListResponseMessageAttemptOut listResponseMessageAttemptOut = svix.getMessageAttempt().listByMsg('app_id', 'msg_id')"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "list_response_message_attempt_out = svix.message_attempt.list_by_msg('app_id', 'msg_id')"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix message-attempt list-by-msg 'app_id' 'msg_id'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/attempt/msg/{msg_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -7058,7 +7540,8 @@
         },
         "/api/v1/app/{app_id}/msg/{msg_id}/attempt/": {
             "get": {
-                "description": "`msg_id`: Use a message id or a message `eventId`",
+                "deprecated": true,
+                "description": "Deprecated: Please use the /attempt/ api instead.\n\n`msg_id`: Use a message id or a message `eventId`",
                 "operationId": "list_attempts_api_v1_app__app_id__msg__msg_id__attempt__get",
                 "parameters": [
                     {
@@ -7112,10 +7595,61 @@
                     },
                     {
                         "in": "query",
+                        "name": "endpoint_id",
+                        "required": false,
+                        "schema": {
+                            "description": "The endpoint's ID or UID",
+                            "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "Endpoint Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "event_types",
+                        "required": false,
+                        "schema": {
+                            "items": {
+                                "example": "user.signup",
+                                "maxLength": 256,
+                                "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                                "type": "string"
+                            },
+                            "title": "Event Types",
+                            "type": "array"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "channel",
+                        "required": false,
+                        "schema": {
+                            "example": "project_1337",
+                            "maxLength": 128,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "Channel",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
                         "name": "status",
                         "required": false,
                         "schema": {
                             "$ref": "#/components/schemas/MessageStatus"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "before",
+                        "required": false,
+                        "schema": {
+                            "format": "date-time",
+                            "title": "Before",
+                            "type": "string"
                         }
                     },
                     {
@@ -7573,7 +8107,8 @@
         },
         "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/attempt/": {
             "get": {
-                "description": "List the message attempts for a particular endpoint.\n\nReturning the endpoint.\n\nThe `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.",
+                "deprecated": true,
+                "description": "DEPRECATED: please use list_attempts with endpoint_id as a query parameter instead.\n\nList the message attempts for a particular endpoint.\n\nReturning the endpoint.\n\nThe `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.",
                 "operationId": "list_attempts_for_endpoint_api_v1_app__app_id__msg__msg_id__endpoint__endpoint_id__attempt__get",
                 "parameters": [
                     {
