@@ -7,3 +7,4 @@ pep8-naming
 mypy
 pip-tools
 pytest
+types-Deprecated

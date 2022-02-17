@@ -31,6 +31,7 @@ META_CONTENTS = read_file(META_PATH)
 PKG_REQUIRES = [
     "urllib3 >= 1.25.3",
     "python-dateutil",
+    "Deprecated",
 ]
 
 def find_meta(meta):
