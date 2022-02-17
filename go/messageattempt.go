@@ -29,8 +29,34 @@ type MessageAttemptListOptions struct {
 	Before     *time.Time
 }
 
+// Deprecated: use `ListByMsg` or `ListByEndpoint` instead
 func (m *MessageAttempt) List(appId string, msgId string, options *MessageAttemptListOptions) (*ListResponseMessageAttemptOut, error) {
-	req := m.api.MessageAttemptApi.ListAttemptsApiV1AppAppIdMsgMsgIdAttemptGet(context.Background(), appId, msgId)
+	return m.ListByMsg(appId, msgId, options)
+}
+
+func (m *MessageAttempt) ListByMsg(appId string, msgId string, options *MessageAttemptListOptions) (*ListResponseMessageAttemptOut, error) {
+	req := m.api.MessageAttemptApi.ListAttemptedDestinationsByMsgApiV1AppAppIdAttemptMsgMsgIdGet(context.Background(), appId, msgId)
+	if options != nil {
+		if options.Iterator != nil {
+			req = req.Iterator(*options.Iterator)
+		}
+		if options.Limit != nil {
+			req = req.Limit(*options.Limit)
+		}
+		if options.Status != nil {
+			req = req.Status(openapi.MessageStatus(*options.Status))
+		}
+	}
+	out, res, err := req.Execute()
+	if err != nil {
+		return nil, wrapError(err, res)
+	}
+	ret := ListResponseMessageAttemptOut(out)
+	return &ret, nil
+}
+
+func (m *MessageAttempt) ListByEndpoint(appId string, endpointId string, options *MessageAttemptListOptions) (*ListResponseMessageAttemptOut, error) {
+	req := m.api.MessageAttemptApi.ListAttemptedDestinationsByEndpointApiV1AppAppIdAttemptEndpointEndpointIdGet(context.Background(), appId, endpointId)
 	if options != nil {
 		if options.Iterator != nil {
 			req = req.Iterator(*options.Iterator)

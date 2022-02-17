@@ -17,6 +17,7 @@ import (
 
 // MessageAttemptEndpointOut struct for MessageAttemptEndpointOut
 type MessageAttemptEndpointOut struct {
+	EndpointId string `json:"endpointId"`
 	Id string `json:"id"`
 	Response string `json:"response"`
 	ResponseStatusCode int32 `json:"responseStatusCode"`
@@ -29,8 +30,9 @@ type MessageAttemptEndpointOut struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewMessageAttemptEndpointOut(id string, response string, responseStatusCode int32, status MessageStatus, timestamp time.Time, triggerType MessageAttemptTriggerType) *MessageAttemptEndpointOut {
+func NewMessageAttemptEndpointOut(endpointId string, id string, response string, responseStatusCode int32, status MessageStatus, timestamp time.Time, triggerType MessageAttemptTriggerType) *MessageAttemptEndpointOut {
 	this := MessageAttemptEndpointOut{}
+	this.EndpointId = endpointId
 	this.Id = id
 	this.Response = response
 	this.ResponseStatusCode = responseStatusCode
@@ -46,6 +48,30 @@ func NewMessageAttemptEndpointOut(id string, response string, responseStatusCode
 func NewMessageAttemptEndpointOutWithDefaults() *MessageAttemptEndpointOut {
 	this := MessageAttemptEndpointOut{}
 	return &this
+}
+
+// GetEndpointId returns the EndpointId field value
+func (o *MessageAttemptEndpointOut) GetEndpointId() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.EndpointId
+}
+
+// GetEndpointIdOk returns a tuple with the EndpointId field value
+// and a boolean to check if the value has been set.
+func (o *MessageAttemptEndpointOut) GetEndpointIdOk() (*string, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.EndpointId, true
+}
+
+// SetEndpointId sets field value
+func (o *MessageAttemptEndpointOut) SetEndpointId(v string) {
+	o.EndpointId = v
 }
 
 // GetId returns the Id field value
@@ -194,6 +220,9 @@ func (o *MessageAttemptEndpointOut) SetTriggerType(v MessageAttemptTriggerType) 
 
 func (o MessageAttemptEndpointOut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
+	if true {
+		toSerialize["endpointId"] = o.EndpointId
+	}
 	if true {
 		toSerialize["id"] = o.Id
 	}
