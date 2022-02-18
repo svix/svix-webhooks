@@ -29,12 +29,12 @@ jobs:
       uses: actions-rs/cargo@v1
       with:
         command: clippy
-        args: --all --all-targets --all-features
+        args: --manifest-path server/Cargo.toml --all --all-targets --all-features
     - name: rustfmt
       uses: actions-rs/cargo@v1
       with:
         command: fmt
-        args: --all -- --check
+        args: --manifest-path server/Cargo.toml --all -- --check
 
   test-versions:
     needs: check
@@ -54,7 +54,7 @@ jobs:
       uses: actions-rs/cargo@v1
       with:
         command: test
-        args: --all --all-features --all-targets
+        args: --manifest-path server/Cargo.toml  --all --all-features --all-targets
 
 #  deny-check:
 #    name: cargo-deny check
