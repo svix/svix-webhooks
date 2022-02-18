@@ -6,9 +6,11 @@ on:
       - main
     paths:
       - 'server/**'
+      - '.github/workflows/server-ci.yml'
   pull_request:
     paths:
       - 'server/**'
+      - '.github/workflows/server-ci.yml'
 
 jobs:
   check:
