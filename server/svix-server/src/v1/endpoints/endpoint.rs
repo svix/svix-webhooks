@@ -28,12 +28,12 @@ use hyper::StatusCode;
 use sea_orm::{entity::prelude::*, ActiveValue::Set, QueryOrder};
 use sea_orm::{ActiveModelTrait, DatabaseConnection, QuerySelect};
 use serde::{Deserialize, Serialize};
-use std::{collections::HashSet, iter};
+use std::{collections::HashMap, collections::HashSet, iter};
 
 use svix_server_derive::{ModelIn, ModelOut};
 use validator::{Validate, ValidationError};
 
-use crate::core::types::EndpointSecret;
+use crate::core::types::{EndpointHeaders, EndpointSecret};
 use crate::db::models::endpoint;
 use crate::v1::utils::Pagination;
 
@@ -168,6 +168,52 @@ struct EndpointSecretOut {
 #[serde(rename_all = "camelCase")]
 struct RecoverIn {
     since: DateTime<Utc>,
+}
+
+#[derive(Clone, Debug, PartialEq, Validate, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct EndpointHeadersIn {
+    #[validate]
+    headers: EndpointHeaders,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Default)]
+#[serde(rename_all = "camelCase")]
+struct EndpointHeadersOut {
+    headers: HashMap<String, String>,
+    sensitive: HashSet<String>,
+}
+
+impl EndpointHeadersOut {
+    const SENSITIVE_HEADERS: &'static [&'static str] = &[
+        "x-auth-token",
+        "www-authenticate",
+        "authorization",
+        "proxy-authenticate",
+        "proxy-authorization",
+    ];
+}
+
+impl From<EndpointHeaders> for EndpointHeadersOut {
+    fn from(hdr: EndpointHeaders) -> Self {
+        let (sens, remaining) = hdr
+            .0
+            .into_iter()
+            .partition(|(k, _)| Self::SENSITIVE_HEADERS.iter().any(|&x| x == k));
+
+        Self {
+            headers: remaining,
+            sensitive: sens.into_iter().map(|(k, _)| k).collect(),
+        }
+    }
+}
+
+impl ModelIn for EndpointHeadersIn {
+    type ActiveModel = endpoint::ActiveModel;
+
+    fn update_model(self, model: &mut Self::ActiveModel) {
+        model.headers = Set(Some(self.headers));
+    }
 }
 
 /// This module is here so that our Result override doesn't conflict
@@ -483,6 +529,46 @@ async fn recover_failed_webhooks(
     Ok((StatusCode::ACCEPTED, Json(EmptyResponse {})))
 }
 
+async fn get_endpoint_headers(
+    Extension(ref db): Extension<DatabaseConnection>,
+    Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
+    AuthenticatedApplication {
+        permissions: _,
+        app,
+    }: AuthenticatedApplication,
+) -> Result<Json<EndpointHeadersOut>> {
+    let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id, endp_id)
+        .one(db)
+        .await?
+        .ok_or_else(|| HttpError::not_found(None, None))?;
+
+    match endp.headers {
+        Some(h) => Ok(Json(h.into())),
+        None => Ok(Json(EndpointHeadersOut::default())),
+    }
+}
+
+async fn update_endpoint_headers(
+    Extension(ref db): Extension<DatabaseConnection>,
+    Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
+    ValidatedJson(data): ValidatedJson<EndpointHeadersIn>,
+    AuthenticatedApplication {
+        permissions: _,
+        app,
+    }: AuthenticatedApplication,
+) -> Result<(StatusCode, Json<EmptyResponse>)> {
+    let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
+        .one(db)
+        .await?
+        .ok_or_else(|| HttpError::not_found(None, None))?;
+
+    let mut endp: endpoint::ActiveModel = endp.into();
+    data.update_model(&mut endp);
+    endp.update(db).await?;
+
+    Ok((StatusCode::NO_CONTENT, Json(EmptyResponse {})))
+}
+
 pub fn router() -> Router {
     Router::new().nest(
         "/app/:app_id",
@@ -508,9 +594,31 @@ pub fn router() -> Router {
             .route("/endpoint/:endp_id/recover/", post(recover_failed_webhooks))
             .route(
                 "/endpoint/:endp_id/headers/",
-                get(api_not_implemented)
+                get(get_endpoint_headers)
                     .patch(api_not_implemented)
-                    .put(api_not_implemented),
+                    .put(update_endpoint_headers),
             ),
     )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::EndpointHeadersOut;
+    use crate::core::types::EndpointHeaders;
+    use std::collections::{HashMap, HashSet};
+
+    #[test]
+    fn test_into_endpoint_headers_out() {
+        let ep = EndpointHeaders(HashMap::from([
+            ("x-non-sensitive".to_owned(), "all-clear".to_owned()),
+            ("authorization".to_owned(), "should-be-omitted".to_owned()),
+        ]));
+
+        let epo: EndpointHeadersOut = ep.into();
+        assert_eq!(
+            HashMap::from([("x-non-sensitive".to_owned(), "all-clear".to_owned())]),
+            epo.headers
+        );
+        assert_eq!(HashSet::from(["authorization".to_owned()]), epo.sensitive);
+    }
 }

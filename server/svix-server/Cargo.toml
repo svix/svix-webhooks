@@ -44,3 +44,4 @@ redis = { version = "0.21.5", features = ["tokio-comp"] }
 # sea orm
 sea-orm = { version = "0.5.0", features = [ "sqlx-postgres", "runtime-tokio-rustls", "macros" ], default-features = false }
 sqlx = { version = "0.5", features = [ "runtime-tokio-rustls", "postgres", "migrate" ] }
+http = "0.2"
