@@ -405,14 +405,41 @@ class MessageAttempt {
     this.api = new MessageAttemptApi(config);
   }
 
+  /**
+   * @deprecated Since version 0.48.0. Use listByMsg or listByEndpoint instead.
+   */
   public list(
     appId: string,
     msgId: string,
     options?: MessageAttemptListOptions
   ): Promise<ListResponseMessageAttemptOut> {
-    return this.api.listAttemptsApiV1AppAppIdMsgMsgIdAttemptGet({
+    return this.listByMsg(
       appId,
       msgId,
+      options,
+    );
+  }
+
+  public listByMsg(
+    appId: string,
+    msgId: string,
+    options?: MessageAttemptListOptions
+  ): Promise<ListResponseMessageAttemptOut> {
+    return this.api.listAttemptedDestinationsByMsgApiV1AppAppIdAttemptMsgMsgIdGet({
+      appId,
+      msgId,
+      ...options,
+    });
+  }
+
+  public listByEndpoint(
+    appId: string,
+    endpointId: string,
+    options?: MessageAttemptListOptions
+  ): Promise<ListResponseMessageAttemptOut> {
+    return this.api.listAttemptedDestinationsByEndpointApiV1AppAppIdAttemptEndpointEndpointIdGet({
+      appId,
+      endpointId,
       ...options,
     });
   }

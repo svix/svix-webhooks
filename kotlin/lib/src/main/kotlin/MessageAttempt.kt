@@ -16,15 +16,45 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
         api.userAgent = options.getUA()
     }
 
+    /**
+     * @deprecated use listByMsg or listByEndpoint instead.
+     */
+    @Deprecated(message = "use listByMsg or listByEndpoint instead.")
     suspend fun list(appId: String, msgId: String, options: MessageAttemptListOptions = MessageAttemptListOptions()): ListResponseMessageAttemptOut {
+        return this.listByMsg(appId, msgId, options)
+    }
+
+    suspend fun listByMsg(appId: String, msgId: String, options: MessageAttemptListOptions = MessageAttemptListOptions()): ListResponseMessageAttemptOut {
         try {
-            return api.listAttemptsApiV1AppAppIdMsgMsgIdAttemptGet(
+            return api.listAttemptedDestinationsByMsgApiV1AppAppIdAttemptMsgMsgIdGet(
                 appId,
                 msgId,
+                null,
                 options.iterator,
                 options.limit,
                 options.messageStatus,
-                null
+                null,
+                null,
+                options.before,
+                null,
+            )
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
+
+    suspend fun listByEndpoint(appId: String, endpointId: String, options: MessageAttemptListOptions = MessageAttemptListOptions()): ListResponseMessageAttemptOut {
+        try {
+            return api.listAttemptedDestinationsByEndpointApiV1AppAppIdAttemptEndpointEndpointIdGet(
+                appId,
+                endpointId,
+                options.iterator,
+                options.limit,
+                options.messageStatus,
+                null,
+                null,
+                options.before,
+                null,
             )
         } catch (e: Exception) {
             throw ApiException.wrap(e)
