@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.Extensions.Logging;
 using Svix.Abstractions;
 using Svix.Api;
@@ -15,6 +15,8 @@ namespace Svix
             AccessToken = Token
         };
         
+        public IApplication Application { get; }
+        
         public IHealth Health { get; }
 
         public ILogger Logger { get; }
@@ -27,13 +29,21 @@ namespace Svix
 
         private readonly ISvixOptions _options;
 
-        public SvixClient(string token, SvixOptions options, ILogger<SvixClient> logger = null)
+        public SvixClient(string token, ISvixOptions options, ILogger<SvixClient> logger = null, IHealthApi healthApi = null
+            , IApplicationApi applicationApi = null)
         {
             Logger = logger;
             _options = options ?? throw new ArgumentNullException(nameof(options));
             Token = token ?? throw new ArgumentNullException(nameof(token));
             
             Health = new Health(this, healthApi ?? new HealthApi(Config));
+            Application = new Application(this, applicationApi ?? new ApplicationApi(Config));
+        }
+        
+        public SvixClient(string token, ISvixOptions options, ILogger<SvixClient> logger = null)
+            : this(token, options, logger, healthApi: null, applicationApi: null)
+        {
+            // empty
         }
     }
 }
