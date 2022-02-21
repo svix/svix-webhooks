@@ -1,9 +1,22 @@
-﻿namespace Svix.Models
-{
-    public sealed class SvixOptions
-    {
-        public string ServerUrl { get; set; }
+﻿using Svix.Abstractions;
 
-        public bool Throw { get; set; }
+namespace Svix.Models
+{
+    public sealed class SvixOptions : ISvixOptions
+    {
+        public string ServerUrl { get; }
+
+        public bool Throw { get; }
+
+        private SvixOptions()
+        {
+            // empty
+        }
+
+        public SvixOptions(string serverUrl, bool bThrow = false)
+        {
+            ServerUrl = serverUrl;
+            Throw = bThrow;
+        }
     }
 }

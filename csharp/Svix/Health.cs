@@ -1,44 +1,37 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using Microsoft.Extensions.Logging;
 using Svix.Abstractions;
 using Svix.Api;
 using Svix.Client;
-using System;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Svix
 {
-    public sealed class Health : IHealth
+    public sealed class Health : SvixResourceBase, IHealth
     {
-        private Configuration Config => new Configuration
-        {
-            BasePath = _svixClient.ServerUrl,
-            AccessToken = _svixClient.Token
-        };
+        private readonly IHealthApi _healthApi;
         
-        private readonly SvixClient _svixClient;
-        
-        public Health(SvixClient svixClient)
+        public Health(ISvixClient svixClient, IHealthApi healthApi)
+            : base(svixClient)
         {
-            _svixClient = svixClient ?? throw new ArgumentNullException(nameof(svixClient));
+            _healthApi = healthApi ?? throw new ArgumentNullException(nameof(healthApi));
         }
 
         public bool IsHealthy(string idempotencyKey = default)
         {
             try
             {
-                using var lHealthApi = new HealthApi(Config);
-                var lResponse = lHealthApi.HealthApiV1HealthGetWithHttpInfo(idempotencyKey);
+                var lResponse = _healthApi.HealthApiV1HealthGetWithHttpInfo(idempotencyKey);
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
             }
             catch (ApiException e)
             {
-                _svixClient.Logger
-                    ?.LogError(e, $"{nameof(IsHealthy)} failed");
+                Logger?.LogError(e, $"{nameof(IsHealthy)} failed");
 
-                if (_svixClient.Throw)
+                if (Throw)
                     throw;
                 
                 return false;
@@ -49,18 +42,16 @@ namespace Svix
         {
             try
             {
-                using var lHealthApi = new HealthApi(Config);
-                var lResponse = await lHealthApi.HealthApiV1HealthGetWithHttpInfoAsync(idempotencyKey, cancellationToken)
+                var lResponse = await _healthApi.HealthApiV1HealthGetWithHttpInfoAsync(idempotencyKey, cancellationToken)
                     .ConfigureAwait(false);
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
             }
             catch (ApiException e)
             {
-                _svixClient.Logger
-                    ?.LogError(e, $"{nameof(IsHealthyAsync)} failed");
+                Logger?.LogError(e, $"{nameof(IsHealthyAsync)} failed");
                 
-                if (_svixClient.Throw)
+                if (Throw)
                     throw;
                 
                 return false;
