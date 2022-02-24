@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 use crate::core::types::{
-    ApplicationId, BaseId, EndpointId, EndpointIdOrUid, EndpointSecret, EndpointUid,
-    EventChannelSet, EventTypeNameSet, ExpiringSigningKeys,
+    ApplicationId, BaseId, EndpointHeaders, EndpointId, EndpointIdOrUid, EndpointSecret,
+    EndpointUid, EventChannelSet, EventTypeNameSet, ExpiringSigningKeys,
 };
 use chrono::Utc;
 use sea_orm::ActiveValue::Set;
@@ -29,6 +29,7 @@ pub struct Model {
     pub uid: Option<EndpointUid>,
     pub old_keys: Option<ExpiringSigningKeys>,
     pub channels: Option<EventChannelSet>,
+    pub headers: Option<EndpointHeaders>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
