@@ -188,6 +188,17 @@ class Application {
     return this.api.createApplicationApiV1AppPost({ applicationIn, ...options });
   }
 
+  public getOrCreate(
+    applicationIn: ApplicationIn,
+    options?: PostOptions
+  ): Promise<ApplicationOut> {
+    return this.api.createApplicationApiV1AppPost({
+      applicationIn,
+      ...options,
+      getIfExists: true,
+    });
+  }
+
   public get(appId: string): Promise<ApplicationOut> {
     return this.api.getApplicationApiV1AppAppIdGet({ appId });
   }
