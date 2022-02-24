@@ -23,6 +23,7 @@ type MessageListOptions struct {
 	EventTypes *[]string
 	Before     *time.Time
 	After      *time.Time
+	Channel    *string
 }
 
 func (m *Message) List(appId string, options *MessageListOptions) (*ListResponseMessageOut, error) {
@@ -42,6 +43,9 @@ func (m *Message) List(appId string, options *MessageListOptions) (*ListResponse
 		}
 		if options.After != nil {
 			req = req.After(*options.After)
+		}
+		if options.Channel != nil {
+			req = req.Channel(*options.Channel)
 		}
 	}
 	out, res, err := req.Execute()

@@ -30,6 +30,7 @@ type MessageAttemptListOptions struct {
 	Before          *time.Time
 	After           *time.Time
 	StatusCodeClass *StatusCodeClass
+	Channel         *string
 }
 
 // Deprecated: use `ListByMsg` or `ListByEndpoint` instead
@@ -57,6 +58,9 @@ func (m *MessageAttempt) ListByMsg(appId string, msgId string, options *MessageA
 		}
 		if options.StatusCodeClass != nil {
 			req.StatusCodeClass(openapi.StatusCodeClass(*options.StatusCodeClass))
+		}
+		if options.Channel != nil {
+			req = req.Channel(*options.Channel)
 		}
 	}
 	out, res, err := req.Execute()
@@ -87,6 +91,9 @@ func (m *MessageAttempt) ListByEndpoint(appId string, endpointId string, options
 		}
 		if options.StatusCodeClass != nil {
 			req.StatusCodeClass(openapi.StatusCodeClass(*options.StatusCodeClass))
+		}
+		if options.Channel != nil {
+			req = req.Channel(*options.Channel)
 		}
 	}
 	out, res, err := req.Execute()
@@ -178,6 +185,9 @@ func (m *MessageAttempt) ListAttemptsForEndpoint(appId string, msgId string, end
 		}
 		if options.After != nil {
 			req = req.After(*options.After)
+		}
+		if options.Channel != nil {
+			req = req.Channel(*options.Channel)
 		}
 	}
 	out, res, err := req.Execute()
