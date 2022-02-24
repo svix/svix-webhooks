@@ -21,7 +21,7 @@ class Message internal constructor(token: String, options: SvixOptions) {
                 options.iterator,
                 options.limit,
                 options.eventTypes,
-                null,
+                options.channel,
                 options.before,
                 options.after,
                 null
