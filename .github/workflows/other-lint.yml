@@ -41,4 +41,10 @@ jobs:
           VALIDATE_OPENAPI: false
           VALIDATE_MARKDOWN: false
           VALIDATE_NATURAL_LANGUAGE: false
+          VALIDATE_RUST_2015: false
+          VALIDATE_RUST_2018: false
+          VALIDATE_RUST_2021: false
+          VALIDATE_RUST_CLIPPY: false
+          VALIDATE_SQL: false
+          VALIDATE_SQLFLUFF: false
           FILTER_REGEX_EXCLUDE: (gradlew|javascript/tsconfig.json)
