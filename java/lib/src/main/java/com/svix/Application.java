@@ -25,9 +25,21 @@ public final class Application {
 		return this.create(applicationIn, new PostOptions());
 	}
 
-    public ApplicationOut create(final ApplicationIn applicationIn, final PostOptions options) throws ApiException {
+	public ApplicationOut create(final ApplicationIn applicationIn, final PostOptions options) throws ApiException {
 		try {
 			return api.createApplicationApiV1AppPost(applicationIn, null, options.getIdempotencyKey());
+		} catch (com.svix.internal.ApiException e) {
+			throw Utils.wrapInternalApiException(e);
+		}
+	}
+
+	public ApplicationOut getOrCreate(final ApplicationIn applicationIn) throws ApiException {
+		return this.getOrCreate(applicationIn, new PostOptions());
+	}
+
+	public ApplicationOut getOrCreate(final ApplicationIn applicationIn, final PostOptions options) throws ApiException {
+		try {
+			return api.createApplicationApiV1AppPost(applicationIn, true, options.getIdempotencyKey());
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
