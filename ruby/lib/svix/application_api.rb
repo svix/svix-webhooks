@@ -13,7 +13,9 @@ module Svix
         def create(application_in, options = {})
             return @api.create_application_api_v1_app_post(application_in, options)
         end
-
+        def get_or_create(application_in, options = {})
+            return @api.create_application_api_v1_app_post(application_in, {**options, get_if_exists: true})
+        end
         def get(app_id)
             return @api.get_application_api_v1_app_app_id_get(app_id)
         end
