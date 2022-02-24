@@ -10,8 +10,8 @@ module Svix
             return @api.list_messages_api_v1_app_app_id_msg_get(app_id, options)
         end
 
-        def create(app_id, message_in)
-            return @api.create_message_api_v1_app_app_id_msg_post(app_id, message_in)
+        def create(app_id, message_in, options = {})
+            return @api.create_message_api_v1_app_app_id_msg_post(app_id, message_in, options)
         end
 
         def get(app_id, msg_id)

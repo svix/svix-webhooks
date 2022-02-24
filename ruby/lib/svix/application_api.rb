@@ -10,8 +10,8 @@ module Svix
             return @api.list_applications_api_v1_app_get(options)
         end
 
-        def create(application_in)
-            return @api.create_application_api_v1_app_post(application_in)
+        def create(application_in, options = {})
+            return @api.create_application_api_v1_app_post(application_in, options)
         end
 
         def get(app_id)
