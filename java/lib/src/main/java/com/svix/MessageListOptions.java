@@ -6,8 +6,9 @@ import org.threeten.bp.OffsetDateTime;
 public class MessageListOptions extends ListOptionsDouble {
     private List<String> eventTypes;
 	private OffsetDateTime before;
+	private OffsetDateTime after;
 
-    public MessageListOptions eventTypes(final List<String> eventTypes) {
+	public MessageListOptions eventTypes(final List<String> eventTypes) {
 		this.eventTypes = eventTypes;
 		return this;
 	}
