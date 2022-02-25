@@ -42,8 +42,17 @@ func (e *Integration) List(appId string, options *IntegrationListOptions) (*List
 }
 
 func (e *Integration) Create(appId string, endpointIn *IntegrationIn) (*IntegrationOut, error) {
+	return e.CreateWithOptions(appId, endpointIn, nil)
+}
+
+func (e *Integration) CreateWithOptions(appId string, endpointIn *IntegrationIn, options *PostOptions) (*IntegrationOut, error) {
 	req := e.api.IntegrationApi.CreateIntegrationApiV1AppAppIdIntegrationPost(context.Background(), appId)
 	req = req.IntegrationIn(openapi.IntegrationIn(*endpointIn))
+	if options != nil {
+		if options.IdempotencyKey != nil {
+			req = req.IdempotencyKey(*options.IdempotencyKey)
+		}
+	}
 	out, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
@@ -90,7 +99,16 @@ func (e *Integration) GetKey(appId string, integId string) (*IntegrationKeyOut, 
 }
 
 func (e *Integration) RotateKey(appId string, integId string) (*IntegrationKeyOut, error) {
+	return e.RotateKeyWithOptions(appId, integId, nil)
+}
+
+func (e *Integration) RotateKeyWithOptions(appId string, integId string, options *PostOptions) (*IntegrationKeyOut, error) {
 	req := e.api.IntegrationApi.RotateIntegrationKeyApiV1AppAppIdIntegrationIntegIdKeyRotatePost(context.Background(), integId, appId)
+	if options != nil {
+		if options.IdempotencyKey != nil {
+			req = req.IdempotencyKey(*options.IdempotencyKey)
+		}
+	}
 	out, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)

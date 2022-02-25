@@ -49,8 +49,17 @@ func (e *EventType) List(options *EventTypeListOptions) (*ListResponseEventTypeO
 }
 
 func (e *EventType) Create(eventTypeIn *EventTypeIn) (*EventTypeOut, error) {
+	return e.CreateWithOptions(eventTypeIn, nil)
+}
+
+func (e *EventType) CreateWithOptions(eventTypeIn *EventTypeIn, options *PostOptions) (*EventTypeOut, error) {
 	req := e.api.EventTypeApi.CreateEventTypeApiV1EventTypePost(context.Background())
 	req = req.EventTypeIn(openapi.EventTypeIn(*eventTypeIn))
+	if options != nil {
+		if options.IdempotencyKey != nil {
+			req = req.IdempotencyKey(*options.IdempotencyKey)
+		}
+	}
 	out, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)

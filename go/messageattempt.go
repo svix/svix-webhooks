@@ -121,7 +121,16 @@ func (m *MessageAttempt) Get(appId string, msgId string, attemptID string) (*Mes
 }
 
 func (m *MessageAttempt) Resend(appId string, msgId string, endpointId string) error {
+	return m.ResendWithOptions(appId, msgId, endpointId, nil)
+}
+
+func (m *MessageAttempt) ResendWithOptions(appId string, msgId string, endpointId string, options *PostOptions) error {
 	req := m.api.MessageAttemptApi.ResendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPost(context.Background(), endpointId, msgId, appId)
+	if options != nil {
+		if options.IdempotencyKey != nil {
+			req = req.IdempotencyKey(*options.IdempotencyKey)
+		}
+	}
 	res, err := req.Execute()
 	return wrapError(err, res)
 }

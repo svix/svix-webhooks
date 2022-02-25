@@ -57,8 +57,17 @@ func (m *Message) List(appId string, options *MessageListOptions) (*ListResponse
 }
 
 func (m *Message) Create(appId string, messageIn *MessageIn) (*MessageOut, error) {
+	return m.CreateWithOptions(appId, messageIn, nil)
+}
+
+func (m *Message) CreateWithOptions(appId string, messageIn *MessageIn, options *PostOptions) (*MessageOut, error) {
 	req := m.api.MessageApi.CreateMessageApiV1AppAppIdMsgPost(context.Background(), appId)
 	req = req.MessageIn(openapi.MessageIn(*messageIn))
+	if options != nil {
+		if options.IdempotencyKey != nil {
+			req = req.IdempotencyKey(*options.IdempotencyKey)
+		}
+	}
 	out, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
