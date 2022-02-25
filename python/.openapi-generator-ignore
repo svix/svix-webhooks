@@ -35,3 +35,4 @@ docs/
 test/
 test-requirements.txt
 tox.ini
+requirements.txt
