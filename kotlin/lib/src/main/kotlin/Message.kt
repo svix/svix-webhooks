@@ -16,7 +16,16 @@ class Message internal constructor(token: String, options: SvixOptions) {
 
     suspend fun list(appId: String, options: MessageListOptions = MessageListOptions()): ListResponseMessageOut {
         try {
-            return api.listMessagesApiV1AppAppIdMsgGet(appId, options.iterator, options.limit, options.eventTypes, null, options.before, null)
+            return api.listMessagesApiV1AppAppIdMsgGet(
+                appId,
+                options.iterator,
+                options.limit,
+                options.eventTypes,
+                null,
+                options.before,
+                options.after,
+                null
+            )
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }

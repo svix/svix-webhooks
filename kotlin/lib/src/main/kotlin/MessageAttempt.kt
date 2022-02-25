@@ -36,6 +36,7 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
                 null,
                 null,
                 options.before,
+                options.after,
                 null,
             )
         } catch (e: Exception) {
@@ -54,6 +55,7 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
                 null,
                 null,
                 options.before,
+                options.after,
                 null,
             )
         } catch (e: Exception) {
@@ -90,6 +92,7 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
                 options.limit,
                 options.messageStatus,
                 options.before,
+                options.after,
                 null
             )
         } catch (e: Exception) {
@@ -132,6 +135,7 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
                 null,
                 options.messageStatus,
                 options.before,
+                options.after,
                 null
             )
         } catch (e: Exception) {
