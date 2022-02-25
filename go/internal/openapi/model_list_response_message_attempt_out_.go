@@ -19,6 +19,7 @@ type ListResponseMessageAttemptOut struct {
 	Data []MessageAttemptOut `json:"data"`
 	Done bool `json:"done"`
 	Iterator *string `json:"iterator,omitempty"`
+	PrevIterator *string `json:"prevIterator,omitempty"`
 }
 
 // NewListResponseMessageAttemptOut instantiates a new ListResponseMessageAttemptOut object
@@ -120,6 +121,38 @@ func (o *ListResponseMessageAttemptOut) SetIterator(v string) {
 	o.Iterator = &v
 }
 
+// GetPrevIterator returns the PrevIterator field value if set, zero value otherwise.
+func (o *ListResponseMessageAttemptOut) GetPrevIterator() string {
+	if o == nil || o.PrevIterator == nil {
+		var ret string
+		return ret
+	}
+	return *o.PrevIterator
+}
+
+// GetPrevIteratorOk returns a tuple with the PrevIterator field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ListResponseMessageAttemptOut) GetPrevIteratorOk() (*string, bool) {
+	if o == nil || o.PrevIterator == nil {
+		return nil, false
+	}
+	return o.PrevIterator, true
+}
+
+// HasPrevIterator returns a boolean if a field has been set.
+func (o *ListResponseMessageAttemptOut) HasPrevIterator() bool {
+	if o != nil && o.PrevIterator != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetPrevIterator gets a reference to the given string and assigns it to the PrevIterator field.
+func (o *ListResponseMessageAttemptOut) SetPrevIterator(v string) {
+	o.PrevIterator = &v
+}
+
 func (o ListResponseMessageAttemptOut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
@@ -130,6 +163,9 @@ func (o ListResponseMessageAttemptOut) MarshalJSON() ([]byte, error) {
 	}
 	if o.Iterator != nil {
 		toSerialize["iterator"] = o.Iterator
+	}
+	if o.PrevIterator != nil {
+		toSerialize["prevIterator"] = o.PrevIterator
 	}
 	return json.Marshal(toSerialize)
 }

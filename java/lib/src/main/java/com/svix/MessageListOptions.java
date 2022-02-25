@@ -3,11 +3,12 @@ package com.svix;
 import java.util.List;
 import org.threeten.bp.OffsetDateTime;
 
-public class MessageListOptions extends ListOptions {
+public class MessageListOptions extends ListOptionsDouble {
     private List<String> eventTypes;
 	private OffsetDateTime before;
+	private OffsetDateTime after;
 
-    public MessageListOptions eventTypes(final List<String> eventTypes) {
+	public MessageListOptions eventTypes(final List<String> eventTypes) {
 		this.eventTypes = eventTypes;
 		return this;
 	}
@@ -31,5 +32,18 @@ public class MessageListOptions extends ListOptions {
 
 	public OffsetDateTime getBefore() {
 		return before;
+	}
+
+	public MessageListOptions after(final OffsetDateTime after) {
+		this.after = after;
+		return this;
+	}
+
+	public void setAfter(final OffsetDateTime after) {
+		this.after = after;
+	}
+
+	public OffsetDateTime getAfter() {
+		return after;
 	}
 }

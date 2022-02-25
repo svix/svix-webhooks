@@ -130,6 +130,10 @@ interface ListOptions {
   limit?: number;
 }
 
+interface ListOptionsDouble extends ListOptions {
+  prevIterator?: string;
+}
+
 export type ApplicationListOptions = ListOptions;
 
 export type EndpointListOptions = ListOptions;
@@ -141,15 +145,17 @@ export interface EventTypeListOptions extends ListOptions {
   includeArchived?: boolean;
 }
 
-export interface MessageListOptions extends ListOptions {
+export interface MessageListOptions extends ListOptionsDouble {
   eventTypes?: string[];
   before?: Date;
+  after?: Date;
 }
 
-export interface MessageAttemptListOptions extends ListOptions {
+export interface MessageAttemptListOptions extends ListOptionsDouble {
   status?: MessageStatus;
   eventTypes?: string[];
   before?: Date;
+  after?: Date;
 }
 
 class Application {
@@ -425,7 +431,7 @@ class MessageAttempt {
     msgId: string,
     options?: MessageAttemptListOptions
   ): Promise<ListResponseMessageAttemptOut> {
-    return this.api.listAttemptedDestinationsByMsgApiV1AppAppIdAttemptMsgMsgIdGet({
+    return this.api.listAttemptsByMsgApiV1AppAppIdAttemptMsgMsgIdGet({
       appId,
       msgId,
       ...options,
@@ -437,7 +443,7 @@ class MessageAttempt {
     endpointId: string,
     options?: MessageAttemptListOptions
   ): Promise<ListResponseMessageAttemptOut> {
-    return this.api.listAttemptedDestinationsByEndpointApiV1AppAppIdAttemptEndpointEndpointIdGet({
+    return this.api.listAttemptsByEndpointApiV1AppAppIdAttemptEndpointEndpointIdGet({
       appId,
       endpointId,
       ...options,

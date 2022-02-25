@@ -26,7 +26,7 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
 
     suspend fun listByMsg(appId: String, msgId: String, options: MessageAttemptListOptions = MessageAttemptListOptions()): ListResponseMessageAttemptOut {
         try {
-            return api.listAttemptedDestinationsByMsgApiV1AppAppIdAttemptMsgMsgIdGet(
+            return api.listAttemptsByMsgApiV1AppAppIdAttemptMsgMsgIdGet(
                 appId,
                 msgId,
                 null,
@@ -36,6 +36,7 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
                 null,
                 null,
                 options.before,
+                options.after,
                 null,
             )
         } catch (e: Exception) {
@@ -45,7 +46,7 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
 
     suspend fun listByEndpoint(appId: String, endpointId: String, options: MessageAttemptListOptions = MessageAttemptListOptions()): ListResponseMessageAttemptOut {
         try {
-            return api.listAttemptedDestinationsByEndpointApiV1AppAppIdAttemptEndpointEndpointIdGet(
+            return api.listAttemptsByEndpointApiV1AppAppIdAttemptEndpointEndpointIdGet(
                 appId,
                 endpointId,
                 options.iterator,
@@ -54,6 +55,7 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
                 null,
                 null,
                 options.before,
+                options.after,
                 null,
             )
         } catch (e: Exception) {
@@ -90,6 +92,7 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
                 options.limit,
                 options.messageStatus,
                 options.before,
+                options.after,
                 null
             )
         } catch (e: Exception) {
@@ -132,6 +135,7 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
                 null,
                 options.messageStatus,
                 options.before,
+                options.after,
                 null
             )
         } catch (e: Exception) {
