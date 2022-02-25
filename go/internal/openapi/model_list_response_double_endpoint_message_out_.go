@@ -14,37 +14,37 @@ import (
 	"encoding/json"
 )
 
-// ListResponseMessageAttemptEndpointOut struct for ListResponseMessageAttemptEndpointOut
-type ListResponseMessageAttemptEndpointOut struct {
-	Data []MessageAttemptEndpointOut `json:"data"`
+// ListResponseDoubleEndpointMessageOut struct for ListResponseDoubleEndpointMessageOut
+type ListResponseDoubleEndpointMessageOut struct {
+	Data []EndpointMessageOut `json:"data"`
 	Done bool `json:"done"`
 	Iterator *string `json:"iterator,omitempty"`
 	PrevIterator *string `json:"prevIterator,omitempty"`
 }
 
-// NewListResponseMessageAttemptEndpointOut instantiates a new ListResponseMessageAttemptEndpointOut object
+// NewListResponseDoubleEndpointMessageOut instantiates a new ListResponseDoubleEndpointMessageOut object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewListResponseMessageAttemptEndpointOut(data []MessageAttemptEndpointOut, done bool) *ListResponseMessageAttemptEndpointOut {
-	this := ListResponseMessageAttemptEndpointOut{}
+func NewListResponseDoubleEndpointMessageOut(data []EndpointMessageOut, done bool) *ListResponseDoubleEndpointMessageOut {
+	this := ListResponseDoubleEndpointMessageOut{}
 	this.Data = data
 	this.Done = done
 	return &this
 }
 
-// NewListResponseMessageAttemptEndpointOutWithDefaults instantiates a new ListResponseMessageAttemptEndpointOut object
+// NewListResponseDoubleEndpointMessageOutWithDefaults instantiates a new ListResponseDoubleEndpointMessageOut object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewListResponseMessageAttemptEndpointOutWithDefaults() *ListResponseMessageAttemptEndpointOut {
-	this := ListResponseMessageAttemptEndpointOut{}
+func NewListResponseDoubleEndpointMessageOutWithDefaults() *ListResponseDoubleEndpointMessageOut {
+	this := ListResponseDoubleEndpointMessageOut{}
 	return &this
 }
 
 // GetData returns the Data field value
-func (o *ListResponseMessageAttemptEndpointOut) GetData() []MessageAttemptEndpointOut {
+func (o *ListResponseDoubleEndpointMessageOut) GetData() []EndpointMessageOut {
 	if o == nil {
-		var ret []MessageAttemptEndpointOut
+		var ret []EndpointMessageOut
 		return ret
 	}
 
@@ -53,7 +53,7 @@ func (o *ListResponseMessageAttemptEndpointOut) GetData() []MessageAttemptEndpoi
 
 // GetDataOk returns a tuple with the Data field value
 // and a boolean to check if the value has been set.
-func (o *ListResponseMessageAttemptEndpointOut) GetDataOk() (*[]MessageAttemptEndpointOut, bool) {
+func (o *ListResponseDoubleEndpointMessageOut) GetDataOk() (*[]EndpointMessageOut, bool) {
 	if o == nil  {
 		return nil, false
 	}
@@ -61,12 +61,12 @@ func (o *ListResponseMessageAttemptEndpointOut) GetDataOk() (*[]MessageAttemptEn
 }
 
 // SetData sets field value
-func (o *ListResponseMessageAttemptEndpointOut) SetData(v []MessageAttemptEndpointOut) {
+func (o *ListResponseDoubleEndpointMessageOut) SetData(v []EndpointMessageOut) {
 	o.Data = v
 }
 
 // GetDone returns the Done field value
-func (o *ListResponseMessageAttemptEndpointOut) GetDone() bool {
+func (o *ListResponseDoubleEndpointMessageOut) GetDone() bool {
 	if o == nil {
 		var ret bool
 		return ret
@@ -77,7 +77,7 @@ func (o *ListResponseMessageAttemptEndpointOut) GetDone() bool {
 
 // GetDoneOk returns a tuple with the Done field value
 // and a boolean to check if the value has been set.
-func (o *ListResponseMessageAttemptEndpointOut) GetDoneOk() (*bool, bool) {
+func (o *ListResponseDoubleEndpointMessageOut) GetDoneOk() (*bool, bool) {
 	if o == nil  {
 		return nil, false
 	}
@@ -85,12 +85,12 @@ func (o *ListResponseMessageAttemptEndpointOut) GetDoneOk() (*bool, bool) {
 }
 
 // SetDone sets field value
-func (o *ListResponseMessageAttemptEndpointOut) SetDone(v bool) {
+func (o *ListResponseDoubleEndpointMessageOut) SetDone(v bool) {
 	o.Done = v
 }
 
 // GetIterator returns the Iterator field value if set, zero value otherwise.
-func (o *ListResponseMessageAttemptEndpointOut) GetIterator() string {
+func (o *ListResponseDoubleEndpointMessageOut) GetIterator() string {
 	if o == nil || o.Iterator == nil {
 		var ret string
 		return ret
@@ -100,7 +100,7 @@ func (o *ListResponseMessageAttemptEndpointOut) GetIterator() string {
 
 // GetIteratorOk returns a tuple with the Iterator field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ListResponseMessageAttemptEndpointOut) GetIteratorOk() (*string, bool) {
+func (o *ListResponseDoubleEndpointMessageOut) GetIteratorOk() (*string, bool) {
 	if o == nil || o.Iterator == nil {
 		return nil, false
 	}
@@ -108,7 +108,7 @@ func (o *ListResponseMessageAttemptEndpointOut) GetIteratorOk() (*string, bool) 
 }
 
 // HasIterator returns a boolean if a field has been set.
-func (o *ListResponseMessageAttemptEndpointOut) HasIterator() bool {
+func (o *ListResponseDoubleEndpointMessageOut) HasIterator() bool {
 	if o != nil && o.Iterator != nil {
 		return true
 	}
@@ -117,12 +117,12 @@ func (o *ListResponseMessageAttemptEndpointOut) HasIterator() bool {
 }
 
 // SetIterator gets a reference to the given string and assigns it to the Iterator field.
-func (o *ListResponseMessageAttemptEndpointOut) SetIterator(v string) {
+func (o *ListResponseDoubleEndpointMessageOut) SetIterator(v string) {
 	o.Iterator = &v
 }
 
 // GetPrevIterator returns the PrevIterator field value if set, zero value otherwise.
-func (o *ListResponseMessageAttemptEndpointOut) GetPrevIterator() string {
+func (o *ListResponseDoubleEndpointMessageOut) GetPrevIterator() string {
 	if o == nil || o.PrevIterator == nil {
 		var ret string
 		return ret
@@ -132,7 +132,7 @@ func (o *ListResponseMessageAttemptEndpointOut) GetPrevIterator() string {
 
 // GetPrevIteratorOk returns a tuple with the PrevIterator field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ListResponseMessageAttemptEndpointOut) GetPrevIteratorOk() (*string, bool) {
+func (o *ListResponseDoubleEndpointMessageOut) GetPrevIteratorOk() (*string, bool) {
 	if o == nil || o.PrevIterator == nil {
 		return nil, false
 	}
@@ -140,7 +140,7 @@ func (o *ListResponseMessageAttemptEndpointOut) GetPrevIteratorOk() (*string, bo
 }
 
 // HasPrevIterator returns a boolean if a field has been set.
-func (o *ListResponseMessageAttemptEndpointOut) HasPrevIterator() bool {
+func (o *ListResponseDoubleEndpointMessageOut) HasPrevIterator() bool {
 	if o != nil && o.PrevIterator != nil {
 		return true
 	}
@@ -149,11 +149,11 @@ func (o *ListResponseMessageAttemptEndpointOut) HasPrevIterator() bool {
 }
 
 // SetPrevIterator gets a reference to the given string and assigns it to the PrevIterator field.
-func (o *ListResponseMessageAttemptEndpointOut) SetPrevIterator(v string) {
+func (o *ListResponseDoubleEndpointMessageOut) SetPrevIterator(v string) {
 	o.PrevIterator = &v
 }
 
-func (o ListResponseMessageAttemptEndpointOut) MarshalJSON() ([]byte, error) {
+func (o ListResponseDoubleEndpointMessageOut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
 		toSerialize["data"] = o.Data
@@ -170,38 +170,38 @@ func (o ListResponseMessageAttemptEndpointOut) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-type NullableListResponseMessageAttemptEndpointOut struct {
-	value *ListResponseMessageAttemptEndpointOut
+type NullableListResponseDoubleEndpointMessageOut struct {
+	value *ListResponseDoubleEndpointMessageOut
 	isSet bool
 }
 
-func (v NullableListResponseMessageAttemptEndpointOut) Get() *ListResponseMessageAttemptEndpointOut {
+func (v NullableListResponseDoubleEndpointMessageOut) Get() *ListResponseDoubleEndpointMessageOut {
 	return v.value
 }
 
-func (v *NullableListResponseMessageAttemptEndpointOut) Set(val *ListResponseMessageAttemptEndpointOut) {
+func (v *NullableListResponseDoubleEndpointMessageOut) Set(val *ListResponseDoubleEndpointMessageOut) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableListResponseMessageAttemptEndpointOut) IsSet() bool {
+func (v NullableListResponseDoubleEndpointMessageOut) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableListResponseMessageAttemptEndpointOut) Unset() {
+func (v *NullableListResponseDoubleEndpointMessageOut) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableListResponseMessageAttemptEndpointOut(val *ListResponseMessageAttemptEndpointOut) *NullableListResponseMessageAttemptEndpointOut {
-	return &NullableListResponseMessageAttemptEndpointOut{value: val, isSet: true}
+func NewNullableListResponseDoubleEndpointMessageOut(val *ListResponseDoubleEndpointMessageOut) *NullableListResponseDoubleEndpointMessageOut {
+	return &NullableListResponseDoubleEndpointMessageOut{value: val, isSet: true}
 }
 
-func (v NullableListResponseMessageAttemptEndpointOut) MarshalJSON() ([]byte, error) {
+func (v NullableListResponseDoubleEndpointMessageOut) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableListResponseMessageAttemptEndpointOut) UnmarshalJSON(src []byte) error {
+func (v *NullableListResponseDoubleEndpointMessageOut) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

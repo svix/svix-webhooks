@@ -1441,6 +1441,11 @@
                         "example": "iterator",
                         "title": "Iterator",
                         "type": "string"
+                    },
+                    "prevIterator": {
+                        "example": "-iterator",
+                        "title": "Previterator",
+                        "type": "string"
                     }
                 },
                 "required": [
@@ -1545,6 +1550,11 @@
                         "example": "iterator",
                         "title": "Iterator",
                         "type": "string"
+                    },
+                    "prevIterator": {
+                        "example": "-iterator",
+                        "title": "Previterator",
+                        "type": "string"
                     }
                 },
                 "required": [
@@ -1570,6 +1580,11 @@
                     "iterator": {
                         "example": "iterator",
                         "title": "Iterator",
+                        "type": "string"
+                    },
+                    "prevIterator": {
+                        "example": "-iterator",
+                        "title": "Previterator",
                         "type": "string"
                     }
                 },
@@ -1622,6 +1637,11 @@
                     "iterator": {
                         "example": "iterator",
                         "title": "Iterator",
+                        "type": "string"
+                    },
+                    "prevIterator": {
+                        "example": "-iterator",
+                        "title": "Previterator",
                         "type": "string"
                     }
                 },
@@ -3064,7 +3084,7 @@
         "/api/v1/app/{app_id}/attempt/endpoint/{endpoint_id}/": {
             "get": {
                 "description": "List attempts by endpoint id",
-                "operationId": "list_attempted_destinations_by_endpoint_api_v1_app__app_id__attempt_endpoint__endpoint_id___get",
+                "operationId": "list_attempts_by_endpoint_api_v1_app__app_id__attempt_endpoint__endpoint_id___get",
                 "parameters": [
                     {
                         "in": "path",
@@ -3161,6 +3181,16 @@
                         }
                     },
                     {
+                        "in": "query",
+                        "name": "after",
+                        "required": false,
+                        "schema": {
+                            "format": "date-time",
+                            "title": "After",
+                            "type": "string"
+                        }
+                    },
+                    {
                         "description": "The request's idempotency key",
                         "in": "header",
                         "name": "idempotency-key",
@@ -3239,7 +3269,7 @@
                         "HTTPBearer": []
                     }
                 ],
-                "summary": "List Attempted Destinations By Endpoint",
+                "summary": "List Attempts By Endpoint",
                 "tags": [
                     "Message Attempt"
                 ],
@@ -3295,7 +3325,7 @@
         "/api/v1/app/{app_id}/attempt/msg/{msg_id}/": {
             "get": {
                 "description": "List attempts by message id",
-                "operationId": "list_attempted_destinations_by_msg_api_v1_app__app_id__attempt_msg__msg_id___get",
+                "operationId": "list_attempts_by_msg_api_v1_app__app_id__attempt_msg__msg_id___get",
                 "parameters": [
                     {
                         "in": "path",
@@ -3406,6 +3436,16 @@
                         }
                     },
                     {
+                        "in": "query",
+                        "name": "after",
+                        "required": false,
+                        "schema": {
+                            "format": "date-time",
+                            "title": "After",
+                            "type": "string"
+                        }
+                    },
+                    {
                         "description": "The request's idempotency key",
                         "in": "header",
                         "name": "idempotency-key",
@@ -3484,7 +3524,7 @@
                         "HTTPBearer": []
                     }
                 ],
-                "summary": "List Attempted Destinations By Msg",
+                "summary": "List Attempts By Msg",
                 "tags": [
                     "Message Attempt"
                 ],
@@ -4928,6 +4968,16 @@
                         "schema": {
                             "format": "date-time",
                             "title": "Before",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "after",
+                        "required": false,
+                        "schema": {
+                            "format": "date-time",
+                            "title": "After",
                             "type": "string"
                         }
                     },
@@ -6987,7 +7037,7 @@
         },
         "/api/v1/app/{app_id}/msg/": {
             "get": {
-                "description": "List all of the application's messages.\n\nThe `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.",
+                "description": "List all of the application's messages.\n\nThe `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.\nThe `after` parameter lets you filter all items created after a certain date and is ignored if an iterator is passed.\n`before` and `after` cannot be used simultaneously.",
                 "operationId": "list_messages_api_v1_app__app_id__msg__get",
                 "parameters": [
                     {
@@ -7059,6 +7109,16 @@
                         "schema": {
                             "format": "date-time",
                             "title": "Before",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "after",
+                        "required": false,
+                        "schema": {
+                            "format": "date-time",
+                            "title": "After",
                             "type": "string"
                         }
                     },
@@ -7541,7 +7601,7 @@
         "/api/v1/app/{app_id}/msg/{msg_id}/attempt/": {
             "get": {
                 "deprecated": true,
-                "description": "Deprecated: Please use the /attempt/ api instead.\n\n`msg_id`: Use a message id or a message `eventId`",
+                "description": "Deprecated: Please use \"List Attempts by Endpoint\" and \"List Attempts by Msg\" instead.\n\n`msg_id`: Use a message id or a message `eventId`",
                 "operationId": "list_attempts_api_v1_app__app_id__msg__msg_id__attempt__get",
                 "parameters": [
                     {
@@ -7649,6 +7709,16 @@
                         "schema": {
                             "format": "date-time",
                             "title": "Before",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "after",
+                        "required": false,
+                        "schema": {
+                            "format": "date-time",
+                            "title": "After",
                             "type": "string"
                         }
                     },
@@ -8216,6 +8286,16 @@
                         "schema": {
                             "format": "date-time",
                             "title": "Before",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "after",
+                        "required": false,
+                        "schema": {
+                            "format": "date-time",
+                            "title": "After",
                             "type": "string"
                         }
                     },

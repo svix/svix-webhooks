@@ -425,7 +425,7 @@ class MessageAttempt {
     msgId: string,
     options?: MessageAttemptListOptions
   ): Promise<ListResponseMessageAttemptOut> {
-    return this.api.listAttemptedDestinationsByMsgApiV1AppAppIdAttemptMsgMsgIdGet({
+    return this.api.listAttemptsByMsgApiV1AppAppIdAttemptMsgMsgIdGet({
       appId,
       msgId,
       ...options,
@@ -437,7 +437,7 @@ class MessageAttempt {
     endpointId: string,
     options?: MessageAttemptListOptions
   ): Promise<ListResponseMessageAttemptOut> {
-    return this.api.listAttemptedDestinationsByEndpointApiV1AppAppIdAttemptEndpointEndpointIdGet({
+    return this.api.listAttemptsByEndpointApiV1AppAppIdAttemptEndpointEndpointIdGet({
       appId,
       endpointId,
       ...options,

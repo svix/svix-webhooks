@@ -420,6 +420,7 @@ type ApiListMessagesApiV1AppAppIdMsgGetRequest struct {
 	eventTypes *[]string
 	channel *string
 	before *time.Time
+	after *time.Time
 	idempotencyKey *string
 }
 
@@ -443,6 +444,10 @@ func (r ApiListMessagesApiV1AppAppIdMsgGetRequest) Before(before time.Time) ApiL
 	r.before = &before
 	return r
 }
+func (r ApiListMessagesApiV1AppAppIdMsgGetRequest) After(after time.Time) ApiListMessagesApiV1AppAppIdMsgGetRequest {
+	r.after = &after
+	return r
+}
 func (r ApiListMessagesApiV1AppAppIdMsgGetRequest) IdempotencyKey(idempotencyKey string) ApiListMessagesApiV1AppAppIdMsgGetRequest {
 	r.idempotencyKey = &idempotencyKey
 	return r
@@ -457,6 +462,8 @@ func (r ApiListMessagesApiV1AppAppIdMsgGetRequest) Execute() (ListResponseMessag
  * List all of the application's messages.
 
 The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
+The `after` parameter lets you filter all items created after a certain date and is ignored if an iterator is passed.
+`before` and `after` cannot be used simultaneously.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param appId
  * @return ApiListMessagesApiV1AppAppIdMsgGetRequest
@@ -523,6 +530,9 @@ func (a *MessageApiService) ListMessagesApiV1AppAppIdMsgGetExecute(r ApiListMess
 	}
 	if r.before != nil {
 		localVarQueryParams.Add("before", parameterToString(*r.before, ""))
+	}
+	if r.after != nil {
+		localVarQueryParams.Add("after", parameterToString(*r.after, ""))
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}

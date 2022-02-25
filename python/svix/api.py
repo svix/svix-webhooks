@@ -391,7 +391,7 @@ class MessageAttempt(ApiBase[MessageAttemptApi]):
         self, app_id: str, msg_id: str, options: MessageAttemptListOptions = MessageAttemptListOptions()
     ) -> ListResponseMessageAttemptOut:
         with self._api() as api:
-            return api.list_attempted_destinations_by_msg_api_v1_app_app_id_attempt_msg_msg_id_get(
+            return api.list_attempts_by_msg_api_v1_app_app_id_attempt_msg_msg_id_get(
                 app_id=app_id, msg_id=msg_id, **options.to_dict(), _check_return_type=False
             )
 
@@ -399,7 +399,7 @@ class MessageAttempt(ApiBase[MessageAttemptApi]):
         self, app_id: str, endpoint_id: str, options: MessageAttemptListOptions = MessageAttemptListOptions()
     ) -> ListResponseMessageAttemptOut:
         with self._api() as api:
-            return api.list_attempted_destinations_by_endpoint_api_v1_app_app_id_attempt_endpoint_endpoint_id_get(
+            return api.list_attempts_by_endpoint_api_v1_app_app_id_attempt_endpoint_endpoint_id_get(
                 app_id=app_id, endpoint_id=endpoint_id, **options.to_dict(), _check_return_type=False
             )
 
