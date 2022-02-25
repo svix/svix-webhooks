@@ -34,4 +34,5 @@
 docs/
 test/
 test-requirements.txt
+requirements.txt
 tox.ini
