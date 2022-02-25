@@ -22,6 +22,7 @@ type MessageListOptions struct {
 	Limit      *int32
 	EventTypes *[]string
 	Before     *time.Time
+	After      *time.Time
 }
 
 func (m *Message) List(appId string, options *MessageListOptions) (*ListResponseMessageOut, error) {
@@ -38,6 +39,9 @@ func (m *Message) List(appId string, options *MessageListOptions) (*ListResponse
 		}
 		if options.Before != nil {
 			req = req.Before(*options.Before)
+		}
+		if options.After != nil {
+			req = req.After(*options.After)
 		}
 	}
 	out, res, err := req.Execute()

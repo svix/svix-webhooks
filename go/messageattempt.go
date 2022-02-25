@@ -27,6 +27,7 @@ type MessageAttemptListOptions struct {
 	Status     *MessageStatus
 	EventTypes *[]string
 	Before     *time.Time
+	After      *time.Time
 }
 
 // Deprecated: use `ListByMsg` or `ListByEndpoint` instead
@@ -45,6 +46,12 @@ func (m *MessageAttempt) ListByMsg(appId string, msgId string, options *MessageA
 		}
 		if options.Status != nil {
 			req = req.Status(openapi.MessageStatus(*options.Status))
+		}
+		if options.Before != nil {
+			req = req.Before(*options.Before)
+		}
+		if options.After != nil {
+			req = req.After(*options.After)
 		}
 	}
 	out, res, err := req.Execute()
@@ -66,6 +73,12 @@ func (m *MessageAttempt) ListByEndpoint(appId string, endpointId string, options
 		}
 		if options.Status != nil {
 			req = req.Status(openapi.MessageStatus(*options.Status))
+		}
+		if options.Before != nil {
+			req = req.Before(*options.Before)
+		}
+		if options.After != nil {
+			req = req.After(*options.After)
 		}
 	}
 	out, res, err := req.Execute()
@@ -106,6 +119,9 @@ func (m *MessageAttempt) ListAttemptedMessages(appId string, endpointId string, 
 		}
 		if options.Before != nil {
 			req = req.Before(*options.Before)
+		}
+		if options.After != nil {
+			req = req.After(*options.After)
 		}
 	}
 	out, res, err := req.Execute()
@@ -148,6 +164,12 @@ func (m *MessageAttempt) ListAttemptsForEndpoint(appId string, msgId string, end
 		}
 		if options.EventTypes != nil {
 			req = req.EventTypes(*options.EventTypes)
+		}
+		if options.Before != nil {
+			req = req.Before(*options.Before)
+		}
+		if options.After != nil {
+			req = req.After(*options.After)
 		}
 	}
 	out, res, err := req.Execute()
