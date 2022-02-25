@@ -65,6 +65,11 @@ class ListOptions:
 
 
 @dataclass
+class ListOptionsDouble(ListOptions):
+    prev_iterator: t.Optional[str] = None
+
+
+@dataclass
 class PostOptions:
     idempotency_key: t.Optional[str] = None
 
@@ -73,9 +78,10 @@ class PostOptions:
 
 
 @dataclass
-class MessageListOptions(ListOptions):
+class MessageListOptions(ListOptionsDouble):
     event_types: t.Optional[t.List[str]] = None
     before: t.Optional[datetime] = None
+    after: t.Optional[datetime] = None
     channel: t.Optional[str] = None
 
 
@@ -101,10 +107,11 @@ class IntegrationListOptions(ListOptions):
 
 
 @dataclass
-class MessageAttemptListOptions(ListOptions):
+class MessageAttemptListOptions(ListOptionsDouble):
     status: t.Optional[MessageStatus] = None
     event_types: t.Optional[t.List[str]] = None
     before: t.Optional[datetime] = None
+    after: t.Optional[datetime] = None
     channel: t.Optional[str] = None
 
 

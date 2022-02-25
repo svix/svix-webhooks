@@ -4,10 +4,11 @@ import java.util.List;
 import org.threeten.bp.OffsetDateTime;
 import com.svix.models.MessageStatus;
 
-public class MessageAttemptListOptions extends ListOptions {
+public class MessageAttemptListOptions extends ListOptionsDouble {
     private MessageStatus status;
 	private List<String> eventTypes;
 	private OffsetDateTime before;
+	private OffsetDateTime after;
 
 	public MessageAttemptListOptions() {
         super();
@@ -50,5 +51,18 @@ public class MessageAttemptListOptions extends ListOptions {
 
 	public OffsetDateTime getBefore() {
 		return before;
+	}
+
+	public MessageAttemptListOptions after(final OffsetDateTime after) {
+		this.after = after;
+		return this;
+	}
+
+	public void setAfter(final OffsetDateTime after) {
+		this.after = after;
+	}
+
+	public OffsetDateTime getAfter() {
+		return after;
 	}
 }
