@@ -8,6 +8,7 @@ from deprecated import deprecated
 from .openapi_client.api.application_api import ApplicationApi
 from .openapi_client.api.authentication_api import AuthenticationApi
 from .openapi_client.api.endpoint_api import EndpointApi
+from .openapi_client.api.environment_api import EnvironmentApi
 from .openapi_client.api.event_type_api import EventTypeApi
 from .openapi_client.api.integration_api import IntegrationApi
 from .openapi_client.api.message_api import MessageApi
@@ -24,6 +25,8 @@ from .openapi_client.model.endpoint_out import EndpointOut
 from .openapi_client.model.endpoint_secret_out import EndpointSecretOut
 from .openapi_client.model.endpoint_secret_rotate_in import EndpointSecretRotateIn
 from .openapi_client.model.endpoint_update import EndpointUpdate
+from .openapi_client.model.environment_in import EnvironmentIn
+from .openapi_client.model.environment_out import EnvironmentOut
 from .openapi_client.model.event_type_in import EventTypeIn
 from .openapi_client.model.event_type_out import EventTypeOut
 from .openapi_client.model.event_type_update import EventTypeUpdate
@@ -118,7 +121,14 @@ class MessageAttemptListOptions(ListOptionsDouble):
 ApiClass = t.TypeVar(
     "ApiClass",
     bound=t.Union[
-        AuthenticationApi, ApplicationApi, EndpointApi, EventTypeApi, IntegrationApi, MessageApi, MessageAttemptApi
+        AuthenticationApi,
+        ApplicationApi,
+        EndpointApi,
+        EventTypeApi,
+        IntegrationApi,
+        MessageApi,
+        MessageAttemptApi,
+        EnvironmentApi,
     ],
 )
 
@@ -451,6 +461,20 @@ class MessageAttempt(ApiBase[MessageAttemptApi]):
             )
 
 
+class Environment(ApiBase[EnvironmentApi]):
+    _ApiClass = EnvironmentApi
+
+    def export_environment(self) -> EnvironmentOut:
+        with self._api() as api:
+            return api.export_environment_configuration_api_v1_environment_export_post(body={})
+
+    def import_environment(self, environment_in: EnvironmentIn) -> None:
+        with self._api() as api:
+            return api.import_environment_configuration_api_v1_environment_import_post(
+                environment_in=environment_in, _check_return_type=False
+            )
+
+
 class Svix:
     _configuration: Configuration
 
@@ -486,6 +510,10 @@ class Svix:
     def message_attempt(self) -> MessageAttempt:
         return MessageAttempt(self._configuration)
 
+    @property
+    def environment(self) -> Environment:
+        return Environment(self._configuration)
+
 
 __all__ = [
     "ApplicationIn",
@@ -519,4 +547,6 @@ __all__ = [
     "MessageAttemptListOptions",
     "RecoverIn",
     "Svix",
+    "EnvironmentOut",
+    "EnvironmentIn",
 ]
