@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.49.0
+*  Libs: Add support for reverse iteration (prev_iterator) & after param in list commands ⬅️
+*  Server: Add support for adding & managing custom Endpoint Headers 🆕
+
 ## Version 0.48.0
 * Libs: Support for new `/attempt/` API via list_for_msg and list_for_endpoint. 🚀
 * **Deprecation warning:** `message_attempt.list` is deprecated in favor of this new API. ❌
