@@ -167,7 +167,7 @@ If you already have one, you just need to run `cargo build`, otherwise, please p
 The server requires the following runtime dependencies to work correctly:
 
 - A PostgreSQL server - for the storage of events.
-- An *optional* Redis server - for the task queue and cache. Please note that it's recommended to enable persistence in Redis so that tasks are persisted across Redis server restarts and upgrades.
+- An *optional* Redis server version 6.2.0 or higher - for the task queue and cache. Please note that it's recommended to enable persistence in Redis so that tasks are persisted across Redis server restarts and upgrades.
 
 ## Server configuration
 
