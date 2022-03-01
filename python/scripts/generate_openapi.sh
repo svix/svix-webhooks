@@ -5,10 +5,12 @@ set -ex
 cd svix
 
 if [ ! -d "./internal" ]; then
-    openapi-python-client generate --path ../../openapi.json --custom-template-path=../templates --config ../openapi-generator-config.json
+    COMMAND="generate"
 else
-    openapi-python-client update --path ../../openapi.json --custom-template-path=../templates --config ../openapi-generator-config.json
+    COMMAND="update"
 fi
+
+openapi-python-client $COMMAND --path ../../openapi.json --custom-template-path=../templates --config ../openapi-generator-config.json
 
 cd internal
 

@@ -17,15 +17,22 @@ jobs:
         with:
           python-version: '3.8'
 
-      - name: Regen openapi libs
+      - name: Install deps
         run: |
           cd python
-          ./scripts/generate_openapi.sh
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt .
+          python -m pip install -r requirements-dev.txt .
 
       - name: Install setuptools
         run: |
           cd python
           python -m pip install setuptools
+
+      - name: Regen openapi libs
+        run: |
+          cd python
+          ./scripts/generate_openapi.sh
 
       - name: Build sdist
         run: |
