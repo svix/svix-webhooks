@@ -2,7 +2,9 @@
 // SPDX-License-Identifier: MIT
 
 use crate::cfg::Configuration;
-use crate::core::types::{EndpointSecret, MessageAttemptTriggerType, MessageStatus};
+use crate::core::types::{
+    EndpointHeaders, EndpointSecret, MessageAttemptTriggerType, MessageId, MessageStatus,
+};
 use crate::db::models::{application, endpoint, message, messageattempt, messagedestination};
 use crate::error::{Error, Result};
 use crate::queue::{MessageTask, QueueTask, TaskQueueConsumer, TaskQueueProducer};
@@ -13,21 +15,21 @@ use sea_orm::ActiveValue::Set;
 use sea_orm::{DatabaseConnection, EntityTrait};
 use tokio::time::{sleep, Duration};
 
-use std::iter;
+use std::{iter, str::FromStr};
 
 const USER_AGENT: &str = concat!("Svix-Webhooks/", env!("CARGO_PKG_VERSION"));
 
 /// Generates a set of headers for any one webhook event
-async fn generate_msg_headers(
+fn generate_msg_headers(
     cfg: &Configuration,
     body: &str,
-    db: &DatabaseConnection,
-    msg_task: &MessageTask,
+    msg_id: &MessageId,
+    configured_headers: Option<EndpointHeaders>,
     endpoint_signing_keys: Vec<&EndpointSecret>,
     _endpoint_url: &str,
 ) -> HeaderMap {
     let timestamp = Utc::now().timestamp();
-    let to_sign = format!("{}.{}.{}", msg_task.msg_id, timestamp, body);
+    let to_sign = format!("{}.{}.{}", msg_id, timestamp, body);
     let signatures = endpoint_signing_keys
         .into_iter()
         .map(|x| hmac_sha256::HMAC::mac(to_sign.as_bytes(), &x.0[..]));
@@ -36,7 +38,7 @@ async fn generate_msg_headers(
         .collect::<Vec<String>>()
         .join(" ");
     let mut headers = HeaderMap::new();
-    let id = msg_task.msg_id.0.parse().unwrap();
+    let id = msg_id.0.parse().unwrap();
     let timestamp = timestamp.to_string().parse().unwrap();
     let signatures_str = signatures_str.parse().unwrap();
     if cfg.whitelabel_headers {
@@ -49,20 +51,9 @@ async fn generate_msg_headers(
         headers.insert("svix-signature", signatures_str);
     }
 
-    let configured_headers =
-    	// FIXME: Don't clone if possible
-        endpoint::Entity::secure_find_by_id(msg_task.app_id.clone(), msg_task.endpoint_id.clone())
-            .one(db)
-            .await
-            .unwrap_or_default()
-            .map(|model| model.headers)
-            .flatten();
-
     if let Some(configured_headers) = configured_headers {
         for (k, v) in configured_headers.0 {
-            // `HeaderName`s can be created from `&'static str`s and byte arrays, but not `String`s
-            // so this seems like the most simple way to do the conversion
-            if let (Ok(k), Ok(v)) = (HeaderName::from_bytes(k.as_bytes()), v.parse()) {
+            if let (Ok(k), Ok(v)) = (HeaderName::from_str(&k), v.parse()) {
                 headers.insert(k, v);
             } else {
                 tracing::error!("Invalid HeaderName or HeaderValues for `{}: {}`", k, v);
@@ -122,7 +113,8 @@ async fn dispatch(
             vec![&endp.key]
         };
 
-        let mut headers = generate_msg_headers(&cfg, &body, db, &msg_task, keys, &endp.url).await;
+        let mut headers =
+            generate_msg_headers(&cfg, &body, &msg_task.msg_id, endp.headers, keys, &endp.url);
         headers.insert("user-agent", USER_AGENT.to_string().parse().unwrap());
         headers
     };
