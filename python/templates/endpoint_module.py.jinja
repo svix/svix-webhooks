@@ -1,0 +1,141 @@
+from typing import Any, Dict, List, Optional, Union, cast
+
+import httpx
+
+from ...client import AuthenticatedClient, Client
+from ...types import Response, UNSET
+
+{% for relative in endpoint.relative_imports %}
+{{ relative }}
+{% endfor %}
+
+{% from "endpoint_macros.py.jinja" import header_params, cookie_params, query_params, json_body, multipart_body,
+    arguments, client, kwargs, parse_response, docstring %}
+
+{% set return_string = endpoint.response_type() %}
+{% set parsed_responses = (endpoint.responses | length > 0) and return_string != "Any" %}
+
+def _get_kwargs(
+    {{ arguments(endpoint) | indent(4) }}
+) -> Dict[str, Any]:
+    url = "{}{{ endpoint.path }}".format(
+        client.base_url
+        {%- for parameter in endpoint.path_parameters.values() -%}
+        ,{{parameter.name}}={{parameter.python_name}}
+        {%- endfor -%}
+    )
+
+    headers: Dict[str, str] = client.get_headers()
+    cookies: Dict[str, Any] = client.get_cookies()
+
+    {{ header_params(endpoint) | indent(4) }}
+
+    {{ cookie_params(endpoint) | indent(4) }}
+
+    {{ query_params(endpoint) | indent(4) }}
+
+    {{ json_body(endpoint) | indent(4) }}
+
+    {{ multipart_body(endpoint) | indent(4) }}
+
+    return {
+	    "method": "{{ endpoint.method }}",
+        "url": url,
+        "headers": headers,
+        "cookies": cookies,
+        "timeout": client.get_timeout(),
+        {% if endpoint.form_body_class %}
+        "data": form_data.to_dict(),
+        {% elif endpoint.multipart_body %}
+        "files": {{ "multipart_" + endpoint.multipart_body.python_name }},
+        {% elif endpoint.json_body %}
+        "json": {{ "json_" + endpoint.json_body.python_name }},
+        {% endif %}
+        {% if endpoint.query_parameters %}
+        "params": params,
+        {% endif %}
+    }
+
+
+{% if parsed_responses %}
+def _parse_response(*, response: httpx.Response) -> Optional[{{ return_string }}]:
+    {% for response in endpoint.responses %}
+    if response.status_code == {{ response.status_code }}:
+        {% import "property_templates/" + response.prop.template as prop_template %}
+        {% if prop_template.construct %}
+        {{ prop_template.construct(response.prop, response.source) | indent(8) }}
+        {% else %}
+        {{ response.prop.python_name }} = cast({{ response.prop.get_type_string() }}, {{ response.source }})
+        {% endif %}
+        return {{ response.prop.python_name }}
+    {% endfor %}
+    return None
+{% endif %}
+
+
+def _build_response(*, response: httpx.Response) -> Response[{{ return_string }}]:
+    return Response(
+        status_code=response.status_code,
+        content=response.content,
+        headers=response.headers,
+        {% if parsed_responses %}
+        parsed=_parse_response(response=response),
+        {% else %}
+        parsed=None,
+        {% endif %}
+    )
+
+
+def sync_detailed(
+    {{ arguments(endpoint) | indent(4) }}
+) -> Response[{{ return_string }}]:
+    {{ docstring(endpoint, return_string) | indent(4) }}
+
+    kwargs = _get_kwargs(
+        {{ kwargs(endpoint) }}
+    )
+
+    response = httpx.request(
+        verify=client.verify_ssl,
+        **kwargs,
+    )
+
+    return _build_response(response=response)
+
+{% if parsed_responses %}
+def sync(
+    {{ arguments(endpoint) | indent(4) }}
+) -> Optional[{{ return_string }}]:
+    {{ docstring(endpoint, return_string) | indent(4) }}
+
+    return sync_detailed(
+        {{ kwargs(endpoint) }}
+    ).parsed
+{% endif %}
+
+async def asyncio_detailed(
+    {{ arguments(endpoint) | indent(4) }}
+) -> Response[{{ return_string }}]:
+    {{ docstring(endpoint, return_string) | indent(4) }}
+
+    kwargs = _get_kwargs(
+        {{ kwargs(endpoint) }}
+    )
+
+    async with httpx.AsyncClient(verify=client.verify_ssl) as _client:
+        response = await _client.request(
+            **kwargs
+        )
+
+    return _build_response(response=response)
+
+{% if parsed_responses %}
+async def asyncio(
+    {{ arguments(endpoint) | indent(4) }}
+) -> Optional[{{ return_string }}]:
+    {{ docstring(endpoint, return_string) | indent(4) }}
+
+    return (await asyncio_detailed(
+        {{ kwargs(endpoint) }}
+    )).parsed
+{% endif %}
