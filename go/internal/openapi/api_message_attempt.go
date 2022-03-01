@@ -889,6 +889,7 @@ type ApiListAttemptsByEndpointApiV1AppAppIdAttemptEndpointEndpointIdGetRequest s
 	iterator *string
 	limit *int32
 	status *MessageStatus
+	statusCodeClass *StatusCodeClass
 	eventTypes *[]string
 	channel *string
 	before *time.Time
@@ -906,6 +907,10 @@ func (r ApiListAttemptsByEndpointApiV1AppAppIdAttemptEndpointEndpointIdGetReques
 }
 func (r ApiListAttemptsByEndpointApiV1AppAppIdAttemptEndpointEndpointIdGetRequest) Status(status MessageStatus) ApiListAttemptsByEndpointApiV1AppAppIdAttemptEndpointEndpointIdGetRequest {
 	r.status = &status
+	return r
+}
+func (r ApiListAttemptsByEndpointApiV1AppAppIdAttemptEndpointEndpointIdGetRequest) StatusCodeClass(statusCodeClass StatusCodeClass) ApiListAttemptsByEndpointApiV1AppAppIdAttemptEndpointEndpointIdGetRequest {
+	r.statusCodeClass = &statusCodeClass
 	return r
 }
 func (r ApiListAttemptsByEndpointApiV1AppAppIdAttemptEndpointEndpointIdGetRequest) EventTypes(eventTypes []string) ApiListAttemptsByEndpointApiV1AppAppIdAttemptEndpointEndpointIdGetRequest {
@@ -997,6 +1002,9 @@ func (a *MessageAttemptApiService) ListAttemptsByEndpointApiV1AppAppIdAttemptEnd
 	}
 	if r.status != nil {
 		localVarQueryParams.Add("status", parameterToString(*r.status, ""))
+	}
+	if r.statusCodeClass != nil {
+		localVarQueryParams.Add("status_code_class", parameterToString(*r.statusCodeClass, ""))
 	}
 	if r.eventTypes != nil {
 		t := *r.eventTypes
@@ -1133,6 +1141,7 @@ type ApiListAttemptsByMsgApiV1AppAppIdAttemptMsgMsgIdGetRequest struct {
 	iterator *string
 	limit *int32
 	status *MessageStatus
+	statusCodeClass *StatusCodeClass
 	eventTypes *[]string
 	channel *string
 	before *time.Time
@@ -1154,6 +1163,10 @@ func (r ApiListAttemptsByMsgApiV1AppAppIdAttemptMsgMsgIdGetRequest) Limit(limit 
 }
 func (r ApiListAttemptsByMsgApiV1AppAppIdAttemptMsgMsgIdGetRequest) Status(status MessageStatus) ApiListAttemptsByMsgApiV1AppAppIdAttemptMsgMsgIdGetRequest {
 	r.status = &status
+	return r
+}
+func (r ApiListAttemptsByMsgApiV1AppAppIdAttemptMsgMsgIdGetRequest) StatusCodeClass(statusCodeClass StatusCodeClass) ApiListAttemptsByMsgApiV1AppAppIdAttemptMsgMsgIdGetRequest {
+	r.statusCodeClass = &statusCodeClass
 	return r
 }
 func (r ApiListAttemptsByMsgApiV1AppAppIdAttemptMsgMsgIdGetRequest) EventTypes(eventTypes []string) ApiListAttemptsByMsgApiV1AppAppIdAttemptMsgMsgIdGetRequest {
@@ -1248,6 +1261,9 @@ func (a *MessageAttemptApiService) ListAttemptsByMsgApiV1AppAppIdAttemptMsgMsgId
 	}
 	if r.status != nil {
 		localVarQueryParams.Add("status", parameterToString(*r.status, ""))
+	}
+	if r.statusCodeClass != nil {
+		localVarQueryParams.Add("status_code_class", parameterToString(*r.statusCodeClass, ""))
 	}
 	if r.eventTypes != nil {
 		t := *r.eventTypes

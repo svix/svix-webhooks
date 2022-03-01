@@ -1755,7 +1755,7 @@
                         "type": "string"
                     },
                     "lastAttempt": {
-                        "$ref": "#/components/schemas/MessageAttemptFailedEvent"
+                        "$ref": "#/components/schemas/MessageAttemptFailedData"
                     },
                     "msgId": {
                         "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
@@ -1772,7 +1772,7 @@
                 "title": "MessageAttemptExhaustedEventData",
                 "type": "object"
             },
-            "MessageAttemptFailedEvent": {
+            "MessageAttemptFailedData": {
                 "properties": {
                     "id": {
                         "example": "atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2",
@@ -1795,7 +1795,81 @@
                     "responseStatusCode",
                     "timestamp"
                 ],
-                "title": "MessageAttemptFailedEvent",
+                "title": "MessageAttemptFailedData",
+                "type": "object"
+            },
+            "MessageAttemptFailingEvent": {
+                "description": "Sent after a message has been failing for a few times.\nIt's sent on the fourth failure. It complements `message.attempt.exhausted` which is sent after the last failure.",
+                "example": {
+                    "data": {
+                        "appId": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "appUid": "unique-app-identifier",
+                        "endpointId": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "lastAttempt": {
+                            "id": "atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "responseStatusCode": 500,
+                            "timestamp": "1970-01-01T00:00:00"
+                        },
+                        "msgId": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2"
+                    },
+                    "type": "message.attempt.failing"
+                },
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/MessageAttemptFailingEventData"
+                    },
+                    "type": {
+                        "default": "message.attempt.failing",
+                        "enum": [
+                            "message.attempt.failing"
+                        ],
+                        "title": "Type",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "data"
+                ],
+                "title": "MessageAttemptFailingEvent",
+                "type": "object"
+            },
+            "MessageAttemptFailingEventData": {
+                "properties": {
+                    "appId": {
+                        "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "title": "Appid",
+                        "type": "string"
+                    },
+                    "appUid": {
+                        "description": "Optional unique identifier for the application",
+                        "example": "unique-app-identifier",
+                        "maxLength": 256,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "title": "Appuid",
+                        "type": "string"
+                    },
+                    "endpointId": {
+                        "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "title": "Endpointid",
+                        "type": "string"
+                    },
+                    "lastAttempt": {
+                        "$ref": "#/components/schemas/MessageAttemptFailedData"
+                    },
+                    "msgId": {
+                        "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "title": "Msgid",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "appId",
+                    "msgId",
+                    "endpointId",
+                    "lastAttempt"
+                ],
+                "title": "MessageAttemptFailingEventData",
                 "type": "object"
             },
             "MessageAttemptOut": {
@@ -2232,6 +2306,27 @@
                 "title": "StatisticsPeriod",
                 "type": "string"
             },
+            "StatusCodeClass": {
+                "description": "The different classes of HTTP status codes:\n- CodeNone = 0\n- Code1xx = 100\n- Code2xx = 200\n- Code3xx = 300\n- Code4xx = 400\n- Code5xx = 500",
+                "enum": [
+                    0,
+                    100,
+                    200,
+                    300,
+                    400,
+                    500
+                ],
+                "title": "StatusCodeClass",
+                "type": "integer",
+                "x-enum-varnames": [
+                    "CodeNone",
+                    "Code1xx",
+                    "Code2xx",
+                    "Code3xx",
+                    "Code4xx",
+                    "Code5xx"
+                ]
+            },
             "ValidationError": {
                 "properties": {
                     "loc": {
@@ -2264,6 +2359,9 @@
                     "a": {
                         "$ref": "#/components/schemas/EndpointDisabledEvent"
                     },
+                    "a1": {
+                        "$ref": "#/components/schemas/MessageAttemptFailingEvent"
+                    },
                     "b": {
                         "$ref": "#/components/schemas/EndpointCreatedEvent"
                     },
@@ -2282,7 +2380,8 @@
                     "b",
                     "c",
                     "d",
-                    "e"
+                    "e",
+                    "a1"
                 ],
                 "title": "WebhookTypes",
                 "type": "object"
@@ -3145,6 +3244,14 @@
                     },
                     {
                         "in": "query",
+                        "name": "status_code_class",
+                        "required": false,
+                        "schema": {
+                            "$ref": "#/components/schemas/StatusCodeClass"
+                        }
+                    },
+                    {
+                        "in": "query",
                         "name": "event_types",
                         "required": false,
                         "schema": {
@@ -3396,6 +3503,14 @@
                         "required": false,
                         "schema": {
                             "$ref": "#/components/schemas/MessageStatus"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "status_code_class",
+                        "required": false,
+                        "schema": {
+                            "$ref": "#/components/schemas/StatusCodeClass"
                         }
                     },
                     {
@@ -10568,6 +10683,30 @@
                     }
                 },
                 "summary": "MessageAttemptExhaustedEvent",
+                "tags": [
+                    "Webhooks"
+                ]
+            }
+        },
+        "MessageAttemptFailingEvent": {
+            "post": {
+                "description": "Sent after a message has been failing for a few times.\nIt's sent on the fourth failure. It complements `message.attempt.exhausted` which is sent after the last failure.",
+                "operationId": "MessageAttemptFailingEvent",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MessageAttemptFailingEvent"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "2XX": {
+                        "description": "Return any 2XX status to indicate that the data was received successfully"
+                    }
+                },
+                "summary": "MessageAttemptFailingEvent",
                 "tags": [
                     "Webhooks"
                 ]

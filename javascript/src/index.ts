@@ -41,6 +41,7 @@ import {
   EventTypeIn,
   EventTypeOut,
   EventTypeUpdate,
+  StatusCodeClass,
   Middleware,
   RequestContext,
   ResponseContext,
@@ -156,6 +157,7 @@ export interface MessageAttemptListOptions extends ListOptionsDouble {
   eventTypes?: string[];
   before?: Date;
   after?: Date;
+  statusCodeClass?: StatusCodeClass;
 }
 
 class Application {

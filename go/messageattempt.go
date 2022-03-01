@@ -12,6 +12,7 @@ type MessageAttempt struct {
 }
 
 type MessageStatus openapi.MessageStatus
+type StatusCodeClass openapi.StatusCodeClass
 
 type (
 	ListResponseMessageAttemptOut         openapi.ListResponseMessageAttemptOut
@@ -22,12 +23,13 @@ type (
 )
 
 type MessageAttemptListOptions struct {
-	Iterator   *string
-	Limit      *int32
-	Status     *MessageStatus
-	EventTypes *[]string
-	Before     *time.Time
-	After      *time.Time
+	Iterator        *string
+	Limit           *int32
+	Status          *MessageStatus
+	EventTypes      *[]string
+	Before          *time.Time
+	After           *time.Time
+	StatusCodeClass *StatusCodeClass
 }
 
 // Deprecated: use `ListByMsg` or `ListByEndpoint` instead
@@ -52,6 +54,9 @@ func (m *MessageAttempt) ListByMsg(appId string, msgId string, options *MessageA
 		}
 		if options.After != nil {
 			req = req.After(*options.After)
+		}
+		if options.StatusCodeClass != nil {
+			req.StatusCodeClass(openapi.StatusCodeClass(*options.StatusCodeClass))
 		}
 	}
 	out, res, err := req.Execute()
@@ -79,6 +84,9 @@ func (m *MessageAttempt) ListByEndpoint(appId string, endpointId string, options
 		}
 		if options.After != nil {
 			req = req.After(*options.After)
+		}
+		if options.StatusCodeClass != nil {
+			req.StatusCodeClass(openapi.StatusCodeClass(*options.StatusCodeClass))
 		}
 	}
 	out, res, err := req.Execute()

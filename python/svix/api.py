@@ -45,6 +45,7 @@ from .openapi_client.model.message_in import MessageIn
 from .openapi_client.model.message_out import MessageOut
 from .openapi_client.model.message_status import MessageStatus
 from .openapi_client.model.recover_in import RecoverIn
+from .openapi_client.model.status_code_class import StatusCodeClass
 
 DEFAULT_SERVER_URL = "https://api.svix.com"
 
@@ -113,6 +114,7 @@ class MessageAttemptListOptions(ListOptionsDouble):
     before: t.Optional[datetime] = None
     after: t.Optional[datetime] = None
     channel: t.Optional[str] = None
+    status_code_class: t.Optional[StatusCodeClass] = None
 
 
 ApiClass = t.TypeVar(
@@ -518,5 +520,6 @@ __all__ = [
     "EndpointListOptions",
     "MessageAttemptListOptions",
     "RecoverIn",
+    "StatusCodeClass",
     "Svix",
 ]
