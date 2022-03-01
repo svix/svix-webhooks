@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 use crate::cfg::Configuration;
-use crate::core::types::{EndpointSecret, MessageAttemptTriggerType, MessageId, MessageStatus};
+use crate::core::types::{EndpointSecret, MessageAttemptTriggerType, MessageStatus};
 use crate::db::models::{application, endpoint, message, messageattempt, messagedestination};
 use crate::error::{Error, Result};
 use crate::queue::{MessageTask, QueueTask, TaskQueueConsumer, TaskQueueProducer};
@@ -17,15 +17,17 @@ use std::iter;
 
 const USER_AGENT: &str = concat!("Svix-Webhooks/", env!("CARGO_PKG_VERSION"));
 
-fn generate_msg_headers(
+/// Generates a set of headers for any one webhook event
+async fn generate_msg_headers(
     cfg: &Configuration,
     body: &str,
-    msg_id: &MessageId,
+    db: &DatabaseConnection,
+    msg_task: &MessageTask,
     endpoint_signing_keys: Vec<&EndpointSecret>,
     _endpoint_url: &str,
 ) -> HeaderMap {
     let timestamp = Utc::now().timestamp();
-    let to_sign = format!("{}.{}.{}", msg_id, timestamp, body);
+    let to_sign = format!("{}.{}.{}", msg_task.msg_id, timestamp, body);
     let signatures = endpoint_signing_keys
         .into_iter()
         .map(|x| hmac_sha256::HMAC::mac(to_sign.as_bytes(), &x.0[..]));
@@ -34,7 +36,7 @@ fn generate_msg_headers(
         .collect::<Vec<String>>()
         .join(" ");
     let mut headers = HeaderMap::new();
-    let id = msg_id.0.parse().unwrap();
+    let id = msg_task.msg_id.0.parse().unwrap();
     let timestamp = timestamp.to_string().parse().unwrap();
     let signatures_str = signatures_str.parse().unwrap();
     if cfg.whitelabel_headers {
@@ -45,6 +47,25 @@ fn generate_msg_headers(
         headers.insert("svix-id", id);
         headers.insert("svix-timestamp", timestamp);
         headers.insert("svix-signature", signatures_str);
+    }
+
+    let configured_headers =
+    	// FIXME: Don't clone
+        endpoint::Entity::secure_find_by_id(msg_task.app_id.clone(), msg_task.endpoint_id.clone())
+            .one(db)
+            .await
+            .unwrap_or_default()
+            .map(|model| model.headers)
+            .flatten();
+
+    if let Some(configured_headers) = configured_headers {
+        for (k, v) in configured_headers.0 {
+            // FIXME: Definitely do not unwrap here
+            headers.insert(
+                reqwest::header::HeaderName::from_bytes(k.as_bytes()).unwrap(),
+                v.parse().unwrap(),
+            );
+        }
     }
 
     headers
@@ -99,7 +120,7 @@ async fn dispatch(
             vec![&endp.key]
         };
 
-        let mut headers = generate_msg_headers(&cfg, &body, &msg.id, keys, &endp.url);
+        let mut headers = generate_msg_headers(&cfg, &body, db, &msg_task, keys, &endp.url).await;
         headers.insert("user-agent", USER_AGENT.to_string().parse().unwrap());
         headers
     };
