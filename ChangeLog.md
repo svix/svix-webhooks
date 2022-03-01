@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.50.0
+* Server: Set custom endpoint headers when sending via worker 
+* Libs: Add support for filtering by StatusCodeClass in attempts API 
+
 ## Version 0.49.0
 *  Libs: Add support for reverse iteration (prev_iterator) & after param in list commands ⬅️
 *  Server: Add support for adding & managing custom Endpoint Headers 🆕
