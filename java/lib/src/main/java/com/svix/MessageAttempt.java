@@ -34,7 +34,7 @@ public final class MessageAttempt {
 					options.getMessageStatus(),
 					options.getStatusCodeClass(),
 					options.getEventTypes(),
-					null,
+					options.getChannel(),
 					options.getBefore(),
 					options.getAfter(),
 					null
@@ -54,7 +54,7 @@ public final class MessageAttempt {
 					options.getMessageStatus(),
 					options.getStatusCodeClass(),
 					options.getEventTypes(),
-					null,
+					options.getChannel(),
 					options.getBefore(),
 					options.getAfter(),
 					null
@@ -115,7 +115,7 @@ public final class MessageAttempt {
 						options.getIterator(),
 						options.getLimit(),
 						options.getEventTypes(),
-						null,
+						options.getChannel(),
 						options.getMessageStatus(),
 						options.getBefore(),
 						options.getAfter(),

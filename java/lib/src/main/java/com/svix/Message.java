@@ -21,7 +21,7 @@ public final class Message {
 					options.getIterator(),
 					options.getLimit(),
 					options.getEventTypes(),
-					null,
+					options.getChannel(),
 					options.getBefore(),
 					options.getAfter(),
 					null

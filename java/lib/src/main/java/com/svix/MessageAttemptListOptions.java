@@ -13,6 +13,7 @@ public class MessageAttemptListOptions extends ListOptionsDouble {
 	private OffsetDateTime before;
 	private OffsetDateTime after;
 	private StatusCodeClass statusCodeClass;
+	private String channel;
 
 	public MessageAttemptListOptions() {
         super();
@@ -42,6 +43,19 @@ public class MessageAttemptListOptions extends ListOptionsDouble {
 
 	public List<String> getEventTypes() {
 		return eventTypes;
+	}
+
+	public MessageAttemptListOptions channel(final String channel) {
+		this.channel = channel;
+		return this;
+	}
+
+	public void setChannel(final String channel) {
+		this.channel = channel;
+	}
+
+	public String getChannel() {
+		return channel;
 	}
 
 	public MessageAttemptListOptions before(final OffsetDateTime before) {
