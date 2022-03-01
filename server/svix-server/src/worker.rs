@@ -7,7 +7,7 @@ use crate::db::models::{application, endpoint, message, messageattempt, messaged
 use crate::error::{Error, Result};
 use crate::queue::{MessageTask, QueueTask, TaskQueueConsumer, TaskQueueProducer};
 use chrono::Utc;
-use reqwest::header::HeaderMap;
+use reqwest::header::{HeaderMap, HeaderName};
 use sea_orm::entity::prelude::*;
 use sea_orm::ActiveValue::Set;
 use sea_orm::{DatabaseConnection, EntityTrait};
@@ -50,7 +50,7 @@ async fn generate_msg_headers(
     }
 
     let configured_headers =
-    	// FIXME: Don't clone
+    	// FIXME: Don't clone if possible
         endpoint::Entity::secure_find_by_id(msg_task.app_id.clone(), msg_task.endpoint_id.clone())
             .one(db)
             .await
@@ -60,11 +60,13 @@ async fn generate_msg_headers(
 
     if let Some(configured_headers) = configured_headers {
         for (k, v) in configured_headers.0 {
-            // FIXME: Definitely do not unwrap here
-            headers.insert(
-                reqwest::header::HeaderName::from_bytes(k.as_bytes()).unwrap(),
-                v.parse().unwrap(),
-            );
+            // `HeaderName`s can be created from `&'static str`s and byte arrays, but not `String`s
+            // so this seems like the most simple way to do the conversion
+            if let (Ok(k), Ok(v)) = (HeaderName::from_bytes(k.as_bytes()), v.parse()) {
+                headers.insert(k, v);
+            } else {
+                tracing::error!("Invalid HeaderName or HeaderValues for `{}: {}`", k, v);
+            }
         }
     }
 
