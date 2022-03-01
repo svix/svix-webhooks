@@ -24,7 +24,7 @@ fn generate_msg_headers(
     cfg: &Configuration,
     body: &str,
     msg_id: &MessageId,
-    configured_headers: Option<EndpointHeaders>,
+    configured_headers: Option<&EndpointHeaders>,
     endpoint_signing_keys: Vec<&EndpointSecret>,
     _endpoint_url: &str,
 ) -> HeaderMap {
@@ -52,8 +52,8 @@ fn generate_msg_headers(
     }
 
     if let Some(configured_headers) = configured_headers {
-        for (k, v) in configured_headers.0 {
-            if let (Ok(k), Ok(v)) = (HeaderName::from_str(&k), v.parse()) {
+        for (k, v) in &configured_headers.0 {
+            if let (Ok(k), Ok(v)) = (HeaderName::from_str(k), v.parse()) {
                 headers.insert(k, v);
             } else {
                 tracing::error!("Invalid HeaderName or HeaderValues for `{}: {}`", k, v);
@@ -113,8 +113,14 @@ async fn dispatch(
             vec![&endp.key]
         };
 
-        let mut headers =
-            generate_msg_headers(&cfg, &body, &msg_task.msg_id, endp.headers, keys, &endp.url);
+        let mut headers = generate_msg_headers(
+            &cfg,
+            &body,
+            &msg_task.msg_id,
+            endp.headers.as_ref(),
+            keys,
+            &endp.url,
+        );
         headers.insert("user-agent", USER_AGENT.to_string().parse().unwrap());
         headers
     };
