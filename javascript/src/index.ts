@@ -150,6 +150,7 @@ export interface MessageListOptions extends ListOptionsDouble {
   eventTypes?: string[];
   before?: Date;
   after?: Date;
+  channel?: string;
 }
 
 export interface MessageAttemptListOptions extends ListOptionsDouble {
@@ -158,6 +159,7 @@ export interface MessageAttemptListOptions extends ListOptionsDouble {
   before?: Date;
   after?: Date;
   statusCodeClass?: StatusCodeClass;
+  channel?: string;
 }
 
 class Application {

@@ -4,7 +4,7 @@ import com.svix.kotlin.models.MessageStatus
 import com.svix.kotlin.models.StatusCodeClass
 import java.time.OffsetDateTime
 
-class MessageAttemptListOptions(var messageStatus: MessageStatus? = null, var before: OffsetDateTime? = null, var after: OffsetDateTime? = null, var eventTypes: List<String>? = null, var statusCodeClass: StatusCodeClass? = null) : ListOptionsDouble() {
+class MessageAttemptListOptions(var messageStatus: MessageStatus? = null, var before: OffsetDateTime? = null, var after: OffsetDateTime? = null, var eventTypes: List<String>? = null, var statusCodeClass: StatusCodeClass? = null, var channel: String? = null) : ListOptionsDouble() {
     fun messageStatus(messageStatus: MessageStatus) = apply { this.messageStatus = messageStatus }
 
     fun before(before: OffsetDateTime) = apply { this.before = before }
@@ -12,6 +12,8 @@ class MessageAttemptListOptions(var messageStatus: MessageStatus? = null, var be
     fun statusCodeClass(statusCodeClass: StatusCodeClass) = apply { this.statusCodeClass = statusCodeClass }
 
     fun eventTypes(eventTypes: List<String>) = apply { this.eventTypes = eventTypes }
+
+    fun channel(channel: String) = apply { this.channel = channel }
 
     override fun iterator(iterator: String) = apply { super.iterator(iterator) }
     override fun prevIterator(iterator: String) = apply { super.prevIterator(iterator) }

@@ -7,6 +7,7 @@ public class MessageListOptions extends ListOptionsDouble {
     private List<String> eventTypes;
 	private OffsetDateTime before;
 	private OffsetDateTime after;
+	private String channel;
 
 	public MessageListOptions eventTypes(final List<String> eventTypes) {
 		this.eventTypes = eventTypes;
@@ -19,6 +20,19 @@ public class MessageListOptions extends ListOptionsDouble {
 
 	public List<String> getEventTypes() {
 		return eventTypes;
+	}
+
+	public MessageListOptions channel(final String channel) {
+		this.channel = channel;
+		return this;
+	}
+
+	public void setChannel(final String channel) {
+		this.channel = channel;
+	}
+
+	public String getChannel() {
+		return channel;
 	}
 
 	public MessageListOptions before(final OffsetDateTime before) {
