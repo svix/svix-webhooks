@@ -66,6 +66,7 @@ require "svix/models/message_status"
 require "svix/models/recover_in"
 require "svix/models/validation_error"
 require "svix/models/webhook_types"
+require "svix/models/status_code_class"
 
 # Core
 require "svix/api_client"
