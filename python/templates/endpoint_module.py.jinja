@@ -1,4 +1,6 @@
 from typing import Any, Dict, List, Optional, Union, cast
+from time import sleep
+import random
 
 import httpx
 
@@ -59,7 +61,7 @@ def _get_kwargs(
 
 {% if parsed_responses %}
 def _parse_response(*, response: httpx.Response) -> Optional[{{ return_string }}]:
-    {% for response in endpoint.responses %}
+    {% for response in endpoint.responses if response.status_code < 400 %}
     if response.status_code == {{ response.status_code }}:
         {% import "property_templates/" + response.prop.template as prop_template %}
         {% if prop_template.construct %}
@@ -68,6 +70,16 @@ def _parse_response(*, response: httpx.Response) -> Optional[{{ return_string }}
         {{ response.prop.python_name }} = cast({{ response.prop.get_type_string() }}, {{ response.source }})
         {% endif %}
         return {{ response.prop.python_name }}
+    {% endfor %}
+    {% for response in endpoint.responses if response.status_code >= 400 %}
+    if response.status_code == {{ response.status_code }}:
+        {% import "property_templates/" + response.prop.template as prop_template %}
+        {% if prop_template.construct %}
+        {{ prop_template.construct(response.prop, response.source) | indent(8) }}
+        {% else %}
+        {{ response.prop.python_name }} = cast({{ response.prop.get_type_string() }}, {{ response.source }})
+        {% endif %}
+        raise Exception({{ response.prop.python_name }})
     {% endfor %}
     return None
 {% endif %}
@@ -85,6 +97,8 @@ def _build_response(*, response: httpx.Response) -> Response[{{ return_string }}
         {% endif %}
     )
 
+sleep_time = 0.05
+num_retries = 3
 
 def sync_detailed(
     {{ arguments(endpoint) | indent(4) }}
@@ -95,11 +109,22 @@ def sync_detailed(
         {{ kwargs(endpoint) }}
     )
 
-    response = httpx.request(
-        verify=client.verify_ssl,
-        **kwargs,
-    )
+    kwargs['headers'] = {'svix-req-id':f"{random.getrandbits(32)}", **kwargs['headers']}
 
+    retry_count = 0
+    for retry in range(num_retries):
+        response = httpx.request(
+                verify=client.verify_ssl,
+                **kwargs,
+            )
+        if response.status_code >= 500 or retry <= num_retries - 1:
+            retry_count +=1
+            kwargs['headers']['svix-retry-count']= str(retry_count)
+            sleep(sleep_time)
+            sleep_time = sleep_time * 2
+        else:
+            break
+    
     return _build_response(response=response)
 
 {% if parsed_responses %}
@@ -122,10 +147,21 @@ async def asyncio_detailed(
         {{ kwargs(endpoint) }}
     )
 
+    kwargs['headers'] = {'svix-req-id':f"{random.getrandbits(32)}", **kwargs['headers']}
+
     async with httpx.AsyncClient(verify=client.verify_ssl) as _client:
-        response = await _client.request(
-            **kwargs
-        )
+        retry_count = 0
+        for retry in range(num_retries):
+            response = await _client.request(
+                **kwargs
+            )
+            if response.status_code >= 500 or retry <= num_retries - 1:
+                retry_count +=1
+                kwargs['headers']['svix-retry-count']= str(retry_count)
+                sleep(sleep_time)
+                sleep_time = sleep_time * 2
+            else:
+                break
 
     return _build_response(response=response)
 
