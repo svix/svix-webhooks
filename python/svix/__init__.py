@@ -12,6 +12,7 @@ from .api import (
     MessageIn,
     MessageOut,
     Svix,
+    SvixAsync,
     SvixOptions,
 )
 from .webhooks import Webhook, WebhookVerificationError
@@ -30,6 +31,7 @@ __all__ = [
     "MessageIn",
     "MessageOut",
     "Svix",
+    "SvixAsync",
     "SvixOptions",
     "Webhook",
     "WebhookVerificationError",

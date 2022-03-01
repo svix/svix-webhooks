@@ -26,7 +26,7 @@ class Webhook:
         self._whsecret = base64.b64decode(whsecret)
         self._enc_key = base64.b64decode(enc_key) if enc_key is not None else None
 
-    def verify(self, data: t.Union[bytes, str], headers: t.Dict[str, str]) -> t.Dict[str, t.Any]:
+    def verify(self, data: t.Union[bytes, str], headers: t.Dict[str, str]) -> t.Any:
         data = data if isinstance(data, str) else data.decode()
         headers = {k.lower(): v for (k, v) in headers.items()}
         msg_id = headers.get("svix-id")
