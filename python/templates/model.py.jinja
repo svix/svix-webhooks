@@ -122,12 +122,12 @@ return field_dict
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        d = src_dict.copy()
+        dict_copy = src_dict.copy()
 {% for property in model.required_properties + model.optional_properties %}
     {% if property.required %}
-        {% set property_source = 'd.pop("' + property.name + '")' %}
+        {% set property_source = 'dict_copy.pop("' + property.name + '")' %}
     {% else %}
-        {% set property_source = 'd.pop("' + property.name + '", UNSET)' %}
+        {% set property_source = 'dict_copy.pop("' + property.name + '", UNSET)' %}
     {% endif %}
     {% import "property_templates/" + property.template as prop_template %}
     {% if prop_template.construct %}
@@ -151,13 +151,13 @@ return field_dict
     {% endif %}
     {% if prop_template and prop_template.construct %}
         additional_properties = {}
-        for prop_name, prop_dict in d.items():
+        for prop_name, prop_dict in dict_copy.items():
             {{ prop_template.construct(model.additional_properties, "prop_dict") | indent(12) }}
             additional_properties[prop_name] = {{ model.additional_properties.python_name }}
 
         {{ module_name }}.additional_properties = additional_properties
     {% else %}
-        {{ module_name }}.additional_properties = d
+        {{ module_name }}.additional_properties = dict_copy
     {% endif %}
 {% endif %}
         return {{ module_name }}
