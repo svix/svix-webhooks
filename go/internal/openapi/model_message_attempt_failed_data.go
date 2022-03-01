@@ -12,240 +12,154 @@ package openapi
 
 import (
 	"encoding/json"
+	"time"
 )
 
-// WebhookTypes All of the webhook types that we support
-type WebhookTypes struct {
-	A EndpointDisabledEvent `json:"a"`
-	A1 MessageAttemptFailingEvent `json:"a1"`
-	B EndpointCreatedEvent `json:"b"`
-	C EndpointUpdatedEvent `json:"c"`
-	D EndpointDeletedEvent `json:"d"`
-	E MessageAttemptExhaustedEvent `json:"e"`
+// MessageAttemptFailedData struct for MessageAttemptFailedData
+type MessageAttemptFailedData struct {
+	Id string `json:"id"`
+	ResponseStatusCode int32 `json:"responseStatusCode"`
+	Timestamp time.Time `json:"timestamp"`
 }
 
-// NewWebhookTypes instantiates a new WebhookTypes object
+// NewMessageAttemptFailedData instantiates a new MessageAttemptFailedData object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewWebhookTypes(a EndpointDisabledEvent, a1 MessageAttemptFailingEvent, b EndpointCreatedEvent, c EndpointUpdatedEvent, d EndpointDeletedEvent, e MessageAttemptExhaustedEvent) *WebhookTypes {
-	this := WebhookTypes{}
-	this.A = a
-	this.A1 = a1
-	this.B = b
-	this.C = c
-	this.D = d
-	this.E = e
+func NewMessageAttemptFailedData(id string, responseStatusCode int32, timestamp time.Time) *MessageAttemptFailedData {
+	this := MessageAttemptFailedData{}
+	this.Id = id
+	this.ResponseStatusCode = responseStatusCode
+	this.Timestamp = timestamp
 	return &this
 }
 
-// NewWebhookTypesWithDefaults instantiates a new WebhookTypes object
+// NewMessageAttemptFailedDataWithDefaults instantiates a new MessageAttemptFailedData object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewWebhookTypesWithDefaults() *WebhookTypes {
-	this := WebhookTypes{}
+func NewMessageAttemptFailedDataWithDefaults() *MessageAttemptFailedData {
+	this := MessageAttemptFailedData{}
 	return &this
 }
 
-// GetA returns the A field value
-func (o *WebhookTypes) GetA() EndpointDisabledEvent {
+// GetId returns the Id field value
+func (o *MessageAttemptFailedData) GetId() string {
 	if o == nil {
-		var ret EndpointDisabledEvent
+		var ret string
 		return ret
 	}
 
-	return o.A
+	return o.Id
 }
 
-// GetAOk returns a tuple with the A field value
+// GetIdOk returns a tuple with the Id field value
 // and a boolean to check if the value has been set.
-func (o *WebhookTypes) GetAOk() (*EndpointDisabledEvent, bool) {
+func (o *MessageAttemptFailedData) GetIdOk() (*string, bool) {
 	if o == nil  {
 		return nil, false
 	}
-	return &o.A, true
+	return &o.Id, true
 }
 
-// SetA sets field value
-func (o *WebhookTypes) SetA(v EndpointDisabledEvent) {
-	o.A = v
+// SetId sets field value
+func (o *MessageAttemptFailedData) SetId(v string) {
+	o.Id = v
 }
 
-// GetA1 returns the A1 field value
-func (o *WebhookTypes) GetA1() MessageAttemptFailingEvent {
+// GetResponseStatusCode returns the ResponseStatusCode field value
+func (o *MessageAttemptFailedData) GetResponseStatusCode() int32 {
 	if o == nil {
-		var ret MessageAttemptFailingEvent
+		var ret int32
 		return ret
 	}
 
-	return o.A1
+	return o.ResponseStatusCode
 }
 
-// GetA1Ok returns a tuple with the A1 field value
+// GetResponseStatusCodeOk returns a tuple with the ResponseStatusCode field value
 // and a boolean to check if the value has been set.
-func (o *WebhookTypes) GetA1Ok() (*MessageAttemptFailingEvent, bool) {
+func (o *MessageAttemptFailedData) GetResponseStatusCodeOk() (*int32, bool) {
 	if o == nil  {
 		return nil, false
 	}
-	return &o.A1, true
+	return &o.ResponseStatusCode, true
 }
 
-// SetA1 sets field value
-func (o *WebhookTypes) SetA1(v MessageAttemptFailingEvent) {
-	o.A1 = v
+// SetResponseStatusCode sets field value
+func (o *MessageAttemptFailedData) SetResponseStatusCode(v int32) {
+	o.ResponseStatusCode = v
 }
 
-// GetB returns the B field value
-func (o *WebhookTypes) GetB() EndpointCreatedEvent {
+// GetTimestamp returns the Timestamp field value
+func (o *MessageAttemptFailedData) GetTimestamp() time.Time {
 	if o == nil {
-		var ret EndpointCreatedEvent
+		var ret time.Time
 		return ret
 	}
 
-	return o.B
+	return o.Timestamp
 }
 
-// GetBOk returns a tuple with the B field value
+// GetTimestampOk returns a tuple with the Timestamp field value
 // and a boolean to check if the value has been set.
-func (o *WebhookTypes) GetBOk() (*EndpointCreatedEvent, bool) {
+func (o *MessageAttemptFailedData) GetTimestampOk() (*time.Time, bool) {
 	if o == nil  {
 		return nil, false
 	}
-	return &o.B, true
+	return &o.Timestamp, true
 }
 
-// SetB sets field value
-func (o *WebhookTypes) SetB(v EndpointCreatedEvent) {
-	o.B = v
+// SetTimestamp sets field value
+func (o *MessageAttemptFailedData) SetTimestamp(v time.Time) {
+	o.Timestamp = v
 }
 
-// GetC returns the C field value
-func (o *WebhookTypes) GetC() EndpointUpdatedEvent {
-	if o == nil {
-		var ret EndpointUpdatedEvent
-		return ret
-	}
-
-	return o.C
-}
-
-// GetCOk returns a tuple with the C field value
-// and a boolean to check if the value has been set.
-func (o *WebhookTypes) GetCOk() (*EndpointUpdatedEvent, bool) {
-	if o == nil  {
-		return nil, false
-	}
-	return &o.C, true
-}
-
-// SetC sets field value
-func (o *WebhookTypes) SetC(v EndpointUpdatedEvent) {
-	o.C = v
-}
-
-// GetD returns the D field value
-func (o *WebhookTypes) GetD() EndpointDeletedEvent {
-	if o == nil {
-		var ret EndpointDeletedEvent
-		return ret
-	}
-
-	return o.D
-}
-
-// GetDOk returns a tuple with the D field value
-// and a boolean to check if the value has been set.
-func (o *WebhookTypes) GetDOk() (*EndpointDeletedEvent, bool) {
-	if o == nil  {
-		return nil, false
-	}
-	return &o.D, true
-}
-
-// SetD sets field value
-func (o *WebhookTypes) SetD(v EndpointDeletedEvent) {
-	o.D = v
-}
-
-// GetE returns the E field value
-func (o *WebhookTypes) GetE() MessageAttemptExhaustedEvent {
-	if o == nil {
-		var ret MessageAttemptExhaustedEvent
-		return ret
-	}
-
-	return o.E
-}
-
-// GetEOk returns a tuple with the E field value
-// and a boolean to check if the value has been set.
-func (o *WebhookTypes) GetEOk() (*MessageAttemptExhaustedEvent, bool) {
-	if o == nil  {
-		return nil, false
-	}
-	return &o.E, true
-}
-
-// SetE sets field value
-func (o *WebhookTypes) SetE(v MessageAttemptExhaustedEvent) {
-	o.E = v
-}
-
-func (o WebhookTypes) MarshalJSON() ([]byte, error) {
+func (o MessageAttemptFailedData) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
-		toSerialize["a"] = o.A
+		toSerialize["id"] = o.Id
 	}
 	if true {
-		toSerialize["a1"] = o.A1
+		toSerialize["responseStatusCode"] = o.ResponseStatusCode
 	}
 	if true {
-		toSerialize["b"] = o.B
-	}
-	if true {
-		toSerialize["c"] = o.C
-	}
-	if true {
-		toSerialize["d"] = o.D
-	}
-	if true {
-		toSerialize["e"] = o.E
+		toSerialize["timestamp"] = o.Timestamp
 	}
 	return json.Marshal(toSerialize)
 }
 
-type NullableWebhookTypes struct {
-	value *WebhookTypes
+type NullableMessageAttemptFailedData struct {
+	value *MessageAttemptFailedData
 	isSet bool
 }
 
-func (v NullableWebhookTypes) Get() *WebhookTypes {
+func (v NullableMessageAttemptFailedData) Get() *MessageAttemptFailedData {
 	return v.value
 }
 
-func (v *NullableWebhookTypes) Set(val *WebhookTypes) {
+func (v *NullableMessageAttemptFailedData) Set(val *MessageAttemptFailedData) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableWebhookTypes) IsSet() bool {
+func (v NullableMessageAttemptFailedData) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableWebhookTypes) Unset() {
+func (v *NullableMessageAttemptFailedData) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableWebhookTypes(val *WebhookTypes) *NullableWebhookTypes {
-	return &NullableWebhookTypes{value: val, isSet: true}
+func NewNullableMessageAttemptFailedData(val *MessageAttemptFailedData) *NullableMessageAttemptFailedData {
+	return &NullableMessageAttemptFailedData{value: val, isSet: true}
 }
 
-func (v NullableWebhookTypes) MarshalJSON() ([]byte, error) {
+func (v NullableMessageAttemptFailedData) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableWebhookTypes) UnmarshalJSON(src []byte) error {
+func (v *NullableMessageAttemptFailedData) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
