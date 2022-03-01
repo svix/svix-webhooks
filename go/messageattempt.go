@@ -50,6 +50,9 @@ func (m *MessageAttempt) ListByMsg(appId string, msgId string, options *MessageA
 		if options.Status != nil {
 			req = req.Status(openapi.MessageStatus(*options.Status))
 		}
+		if options.EventTypes != nil {
+			req = req.EventTypes(*options.EventTypes)
+		}
 		if options.Before != nil {
 			req = req.Before(*options.Before)
 		}
@@ -82,6 +85,9 @@ func (m *MessageAttempt) ListByEndpoint(appId string, endpointId string, options
 		}
 		if options.Status != nil {
 			req = req.Status(openapi.MessageStatus(*options.Status))
+		}
+		if options.EventTypes != nil {
+			req = req.EventTypes(*options.EventTypes)
 		}
 		if options.Before != nil {
 			req = req.Before(*options.Before)
