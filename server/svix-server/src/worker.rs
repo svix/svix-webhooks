@@ -2,25 +2,29 @@
 // SPDX-License-Identifier: MIT
 
 use crate::cfg::Configuration;
-use crate::core::types::{EndpointSecret, MessageAttemptTriggerType, MessageId, MessageStatus};
+use crate::core::types::{
+    EndpointHeaders, EndpointSecret, MessageAttemptTriggerType, MessageId, MessageStatus,
+};
 use crate::db::models::{application, endpoint, message, messageattempt, messagedestination};
 use crate::error::{Error, Result};
 use crate::queue::{MessageTask, QueueTask, TaskQueueConsumer, TaskQueueProducer};
 use chrono::Utc;
-use reqwest::header::HeaderMap;
+use reqwest::header::{HeaderMap, HeaderName};
 use sea_orm::entity::prelude::*;
 use sea_orm::ActiveValue::Set;
 use sea_orm::{DatabaseConnection, EntityTrait};
 use tokio::time::{sleep, Duration};
 
-use std::iter;
+use std::{iter, str::FromStr};
 
 const USER_AGENT: &str = concat!("Svix-Webhooks/", env!("CARGO_PKG_VERSION"));
 
+/// Generates a set of headers for any one webhook event
 fn generate_msg_headers(
     cfg: &Configuration,
     body: &str,
     msg_id: &MessageId,
+    configured_headers: Option<&EndpointHeaders>,
     endpoint_signing_keys: Vec<&EndpointSecret>,
     _endpoint_url: &str,
 ) -> HeaderMap {
@@ -45,6 +49,16 @@ fn generate_msg_headers(
         headers.insert("svix-id", id);
         headers.insert("svix-timestamp", timestamp);
         headers.insert("svix-signature", signatures_str);
+    }
+
+    if let Some(configured_headers) = configured_headers {
+        for (k, v) in &configured_headers.0 {
+            if let (Ok(k), Ok(v)) = (HeaderName::from_str(k), v.parse()) {
+                headers.insert(k, v);
+            } else {
+                tracing::error!("Invalid HeaderName or HeaderValues for `{}: {}`", k, v);
+            }
+        }
     }
 
     headers
@@ -99,7 +113,14 @@ async fn dispatch(
             vec![&endp.key]
         };
 
-        let mut headers = generate_msg_headers(&cfg, &body, &msg.id, keys, &endp.url);
+        let mut headers = generate_msg_headers(
+            &cfg,
+            &body,
+            &msg_task.msg_id,
+            endp.headers.as_ref(),
+            keys,
+            &endp.url,
+        );
         headers.insert("user-agent", USER_AGENT.to_string().parse().unwrap());
         headers
     };
