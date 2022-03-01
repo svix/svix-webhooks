@@ -19,8 +19,8 @@ jobs:
 
       - name: Regen openapi libs
         run: |
-          yarn
-          ./regen_openapi.sh
+          cd python
+          ./scripts/generate_openapi.sh
 
       - name: Install setuptools
         run: |

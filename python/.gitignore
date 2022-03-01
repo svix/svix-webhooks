@@ -65,7 +65,4 @@ target/
 # Ipython Notebook
 .ipynb_checkpoints
 
-# OpenAPI version files
-.openapi-generator
-
-/svix/openapi_client
+/svix/internal
