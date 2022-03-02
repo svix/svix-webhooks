@@ -12,17 +12,17 @@ class Authentication internal constructor(token: String, options: SvixOptions) {
         api.userAgent = options.getUA()
     }
 
-    suspend fun dashboardAccess(appId: String): DashboardAccessOut {
+    suspend fun dashboardAccess(appId: String, options: PostOptions = PostOptions()): DashboardAccessOut {
         try {
-            return api.getDashboardAccessApiV1AuthDashboardAccessAppIdPost(appId, null)
+            return api.getDashboardAccessApiV1AuthDashboardAccessAppIdPost(appId, options.idempotencyKey)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
     }
 
-    suspend fun logout() {
+    suspend fun logout(options: PostOptions = PostOptions()) {
         try {
-            api.logoutApiV1AuthLogoutPost(null)
+            api.logoutApiV1AuthLogoutPost(options.idempotencyKey)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }

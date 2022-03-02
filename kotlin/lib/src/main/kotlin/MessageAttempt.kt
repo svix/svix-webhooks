@@ -73,9 +73,14 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun resend(appId: String, msgId: String, endpointId: String) {
+    suspend fun resend(appId: String, msgId: String, endpointId: String, options: PostOptions = PostOptions()) {
         try {
-            api.resendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPost(endpointId, msgId, appId, null)
+            api.resendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPost(
+                endpointId,
+                msgId,
+                appId,
+                options.idempotencyKey
+            )
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }

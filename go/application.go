@@ -40,8 +40,17 @@ func (a *Application) List(options *ApplicationListOptions) (*ListResponseApplic
 }
 
 func (a *Application) Create(applicationIn *ApplicationIn) (*ApplicationOut, error) {
+	return a.CreateWithOptions(applicationIn, nil)
+}
+
+func (a *Application) CreateWithOptions(applicationIn *ApplicationIn, options *PostOptions) (*ApplicationOut, error) {
 	req := a.api.ApplicationApi.CreateApplicationApiV1AppPost(context.Background())
 	req = req.ApplicationIn(openapi.ApplicationIn(*applicationIn))
+	if options != nil {
+		if options.IdempotencyKey != nil {
+			req = req.IdempotencyKey(*options.IdempotencyKey)
+		}
+	}
 	resp, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)

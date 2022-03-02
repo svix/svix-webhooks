@@ -31,9 +31,9 @@ class Message internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun create(appId: String, messageIn: MessageIn): MessageOut {
+    suspend fun create(appId: String, messageIn: MessageIn, options: PostOptions = PostOptions()): MessageOut {
         try {
-            return api.createMessageApiV1AppAppIdMsgPost(appId, messageIn, null, null)
+            return api.createMessageApiV1AppAppIdMsgPost(appId, messageIn, null, options.idempotencyKey)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }

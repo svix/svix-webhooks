@@ -46,8 +46,17 @@ func (e *Endpoint) List(appId string, options *EndpointListOptions) (*ListRespon
 }
 
 func (e *Endpoint) Create(appId string, endpointIn *EndpointIn) (*EndpointOut, error) {
+	return e.CreateWithOptions(appId, endpointIn, nil)
+}
+
+func (e *Endpoint) CreateWithOptions(appId string, endpointIn *EndpointIn, options *PostOptions) (*EndpointOut, error) {
 	req := e.api.EndpointApi.CreateEndpointApiV1AppAppIdEndpointPost(context.Background(), appId)
 	req = req.EndpointIn(openapi.EndpointIn(*endpointIn))
+	if options != nil {
+		if options.IdempotencyKey != nil {
+			req = req.IdempotencyKey(*options.IdempotencyKey)
+		}
+	}
 	out, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
@@ -94,8 +103,17 @@ func (e *Endpoint) GetSecret(appId string, endpointId string) (*EndpointSecretOu
 }
 
 func (e *Endpoint) RotateSecret(appId string, endpointId string, endpointSecretRotateIn *EndpointSecretRotateIn) error {
+	return e.RotateSecretWithOptions(appId, endpointId, endpointSecretRotateIn, nil)
+}
+
+func (e *Endpoint) RotateSecretWithOptions(appId string, endpointId string, endpointSecretRotateIn *EndpointSecretRotateIn, options *PostOptions) error {
 	req := e.api.EndpointApi.RotateEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretRotatePost(context.Background(), endpointId, appId)
 	req = req.EndpointSecretRotateIn(openapi.EndpointSecretRotateIn(*endpointSecretRotateIn))
+	if options != nil {
+		if options.IdempotencyKey != nil {
+			req = req.IdempotencyKey(*options.IdempotencyKey)
+		}
+	}
 	res, err := req.Execute()
 	if err != nil {
 		return wrapError(err, res)
@@ -104,8 +122,17 @@ func (e *Endpoint) RotateSecret(appId string, endpointId string, endpointSecretR
 }
 
 func (e *Endpoint) Recover(appId string, endpointId string, recoverIn *RecoverIn) error {
+	return e.RecoverWithOptions(appId, endpointId, recoverIn, nil)
+}
+
+func (e *Endpoint) RecoverWithOptions(appId string, endpointId string, recoverIn *RecoverIn, options *PostOptions) error {
 	req := e.api.EndpointApi.RecoverFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPost(context.Background(), appId, endpointId)
 	req = req.RecoverIn(openapi.RecoverIn(*recoverIn))
+	if options != nil {
+		if options.IdempotencyKey != nil {
+			req = req.IdempotencyKey(*options.IdempotencyKey)
+		}
+	}
 	_, res, err := req.Execute()
 	if err != nil {
 		return wrapError(err, res)

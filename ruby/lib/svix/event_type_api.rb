@@ -10,8 +10,8 @@ module Svix
             return @api.list_event_types_api_v1_event_type_get(options)
         end
 
-        def create(event_type_in)
-            return @api.create_event_type_api_v1_event_type_post(event_type_in)
+        def create(event_type_in, options = {})
+            return @api.create_event_type_api_v1_event_type_post(event_type_in, options)
         end
 
         def get(event_type_name)

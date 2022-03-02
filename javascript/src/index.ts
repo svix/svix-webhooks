@@ -109,7 +109,9 @@ export class Svix {
     this.messageAttempt = new MessageAttempt(config);
   }
 }
-
+export interface PostOptions {
+  idempotencyKey?: string;
+}
 class Authentication {
   private readonly api: AuthenticationApi;
 
@@ -117,12 +119,18 @@ class Authentication {
     this.api = new AuthenticationApi(config);
   }
 
-  public dashboardAccess(appId: string): Promise<DashboardAccessOut> {
-    return this.api.getDashboardAccessApiV1AuthDashboardAccessAppIdPost({ appId });
+  public dashboardAccess(
+    appId: string,
+    options?: PostOptions
+  ): Promise<DashboardAccessOut> {
+    return this.api.getDashboardAccessApiV1AuthDashboardAccessAppIdPost({
+      appId,
+      ...options,
+    });
   }
 
-  public logout(): Promise<void> {
-    return this.api.logoutApiV1AuthLogoutPost({});
+  public logout(options?: PostOptions): Promise<void> {
+    return this.api.logoutApiV1AuthLogoutPost({ ...options });
   }
 }
 
@@ -173,8 +181,11 @@ class Application {
     return this.api.listApplicationsApiV1AppGet({ ...options });
   }
 
-  public create(applicationIn: ApplicationIn): Promise<ApplicationOut> {
-    return this.api.createApplicationApiV1AppPost({ applicationIn });
+  public create(
+    applicationIn: ApplicationIn,
+    options?: PostOptions
+  ): Promise<ApplicationOut> {
+    return this.api.createApplicationApiV1AppPost({ applicationIn, ...options });
   }
 
   public get(appId: string): Promise<ApplicationOut> {
@@ -204,8 +215,16 @@ class Endpoint {
     return this.api.listEndpointsApiV1AppAppIdEndpointGet({ appId, ...options });
   }
 
-  public create(appId: string, endpointIn: EndpointIn): Promise<EndpointOut> {
-    return this.api.createEndpointApiV1AppAppIdEndpointPost({ appId, endpointIn });
+  public create(
+    appId: string,
+    endpointIn: EndpointIn,
+    options?: PostOptions
+  ): Promise<EndpointOut> {
+    return this.api.createEndpointApiV1AppAppIdEndpointPost({
+      appId,
+      endpointIn,
+      ...options,
+    });
   }
 
   public get(appId: string, endpointId: string): Promise<EndpointOut> {
@@ -241,21 +260,29 @@ class Endpoint {
   public rotateSecret(
     appId: string,
     endpointId: string,
-    endpointSecretRotateIn: EndpointSecretRotateIn
+    endpointSecretRotateIn: EndpointSecretRotateIn,
+    options?: PostOptions
   ): Promise<void> {
     return this.api.rotateEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretRotatePost({
       endpointId,
       appId,
       endpointSecretRotateIn,
+      ...options,
     });
   }
 
-  public recover(appId: string, endpointId: string, recoverIn: RecoverIn): Promise<void> {
+  public recover(
+    appId: string,
+    endpointId: string,
+    recoverIn: RecoverIn,
+    options?: PostOptions
+  ): Promise<void> {
     return this.api
       .recoverFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPost({
         appId,
         endpointId,
         recoverIn,
+        ...options,
       })
       .then(() => Promise.resolve());
   }
@@ -307,8 +334,8 @@ class EventType {
     return this.api.getEventTypeApiV1EventTypeEventTypeNameGet({ eventTypeName });
   }
 
-  public create(eventTypeIn: EventTypeIn): Promise<EventTypeOut> {
-    return this.api.createEventTypeApiV1EventTypePost({ eventTypeIn });
+  public create(eventTypeIn: EventTypeIn, options?: PostOptions): Promise<EventTypeOut> {
+    return this.api.createEventTypeApiV1EventTypePost({ eventTypeIn, ...options });
   }
 
   public update(
@@ -340,10 +367,15 @@ class Integration {
     return this.api.listIntegrationsApiV1AppAppIdIntegrationGet({ appId, ...options });
   }
 
-  public create(appId: string, integrationIn: IntegrationIn): Promise<IntegrationOut> {
+  public create(
+    appId: string,
+    integrationIn: IntegrationIn,
+    options?: PostOptions
+  ): Promise<IntegrationOut> {
     return this.api.createIntegrationApiV1AppAppIdIntegrationPost({
       appId,
       integrationIn,
+      ...options,
     });
   }
 
@@ -377,10 +409,15 @@ class Integration {
     });
   }
 
-  public rotateKey(appId: string, integId: string): Promise<IntegrationKeyOut> {
+  public rotateKey(
+    appId: string,
+    integId: string,
+    options?: PostOptions
+  ): Promise<IntegrationKeyOut> {
     return this.api.rotateIntegrationKeyApiV1AppAppIdIntegrationIntegIdKeyRotatePost({
       integId,
       appId,
+      ...options,
     });
   }
 }
@@ -399,8 +436,12 @@ class Message {
     return this.api.listMessagesApiV1AppAppIdMsgGet({ appId, ...options });
   }
 
-  public create(appId: string, messageIn: MessageIn): Promise<MessageOut> {
-    return this.api.createMessageApiV1AppAppIdMsgPost({ appId, messageIn });
+  public create(
+    appId: string,
+    messageIn: MessageIn,
+    options?: PostOptions
+  ): Promise<MessageOut> {
+    return this.api.createMessageApiV1AppAppIdMsgPost({ appId, messageIn, ...options });
   }
 
   public get(appId: string, msgId: string): Promise<MessageOut> {
@@ -423,11 +464,7 @@ class MessageAttempt {
     msgId: string,
     options?: MessageAttemptListOptions
   ): Promise<ListResponseMessageAttemptOut> {
-    return this.listByMsg(
-      appId,
-      msgId,
-      options,
-    );
+    return this.listByMsg(appId, msgId, options);
   }
 
   public listByMsg(
@@ -466,11 +503,17 @@ class MessageAttempt {
     });
   }
 
-  public resend(appId: string, msgId: string, endpointId: string): Promise<void> {
+  public resend(
+    appId: string,
+    msgId: string,
+    endpointId: string,
+    options?: PostOptions
+  ): Promise<void> {
     return this.api.resendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPost({
       endpointId,
       msgId,
       appId,
+      ...options,
     });
   }
 

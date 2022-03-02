@@ -32,8 +32,12 @@ public final class Message {
 	}
 
 	public MessageOut create(final String appId, final MessageIn messageIn) throws ApiException {
+		return this.create(appId, messageIn, new PostOptions());
+	}
+
+	public MessageOut create(final String appId, final MessageIn messageIn, final PostOptions options) throws ApiException {
 		try {
-			return api.createMessageApiV1AppAppIdMsgPost(appId, messageIn.payload(getPayload(messageIn.getPayload())), null, null);
+			return api.createMessageApiV1AppAppIdMsgPost(appId, messageIn.payload(getPayload(messageIn.getPayload())), null, options.getIdempotencyKey());
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
