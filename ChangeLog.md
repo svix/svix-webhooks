@@ -4,10 +4,11 @@
 * Libs: Support for passing an idempotency key to post commands
 * Libs: Add support for filtering by channel
 * Kotlin & Go: Support filtering by event type
+* JS: fix for API calls using a default idempotency key when one isn't set 🐞
 
 ## Version 0.50.0
-* Server: Set custom endpoint headers when sending via worker 
-* Libs: Add support for filtering by StatusCodeClass in attempts API 
+* Server: Set custom endpoint headers when sending via worker
+* Libs: Add support for filtering by StatusCodeClass in attempts API
 
 ## Version 0.49.0
 *  Libs: Add support for reverse iteration (prev_iterator) & after param in list commands ⬅️
