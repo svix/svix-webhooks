@@ -114,3 +114,140 @@ impl Clone for Box<dyn TaskQueueSend> {
 trait TaskQueueReceive {
     async fn receive(&mut self) -> Result<TaskQueueDelivery>;
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // TODO: Test Redis impl too
+
+    /// Creates a [`MessageTask`] with filler information and the given MessageId inner String
+    fn mock_message(message_id: String) -> QueueTask {
+        MessageTask::new_task(
+            MessageId(message_id),
+            ApplicationId("TestEndpointID".to_owned()),
+            EndpointId("TestEndpointID".to_owned()),
+            MessageAttemptTriggerType::Scheduled,
+        )
+    }
+
+    /// Sends a message with the given TaskQueueProducer reference and asserts that the result is OK
+    async fn assert_send(tx: &TaskQueueProducer, message_id: &str) {
+        assert!(tx
+            .send(mock_message(message_id.to_owned()), None)
+            .await
+            .is_ok());
+    }
+
+    /// Receives a message with the given TaskQueueConsumer mutable reference and asserts that it is
+    /// equal to the mock message with the given message_id.
+    async fn assert_recv(rx: &mut TaskQueueConsumer, message_id: &str) {
+        assert_eq!(
+            rx.receive().await.unwrap().task,
+            mock_message(message_id.to_owned())
+        )
+    }
+
+    #[tokio::test]
+    async fn test_single_producer_single_consumer() {
+        let (tx_mem, mut rx_mem) = memory::new_pair().await;
+
+        let msg_id = "TestMessageID1";
+
+        assert_send(&tx_mem, msg_id).await;
+        assert_recv(&mut rx_mem, msg_id).await;
+    }
+
+    #[tokio::test]
+    async fn test_multiple_producer_single_consumer() {
+        let (tx_mem, mut rx_mem) = memory::new_pair().await;
+
+        let msg_1 = "TestMessageID1";
+        let msg_2 = "TestMessageID2";
+
+        tokio::spawn({
+            let tx_mem = tx_mem.clone();
+            async move {
+                assert_send(&tx_mem, msg_1).await;
+            }
+        });
+        tokio::spawn(async move {
+            assert_send(&tx_mem, msg_2).await;
+        });
+
+        assert_recv(&mut rx_mem, msg_1).await;
+        assert_recv(&mut rx_mem, msg_2).await;
+    }
+
+    #[tokio::test]
+    async fn test_delay() {
+        let (tx_mem, mut rx_mem) = memory::new_pair().await;
+
+        let msg_1 = "TestMessageID1";
+        let msg_2 = "TestMessageID2";
+
+        assert!(tx_mem
+            .send(
+                mock_message(msg_1.to_owned()),
+                Some(Duration::from_millis(200))
+            )
+            .await
+            .is_ok());
+        assert_send(&tx_mem, msg_2).await;
+
+        assert_recv(&mut rx_mem, msg_2).await;
+        assert_recv(&mut rx_mem, msg_1).await;
+    }
+
+    // TODO: Eliminate code duplication in ack and nack tests
+
+    #[tokio::test]
+    #[ignore]
+    // ack only works with the Redis queue as of present, so this test is ignored for now
+    async fn test_ack() {
+        let (tx_mem, mut rx_mem) = memory::new_pair().await;
+        assert!(tx_mem
+            .send(mock_message("1".to_owned()), None)
+            .await
+            .is_ok());
+
+        let recv = rx_mem.receive().await.unwrap();
+        assert_eq!(&recv.task, &mock_message("1".to_owned()));
+
+        assert!(tx_mem.ack(recv).await.is_ok());
+
+        tokio::select! {
+            _ = rx_mem.receive() => {
+                panic!("`rx_mem` received second message");
+            }
+
+            // FIXME: Find out correct timeout duration
+            _ = tokio::time::sleep(Duration::from_millis(500)) => {}
+        }
+    }
+
+    #[tokio::test]
+    #[ignore]
+    // nack only works with the Redis queue as of present, so this test is ignored for now
+    async fn test_nack() {
+        let (tx_mem, mut rx_mem) = memory::new_pair().await;
+        assert!(tx_mem
+            .send(mock_message("1".to_owned()), None)
+            .await
+            .is_ok());
+
+        let recv = rx_mem.receive().await.unwrap();
+        assert_eq!(&recv.task, &mock_message("1".to_owned()));
+
+        assert!(tx_mem.nack(recv).await.is_ok());
+
+        tokio::select! {
+            _ = rx_mem.receive() => {}
+
+            // FIXME: Find out correct timeout duration
+            _ = tokio::time::sleep(Duration::from_millis(500)) => {
+                panic!("`rx_mem` did not receive second message");
+            }
+        }
+    }
+}
