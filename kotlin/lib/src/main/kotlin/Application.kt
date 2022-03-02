@@ -22,9 +22,9 @@ class Application internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun create(applicationIn: ApplicationIn): ApplicationOut {
+    suspend fun create(applicationIn: ApplicationIn, options: PostOptions = PostOptions()): ApplicationOut {
         try {
-            return api.createApplicationApiV1AppPost(applicationIn, null, null)
+            return api.createApplicationApiV1AppPost(applicationIn, null, options.idempotencyKey)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }

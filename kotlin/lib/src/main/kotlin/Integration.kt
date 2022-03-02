@@ -24,9 +24,9 @@ class Integration internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun create(appId: String, integIn: IntegrationIn): IntegrationOut {
+    suspend fun create(appId: String, integIn: IntegrationIn, options: PostOptions = PostOptions()): IntegrationOut {
         try {
-            return api.createIntegrationApiV1AppAppIdIntegrationPost(appId, integIn, null)
+            return api.createIntegrationApiV1AppAppIdIntegrationPost(appId, integIn, options.idempotencyKey)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -64,9 +64,13 @@ class Integration internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun rotateKey(appId: String, integId: String): IntegrationKeyOut {
+    suspend fun rotateKey(appId: String, integId: String, options: PostOptions = PostOptions()): IntegrationKeyOut {
         try {
-            return api.rotateIntegrationKeyApiV1AppAppIdIntegrationIntegIdKeyRotatePost(integId, appId, null)
+            return api.rotateIntegrationKeyApiV1AppAppIdIntegrationIntegIdKeyRotatePost(
+                integId,
+                appId,
+                options.idempotencyKey
+            )
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }

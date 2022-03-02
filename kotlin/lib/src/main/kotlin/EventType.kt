@@ -23,9 +23,9 @@ class EventType internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun create(eventTypeIn: EventTypeIn): EventTypeOut {
+    suspend fun create(eventTypeIn: EventTypeIn, options: PostOptions = PostOptions()): EventTypeOut {
         try {
-            return api.createEventTypeApiV1EventTypePost(eventTypeIn, null)
+            return api.createEventTypeApiV1EventTypePost(eventTypeIn, options.idempotencyKey)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }

@@ -28,9 +28,9 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun create(appId: String, endpointIn: EndpointIn): EndpointOut {
+    suspend fun create(appId: String, endpointIn: EndpointIn, options: PostOptions = PostOptions()): EndpointOut {
         try {
-            return api.createEndpointApiV1AppAppIdEndpointPost(appId, endpointIn, null)
+            return api.createEndpointApiV1AppAppIdEndpointPost(appId, endpointIn, options.idempotencyKey)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -68,17 +68,32 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun rotateSecret(appId: String, endpointId: String, endpointSecretRotateIn: EndpointSecretRotateIn) {
+    suspend fun rotateSecret(
+        appId: String,
+        endpointId: String,
+        endpointSecretRotateIn: EndpointSecretRotateIn,
+        options: PostOptions = PostOptions()
+    ) {
         try {
-            api.rotateEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretRotatePost(endpointId, appId, endpointSecretRotateIn, null)
+            api.rotateEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretRotatePost(
+                endpointId,
+                appId,
+                endpointSecretRotateIn,
+                options.idempotencyKey
+            )
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
     }
 
-    suspend fun recover(appId: String, endpointId: String, recoverIn: RecoverIn) {
+    suspend fun recover(appId: String, endpointId: String, recoverIn: RecoverIn, options: PostOptions = PostOptions()) {
         try {
-            api.recoverFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPost(appId, endpointId, recoverIn, null)
+            api.recoverFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPost(
+                appId,
+                endpointId,
+                recoverIn,
+                options.idempotencyKey
+            )
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
