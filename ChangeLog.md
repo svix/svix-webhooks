@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.51.0
+* Libs: Support for passing an idempotency key to post commands
+* Libs: Add support for filtering by channel
+* Kotlin & Go: Support filtering by event type
+
 ## Version 0.50.0
 * Server: Set custom endpoint headers when sending via worker 
 * Libs: Add support for filtering by StatusCodeClass in attempts API 
