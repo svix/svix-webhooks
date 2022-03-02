@@ -21,6 +21,7 @@ const USER_AGENT: &str = concat!("Svix-Webhooks/", env!("CARGO_PKG_VERSION"));
 
 /// Generates a set of headers for any one webhook event
 fn generate_msg_headers(
+    timestamp: i64,
     cfg: &Configuration,
     body: &str,
     msg_id: &MessageId,
@@ -28,7 +29,6 @@ fn generate_msg_headers(
     endpoint_signing_keys: Vec<&EndpointSecret>,
     _endpoint_url: &str,
 ) -> HeaderMap {
-    let timestamp = Utc::now().timestamp();
     let to_sign = format!("{}.{}.{}", msg_id, timestamp, body);
     let signatures = endpoint_signing_keys
         .into_iter()
@@ -114,6 +114,7 @@ async fn dispatch(
         };
 
         let mut headers = generate_msg_headers(
+            Utc::now().timestamp(),
             &cfg,
             &body,
             &msg_task.msg_id,
