@@ -22,16 +22,16 @@ const USER_AGENT: &str = concat!("Svix-Webhooks/", env!("CARGO_PKG_VERSION"));
 /// Generates a set of headers for any one webhook event
 fn generate_msg_headers(
     timestamp: i64,
-    cfg: &Configuration,
+    whitelabel_headers: bool,
     body: &str,
     msg_id: &MessageId,
     configured_headers: Option<&EndpointHeaders>,
-    endpoint_signing_keys: Vec<&EndpointSecret>,
+    endpoint_signing_keys: &[&EndpointSecret],
     _endpoint_url: &str,
 ) -> HeaderMap {
     let to_sign = format!("{}.{}.{}", msg_id, timestamp, body);
     let signatures = endpoint_signing_keys
-        .into_iter()
+        .iter()
         .map(|x| hmac_sha256::HMAC::mac(to_sign.as_bytes(), &x.0[..]));
     let signatures_str = signatures
         .map(|x| format!("v1,{}", base64::encode(x)))
@@ -41,7 +41,7 @@ fn generate_msg_headers(
     let id = msg_id.0.parse().unwrap();
     let timestamp = timestamp.to_string().parse().unwrap();
     let signatures_str = signatures_str.parse().unwrap();
-    if cfg.whitelabel_headers {
+    if whitelabel_headers {
         headers.insert("webhook-id", id);
         headers.insert("webhook-timestamp", timestamp);
         headers.insert("webhook-signature", signatures_str);
@@ -115,11 +115,11 @@ async fn dispatch(
 
         let mut headers = generate_msg_headers(
             Utc::now().timestamp(),
-            &cfg,
+            cfg.whitelabel_headers,
             &body,
             &msg_task.msg_id,
             endp.headers.as_ref(),
-            keys,
+            &keys,
             &endp.url,
         );
         headers.insert("user-agent", USER_AGENT.to_string().parse().unwrap());
@@ -297,5 +297,92 @@ pub async fn worker_loop(
                 sleep(Duration::from_millis(10)).await;
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::core::types::BaseId;
+
+    use std::collections::HashMap;
+
+    // [`generate_msg_headers`] tests
+    const TIMESTAMP: i64 = 1;
+    const WHITELABEL_HEADERS: bool = false;
+    const BODY: &str = "{\"test\": \"body\"}";
+    const ENDPOINT_SIGNING_KEYS: &[&EndpointSecret] = &[];
+    const ENDPOINT_URL: &str = "http://localhost:8071";
+
+    /// Utility function that returns the default set of headers before configurable header are
+    /// accounted for
+    fn mock_headers() -> (HeaderMap, MessageId) {
+        let id = MessageId::new(None, None);
+
+        (
+            generate_msg_headers(
+                TIMESTAMP,
+                WHITELABEL_HEADERS,
+                BODY,
+                &id,
+                None,
+                ENDPOINT_SIGNING_KEYS,
+                ENDPOINT_URL,
+            ),
+            id,
+        )
+    }
+
+    // Tests configurable headers with a valid and an invalid header. The valid header pair should
+    // be included, while the invalid pair should be skipped.
+    #[test]
+    fn test_generate_msg_headers_with_custom_headers() {
+        // The headers to be given to [`generate_msg_headers`]
+        let mut headers = HashMap::new();
+        headers.insert("test_key".to_owned(), "value".to_owned());
+        headers.insert("invälid_key".to_owned(), "value".to_owned());
+
+        // The invalid key should be skipped over so it is not included in the expected
+        let (mut expected, id) = mock_headers();
+        let _ = expected.insert("test_key", "value".parse().unwrap());
+
+        let actual = generate_msg_headers(
+            TIMESTAMP,
+            WHITELABEL_HEADERS,
+            BODY,
+            &id,
+            Some(&EndpointHeaders(headers)),
+            ENDPOINT_SIGNING_KEYS,
+            ENDPOINT_URL,
+        );
+
+        assert_eq!(expected, actual);
+    }
+
+    // Tests endpoint signing keys -- expected values are fetched from the Svix documentation for a
+    // direct comparison to the current implementation.
+    #[test]
+    fn test_generate_msg_headers_with_signing_key() {
+        let test_timestamp = 1614265330;
+        let test_body = "{\"test\": 2432232314}";
+        let test_key = EndpointSecret(base64::decode("MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw").unwrap());
+        let test_message_id = MessageId("msg_p5jXN8AQM9LWM0D4loKWxJek".to_owned());
+
+        let expected_signature_str = "v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE=";
+
+        let actual = generate_msg_headers(
+            test_timestamp,
+            WHITELABEL_HEADERS,
+            test_body,
+            &test_message_id,
+            None,
+            &[&test_key],
+            ENDPOINT_URL,
+        );
+
+        assert_eq!(
+            actual.get("svix-signature").unwrap(),
+            expected_signature_str
+        );
     }
 }
