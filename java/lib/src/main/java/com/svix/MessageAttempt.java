@@ -73,8 +73,12 @@ public final class MessageAttempt {
 	}
 
 	public void resend(final String msgId, final String appId, final String endpointId) throws ApiException {
+		this.resend(msgId, appId, endpointId, new PostOptions());
+	}
+
+	public void resend(final String msgId, final String appId, final String endpointId, final PostOptions options) throws ApiException {
 		try {
-			api.resendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPost(endpointId, msgId, appId, null);
+			api.resendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPost(endpointId, msgId, appId, options.getIdempotencyKey());
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}

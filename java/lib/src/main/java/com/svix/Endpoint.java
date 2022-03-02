@@ -28,8 +28,12 @@ public final class Endpoint {
 	}
 
 	public EndpointOut create(final String appId, final EndpointIn endpointIn) throws ApiException {
+		return this.create(appId, endpointIn, new PostOptions());
+	}
+
+	public EndpointOut create(final String appId, final EndpointIn endpointIn, final PostOptions options) throws ApiException {
 		try {
-			return api.createEndpointApiV1AppAppIdEndpointPost(appId, endpointIn, null);
+			return api.createEndpointApiV1AppAppIdEndpointPost(appId, endpointIn, options.getIdempotencyKey());
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
@@ -68,16 +72,24 @@ public final class Endpoint {
 	}
 
 	public void rotateSecret(final String appId, final String endpointId, final EndpointSecretRotateIn endpointSecretRotateIn) throws ApiException {
+		this.rotateSecret(appId, endpointId, endpointSecretRotateIn, new PostOptions());
+	}
+
+	public void rotateSecret(final String appId, final String endpointId, final EndpointSecretRotateIn endpointSecretRotateIn, final PostOptions options) throws ApiException {
 		try {
-			api.rotateEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretRotatePost(endpointId, appId, endpointSecretRotateIn, null);
+			api.rotateEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretRotatePost(endpointId, appId, endpointSecretRotateIn, options.getIdempotencyKey());
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
 	}
 
 	public void recover(final String appId, final String endpointId, final RecoverIn recoverIn) throws ApiException {
+		this.recover(appId, endpointId, recoverIn, new PostOptions());
+	}
+
+	public void recover(final String appId, final String endpointId, final RecoverIn recoverIn, final PostOptions options) throws ApiException {
 		try {
-			api.recoverFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPost(appId, endpointId, recoverIn, null);
+			api.recoverFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPost(appId, endpointId, recoverIn, options.getIdempotencyKey());
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
