@@ -13,6 +13,7 @@ use tower_http::trace::TraceLayer;
 
 use crate::{core::security::generate_token, db::init_db, worker::worker_loop};
 
+mod cache;
 mod cfg;
 mod core;
 mod db;
