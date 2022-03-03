@@ -177,6 +177,14 @@ struct EndpointHeadersIn {
     headers: EndpointHeaders,
 }
 
+impl ModelIn for EndpointHeadersIn {
+    type ActiveModel = endpoint::ActiveModel;
+
+    fn update_model(self, model: &mut Self::ActiveModel) {
+        model.headers = Set(Some(self.headers));
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, Default)]
 #[serde(rename_all = "camelCase")]
 struct EndpointHeadersOut {
@@ -208,11 +216,23 @@ impl From<EndpointHeaders> for EndpointHeadersOut {
     }
 }
 
-impl ModelIn for EndpointHeadersIn {
+#[derive(Clone, Debug, PartialEq, Validate, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct EndpointHeadersPatchIn {
+    #[validate]
+    headers: EndpointHeaders,
+}
+
+impl ModelIn for EndpointHeadersPatchIn {
     type ActiveModel = endpoint::ActiveModel;
 
     fn update_model(self, model: &mut Self::ActiveModel) {
-        model.headers = Set(Some(self.headers));
+        model.headers = if let Some(Some(mut hdrs)) = model.headers.take() {
+            hdrs.0.extend(self.headers.0);
+            Set(Some(hdrs))
+        } else {
+            Set(Some(self.headers))
+        };
     }
 }
 
@@ -569,6 +589,27 @@ async fn update_endpoint_headers(
     Ok((StatusCode::NO_CONTENT, Json(EmptyResponse {})))
 }
 
+async fn patch_endpoint_headers(
+    Extension(ref db): Extension<DatabaseConnection>,
+    Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
+    ValidatedJson(data): ValidatedJson<EndpointHeadersPatchIn>,
+    AuthenticatedApplication {
+        permissions: _,
+        app,
+    }: AuthenticatedApplication,
+) -> Result<(StatusCode, Json<EmptyResponse>)> {
+    let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
+        .one(db)
+        .await?
+        .ok_or_else(|| HttpError::not_found(None, None))?;
+
+    let mut endp: endpoint::ActiveModel = endp.into();
+    data.update_model(&mut endp);
+    endp.update(db).await?;
+
+    Ok((StatusCode::NO_CONTENT, Json(EmptyResponse {})))
+}
+
 pub fn router() -> Router {
     Router::new().nest(
         "/app/:app_id",
@@ -595,7 +636,7 @@ pub fn router() -> Router {
             .route(
                 "/endpoint/:endp_id/headers/",
                 get(get_endpoint_headers)
-                    .patch(api_not_implemented)
+                    .patch(patch_endpoint_headers)
                     .put(update_endpoint_headers),
             ),
     )
@@ -603,8 +644,11 @@ pub fn router() -> Router {
 
 #[cfg(test)]
 mod tests {
-    use super::EndpointHeadersOut;
+    use super::{EndpointHeadersOut, EndpointHeadersPatchIn};
     use crate::core::types::EndpointHeaders;
+    use crate::db::models::endpoint;
+    use crate::v1::utils::ModelIn;
+    use sea_orm::ActiveValue::Set;
     use std::collections::{HashMap, HashSet};
 
     #[test]
@@ -620,5 +664,31 @@ mod tests {
             epo.headers
         );
         assert_eq!(HashSet::from(["authorization".to_owned()]), epo.sensitive);
+    }
+
+    #[test]
+    fn test_patch_endpoint_model_update() {
+        let existing_hdrs = EndpointHeaders(HashMap::from([
+            ("x-1".to_owned(), "123".to_owned()),
+            ("x-2".to_owned(), "456".to_owned()),
+        ]));
+        let patched_hdrs = EndpointHeadersPatchIn {
+            headers: EndpointHeaders(HashMap::from([
+                ("x-1".to_owned(), "789".to_owned()),
+                ("x-3".to_owned(), "123".to_owned()),
+            ])),
+        };
+        let updated_hdrs = EndpointHeaders(HashMap::from([
+            ("x-1".to_owned(), "789".to_owned()),
+            ("x-2".to_owned(), "456".to_owned()),
+            ("x-3".to_owned(), "123".to_owned()),
+        ]));
+        let mut model = endpoint::ActiveModel {
+            headers: Set(Some(existing_hdrs)),
+            ..Default::default()
+        };
+
+        patched_hdrs.update_model(&mut model);
+        assert_eq!(model.headers, Set(Some(updated_hdrs)));
     }
 }
