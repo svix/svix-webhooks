@@ -69,7 +69,9 @@ export class {{classname}}RequestFactory extends BaseAPIRequestFactory {
 
         // Header Params
         {{#headerParams}}
-        requestContext.setHeaderParam("{{baseName}}", ObjectSerializer.serialize({{paramName}}, "{{{dataType}}}", "{{dataFormat}}"));
+        if ({{paramName}} !== undefined) {
+            requestContext.setHeaderParam("{{baseName}}", ObjectSerializer.serialize({{paramName}}, "{{{dataType}}}", "{{dataFormat}}"));
+        }
         {{/headerParams}}
 
         // Form Params
