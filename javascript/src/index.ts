@@ -126,7 +126,6 @@ class Authentication {
     return this.api.getDashboardAccessApiV1AuthDashboardAccessAppIdPost({
       appId,
       ...options,
-      idempotencyKey: options?.idempotencyKey || ""
     });
   }
 
@@ -186,11 +185,7 @@ class Application {
     applicationIn: ApplicationIn,
     options?: PostOptions
   ): Promise<ApplicationOut> {
-    return this.api.createApplicationApiV1AppPost({
-      applicationIn,
-      ...options,
-      idempotencyKey: options?.idempotencyKey || ""
-    });
+    return this.api.createApplicationApiV1AppPost({ applicationIn, ...options });
   }
 
   public get(appId: string): Promise<ApplicationOut> {
@@ -229,7 +224,6 @@ class Endpoint {
       appId,
       endpointIn,
       ...options,
-      idempotencyKey: options?.idempotencyKey || ""
     });
   }
 
@@ -274,7 +268,6 @@ class Endpoint {
       appId,
       endpointSecretRotateIn,
       ...options,
-      idempotencyKey: options?.idempotencyKey || ""
     });
   }
 
@@ -290,7 +283,6 @@ class Endpoint {
         endpointId,
         recoverIn,
         ...options,
-        idempotencyKey: options?.idempotencyKey || ""
       })
       .then(() => Promise.resolve());
   }
@@ -384,7 +376,6 @@ class Integration {
       appId,
       integrationIn,
       ...options,
-      idempotencyKey: options?.idempotencyKey || ""
     });
   }
 
@@ -427,7 +418,6 @@ class Integration {
       integId,
       appId,
       ...options,
-      idempotencyKey: options?.idempotencyKey || ""
     });
   }
 }
@@ -451,12 +441,7 @@ class Message {
     messageIn: MessageIn,
     options?: PostOptions
   ): Promise<MessageOut> {
-    return this.api.createMessageApiV1AppAppIdMsgPost({
-      appId,
-      messageIn,
-      ...options,
-      idempotencyKey: options?.idempotencyKey || ""
-    });
+    return this.api.createMessageApiV1AppAppIdMsgPost({ appId, messageIn, ...options });
   }
 
   public get(appId: string, msgId: string): Promise<MessageOut> {
@@ -529,7 +514,6 @@ class MessageAttempt {
       msgId,
       appId,
       ...options,
-      idempotencyKey: options?.idempotencyKey || ""
     });
   }
 

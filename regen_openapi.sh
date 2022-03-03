@@ -8,7 +8,7 @@ fi
 
 yarn openapi-generator-cli generate -i openapi.json -g python -o python/ -c python/openapi-generator-config.json -t python/templates
 
-yarn openapi-generator-cli generate -i openapi.json -g typescript -o javascript/src/openapi -c javascript/openapi-generator-config.json
+yarn openapi-generator-cli generate -i openapi.json -g typescript -o javascript/src/openapi -c javascript/openapi-generator-config.json -t javascript/templates
 
 yarn openapi-generator-cli generate -i openapi.json -g go -o go/internal/openapi -c go/openapi-generator-config.json -t go/templates
 
