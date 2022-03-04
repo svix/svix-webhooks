@@ -3,7 +3,7 @@ use bb8_redis::RedisConnectionManager;
 use redis::{AsyncCommands, RedisError};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
-use crate::core::types::{ApplicationId, OrganizationId};
+use crate::core::types::{ApplicationId, EndpointSecret, ExpiringSigningKeys, OrganizationId};
 
 /// Errors internal to the cache
 #[derive(thiserror::Error, Debug)]
@@ -27,7 +27,7 @@ pub trait CacheValue: DeserializeOwned + Serialize {
 }
 
 /// A macro that creates a [`CacheKey`] and ties it to any value that implements
-/// DeserializeOwned`] and [`Serialize`]
+/// [`DeserializeOwned`] and [`Serialize`]
 macro_rules! kv_def {
     ($key_id:ident, $val_struct:ident) => {
         #[derive(Clone, Debug)]
@@ -46,20 +46,7 @@ macro_rules! kv_def {
         }
     };
 }
-
-// FIXME: Find out the actual data that needs to be cached
-#[derive(Deserialize, Serialize, Debug, Clone)]
-pub struct AppEndpointValue {
-    test_value: String,
-}
-kv_def!(AppEndpointKey, AppEndpointValue);
-impl AppEndpointKey {
-    // FIXME: Rewrite doc comment when AppEndpointValue members are known
-    /// Returns a key for fetching all cached endpoints for a given organization and application.
-    pub fn new(org: OrganizationId, app: ApplicationId) -> AppEndpointKey {
-        AppEndpointKey(format!("{}_APP_v3_{}_{}", Self::PREFIX_CACHE, org, app))
-    }
-}
+pub(crate) use kv_def;
 
 /// A Redis-based cache of data to avoid expensive fetches from PostgreSQL. Simply a wrapper over
 /// Redis.
@@ -75,12 +62,9 @@ impl RedisCache {
     pub async fn get<T: CacheValue>(&self, key: &T::Key) -> Result<Option<T>> {
         let mut pool = self.redis.get().await?;
         let fetched = pool.get::<&str, Option<String>>(key.as_ref()).await?;
-
-        if let Some(fetched) = fetched {
-            Ok(Some(serde_json::from_str(&fetched)?))
-        } else {
-            Ok(None)
-        }
+        Ok(fetched
+            .map(|json| serde_json::from_str(&json))
+            .transpose()?)
     }
 
     pub async fn set<T: CacheValue>(
