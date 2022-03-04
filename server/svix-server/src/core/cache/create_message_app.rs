@@ -1,14 +1,14 @@
 use std::convert::TryInto;
 
 use chrono::{DateTime, FixedOffset};
-use sea_orm::{ConnectionTrait, DatabaseConnection};
+use sea_orm::{DatabaseTransaction};
 use serde::{Deserialize, Serialize};
 
 use super::{kv_def, CacheKey, CacheValue};
 use crate::{
     core::types::{
-        ApplicationId, ApplicationUid, EndpointHeaders, EndpointSecret, EventChannelSet,
-        EventTypeNameSet, ExpiringSigningKeys, OrganizationId,
+        ApplicationId, ApplicationUid, EndpointHeaders, EndpointId, EndpointSecret,
+        EventChannelSet, EventTypeNameSet, ExpiringSigningKeys, OrganizationId,
     },
     db::models::{application, endpoint},
     error::{Error, Result},
@@ -18,45 +18,50 @@ use crate::{
 /// associated with the given application and organization ID.
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct CreateMessageApp {
-    id: ApplicationId,
-    uid: Option<ApplicationUid>,
-    org_id: OrganizationId,
+    pub id: ApplicationId,
+    pub uid: Option<ApplicationUid>,
+    pub org_id: OrganizationId,
     // TODO: org_group_id
-    rate_limit: Option<u16>,
-    endpoints: Vec<CreateMessageEndpoint>,
-    deleted: bool,
+    pub rate_limit: Option<u16>,
+    pub endpoints: Vec<CreateMessageEndpoint>,
+    pub deleted: bool,
 }
 
 /// The information for each individual endpoint cached with the creation of a message.
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct CreateMessageEndpoint {
-    url: String,
-    key: EndpointSecret,
-    old_signing_keys: Option<ExpiringSigningKeys>,
-    event_type_ids: Option<EventTypeNameSet>,
-    channels: Option<EventChannelSet>,
-    rate_limit: Option<u16>,
+    pub id: EndpointId,
+    pub url: String,
+    pub key: EndpointSecret,
+    pub old_signing_keys: Option<ExpiringSigningKeys>,
+    pub event_types_ids: Option<EventTypeNameSet>,
+    pub channels: Option<EventChannelSet>,
+    pub rate_limit: Option<u16>,
     // Same type as the `DateTimeWithTimeZone from SeaORM used in the endpoint model
-    first_failure_at: Option<DateTime<FixedOffset>>,
-    headers: Option<EndpointHeaders>,
-    disabled: bool,
-    deleted: bool,
+    pub first_failure_at: Option<DateTime<FixedOffset>>,
+    pub headers: Option<EndpointHeaders>,
+    pub disabled: bool,
+    pub deleted: bool,
 }
 
 impl CreateMessageApp {
     /// Fetch all requisite information for creating a [`CreateMessageApp`] from the PostgreSQL
     /// database
-    async fn fetch(db: &DatabaseConnection, app: application::Model) -> Result<CreateMessageApp> {
+    pub async fn fetch(
+        db: &DatabaseTransaction,
+        app: application::Model,
+    ) -> Result<CreateMessageApp> {
         let endpoints = endpoint::Entity::secure_find(app.id.clone())
-            .all(&db.begin().await?)
+            .all(db)
             .await?
             .into_iter()
             .map(|db_val| {
                 Ok(CreateMessageEndpoint {
+                    id: db_val.id,
                     url: db_val.url,
                     key: db_val.key,
                     old_signing_keys: db_val.old_keys,
-                    event_type_ids: db_val.event_types_ids,
+                    event_types_ids: db_val.event_types_ids,
                     channels: db_val.channels,
                     rate_limit: db_val
                         .rate_limit
@@ -84,7 +89,7 @@ impl CreateMessageApp {
                 .map_err(|_| {
                     Error::Validation("Application rate limit out of bounds".to_owned())
                 })?,
-            endpoints: endpoints,
+            endpoints,
             deleted: app.deleted,
         })
     }

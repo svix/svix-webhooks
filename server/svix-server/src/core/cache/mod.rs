@@ -53,6 +53,7 @@ pub(crate) use kv_def;
 
 /// A Redis-based cache of data to avoid expensive fetches from PostgreSQL. Simply a wrapper over
 /// Redis.
+#[derive(Debug, Clone)]
 pub struct RedisCache {
     redis: Pool<RedisConnectionManager>,
 }

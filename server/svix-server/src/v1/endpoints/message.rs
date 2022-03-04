@@ -5,13 +5,17 @@ use std::collections::HashSet;
 
 use crate::{
     core::{
+        cache::{
+            create_message_app::{AppEndpointKey, CreateMessageApp},
+            RedisCache,
+        },
         security::AuthenticatedApplication,
         types::{
             ApplicationIdOrUid, BaseId, EventChannelSet, EventTypeName, MessageAttemptTriggerType,
             MessageId, MessageIdOrUid, MessageStatus, MessageUid,
         },
     },
-    db::models::{endpoint, messagedestination},
+    db::models::messagedestination,
     error::{HttpError, Result},
     queue::{MessageTask, TaskQueueProducer},
     v1::utils::{
@@ -154,11 +158,34 @@ async fn list_messages(
 async fn create_message(
     Extension(ref db): Extension<DatabaseConnection>,
     Extension(queue_tx): Extension<TaskQueueProducer>,
+    Extension(redis_cache): Extension<Option<RedisCache>>,
     ValidatedJson(data): ValidatedJson<MessageIn>,
     AuthenticatedApplication { permissions, app }: AuthenticatedApplication,
 ) -> Result<(StatusCode, Json<MessageOut>)> {
     let txn = db.begin().await?;
     let db = &txn;
+
+    let create_message_app: CreateMessageApp = if let Some(redis_cache) = redis_cache {
+        let cache_key = AppEndpointKey::new(app.org_id.clone(), app.id.clone());
+        // Redis cache errors are logged but ignored because you can always fallback to postgres
+        if let Some(cma) = redis_cache.get(&cache_key).await.unwrap_or_else(|e| {
+            tracing::error!("Redis cache error on fetch: {}", e);
+            None
+        }) {
+            cma
+        } else {
+            // If the [`CreateMessageApp`] isn't in the Redis cache, fetch it from the PostgreSQL
+            // database and insert that into the cache
+            let cma = CreateMessageApp::fetch(db, app.clone()).await?;
+            if let Err(e) = redis_cache.set(&cache_key, &cma, Some(30)).await {
+                tracing::error!("Redis cache error on set: {}", e);
+            }
+            cma
+        }
+    } else {
+        // If Redis is disabled, there will be no RedisCache so fallback to postgres
+        CreateMessageApp::fetch(db, app.clone()).await?
+    };
 
     let msg = message::ActiveModel {
         app_id: Set(app.id.clone()),
@@ -171,13 +198,14 @@ async fn create_message(
     let empty_channel_set = HashSet::new();
     let mut msg_dests = vec![];
     let mut tasks = vec![];
-    for endp in endpoint::Entity::secure_find(app.id.clone())
-        .filter(endpoint::Column::Disabled.eq(false))
-        .all(db)
-        .await?
+    for endp in create_message_app.endpoints
         .into_iter()
         .filter(|endp| {
-            trigger_type == MessageAttemptTriggerType::Manual
+            // No disabled or deleted enpoints ever
+          	!endp.disabled && !endp.deleted &&
+            (
+                // Manual attempt types go throguh regardless
+                trigger_type == MessageAttemptTriggerType::Manual
                 || (
                         // If an endpoint has event types and it matches ours, or has no event types
                         endp
@@ -193,7 +221,7 @@ async fn create_message(
                         .as_ref()
                         .map(|x| !x.0.is_disjoint(msg.channels.as_ref().map(|x| &x.0).unwrap_or(&empty_channel_set)))
                         .unwrap_or(true)
-                )
+                ))
         })
     {
         let msg_dest = messagedestination::ActiveModel {

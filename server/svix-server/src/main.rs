@@ -11,7 +11,11 @@ use dotenv::dotenv;
 use std::{net::SocketAddr, process::exit, str::FromStr};
 use tower_http::trace::TraceLayer;
 
-use crate::{core::security::generate_token, db::init_db, worker::worker_loop};
+use crate::{
+    core::{cache::RedisCache, security::generate_token},
+    db::init_db,
+    worker::worker_loop,
+};
 
 mod cfg;
 mod core;
@@ -98,13 +102,18 @@ async fn main() {
         }
     };
 
+    let redis_cache = redis_pool
+        .as_ref()
+        .map(|pool| RedisCache::new(pool.clone()));
+
     // build our application with a route
     let mut app = Router::new()
         .nest("/api/v1", v1::router())
         .layer(TraceLayer::new_for_http().on_request(()))
         .layer(Extension(pool.clone()))
         .layer(Extension(queue_tx.clone()))
-        .layer(Extension(cfg.clone()));
+        .layer(Extension(cfg.clone()))
+    	.layer(Extension(redis_cache));
 
     if let Some(redis_pool) = &redis_pool {
         app = app.layer(Extension(redis_pool.clone()));
