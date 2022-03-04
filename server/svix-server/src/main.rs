@@ -113,7 +113,7 @@ async fn main() {
         .layer(Extension(pool.clone()))
         .layer(Extension(queue_tx.clone()))
         .layer(Extension(cfg.clone()))
-    	.layer(Extension(redis_cache));
+    	.layer(Extension(redis_cache.clone()));
 
     if let Some(redis_pool) = &redis_pool {
         app = app.layer(Extension(redis_pool.clone()));
@@ -137,7 +137,7 @@ async fn main() {
         async {
             if with_worker {
                 tracing::debug!("Worker: Initializing");
-                worker_loop(cfg, pool, queue_tx, queue_rx).await
+                worker_loop(cfg, pool, redis_cache, queue_tx, queue_rx).await
             } else {
                 tracing::debug!("Worker: off");
                 Ok(())

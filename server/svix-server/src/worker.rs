@@ -2,8 +2,15 @@
 // SPDX-License-Identifier: MIT
 
 use crate::cfg::Configuration;
-use crate::core::types::{
-    EndpointHeaders, EndpointSecret, MessageAttemptTriggerType, MessageId, MessageStatus,
+use crate::core::{
+    cache::{
+        create_message_app::{AppEndpointKey, CreateMessageApp, CreateMessageEndpoint},
+        RedisCache,
+    },
+    types::{
+        ApplicationId, EndpointHeaders, EndpointId, EndpointSecret, MessageAttemptTriggerType,
+        MessageId, MessageStatus,
+    },
 };
 use crate::db::models::{application, endpoint, message, messageattempt, messagedestination};
 use crate::error::{Error, Result};
@@ -15,7 +22,7 @@ use sea_orm::ActiveValue::Set;
 use sea_orm::{DatabaseConnection, EntityTrait};
 use tokio::time::{sleep, Duration};
 
-use std::{iter, str::FromStr};
+use std::{convert::TryInto, iter, str::FromStr};
 
 const USER_AGENT: &str = concat!("Svix-Webhooks/", env!("CARGO_PKG_VERSION"));
 
@@ -64,19 +71,14 @@ fn generate_msg_headers(
     headers
 }
 
-/// Dispatches one webhook
-async fn dispatch(
-    cfg: Configuration,
+// A fallback for if the cache is disabled or the endpoint was not found
+async fn fetch_endpoint_from_postgres(
     db: &DatabaseConnection,
-    queue_tx: &TaskQueueProducer,
-    msg_task: MessageTask,
-) -> Result<()> {
-    tracing::trace!("Dispatch: {} {}", &msg_task.msg_id, &msg_task.endpoint_id);
-
-    let app_id = &msg_task.app_id;
-    let endp_id = &msg_task.endpoint_id;
+    app_id: ApplicationId,
+    endpoint_id: EndpointId,
+) -> Result<CreateMessageEndpoint> {
     let (endp, _app): (endpoint::Model, application::Model) = if let Some((endp, app)) =
-        endpoint::Entity::secure_find_by_id(app_id.clone(), endp_id.clone())
+        endpoint::Entity::secure_find_by_id(app_id.clone(), endpoint_id.clone())
             .filter(endpoint::Column::Disabled.eq(false))
             .find_also_related(application::Entity)
             .one(db)
@@ -84,12 +86,58 @@ async fn dispatch(
     {
         (endp, app.unwrap())
     } else {
-        tracing::warn!(
+        return Err(Error::Generic(format!(
             "Unexpected: app or endpoint don't exist (or deleted) {} {}",
-            app_id,
-            endp_id
-        );
-        return Ok(());
+            app_id, endpoint_id
+        )));
+    };
+
+    endp.try_into()
+}
+
+/// Dispatches one webhook
+async fn dispatch(
+    cfg: Configuration,
+    db: &DatabaseConnection,
+    redis_cache: Option<RedisCache>,
+    queue_tx: &TaskQueueProducer,
+    msg_task: MessageTask,
+) -> Result<()> {
+    tracing::trace!("Dispatch: {} {}", &msg_task.msg_id, &msg_task.endpoint_id);
+
+    let app_id = &msg_task.app_id;
+    let endp_id = &msg_task.endpoint_id;
+
+    let endp: CreateMessageEndpoint = if let Some(cache) = redis_cache {
+        let cache_key = AppEndpointKey::new(msg_task.org_id.clone(), msg_task.app_id.clone());
+
+        if let Some(cma) = cache
+            .get::<CreateMessageApp>(&cache_key)
+            .await
+            .unwrap_or_else(|e| {
+                // On cache fetch error, log and fallback to PostgreSQL by defaulting to None
+                tracing::error!("Redis cache error on fetch: {}", e);
+                None
+            })
+        {
+            if let Some(endp) = cma
+                .endpoints
+                .into_iter()
+                .find(|endp| endp.id == msg_task.endpoint_id)
+            {
+                endp
+            } else {
+                // If the [`CreateMessageApp`] does not contain the correct endpoint fallback to
+                // PostgreSQL
+                fetch_endpoint_from_postgres(db, app_id.clone(), endp_id.clone()).await?
+            }
+        } else {
+            // If the [`CreateMessageApp`] is not in the cache fallback to PostgreSQL
+            fetch_endpoint_from_postgres(db, app_id.clone(), endp_id.clone()).await?
+        }
+    } else {
+        // If Redis is disabled, look in PostgreSQL instead
+        fetch_endpoint_from_postgres(db, app_id.clone(), endp_id.clone()).await?
     };
 
     let msg = if let Some(msg) = message::Entity::find_by_id(msg_task.msg_id.clone())
@@ -105,7 +153,7 @@ async fn dispatch(
     // FIXME: no unwrap
     let body = serde_json::to_string(&msg.payload).unwrap();
     let headers = {
-        let keys: Vec<&EndpointSecret> = if let Some(ref old_keys) = endp.old_keys {
+        let keys: Vec<&EndpointSecret> = if let Some(ref old_keys) = endp.old_signing_keys {
             iter::once(&endp.key)
                 .chain(old_keys.0.iter().map(|x| &x.key))
                 .collect()
@@ -268,6 +316,7 @@ async fn dispatch(
 pub async fn worker_loop(
     cfg: Configuration,
     pool: DatabaseConnection,
+    redis_cache: Option<RedisCache>,
     queue_tx: TaskQueueProducer,
     mut queue_rx: TaskQueueConsumer,
 ) -> Result<()> {
@@ -280,8 +329,9 @@ pub async fn worker_loop(
                 let cfg = cfg.clone();
                 match queue_task {
                     QueueTask::MessageV1(msg) => {
+                        let cache = redis_cache.clone();
                         tokio::spawn(async move {
-                            if let Err(err) = dispatch(cfg, &pool, &queue_tx, msg).await {
+                            if let Err(err) = dispatch(cfg, &pool, cache, &queue_tx, msg).await {
                                 tracing::error!("Error executing task: {}", err);
                                 queue_tx.nack(delivery).await.unwrap();
                             } else {

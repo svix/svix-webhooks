@@ -232,7 +232,12 @@ async fn create_message(
             ..Default::default()
         };
         msg_dests.push(msg_dest);
-        tasks.push(MessageTask::new_task(msg.id.clone(), app.id.clone(), endp.id, MessageAttemptTriggerType::Scheduled));
+        tasks.push(
+            MessageTask::new_task(
+                msg.id.clone(),
+                app.id.clone(),
+                app.org_id.clone(),
+                endp.id, MessageAttemptTriggerType::Scheduled));
     }
     if !msg_dests.is_empty() {
         messagedestination::Entity::insert_many(msg_dests)

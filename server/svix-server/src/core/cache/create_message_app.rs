@@ -1,7 +1,7 @@
-use std::convert::TryInto;
+use std::convert::{TryFrom, TryInto};
 
 use chrono::{DateTime, FixedOffset};
-use sea_orm::{DatabaseTransaction};
+use sea_orm::DatabaseTransaction;
 use serde::{Deserialize, Serialize};
 
 use super::{kv_def, CacheKey, CacheValue};
@@ -25,6 +25,30 @@ pub struct CreateMessageApp {
     pub rate_limit: Option<u16>,
     pub endpoints: Vec<CreateMessageEndpoint>,
     pub deleted: bool,
+}
+
+impl TryFrom<endpoint::Model> for CreateMessageEndpoint {
+    type Error = Error;
+
+    fn try_from(m: endpoint::Model) -> Result<CreateMessageEndpoint> {
+        Ok(CreateMessageEndpoint {
+            id: m.id,
+            url: m.url,
+            key: m.key,
+            old_signing_keys: m.old_keys,
+            event_types_ids: m.event_types_ids,
+            channels: m.channels,
+            rate_limit: m
+                .rate_limit
+                .map(|v| v.try_into())
+                .transpose()
+                .map_err(|_| Error::Validation("Endpoint rate limit out of bounds".to_owned()))?,
+            first_failure_at: m.first_failure_at,
+            headers: m.headers,
+            disabled: m.disabled,
+            deleted: m.deleted,
+        })
+    }
 }
 
 /// The information for each individual endpoint cached with the creation of a message.
@@ -55,27 +79,7 @@ impl CreateMessageApp {
             .all(db)
             .await?
             .into_iter()
-            .map(|db_val| {
-                Ok(CreateMessageEndpoint {
-                    id: db_val.id,
-                    url: db_val.url,
-                    key: db_val.key,
-                    old_signing_keys: db_val.old_keys,
-                    event_types_ids: db_val.event_types_ids,
-                    channels: db_val.channels,
-                    rate_limit: db_val
-                        .rate_limit
-                        .map(|v| v.try_into())
-                        .transpose()
-                        .map_err(|_| {
-                            Error::Validation("Endpoint rate limit out of bounds".to_owned())
-                        })?,
-                    first_failure_at: db_val.first_failure_at,
-                    headers: db_val.headers,
-                    disabled: db_val.disabled,
-                    deleted: db_val.deleted,
-                })
-            })
+            .map(TryInto::try_into)
             .collect::<Result<Vec<_>>>()?;
 
         Ok(CreateMessageApp {

@@ -185,6 +185,7 @@ async fn resend_webhook(
             MessageTask::new_task(
                 msg.id.clone(),
                 app.id,
+                app.org_id,
                 endp.id,
                 MessageAttemptTriggerType::Manual,
             ),
