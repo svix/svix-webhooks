@@ -1,9 +1,9 @@
+pub mod create_message_app;
+
 use bb8::Pool;
 use bb8_redis::RedisConnectionManager;
 use redis::{AsyncCommands, RedisError};
-use serde::{de::DeserializeOwned, Deserialize, Serialize};
-
-use crate::core::types::{ApplicationId, EndpointSecret, ExpiringSigningKeys, OrganizationId};
+use serde::{de::DeserializeOwned, Serialize};
 
 /// Errors internal to the cache
 #[derive(thiserror::Error, Debug)]
@@ -19,9 +19,12 @@ pub enum Error {
 }
 type Result<T> = std::result::Result<T, Error>;
 
+/// A valid key value for the cache -- usually just a wrapper around a [`String`]
 pub trait CacheKey: AsRef<str> {
-    const PREFIX_CACHE: &'static str = "USER_CACHE";
+    const PREFIX_CACHE: &'static str = "SVIX_CACHE";
 }
+/// Any (de)serializable structure usuable as a value in the cache -- it is associated with a
+/// given key type to ensure type checking on creation or reading of values from the cache
 pub trait CacheValue: DeserializeOwned + Serialize {
     type Key: CacheKey;
 }
@@ -97,6 +100,7 @@ impl RedisCache {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use serde::Deserialize;
 
     // Test structures
 
