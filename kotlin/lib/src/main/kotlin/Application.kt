@@ -30,6 +30,14 @@ class Application internal constructor(token: String, options: SvixOptions) {
         }
     }
 
+    suspend fun getOrCreate(applicationIn: ApplicationIn, options: PostOptions = PostOptions()): ApplicationOut {
+        try {
+            return api.createApplicationApiV1AppPost(applicationIn, true, options.idempotencyKey)
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
+
     suspend fun get(appId: String): ApplicationOut {
         try {
             return api.getApplicationApiV1AppAppIdGet(appId, null)

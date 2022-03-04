@@ -59,6 +59,27 @@ func (a *Application) CreateWithOptions(applicationIn *ApplicationIn, options *P
 	return &ret, nil
 }
 
+func (a *Application) GetOrCreate(applicationIn *ApplicationIn) (*ApplicationOut, error) {
+	return a.GetOrCreateWithOptions(applicationIn, nil)
+}
+
+func (a *Application) GetOrCreateWithOptions(applicationIn *ApplicationIn, options *PostOptions) (*ApplicationOut, error) {
+	req := a.api.ApplicationApi.CreateApplicationApiV1AppPost(context.Background())
+	req = req.ApplicationIn(openapi.ApplicationIn(*applicationIn))
+	req = req.GetIfExists(true)
+	if options != nil {
+		if options.IdempotencyKey != nil {
+			req = req.IdempotencyKey(*options.IdempotencyKey)
+		}
+	}
+	resp, res, err := req.Execute()
+	if err != nil {
+		return nil, wrapError(err, res)
+	}
+	ret := ApplicationOut(resp)
+	return &ret, nil
+}
+
 func (a *Application) Get(appId string) (*ApplicationOut, error) {
 	req := a.api.ApplicationApi.GetApplicationApiV1AppAppIdGet(context.Background(), appId)
 	resp, res, err := req.Execute()
