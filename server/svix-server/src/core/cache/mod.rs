@@ -90,7 +90,7 @@ impl RedisCache {
         Ok(())
     }
 
-	#[cfg(test)]
+    #[cfg(test)]
     pub async fn delete<T: CacheKey>(&self, key: &T) -> Result<()> {
         let mut pool = self.redis.get().await?;
         pool.del(key.as_ref()).await?;
@@ -126,9 +126,11 @@ mod tests {
 
     #[tokio::test]
     async fn test_cache_crud_no_ttl() {
-        // FIXME: Configurable addr
+        dotenv::dotenv().ok();
+        let cfg = crate::cfg::load().unwrap();
+
         let redis_pool = bb8::Pool::builder()
-            .build(RedisConnectionManager::new("redis://localhost:6379").unwrap())
+            .build(RedisConnectionManager::new(cfg.redis_dsn.as_deref().unwrap()).unwrap())
             .await
             .unwrap();
 
