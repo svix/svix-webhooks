@@ -15,6 +15,7 @@ from ...types import Response, UNSET
     arguments, client, kwargs, parse_response, docstring %}
 
 {% set return_string = endpoint.response_type() %}
+{% set return_type = endpoint.responses[0].prop.get_type_string() if endpoint.responses[0].prop.get_type_string() != "Any" else None%}
 {% set parsed_responses = (endpoint.responses | length > 0) and return_string != "Any" %}
 
 def _get_kwargs(
@@ -60,49 +61,27 @@ def _get_kwargs(
 
 
 {% if parsed_responses %}
-def _parse_response(*, response: httpx.Response) -> Optional[{{ return_string }}]:
-    {% for response in endpoint.responses if response.status_code < 400 %}
+def _parse_response(*, response: httpx.Response) -> {{ return_type }}:
+    {% for response in endpoint.responses if response.status_code >= 299 %}
     if response.status_code == {{ response.status_code }}:
-        {% import "property_templates/" + response.prop.template as prop_template %}
-        {% if prop_template.construct %}
-        {{ prop_template.construct(response.prop, response.source) | indent(8) }}
-        {% else %}
-        {{ response.prop.python_name }} = cast({{ response.prop.get_type_string() }}, {{ response.source }})
-        {% endif %}
-        return {{ response.prop.python_name }}
+        raise {{ response.prop.class_info.name }}({{ response.source }}, response.status_code)
     {% endfor %}
-    {% for response in endpoint.responses if response.status_code >= 400 %}
-    if response.status_code == {{ response.status_code }}:
-        {% import "property_templates/" + response.prop.template as prop_template %}
-        {% if prop_template.construct %}
-        {{ prop_template.construct(response.prop, response.source) | indent(8) }}
-        {% else %}
-        {{ response.prop.python_name }} = cast({{ response.prop.get_type_string() }}, {{ response.source }})
-        {% endif %}
-        raise Exception({{ response.prop.python_name }})
-    {% endfor %}
-    return None
+    {%set ok_response = endpoint.responses[0]%}
+    {% import "property_templates/" + ok_response.prop.template as ok_response_prop_template %}
+    {% if ok_response_prop_template.construct %}
+    {{ ok_response_prop_template.construct(ok_response.prop, ok_response.source) | indent(8) }}
+    {% else %}
+    {{ ok_response.prop.python_name }} = None
+    {% endif %}
+    return {{ok_response.prop.python_name}}
 {% endif %}
-
-
-def _build_response(*, response: httpx.Response) -> Response[{{ return_string }}]:
-    return Response(
-        status_code=response.status_code,
-        content=response.content,
-        headers=response.headers,
-        {% if parsed_responses %}
-        parsed=_parse_response(response=response),
-        {% else %}
-        parsed=None,
-        {% endif %}
-    )
 
 sleep_time = 0.05
 num_retries = 3
 
 def sync_detailed(
     {{ arguments(endpoint) | indent(4) }}
-) -> Response[{{ return_string }}]:
+) -> {{return_type}}:
     {{ docstring(endpoint, return_string) | indent(4) }}
 
     kwargs = _get_kwargs(
@@ -117,30 +96,31 @@ def sync_detailed(
                 verify=client.verify_ssl,
                 **kwargs,
             )
-        if response.status_code >= 500 or retry <= num_retries - 1:
+        if response.status_code >= 500 and retry < num_retries:
             retry_count +=1
             kwargs['headers']['svix-retry-count']= str(retry_count)
             sleep(sleep_time)
             sleep_time = sleep_time * 2
         else:
             break
+
     
-    return _build_response(response=response)
+    return _parse_response(response=response)
 
 {% if parsed_responses %}
 def sync(
     {{ arguments(endpoint) | indent(4) }}
-) -> Optional[{{ return_string }}]:
+) -> {{ return_type }}:
     {{ docstring(endpoint, return_string) | indent(4) }}
 
     return sync_detailed(
         {{ kwargs(endpoint) }}
-    ).parsed
+    )
 {% endif %}
 
 async def asyncio_detailed(
     {{ arguments(endpoint) | indent(4) }}
-) -> Response[{{ return_string }}]:
+) -> {{ return_type }}:
     {{ docstring(endpoint, return_string) | indent(4) }}
 
     kwargs = _get_kwargs(
@@ -155,7 +135,7 @@ async def asyncio_detailed(
             response = await _client.request(
                 **kwargs
             )
-            if response.status_code >= 500 or retry <= num_retries - 1:
+            if response.status_code >= 500 and retry < num_retries:
                 retry_count +=1
                 kwargs['headers']['svix-retry-count']= str(retry_count)
                 sleep(sleep_time)
@@ -163,15 +143,15 @@ async def asyncio_detailed(
             else:
                 break
 
-    return _build_response(response=response)
+    return _parse_response(response=response)
 
 {% if parsed_responses %}
 async def asyncio(
     {{ arguments(endpoint) | indent(4) }}
-) -> Optional[{{ return_string }}]:
+) -> {{ return_type }}:
     {{ docstring(endpoint, return_string) | indent(4) }}
 
     return (await asyncio_detailed(
         {{ kwargs(endpoint) }}
-    )).parsed
+    ))
 {% endif %}

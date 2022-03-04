@@ -23,11 +23,18 @@ from ..types import UNSET, Unset
 
 {% set class_name = model.class_info.name %}
 {% set module_name = model.class_info.module_name %}
+{% set is_exception = class_name in ["HttpError", "HTTPValidationError", "ValidationError"]%}
 
 T = TypeVar("T", bound="{{ class_name }}")
 
-@attr.s(auto_attribs=True)
-class {{ class_name }}:
+{{"@attr.s(auto_attribs=True)" if not is_exception}}
+class {{ class_name }}({{"Exception" if is_exception}}):
+    {%if is_exception%}
+    status_code: int
+    def __init__(self, response: Dict[str, str], status_code: int):
+        self.status_code = status_code
+        super({{class_name}}, self).__init__(response) 
+    {%else%}
     """{% if model.title %}{{ model.title | wordwrap(116) }}
 
     {% endif -%}
@@ -179,3 +186,4 @@ return field_dict
     def __contains__(self, key: str) -> bool:
         return key in self.additional_properties
     {% endif %}
+    {%endif%}

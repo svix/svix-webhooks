@@ -4,8 +4,8 @@ from .internal.openapi_client.models.validation_error import ValidationError
 from .webhooks import WebhookVerificationError
 
 __all__ = [
-    "HttpError",
     "ValidationError",
     "HTTPValidationError",
+    "HttpError",
     "WebhookVerificationError",
 ]
