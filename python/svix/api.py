@@ -72,8 +72,6 @@ from .internal.openapi_client.models.endpoint_update import EndpointUpdate
 from .internal.openapi_client.models.event_type_in import EventTypeIn
 from .internal.openapi_client.models.event_type_out import EventTypeOut
 from .internal.openapi_client.models.event_type_update import EventTypeUpdate
-from .internal.openapi_client.models.http_error import HttpError
-from .internal.openapi_client.models.http_validation_error import HTTPValidationError
 from .internal.openapi_client.models.integration_in import IntegrationIn
 from .internal.openapi_client.models.integration_key_out import IntegrationKeyOut
 from .internal.openapi_client.models.integration_out import IntegrationOut
@@ -96,7 +94,6 @@ from .internal.openapi_client.models.message_status import MessageStatus
 from .internal.openapi_client.models.recover_in import RecoverIn
 from .internal.openapi_client.models.recover_out import RecoverOut
 from .internal.openapi_client.models.status_code_class import StatusCodeClass
-from .utils import Utils
 
 DEFAULT_SERVER_URL = "https://api.svix.com"
 
@@ -176,114 +173,88 @@ class ApiBase:
 
 
 class AuthenticationAsync(ApiBase):
-    async def dashboard_access(
-        self, app_id: str, options: PostOptions = PostOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, DashboardAccessOut, None]:
+    async def dashboard_access(self, app_id: str, options: PostOptions = PostOptions()) -> DashboardAccessOut:
         return await get_dashboard_access_api_v1_auth_dashboard_access_app_id_post.asyncio(
             client=self._client, app_id=app_id, **options.to_dict()
         )
 
-    async def logout(
-        self, options: PostOptions = PostOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, DashboardAccessOut, None]:
+    async def logout(self, options: PostOptions = PostOptions()) -> None:
         return await logout_api_v1_auth_logout_post.asyncio(client=self._client, **options.to_dict())
 
 
 class Authentication(ApiBase):
-    def dashboard_access(
-        self, app_id: str, options: PostOptions = PostOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, DashboardAccessOut, None]:
+    def dashboard_access(self, app_id: str, options: PostOptions = PostOptions()) -> DashboardAccessOut:
         return get_dashboard_access_api_v1_auth_dashboard_access_app_id_post.sync(
             client=self._client, app_id=app_id, **options.to_dict()
         )
 
-    def logout(
-        self, options: PostOptions = PostOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, DashboardAccessOut, None]:
+    def logout(self, options: PostOptions = PostOptions()) -> None:
         return logout_api_v1_auth_logout_post.sync(client=self._client, **options.to_dict())
 
 
 class ApplicationAsync(ApiBase):
-    async def list(
-        self, options: ApplicationListOptions = ApplicationListOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, ListResponseApplicationOut, None]:
+    async def list(self, options: ApplicationListOptions = ApplicationListOptions()) -> ListResponseApplicationOut:
         return await list_applications_api_v1_app_get.asyncio(client=self._client, **options.to_dict())
 
-    async def create(
-        self, application_in: ApplicationIn, options: PostOptions = PostOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, ApplicationOut, None]:
+    async def create(self, application_in: ApplicationIn, options: PostOptions = PostOptions()) -> ApplicationOut:
         return await create_application_api_v1_app_post.asyncio(
             client=self._client, json_body=application_in, **options.to_dict()
         )
 
-    async def get(self, app_id: str) -> t.Union[HTTPValidationError, HttpError, ApplicationOut, None]:
+    async def get(self, app_id: str) -> ApplicationOut:
         return await get_application_api_v1_app_app_id_get.asyncio(client=self._client, app_id=app_id)
 
     async def get_or_create(
         self, application_in: ApplicationIn, options: PostOptions = PostOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, ApplicationOut, None]:
+    ) -> ApplicationOut:
         return await create_application_api_v1_app_post.asyncio(
             client=self._client, json_body=application_in, get_if_exists=True, **options.to_dict()
         )
 
-    async def update(
-        self, app_id: str, application_in: ApplicationIn
-    ) -> t.Union[HTTPValidationError, HttpError, ApplicationOut, None]:
+    async def update(self, app_id: str, application_in: ApplicationIn) -> ApplicationOut:
         return await update_application_api_v1_app_app_id_put.asyncio(
             client=self._client, app_id=app_id, json_body=application_in
         )
 
-    async def delete(self, app_id: str) -> t.Union[HTTPValidationError, HttpError, ApplicationOut, None]:
+    async def delete(self, app_id: str) -> None:
         return await delete_application_api_v1_app_app_id_delete.asyncio(client=self._client, app_id=app_id)
 
 
 class Application(ApiBase):
-    def list(
-        self, options: ApplicationListOptions = ApplicationListOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, ListResponseApplicationOut, None]:
+    def list(self, options: ApplicationListOptions = ApplicationListOptions()) -> ListResponseApplicationOut:
         return list_applications_api_v1_app_get.sync(client=self._client, **options.to_dict())
 
-    def create(
-        self, application_in: ApplicationIn, options: PostOptions = PostOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, ApplicationOut, None]:
+    def create(self, application_in: ApplicationIn, options: PostOptions = PostOptions()) -> ApplicationOut:
         return create_application_api_v1_app_post.sync(
             client=self._client, json_body=application_in, **options.to_dict()
         )
 
-    def get(self, app_id: str) -> t.Union[HTTPValidationError, HttpError, ApplicationOut, None]:
+    def get(self, app_id: str) -> ApplicationOut:
         return get_application_api_v1_app_app_id_get.sync(client=self._client, app_id=app_id)
 
-    def get_or_create(
-        self, application_in: ApplicationIn, options: PostOptions = PostOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, ApplicationOut, None]:
+    def get_or_create(self, application_in: ApplicationIn, options: PostOptions = PostOptions()) -> ApplicationOut:
         return create_application_api_v1_app_post.sync(
             client=self._client, json_body=application_in, get_if_exists=True, **options.to_dict()
         )
 
-    def update(
-        self, app_id: str, application_in: ApplicationIn
-    ) -> t.Union[HTTPValidationError, HttpError, ApplicationOut, None]:
+    def update(self, app_id: str, application_in: ApplicationIn) -> ApplicationOut:
         return update_application_api_v1_app_app_id_put.sync(
             client=self._client, app_id=app_id, json_body=application_in
         )
 
-    def delete(self, app_id: str) -> t.Union[HTTPValidationError, HttpError, ApplicationOut, None]:
+    def delete(self, app_id: str) -> None:
         return delete_application_api_v1_app_app_id_delete.sync(client=self._client, app_id=app_id)
 
 
 class EndpointAsync(ApiBase):
-    async def list(
-        self, app_id: str, options: EndpointListOptions = EndpointListOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, ListResponseEndpointOut, None]:
+    async def list(self, app_id: str, options: EndpointListOptions = EndpointListOptions()) -> ListResponseEndpointOut:
         return await list_endpoints_api_v1_app_app_id_endpoint_get.asyncio(
             client=self._client,
             app_id=app_id,
             **options.to_dict(),
         )
 
-    async def create(
-        self, app_id: str, endpoint_in: EndpointIn, options: PostOptions = PostOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, EndpointOut, None]:
+    async def create(self, app_id: str, endpoint_in: EndpointIn, options: PostOptions = PostOptions()) -> EndpointOut:
         return await create_endpoint_api_v1_app_app_id_endpoint_post.asyncio(
             client=self._client,
             app_id=app_id,
@@ -291,14 +262,12 @@ class EndpointAsync(ApiBase):
             **options.to_dict(),
         )
 
-    async def get(self, app_id: str, endpoint_id: str) -> t.Union[HTTPValidationError, HttpError, EndpointOut, None]:
+    async def get(self, app_id: str, endpoint_id: str) -> EndpointOut:
         return await get_endpoint_api_v1_app_app_id_endpoint_endpoint_id_get.asyncio(
             client=self._client, app_id=app_id, endpoint_id=endpoint_id
         )
 
-    async def update(
-        self, app_id: str, endpoint_id: str, endpoint_update: EndpointUpdate
-    ) -> t.Union[HTTPValidationError, HttpError, EndpointOut, None]:
+    async def update(self, app_id: str, endpoint_id: str, endpoint_update: EndpointUpdate) -> EndpointOut:
         return await update_endpoint_api_v1_app_app_id_endpoint_endpoint_id_put.asyncio(
             client=self._client,
             app_id=app_id,
@@ -306,16 +275,14 @@ class EndpointAsync(ApiBase):
             json_body=endpoint_update,
         )
 
-    async def delete(self, app_id: str, endpoint_id: str) -> t.Union[HTTPValidationError, HttpError, EndpointOut, None]:
+    async def delete(self, app_id: str, endpoint_id: str) -> None:
         return await delete_endpoint_api_v1_app_app_id_endpoint_endpoint_id_delete.asyncio(
             client=self._client,
             app_id=app_id,
             endpoint_id=endpoint_id,
         )
 
-    async def get_secret(
-        self, app_id: str, endpoint_id: str
-    ) -> t.Union[HTTPValidationError, HttpError, EndpointSecretOut, None]:
+    async def get_secret(self, app_id: str, endpoint_id: str) -> EndpointSecretOut:
         return await get_endpoint_secret_api_v1_app_app_id_endpoint_endpoint_id_secret_get.asyncio(
             client=self._client,
             app_id=app_id,
@@ -328,7 +295,7 @@ class EndpointAsync(ApiBase):
         endpoint_id: str,
         endpoint_secret_rotate_in: EndpointSecretRotateIn,
         options: PostOptions = PostOptions(),
-    ) -> t.Union[HTTPValidationError, HttpError, EndpointSecretOut, None]:
+    ) -> None:
         return await rotate_endpoint_secret_api_v1_app_app_id_endpoint_endpoint_id_secret_rotate_post.asyncio(
             client=self._client,
             app_id=app_id,
@@ -339,7 +306,7 @@ class EndpointAsync(ApiBase):
 
     async def recover(
         self, app_id: str, endpoint_id: str, recover_in: RecoverIn, options: PostOptions = PostOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, RecoverOut, None]:
+    ) -> RecoverOut:
         return await recover_failed_webhooks_api_v1_app_app_id_endpoint_endpoint_id_recover_post.asyncio(
             client=self._client,
             app_id=app_id,
@@ -348,18 +315,14 @@ class EndpointAsync(ApiBase):
             **options.to_dict(),
         )
 
-    async def get_headers(
-        self, app_id: str, endpoint_id: str
-    ) -> t.Union[HTTPValidationError, HttpError, EndpointHeadersOut, None]:
+    async def get_headers(self, app_id: str, endpoint_id: str) -> EndpointHeadersOut:
         return await get_endpoint_headers_api_v1_app_app_id_endpoint_endpoint_id_headers_get.asyncio(
             client=self._client,
             app_id=app_id,
             endpoint_id=endpoint_id,
         )
 
-    async def update_headers(
-        self, app_id: str, endpoint_id: str, endpoint_headers_in: EndpointHeadersIn
-    ) -> t.Union[HTTPValidationError, HttpError, EndpointHeadersOut, None]:
+    async def update_headers(self, app_id: str, endpoint_id: str, endpoint_headers_in: EndpointHeadersIn) -> None:
         return await update_endpoint_headers_api_v1_app_app_id_endpoint_endpoint_id_headers_put.asyncio(
             client=self._client,
             app_id=app_id,
@@ -367,9 +330,7 @@ class EndpointAsync(ApiBase):
             json_body=endpoint_headers_in,
         )
 
-    async def patch_headers(
-        self, app_id: str, endpoint_id: str, endpoint_headers_in: EndpointHeadersIn
-    ) -> t.Union[HTTPValidationError, HttpError, EndpointHeadersOut, None]:
+    async def patch_headers(self, app_id: str, endpoint_id: str, endpoint_headers_in: EndpointHeadersIn) -> None:
         return await patch_endpoint_headers_api_v1_app_app_id_endpoint_endpoint_id_headers_patch.asyncio(
             client=self._client,
             app_id=app_id,
@@ -379,18 +340,14 @@ class EndpointAsync(ApiBase):
 
 
 class Endpoint(ApiBase):
-    def list(
-        self, app_id: str, options: EndpointListOptions = EndpointListOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, ListResponseEndpointOut, None]:
+    def list(self, app_id: str, options: EndpointListOptions = EndpointListOptions()) -> ListResponseEndpointOut:
         return list_endpoints_api_v1_app_app_id_endpoint_get.sync(
             client=self._client,
             app_id=app_id,
             **options.to_dict(),
         )
 
-    def create(
-        self, app_id: str, endpoint_in: EndpointIn, options: PostOptions = PostOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, EndpointOut, None]:
+    def create(self, app_id: str, endpoint_in: EndpointIn, options: PostOptions = PostOptions()) -> EndpointOut:
         return create_endpoint_api_v1_app_app_id_endpoint_post.sync(
             client=self._client,
             app_id=app_id,
@@ -398,14 +355,12 @@ class Endpoint(ApiBase):
             **options.to_dict(),
         )
 
-    def get(self, app_id: str, endpoint_id: str) -> t.Union[HTTPValidationError, HttpError, EndpointOut, None]:
+    def get(self, app_id: str, endpoint_id: str) -> EndpointOut:
         return get_endpoint_api_v1_app_app_id_endpoint_endpoint_id_get.sync(
             client=self._client, app_id=app_id, endpoint_id=endpoint_id
         )
 
-    def update(
-        self, app_id: str, endpoint_id: str, endpoint_update: EndpointUpdate
-    ) -> t.Union[HTTPValidationError, HttpError, EndpointOut, None]:
+    def update(self, app_id: str, endpoint_id: str, endpoint_update: EndpointUpdate) -> EndpointOut:
         return update_endpoint_api_v1_app_app_id_endpoint_endpoint_id_put.sync(
             client=self._client,
             app_id=app_id,
@@ -413,16 +368,14 @@ class Endpoint(ApiBase):
             json_body=endpoint_update,
         )
 
-    def delete(self, app_id: str, endpoint_id: str) -> t.Union[HTTPValidationError, HttpError, EndpointOut, None]:
+    def delete(self, app_id: str, endpoint_id: str) -> None:
         return delete_endpoint_api_v1_app_app_id_endpoint_endpoint_id_delete.sync(
             client=self._client,
             app_id=app_id,
             endpoint_id=endpoint_id,
         )
 
-    def get_secret(
-        self, app_id: str, endpoint_id: str
-    ) -> t.Union[HTTPValidationError, HttpError, EndpointSecretOut, None]:
+    def get_secret(self, app_id: str, endpoint_id: str) -> EndpointSecretOut:
         return get_endpoint_secret_api_v1_app_app_id_endpoint_endpoint_id_secret_get.sync(
             client=self._client,
             app_id=app_id,
@@ -435,7 +388,7 @@ class Endpoint(ApiBase):
         endpoint_id: str,
         endpoint_secret_rotate_in: EndpointSecretRotateIn,
         options: PostOptions = PostOptions(),
-    ) -> t.Union[HTTPValidationError, HttpError, EndpointSecretOut, None]:
+    ) -> None:
         return rotate_endpoint_secret_api_v1_app_app_id_endpoint_endpoint_id_secret_rotate_post.sync(
             client=self._client,
             app_id=app_id,
@@ -446,7 +399,7 @@ class Endpoint(ApiBase):
 
     def recover(
         self, app_id: str, endpoint_id: str, recover_in: RecoverIn, options: PostOptions = PostOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, RecoverOut, None]:
+    ) -> RecoverOut:
         return recover_failed_webhooks_api_v1_app_app_id_endpoint_endpoint_id_recover_post.sync(
             client=self._client,
             app_id=app_id,
@@ -455,18 +408,14 @@ class Endpoint(ApiBase):
             **options.to_dict(),
         )
 
-    def get_headers(
-        self, app_id: str, endpoint_id: str
-    ) -> t.Union[HTTPValidationError, HttpError, EndpointHeadersOut, None]:
+    def get_headers(self, app_id: str, endpoint_id: str) -> EndpointHeadersOut:
         return get_endpoint_headers_api_v1_app_app_id_endpoint_endpoint_id_headers_get.sync(
             client=self._client,
             app_id=app_id,
             endpoint_id=endpoint_id,
         )
 
-    def update_headers(
-        self, app_id: str, endpoint_id: str, endpoint_headers_in: EndpointHeadersIn
-    ) -> t.Union[HTTPValidationError, HttpError, EndpointHeadersOut, None]:
+    def update_headers(self, app_id: str, endpoint_id: str, endpoint_headers_in: EndpointHeadersIn) -> None:
         return update_endpoint_headers_api_v1_app_app_id_endpoint_endpoint_id_headers_put.sync(
             client=self._client,
             app_id=app_id,
@@ -474,9 +423,7 @@ class Endpoint(ApiBase):
             json_body=endpoint_headers_in,
         )
 
-    def patch_headers(
-        self, app_id: str, endpoint_id: str, endpoint_headers_in: EndpointHeadersIn
-    ) -> t.Union[HTTPValidationError, HttpError, EndpointHeadersOut, None]:
+    def patch_headers(self, app_id: str, endpoint_id: str, endpoint_headers_in: EndpointHeadersIn) -> None:
         return patch_endpoint_headers_api_v1_app_app_id_endpoint_endpoint_id_headers_patch.sync(
             client=self._client,
             app_id=app_id,
@@ -486,39 +433,33 @@ class Endpoint(ApiBase):
 
 
 class EventTypeAsync(ApiBase):
-    async def list(
-        self, options: EventTypeListOptions = EventTypeListOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, ListResponseEventTypeOut, None]:
+    async def list(self, options: EventTypeListOptions = EventTypeListOptions()) -> ListResponseEventTypeOut:
         return await list_event_types_api_v1_event_type_get.asyncio(
             client=self._client,
             **options.to_dict(),
         )
 
-    async def create(
-        self, event_type_in: EventTypeIn, options: PostOptions = PostOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, EventTypeOut, None]:
+    async def create(self, event_type_in: EventTypeIn, options: PostOptions = PostOptions()) -> EventTypeOut:
         return await create_event_type_api_v1_event_type_post.asyncio(
             client=self._client,
             json_body=event_type_in,
             **options.to_dict(),
         )
 
-    async def get(self, event_type_name: str) -> t.Union[HTTPValidationError, HttpError, EventTypeOut, None]:
+    async def get(self, event_type_name: str) -> EventTypeOut:
         return await get_event_type_api_v1_event_type_event_type_name_get.asyncio(
             client=self._client,
             event_type_name=event_type_name,
         )
 
-    async def update(
-        self, event_type_name: str, event_type_update: EventTypeUpdate
-    ) -> t.Union[HTTPValidationError, HttpError, EventTypeOut, None]:
+    async def update(self, event_type_name: str, event_type_update: EventTypeUpdate) -> EventTypeOut:
         return await update_event_type_api_v1_event_type_event_type_name_put.asyncio(
             client=self._client,
             event_type_name=event_type_name,
             json_body=event_type_update,
         )
 
-    async def delete(self, event_type_name: str) -> t.Union[HTTPValidationError, HttpError, EventTypeOut, None]:
+    async def delete(self, event_type_name: str) -> None:
         return await delete_event_type_api_v1_event_type_event_type_name_delete.asyncio(
             client=self._client,
             event_type_name=event_type_name,
@@ -526,39 +467,33 @@ class EventTypeAsync(ApiBase):
 
 
 class EventType(ApiBase):
-    def list(
-        self, options: EventTypeListOptions = EventTypeListOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, ListResponseEventTypeOut, None]:
+    def list(self, options: EventTypeListOptions = EventTypeListOptions()) -> ListResponseEventTypeOut:
         return list_event_types_api_v1_event_type_get.sync(
             client=self._client,
             **options.to_dict(),
         )
 
-    def create(
-        self, event_type_in: EventTypeIn, options: PostOptions = PostOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, EventTypeOut, None]:
+    def create(self, event_type_in: EventTypeIn, options: PostOptions = PostOptions()) -> EventTypeOut:
         return create_event_type_api_v1_event_type_post.sync(
             client=self._client,
             json_body=event_type_in,
             **options.to_dict(),
         )
 
-    def get(self, event_type_name: str) -> t.Union[HTTPValidationError, HttpError, EventTypeOut, None]:
+    def get(self, event_type_name: str) -> EventTypeOut:
         return get_event_type_api_v1_event_type_event_type_name_get.sync(
             client=self._client,
             event_type_name=event_type_name,
         )
 
-    def update(
-        self, event_type_name: str, event_type_update: EventTypeUpdate
-    ) -> t.Union[HTTPValidationError, HttpError, EventTypeOut, None]:
+    def update(self, event_type_name: str, event_type_update: EventTypeUpdate) -> EventTypeOut:
         return update_event_type_api_v1_event_type_event_type_name_put.sync(
             client=self._client,
             event_type_name=event_type_name,
             json_body=event_type_update,
         )
 
-    def delete(self, event_type_name: str) -> t.Union[HTTPValidationError, HttpError, EventTypeOut, None]:
+    def delete(self, event_type_name: str) -> None:
         return delete_event_type_api_v1_event_type_event_type_name_delete.sync(
             client=self._client,
             event_type_name=event_type_name,
@@ -568,7 +503,7 @@ class EventType(ApiBase):
 class IntegrationAsync(ApiBase):
     async def list(
         self, app_id: str, options: IntegrationListOptions = IntegrationListOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, ListResponseIntegrationOut, None]:
+    ) -> ListResponseIntegrationOut:
         return await list_integrations_api_v1_app_app_id_integration_get.asyncio(
             client=self._client,
             app_id=app_id,
@@ -577,7 +512,7 @@ class IntegrationAsync(ApiBase):
 
     async def create(
         self, app_id: str, integ_in: IntegrationIn, options: PostOptions = PostOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, IntegrationOut, None]:
+    ) -> IntegrationOut:
         return await create_integration_api_v1_app_app_id_integration_post.asyncio(
             client=self._client,
             app_id=app_id,
@@ -585,16 +520,14 @@ class IntegrationAsync(ApiBase):
             **options.to_dict(),
         )
 
-    async def get(self, app_id: str, integ_id: str) -> t.Union[HTTPValidationError, HttpError, IntegrationOut, None]:
+    async def get(self, app_id: str, integ_id: str) -> IntegrationOut:
         return await get_integration_api_v1_app_app_id_integration_integ_id_get.asyncio(
             client=self._client,
             app_id=app_id,
             integ_id=integ_id,
         )
 
-    async def update(
-        self, app_id: str, integ_id: str, integ_update: IntegrationUpdate
-    ) -> t.Union[HTTPValidationError, HttpError, IntegrationOut, None]:
+    async def update(self, app_id: str, integ_id: str, integ_update: IntegrationUpdate) -> IntegrationOut:
         return await update_integration_api_v1_app_app_id_integration_integ_id_put.asyncio(
             client=self._client,
             app_id=app_id,
@@ -602,25 +535,21 @@ class IntegrationAsync(ApiBase):
             json_body=integ_update,
         )
 
-    async def delete(self, app_id: str, integ_id: str) -> t.Union[HTTPValidationError, HttpError, IntegrationOut, None]:
+    async def delete(self, app_id: str, integ_id: str) -> None:
         return await delete_integration_api_v1_app_app_id_integration_integ_id_delete.asyncio(
             client=self._client,
             app_id=app_id,
             integ_id=integ_id,
         )
 
-    async def get_key(
-        self, app_id: str, integ_id: str
-    ) -> t.Union[HTTPValidationError, HttpError, IntegrationKeyOut, None]:
+    async def get_key(self, app_id: str, integ_id: str) -> IntegrationKeyOut:
         return await get_integration_key_api_v1_app_app_id_integration_integ_id_key_get.asyncio(
             client=self._client,
             app_id=app_id,
             integ_id=integ_id,
         )
 
-    async def rotate_key(
-        self, app_id: str, integ_id: str, options: PostOptions = PostOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, IntegrationKeyOut, None]:
+    async def rotate_key(self, app_id: str, integ_id: str, options: PostOptions = PostOptions()) -> IntegrationKeyOut:
         return await rotate_integration_key_api_v1_app_app_id_integration_integ_id_key_rotate_post.asyncio(
             client=self._client,
             app_id=app_id,
@@ -632,16 +561,14 @@ class IntegrationAsync(ApiBase):
 class Integration(ApiBase):
     def list(
         self, app_id: str, options: IntegrationListOptions = IntegrationListOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, ListResponseIntegrationOut, None]:
+    ) -> ListResponseIntegrationOut:
         return list_integrations_api_v1_app_app_id_integration_get.sync(
             client=self._client,
             app_id=app_id,
             **options.to_dict(),
         )
 
-    def create(
-        self, app_id: str, integ_in: IntegrationIn, options: PostOptions = PostOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, IntegrationOut, None]:
+    def create(self, app_id: str, integ_in: IntegrationIn, options: PostOptions = PostOptions()) -> IntegrationOut:
         return create_integration_api_v1_app_app_id_integration_post.sync(
             client=self._client,
             app_id=app_id,
@@ -649,16 +576,14 @@ class Integration(ApiBase):
             **options.to_dict(),
         )
 
-    def get(self, app_id: str, integ_id: str) -> t.Union[HTTPValidationError, HttpError, IntegrationOut, None]:
+    def get(self, app_id: str, integ_id: str) -> IntegrationOut:
         return get_integration_api_v1_app_app_id_integration_integ_id_get.sync(
             client=self._client,
             app_id=app_id,
             integ_id=integ_id,
         )
 
-    def update(
-        self, app_id: str, integ_id: str, integ_update: IntegrationUpdate
-    ) -> t.Union[HTTPValidationError, HttpError, IntegrationOut, None]:
+    def update(self, app_id: str, integ_id: str, integ_update: IntegrationUpdate) -> IntegrationOut:
         return update_integration_api_v1_app_app_id_integration_integ_id_put.sync(
             client=self._client,
             app_id=app_id,
@@ -666,23 +591,21 @@ class Integration(ApiBase):
             json_body=integ_update,
         )
 
-    def delete(self, app_id: str, integ_id: str) -> t.Union[HTTPValidationError, HttpError, IntegrationOut, None]:
+    def delete(self, app_id: str, integ_id: str) -> None:
         return delete_integration_api_v1_app_app_id_integration_integ_id_delete.sync(
             client=self._client,
             app_id=app_id,
             integ_id=integ_id,
         )
 
-    def get_key(self, app_id: str, integ_id: str) -> t.Union[HTTPValidationError, HttpError, IntegrationKeyOut, None]:
+    def get_key(self, app_id: str, integ_id: str) -> IntegrationKeyOut:
         return get_integration_key_api_v1_app_app_id_integration_integ_id_key_get.sync(
             client=self._client,
             app_id=app_id,
             integ_id=integ_id,
         )
 
-    def rotate_key(
-        self, app_id: str, integ_id: str, options: PostOptions = PostOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, IntegrationKeyOut, None]:
+    def rotate_key(self, app_id: str, integ_id: str, options: PostOptions = PostOptions()) -> IntegrationKeyOut:
         return rotate_integration_key_api_v1_app_app_id_integration_integ_id_key_rotate_post.sync(
             client=self._client,
             app_id=app_id,
@@ -692,18 +615,14 @@ class Integration(ApiBase):
 
 
 class MessageAsync(ApiBase):
-    async def list(
-        self, app_id: str, options: MessageListOptions = MessageListOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, ListResponseMessageOut, None]:
+    async def list(self, app_id: str, options: MessageListOptions = MessageListOptions()) -> ListResponseMessageOut:
         return await list_messages_api_v1_app_app_id_msg_get.asyncio(
             client=self._client,
             app_id=app_id,
             **options.to_dict(),
         )
 
-    async def create(
-        self, app_id: str, message_in: MessageIn, options: PostOptions = PostOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, MessageOut, None]:
+    async def create(self, app_id: str, message_in: MessageIn, options: PostOptions = PostOptions()) -> MessageOut:
         return await create_message_api_v1_app_app_id_msg_post.asyncio(
             client=self._client,
             app_id=app_id,
@@ -711,7 +630,7 @@ class MessageAsync(ApiBase):
             **options.to_dict(),
         )
 
-    async def get(self, app_id: str, msg_id: str) -> t.Union[HTTPValidationError, HttpError, MessageOut, None]:
+    async def get(self, app_id: str, msg_id: str) -> MessageOut:
         return await get_message_api_v1_app_app_id_msg_msg_id_get.asyncio(
             client=self._client,
             app_id=app_id,
@@ -720,18 +639,14 @@ class MessageAsync(ApiBase):
 
 
 class Message(ApiBase):
-    def list(
-        self, app_id: str, options: MessageListOptions = MessageListOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, ListResponseMessageOut, None]:
+    def list(self, app_id: str, options: MessageListOptions = MessageListOptions()) -> ListResponseMessageOut:
         return list_messages_api_v1_app_app_id_msg_get.sync(
             client=self._client,
             app_id=app_id,
             **options.to_dict(),
         )
 
-    def create(
-        self, app_id: str, message_in: MessageIn, options: PostOptions = PostOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, MessageOut, None]:
+    def create(self, app_id: str, message_in: MessageIn, options: PostOptions = PostOptions()) -> MessageOut:
         return create_message_api_v1_app_app_id_msg_post.sync(
             client=self._client,
             app_id=app_id,
@@ -739,7 +654,7 @@ class Message(ApiBase):
             **options.to_dict(),
         )
 
-    def get(self, app_id: str, msg_id: str) -> t.Union[HTTPValidationError, HttpError, MessageOut, None]:
+    def get(self, app_id: str, msg_id: str) -> MessageOut:
         return get_message_api_v1_app_app_id_msg_msg_id_get.sync(
             client=self._client,
             app_id=app_id,
@@ -750,21 +665,19 @@ class Message(ApiBase):
 class MessageAttemptAsync(ApiBase):
     async def list_by_msg(
         self, app_id: str, msg_id: str, options: MessageAttemptListOptions = MessageAttemptListOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, ListResponseMessageAttemptOut, None]:
+    ) -> ListResponseMessageAttemptOut:
         return await list_attempts_by_msg_api_v1_app_app_id_attempt_msg_msg_id_get.asyncio(
             client=self._client, app_id=app_id, msg_id=msg_id, **options.to_dict()
         )
 
     async def list_by_endpoint(
         self, app_id: str, endpoint_id: str, options: MessageAttemptListOptions = MessageAttemptListOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, ListResponseMessageAttemptOut, None]:
+    ) -> ListResponseMessageAttemptOut:
         return await list_attempts_by_endpoint_api_v1_app_app_id_attempt_endpoint_endpoint_id_get.asyncio(
             client=self._client, app_id=app_id, endpoint_id=endpoint_id, **options.to_dict()
         )
 
-    async def get(
-        self, app_id: str, msg_id: str, attempt_id: str
-    ) -> t.Union[HTTPValidationError, HttpError, MessageAttemptOut, None]:
+    async def get(self, app_id: str, msg_id: str, attempt_id: str) -> MessageAttemptOut:
         return await get_attempt_api_v1_app_app_id_msg_msg_id_attempt_attempt_id_get.asyncio(
             client=self._client,
             app_id=app_id,
@@ -772,9 +685,7 @@ class MessageAttemptAsync(ApiBase):
             attempt_id=attempt_id,
         )
 
-    async def resend(
-        self, app_id: str, msg_id: str, endpoint_id: str, options: PostOptions = PostOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, MessageAttemptOut, None]:
+    async def resend(self, app_id: str, msg_id: str, endpoint_id: str, options: PostOptions = PostOptions()) -> None:
         return await resend_webhook_api_v1_app_app_id_msg_msg_id_endpoint_endpoint_id_resend_post.asyncio(
             client=self._client,
             app_id=app_id,
@@ -785,7 +696,7 @@ class MessageAttemptAsync(ApiBase):
 
     async def list_attempted_messages(
         self, app_id: str, endpoint_id: str, options: MessageAttemptListOptions = MessageAttemptListOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, ListResponseEndpointMessageOut, None]:
+    ) -> ListResponseEndpointMessageOut:
         return await list_attempted_messages_api_v1_app_app_id_endpoint_endpoint_id_msg_get.asyncio(
             client=self._client,
             app_id=app_id,
@@ -795,7 +706,7 @@ class MessageAttemptAsync(ApiBase):
 
     async def list_attempted_destinations(
         self, app_id: str, msg_id: str, options: MessageAttemptListOptions = MessageAttemptListOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, ListResponseMessageEndpointOut, None]:
+    ) -> ListResponseMessageEndpointOut:
         return await list_attempted_destinations_api_v1_app_app_id_msg_msg_id_endpoint_get.asyncio(
             client=self._client,
             app_id=app_id,
@@ -809,7 +720,7 @@ class MessageAttemptAsync(ApiBase):
         msg_id: str,
         endpoint_id: str,
         options: MessageAttemptListOptions = MessageAttemptListOptions(),
-    ) -> t.Union[HTTPValidationError, HttpError, ListResponseMessageAttemptEndpointOut, None]:
+    ) -> ListResponseMessageAttemptEndpointOut:
         return await list_attempts_for_endpoint_api_v1_app_app_id_msg_msg_id_endpoint_endpoint_id_attempt_get.asyncio(
             client=self._client,
             app_id=app_id,
@@ -823,26 +734,24 @@ class MessageAttempt(ApiBase):
     @deprecated(reason="use list_by_msg or list_by_endpoint instead")
     def list(
         self, app_id: str, msg_id: str, options: MessageAttemptListOptions = MessageAttemptListOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, ListResponseMessageAttemptOut, None]:
+    ) -> ListResponseMessageAttemptOut:
         return self.list_by_msg(app_id=app_id, msg_id=msg_id, options=options)
 
     def list_by_msg(
         self, app_id: str, msg_id: str, options: MessageAttemptListOptions = MessageAttemptListOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, ListResponseMessageAttemptOut, None]:
+    ) -> ListResponseMessageAttemptOut:
         return list_attempts_by_msg_api_v1_app_app_id_attempt_msg_msg_id_get.sync(
             client=self._client, app_id=app_id, msg_id=msg_id, **options.to_dict()
         )
 
     def list_by_endpoint(
         self, app_id: str, endpoint_id: str, options: MessageAttemptListOptions = MessageAttemptListOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, ListResponseMessageAttemptOut, None]:
+    ) -> ListResponseMessageAttemptOut:
         return list_attempts_by_endpoint_api_v1_app_app_id_attempt_endpoint_endpoint_id_get.sync(
             client=self._client, app_id=app_id, endpoint_id=endpoint_id, **options.to_dict()
         )
 
-    def get(
-        self, app_id: str, msg_id: str, attempt_id: str
-    ) -> t.Union[HTTPValidationError, HttpError, MessageAttemptOut, None]:
+    def get(self, app_id: str, msg_id: str, attempt_id: str) -> MessageAttemptOut:
         return get_attempt_api_v1_app_app_id_msg_msg_id_attempt_attempt_id_get.sync(
             client=self._client,
             app_id=app_id,
@@ -850,9 +759,7 @@ class MessageAttempt(ApiBase):
             attempt_id=attempt_id,
         )
 
-    def resend(
-        self, app_id: str, msg_id: str, endpoint_id: str, options: PostOptions = PostOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, MessageAttemptOut, None]:
+    def resend(self, app_id: str, msg_id: str, endpoint_id: str, options: PostOptions = PostOptions()) -> None:
         return resend_webhook_api_v1_app_app_id_msg_msg_id_endpoint_endpoint_id_resend_post.sync(
             client=self._client,
             app_id=app_id,
@@ -863,7 +770,7 @@ class MessageAttempt(ApiBase):
 
     def list_attempted_messages(
         self, app_id: str, endpoint_id: str, options: MessageAttemptListOptions = MessageAttemptListOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, ListResponseEndpointMessageOut, None]:
+    ) -> ListResponseEndpointMessageOut:
         return list_attempted_messages_api_v1_app_app_id_endpoint_endpoint_id_msg_get.sync(
             client=self._client,
             app_id=app_id,
@@ -873,7 +780,7 @@ class MessageAttempt(ApiBase):
 
     def list_attempted_destinations(
         self, app_id: str, msg_id: str, options: MessageAttemptListOptions = MessageAttemptListOptions()
-    ) -> t.Union[HTTPValidationError, HttpError, ListResponseMessageEndpointOut, None]:
+    ) -> ListResponseMessageEndpointOut:
         return list_attempted_destinations_api_v1_app_app_id_msg_msg_id_endpoint_get.sync(
             client=self._client,
             app_id=app_id,
@@ -887,7 +794,7 @@ class MessageAttempt(ApiBase):
         msg_id: str,
         endpoint_id: str,
         options: MessageAttemptListOptions = MessageAttemptListOptions(),
-    ) -> t.Union[HTTPValidationError, HttpError, ListResponseMessageAttemptEndpointOut, None]:
+    ) -> ListResponseMessageAttemptEndpointOut:
         return list_attempts_for_endpoint_api_v1_app_app_id_msg_msg_id_endpoint_endpoint_id_attempt_get.sync(
             client=self._client,
             app_id=app_id,
