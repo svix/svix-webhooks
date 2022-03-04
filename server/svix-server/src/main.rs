@@ -4,7 +4,7 @@
 #![warn(clippy::all)]
 #![forbid(unsafe_code)]
 
-use axum::{AddExtensionLayer, Router};
+use axum::{extract::Extension, Router};
 use bb8_redis::RedisConnectionManager;
 use cfg::QueueType;
 use dotenv::dotenv;
@@ -102,12 +102,12 @@ async fn main() {
     let mut app = Router::new()
         .nest("/api/v1", v1::router())
         .layer(TraceLayer::new_for_http().on_request(()))
-        .layer(AddExtensionLayer::new(pool.clone()))
-        .layer(AddExtensionLayer::new(queue_tx.clone()))
-        .layer(AddExtensionLayer::new(cfg.clone()));
+        .layer(Extension(pool.clone()))
+        .layer(Extension(queue_tx.clone()))
+        .layer(Extension(cfg.clone()));
 
     if let Some(redis_pool) = &redis_pool {
-        app = app.layer(AddExtensionLayer::new(redis_pool.clone()));
+        app = app.layer(Extension(redis_pool.clone()));
     };
 
     let addr = SocketAddr::from_str(&cfg.listen_address).unwrap();
