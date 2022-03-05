@@ -86,6 +86,13 @@ Looking for general information? Checkout the [README](./README.md).
     <th colspan="4">
   </th>
   <tr>
+    <th>Rust</th>
+    <th>🔜</th>
+    <th>🔜</th>
+    <th>🔜</th>
+    <th colspan="4">
+  </th>
+  <tr>
     <th><a href="https://github.com/svix/svix-libs/blob/main/php/README.md">PHP</a></th>
     <th>✅</th>
     <th>🔜</th>
