@@ -1,6 +1,8 @@
-﻿using Moq;
+﻿using System;
+using Moq;
 using Svix.Abstractions;
 using Svix.Api;
+using Svix.Model;
 using Svix.Models;
 using Xunit;
 
@@ -30,12 +32,112 @@ namespace Svix.Tests
         {
             // empty
         }
-        
+
         [Fact]
-        public void ApplicationList_WithoutIterator_CallsApi_WithoutIteratorInfo()
+        public void ApplicationCreate_WithoutApplication_ThrowsException()
         {
             // Arrange
-            var lOptions = new ApplicationListOptions { };
+
+            // Act
+           
+            // Assert
+            Assert.Throws<ArgumentNullException>(() => _svixClient.Application.Create(null, null));
+        }
+        
+        [Fact]
+        public async void ApplicationCreateAsync_WithoutApplication_ThrowsException()
+        {
+            // Arrange
+
+            // Act
+            
+            // Assert
+            Assert.ThrowsAsync<ArgumentNullException>(() => _svixClient.Application.CreateAsync(null, null, null, default));
+        }
+        
+        [Fact]
+        public void ApplicationCreate_WithoutOptions_CallsApi_WithoutOptions()
+        {
+            // Arrange
+            var lName = "app_name_08q73yhrngv";
+            var lUid = "08273gh45";
+            var lRateLimit = 30;
+            
+            ApplicationCreateOptions lOptions = null;
+            var lApplication = new ApplicationIn(lName, lRateLimit, lUid);
+
+            // Act
+            var lApplicationOut = _svixClient.Application.Create(lApplication, lOptions, null);
+            
+            // Assert
+            _mockApplicationApi.Verify(x => x.CreateApplicationApiV1AppPost(lApplication, It.IsAny<bool>(), null));
+        }
+        
+        [Fact]
+        public async void ApplicationCreateAsync_WithoutOptions_CallsApi_WithoutOptions()
+        {
+            // Arrange
+            var lName = "app_name_08q73yhrngv";
+            var lUid = "08273gh45";
+            var lRateLimit = 30;
+            
+            ApplicationCreateOptions lOptions = null;
+            var lApplication = new ApplicationIn(lName, lRateLimit, lUid);
+
+            // Act
+            var lResult = _svixClient.Application.CreateAsync(lApplication, lOptions, null, default);
+            
+            // Assert
+            _mockApplicationApi.Verify(x => x.CreateApplicationApiV1AppPostAsync(lApplication, It.IsAny<bool>(), null, default));
+        }
+        
+        [Fact]
+        public void ApplicationCreate_WithOptions_CallsApi_WithOptions()
+        {
+            // Arrange
+            var lName = "app_name_08q73yhrngv";
+            var lUid = "08273gh45";
+            var lRateLimit = 30;
+            
+            var lApplication = new ApplicationIn(lName, lRateLimit, lUid);
+            ApplicationCreateOptions lOptions = new ApplicationCreateOptions
+            {
+                GetIfExists = true 
+            };
+
+            // Act
+            var lApplicationOut = _svixClient.Application.Create(lApplication, lOptions, null);
+            
+            // Assert
+            _mockApplicationApi.Verify(x => x.CreateApplicationApiV1AppPost(lApplication, true, null));
+        }
+        
+        [Fact]
+        public void ApplicationCreateAsync_WithOptions_CallsApi_WithOptions()
+        {
+            // Arrange
+            var lName = "app_name_08q73yhrngv";
+            var lUid = "08273gh45";
+            var lRateLimit = 30;
+            
+            var lApplication = new ApplicationIn(lName, lRateLimit, lUid);
+            ApplicationCreateOptions lOptions = new ApplicationCreateOptions
+            {
+                GetIfExists = true 
+            };
+
+            // Act
+            var lApplicationOut = _svixClient.Application.CreateAsync(lApplication, lOptions, null, default);
+            
+            // Assert
+            _mockApplicationApi.Verify(x => x.CreateApplicationApiV1AppPostAsync(lApplication, true, null, default));
+        }
+        
+        [Fact]
+        public void ApplicationList_WithoutOptions_CallsApi_WithoutOptions()
+        {
+            // Arrange
+            ApplicationListOptions lOptions = null;
             
             // Act
             var lResult = _svixClient.Application
@@ -46,10 +148,10 @@ namespace Svix.Tests
         }
         
         [Fact]
-        public async void ApplicationListAsync_WithoutIterator_CallsApi_WithoutIteratorInfo()
+        public async void ApplicationListAsync_WithoutOptions_CallsApi_WithoutOptions()
         {
             // Arrange
-            var lOptions = new ApplicationListOptions { };
+            ApplicationListOptions lOptions = null;
             
             // Act
             var lResult = _svixClient.Application
@@ -60,7 +162,7 @@ namespace Svix.Tests
         }
         
         [Fact]
-        public void ApplicationList_WithIterator_CallsApi_WithIteratorInfo()
+        public void ApplicationList_WithOptions_CallsApi_WithOptions()
         {
             // Arrange
             var lIterator = "app_1srOrx2ZWZBpBUvZwXKQmoEYga2";
@@ -81,7 +183,7 @@ namespace Svix.Tests
         }
         
         [Fact]
-        public async void ApplicationListAsync_WithIterator_CallsApi_WithIteratorInfo()
+        public async void ApplicationListAsync_WithOptions_CallsApi_WithOptions()
         {
             // Arrange
             var lIterator = "app_1srOrx2ZWZBpBUvZwXKQmoEYga2";

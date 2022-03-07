@@ -20,6 +20,75 @@ namespace Svix
         {
             _applicationApi = applicationApi ?? throw new ArgumentNullException(nameof(applicationApi));
         }
+
+        public ApplicationOut Create(ApplicationIn application, ApplicationCreateOptions options, string idempotencyKey = default)
+        {
+            try
+            {
+                application = application ?? throw new ArgumentNullException(nameof(application));
+                
+                var lApplication = _applicationApi.CreateApplicationApiV1AppPost(
+                    application,
+                    options?.GetIfExists ?? false,
+                    idempotencyKey);
+
+                return lApplication;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(List)} failed");
+
+                if (Throw)
+                    throw;
+
+                return null;
+            }
+        }
+        
+        public async Task<ApplicationOut> CreateAsync(ApplicationIn application, ApplicationCreateOptions options, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                application = application ?? throw new ArgumentNullException(nameof(application));
+                
+                var lApplication = await _applicationApi.CreateApplicationApiV1AppPostAsync(
+                    application,
+                    options?.GetIfExists ?? false,
+                    idempotencyKey,
+                    cancellationToken);
+
+                return lApplication;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(List)} failed");
+
+                if (Throw)
+                    throw;
+
+                return null;
+            }
+        }
+
+        public ApplicationOut Delete()
+        {
+            throw new NotImplementedException();
+        }
+        
+        public async Task<ApplicationOut> DeleteAsync()
+        {
+            throw new NotImplementedException();
+        }
+        
+        public ApplicationOut Get()
+        {
+            throw new NotImplementedException();
+        }
+        
+        public async Task<ApplicationOut> GetAsync()
+        {
+            throw new NotImplementedException();
+        }
         
         public List<ApplicationOut> List(ApplicationListOptions options = null, string idempotencyKey = default)
         {
@@ -64,6 +133,16 @@ namespace Svix
                 
                 return new List<ApplicationOut>();
             }
+        }
+        
+        public ApplicationOut Update()
+        {
+            throw new NotImplementedException();
+        }
+        
+        public async Task<ApplicationOut> UpdateAsync()
+        {
+            throw new NotImplementedException();
         }
     }
 }
