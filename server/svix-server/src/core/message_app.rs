@@ -1,12 +1,15 @@
-use std::convert::{TryFrom, TryInto};
+use std::{
+    convert::{TryFrom, TryInto},
+    time::Duration,
+};
 
 use chrono::{DateTime, FixedOffset};
-use sea_orm::DatabaseTransaction;
+use sea_orm::{ConnectionTrait, DatabaseConnection, DatabaseTransaction};
 use serde::{Deserialize, Serialize};
 
 use crate::{
     core::{
-        cache::{kv_def, CacheKey, CacheValue},
+        cache::{kv_def, CacheKey, CacheValue, RedisCache},
         types::{
             ApplicationId, ApplicationUid, EndpointHeaders, EndpointId, EndpointSecret,
             EventChannelSet, EventTypeNameSet, ExpiringSigningKeys, OrganizationId,
@@ -31,7 +34,7 @@ pub struct CreateMessageApp {
 impl CreateMessageApp {
     /// Fetch all requisite information for creating a [`CreateMessageApp`] from the PostgreSQL
     /// database
-    pub async fn fetch(
+    async fn fetch_from_pg_by_model(
         db: &DatabaseTransaction,
         app: application::Model,
     ) -> Result<CreateMessageApp> {
@@ -56,6 +59,50 @@ impl CreateMessageApp {
             endpoints,
             deleted: app.deleted,
         })
+    }
+
+    /// Fetches all information for creating a [`CreateMessageApp`] from the Redis cache if it
+    /// exists or from PostgreSQL otherwise. If the RedisCache is Some, but does not contain the
+    /// requisite information, fetch it from PostgreSQL and insert the data into the cache.
+    pub async fn layered_fetch(
+        redis: Option<&RedisCache>,
+        pg: &DatabaseConnection,
+        app: Option<application::Model>,
+        app_id: ApplicationId,
+        org_id: OrganizationId,
+    ) -> Result<Option<CreateMessageApp>> {
+        let cache_key = AppEndpointKey::new(org_id.clone(), app_id.clone());
+
+        // First check Redis
+        if let Some(redis) = redis {
+            if let Ok(Some(cma)) = redis.get(&cache_key).await {
+                return Ok(Some(cma));
+            }
+        }
+
+        // Then check PostgreSQL
+        let db = pg.begin().await?;
+        // Fetch the [`application::Model`] either given or from the ID
+        let app = if let Some(app) = app {
+            app
+        } else if let Some(app) = application::Entity::secure_find_by_id(org_id, app_id)
+            .one(&db)
+            .await?
+        {
+            app
+        } else {
+            return Ok(None);
+        };
+
+        // Fetch the actual [`CreateMessageApp`]
+        let out = Self::fetch_from_pg_by_model(&db, app).await?;
+
+        // Insert it into Redis
+        if let Some(redis) = redis {
+            let _ = redis.set(&cache_key, &out, Duration::from_secs(30)).await;
+        }
+
+        Ok(Some(out))
     }
 }
 

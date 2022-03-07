@@ -4,13 +4,10 @@
 use crate::cfg::Configuration;
 use crate::core::{
     cache::RedisCache,
-    message_app::{AppEndpointKey, CreateMessageApp, CreateMessageEndpoint},
-    types::{
-        ApplicationId, EndpointHeaders, EndpointId, EndpointSecret, MessageAttemptTriggerType,
-        MessageId, MessageStatus,
-    },
+    message_app::{CreateMessageApp, CreateMessageEndpoint},
+    types::{EndpointHeaders, EndpointSecret, MessageAttemptTriggerType, MessageId, MessageStatus},
 };
-use crate::db::models::{application, endpoint, message, messageattempt, messagedestination};
+use crate::db::models::{message, messageattempt, messagedestination};
 use crate::error::{Error, Result};
 use crate::queue::{MessageTask, QueueTask, TaskQueueConsumer, TaskQueueProducer};
 use chrono::Utc;
@@ -20,7 +17,7 @@ use sea_orm::ActiveValue::Set;
 use sea_orm::{DatabaseConnection, EntityTrait};
 use tokio::time::{sleep, Duration};
 
-use std::{convert::TryInto, iter, str::FromStr};
+use std::{iter, str::FromStr};
 
 const USER_AGENT: &str = concat!("Svix-Webhooks/", env!("CARGO_PKG_VERSION"));
 
@@ -69,30 +66,6 @@ fn generate_msg_headers(
     headers
 }
 
-// A fallback for if the cache is disabled or the endpoint was not found
-async fn fetch_endpoint_from_postgres(
-    db: &DatabaseConnection,
-    app_id: ApplicationId,
-    endpoint_id: EndpointId,
-) -> Result<CreateMessageEndpoint> {
-    let (endp, _app): (endpoint::Model, application::Model) = if let Some((endp, app)) =
-        endpoint::Entity::secure_find_by_id(app_id.clone(), endpoint_id.clone())
-            .filter(endpoint::Column::Disabled.eq(false))
-            .find_also_related(application::Entity)
-            .one(db)
-            .await?
-    {
-        (endp, app.unwrap())
-    } else {
-        return Err(Error::Generic(format!(
-            "Unexpected: app or endpoint don't exist (or deleted) {} {}",
-            app_id, endpoint_id
-        )));
-    };
-
-    endp.try_into()
-}
-
 /// Dispatches one webhook
 async fn dispatch(
     cfg: Configuration,
@@ -106,43 +79,6 @@ async fn dispatch(
     let app_id = &msg_task.app_id;
     let endp_id = &msg_task.endpoint_id;
 
-    let endp: CreateMessageEndpoint = if let Some(cache) = redis_cache {
-        if let Some(organization_id) = msg_task.org_id.clone() {
-            let cache_key = AppEndpointKey::new(organization_id, msg_task.app_id.clone());
-
-            if let Some(cma) = cache
-                .get::<CreateMessageApp>(&cache_key)
-                .await
-                .unwrap_or_else(|e| {
-                    // On cache fetch error, log and fallback to PostgreSQL by defaulting to None
-                    tracing::error!("Redis cache error on fetch: {}", e);
-                    None
-                })
-            {
-                if let Some(endp) = cma
-                    .endpoints
-                    .into_iter()
-                    .find(|endp| endp.id == msg_task.endpoint_id)
-                {
-                    endp
-                } else {
-                    // If the [`CreateMessageApp`] does not contain the correct endpoint fallback to
-                    // PostgreSQL
-                    fetch_endpoint_from_postgres(db, app_id.clone(), endp_id.clone()).await?
-                }
-            } else {
-                // If the [`CreateMessageApp`] is not in the cache fallback to PostgreSQL
-                fetch_endpoint_from_postgres(db, app_id.clone(), endp_id.clone()).await?
-            }
-        } else {
-            // If there is no [`OrganizationId`], then fallback to PostgreSQL
-            fetch_endpoint_from_postgres(db, app_id.clone(), endp_id.clone()).await?
-        }
-    } else {
-        // If Redis is disabled, look in PostgreSQL instead
-        fetch_endpoint_from_postgres(db, app_id.clone(), endp_id.clone()).await?
-    };
-
     let msg = if let Some(msg) = message::Entity::find_by_id(msg_task.msg_id.clone())
         .one(db)
         .await?
@@ -152,6 +88,27 @@ async fn dispatch(
         tracing::warn!("Unexpected: message doesn't exist {}", msg_task.msg_id);
         return Ok(());
     };
+
+    let org_id = msg.org_id;
+
+    let endp: CreateMessageEndpoint = CreateMessageApp::layered_fetch(
+        redis_cache.as_ref(),
+        db,
+        None,
+        app_id.clone(),
+        org_id.clone(),
+    )
+    .await?
+    .ok_or_else(|| Error::Generic(format!("Unexpected: app does not exist {}", app_id)))?
+    .endpoints
+    .into_iter()
+    .find(|endp| endp.id == *endp_id)
+    .ok_or_else(|| {
+        Error::Generic(format!(
+            "Unexpected: endpoint does not exist {} {}",
+            app_id, endp_id
+        ))
+    })?;
 
     // FIXME: no unwrap
     let body = serde_json::to_string(&msg.payload).unwrap();

@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use std::{collections::HashSet, time::Duration};
+use std::collections::HashSet;
 
 use crate::{
     core::{
         cache::RedisCache,
-        message_app::{AppEndpointKey, CreateMessageApp},
+        message_app::CreateMessageApp,
         security::AuthenticatedApplication,
         types::{
             ApplicationIdOrUid, BaseId, EventChannelSet, EventTypeName, MessageAttemptTriggerType,
@@ -14,7 +14,7 @@ use crate::{
         },
     },
     db::models::messagedestination,
-    error::{HttpError, Result},
+    error::{Error, HttpError, Result},
     queue::{MessageTask, TaskQueueProducer},
     v1::utils::{
         ListResponse, MessageListFetchOptions, ModelIn, ModelOut, ValidatedJson, ValidatedQuery,
@@ -160,33 +160,19 @@ async fn create_message(
     ValidatedJson(data): ValidatedJson<MessageIn>,
     AuthenticatedApplication { permissions, app }: AuthenticatedApplication,
 ) -> Result<(StatusCode, Json<MessageOut>)> {
+    let create_message_app = CreateMessageApp::layered_fetch(
+        redis_cache.as_ref(),
+        db,
+        Some(app.clone()),
+        app.id.clone(),
+        app.org_id,
+    )
+    .await?
+    // Should never happen since you're giving it an existing Application, but just in case
+    .ok_or_else(|| Error::Generic(format!("Application doesn't exist: {}", app.id)))?;
+
     let txn = db.begin().await?;
     let db = &txn;
-
-    let create_message_app: CreateMessageApp = if let Some(redis_cache) = redis_cache {
-        let cache_key = AppEndpointKey::new(app.org_id.clone(), app.id.clone());
-        // Redis cache errors are logged but ignored because you can always fallback to postgres
-        if let Some(cma) = redis_cache.get(&cache_key).await.unwrap_or_else(|e| {
-            tracing::error!("Redis cache error on fetch: {}", e);
-            None
-        }) {
-            cma
-        } else {
-            // If the [`CreateMessageApp`] isn't in the Redis cache, fetch it from the PostgreSQL
-            // database and insert that into the cache
-            let cma = CreateMessageApp::fetch(db, app.clone()).await?;
-            if let Err(e) = redis_cache
-                .set(&cache_key, &cma, Duration::from_secs(30))
-                .await
-            {
-                tracing::error!("Redis cache error on set: {}", e);
-            }
-            cma
-        }
-    } else {
-        // If Redis is disabled, there will be no RedisCache so fallback to postgres
-        CreateMessageApp::fetch(db, app.clone()).await?
-    };
 
     let msg = message::ActiveModel {
         app_id: Set(app.id.clone()),
@@ -237,7 +223,6 @@ async fn create_message(
             MessageTask::new_task(
                 msg.id.clone(),
                 app.id.clone(),
-                Some(app.org_id.clone()),
                 endp.id, MessageAttemptTriggerType::Scheduled));
     }
     if !msg_dests.is_empty() {
