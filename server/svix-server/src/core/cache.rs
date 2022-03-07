@@ -1,5 +1,3 @@
-pub mod create_message_app;
-
 use std::time::Duration;
 
 use bb8::Pool;

@@ -3,10 +3,8 @@
 
 use crate::cfg::Configuration;
 use crate::core::{
-    cache::{
-        create_message_app::{AppEndpointKey, CreateMessageApp, CreateMessageEndpoint},
-        RedisCache,
-    },
+    cache::RedisCache,
+    message_app::{AppEndpointKey, CreateMessageApp, CreateMessageEndpoint},
     types::{
         ApplicationId, EndpointHeaders, EndpointId, EndpointSecret, MessageAttemptTriggerType,
         MessageId, MessageStatus,

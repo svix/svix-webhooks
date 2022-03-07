@@ -2,5 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 pub mod cache;
+pub mod message_app;
 pub mod security;
 pub mod types;

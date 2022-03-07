@@ -4,11 +4,13 @@ use chrono::{DateTime, FixedOffset};
 use sea_orm::DatabaseTransaction;
 use serde::{Deserialize, Serialize};
 
-use super::{kv_def, CacheKey, CacheValue};
 use crate::{
-    core::types::{
-        ApplicationId, ApplicationUid, EndpointHeaders, EndpointId, EndpointSecret,
-        EventChannelSet, EventTypeNameSet, ExpiringSigningKeys, OrganizationId,
+    core::{
+        cache::{kv_def, CacheKey, CacheValue},
+        types::{
+            ApplicationId, ApplicationUid, EndpointHeaders, EndpointId, EndpointSecret,
+            EventChannelSet, EventTypeNameSet, ExpiringSigningKeys, OrganizationId,
+        },
     },
     db::models::{application, endpoint},
     error::{Error, Result},
@@ -21,7 +23,6 @@ pub struct CreateMessageApp {
     pub id: ApplicationId,
     pub uid: Option<ApplicationUid>,
     pub org_id: OrganizationId,
-    // TODO: org_group_id
     pub rate_limit: Option<u16>,
     pub endpoints: Vec<CreateMessageEndpoint>,
     pub deleted: bool,

@@ -5,10 +5,8 @@ use std::{collections::HashSet, time::Duration};
 
 use crate::{
     core::{
-        cache::{
-            create_message_app::{AppEndpointKey, CreateMessageApp},
-            RedisCache,
-        },
+        cache::RedisCache,
+        message_app::{AppEndpointKey, CreateMessageApp},
         security::AuthenticatedApplication,
         types::{
             ApplicationIdOrUid, BaseId, EventChannelSet, EventTypeName, MessageAttemptTriggerType,
