@@ -496,7 +496,7 @@ async fn bulk_recover_failed_messages(
                     MessageTask::new_task(
                         msg_dest.msg_id,
                         app.id.clone(),
-                        app.org_id.clone(),
+                        Some(app.org_id.clone()),
                         msg_dest.endp_id,
                         MessageAttemptTriggerType::Manual,
                     ),

@@ -109,30 +109,35 @@ async fn dispatch(
     let endp_id = &msg_task.endpoint_id;
 
     let endp: CreateMessageEndpoint = if let Some(cache) = redis_cache {
-        let cache_key = AppEndpointKey::new(msg_task.org_id.clone(), msg_task.app_id.clone());
+        if let Some(organization_id) = msg_task.org_id.clone() {
+            let cache_key = AppEndpointKey::new(organization_id, msg_task.app_id.clone());
 
-        if let Some(cma) = cache
-            .get::<CreateMessageApp>(&cache_key)
-            .await
-            .unwrap_or_else(|e| {
-                // On cache fetch error, log and fallback to PostgreSQL by defaulting to None
-                tracing::error!("Redis cache error on fetch: {}", e);
-                None
-            })
-        {
-            if let Some(endp) = cma
-                .endpoints
-                .into_iter()
-                .find(|endp| endp.id == msg_task.endpoint_id)
+            if let Some(cma) = cache
+                .get::<CreateMessageApp>(&cache_key)
+                .await
+                .unwrap_or_else(|e| {
+                    // On cache fetch error, log and fallback to PostgreSQL by defaulting to None
+                    tracing::error!("Redis cache error on fetch: {}", e);
+                    None
+                })
             {
-                endp
+                if let Some(endp) = cma
+                    .endpoints
+                    .into_iter()
+                    .find(|endp| endp.id == msg_task.endpoint_id)
+                {
+                    endp
+                } else {
+                    // If the [`CreateMessageApp`] does not contain the correct endpoint fallback to
+                    // PostgreSQL
+                    fetch_endpoint_from_postgres(db, app_id.clone(), endp_id.clone()).await?
+                }
             } else {
-                // If the [`CreateMessageApp`] does not contain the correct endpoint fallback to
-                // PostgreSQL
+                // If the [`CreateMessageApp`] is not in the cache fallback to PostgreSQL
                 fetch_endpoint_from_postgres(db, app_id.clone(), endp_id.clone()).await?
             }
         } else {
-            // If the [`CreateMessageApp`] is not in the cache fallback to PostgreSQL
+            // If there is no [`OrganizationId`], then fallback to PostgreSQL
             fetch_endpoint_from_postgres(db, app_id.clone(), endp_id.clone()).await?
         }
     } else {

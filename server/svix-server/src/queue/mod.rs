@@ -20,7 +20,7 @@ pub mod redis;
 pub struct MessageTask {
     pub msg_id: MessageId,
     pub app_id: ApplicationId,
-    pub org_id: OrganizationId,
+    pub org_id: Option<OrganizationId>,
     pub endpoint_id: EndpointId,
     pub trigger_type: MessageAttemptTriggerType,
     pub attempt_count: u16,
@@ -30,7 +30,7 @@ impl MessageTask {
     pub fn new_task(
         msg_id: MessageId,
         app_id: ApplicationId,
-        org_id: OrganizationId,
+        org_id: Option<OrganizationId>,
         endpoint_id: EndpointId,
         trigger_type: MessageAttemptTriggerType,
     ) -> QueueTask {
@@ -131,7 +131,7 @@ mod tests {
         MessageTask::new_task(
             MessageId(message_id),
             ApplicationId("TestEndpointID".to_owned()),
-            OrganizationId("TestEndpointID".to_owned()),
+            Some(OrganizationId("TestEndpointID".to_owned())),
             EndpointId("TestEndpointID".to_owned()),
             MessageAttemptTriggerType::Scheduled,
         )

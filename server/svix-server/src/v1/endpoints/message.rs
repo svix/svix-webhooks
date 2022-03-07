@@ -239,7 +239,7 @@ async fn create_message(
             MessageTask::new_task(
                 msg.id.clone(),
                 app.id.clone(),
-                app.org_id.clone(),
+                Some(app.org_id.clone()),
                 endp.id, MessageAttemptTriggerType::Scheduled));
     }
     if !msg_dests.is_empty() {
