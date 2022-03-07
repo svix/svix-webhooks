@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use std::collections::HashSet;
+use std::{collections::HashSet, time::Duration};
 
 use crate::{
     core::{
@@ -177,7 +177,10 @@ async fn create_message(
             // If the [`CreateMessageApp`] isn't in the Redis cache, fetch it from the PostgreSQL
             // database and insert that into the cache
             let cma = CreateMessageApp::fetch(db, app.clone()).await?;
-            if let Err(e) = redis_cache.set(&cache_key, &cma, 30).await {
+            if let Err(e) = redis_cache
+                .set(&cache_key, &cma, Duration::from_secs(30))
+                .await
+            {
                 tracing::error!("Redis cache error on set: {}", e);
             }
             cma

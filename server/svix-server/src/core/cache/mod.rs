@@ -1,5 +1,7 @@
 pub mod create_message_app;
 
+use std::time::Duration;
+
 use bb8::Pool;
 use bb8_redis::RedisConnectionManager;
 use redis::{AsyncCommands, RedisError};
@@ -16,6 +18,9 @@ pub enum Error {
 
     #[error("Redis databse error")]
     Database(#[from] RedisError),
+
+    #[error("input error: {0}")]
+    Input(String),
 }
 type Result<T> = std::result::Result<T, Error>;
 
@@ -71,11 +76,22 @@ impl RedisCache {
             .transpose()?)
     }
 
-    pub async fn set<T: CacheValue>(&self, key: &T::Key, value: &T, ttl: usize) -> Result<()> {
+    /// Sets a CacheKey to its associated CacheValue.
+    /// Note that the [`Duration`] used is down to millisecond precision.
+    pub async fn set<T: CacheValue>(&self, key: &T::Key, value: &T, ttl: Duration) -> Result<()> {
         let mut pool = self.redis.get().await?;
 
-        pool.set_ex(key.as_ref(), serde_json::to_string(value)?, ttl)
-            .await?;
+        pool.pset_ex(
+            key.as_ref(),
+            serde_json::to_string(value)?,
+            ttl.as_millis().try_into().map_err(|e| {
+                Error::Input(format!(
+                    "Duration given cannot be converted to usize: {}",
+                    e
+                ))
+            })?,
+        )
+        .await?;
 
         Ok(())
     }
@@ -135,16 +151,28 @@ mod tests {
         );
 
         // Create
-        assert!(cache.set(&first_key, &first_val_a, 30).await.is_ok());
-        assert!(cache.set(&second_key, &second_val_a, 30).await.is_ok());
+        assert!(cache
+            .set(&first_key, &first_val_a, Duration::from_secs(30))
+            .await
+            .is_ok());
+        assert!(cache
+            .set(&second_key, &second_val_a, Duration::from_secs(30))
+            .await
+            .is_ok());
 
         // Read
         assert_eq!(cache.get(&first_key).await.unwrap(), Some(first_val_a));
         assert_eq!(cache.get(&second_key).await.unwrap(), Some(second_val_a));
 
         // Update (overwrite)
-        assert!(cache.set(&first_key, &first_val_b, 30).await.is_ok());
-        assert!(cache.set(&second_key, &second_val_b, 30).await.is_ok());
+        assert!(cache
+            .set(&first_key, &first_val_b, Duration::from_secs(30))
+            .await
+            .is_ok());
+        assert!(cache
+            .set(&second_key, &second_val_b, Duration::from_secs(30))
+            .await
+            .is_ok());
 
         // Confirm update
         assert_eq!(cache.get(&first_key).await.unwrap(), Some(first_val_b));
@@ -168,7 +196,10 @@ mod tests {
         let cache = RedisCache::new(redis_pool.clone());
         let key = TestKeyA::new("key".to_owned());
 
-        assert!(cache.set(&key, &TestValA(1), 1).await.is_ok());
+        assert!(cache
+            .set(&key, &TestValA(1), Duration::from_secs(1))
+            .await
+            .is_ok());
         tokio::time::sleep(std::time::Duration::from_millis(1200)).await;
         assert_eq!(cache.get::<TestValA>(&key).await.unwrap(), None);
     }
