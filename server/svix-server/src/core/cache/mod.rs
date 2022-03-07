@@ -71,21 +71,11 @@ impl RedisCache {
             .transpose()?)
     }
 
-    pub async fn set<T: CacheValue>(
-        &self,
-        key: &T::Key,
-        value: &T,
-        ttl: Option<usize>,
-    ) -> Result<()> {
+    pub async fn set<T: CacheValue>(&self, key: &T::Key, value: &T, ttl: usize) -> Result<()> {
         let mut pool = self.redis.get().await?;
 
-        if let Some(ttl) = ttl {
-            pool.set_ex(key.as_ref(), serde_json::to_string(value)?, ttl)
-                .await?;
-        } else {
-            pool.set(key.as_ref(), serde_json::to_string(value)?)
-                .await?;
-        }
+        pool.set_ex(key.as_ref(), serde_json::to_string(value)?, ttl)
+            .await?;
 
         Ok(())
     }
@@ -145,16 +135,16 @@ mod tests {
         );
 
         // Create
-        assert!(cache.set(&first_key, &first_val_a, None).await.is_ok());
-        assert!(cache.set(&second_key, &second_val_a, None).await.is_ok());
+        assert!(cache.set(&first_key, &first_val_a, 30).await.is_ok());
+        assert!(cache.set(&second_key, &second_val_a, 30).await.is_ok());
 
         // Read
         assert_eq!(cache.get(&first_key).await.unwrap(), Some(first_val_a));
         assert_eq!(cache.get(&second_key).await.unwrap(), Some(second_val_a));
 
         // Update (overwrite)
-        assert!(cache.set(&first_key, &first_val_b, None).await.is_ok());
-        assert!(cache.set(&second_key, &second_val_b, None).await.is_ok());
+        assert!(cache.set(&first_key, &first_val_b, 30).await.is_ok());
+        assert!(cache.set(&second_key, &second_val_b, 30).await.is_ok());
 
         // Confirm update
         assert_eq!(cache.get(&first_key).await.unwrap(), Some(first_val_b));
@@ -178,7 +168,7 @@ mod tests {
         let cache = RedisCache::new(redis_pool.clone());
         let key = TestKeyA::new("key".to_owned());
 
-        assert!(cache.set(&key, &TestValA(1), Some(1)).await.is_ok());
+        assert!(cache.set(&key, &TestValA(1), 1).await.is_ok());
         tokio::time::sleep(std::time::Duration::from_millis(1200)).await;
         assert_eq!(cache.get::<TestValA>(&key).await.unwrap(), None);
     }

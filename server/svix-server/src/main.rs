@@ -113,7 +113,7 @@ async fn main() {
         .layer(Extension(pool.clone()))
         .layer(Extension(queue_tx.clone()))
         .layer(Extension(cfg.clone()))
-    	.layer(Extension(redis_cache.clone()));
+        .layer(Extension(redis_cache.clone()));
 
     if let Some(redis_pool) = &redis_pool {
         app = app.layer(Extension(redis_pool.clone()));
