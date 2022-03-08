@@ -54,7 +54,7 @@ jobs:
     - uses: Swatinem/rust-cache@v1
 
     - name: Start dependencies
-      run: docker-compose -f "server/docker-compose.yml" up --no-build -d
+      run: docker-compose -f "server/testing-docker-compose.yml" up -d
 
     - name: Run tests
       uses: actions-rs/cargo@v1
