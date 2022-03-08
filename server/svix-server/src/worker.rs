@@ -2,10 +2,12 @@
 // SPDX-License-Identifier: MIT
 
 use crate::cfg::Configuration;
-use crate::core::types::{
-    EndpointHeaders, EndpointSecret, MessageAttemptTriggerType, MessageId, MessageStatus,
+use crate::core::{
+    cache::RedisCache,
+    message_app::{CreateMessageApp, CreateMessageEndpoint},
+    types::{EndpointHeaders, EndpointSecret, MessageAttemptTriggerType, MessageId, MessageStatus},
 };
-use crate::db::models::{application, endpoint, message, messageattempt, messagedestination};
+use crate::db::models::{message, messageattempt, messagedestination};
 use crate::error::{Error, Result};
 use crate::queue::{MessageTask, QueueTask, TaskQueueConsumer, TaskQueueProducer};
 use chrono::Utc;
@@ -68,6 +70,7 @@ fn generate_msg_headers(
 async fn dispatch(
     cfg: Configuration,
     db: &DatabaseConnection,
+    redis_cache: Option<RedisCache>,
     queue_tx: &TaskQueueProducer,
     msg_task: MessageTask,
 ) -> Result<()> {
@@ -75,22 +78,6 @@ async fn dispatch(
 
     let app_id = &msg_task.app_id;
     let endp_id = &msg_task.endpoint_id;
-    let (endp, _app): (endpoint::Model, application::Model) = if let Some((endp, app)) =
-        endpoint::Entity::secure_find_by_id(app_id.clone(), endp_id.clone())
-            .filter(endpoint::Column::Disabled.eq(false))
-            .find_also_related(application::Entity)
-            .one(db)
-            .await?
-    {
-        (endp, app.unwrap())
-    } else {
-        tracing::warn!(
-            "Unexpected: app or endpoint don't exist (or deleted) {} {}",
-            app_id,
-            endp_id
-        );
-        return Ok(());
-    };
 
     let msg = if let Some(msg) = message::Entity::find_by_id(msg_task.msg_id.clone())
         .one(db)
@@ -102,10 +89,32 @@ async fn dispatch(
         return Ok(());
     };
 
+    let org_id = msg.org_id;
+
+    let endp: CreateMessageEndpoint = CreateMessageApp::layered_fetch(
+        redis_cache.as_ref(),
+        db,
+        None,
+        app_id.clone(),
+        org_id.clone(),
+        Duration::from_secs(30),
+    )
+    .await?
+    .ok_or_else(|| Error::Generic(format!("Unexpected: app does not exist {}", app_id)))?
+    .endpoints
+    .into_iter()
+    .find(|endp| endp.id == *endp_id)
+    .ok_or_else(|| {
+        Error::Generic(format!(
+            "Unexpected: endpoint does not exist {} {}",
+            app_id, endp_id
+        ))
+    })?;
+
     // FIXME: no unwrap
     let body = serde_json::to_string(&msg.payload).unwrap();
     let headers = {
-        let keys: Vec<&EndpointSecret> = if let Some(ref old_keys) = endp.old_keys {
+        let keys: Vec<&EndpointSecret> = if let Some(ref old_keys) = endp.old_signing_keys {
             iter::once(&endp.key)
                 .chain(old_keys.0.iter().map(|x| &x.key))
                 .collect()
@@ -268,6 +277,7 @@ async fn dispatch(
 pub async fn worker_loop(
     cfg: Configuration,
     pool: DatabaseConnection,
+    redis_cache: Option<RedisCache>,
     queue_tx: TaskQueueProducer,
     mut queue_rx: TaskQueueConsumer,
 ) -> Result<()> {
@@ -280,8 +290,9 @@ pub async fn worker_loop(
                 let cfg = cfg.clone();
                 match queue_task {
                     QueueTask::MessageV1(msg) => {
+                        let cache = redis_cache.clone();
                         tokio::spawn(async move {
-                            if let Err(err) = dispatch(cfg, &pool, &queue_tx, msg).await {
+                            if let Err(err) = dispatch(cfg, &pool, cache, &queue_tx, msg).await {
                                 tracing::error!("Error executing task: {}", err);
                                 queue_tx.nack(delivery).await.unwrap();
                             } else {

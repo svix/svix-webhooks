@@ -1,18 +1,20 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use std::collections::HashSet;
+use std::{collections::HashSet, time::Duration};
 
 use crate::{
     core::{
+        cache::RedisCache,
+        message_app::CreateMessageApp,
         security::AuthenticatedApplication,
         types::{
             ApplicationIdOrUid, BaseId, EventChannelSet, EventTypeName, MessageAttemptTriggerType,
             MessageId, MessageIdOrUid, MessageStatus, MessageUid,
         },
     },
-    db::models::{endpoint, messagedestination},
-    error::{HttpError, Result},
+    db::models::messagedestination,
+    error::{Error, HttpError, Result},
     queue::{MessageTask, TaskQueueProducer},
     v1::utils::{
         ListResponse, MessageListFetchOptions, ModelIn, ModelOut, ValidatedJson, ValidatedQuery,
@@ -154,9 +156,22 @@ async fn list_messages(
 async fn create_message(
     Extension(ref db): Extension<DatabaseConnection>,
     Extension(queue_tx): Extension<TaskQueueProducer>,
+    Extension(redis_cache): Extension<Option<RedisCache>>,
     ValidatedJson(data): ValidatedJson<MessageIn>,
     AuthenticatedApplication { permissions, app }: AuthenticatedApplication,
 ) -> Result<(StatusCode, Json<MessageOut>)> {
+    let create_message_app = CreateMessageApp::layered_fetch(
+        redis_cache.as_ref(),
+        db,
+        Some(app.clone()),
+        app.id.clone(),
+        app.org_id,
+        Duration::from_secs(30),
+    )
+    .await?
+    // Should never happen since you're giving it an existing Application, but just in case
+    .ok_or_else(|| Error::Generic(format!("Application doesn't exist: {}", app.id)))?;
+
     let txn = db.begin().await?;
     let db = &txn;
 
@@ -171,13 +186,14 @@ async fn create_message(
     let empty_channel_set = HashSet::new();
     let mut msg_dests = vec![];
     let mut tasks = vec![];
-    for endp in endpoint::Entity::secure_find(app.id.clone())
-        .filter(endpoint::Column::Disabled.eq(false))
-        .all(db)
-        .await?
+    for endp in create_message_app.endpoints
         .into_iter()
         .filter(|endp| {
-            trigger_type == MessageAttemptTriggerType::Manual
+            // No disabled or deleted enpoints ever
+          	!endp.disabled && !endp.deleted &&
+            (
+                // Manual attempt types go throguh regardless
+                trigger_type == MessageAttemptTriggerType::Manual
                 || (
                         // If an endpoint has event types and it matches ours, or has no event types
                         endp
@@ -193,7 +209,7 @@ async fn create_message(
                         .as_ref()
                         .map(|x| !x.0.is_disjoint(msg.channels.as_ref().map(|x| &x.0).unwrap_or(&empty_channel_set)))
                         .unwrap_or(true)
-                )
+                ))
         })
     {
         let msg_dest = messagedestination::ActiveModel {
@@ -204,7 +220,11 @@ async fn create_message(
             ..Default::default()
         };
         msg_dests.push(msg_dest);
-        tasks.push(MessageTask::new_task(msg.id.clone(), app.id.clone(), endp.id, MessageAttemptTriggerType::Scheduled));
+        tasks.push(
+            MessageTask::new_task(
+                msg.id.clone(),
+                app.id.clone(),
+                endp.id, MessageAttemptTriggerType::Scheduled));
     }
     if !msg_dests.is_empty() {
         messagedestination::Entity::insert_many(msg_dests)
