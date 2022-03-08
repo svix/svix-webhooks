@@ -70,6 +70,7 @@ impl CreateMessageApp {
         app: Option<application::Model>,
         app_id: ApplicationId,
         org_id: OrganizationId,
+        ttl: Duration,
     ) -> Result<Option<CreateMessageApp>> {
         let cache_key = AppEndpointKey::new(org_id.clone(), app_id.clone());
 
@@ -99,7 +100,7 @@ impl CreateMessageApp {
 
         // Insert it into Redis
         if let Some(redis) = redis {
-            let _ = redis.set(&cache_key, &out, Duration::from_secs(30)).await;
+            let _ = redis.set(&cache_key, &out, ttl).await;
         }
 
         Ok(Some(out))

@@ -97,6 +97,7 @@ async fn dispatch(
         None,
         app_id.clone(),
         org_id.clone(),
+        Duration::from_secs(30),
     )
     .await?
     .ok_or_else(|| Error::Generic(format!("Unexpected: app does not exist {}", app_id)))?

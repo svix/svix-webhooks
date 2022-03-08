@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use std::collections::HashSet;
+use std::{collections::HashSet, time::Duration};
 
 use crate::{
     core::{
@@ -166,6 +166,7 @@ async fn create_message(
         Some(app.clone()),
         app.id.clone(),
         app.org_id,
+        Duration::from_secs(30),
     )
     .await?
     // Should never happen since you're giving it an existing Application, but just in case
