@@ -1,0 +1,18 @@
+version: "3.7"
+services:
+  postgres:
+    image: postgres:13.4
+    volumes:
+      - "postgres-data:/var/lib/postgresql/data/"
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: "redis:6.2-alpine"
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres-data:

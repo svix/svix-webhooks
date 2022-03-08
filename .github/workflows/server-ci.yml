@@ -25,11 +25,13 @@ jobs:
         profile: minimal
         components: clippy, rustfmt
     - uses: Swatinem/rust-cache@v1
+
     - name: Check
       uses: actions-rs/cargo@v1
       with:
         command: clippy
         args: --manifest-path server/Cargo.toml --all --all-targets --all-features
+        
     - name: rustfmt
       uses: actions-rs/cargo@v1
       with:
@@ -50,11 +52,23 @@ jobs:
         override: true
         profile: minimal
     - uses: Swatinem/rust-cache@v1
+
+    - name: Start dependencies
+      run: docker-compose -f "server/testing-docker-compose.yml" up -d
+
     - name: Run tests
       uses: actions-rs/cargo@v1
+      env:
+        DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
+        SVIX_REDIS_DSN: "redis://localhost:6379"
+        SVIX_QUEUE_TYPE: "redis"
+        SVIX_JWT_SECRET: "test value"
       with:
         command: test
         args: --manifest-path server/Cargo.toml  --all --all-features --all-targets
+
+    - name: Stop dependencies
+      run: docker-compose -f "server/docker-compose.yml" down
 
 #  deny-check:
 #    name: cargo-deny check
