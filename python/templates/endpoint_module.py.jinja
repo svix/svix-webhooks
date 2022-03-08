@@ -82,7 +82,7 @@ num_retries = 3
 def sync_detailed(
     {{ arguments(endpoint) | indent(4) }}
 ) -> {{return_type}}:
-    {{ docstring(endpoint, return_string) | indent(4) }}
+    {{ docstring(endpoint, return_type) | indent(4) }}
 
     kwargs = _get_kwargs(
         {{ kwargs(endpoint) }}
@@ -111,7 +111,7 @@ def sync_detailed(
 def sync(
     {{ arguments(endpoint) | indent(4) }}
 ) -> {{ return_type }}:
-    {{ docstring(endpoint, return_string) | indent(4) }}
+    {{ docstring(endpoint, return_type) | indent(4) }}
 
     return sync_detailed(
         {{ kwargs(endpoint) }}
@@ -121,7 +121,7 @@ def sync(
 async def asyncio_detailed(
     {{ arguments(endpoint) | indent(4) }}
 ) -> {{ return_type }}:
-    {{ docstring(endpoint, return_string) | indent(4) }}
+    {{ docstring(endpoint, return_type) | indent(4) }}
 
     kwargs = _get_kwargs(
         {{ kwargs(endpoint) }}
@@ -149,7 +149,7 @@ async def asyncio_detailed(
 async def asyncio(
     {{ arguments(endpoint) | indent(4) }}
 ) -> {{ return_type }}:
-    {{ docstring(endpoint, return_string) | indent(4) }}
+    {{ docstring(endpoint, return_type) | indent(4) }}
 
     return (await asyncio_detailed(
         {{ kwargs(endpoint) }}
