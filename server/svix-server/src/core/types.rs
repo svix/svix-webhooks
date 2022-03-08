@@ -14,7 +14,7 @@ use sea_orm::{
 };
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
-use svix_ksuid::*;
+use svix_ksuid::{Ksuid, KsuidLike};
 use validator::{Validate, ValidationError, ValidationErrors};
 
 const ALL_ERROR: &str = "__all__";
@@ -376,7 +376,7 @@ json_wrapper!(EventChannelSet);
 
 impl Validate for EventChannelSet {
     fn validate(&self) -> Result<(), validator::ValidationErrors> {
-        for item in self.0.iter() {
+        for item in &self.0 {
             item.validate()?;
         }
         Ok(())
@@ -389,7 +389,7 @@ json_wrapper!(EventTypeNameSet);
 
 impl Validate for EventTypeNameSet {
     fn validate(&self) -> Result<(), validator::ValidationErrors> {
-        for item in self.0.iter() {
+        for item in &self.0 {
             item.validate()?;
         }
         Ok(())

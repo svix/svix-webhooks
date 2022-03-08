@@ -54,7 +54,7 @@ pub trait ModelOut {
     fn list_response<T: ModelOut>(mut data: Vec<T>, limit: usize) -> ListResponse<T> {
         let done = data.len() <= limit;
         data.truncate(limit);
-        let iterator = data.last().map(|x| x.id_copy());
+        let iterator = data.last().map(ModelOut::id_copy);
         ListResponse {
             data,
             iterator,
@@ -85,8 +85,7 @@ where
                     Some(
                         body_err
                             .source()
-                            .map(|x| x.to_string())
-                            .unwrap_or_else(|| err.to_string()),
+                            .map_or_else(|| err.to_string(), ToString::to_string),
                     ),
                 ),
                 _ => HttpError::bad_request(None, Some(err.to_string())),

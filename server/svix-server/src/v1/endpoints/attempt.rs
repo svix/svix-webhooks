@@ -65,6 +65,8 @@ impl From<messageattempt::Model> for MessageAttemptOut {
     }
 }
 
+// [`AttemptListFetchOptions`] starting with `Attempt` seems justified here
+#[allow(clippy::module_name_repetitions)]
 #[derive(Debug, Deserialize, Validate)]
 pub struct AttemptListFetchOptions {
     pub endpoint_id: Option<EndpointIdOrUid>,
@@ -105,7 +107,7 @@ async fn list_messageattempts(
         .limit(limit + 1);
 
     if let Some(iterator) = iterator {
-        query = query.filter(messageattempt::Column::Id.lt(iterator))
+        query = query.filter(messageattempt::Column::Id.lt(iterator));
     }
 
     if let Some(endpoint_id) = endpoint_id {
@@ -113,16 +115,16 @@ async fn list_messageattempts(
             .one(db)
             .await?
             .ok_or_else(|| HttpError::not_found(None, None))?;
-        query = query.filter(messageattempt::Column::EndpId.eq(endp.id))
+        query = query.filter(messageattempt::Column::EndpId.eq(endp.id));
     }
 
     if let Some(status) = status {
-        query = query.filter(messageattempt::Column::Status.eq(status))
+        query = query.filter(messageattempt::Column::Status.eq(status));
     }
 
     Ok(Json(MessageAttemptOut::list_response(
-        query.all(db).await?.into_iter().map(|x| x.into()).collect(),
-        limit as usize,
+        query.all(db).await?.into_iter().map(Into::into).collect(),
+        limit.try_into().expect("Limit could not fit into a usize"),
     )))
 }
 

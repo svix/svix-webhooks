@@ -54,7 +54,7 @@ macro_rules! kv_def {
 }
 pub(crate) use kv_def;
 
-/// A Redis-based cache of data to avoid expensive fetches from PostgreSQL. Simply a wrapper over
+/// A Redis-based cache of data to avoid expensive fetches from postgres. Simply a wrapper over
 /// Redis.
 #[derive(Debug, Clone)]
 pub struct RedisCache {
@@ -74,7 +74,7 @@ impl RedisCache {
             .transpose()?)
     }
 
-    /// Sets a CacheKey to its associated CacheValue.
+    /// Sets a [`CacheKey`] to its associated [`CacheValue`].
     /// Note that the [`Duration`] used is down to millisecond precision.
     pub async fn set<T: CacheValue>(&self, key: &T::Key, value: &T, ttl: Duration) -> Result<()> {
         let mut pool = self.redis.get().await?;

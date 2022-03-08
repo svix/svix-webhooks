@@ -139,7 +139,7 @@ async fn dispatch(
     let res = client
         .post(&endp.url)
         .headers(headers)
-        .timeout(Duration::from_secs(cfg.worker_request_timeout as u64))
+        .timeout(Duration::from_secs(u64::from(cfg.worker_request_timeout)))
         .json(&msg.payload)
         .send()
         .await;
@@ -179,7 +179,11 @@ async fn dispatch(
     };
     let attempt = match res {
         Ok(res) => {
-            let status_code = res.status().as_u16() as i16;
+            let status_code = res
+                .status()
+                .as_u16()
+                .try_into()
+                .expect("HTTP status does not fit into u16");
             let status = if res.status().is_success() {
                 MessageStatus::Success
             } else {
@@ -274,7 +278,7 @@ async fn dispatch(
 }
 
 /// Listens on the message queue for new tasks
-pub async fn worker_loop(
+pub async fn main_loop(
     cfg: Configuration,
     pool: DatabaseConnection,
     redis_cache: Option<RedisCache>,

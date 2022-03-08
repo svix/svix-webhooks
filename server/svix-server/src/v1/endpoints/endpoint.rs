@@ -51,16 +51,14 @@ pub fn validate_event_types_ids(
     }
 }
 
-pub fn validate_channels_endpoint(
-    channels: &EventChannelSet,
-) -> std::result::Result<(), ValidationError> {
+pub fn validate_channels(channels: &EventChannelSet) -> std::result::Result<(), ValidationError> {
     let len = channels.0.len();
-    if !(1..=10).contains(&len) {
+    if (1..=10).contains(&len) {
+        Ok(())
+    } else {
         Err(ValidationError::new(
             "Channels must have at least 1 and at most 10 items, or be set to null.",
         ))
-    } else {
-        Ok(())
     }
 }
 
@@ -84,7 +82,7 @@ struct EndpointIn {
     #[validate(custom = "validate_event_types_ids")]
     #[validate]
     event_types_ids: Option<EventTypeNameSet>,
-    #[validate(custom = "validate_channels_endpoint")]
+    #[validate(custom = "validate_channels")]
     #[validate]
     channels: Option<EventChannelSet>,
 
@@ -99,7 +97,7 @@ impl ModelIn for EndpointIn {
 
     fn update_model(self, model: &mut Self::ActiveModel) {
         model.description = Set(self.description);
-        model.rate_limit = Set(self.rate_limit.map(|x| x.into()));
+        model.rate_limit = Set(self.rate_limit.map(Into::into));
         model.uid = Set(self.uid);
         model.url = Set(self.url);
         model.version = Set(self.version.into());
@@ -136,10 +134,16 @@ impl From<endpoint::Model> for EndpointOut {
     fn from(model: endpoint::Model) -> Self {
         Self {
             description: model.description,
-            rate_limit: model.rate_limit.map(|x| x as u16),
+            rate_limit: model.rate_limit.map(|x| {
+                x.try_into()
+                    .expect("Endpoint rate limit could not fit in u16")
+            }),
             uid: model.uid,
             url: model.url,
-            version: model.version as u16,
+            version: model
+                .version
+                .try_into()
+                .expect("Endpoint model version could not fit in u16"),
             disabled: model.disabled,
             event_types_ids: model.event_types_ids,
             channels: model.channels,
@@ -260,8 +264,7 @@ async fn validate_event_types(
         .into_model::<EventTypeNameResult>()
         .all(db)
         .await?;
-    let event_types: HashSet<EventTypeName> =
-        HashSet::from_iter(event_types.into_iter().map(|x| x.name));
+    let event_types: HashSet<EventTypeName> = (event_types.into_iter().map(|x| x.name)).collect();
     let missing: Vec<&EventTypeName> = event_types_ids
         .0
         .iter()
@@ -298,12 +301,12 @@ async fn list_endpoints(
         .limit(limit + 1);
 
     if let Some(iterator) = iterator {
-        query = query.filter(endpoint::Column::Id.gt(iterator))
+        query = query.filter(endpoint::Column::Id.gt(iterator));
     }
 
     Ok(Json(EndpointOut::list_response(
-        query.all(db).await?.into_iter().map(|x| x.into()).collect(),
-        limit as usize,
+        query.all(db).await?.into_iter().map(Into::into).collect(),
+        limit.try_into().expect("Limit could not fit into usize"),
     )))
 }
 
@@ -449,11 +452,7 @@ async fn rotate_endpoint_secret(
 
         old_keys: Set(Some(ExpiringSigningKeys(
             iter::once(last_key)
-                .chain(
-                    old_keys
-                        .map(|x| x.0.into_iter())
-                        .unwrap_or_else(|| vec![].into_iter()),
-                )
+                .chain(old_keys.map_or_else(|| vec![].into_iter(), |x| x.0.into_iter()))
                 .collect(),
         ))),
         ..endp.into()
@@ -483,7 +482,7 @@ async fn bulk_recover_failed_messages(
             .limit(RECOVER_LIMIT);
 
         if let Some(iterator) = iterator {
-            query = query.filter(messagedestination::Column::Id.gt(iterator))
+            query = query.filter(messagedestination::Column::Id.gt(iterator));
         }
 
         let items = query.all(&db).await?;

@@ -41,7 +41,7 @@ impl ModelIn for ApplicationIn {
 
     fn update_model(self, model: &mut Self::ActiveModel) {
         model.name = Set(self.name);
-        model.rate_limit = Set(self.rate_limit.map(|x| x.into()));
+        model.rate_limit = Set(self.rate_limit.map(Into::into));
         model.uid = Set(self.uid);
     }
 }
@@ -67,7 +67,9 @@ impl From<application::Model> for ApplicationOut {
         Self {
             uid: model.uid,
             name: model.name,
-            rate_limit: model.rate_limit.map(|x| x as u16),
+            rate_limit: model
+                .rate_limit
+                .map(|x| x.try_into().expect("Rate limit could not fit into a u16")),
 
             id: model.id,
             created_at: model.created_at.into(),
@@ -89,12 +91,12 @@ async fn list_applications(
         .limit(limit + 1);
 
     if let Some(iterator) = iterator {
-        query = query.filter(application::Column::Id.gt(iterator))
+        query = query.filter(application::Column::Id.gt(iterator));
     }
 
     Ok(Json(ApplicationOut::list_response(
-        query.all(db).await?.into_iter().map(|x| x.into()).collect(),
-        limit as usize,
+        query.all(db).await?.into_iter().map(Into::into).collect(),
+        limit.try_into().expect("Limit could not fit into a usize"),
     )))
 }
 

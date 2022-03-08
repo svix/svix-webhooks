@@ -45,12 +45,12 @@ pub fn validate_channels_msg(
     channels: &EventChannelSet,
 ) -> std::result::Result<(), ValidationError> {
     let len = channels.0.len();
-    if !(1..=5).contains(&len) {
+    if (1..=5).contains(&len) {
+        Ok(())
+    } else {
         Err(ValidationError::new(
             "Channels must have at least 1 and at most 5 items, or be set to null.",
         ))
-    } else {
-        Ok(())
     }
 }
 
@@ -148,8 +148,8 @@ async fn list_messages(
     }
 
     Ok(Json(MessageOut::list_response(
-        query.all(db).await?.into_iter().map(|x| x.into()).collect(),
-        limit as usize,
+        query.all(db).await?.into_iter().map(Into::into).collect(),
+        limit.try_into().expect("Limit could not fit in usize"),
     )))
 }
 
@@ -186,32 +186,31 @@ async fn create_message(
     let empty_channel_set = HashSet::new();
     let mut msg_dests = vec![];
     let mut tasks = vec![];
-    for endp in create_message_app.endpoints
-        .into_iter()
-        .filter(|endp| {
-            // No disabled or deleted enpoints ever
-          	!endp.disabled && !endp.deleted &&
-            (
+    for endp in create_message_app.endpoints.into_iter().filter(|endp| {
+        // No disabled or deleted enpoints ever
+        !endp.disabled
+            && !endp.deleted
+            && (
                 // Manual attempt types go throguh regardless
                 trigger_type == MessageAttemptTriggerType::Manual
-                || (
+                    || (
                         // If an endpoint has event types and it matches ours, or has no event types
                         endp
                         .event_types_ids
                         .as_ref()
-                        .map(|x| x.0.contains(&msg.event_type))
-                        .unwrap_or(true)
+                        .map_or(true, |x| x.0.contains(&msg.event_type))
                     &&
                         // If an endpoint has no channels accept all messages, otherwise only if their channels overlap.
                         // A message with no channels doesn't match an endpoint with channels.
                         endp
                         .channels
                         .as_ref()
-                        .map(|x| !x.0.is_disjoint(msg.channels.as_ref().map(|x| &x.0).unwrap_or(&empty_channel_set)))
-                        .unwrap_or(true)
-                ))
-        })
-    {
+                        .map_or(true, |x| { !x.0.is_disjoint(
+                            msg.channels.as_ref().map_or(&empty_channel_set, |x| &x.0))
+                        })
+                    )
+            )
+    }) {
         let msg_dest = messagedestination::ActiveModel {
             msg_id: Set(msg.id.clone()),
             endp_id: Set(endp.id.clone()),
@@ -220,11 +219,12 @@ async fn create_message(
             ..Default::default()
         };
         msg_dests.push(msg_dest);
-        tasks.push(
-            MessageTask::new_task(
-                msg.id.clone(),
-                app.id.clone(),
-                endp.id, MessageAttemptTriggerType::Scheduled));
+        tasks.push(MessageTask::new_task(
+            msg.id.clone(),
+            app.id.clone(),
+            endp.id,
+            MessageAttemptTriggerType::Scheduled,
+        ));
     }
     if !msg_dests.is_empty() {
         messagedestination::Entity::insert_many(msg_dests)

@@ -124,8 +124,8 @@ async fn list_event_types(
     }
 
     Ok(Json(EventTypeOut::list_response(
-        query.all(db).await?.into_iter().map(|x| x.into()).collect(),
-        limit as usize,
+        query.all(db).await?.into_iter().map(Into::into).collect(),
+        limit.try_into().expect("Limit could not fit into usize"),
     )))
 }
 
@@ -135,32 +135,30 @@ async fn create_event_type(
     permissions: Permissions,
 ) -> Result<(StatusCode, Json<EventTypeOut>)> {
     let evtype =
-        eventtype::Entity::secure_find_by_name(permissions.org_id.clone(), data.name.to_owned())
+        eventtype::Entity::secure_find_by_name(permissions.org_id.clone(), data.name.clone())
             .one(db)
             .await?;
-    let ret = match evtype {
-        Some(evtype) => {
-            if evtype.deleted {
-                let mut evtype: eventtype::ActiveModel = evtype.into();
-                evtype.deleted = Set(false);
-                data.update_model(&mut evtype);
-                evtype.update(db).await?
-            } else {
-                return Err(HttpError::conflict(
-                    Some("event_type_exists".to_owned()),
-                    Some("An event_type with this name already exists".to_owned()),
-                )
-                .into());
-            }
+    let ret = if let Some(evtype) = evtype {
+        if evtype.deleted {
+            let mut evtype: eventtype::ActiveModel = evtype.into();
+            evtype.deleted = Set(false);
+            data.update_model(&mut evtype);
+            evtype.update(db).await?
+        } else {
+            return Err(HttpError::conflict(
+                Some("event_type_exists".to_owned()),
+                Some("An event_type with this name already exists".to_owned()),
+            )
+            .into());
         }
-        None => {
-            let evtype = eventtype::ActiveModel {
-                org_id: Set(permissions.org_id.clone()),
-                ..data.into()
-            };
-            evtype.insert(db).await?
-        }
+    } else {
+        let evtype = eventtype::ActiveModel {
+            org_id: Set(permissions.org_id.clone()),
+            ..data.into()
+        };
+        evtype.insert(db).await?
     };
+
     Ok((StatusCode::CREATED, Json(ret.into())))
 }
 

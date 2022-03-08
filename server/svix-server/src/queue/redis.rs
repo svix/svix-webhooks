@@ -1,3 +1,6 @@
+// This lint warns on required syntax in async blocks
+#![allow(clippy::let_unit_value)]
+
 /// Redis queue implementation
 ///
 /// This implementation uses the following data structures:
@@ -22,7 +25,7 @@ use bb8::Pool;
 use bb8_redis::RedisConnectionManager;
 use chrono::Utc;
 use redis::{AsyncCommands, RedisWrite, ToRedisArgs};
-use svix_ksuid::*;
+use svix_ksuid::{Ksuid, KsuidLike};
 use tokio::time::sleep;
 
 use crate::error::{Error, Result};
@@ -58,15 +61,22 @@ pub async fn new_pair(
                 .zrangebyscore_limit(DELAYED, 0isize, timestamp, 0isize, batch_size)
                 .await
                 .unwrap();
-            if !keys.is_empty() {
-                // FIXME: needs to be a transaction
-                let keys: Vec<(String, String)> =
-                    pool.zpopmin(DELAYED, keys.len() as isize).await.unwrap();
-                let keys: Vec<String> = keys.into_iter().map(|x| x.0).collect();
-                let _: () = pool.rpush(MAIN, keys).await.unwrap();
-            } else {
+            if keys.is_empty() {
                 // Wait for half a second before attempting to fetch again if nothing was found
                 sleep(Duration::from_millis(500)).await;
+            } else {
+                // FIXME: needs to be a transaction
+                let keys: Vec<(String, String)> = pool
+                    .zpopmin(
+                        DELAYED,
+                        keys.len()
+                            .try_into()
+                            .expect("Key length does not fit into an isize"),
+                    )
+                    .await
+                    .unwrap();
+                let keys: Vec<String> = keys.into_iter().map(|x| x.0).collect();
+                let _: () = pool.rpush(MAIN, keys).await.unwrap();
             }
 
             // Every iteration here also check whether the processing queue has items that should

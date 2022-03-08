@@ -82,7 +82,7 @@ impl Entity {
     ) -> Select<Entity> {
         Self::secure_find(app_id).filter(
             Condition::any()
-                .add(Column::Id.eq(id_or_uid.to_owned()))
+                .add(Column::Id.eq(id_or_uid.clone()))
                 .add(Column::Uid.eq(id_or_uid)),
         )
     }

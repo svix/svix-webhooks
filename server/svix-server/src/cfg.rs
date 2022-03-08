@@ -138,6 +138,7 @@ impl ToString for LogLevel {
         .to_string()
     }
 }
+
 pub fn load() -> Result<Arc<ConfigurationInner>> {
     if let Ok(db_url) = std::env::var("DATABASE_URL") {
         // If we have DATABASE_URL set, we should potentially use it.

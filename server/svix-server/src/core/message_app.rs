@@ -1,3 +1,5 @@
+// Lots of false positives in this file
+
 use std::{
     convert::{TryFrom, TryInto},
     time::Duration,
@@ -32,7 +34,7 @@ pub struct CreateMessageApp {
 }
 
 impl CreateMessageApp {
-    /// Fetch all requisite information for creating a [`CreateMessageApp`] from the PostgreSQL
+    /// Fetch all requisite information for creating a [`CreateMessageApp`] from the postgres
     /// database
     async fn fetch_from_pg_by_model(
         db: &DatabaseTransaction,
@@ -51,7 +53,7 @@ impl CreateMessageApp {
             org_id: app.org_id,
             rate_limit: app
                 .rate_limit
-                .map(|v| v.try_into())
+                .map(TryInto::try_into)
                 .transpose()
                 .map_err(|_| {
                     Error::Validation("Application rate limit out of bounds".to_owned())
@@ -62,8 +64,8 @@ impl CreateMessageApp {
     }
 
     /// Fetches all information for creating a [`CreateMessageApp`] from the Redis cache if it
-    /// exists or from PostgreSQL otherwise. If the RedisCache is Some, but does not contain the
-    /// requisite information, fetch it from PostgreSQL and insert the data into the cache.
+    /// exists or from postgres otherwise. If the [`RedisCache`] is Some, but does not contain the
+    /// requisite information, fetch it from postgres and insert the data into the cache.
     pub async fn layered_fetch(
         redis: Option<&RedisCache>,
         pg: &DatabaseConnection,
@@ -81,7 +83,7 @@ impl CreateMessageApp {
             }
         }
 
-        // Then check PostgreSQL
+        // Then check postgres
         let db = pg.begin().await?;
         // Fetch the [`application::Model`] either given or from the ID
         let app = if let Some(app) = app {
@@ -100,7 +102,7 @@ impl CreateMessageApp {
 
         // Insert it into Redis
         if let Some(redis) = redis {
-            let _ = redis.set(&cache_key, &out, ttl).await;
+            std::mem::drop(redis.set(&cache_key, &out, ttl).await);
         }
 
         Ok(Some(out))
@@ -137,7 +139,7 @@ impl TryFrom<endpoint::Model> for CreateMessageEndpoint {
             channels: m.channels,
             rate_limit: m
                 .rate_limit
-                .map(|v| v.try_into())
+                .map(TryInto::try_into)
                 .transpose()
                 .map_err(|_| Error::Validation("Endpoint rate limit out of bounds".to_owned()))?,
             first_failure_at: m.first_failure_at,

@@ -12,7 +12,7 @@ use sea_orm::DbErr;
 use serde::Serialize;
 use serde_json::json;
 
-/// A short-hand version of a [std::result::Result] that always returns an Svix [Error].
+/// A short-hand version of a [`std::result::Result`] that always returns an Svix [Error].
 pub type Result<T> = std::result::Result<T, Error>;
 
 /// The error type returned from the Svix API
@@ -33,10 +33,9 @@ pub enum Error {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Error::Generic(s) => s.fmt(f),
-            Error::Database(s) => s.fmt(f),
-            Error::Queue(s) => s.fmt(f),
-            Error::Validation(s) => s.fmt(f),
+            Error::Generic(s) | Error::Database(s) | Error::Queue(s) | Error::Validation(s) => {
+                s.fmt(f)
+            }
             Error::Http(s) => s.fmt(f),
         }
     }

@@ -21,7 +21,7 @@ use crate::{
 
 use super::types::{ApplicationIdOrUid, OrganizationId};
 
-/// The default org_id we use (useful for generating JWTs when testing).
+/// The default [`OrganizationId`] we use (useful for generating JWTs when testing).
 fn org_id() -> OrganizationId {
     OrganizationId("org_23rb8YdGqMT0qIzpgGwdXfHirMu".to_owned())
 }
@@ -105,7 +105,7 @@ where
             .map_err(to_internal_server_error)?;
         let app = application::Entity::secure_find_by_id_or_uid(
             permissions.org_id.clone(),
-            app_id.to_owned(),
+            app_id.clone(),
         )
         .one(db)
         .await?
@@ -118,7 +118,9 @@ pub fn generate_token(keys: &Keys) -> Result<String> {
     let claims = Claims::create(Duration::from_hours(24 * 365 * 10))
         .with_issuer(env!("CARGO_PKG_NAME"))
         .with_subject(org_id().0);
-    Ok(keys.key.authenticate(claims).unwrap())
+    keys.key
+        .authenticate(claims)
+        .map_err(|e| Error::Generic(format!("authentication error {}", e)))
 }
 
 #[derive(Clone, Debug)]

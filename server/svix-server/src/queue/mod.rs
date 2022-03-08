@@ -3,7 +3,7 @@ use std::time::Duration;
 use axum::async_trait;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use svix_ksuid::*;
+use svix_ksuid::{Ksuid, KsuidLike};
 
 use crate::{
     core::types::{ApplicationId, EndpointId, MessageAttemptTriggerType, MessageId},

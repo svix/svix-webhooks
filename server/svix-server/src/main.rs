@@ -1,8 +1,13 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-#![warn(clippy::all)]
 #![forbid(unsafe_code)]
+#![warn(clippy::all)]
+#![warn(clippy::pedantic)]
+// This lint warns on `..Default::default()` in struct initialization
+#![allow(clippy::default_trait_access)]
+// This lint warns on axum services that need to be async to route properly
+#![allow(clippy::unused_async)]
 
 use axum::{extract::Extension, Router};
 use bb8_redis::RedisConnectionManager;
@@ -14,7 +19,6 @@ use tower_http::trace::TraceLayer;
 use crate::{
     core::{cache::RedisCache, security::generate_token},
     db::init_db,
-    worker::worker_loop,
 };
 
 mod cfg;
@@ -137,7 +141,7 @@ async fn main() {
         async {
             if with_worker {
                 tracing::debug!("Worker: Initializing");
-                worker_loop(cfg, pool, redis_cache, queue_tx, queue_rx).await
+                worker::main_loop(cfg, pool, redis_cache, queue_tx, queue_rx).await
             } else {
                 tracing::debug!("Worker: off");
                 Ok(())
