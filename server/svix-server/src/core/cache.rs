@@ -187,8 +187,11 @@ mod tests {
 
     #[tokio::test]
     async fn test_cache_ttl() {
+        dotenv::dotenv().ok();
+        let cfg = crate::cfg::load().unwrap();
+
         let redis_pool = bb8::Pool::builder()
-            .build(RedisConnectionManager::new("redis://localhost:6379").unwrap())
+            .build(RedisConnectionManager::new(cfg.redis_dsn.as_deref().unwrap()).unwrap())
             .await
             .unwrap();
         let cache = RedisCache::new(redis_pool.clone());
