@@ -19,9 +19,13 @@ services:
       DB_USER: "postgres"
       DB_PASSWORD: "postgres"
       MAX_CLIENT_CONN: 500
+    ports:
+      - "5432:5432"
 
   redis:
     image: "redis:6.2-alpine"
+    ports:
+      - "6379:6379"
 
 volumes:
   postgres-data:
