@@ -1,5 +1,8 @@
 # Changelog
 
+## Next
+* Libs: Add `msg_id` to attempt list responses (`MessageAttemptOut`)
+
 ## Version 0.51.0
 * Libs: Support for passing an idempotency key to post commands
 * Libs: Add support for filtering by channel

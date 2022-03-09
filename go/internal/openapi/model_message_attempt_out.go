@@ -19,6 +19,7 @@ import (
 type MessageAttemptOut struct {
 	EndpointId string `json:"endpointId"`
 	Id string `json:"id"`
+	MsgId string `json:"msgId"`
 	Response string `json:"response"`
 	ResponseStatusCode int32 `json:"responseStatusCode"`
 	Status MessageStatus `json:"status"`
@@ -30,10 +31,11 @@ type MessageAttemptOut struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewMessageAttemptOut(endpointId string, id string, response string, responseStatusCode int32, status MessageStatus, timestamp time.Time, triggerType MessageAttemptTriggerType) *MessageAttemptOut {
+func NewMessageAttemptOut(endpointId string, id string, msgId string, response string, responseStatusCode int32, status MessageStatus, timestamp time.Time, triggerType MessageAttemptTriggerType) *MessageAttemptOut {
 	this := MessageAttemptOut{}
 	this.EndpointId = endpointId
 	this.Id = id
+	this.MsgId = msgId
 	this.Response = response
 	this.ResponseStatusCode = responseStatusCode
 	this.Status = status
@@ -96,6 +98,30 @@ func (o *MessageAttemptOut) GetIdOk() (*string, bool) {
 // SetId sets field value
 func (o *MessageAttemptOut) SetId(v string) {
 	o.Id = v
+}
+
+// GetMsgId returns the MsgId field value
+func (o *MessageAttemptOut) GetMsgId() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.MsgId
+}
+
+// GetMsgIdOk returns a tuple with the MsgId field value
+// and a boolean to check if the value has been set.
+func (o *MessageAttemptOut) GetMsgIdOk() (*string, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.MsgId, true
+}
+
+// SetMsgId sets field value
+func (o *MessageAttemptOut) SetMsgId(v string) {
+	o.MsgId = v
 }
 
 // GetResponse returns the Response field value
@@ -225,6 +251,9 @@ func (o MessageAttemptOut) MarshalJSON() ([]byte, error) {
 	}
 	if true {
 		toSerialize["id"] = o.Id
+	}
+	if true {
+		toSerialize["msgId"] = o.MsgId
 	}
 	if true {
 		toSerialize["response"] = o.Response
