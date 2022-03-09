@@ -468,7 +468,7 @@ class MessageAttempt {
   }
 
   /**
-   * @deprecated Since version 0.52.0. Use listByMsg or listByEndpoint instead.
+   * @deprecated Since version 0.48.0. Use listByMsg or listByEndpoint instead.
    */
   public list(
     appId: string,
