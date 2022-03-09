@@ -1,4 +1,4 @@
 [flake8]
 max-line-length = 120
 extend-ignore = E203, W503, E501, E711, E712, N803
-exclude = .git,__pycache__,__init__.py,.mypy_cache,.pytest_cache,svix/openapi_client
+exclude = .git,__pycache__,__init__.py,.mypy_cache,.pytest_cache,svix/internal

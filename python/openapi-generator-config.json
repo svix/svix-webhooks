@@ -1,4 +1,4 @@
 {
-  "packageName": "svix.openapi_client",
-  "projectName": "svix"
+  "project_name_override": "internal",
+  "package_name_override": "openapi_client"
 }

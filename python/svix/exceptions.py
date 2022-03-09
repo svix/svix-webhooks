@@ -1,25 +1,9 @@
-from .openapi_client.exceptions import (
-    ApiAttributeError,
-    ApiException,
-    ApiKeyError,
-    ApiTypeError,
-    ApiValueError,
-    ForbiddenException,
-    NotFoundException,
-    ServiceException,
-    UnauthorizedException,
-)
+from .internal.openapi_client.models.http_error import HttpError
+from .internal.openapi_client.models.http_validation_error import HTTPValidationError
 from .webhooks import WebhookVerificationError
 
 __all__ = [
-    "ApiAttributeError",
-    "ApiException",
-    "ApiKeyError",
-    "ApiTypeError",
-    "ApiValueError",
-    "ForbiddenException",
-    "NotFoundException",
-    "ServiceException",
-    "UnauthorizedException",
+    "HTTPValidationError",
+    "HttpError",
     "WebhookVerificationError",
 ]
