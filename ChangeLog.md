@@ -1,5 +1,8 @@
 # Changelog
 
+## Next
+* 
+
 ## Version 0.52.0
 * Libs/JS: Fix for setting Idempotency-Key when one isn't set  🐞
 * Libs/All: Add `msg_id` to attempt list responses (`MessageAttemptOut`)

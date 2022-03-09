@@ -56,7 +56,7 @@ filesPaths.forEach((relativePath) => {
 
 // Add Changelog Section
 const changelogPath = join(rootDir, "ChangeLog.md");
-const changelogUpdate = readFileSync(changelogPath, 'utf8').replace("# Changelog", `# Changelog\n\n## Version ${newVersion}\n* `);
+const changelogUpdate = readFileSync(changelogPath, 'utf8').replace("# Changelog\n\n## Next", `# Changelog\n\n## Next\n* \n\n## Version ${newVersion}`);
 writeFileSync(changelogPath, changelogUpdate);
 
 console.log("Version bumped from %s to %s, don't forget to update the changelog!", currentVersion, newVersion);
