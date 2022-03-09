@@ -1,7 +1,12 @@
 # Changelog
 
-## Next
-* Libs: Add `msg_id` to attempt list responses (`MessageAttemptOut`)
+## Version 0.52.0
+* Libs/JS: Fix for setting Idempotency-Key when one isn't set  🐞
+* Libs/All: Add `msg_id` to attempt list responses (`MessageAttemptOut`)
+* Libs/All: New GetOrCreate application function 🆕
+* Server: Remove deprecated axum API usage
+* Server: Implement PATCH for endpoint headers API 🆕
+* Server: Add support for an endpoint cache for improved performance when sending 🚀
 
 ## Version 0.51.0
 * Libs: Support for passing an idempotency key to post commands
