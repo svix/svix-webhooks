@@ -1,0 +1,43 @@
+name: Ruby Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  dotnet:
+    name: Ruby Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7
+          bundler-cache: true
+          working-directory: ruby
+
+      - name: Regen openapi libs
+        run: |
+          yarn
+          ./regen_openapi.sh
+
+      - name: Build
+        run: |
+          cd ruby
+          bundler exec rake build
+
+      - name: Publish
+        run: |
+          mkdir -p "$HOME/.gem"
+          touch "$HOME/.gem/credentials"
+          chmod 0600 "$HOME/.gem/credentials"
+          printf -- "---\n:rubygems_api_key: %s\n" "$RUBYGEMS_AUTH_TOKEN" > "$HOME/.gem/credentials"
+
+          cd ruby
+          gem push pkg/*.gem
+        env:
+          RUBYGEMS_AUTH_TOKEN: "${{secrets.RUBYGEMS_AUTH_TOKEN}}"
