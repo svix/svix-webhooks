@@ -1,0 +1,43 @@
+name: C# Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  dotnet:
+    name: C# Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup .NET Core SDK
+        uses: actions/setup-dotnet@v1.7.2
+        with:
+          dotnet-version: 5.0.x
+
+      - name: Regen openapi libs
+        run: |
+          yarn
+          ./regen_openapi.sh
+
+      - name: Install dependencies
+        run: |
+          cd csharp
+          dotnet restore
+
+      - name: Build
+        run: |
+          cd csharp
+          dotnet build --configuration Release Svix --no-restore
+
+      - name: Release
+        run: |
+          cd csharp
+          dotnet nuget push "$(find Svix/bin/Release/Svix.*.nupkg)" \
+            --api-key "$NUGET_API_KEY" \
+            --source "https://api.nuget.org/v3/index.json"
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
