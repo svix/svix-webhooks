@@ -1,0 +1,24 @@
+[package]
+name = "svix_test_suite"
+version = "0.1.0"
+license = "MIT"
+description = "Svix webhooks server test suite"
+
+authors = ["Svix Inc. <oss@svix.com>"]
+homepage = "https://www.svix.com"
+repository = "https://github.com/svix/svix-webhooks"
+readme = "../README.md"
+edition = "2021"
+publish = false
+
+[dependencies]
+anyhow = "1.0.56"
+async-trait = "0.1.52"
+axum = { version = "0.4.8", features = ["headers"] }
+chrono = {  version = "0.4.19", features = ["serde"] }
+clap = { version = "3.0.10", features = ["derive"] }
+dotenv = "0.15.0"
+tokio = { version = "1.15.0", features = ["full"] }
+serde = { version = "1.0.133", features = ["derive"] }
+serde_json = "1.0.74"
+reqwest = { version = "0.11.9", features = ["json", "rustls-tls", "trust-dns"], default-features = false }
