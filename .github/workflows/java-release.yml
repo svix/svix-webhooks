@@ -1,0 +1,41 @@
+name: Java Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  pull_request:
+    paths:
+      - ".github/workflows/java-release.yml"
+
+jobs:
+  dotnet:
+    name: Java Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Regen openapi libs
+        run: |
+          yarn
+          ./regen_openapi.sh
+
+      # - name: Install GPG Signing Key
+      #   run: |
+      #     cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import
+
+      - name: Publish
+        run: |
+          cd java
+          java --version
+          ./gradlew publishToSonatype closeSonatypeStagingRepository
+        env:
+          NEXUS_USERNAME: "${{secrets.NEXUS_USERNAME}}"
+          NEXUS_PASSWORD: "${{secrets.NEXUS_PASSWORD}}" 
