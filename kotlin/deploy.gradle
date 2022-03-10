@@ -8,15 +8,9 @@
  * https://raw.github.com/chrisbanes/gradle-mvn-push/master/gradle-mvn-push.gradle
  */
 
-apply plugin: "maven"
 apply plugin: "signing"
-apply plugin: "io.codearte.nexus-staging"
-
-nexusStaging {
-    packageGroup = GROUP
-    numberOfRetries = 40
-    delayBetweenRetriesInMillis = 4000
-}
+apply plugin: "maven-publish"
+apply plugin: "io.github.gradle-nexus.publish-plugin"
 
 def isReleaseBuild() {
     return VERSION_NAME.contains("SNAPSHOT") == false
@@ -24,7 +18,7 @@ def isReleaseBuild() {
 
 def getReleaseRepositoryUrl() {
     return hasProperty("RELEASE_REPOSITORY_URL") ? RELEASE_REPOSITORY_URL
-            : "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            : "https://s01.oss.sonatype.org/service/local/"
 }
 
 def getSnapshotRepositoryUrl() {
@@ -40,84 +34,82 @@ def getRepositoryPassword() {
     return hasProperty("NEXUS_PASSWORD") ? NEXUS_PASSWORD : ""
 }
 
-afterEvaluate { project ->
-    uploadArchives {
-        repositories {
-            mavenDeployer {
-                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+nexusPublishing {
+    packageGroup = GROUP
+    repositories {
+        sonatype {
+            nexusUrl.set(uri(getReleaseRepositoryUrl()))
+            snapshotRepositoryUrl.set(uri(getSnapshotRepositoryUrl()))
+            
+            username = getRepositoryUsername()
+            password = getRepositoryPassword()
+        }
+    }
+}
 
-                pom.groupId = GROUP
-                pom.artifactId = POM_ARTIFACT_ID
-                pom.version = VERSION_NAME
+task sourcesJar(type: Jar) {
+    classifier = "sources"
+    from sourceSets.main.allSource
+}
 
-                repository(url: getReleaseRepositoryUrl()) {
-                    authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = "javadoc"
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = GROUP
+            version = VERSION_NAME
+
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            pom {
+                name = POM_NAME
+                description = POM_DESCRIPTION
+                url = POM_URL
+
+                groupId = GROUP
+                artifactId = POM_ARTIFACT_ID
+                version = VERSION_NAME
+
+                licenses {
+                    license {
+                        name = POM_LICENCE_NAME
+                        url = POM_LICENCE_URL
+                        distribution = POM_LICENCE_DIST
+                    }
                 }
-
-                snapshotRepository(url: getSnapshotRepositoryUrl()) {
-                    authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+                developers {
+                    developer {
+                        id = POM_DEVELOPER_ID
+                        name = POM_DEVELOPER_NAME
+                        email = POM_DEVELOPER_EMAIL
+                    }
                 }
-
-                pom.project {
-                    name POM_NAME
-                    description POM_DESCRIPTION
-                    url POM_URL
-                    packaging POM_PACKAGING
-
-                    scm {
-                        url POM_SCM_URL
-                        connection POM_SCM_CONNECTION
-                        developerConnection POM_SCM_DEV_CONNECTION
-                    }
-
-                    licenses {
-                        license {
-                            name POM_LICENCE_NAME
-                            url POM_LICENCE_URL
-                            distribution POM_LICENCE_DIST
-                        }
-                    }
-
-                    developers {
-                        developer {
-                            id POM_DEVELOPER_ID
-                            name POM_DEVELOPER_NAME
-                            email POM_DEVELOPER_EMAIL
-                        }
-                    }
-
-                    organization {
-                        name POM_DEVELOPER_NAME
-                        url POM_ORGANIZATION_URL
-                    }
+                scm {
+                    connection = POM_SCM_CONNECTION
+                    developerConnection = POM_SCM_DEV_CONNECTION
+                    url = POM_SCM_URL
+                }
+                organization {
+                    name = POM_DEVELOPER_NAME
+                    url = POM_ORGANIZATION_URL
                 }
             }
         }
     }
+}
 
-    signing {
-        required { isReleaseBuild() &&
-        (gradle.taskGraph.hasTask("uploadArchives") || gradle.taskGraph.hasTask("publish"))}
-        useGpgCmd()
-        sign configurations.archives
-    }
-
-    tasks.withType(Sign) {
-        onlyIf { isReleaseBuild() && project.hasProperty("signing.gnupg.keyName") }
-    }
-
-    task sourcesJar(type: Jar) {
-        classifier = "sources"
-        from sourceSets.main.allSource
-    }
-
-    task javadocJar(type: Jar, dependsOn: javadoc) {
-        classifier = "javadoc"
-        from javadoc.destinationDir
-    }
-
-    artifacts {
-        archives sourcesJar
-        archives javadocJar
-    }
+signing {
+    required { !project.version.endsWith("-SNAPSHOT") && !project.hasProperty("skipSigning") }
+    useGpgCmd()
+    sign publishing.publications.maven
 }

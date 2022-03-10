@@ -89,6 +89,6 @@ Simply run:
 ## Publishing to Maven
 
 ```sh
-./gradlew uploadArchives
+./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
 ```
 
