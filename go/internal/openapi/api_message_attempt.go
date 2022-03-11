@@ -414,6 +414,7 @@ type ApiListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGetRequest struct
 	appId string
 	iterator *string
 	limit *int32
+	channel *string
 	status *MessageStatus
 	before *time.Time
 	after *time.Time
@@ -426,6 +427,10 @@ func (r ApiListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGetRequest) It
 }
 func (r ApiListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGetRequest) Limit(limit int32) ApiListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGetRequest {
 	r.limit = &limit
+	return r
+}
+func (r ApiListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGetRequest) Channel(channel string) ApiListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGetRequest {
+	r.channel = &channel
 	return r
 }
 func (r ApiListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGetRequest) Status(status MessageStatus) ApiListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGetRequest {
@@ -512,6 +517,9 @@ func (a *MessageAttemptApiService) ListAttemptedMessagesApiV1AppAppIdEndpointEnd
 	}
 	if r.limit != nil {
 		localVarQueryParams.Add("limit", parameterToString(*r.limit, ""))
+	}
+	if r.channel != nil {
+		localVarQueryParams.Add("channel", parameterToString(*r.channel, ""))
 	}
 	if r.status != nil {
 		localVarQueryParams.Add("status", parameterToString(*r.status, ""))
