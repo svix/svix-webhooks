@@ -1,6 +1,6 @@
 {% set class_name = model.class_info.name %}
 {# TODO: This is a hack to fix the typing of payloads, ideally we'd fix the generator so we don't need to manually add them here #}
-{% set dict_classes = ['EndpointMessageOutPayload', 'MessageInPayload', 'MessageOutPayload'] %}
+{% set dict_classes = ['EndpointMessageOutPayload', 'MessageInPayload', 'MessageOutPayload', 'EndpointHeadersInHeaders', 'EndpointHeadersOutHeaders'] %}
 {% if class_name in dict_classes %}
 from typing import Any, Dict
 

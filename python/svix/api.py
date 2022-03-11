@@ -63,7 +63,9 @@ from .internal.openapi_client.models.application_in import ApplicationIn
 from .internal.openapi_client.models.application_out import ApplicationOut
 from .internal.openapi_client.models.dashboard_access_out import DashboardAccessOut
 from .internal.openapi_client.models.endpoint_headers_in import EndpointHeadersIn
+from .internal.openapi_client.models.endpoint_headers_in_headers import EndpointHeadersInHeaders
 from .internal.openapi_client.models.endpoint_headers_out import EndpointHeadersOut
+from .internal.openapi_client.models.endpoint_headers_out_headers import EndpointHeadersOutHeaders
 from .internal.openapi_client.models.endpoint_in import EndpointIn
 from .internal.openapi_client.models.endpoint_message_out_payload import EndpointMessageOutPayload
 from .internal.openapi_client.models.endpoint_out import EndpointOut
@@ -311,6 +313,13 @@ class EndpointAsync(ApiBase):
             endpoint_id=endpoint_id,
             json_body=recover_in,
             **options.to_dict(),
+        )
+
+    async def set_headers(self, app_id: str, endpoint_id: str) -> EndpointHeadersOut:
+        return await get_endpoint_headers_api_v1_app_app_id_endpoint_endpoint_id_headers_get.asyncio(
+            client=self._client,
+            app_id=app_id,
+            endpoint_id=endpoint_id,
         )
 
     async def get_headers(self, app_id: str, endpoint_id: str) -> EndpointHeadersOut:
@@ -881,7 +890,9 @@ __all__ = [
     "ListResponseApplicationOut",
     "DashboardAccessOut",
     "EndpointHeadersIn",
+    "EndpointHeadersInHeaders",
     "EndpointHeadersOut",
+    "EndpointHeadersOutHeaders",
     "EndpointIn",
     "EndpointOut",
     "EndpointSecretOut",
