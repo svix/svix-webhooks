@@ -6,7 +6,7 @@
 ## Version 0.53.0
 * Python: **Breaking** The python library is now fully typed!  There may be some breaking changes releated to this upgrade (including dropping support for Python 2.X). Please check test and check your integration before upgrading to this version. 🤓
 * Python: New Async API via SvixAsync! 🚀
-* Libs: Remove prevIterator option from message attempt options (This was added by mistake and was never used, previous iterators should be passed via the `iterator` option, we're sorry about this!) 🐞
+* Libs: Remove the `prevIterator` option from message attempt options (This was added by mistake, never worked and was never meant to work. All iterators should be passed via the `iterator` option. Sorry for the confusion!)
 * Libs: Allow filtering by messages by channel
 
 ## Version 0.52.0
