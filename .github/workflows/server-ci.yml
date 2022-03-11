@@ -14,6 +14,7 @@ on:
 
 jobs:
   check:
+    name: Server CI
     # Run `cargo check` first to ensure that the pushed code at least compiles.
     runs-on: ubuntu-latest
     steps:
@@ -26,7 +27,7 @@ jobs:
         components: clippy, rustfmt
     - uses: Swatinem/rust-cache@v1
 
-    - name: Check
+    - name: Clippy
       uses: actions-rs/cargo@v1
       with:
         command: clippy
