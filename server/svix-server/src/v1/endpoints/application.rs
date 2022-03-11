@@ -205,17 +205,6 @@ mod tests {
         })
     }
 
-    fn assert_eq(expected: &ApplicationOut) -> Box<dyn FnOnce(ApplicationOut) -> Result<()>> {
-        let expected = expected.clone();
-        Box::new(move |out| {
-            if out == expected {
-                Ok(())
-            } else {
-                anyhow::bail!("ApplicationOut = {:?}, expected {:?}", out, expected);
-            }
-        })
-    }
-
     #[tokio::test]
     async fn crd() {
         let (client, jh) = start_svix_server();
@@ -249,24 +238,18 @@ mod tests {
 
         // READ
         let _ = client
-            .asserting_request::<ApplicationIn, _, _>(
+            .asserting_get::<ApplicationOut>(
                 &format!("api/v1/app/{}/", app_1.id),
-                HashMap::new(),
-                Method::Get,
-                None,
                 StatusCode::OK,
-                assert_eq(&app_1),
+                Some(app_1.clone()),
             )
             .await
             .unwrap();
         let _ = client
-            .asserting_request::<ApplicationIn, _, _>(
+            .asserting_get::<ApplicationOut>(
                 &format!("api/v1/app/{}/", app_2.id),
-                HashMap::new(),
-                Method::Get,
-                None,
                 StatusCode::OK,
-                assert_eq(&app_2),
+                Some(app_2.clone()),
             )
             .await
             .unwrap();
@@ -295,22 +278,18 @@ mod tests {
 
         // READ AGAIN
         let _ = client
-            .asserting_request_no_response_body::<ApplicationIn>(
+            .asserting_get::<ApplicationOut>(
                 &format!("api/v1/app/{}/", app_1.id),
-                HashMap::new(),
-                Method::Get,
-                None,
                 StatusCode::NOT_FOUND,
+                None,
             )
             .await
             .unwrap();
         let _ = client
-            .asserting_request_no_response_body::<ApplicationIn>(
+            .asserting_get::<ApplicationOut>(
                 &format!("api/v1/app/{}/", app_2.id),
-                HashMap::new(),
-                Method::Get,
-                None,
                 StatusCode::NOT_FOUND,
+                None,
             )
             .await
             .unwrap();

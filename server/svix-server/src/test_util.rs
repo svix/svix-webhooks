@@ -127,6 +127,41 @@ impl TestClient {
 
         Ok(())
     }
+
+    pub async fn asserting_get<O: DeserializeOwned + Clone + PartialEq + std::fmt::Debug>(
+        &self,
+        endpoint: &str,
+        expected_code: StatusCode,
+        expected_resp: Option<O>,
+    ) -> Result<()> {
+        if let Some(expected_resp) = expected_resp {
+            self.asserting_request::<(), O, _>(
+                endpoint,
+                HashMap::new(),
+                Method::Get,
+                None,
+                expected_code,
+                move |actual_resp| {
+                    if actual_resp == expected_resp {
+                        Ok(())
+                    } else {
+                        anyhow::bail!("exppected {:?}, received {:?}", expected_resp, actual_resp)
+                    }
+                },
+            )
+            .await
+            .map(|_| ())
+        } else {
+            self.asserting_request_no_response_body::<()>(
+                endpoint,
+                HashMap::new(),
+                Method::Get,
+                None,
+                expected_code,
+            )
+            .await
+        }
+    }
 }
 
 pub fn start_svix_server() -> (TestClient, tokio::task::JoinHandle<()>) {
