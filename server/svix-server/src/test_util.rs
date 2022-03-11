@@ -1,11 +1,10 @@
-use std::{collections::HashMap, net::TcpListener, str::FromStr};
+use std::net::TcpListener;
 
 use anyhow::{Context, Result};
-use reqwest::{
-    header::{HeaderMap, HeaderName, HeaderValue},
-    Client, StatusCode,
-};
-use serde::{de::DeserializeOwned, Serialize};
+use reqwest::{Client, RequestBuilder, StatusCode};
+use serde::{de::DeserializeOwned, Deserialize, Serialize};
+
+use crate::core::security::generate_token_random_org;
 
 pub struct TestClient {
     base_uri: String,
@@ -13,11 +12,14 @@ pub struct TestClient {
     client: Client,
 }
 
-pub enum Method {
-    Get,
-    Post,
-    Put,
-    Delete,
+pub struct EmptyResponse;
+impl<'de> Deserialize<'de> for EmptyResponse {
+    fn deserialize<D>(_: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        Ok(EmptyResponse)
+    }
 }
 
 impl TestClient {
@@ -29,200 +31,118 @@ impl TestClient {
         }
     }
 
-    pub async fn request<I: Serialize, O: DeserializeOwned>(
-        &self,
-        endpoint: &str,
-        headers: HashMap<String, String>,
-        method: Method,
-        body: Option<I>,
-    ) -> Result<(StatusCode, Result<O>)> {
-        let uri = format!("{}/{}", self.base_uri, endpoint);
-
-        let request = match &method {
-            Method::Get => self.client.get(uri),
-            Method::Post => self.client.post(uri),
-            Method::Put => self.client.put(uri),
-            Method::Delete => self.client.delete(uri),
-        };
-
-        let request = request.header("Authorization", &self.auth_header);
-        let request = request.headers(
-            headers
-                .iter()
-                .map(|(k, v)| -> Result<(HeaderName, HeaderValue)> {
-                    Ok((
-                        HeaderName::from_str(k).context("Invalid HeaderName")?,
-                        HeaderValue::from_str(v).context("Invalid HeaderValue")?,
-                    ))
-                })
-                .collect::<Result<HeaderMap>>()?,
-        );
-
-        let request = if let Some(body) = body {
-            request.json(&body)
-        } else {
-            request
-        };
-
-        let response = request.send().await?;
-
-        Ok((
-            response.status(),
-            response.json::<O>().await.context("Error deserializing"),
-        ))
+    fn build_uri(&self, endpoint: &str) -> String {
+        format!("{}/{}", self.base_uri, endpoint)
     }
 
-    pub async fn asserting_request<
-        I: Serialize,
-        O: DeserializeOwned + Clone,
-        F: FnOnce(O) -> Result<()>,
-    >(
+    fn add_headers(&self, request: RequestBuilder) -> RequestBuilder {
+        request.header("Authorization", &self.auth_header)
+    }
+
+    pub async fn get<O: DeserializeOwned>(
         &self,
         endpoint: &str,
-        headers: HashMap<String, String>,
-        method: Method,
-        body: Option<I>,
         expected_code: StatusCode,
-        response_assertation: F,
     ) -> Result<O> {
-        let (status, output): (_, Result<O>) = self
-            .request(endpoint, headers, method, body)
-            .await
-            .context("error polling endpoint")?;
+        let mut req = self.client.get(self.build_uri(endpoint));
+        req = self.add_headers(req);
 
-        if status != expected_code {
+        let resp = req.send().await.context("error sending request")?;
+
+        if resp.status() != expected_code {
             anyhow::bail!(
-                "assertation failed: expected {}, received {}",
+                "assertation failed: expected status {}, actual status {}",
                 expected_code,
-                status
-            )
+                resp.status()
+            );
         }
 
-        let output = output.context("failed to deserialize response")?;
-        response_assertation(output.clone()).context("assertation failed")?;
-
-        Ok(output)
+        Ok(resp
+            .json()
+            .await
+            .context("error receiving/parsing response")?)
     }
 
-    pub async fn asserting_request_no_response_body<I: Serialize>(
-        &self,
-        endpoint: &str,
-        headers: HashMap<String, String>,
-        method: Method,
-        body: Option<I>,
-        expected_code: StatusCode,
-    ) -> Result<()> {
-        let (status, _): (_, Result<()>) = self
-            .request(endpoint, headers, method, body)
-            .await
-            .context("error polling endpoint")?;
-
-        if status != expected_code {
-            anyhow::bail!(
-                "assertation failed: expected {}, received {}",
-                expected_code,
-                status
-            )
-        }
-
-        Ok(())
-    }
-
-    pub async fn asserting_get<O: DeserializeOwned + Clone + PartialEq + std::fmt::Debug>(
-        &self,
-        endpoint: &str,
-        expected_code: StatusCode,
-        expected_resp: Option<O>,
-    ) -> Result<()> {
-        if let Some(expected_resp) = expected_resp {
-            self.asserting_request::<(), O, _>(
-                endpoint,
-                HashMap::new(),
-                Method::Get,
-                None,
-                expected_code,
-                move |actual_resp| {
-                    if actual_resp == expected_resp {
-                        Ok(())
-                    } else {
-                        anyhow::bail!("exppected {:?}, received {:?}", expected_resp, actual_resp)
-                    }
-                },
-            )
-            .await
-            .map(|_| ())
-        } else {
-            self.asserting_request_no_response_body::<()>(
-                endpoint,
-                HashMap::new(),
-                Method::Get,
-                None,
-                expected_code,
-            )
-            .await
-        }
-    }
-
-    pub async fn asserting_post<
-        I: Serialize,
-        O: DeserializeOwned + Clone,
-        F: FnOnce(O) -> Result<()>,
-    >(
+    pub async fn post<I: Serialize, O: DeserializeOwned>(
         &self,
         endpoint: &str,
         input: I,
         expected_code: StatusCode,
-        response_assertation: F,
     ) -> Result<O> {
-        self.asserting_request(
-            endpoint,
-            HashMap::new(),
-            Method::Post,
-            Some(input),
-            expected_code,
-            response_assertation,
-        )
-        .await
+        let mut req = self.client.post(self.build_uri(endpoint));
+        req = self.add_headers(req).json(&input);
+
+        let resp = req.send().await.context("error sending request")?;
+
+        if resp.status() != expected_code {
+            anyhow::bail!(
+                "assertation failed: expected status {}, actual status {}",
+                expected_code,
+                resp.status()
+            );
+        }
+
+        Ok(resp
+            .json()
+            .await
+            .context("error receiving/parsing response")?)
     }
 
-    pub async fn asserting_put<
-        I: Serialize,
-        O: DeserializeOwned + Clone,
-        F: FnOnce(O) -> Result<()>,
-    >(
+    pub async fn put<I: Serialize, O: DeserializeOwned>(
         &self,
         endpoint: &str,
         input: I,
         expected_code: StatusCode,
-        response_assertation: F,
     ) -> Result<O> {
-        self.asserting_request(
-            endpoint,
-            HashMap::new(),
-            Method::Put,
-            Some(input),
-            expected_code,
-            response_assertation,
-        )
-        .await
+        let mut req = self.client.put(self.build_uri(endpoint));
+        req = self.add_headers(req).json(&input);
+
+        let resp = req.send().await.context("error sending request")?;
+
+        if resp.status() != expected_code {
+            anyhow::bail!(
+                "assertation failed: expected status {}, actual status {}",
+                expected_code,
+                resp.status()
+            );
+        }
+
+        Ok(resp
+            .json()
+            .await
+            .context("error receiving/parsing response")?)
     }
 
-    pub async fn asserting_delete(&self, endpoint: &str, expected_code: StatusCode) -> Result<()> {
-        self.asserting_request_no_response_body::<()>(
-            endpoint,
-            HashMap::new(),
-            Method::Delete,
-            None,
-            expected_code,
-        )
-        .await
+    pub async fn delete<O: DeserializeOwned>(
+        &self,
+        endpoint: &str,
+        expected_code: StatusCode,
+    ) -> Result<O> {
+        let mut req = self.client.delete(self.build_uri(endpoint));
+        req = self.add_headers(req);
+
+        let resp = req.send().await.context("error sending request")?;
+
+        if resp.status() != expected_code {
+            anyhow::bail!(
+                "assertation failed: expected status {}, actual status {}",
+                expected_code,
+                resp.status()
+            );
+        }
+
+        Ok(resp
+            .json()
+            .await
+            .context("error receiving/parsing response")?)
     }
 }
 
 pub fn start_svix_server() -> (TestClient, tokio::task::JoinHandle<()>) {
     let _ = dotenv::dotenv();
     let cfg = crate::cfg::load().unwrap();
-    let token = crate::generate_token(&cfg.jwt_secret).unwrap();
+    let token = generate_token_random_org(&cfg.jwt_secret).unwrap();
+    println!("{}", token);
     let listener = TcpListener::bind("127.0.0.1:0").unwrap();
     let base_uri = format!("http://{}", listener.local_addr().unwrap());
 

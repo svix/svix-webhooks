@@ -175,11 +175,13 @@ pub fn router() -> Router {
 
 #[cfg(test)]
 mod tests {
-    use anyhow::Result;
     use reqwest::StatusCode;
 
     use super::{ApplicationIn, ApplicationOut};
-    use crate::test_util::start_svix_server;
+    use crate::{
+        test_util::{start_svix_server, EmptyResponse},
+        v1::utils::ListResponse,
+    };
 
     fn application_in(name: &str) -> ApplicationIn {
         ApplicationIn {
@@ -188,141 +190,146 @@ mod tests {
         }
     }
 
-    fn assert_name(expected_name: &str) -> Box<dyn FnOnce(ApplicationOut) -> Result<()>> {
-        let expected_name = expected_name.to_owned();
-        Box::new(move |out| {
-            if out.name == expected_name {
-                Ok(())
-            } else {
-                anyhow::bail!(
-                    "ApplicationOut name = {}, expected {}",
-                    out.name,
-                    expected_name
-                );
-            }
-        })
-    }
-
     #[tokio::test]
-    async fn crud() {
-        let (client, jh) = start_svix_server();
+    async fn test_crud() {
+        let (client, _jh) = start_svix_server();
 
-        const APP_NAME_1_1: &str = "v1ApplicationCrdTest11";
-        const APP_NAME_1_2: &str = "v1ApplicationCrdTest12";
-        const APP_NAME_2_1: &str = "v1ApplicationCrdTest21";
-        const APP_NAME_2_2: &str = "v1ApplicationCrdTest22";
+        const APP_NAME_1_1: &str = "v1ApplicationCrudTest11";
+        const APP_NAME_1_2: &str = "v1ApplicationCrudTest12";
+        const APP_NAME_2_1: &str = "v1ApplicationCrudTest21";
+        const APP_NAME_2_2: &str = "v1ApplicationCrudTest22";
 
         // CREATE
-        let app_1 = client
-            .asserting_post(
+        let app_1: ApplicationOut = client
+            .post(
                 "api/v1/app/",
                 application_in(APP_NAME_1_1),
                 StatusCode::CREATED,
-                assert_name(APP_NAME_1_1),
             )
             .await
             .unwrap();
+        assert_eq!(app_1.name, APP_NAME_1_1);
 
-        let app_2 = client
-            .asserting_post(
+        let app_2: ApplicationOut = client
+            .post(
                 "api/v1/app/",
                 application_in(APP_NAME_2_1),
                 StatusCode::CREATED,
-                assert_name(APP_NAME_2_1),
             )
             .await
             .unwrap();
+        assert_eq!(app_2.name, APP_NAME_2_1);
 
         // READ
-        let _ = client
-            .asserting_get::<ApplicationOut>(
-                &format!("api/v1/app/{}/", app_1.id),
-                StatusCode::OK,
-                Some(app_1.clone()),
-            )
-            .await
-            .unwrap();
+        assert_eq!(
+            client
+                .get::<ApplicationOut>(&format!("api/v1/app/{}/", app_1.id), StatusCode::OK)
+                .await
+                .unwrap(),
+            app_1
+        );
 
-        let _ = client
-            .asserting_get::<ApplicationOut>(
-                &format!("api/v1/app/{}/", app_2.id),
-                StatusCode::OK,
-                Some(app_2.clone()),
-            )
-            .await
-            .unwrap();
+        assert_eq!(
+            client
+                .get::<ApplicationOut>(&format!("api/v1/app/{}/", app_2.id), StatusCode::OK,)
+                .await
+                .unwrap(),
+            app_2
+        );
 
         //UPDATE
         let app_1_id = app_1.id;
-        let app_1 = client
-            .asserting_put(
+        let app_1: ApplicationOut = client
+            .put(
                 &format!("api/v1/app/{}", app_1_id),
                 application_in(APP_NAME_1_2),
                 StatusCode::OK,
-                assert_name(APP_NAME_1_2),
             )
             .await
             .unwrap();
 
         let app_2_id = app_2.id;
-        let app_2 = client
-            .asserting_put(
+        let app_2: ApplicationOut = client
+            .put(
                 &format!("api/v1/app/{}", app_2_id),
                 application_in(APP_NAME_2_2),
                 StatusCode::OK,
-                assert_name(APP_NAME_2_2),
             )
             .await
             .unwrap();
 
         // CONFIRM UPDATE
-        let _ = client
-            .asserting_get::<ApplicationOut>(
-                &format!("api/v1/app/{}/", app_1_id),
-                StatusCode::OK,
-                Some(app_1.clone()),
-            )
-            .await
-            .unwrap();
+        assert_eq!(
+            client
+                .get::<ApplicationOut>(&format!("api/v1/app/{}/", app_1_id), StatusCode::OK,)
+                .await
+                .unwrap(),
+            app_1
+        );
 
-        let _ = client
-            .asserting_get::<ApplicationOut>(
-                &format!("api/v1/app/{}/", app_2_id),
-                StatusCode::OK,
-                Some(app_2.clone()),
-            )
-            .await
-            .unwrap();
+        assert_eq!(
+            client
+                .get::<ApplicationOut>(&format!("api/v1/app/{}/", app_2_id), StatusCode::OK,)
+                .await
+                .unwrap(),
+            app_2
+        );
 
         // DELETE
-        let _ = client
-            .asserting_delete(&format!("api/v1/app/{}/", app_1.id), StatusCode::NO_CONTENT)
+        let _: EmptyResponse = client
+            .delete(&format!("api/v1/app/{}/", app_1.id), StatusCode::NO_CONTENT)
             .await
             .unwrap();
-        let _ = client
-            .asserting_delete(&format!("api/v1/app/{}/", app_2.id), StatusCode::NO_CONTENT)
+        let _: EmptyResponse = client
+            .delete(&format!("api/v1/app/{}/", app_2.id), StatusCode::NO_CONTENT)
             .await
             .unwrap();
 
         // CONFIRM DELETION
-        let _ = client
-            .asserting_get::<ApplicationOut>(
-                &format!("api/v1/app/{}/", app_1.id),
-                StatusCode::NOT_FOUND,
-                None,
-            )
+        // Deserialize into a Value because it a basic JSON structure saying "Entity not found"
+        let _: serde_json::Value = client
+            .get(&format!("api/v1/app/{}/", app_1.id), StatusCode::NOT_FOUND)
             .await
             .unwrap();
-        let _ = client
-            .asserting_get::<ApplicationOut>(
-                &format!("api/v1/app/{}/", app_2.id),
-                StatusCode::NOT_FOUND,
-                None,
+        let _: serde_json::Value = client
+            .get(&format!("api/v1/app/{}/", app_2.id), StatusCode::NOT_FOUND)
+            .await
+            .unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_list() {
+        let (client, _jh) = start_svix_server();
+
+        const APP_NAME_1: &str = "v1ApplicationCrudTest1";
+        const APP_NAME_2: &str = "v1ApplicationCrudTest2";
+
+        // CREATE
+        let app_1 = client
+            .post(
+                "api/v1/app/",
+                application_in(APP_NAME_1),
+                StatusCode::CREATED,
             )
             .await
             .unwrap();
 
-        // Kill server
-        jh.abort();
+        let app_2 = client
+            .post(
+                "api/v1/app/",
+                application_in(APP_NAME_2),
+                StatusCode::CREATED,
+            )
+            .await
+            .unwrap();
+
+        let list = client
+            .get::<ListResponse<ApplicationOut>>("api/v1/app/", StatusCode::OK)
+            .await
+            .unwrap();
+
+        assert_eq!(list.data.len(), 2);
+        assert!(list.data.contains(&app_1));
+        assert!(list.data.contains(&app_2));
     }
 }

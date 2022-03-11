@@ -19,6 +19,10 @@ use crate::{
     error::{Error, HttpError, Result},
 };
 
+// False positive as the Trait is used with the [`BaseId::generate_`] method
+#[allow(unused_imports)]
+use super::types::BaseId;
+
 use super::types::{ApplicationIdOrUid, OrganizationId};
 
 /// The default org_id we use (useful for generating JWTs when testing).
@@ -118,6 +122,14 @@ pub fn generate_token(keys: &Keys) -> Result<String> {
     let claims = Claims::create(Duration::from_hours(24 * 365 * 10))
         .with_issuer(env!("CARGO_PKG_NAME"))
         .with_subject(org_id().0);
+    Ok(keys.key.authenticate(claims).unwrap())
+}
+
+#[cfg(test)]
+pub fn generate_token_random_org(keys: &Keys) -> Result<String> {
+    let claims = Claims::create(Duration::from_hours(24 * 365 * 10))
+        .with_issuer(env!("CARGO_PKG_NAME"))
+        .with_subject(OrganizationId::generate_(None, None));
     Ok(keys.key.authenticate(claims).unwrap())
 }
 
