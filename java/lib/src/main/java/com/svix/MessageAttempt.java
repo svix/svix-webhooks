@@ -91,6 +91,7 @@ public final class MessageAttempt {
 					appId,
 					options.getIterator(),
 					options.getLimit(),
+					options.getChannel(),
 					options.getMessageStatus(),
 					options.getBefore(),
 					options.getAfter(),

@@ -153,6 +153,9 @@ func (m *MessageAttempt) ListAttemptedMessages(appId string, endpointId string, 
 		if options.After != nil {
 			req = req.After(*options.After)
 		}
+		if options.Channel != nil {
+			req = req.Channel(*options.Channel)
+		}
 	}
 	out, res, err := req.Execute()
 	if err != nil {

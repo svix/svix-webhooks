@@ -97,6 +97,7 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
                 appId,
                 options.iterator,
                 options.limit,
+                options.channel,
                 options.messageStatus,
                 options.before,
                 options.after,
