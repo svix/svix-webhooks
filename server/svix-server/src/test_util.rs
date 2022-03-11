@@ -4,7 +4,7 @@ use anyhow::{Context, Result};
 use reqwest::{Client, RequestBuilder, StatusCode};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
-use crate::core::security::generate_token_random_org;
+use crate::core::security::test_util::generate_token_random_org;
 
 pub struct TestClient {
     base_uri: String,

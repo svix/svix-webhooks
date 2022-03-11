@@ -19,10 +19,6 @@ use crate::{
     error::{Error, HttpError, Result},
 };
 
-// False positive as the Trait is used with the [`BaseId::generate_`] method
-#[allow(unused_imports)]
-use super::types::BaseId;
-
 use super::types::{ApplicationIdOrUid, OrganizationId};
 
 /// The default org_id we use (useful for generating JWTs when testing).
@@ -125,14 +121,6 @@ pub fn generate_token(keys: &Keys) -> Result<String> {
     Ok(keys.key.authenticate(claims).unwrap())
 }
 
-#[cfg(test)]
-pub fn generate_token_random_org(keys: &Keys) -> Result<String> {
-    let claims = Claims::create(Duration::from_hours(24 * 365 * 10))
-        .with_issuer(env!("CARGO_PKG_NAME"))
-        .with_subject(OrganizationId::new(None, None).0);
-    Ok(keys.key.authenticate(claims).unwrap())
-}
-
 #[derive(Clone, Debug)]
 pub struct Keys {
     key: HS256Key,
@@ -143,5 +131,18 @@ impl Keys {
         Self {
             key: HS256Key::from_bytes(secret),
         }
+    }
+}
+
+#[cfg(test)]
+pub(crate) mod test_util {
+    use super::*;
+    use crate::core::types::BaseId;
+
+    pub fn generate_token_random_org(keys: &Keys) -> Result<String> {
+        let claims = Claims::create(Duration::from_hours(24 * 365 * 10))
+            .with_issuer(env!("CARGO_PKG_NAME"))
+            .with_subject(OrganizationId::new(None, None).0);
+        Ok(keys.key.authenticate(claims).unwrap())
     }
 }
