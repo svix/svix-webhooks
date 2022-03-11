@@ -163,6 +163,7 @@ async fn main() {
 
     if let Some(Commands::Migrate) = &args.command {
         db::run_migrations(&cfg).await;
+        exit(0);
     } else if let Some(Commands::Jwt {
         command: JwtCommands::Generate,
     }) = &args.command
