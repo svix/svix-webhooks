@@ -56,6 +56,9 @@ jobs:
     - name: Start dependencies
       run: docker-compose -f "server/testing-docker-compose.yml" up -d
 
+	- name: Wait for postgres
+      run: sleep 15
+	
     - name: Run tests
       uses: actions-rs/cargo@v1
       env:
