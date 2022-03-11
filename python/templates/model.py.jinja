@@ -1,3 +1,11 @@
+{% set class_name = model.class_info.name %}
+{# TODO: This is a hack to fix the typing of payloads, ideally we'd fix the generator so we don't need to manually add them here #}
+{% set dict_classes = ['EndpointMessageOutPayload', 'MessageInPayload', 'MessageOutPayload'] %}
+{% if class_name in dict_classes %}
+from typing import Any, Dict
+
+{{ class_name }} = Dict[str, Any]
+{% else %}
 from typing import Any, Dict, Type, TypeVar, Tuple, Optional, BinaryIO, TextIO
 
 {% if model.additional_properties %}
@@ -21,7 +29,6 @@ from ..types import UNSET, Unset
 {% set additional_property_type = 'Any' if model.additional_properties == True else model.additional_properties.get_type_string() %}
 {% endif %}
 
-{% set class_name = model.class_info.name %}
 {% set module_name = model.class_info.module_name %}
 {% set is_exception = class_name in ["HttpError", "HTTPValidationError", "ValidationError"]%}
 
@@ -74,7 +81,9 @@ class {{ class_name }}({{"Exception" if is_exception}}):
 {% macro _to_dict(multipart=False) %}
 {% for property in model.required_properties + model.optional_properties %}
 {% import "property_templates/" + property.template as prop_template %}
-{% if prop_template.transform %}
+{% if property.class_info and property.class_info.name in dict_classes %}
+{{ property.python_name }} = self.{{ property.python_name }}
+{% elif prop_template.transform %}
 {{ prop_template.transform(property, "self." + property.python_name, property.python_name, multipart=multipart) }}
 {% elif multipart %}
 {{ property.python_name }} = self.{{ property.python_name }} if isinstance(self.{{ property.python_name }}, Unset) else (None, str(self.{{ property.python_name }}).encode(), "text/plain")
@@ -138,7 +147,11 @@ return field_dict
     {% endif %}
     {% import "property_templates/" + property.template as prop_template %}
     {% if prop_template.construct %}
+        {% if property.class_info and property.class_info.name in dict_classes %}
+        {{ property.name }} = dict_copy.pop("{{ property.name }}")
+        {% else %}
         {{ prop_template.construct(property, property_source) | indent(8) }}
+        {% endif %}
     {% else %}
         {{ property.python_name }} = {{ property_source }}
     {% endif %}
@@ -187,3 +200,4 @@ return field_dict
         return key in self.additional_properties
     {% endif %}
     {%endif%}
+{% endif %}
