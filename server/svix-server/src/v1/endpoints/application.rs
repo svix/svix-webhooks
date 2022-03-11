@@ -175,13 +175,11 @@ pub fn router() -> Router {
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashMap;
-
     use anyhow::Result;
     use reqwest::StatusCode;
 
     use super::{ApplicationIn, ApplicationOut};
-    use crate::test_util::{start_svix_server, Method};
+    use crate::test_util::start_svix_server;
 
     fn application_in(name: &str) -> ApplicationIn {
         ApplicationIn {
@@ -206,28 +204,31 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn crd() {
+    async fn crud() {
         let (client, jh) = start_svix_server();
 
-        const APP_NAME_1: &str = "v1ApplicationCrdTest1";
-        const APP_NAME_2: &str = "v1ApplicationCrdTest2";
+        const APP_NAME_1_1: &str = "v1ApplicationCrdTest11";
+        const APP_NAME_1_2: &str = "v1ApplicationCrdTest12";
+        const APP_NAME_2_1: &str = "v1ApplicationCrdTest21";
+        const APP_NAME_2_2: &str = "v1ApplicationCrdTest22";
 
         // CREATE
         let app_1 = client
             .asserting_post(
                 "api/v1/app/",
-                application_in(APP_NAME_1),
+                application_in(APP_NAME_1_1),
                 StatusCode::CREATED,
-                assert_name(APP_NAME_1),
+                assert_name(APP_NAME_1_1),
             )
             .await
             .unwrap();
+
         let app_2 = client
             .asserting_post(
                 "api/v1/app/",
-                application_in(APP_NAME_2),
+                application_in(APP_NAME_2_1),
                 StatusCode::CREATED,
-                assert_name(APP_NAME_2),
+                assert_name(APP_NAME_2_1),
             )
             .await
             .unwrap();
@@ -241,9 +242,52 @@ mod tests {
             )
             .await
             .unwrap();
+
         let _ = client
             .asserting_get::<ApplicationOut>(
                 &format!("api/v1/app/{}/", app_2.id),
+                StatusCode::OK,
+                Some(app_2.clone()),
+            )
+            .await
+            .unwrap();
+
+        //UPDATE
+        let app_1_id = app_1.id;
+        let app_1 = client
+            .asserting_put(
+                &format!("api/v1/app/{}", app_1_id),
+                application_in(APP_NAME_1_2),
+                StatusCode::OK,
+                assert_name(APP_NAME_1_2),
+            )
+            .await
+            .unwrap();
+
+        let app_2_id = app_2.id;
+        let app_2 = client
+            .asserting_put(
+                &format!("api/v1/app/{}", app_2_id),
+                application_in(APP_NAME_2_2),
+                StatusCode::OK,
+                assert_name(APP_NAME_2_2),
+            )
+            .await
+            .unwrap();
+
+        // CONFIRM UPDATE
+        let _ = client
+            .asserting_get::<ApplicationOut>(
+                &format!("api/v1/app/{}/", app_1_id),
+                StatusCode::OK,
+                Some(app_1.clone()),
+            )
+            .await
+            .unwrap();
+
+        let _ = client
+            .asserting_get::<ApplicationOut>(
+                &format!("api/v1/app/{}/", app_2_id),
                 StatusCode::OK,
                 Some(app_2.clone()),
             )
@@ -260,7 +304,7 @@ mod tests {
             .await
             .unwrap();
 
-        // READ AGAIN
+        // CONFIRM DELETION
         let _ = client
             .asserting_get::<ApplicationOut>(
                 &format!("api/v1/app/{}/", app_1.id),
