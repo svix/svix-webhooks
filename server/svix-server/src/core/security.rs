@@ -133,3 +133,16 @@ impl Keys {
         }
     }
 }
+
+#[cfg(test)]
+pub(crate) mod test_util {
+    use super::*;
+    use crate::core::types::BaseId;
+
+    pub fn generate_token_random_org(keys: &Keys) -> Result<String> {
+        let claims = Claims::create(Duration::from_hours(24 * 365 * 10))
+            .with_issuer(env!("CARGO_PKG_NAME"))
+            .with_subject(OrganizationId::new(None, None).0);
+        Ok(keys.key.authenticate(claims).unwrap())
+    }
+}

@@ -8,10 +8,15 @@ use axum::{extract::Extension, Router};
 use bb8_redis::RedisConnectionManager;
 use cfg::QueueType;
 use dotenv::dotenv;
-use std::{net::SocketAddr, process::exit, str::FromStr};
+use std::{
+    net::{SocketAddr, TcpListener},
+    process::exit,
+    str::FromStr,
+};
 use tower_http::trace::TraceLayer;
 
 use crate::{
+    cfg::Configuration,
     core::{cache::RedisCache, security::generate_token},
     db::init_db,
     worker::worker_loop,
@@ -24,6 +29,9 @@ mod error;
 mod queue;
 mod v1;
 mod worker;
+
+#[cfg(test)]
+pub(crate) mod test_util;
 
 const CRATE_NAME: &str = env!("CARGO_CRATE_NAME");
 
@@ -44,6 +52,9 @@ enum Commands {
         #[clap(subcommand)]
         command: JwtCommands,
     },
+
+    #[clap()]
+    Migrate,
 }
 
 #[derive(Subcommand)]
@@ -53,35 +64,7 @@ enum JwtCommands {
     Generate,
 }
 
-#[tokio::main]
-async fn main() {
-    dotenv().ok();
-
-    let args = Args::parse();
-    let cfg = cfg::load().unwrap();
-
-    if cfg!(debug_assertions) && std::env::var_os("RUST_LOG").is_none() {
-        std::env::set_var(
-            "RUST_LOG",
-            format!(
-                "{crate}={level},tower_http={level}",
-                crate = CRATE_NAME,
-                level = cfg.log_level.to_string()
-            ),
-        );
-    }
-
-    tracing_subscriber::fmt::init();
-
-    if let Some(Commands::Jwt {
-        command: JwtCommands::Generate,
-    }) = &args.command
-    {
-        let token = generate_token(&cfg.jwt_secret).unwrap();
-        println!("Token (Bearer): {}", token);
-        exit(0);
-    }
-
+pub(crate) async fn run(cfg: Configuration, listener: Option<TcpListener>) {
     let pool = init_db(&cfg).await;
     let redis_pool = if let Some(redis_dsn) = &cfg.redis_dsn {
         tracing::debug!("Redis: Initializing pool");
@@ -119,16 +102,26 @@ async fn main() {
         app = app.layer(Extension(redis_pool.clone()));
     };
 
-    let addr = SocketAddr::from_str(&cfg.listen_address).unwrap();
     let with_api = cfg.api_enabled;
     let with_worker = cfg.worker_enabled;
+
+    let listen_address = SocketAddr::from_str(&cfg.listen_address).unwrap();
+
     let (server, worker_loop) = tokio::join!(
         async {
             if with_api {
-                tracing::debug!("API: Listening on {}", addr);
-                axum::Server::bind(&addr)
-                    .serve(app.into_make_service())
-                    .await
+                if let Some(l) = listener {
+                    tracing::debug!("API: Listening on {}", l.local_addr().unwrap());
+                    axum::Server::from_tcp(l)
+                        .unwrap()
+                        .serve(app.into_make_service())
+                        .await
+                } else {
+                    tracing::debug!("API: Listening on {}", listen_address);
+                    axum::Server::bind(&listen_address)
+                        .serve(app.into_make_service())
+                        .await
+                }
             } else {
                 tracing::debug!("API: off");
                 Ok(())
@@ -146,4 +139,40 @@ async fn main() {
     );
     server.unwrap();
     worker_loop.unwrap();
+}
+
+#[tokio::main]
+async fn main() {
+    dotenv().ok();
+
+    let args = Args::parse();
+    let cfg = cfg::load().unwrap();
+
+    if cfg!(debug_assertions) && std::env::var_os("RUST_LOG").is_none() {
+        std::env::set_var(
+            "RUST_LOG",
+            format!(
+                "{crate}={level},tower_http={level}",
+                crate = CRATE_NAME,
+                level = cfg.log_level.to_string()
+            ),
+        );
+    }
+
+    tracing_subscriber::fmt::init();
+
+    if let Some(Commands::Migrate) = &args.command {
+        let _ = db::init_db_and_run_migrations(&cfg).await;
+        println!("Migrations run");
+        exit(0);
+    } else if let Some(Commands::Jwt {
+        command: JwtCommands::Generate,
+    }) = &args.command
+    {
+        let token = generate_token(&cfg.jwt_secret).unwrap();
+        println!("Token (Bearer): {}", token);
+        exit(0);
+    }
+
+    run(cfg, None).await;
 }

@@ -34,9 +34,9 @@ pub struct Pagination<T: Validate> {
 #[derive(Serialize)]
 pub struct EmptyResponse {}
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
-pub struct ListResponse<T> {
+pub struct ListResponse<T: Clone> {
     pub(crate) data: Vec<T>,
     pub(crate) iterator: Option<String>,
     pub(crate) done: bool,
@@ -51,7 +51,7 @@ pub trait ModelIn {
 pub trait ModelOut {
     fn id_copy(&self) -> String;
 
-    fn list_response<T: ModelOut>(mut data: Vec<T>, limit: usize) -> ListResponse<T> {
+    fn list_response<T: ModelOut + Clone>(mut data: Vec<T>, limit: usize) -> ListResponse<T> {
         let done = data.len() <= limit;
         data.truncate(limit);
         let iterator = data.last().map(|x| x.id_copy());
