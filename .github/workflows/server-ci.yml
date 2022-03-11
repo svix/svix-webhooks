@@ -56,14 +56,17 @@ jobs:
     - name: Start dependencies
       run: docker-compose -f "server/testing-docker-compose.yml" up -d
 
-    - name: Install sqlx
-      run: cargo install sqlx-cli
-    
     - name: Run migrations
-      run: sqlx migrate run
+      uses: actions-rs/cargo@v1
       env:
         DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
-    
+        SVIX_REDIS_DSN: "redis://localhost:6379"
+        SVIX_QUEUE_TYPE: "redis"
+        SVIX_JWT_SECRET: "test value"
+      with:
+        command: run
+        args: --manifest-path server/Cargo.toml -- migrate
+
     - name: Run tests
       uses: actions-rs/cargo@v1
       env:

@@ -52,6 +52,9 @@ enum Commands {
         #[clap(subcommand)]
         command: JwtCommands,
     },
+
+    #[clap()]
+    Migrate,
 }
 
 #[derive(Subcommand)]
@@ -158,7 +161,9 @@ async fn main() {
 
     tracing_subscriber::fmt::init();
 
-    if let Some(Commands::Jwt {
+    if let Some(Commands::Migrate) = &args.command {
+        db::run_migrations(&cfg).await;
+    } else if let Some(Commands::Jwt {
         command: JwtCommands::Generate,
     }) = &args.command
     {
