@@ -20,6 +20,11 @@ services:
 
   pgbouncer:
     image: edoburu/pgbouncer:1.15.0
+    healthcheck:
+      test: "pg_isready -h localhost"
+      interval: 30s
+      timeout: 10s
+      retries: 3
     environment:
       DB_HOST: "postgres"
       DB_USER: "postgres"
