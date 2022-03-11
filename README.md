@@ -65,7 +65,7 @@ To stay up-to-date with new features and improvements be sure to watch our repo!
     <th>✅</th>
     <th>✅</th>
     <th>✅</th>
-    <th colspan="4">Async Support planned.</th>
+    <th colspan="4"></th>
   </tr>
     </tr>
     <tr>
