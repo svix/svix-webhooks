@@ -65,6 +65,7 @@ from .internal.openapi_client.models.dashboard_access_out import DashboardAccess
 from .internal.openapi_client.models.endpoint_headers_in import EndpointHeadersIn
 from .internal.openapi_client.models.endpoint_headers_out import EndpointHeadersOut
 from .internal.openapi_client.models.endpoint_in import EndpointIn
+from .internal.openapi_client.models.endpoint_message_out_payload import EndpointMessageOutPayload
 from .internal.openapi_client.models.endpoint_out import EndpointOut
 from .internal.openapi_client.models.endpoint_secret_out import EndpointSecretOut
 from .internal.openapi_client.models.endpoint_secret_rotate_in import EndpointSecretRotateIn
@@ -89,7 +90,9 @@ from .internal.openapi_client.models.list_response_message_endpoint_out import L
 from .internal.openapi_client.models.list_response_message_out import ListResponseMessageOut
 from .internal.openapi_client.models.message_attempt_out import MessageAttemptOut
 from .internal.openapi_client.models.message_in import MessageIn
+from .internal.openapi_client.models.message_in_payload import MessageInPayload
 from .internal.openapi_client.models.message_out import MessageOut
+from .internal.openapi_client.models.message_out_payload import MessageOutPayload
 from .internal.openapi_client.models.message_status import MessageStatus
 from .internal.openapi_client.models.recover_in import RecoverIn
 from .internal.openapi_client.models.recover_out import RecoverOut
@@ -890,7 +893,10 @@ __all__ = [
     "ListResponseEventTypeOut",
     "ListResponseMessageOut",
     "MessageIn",
+    "MessageInPayload",
     "MessageOut",
+    "MessageOutPayload",
+    "EndpointMessageOutPayload",
     "ListResponseMessageAttemptOut",
     "ListResponseEndpointMessageOut",
     "ListResponseMessageEndpointOut",
