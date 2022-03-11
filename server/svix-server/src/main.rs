@@ -162,7 +162,8 @@ async fn main() {
     tracing_subscriber::fmt::init();
 
     if let Some(Commands::Migrate) = &args.command {
-        db::run_migrations(&cfg).await;
+        let _ = db::init_db_and_run_migrations(&cfg).await;
+        println!("Migrations run");
         exit(0);
     } else if let Some(Commands::Jwt {
         command: JwtCommands::Generate,
