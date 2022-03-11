@@ -7,7 +7,7 @@ import com.svix.models.MessageStatus;
 import com.svix.models.StatusCodeClass;
 
 
-public class MessageAttemptListOptions extends ListOptionsDouble {
+public class MessageAttemptListOptions extends ListOptions {
     private MessageStatus status;
 	private List<String> eventTypes;
 	private OffsetDateTime before;
