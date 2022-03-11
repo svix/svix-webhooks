@@ -47,7 +47,7 @@ Looking for general information? Checkout the [README](./README.md).
     <th>✅</th>
     <th>✅</th>
     <th>✅</th>
-    <th colspan="4">Async Support planned.</th>
+    <th colspan="4"></th>
   </tr>
     </tr>
     <tr>

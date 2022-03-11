@@ -37,7 +37,7 @@ You can find general usage documentation at <https://docs.svix.com>.  For comple
   </tr>
   <tr>
     <th>Caveats</th>
-    <th>Async support planned.</th>
+    <th>None! 🚀</th>
   </tr>
 </table>
 
@@ -48,6 +48,17 @@ pip install Svix
 ```
 
 ## Usage
+Please refer to [the documentation](https://docs.svix.com/) or [the API reference](https://api.svix.com/docs) for more usage instructions.
+
+### Async
+```python
+from svix.api import SvixAsync, ApplicationIn
+
+svix = SvixAsync("AUTH_TOKEN")
+app = await svix.application.create(ApplicationIn(name="Application name"))
+```
+
+### Sync
 
 ```python
 from svix.api import Svix, ApplicationIn
@@ -56,15 +67,13 @@ svix = Svix("AUTH_TOKEN")
 app = svix.application.create(ApplicationIn(name="Application name"))
 ```
 
-Please refer to [the documentation](https://docs.svix.com/) or [the API reference](https://api.svix.com/docs) for more usage instructions.
-
 # Development
 
 First checkout the [core README](../README.md#development) for details on how to generate our API bindings, then follow the steps below.
 
 ## Requirements
 
- - python 2 or 3
+ - python 3
 
 ## Installing dependencies
 
