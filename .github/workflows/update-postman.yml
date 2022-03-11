@@ -1,0 +1,22 @@
+name: Update Postman Collection
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  postman:
+    name: Update Postman Collection
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Dependencies
+        run: yarn
+
+      - name: Update Postman Collection
+        run: yarn update-postman
+        env:
+          POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
