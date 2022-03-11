@@ -162,6 +162,17 @@ impl TestClient {
             .await
         }
     }
+
+    pub async fn asserting_delete(&self, endpoint: &str, expected_code: StatusCode) -> Result<()> {
+        self.asserting_request_no_response_body::<()>(
+            endpoint,
+            HashMap::new(),
+            Method::Delete,
+            None,
+            expected_code,
+        )
+        .await
+    }
 }
 
 pub fn start_svix_server() -> (TestClient, tokio::task::JoinHandle<()>) {

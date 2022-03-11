@@ -256,23 +256,11 @@ mod tests {
 
         // DELETE
         let _ = client
-            .asserting_request_no_response_body::<ApplicationIn>(
-                &format!("api/v1/app/{}/", app_1.id),
-                HashMap::new(),
-                Method::Delete,
-                None,
-                StatusCode::NO_CONTENT,
-            )
+            .asserting_delete(&format!("api/v1/app/{}/", app_1.id), StatusCode::NO_CONTENT)
             .await
             .unwrap();
         let _ = client
-            .asserting_request_no_response_body::<ApplicationIn>(
-                &format!("api/v1/app/{}/", app_2.id),
-                HashMap::new(),
-                Method::Delete,
-                None,
-                StatusCode::NO_CONTENT,
-            )
+            .asserting_delete(&format!("api/v1/app/{}/", app_2.id), StatusCode::NO_CONTENT)
             .await
             .unwrap();
 
