@@ -142,7 +142,6 @@ pub fn start_svix_server() -> (TestClient, tokio::task::JoinHandle<()>) {
     let _ = dotenv::dotenv();
     let cfg = crate::cfg::load().unwrap();
     let token = generate_token_random_org(&cfg.jwt_secret).unwrap();
-    println!("{}", token);
     let listener = TcpListener::bind("127.0.0.1:0").unwrap();
     let base_uri = format!("http://{}", listener.local_addr().unwrap());
 

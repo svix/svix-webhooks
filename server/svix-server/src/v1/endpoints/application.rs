@@ -237,7 +237,7 @@ mod tests {
             app_2
         );
 
-        //UPDATE
+        // UPDATE
         let app_1_id = app_1.id;
         let app_1: ApplicationOut = client
             .put(
