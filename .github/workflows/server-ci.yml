@@ -56,9 +56,6 @@ jobs:
     - name: Start dependencies
       run: docker-compose -f "server/testing-docker-compose.yml" up -d
 
-    - name: Wait for postgres
-      run: sleep 15
-
     - name: Install sqlx
       run: cargo install sqlx-cli
     
