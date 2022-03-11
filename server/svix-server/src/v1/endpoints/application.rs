@@ -214,22 +214,18 @@ mod tests {
 
         // CREATE
         let app_1 = client
-            .asserting_request(
+            .asserting_post(
                 "api/v1/app/",
-                HashMap::new(),
-                Method::Post,
-                Some(application_in(APP_NAME_1)),
+                application_in(APP_NAME_1),
                 StatusCode::CREATED,
                 assert_name(APP_NAME_1),
             )
             .await
             .unwrap();
         let app_2 = client
-            .asserting_request(
+            .asserting_post(
                 "api/v1/app/",
-                HashMap::new(),
-                Method::Post,
-                Some(application_in(APP_NAME_2)),
+                application_in(APP_NAME_2),
                 StatusCode::CREATED,
                 assert_name(APP_NAME_2),
             )

@@ -1,6 +1,7 @@
 use std::{collections::HashMap, net::TcpListener, str::FromStr};
 
 use anyhow::{Context, Result};
+use http::response;
 use reqwest::{
     header::{HeaderMap, HeaderName, HeaderValue},
     Client, StatusCode,
@@ -161,6 +162,28 @@ impl TestClient {
             )
             .await
         }
+    }
+
+    pub async fn asserting_post<
+        I: Serialize,
+        O: DeserializeOwned + Clone,
+        F: FnOnce(O) -> Result<()>,
+    >(
+        &self,
+        endpoint: &str,
+        input: I,
+        expected_code: StatusCode,
+        response_assertation: F,
+    ) -> Result<O> {
+        self.asserting_request(
+            endpoint,
+            HashMap::new(),
+            Method::Post,
+            Some(input),
+            expected_code,
+            response_assertation,
+        )
+        .await
     }
 
     pub async fn asserting_delete(&self, endpoint: &str, expected_code: StatusCode) -> Result<()> {
