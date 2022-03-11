@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -70,24 +71,89 @@ namespace Svix
             }
         }
 
-        public ApplicationOut Delete()
+        public bool Delete(string appId, string idempotencyKey = default)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var lResponse = _applicationApi.DeleteApplicationApiV1AppAppIdDeleteWithHttpInfo(
+                    appId,
+                    idempotencyKey);
+
+                return lResponse.StatusCode == HttpStatusCode.NoContent;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(List)} failed");
+
+                if (Throw)
+                    throw;
+
+                return false;
+            }
         }
         
-        public async Task<ApplicationOut> DeleteAsync()
+        public async Task<bool> DeleteAsync(string appId, string idempotencyKey = default, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var lResponse = await _applicationApi.DeleteApplicationApiV1AppAppIdDeleteWithHttpInfoAsync(
+                    appId,
+                    idempotencyKey,
+                    cancellationToken);
+
+                return lResponse.StatusCode == HttpStatusCode.NoContent;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(List)} failed");
+
+                if (Throw)
+                    throw;
+
+                return false;
+            }
         }
         
-        public ApplicationOut Get()
+        public ApplicationOut Get(string appId, string idempotencyKey = default)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var lApplication = _applicationApi.GetApplicationApiV1AppAppIdGet(
+                    appId,
+                    idempotencyKey);
+
+                return lApplication;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(List)} failed");
+
+                if (Throw)
+                    throw;
+
+                return null;
+            }
         }
         
-        public async Task<ApplicationOut> GetAsync()
+        public async Task<ApplicationOut> GetAsync(string appId, string idempotencyKey = default, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var lApplication = await _applicationApi.GetApplicationApiV1AppAppIdGetAsync(
+                    appId,
+                    idempotencyKey);
+
+                return lApplication;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(List)} failed");
+
+                if (Throw)
+                    throw;
+
+                return null;
+            }
         }
         
         public List<ApplicationOut> List(ApplicationListOptions options = null, string idempotencyKey = default)
@@ -135,14 +201,49 @@ namespace Svix
             }
         }
         
-        public ApplicationOut Update()
+        public ApplicationOut Update(string appId, ApplicationIn application, string idempotencyKey = default)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var lApplication = _applicationApi.UpdateApplicationApiV1AppAppIdPut(
+                    appId,
+                    application,
+                    idempotencyKey);
+
+                return lApplication;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(List)} failed");
+
+                if (Throw)
+                    throw;
+
+                return null;
+            }
         }
         
-        public async Task<ApplicationOut> UpdateAsync()
+        public async Task<ApplicationOut> UpdateAsync(string appId, ApplicationIn application, string idempotencyKey = default, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var lApplication = await _applicationApi.UpdateApplicationApiV1AppAppIdPutAsync(
+                    appId,
+                    application,
+                    idempotencyKey,
+                    cancellationToken);
+
+                return lApplication;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(List)} failed");
+
+                if (Throw)
+                    throw;
+
+                return null;
+            }
         }
     }
 }
