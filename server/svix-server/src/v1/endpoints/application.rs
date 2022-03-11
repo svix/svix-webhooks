@@ -23,15 +23,18 @@ use crate::core::security::Permissions;
 use crate::db::models::application;
 use crate::v1::utils::Pagination;
 
-#[derive(Clone, Debug, PartialEq, Deserialize, Validate, ModelIn)]
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize, Validate, ModelIn)]
 #[serde(rename_all = "camelCase")]
 struct ApplicationIn {
     #[validate(length(min = 1))]
     name: String,
+
     #[validate(range(min = 1))]
+    #[serde(skip_serializing_if = "Option::is_none")]
     rate_limit: Option<u16>,
     /// Optional unique identifier for the application
     #[validate]
+    #[serde(skip_serializing_if = "Option::is_none")]
     uid: Option<ApplicationUid>,
 }
 
@@ -46,7 +49,7 @@ impl ModelIn for ApplicationIn {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, ModelOut)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, ModelOut)]
 #[serde(rename_all = "camelCase")]
 struct ApplicationOut {
     // FIXME: Do we want to use serde(flatten) or just duplicate the keys?
@@ -168,4 +171,151 @@ pub fn router() -> Router {
                 .put(update_application)
                 .delete(delete_application),
         )
+}
+
+#[cfg(test)]
+mod tests {
+    use std::collections::HashMap;
+
+    use anyhow::Result;
+    use reqwest::StatusCode;
+
+    use super::{ApplicationIn, ApplicationOut};
+    use crate::test_util::{start_svix_server, Method};
+
+    fn application_in(name: &str) -> ApplicationIn {
+        ApplicationIn {
+            name: name.to_owned(),
+            ..Default::default()
+        }
+    }
+
+    fn assert_name(expected_name: &str) -> Box<dyn FnOnce(ApplicationOut) -> Result<()>> {
+        let expected_name = expected_name.to_owned();
+        Box::new(move |out| {
+            if out.name == expected_name {
+                Ok(())
+            } else {
+                anyhow::bail!(
+                    "ApplicationOut name = {}, expected {}",
+                    out.name,
+                    expected_name
+                );
+            }
+        })
+    }
+
+    fn assert_eq(expected: &ApplicationOut) -> Box<dyn FnOnce(ApplicationOut) -> Result<()>> {
+        let expected = expected.clone();
+        Box::new(move |out| {
+            if out == expected {
+                Ok(())
+            } else {
+                anyhow::bail!("ApplicationOut = {:?}, expected {:?}", out, expected);
+            }
+        })
+    }
+
+    #[tokio::test]
+    async fn crd() {
+        let (client, jh) = start_svix_server();
+
+        const APP_NAME_1: &str = "v1ApplicationCrdTest1";
+        const APP_NAME_2: &str = "v1ApplicationCrdTest2";
+
+        // CREATE
+        let app_1 = client
+            .asserting_request(
+                "api/v1/app/",
+                HashMap::new(),
+                Method::Post,
+                Some(application_in(APP_NAME_1)),
+                StatusCode::CREATED,
+                assert_name(APP_NAME_1),
+            )
+            .await
+            .unwrap();
+        let app_2 = client
+            .asserting_request(
+                "api/v1/app/",
+                HashMap::new(),
+                Method::Post,
+                Some(application_in(APP_NAME_2)),
+                StatusCode::CREATED,
+                assert_name(APP_NAME_2),
+            )
+            .await
+            .unwrap();
+
+        // READ
+        let _ = client
+            .asserting_request::<ApplicationIn, _, _>(
+                &format!("api/v1/app/{}/", app_1.id),
+                HashMap::new(),
+                Method::Get,
+                None,
+                StatusCode::OK,
+                assert_eq(&app_1),
+            )
+            .await
+            .unwrap();
+        let _ = client
+            .asserting_request::<ApplicationIn, _, _>(
+                &format!("api/v1/app/{}/", app_2.id),
+                HashMap::new(),
+                Method::Get,
+                None,
+                StatusCode::OK,
+                assert_eq(&app_2),
+            )
+            .await
+            .unwrap();
+
+        // DELETE
+        let _ = client
+            .asserting_request_no_response_body::<ApplicationIn>(
+                &format!("api/v1/app/{}/", app_1.id),
+                HashMap::new(),
+                Method::Delete,
+                None,
+                StatusCode::NO_CONTENT,
+            )
+            .await
+            .unwrap();
+        let _ = client
+            .asserting_request_no_response_body::<ApplicationIn>(
+                &format!("api/v1/app/{}/", app_2.id),
+                HashMap::new(),
+                Method::Delete,
+                None,
+                StatusCode::NO_CONTENT,
+            )
+            .await
+            .unwrap();
+
+        // READ AGAIN
+        let _ = client
+            .asserting_request_no_response_body::<ApplicationIn>(
+                &format!("api/v1/app/{}/", app_1.id),
+                HashMap::new(),
+                Method::Get,
+                None,
+                StatusCode::NOT_FOUND,
+            )
+            .await
+            .unwrap();
+        let _ = client
+            .asserting_request_no_response_body::<ApplicationIn>(
+                &format!("api/v1/app/{}/", app_2.id),
+                HashMap::new(),
+                Method::Get,
+                None,
+                StatusCode::NOT_FOUND,
+            )
+            .await
+            .unwrap();
+
+        // Kill server
+        jh.abort();
+    }
 }

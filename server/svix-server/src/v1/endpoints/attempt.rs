@@ -35,7 +35,7 @@ use validator::Validate;
 use crate::db::models::messageattempt;
 use crate::v1::utils::Pagination;
 
-#[derive(Clone, Debug, PartialEq, Serialize, ModelOut)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, ModelOut)]
 #[serde(rename_all = "camelCase")]
 struct MessageAttemptOut {
     response: String,

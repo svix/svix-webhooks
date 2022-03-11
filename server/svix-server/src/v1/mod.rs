@@ -4,7 +4,7 @@
 use axum::Router;
 
 mod endpoints;
-mod utils;
+pub(crate) mod utils;
 
 pub fn router() -> Router {
     let ret = Router::new()
