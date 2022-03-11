@@ -5082,6 +5082,18 @@
                     },
                     {
                         "in": "query",
+                        "name": "channel",
+                        "required": false,
+                        "schema": {
+                            "example": "project_1337",
+                            "maxLength": 128,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "Channel",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
                         "name": "status",
                         "required": false,
                         "schema": {
