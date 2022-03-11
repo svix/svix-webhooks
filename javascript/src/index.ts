@@ -139,10 +139,6 @@ interface ListOptions {
   limit?: number;
 }
 
-interface ListOptionsDouble extends ListOptions {
-  prevIterator?: string;
-}
-
 export type ApplicationListOptions = ListOptions;
 
 export type EndpointListOptions = ListOptions;
@@ -154,14 +150,14 @@ export interface EventTypeListOptions extends ListOptions {
   includeArchived?: boolean;
 }
 
-export interface MessageListOptions extends ListOptionsDouble {
+export interface MessageListOptions extends ListOptions {
   eventTypes?: string[];
   before?: Date;
   after?: Date;
   channel?: string;
 }
 
-export interface MessageAttemptListOptions extends ListOptionsDouble {
+export interface MessageAttemptListOptions extends ListOptions {
   status?: MessageStatus;
   eventTypes?: string[];
   before?: Date;
