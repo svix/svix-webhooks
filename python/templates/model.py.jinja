@@ -1,7 +1,5 @@
 {% set class_name = model.class_info.name %}
-{# TODO: This is a hack to fix the typing of payloads, ideally we'd fix the generator so we don't need to manually add them here #}
-{% set dict_classes = ['EndpointMessageOutPayload', 'MessageInPayload', 'MessageOutPayload'] %}
-{% if class_name in dict_classes %}
+{% if model.required_properties == [] and model.optional_properties == [] %}
 from typing import Any, Dict
 
 {{ class_name }} = Dict[str, Any]
@@ -77,11 +75,10 @@ class {{ class_name }}({{"Exception" if is_exception}}):
     {% if model.additional_properties %}
     additional_properties: Dict[str, {{ additional_property_type }}] = attr.ib(init=False, factory=dict)
     {% endif %}
-
 {% macro _to_dict(multipart=False) %}
 {% for property in model.required_properties + model.optional_properties %}
 {% import "property_templates/" + property.template as prop_template %}
-{% if property.class_info and property.class_info.name in dict_classes %}
+{% if property.class_info and property.required_properties == [] and property.optional_properties == [] %}
 {{ property.python_name }} = self.{{ property.python_name }}
 {% elif prop_template.transform %}
 {{ prop_template.transform(property, "self." + property.python_name, property.python_name, multipart=multipart) }}
@@ -147,7 +144,7 @@ return field_dict
     {% endif %}
     {% import "property_templates/" + property.template as prop_template %}
     {% if prop_template.construct %}
-        {% if property.class_info and property.class_info.name in dict_classes %}
+        {% if property.class_info and property.required_properties == [] and property.optional_properties == [] %}
         {{ property.name }} = dict_copy.pop("{{ property.name }}")
         {% else %}
         {{ prop_template.construct(property, property_source) | indent(8) }}

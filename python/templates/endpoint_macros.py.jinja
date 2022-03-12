@@ -57,7 +57,9 @@ params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
     {% set property = endpoint.json_body %}
     {% set destination = "json_" + property.python_name %}
     {% import "property_templates/" + property.template as prop_template %}
-    {% if prop_template.transform %}
+    {% if property.class_info and property.required_properties == [] and property.optional_properties == [] %}
+{{ destination }} = {{ property.python_name }}
+    {% elif prop_template.transform %}
 {{ prop_template.transform(property, property.python_name, destination) }}
     {% else %}
 {{ destination }} = {{ property.python_name }}
