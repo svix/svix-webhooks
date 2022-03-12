@@ -68,7 +68,9 @@ def _parse_response(*, response: httpx.Response) -> {{ return_type }}:
     {% endfor %}
     {%set ok_response = endpoint.responses[0]%}
     {% import "property_templates/" + ok_response.prop.template as ok_response_prop_template %}
-    {% if ok_response_prop_template.construct %}
+    {% if ok_response.prop and ok_response.prop.required_properties == [] and ok_response.prop.optional_properties == [] %}
+    {{ ok_response.prop.python_name }} = {{ ok_response.prop.class_info.name }}({{ ok_response.source }})
+    {% elif ok_response_prop_template.construct %}
     {{ ok_response_prop_template.construct(ok_response.prop, ok_response.source) | indent(8) }}
     {% else %}
     {{ ok_response.prop.python_name }} = None
