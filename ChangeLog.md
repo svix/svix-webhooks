@@ -3,6 +3,10 @@
 ## Next
 * 
 
+## Version 0.53.1
+* Java & Kotlin: Build against java 11
+* Ruby: Fix a broken import (we changed the name of a webhook event) 🐞
+
 ## Version 0.53.0
 * Python: **Breaking** The python library is now fully typed!  There may be some breaking changes releated to this upgrade (including dropping support for Python 2.X). Please check test and check your integration before upgrading to this version. 🤓
 * Python: New Async API via SvixAsync! 🚀
