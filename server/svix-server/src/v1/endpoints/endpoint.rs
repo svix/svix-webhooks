@@ -654,6 +654,7 @@ pub fn router() -> Router {
 mod tests {
     use std::collections::{HashMap, HashSet};
 
+    use anyhow::Result;
     use reqwest::StatusCode;
     use sea_orm::ActiveValue::Set;
 
@@ -661,7 +662,7 @@ mod tests {
     use crate::{
         core::types::EndpointHeaders,
         db::models::endpoint,
-        test_util::{start_svix_server, EmptyResponse},
+        test_util::{start_svix_server, EmptyResponse, TestClient},
         v1::{
             endpoints::application::tests::{create_test_app, delete_test_app},
             utils::ModelIn,
@@ -717,6 +718,45 @@ mod tests {
         }
     }
 
+    async fn post_endpoint(client: &TestClient, app_id: &str, ep_url: &str) -> Result<EndpointOut> {
+        client
+            .post(
+                &format!("api/v1/app/{}/endpoint/", app_id),
+                endpoint_in(ep_url),
+                StatusCode::CREATED,
+            )
+            .await
+    }
+
+    async fn get_endpoint(client: &TestClient, app_id: &str, ep_id: &str) -> Result<EndpointOut> {
+        client
+            .get(
+                &format!("api/v1/app/{}/endpoint/{}/", app_id, ep_id),
+                StatusCode::OK,
+            )
+            .await
+    }
+
+    async fn get_404(client: &TestClient, app_id: &str, ep_id: &str) -> Result<()> {
+        let _: serde_json::Value = client
+            .get(
+                &format!("api/v1/app/{}/endpoint/{}/", app_id, ep_id),
+                StatusCode::NOT_FOUND,
+            )
+            .await?;
+        Ok(())
+    }
+
+    async fn delete_endpoint(client: &TestClient, app_id: &str, ep_id: &str) -> Result<()> {
+        let _: EmptyResponse = client
+            .delete(
+                &format!("api/v1/app/{}/endpoint/{}/", app_id, ep_id),
+                StatusCode::NO_CONTENT,
+            )
+            .await?;
+        Ok(())
+    }
+
     #[tokio::test]
     async fn test_crud() {
         let (client, _jh) = start_svix_server();
@@ -734,45 +774,25 @@ mod tests {
         let app_2 = create_test_app(&client, APP_NAME_2).await.unwrap();
 
         // CREATE
-        let app_1_ep_1: EndpointOut = client
-            .post(
-                &format!("api/v1/app/{}/endpoint/", app_1),
-                endpoint_in(EP_URI_APP_1_EP_1_VER_1),
-                StatusCode::CREATED,
-            )
+        let app_1_ep_1 = post_endpoint(&client, &app_1, EP_URI_APP_1_EP_1_VER_1)
             .await
             .unwrap();
         assert_eq!(app_1_ep_1.url, EP_URI_APP_1_EP_1_VER_1);
         assert_eq!(app_1_ep_1.version, 1);
 
-        let app_1_ep_2: EndpointOut = client
-            .post(
-                &format!("api/v1/app/{}/endpoint/", app_1),
-                endpoint_in(EP_URI_APP_1_EP_2),
-                StatusCode::CREATED,
-            )
+        let app_1_ep_2 = post_endpoint(&client, &app_1, EP_URI_APP_1_EP_2)
             .await
             .unwrap();
         assert_eq!(app_1_ep_2.url, EP_URI_APP_1_EP_2);
         assert_eq!(app_1_ep_2.version, 1);
 
-        let app_2_ep_1: EndpointOut = client
-            .post(
-                &format!("api/v1/app/{}/endpoint/", app_2),
-                endpoint_in(EP_URI_APP_2_EP_1),
-                StatusCode::CREATED,
-            )
+        let app_2_ep_1 = post_endpoint(&client, &app_2, EP_URI_APP_2_EP_1)
             .await
             .unwrap();
         assert_eq!(app_2_ep_1.url, EP_URI_APP_2_EP_1);
         assert_eq!(app_2_ep_1.version, 1);
 
-        let app_2_ep_2: EndpointOut = client
-            .post(
-                &format!("api/v1/app/{}/endpoint/", app_2),
-                endpoint_in(EP_URI_APP_2_EP_2),
-                StatusCode::CREATED,
-            )
+        let app_2_ep_2 = post_endpoint(&client, &app_2, EP_URI_APP_2_EP_2)
             .await
             .unwrap();
         assert_eq!(app_2_ep_2.url, EP_URI_APP_2_EP_2);
@@ -782,76 +802,28 @@ mod tests {
 
         // Can read from correct app
         assert_eq!(
-            client
-                .get::<EndpointOut>(
-                    &format!("api/v1/app/{}/endpoint/{}/", app_1, app_1_ep_1.id),
-                    StatusCode::OK
-                )
-                .await
-                .unwrap(),
+            get_endpoint(&client, &app_1, &app_1_ep_1.id).await.unwrap(),
             app_1_ep_1
         );
         assert_eq!(
-            client
-                .get::<EndpointOut>(
-                    &format!("api/v1/app/{}/endpoint/{}/", app_1, app_1_ep_2.id),
-                    StatusCode::OK
-                )
-                .await
-                .unwrap(),
+            get_endpoint(&client, &app_1, &app_1_ep_2.id).await.unwrap(),
             app_1_ep_2
         );
         assert_eq!(
-            client
-                .get::<EndpointOut>(
-                    &format!("api/v1/app/{}/endpoint/{}/", app_2, app_2_ep_1.id),
-                    StatusCode::OK
-                )
-                .await
-                .unwrap(),
+            get_endpoint(&client, &app_2, &app_2_ep_1.id).await.unwrap(),
             app_2_ep_1
         );
         assert_eq!(
-            client
-                .get::<EndpointOut>(
-                    &format!("api/v1/app/{}/endpoint/{}/", app_2, app_2_ep_2.id),
-                    StatusCode::OK
-                )
-                .await
-                .unwrap(),
+            get_endpoint(&client, &app_2, &app_2_ep_2.id).await.unwrap(),
             app_2_ep_2
         );
 
         // Can't read from incorrect app
         // Deserialize into a Value because it a basic JSON structure saying "Entity not found"
-        let _: serde_json::Value = client
-            .get(
-                &format!("api/v1/app/{}/endpoint/{}/", app_2, app_1_ep_1.id),
-                StatusCode::NOT_FOUND,
-            )
-            .await
-            .unwrap();
-        let _: serde_json::Value = client
-            .get(
-                &format!("api/v1/app/{}/endpoint/{}/", app_2, app_1_ep_2.id),
-                StatusCode::NOT_FOUND,
-            )
-            .await
-            .unwrap();
-        let _: serde_json::Value = client
-            .get(
-                &format!("api/v1/app/{}/endpoint/{}/", app_1, app_2_ep_1.id),
-                StatusCode::NOT_FOUND,
-            )
-            .await
-            .unwrap();
-        let _: serde_json::Value = client
-            .get(
-                &format!("api/v1/app/{}/endpoint/{}/", app_1, app_2_ep_2.id),
-                StatusCode::NOT_FOUND,
-            )
-            .await
-            .unwrap();
+        get_404(&client, &app_2, &app_1_ep_1.id).await.unwrap();
+        get_404(&client, &app_2, &app_1_ep_2.id).await.unwrap();
+        get_404(&client, &app_1, &app_2_ep_1.id).await.unwrap();
+        get_404(&client, &app_1, &app_2_ep_2.id).await.unwrap();
 
         // UPDATE
         let app_1_ep_1_id = app_1_ep_1.id;
@@ -867,76 +839,30 @@ mod tests {
 
         // CONFIRM UPDATE
         assert_eq!(
-            client
-                .get::<EndpointOut>(
-                    &format!("api/v1/app/{}/endpoint/{}/", app_1, app_1_ep_1_id),
-                    StatusCode::OK
-                )
-                .await
-                .unwrap(),
+            get_endpoint(&client, &app_1, &app_1_ep_1_id).await.unwrap(),
             app_1_ep_1
         );
 
         // DELETE
-        let _: EmptyResponse = client
-            .delete(
-                &format!("api/v1/app/{}/endpoint/{}/", app_1, app_1_ep_1.id),
-                StatusCode::NO_CONTENT,
-            )
+        delete_endpoint(&client, &app_1, &app_1_ep_1.id)
             .await
             .unwrap();
-        let _: EmptyResponse = client
-            .delete(
-                &format!("api/v1/app/{}/endpoint/{}/", app_1, app_1_ep_2.id),
-                StatusCode::NO_CONTENT,
-            )
+        delete_endpoint(&client, &app_1, &app_1_ep_2.id)
             .await
             .unwrap();
-        let _: EmptyResponse = client
-            .delete(
-                &format!("api/v1/app/{}/endpoint/{}/", app_2, app_2_ep_1.id),
-                StatusCode::NO_CONTENT,
-            )
+        delete_endpoint(&client, &app_2, &app_2_ep_1.id)
             .await
             .unwrap();
-        let _: EmptyResponse = client
-            .delete(
-                &format!("api/v1/app/{}/endpoint/{}/", app_2, app_2_ep_2.id),
-                StatusCode::NO_CONTENT,
-            )
+        delete_endpoint(&client, &app_2, &app_2_ep_2.id)
             .await
             .unwrap();
 
         // CONFIRM DELETION
         // Deserialize into a Value because it a basic JSON structure saying "Entity not found"
-        let _: serde_json::Value = client
-            .get(
-                &format!("api/v1/app/{}/endpoint/{}", app_1, app_1_ep_1.id),
-                StatusCode::NOT_FOUND,
-            )
-            .await
-            .unwrap();
-        let _: serde_json::Value = client
-            .get(
-                &format!("api/v1/app/{}/endpoint/{}", app_1, app_1_ep_2.id),
-                StatusCode::NOT_FOUND,
-            )
-            .await
-            .unwrap();
-        let _: serde_json::Value = client
-            .get(
-                &format!("api/v1/app/{}/endpoint/{}", app_2, app_2_ep_1.id),
-                StatusCode::NOT_FOUND,
-            )
-            .await
-            .unwrap();
-        let _: serde_json::Value = client
-            .get(
-                &format!("api/v1/app/{}/endpoint/{}", app_2, app_2_ep_2.id),
-                StatusCode::NOT_FOUND,
-            )
-            .await
-            .unwrap();
+        get_404(&client, &app_1, &app_1_ep_1.id).await.unwrap();
+        get_404(&client, &app_1, &app_1_ep_2.id).await.unwrap();
+        get_404(&client, &app_2, &app_2_ep_1.id).await.unwrap();
+        get_404(&client, &app_2, &app_2_ep_2.id).await.unwrap();
 
         delete_test_app(&client, app_1).await.unwrap();
         delete_test_app(&client, app_2).await.unwrap();
