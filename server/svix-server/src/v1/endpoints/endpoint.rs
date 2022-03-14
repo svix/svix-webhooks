@@ -64,32 +64,40 @@ pub fn validate_channels_endpoint(
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Deserialize, Validate, ModelIn)]
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize, Validate, ModelIn)]
 #[serde(rename_all = "camelCase")]
 struct EndpointIn {
     #[serde(default)]
+    #[serde(skip_serializing_if = "String::is_empty")]
     description: String,
+
     #[validate(range(min = 1))]
+    #[serde(skip_serializing_if = "Option::is_none")]
     rate_limit: Option<u16>,
     /// Optional unique identifier for the endpoint
     #[validate]
+    #[serde(skip_serializing_if = "Option::is_none")]
     uid: Option<EndpointUid>,
     #[validate(url)]
     url: String,
     #[validate(range(min = 1))]
     version: u16,
     #[serde(default)]
+    #[serde(skip_serializing_if = "std::ops::Not::not")]
     disabled: bool,
     #[serde(rename = "filterTypes")]
     #[validate(custom = "validate_event_types_ids")]
     #[validate]
+    #[serde(skip_serializing_if = "Option::is_none")]
     event_types_ids: Option<EventTypeNameSet>,
     #[validate(custom = "validate_channels_endpoint")]
     #[validate]
+    #[serde(skip_serializing_if = "Option::is_none")]
     channels: Option<EventChannelSet>,
 
     #[serde(default)]
     #[serde(rename = "secret")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     key: Option<EndpointSecret>,
 }
 
@@ -112,7 +120,7 @@ impl ModelIn for EndpointIn {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, ModelOut)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, ModelOut)]
 #[serde(rename_all = "camelCase")]
 struct EndpointOut {
     description: String,
@@ -644,12 +652,21 @@ pub fn router() -> Router {
 
 #[cfg(test)]
 mod tests {
-    use super::{EndpointHeadersOut, EndpointHeadersPatchIn};
-    use crate::core::types::EndpointHeaders;
-    use crate::db::models::endpoint;
-    use crate::v1::utils::ModelIn;
-    use sea_orm::ActiveValue::Set;
     use std::collections::{HashMap, HashSet};
+
+    use reqwest::StatusCode;
+    use sea_orm::ActiveValue::Set;
+
+    use super::{EndpointHeadersOut, EndpointHeadersPatchIn, EndpointIn, EndpointOut};
+    use crate::{
+        core::types::EndpointHeaders,
+        db::models::endpoint,
+        test_util::{start_svix_server, EmptyResponse},
+        v1::{
+            endpoints::application::tests::{create_test_app, delete_test_app},
+            utils::ModelIn,
+        },
+    };
 
     #[test]
     fn test_into_endpoint_headers_out() {
@@ -691,4 +708,246 @@ mod tests {
         patched_hdrs.update_model(&mut model);
         assert_eq!(model.headers, Set(Some(updated_hdrs)));
     }
+
+    fn endpoint_in(url: &str) -> EndpointIn {
+        EndpointIn {
+            url: url.to_owned(),
+            version: 1,
+            ..Default::default()
+        }
+    }
+
+    #[tokio::test]
+    async fn test_crud() {
+        let (client, _jh) = start_svix_server();
+
+        const APP_NAME_1: &str = "v1EndpointCrudTestApp1";
+        const APP_NAME_2: &str = "v1EndpointCrudTestApp2";
+
+        const EP_URI_APP_1_EP_1_VER_1: &str = "http://v1endpointcrudtestapp1ep1ver1.test";
+        const EP_URI_APP_1_EP_1_VER_2: &str = "http://v1EndpointCrudTestApp1Ep1Ver2.test";
+        const EP_URI_APP_1_EP_2: &str = "http://v1EndpointCrudTestApp1Ep2.test";
+        const EP_URI_APP_2_EP_1: &str = "http://v1EndpointCrudTestApp2Ep1.test";
+        const EP_URI_APP_2_EP_2: &str = "http://v1EndpointCrudTestApp2Ep2.test";
+
+        let app_1 = create_test_app(&client, APP_NAME_1).await.unwrap();
+        let app_2 = create_test_app(&client, APP_NAME_2).await.unwrap();
+
+        // CREATE
+        let app_1_ep_1: EndpointOut = client
+            .post(
+                &format!("api/v1/app/{}/endpoint/", app_1),
+                endpoint_in(EP_URI_APP_1_EP_1_VER_1),
+                StatusCode::CREATED,
+            )
+            .await
+            .unwrap();
+        assert_eq!(app_1_ep_1.url, EP_URI_APP_1_EP_1_VER_1);
+        assert_eq!(app_1_ep_1.version, 1);
+
+        let app_1_ep_2: EndpointOut = client
+            .post(
+                &format!("api/v1/app/{}/endpoint/", app_1),
+                endpoint_in(EP_URI_APP_1_EP_2),
+                StatusCode::CREATED,
+            )
+            .await
+            .unwrap();
+        assert_eq!(app_1_ep_2.url, EP_URI_APP_1_EP_2);
+        assert_eq!(app_1_ep_2.version, 1);
+
+        let app_2_ep_1: EndpointOut = client
+            .post(
+                &format!("api/v1/app/{}/endpoint/", app_2),
+                endpoint_in(EP_URI_APP_2_EP_1),
+                StatusCode::CREATED,
+            )
+            .await
+            .unwrap();
+        assert_eq!(app_2_ep_1.url, EP_URI_APP_2_EP_1);
+        assert_eq!(app_2_ep_1.version, 1);
+
+        let app_2_ep_2: EndpointOut = client
+            .post(
+                &format!("api/v1/app/{}/endpoint/", app_2),
+                endpoint_in(EP_URI_APP_2_EP_2),
+                StatusCode::CREATED,
+            )
+            .await
+            .unwrap();
+        assert_eq!(app_2_ep_2.url, EP_URI_APP_2_EP_2);
+        assert_eq!(app_2_ep_2.version, 1);
+
+        // READ
+
+        // Can read from correct app
+        assert_eq!(
+            client
+                .get::<EndpointOut>(
+                    &format!("api/v1/app/{}/endpoint/{}/", app_1, app_1_ep_1.id),
+                    StatusCode::OK
+                )
+                .await
+                .unwrap(),
+            app_1_ep_1
+        );
+        assert_eq!(
+            client
+                .get::<EndpointOut>(
+                    &format!("api/v1/app/{}/endpoint/{}/", app_1, app_1_ep_2.id),
+                    StatusCode::OK
+                )
+                .await
+                .unwrap(),
+            app_1_ep_2
+        );
+        assert_eq!(
+            client
+                .get::<EndpointOut>(
+                    &format!("api/v1/app/{}/endpoint/{}/", app_2, app_2_ep_1.id),
+                    StatusCode::OK
+                )
+                .await
+                .unwrap(),
+            app_2_ep_1
+        );
+        assert_eq!(
+            client
+                .get::<EndpointOut>(
+                    &format!("api/v1/app/{}/endpoint/{}/", app_2, app_2_ep_2.id),
+                    StatusCode::OK
+                )
+                .await
+                .unwrap(),
+            app_2_ep_2
+        );
+
+        // Can't read from incorrect app
+        // Deserialize into a Value because it a basic JSON structure saying "Entity not found"
+        let _: serde_json::Value = client
+            .get(
+                &format!("api/v1/app/{}/endpoint/{}/", app_2, app_1_ep_1.id),
+                StatusCode::NOT_FOUND,
+            )
+            .await
+            .unwrap();
+        let _: serde_json::Value = client
+            .get(
+                &format!("api/v1/app/{}/endpoint/{}/", app_2, app_1_ep_2.id),
+                StatusCode::NOT_FOUND,
+            )
+            .await
+            .unwrap();
+        let _: serde_json::Value = client
+            .get(
+                &format!("api/v1/app/{}/endpoint/{}/", app_1, app_2_ep_1.id),
+                StatusCode::NOT_FOUND,
+            )
+            .await
+            .unwrap();
+        let _: serde_json::Value = client
+            .get(
+                &format!("api/v1/app/{}/endpoint/{}/", app_1, app_2_ep_2.id),
+                StatusCode::NOT_FOUND,
+            )
+            .await
+            .unwrap();
+
+        // UPDATE
+        let app_1_ep_1_id = app_1_ep_1.id;
+        let app_1_ep_1: EndpointOut = client
+            .put(
+                &format!("api/v1/app/{}/endpoint/{}/", app_1, app_1_ep_1_id),
+                endpoint_in(EP_URI_APP_1_EP_1_VER_2),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
+        assert_eq!(app_1_ep_1.url, EP_URI_APP_1_EP_1_VER_2);
+
+        // CONFIRM UPDATE
+        assert_eq!(
+            client
+                .get::<EndpointOut>(
+                    &format!("api/v1/app/{}/endpoint/{}/", app_1, app_1_ep_1_id),
+                    StatusCode::OK
+                )
+                .await
+                .unwrap(),
+            app_1_ep_1
+        );
+
+        // DELETE
+        let _: EmptyResponse = client
+            .delete(
+                &format!("api/v1/app/{}/endpoint/{}/", app_1, app_1_ep_1.id),
+                StatusCode::NO_CONTENT,
+            )
+            .await
+            .unwrap();
+        let _: EmptyResponse = client
+            .delete(
+                &format!("api/v1/app/{}/endpoint/{}/", app_1, app_1_ep_2.id),
+                StatusCode::NO_CONTENT,
+            )
+            .await
+            .unwrap();
+        let _: EmptyResponse = client
+            .delete(
+                &format!("api/v1/app/{}/endpoint/{}/", app_2, app_2_ep_1.id),
+                StatusCode::NO_CONTENT,
+            )
+            .await
+            .unwrap();
+        let _: EmptyResponse = client
+            .delete(
+                &format!("api/v1/app/{}/endpoint/{}/", app_2, app_2_ep_2.id),
+                StatusCode::NO_CONTENT,
+            )
+            .await
+            .unwrap();
+
+        // CONFIRM DELETION
+        // Deserialize into a Value because it a basic JSON structure saying "Entity not found"
+        let _: serde_json::Value = client
+            .get(
+                &format!("api/v1/app/{}/endpoint/{}", app_1, app_1_ep_1.id),
+                StatusCode::NOT_FOUND,
+            )
+            .await
+            .unwrap();
+        let _: serde_json::Value = client
+            .get(
+                &format!("api/v1/app/{}/endpoint/{}", app_1, app_1_ep_2.id),
+                StatusCode::NOT_FOUND,
+            )
+            .await
+            .unwrap();
+        let _: serde_json::Value = client
+            .get(
+                &format!("api/v1/app/{}/endpoint/{}", app_2, app_2_ep_1.id),
+                StatusCode::NOT_FOUND,
+            )
+            .await
+            .unwrap();
+        let _: serde_json::Value = client
+            .get(
+                &format!("api/v1/app/{}/endpoint/{}", app_2, app_2_ep_2.id),
+                StatusCode::NOT_FOUND,
+            )
+            .await
+            .unwrap();
+
+        delete_test_app(&client, app_1).await.unwrap();
+        delete_test_app(&client, app_2).await.unwrap();
+    }
+
+    #[test]
+    fn test_uid() {}
+
+    #[test]
+    fn test_endpoint_secret_get_and_rotation() {}
+
+    #[test]
+    fn test_endpoint_headers_crud() {}
 }
