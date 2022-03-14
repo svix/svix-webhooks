@@ -665,7 +665,7 @@ mod tests {
         test_util::{start_svix_server, EmptyResponse, TestClient},
         v1::{
             endpoints::application::tests::{create_test_app, delete_test_app},
-            utils::ModelIn,
+            utils::{ListResponse, ModelIn},
         },
     };
 
@@ -738,6 +738,7 @@ mod tests {
     }
 
     async fn get_404(client: &TestClient, app_id: &str, ep_id: &str) -> Result<()> {
+        // Deserialize into a Value because it a basic JSON structure saying "Entity not found"
         let _: serde_json::Value = client
             .get(
                 &format!("api/v1/app/{}/endpoint/{}/", app_id, ep_id),
@@ -819,7 +820,6 @@ mod tests {
         );
 
         // Can't read from incorrect app
-        // Deserialize into a Value because it a basic JSON structure saying "Entity not found"
         get_404(&client, &app_2, &app_1_ep_1.id).await.unwrap();
         get_404(&client, &app_2, &app_1_ep_2.id).await.unwrap();
         get_404(&client, &app_1, &app_2_ep_1.id).await.unwrap();
@@ -843,6 +843,23 @@ mod tests {
             app_1_ep_1
         );
 
+        // LIST
+        let list_app_1: ListResponse<EndpointOut> = client
+            .get(&format!("api/v1/app/{}/endpoint/", &app_1), StatusCode::OK)
+            .await
+            .unwrap();
+        assert_eq!(list_app_1.data.len(), 2);
+        assert!(list_app_1.data.contains(&app_1_ep_1));
+        assert!(list_app_1.data.contains(&app_1_ep_2));
+
+        let list_app_2: ListResponse<EndpointOut> = client
+            .get(&format!("api/v1/app/{}/endpoint/", &app_2), StatusCode::OK)
+            .await
+            .unwrap();
+        assert_eq!(list_app_2.data.len(), 2);
+        assert!(list_app_2.data.contains(&app_2_ep_1));
+        assert!(list_app_2.data.contains(&app_2_ep_2));
+
         // DELETE
         delete_endpoint(&client, &app_1, &app_1_ep_1.id)
             .await
@@ -858,7 +875,6 @@ mod tests {
             .unwrap();
 
         // CONFIRM DELETION
-        // Deserialize into a Value because it a basic JSON structure saying "Entity not found"
         get_404(&client, &app_1, &app_1_ep_1.id).await.unwrap();
         get_404(&client, &app_1, &app_1_ep_2.id).await.unwrap();
         get_404(&client, &app_2, &app_2_ep_1.id).await.unwrap();
