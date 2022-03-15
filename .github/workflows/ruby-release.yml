@@ -3,7 +3,7 @@ name: Ruby Release
 on:
   push:
     tags:
-      - "v*"
+      - 'v*'
 
 jobs:
   dotnet:
