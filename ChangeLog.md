@@ -3,6 +3,9 @@
 ## Next
 * 
 
+## Version 0.53.2
+* Ruby: Fix CI to not include Vendor data in package.
+
 ## Version 0.53.1
 * Java & Kotlin: Build against java 11
 * Ruby: Fix a broken import (we changed the name of a webhook event) 🐞
