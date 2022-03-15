@@ -657,6 +657,7 @@ mod tests {
     use anyhow::Result;
     use reqwest::StatusCode;
     use sea_orm::ActiveValue::Set;
+    use serde::de::IgnoredAny;
 
     use super::{
         EndpointHeadersOut, EndpointHeadersPatchIn, EndpointIn, EndpointOut, EndpointSecretOut,
@@ -664,7 +665,7 @@ mod tests {
     use crate::{
         core::types::{EndpointHeaders, EndpointUid},
         db::models::endpoint,
-        test_util::{start_svix_server, EmptyResponse, TestClient},
+        test_util::{start_svix_server, IgnoredResponse, TestClient},
         v1::{
             endpoints::application::tests::{create_test_app, delete_test_app},
             utils::{ListResponse, ModelIn},
@@ -758,8 +759,7 @@ mod tests {
     }
 
     async fn get_404(client: &TestClient, app_id: &str, ep_id: &str) -> Result<()> {
-        // Deserialize into a Value because it a basic JSON structure saying "Entity not found"
-        let _: serde_json::Value = client
+        let _: IgnoredResponse = client
             .get(
                 &format!("api/v1/app/{}/endpoint/{}/", app_id, ep_id),
                 StatusCode::NOT_FOUND,
@@ -769,7 +769,7 @@ mod tests {
     }
 
     async fn delete_endpoint(client: &TestClient, app_id: &str, ep_id: &str) -> Result<()> {
-        let _: EmptyResponse = client
+        let _: IgnoredResponse = client
             .delete(
                 &format!("api/v1/app/{}/endpoint/{}/", app_id, ep_id),
                 StatusCode::NO_CONTENT,
@@ -1025,7 +1025,7 @@ mod tests {
             .await
             .unwrap();
 
-        let _: EmptyResponse = client
+        let _: IgnoredResponse = client
             .post(
                 &format!("api/v1/app/{}/endpoint/{}/secret/rotate/", app_id, ep.id),
                 serde_json::json!({ "key": null }),
@@ -1045,7 +1045,7 @@ mod tests {
                     .unwrap()
         );
 
-        let _: EmptyResponse = client
+        let _: IgnoredAny = client
             .post(
                 &format!("api/v1/app/{}/endpoint/{}/secret/rotate/", app_id, ep.id),
                 &former_secret,
