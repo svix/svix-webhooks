@@ -900,9 +900,6 @@ mod tests {
         get_404(&client, &app_1, &app_1_ep_2.id).await.unwrap();
         get_404(&client, &app_2, &app_2_ep_1.id).await.unwrap();
         get_404(&client, &app_2, &app_2_ep_2.id).await.unwrap();
-
-        delete_test_app(&client, app_1).await.unwrap();
-        delete_test_app(&client, app_2).await.unwrap();
     }
 
     /// Tests that there is at most one endpoint with a single UID for all endpoints associated with
@@ -992,14 +989,8 @@ mod tests {
         let mut ep_2 = endpoint_in(EP_URI_APP_2);
         ep_2.uid = Some(uid.clone());
 
-        let ep_1 = post_endpoint_in(&client, &app_1, ep_1).await.unwrap();
-        let ep_2 = post_endpoint_in(&client, &app_2, ep_2).await.unwrap();
-
-        delete_endpoint(&client, &app_1, &ep_1.id).await.unwrap();
-        delete_endpoint(&client, &app_2, &ep_2.id).await.unwrap();
-
-        delete_test_app(&client, app_1).await.unwrap();
-        delete_test_app(&client, app_2).await.unwrap();
+        let _ = post_endpoint_in(&client, &app_1, ep_1).await.unwrap();
+        let _ = post_endpoint_in(&client, &app_2, ep_2).await.unwrap();
     }
 
     // Simply tests that upon rotating an endpoint secret that it differs from the prior one
