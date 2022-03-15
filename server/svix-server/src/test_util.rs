@@ -12,13 +12,15 @@ pub struct TestClient {
     client: Client,
 }
 
-pub struct EmptyResponse;
-impl<'de> Deserialize<'de> for EmptyResponse {
-    fn deserialize<D>(_: D) -> Result<Self, D::Error>
+/// This struct accepts any JSON response and just ignores it.
+pub struct IgnoredResponse;
+impl<'de> Deserialize<'de> for IgnoredResponse {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
     {
-        Ok(EmptyResponse)
+        let _ = serde_json::Value::deserialize(deserializer);
+        Ok(IgnoredResponse)
     }
 }
 

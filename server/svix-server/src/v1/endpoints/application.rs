@@ -179,7 +179,7 @@ mod tests {
 
     use super::{ApplicationIn, ApplicationOut};
     use crate::{
-        test_util::{start_svix_server, EmptyResponse},
+        test_util::{start_svix_server, IgnoredResponse},
         v1::utils::ListResponse,
     };
 
@@ -276,22 +276,21 @@ mod tests {
         );
 
         // DELETE
-        let _: EmptyResponse = client
+        let _: IgnoredResponse = client
             .delete(&format!("api/v1/app/{}/", app_1.id), StatusCode::NO_CONTENT)
             .await
             .unwrap();
-        let _: EmptyResponse = client
+        let _: IgnoredResponse = client
             .delete(&format!("api/v1/app/{}/", app_2.id), StatusCode::NO_CONTENT)
             .await
             .unwrap();
 
         // CONFIRM DELETION
-        // Deserialize into a Value because it a basic JSON structure saying "Entity not found"
-        let _: serde_json::Value = client
+        let _: IgnoredResponse = client
             .get(&format!("api/v1/app/{}/", app_1.id), StatusCode::NOT_FOUND)
             .await
             .unwrap();
-        let _: serde_json::Value = client
+        let _: IgnoredResponse = client
             .get(&format!("api/v1/app/{}/", app_2.id), StatusCode::NOT_FOUND)
             .await
             .unwrap();
