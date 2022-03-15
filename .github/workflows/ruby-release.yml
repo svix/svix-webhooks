@@ -3,7 +3,7 @@ name: Ruby Release
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 jobs:
   dotnet:
@@ -17,13 +17,16 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.7
-          bundler-cache: true
-          working-directory: ruby
 
       - name: Regen openapi libs
         run: |
           yarn
           ./regen_openapi.sh
+
+      - name: Install dependencies
+        run: |
+          cd ruby
+          bundler install
 
       - name: Build
         run: |
