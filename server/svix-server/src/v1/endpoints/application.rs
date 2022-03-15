@@ -213,6 +213,7 @@ pub(crate) mod tests {
     }
 
     #[tokio::test]
+    #[cfg_attr(not(feature = "integration_testing"), ignore)]
     async fn test_crud() {
         let (client, _jh) = start_svix_server();
 
@@ -319,6 +320,7 @@ pub(crate) mod tests {
     }
 
     #[tokio::test]
+    #[cfg_attr(not(feature = "integration_testing"), ignore)]
     async fn test_list() {
         let (client, _jh) = start_svix_server();
 

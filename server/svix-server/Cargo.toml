@@ -11,6 +11,11 @@ readme = "../README.md"
 edition = "2021"
 publish = false
 
+[features]
+# This feature enables integration tests that require a running PostgreSQL and Redis instance
+# whose DSNs are set through environmental variables just like in the actual application
+integration_testing = []
+
 [dependencies]
 svix-server_derive = { path = "../svix-server_derive" }
 
