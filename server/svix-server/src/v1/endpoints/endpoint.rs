@@ -1034,15 +1034,15 @@ mod tests {
             .await
             .unwrap();
 
-        assert!(
-            former_secret
-                != client
-                    .get(
-                        &format!("api/v1/app/{}/endpoint/{}/secret/", app_id, ep.id),
-                        StatusCode::OK
-                    )
-                    .await
-                    .unwrap()
+        assert_ne!(
+            former_secret,
+            client
+                .get(
+                    &format!("api/v1/app/{}/endpoint/{}/secret/", app_id, ep.id),
+                    StatusCode::OK
+                )
+                .await
+                .unwrap()
         );
 
         let _: IgnoredAny = client
