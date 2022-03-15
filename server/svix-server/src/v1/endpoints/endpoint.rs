@@ -660,7 +660,7 @@ mod tests {
 
     use super::{EndpointHeadersOut, EndpointHeadersPatchIn, EndpointIn, EndpointOut};
     use crate::{
-        core::types::EndpointHeaders,
+        core::types::{EndpointHeaders, EndpointUid},
         db::models::endpoint,
         test_util::{start_svix_server, EmptyResponse, TestClient},
         v1::{
@@ -718,11 +718,29 @@ mod tests {
         }
     }
 
-    async fn post_endpoint(client: &TestClient, app_id: &str, ep_url: &str) -> Result<EndpointOut> {
+    async fn post_endpoint_default(
+        client: &TestClient,
+        app_id: &str,
+        ep_url: &str,
+    ) -> Result<EndpointOut> {
         client
             .post(
                 &format!("api/v1/app/{}/endpoint/", app_id),
                 endpoint_in(ep_url),
+                StatusCode::CREATED,
+            )
+            .await
+    }
+
+    async fn post_endpoint_in(
+        client: &TestClient,
+        app_id: &str,
+        ep: EndpointIn,
+    ) -> Result<EndpointOut> {
+        client
+            .post(
+                &format!("api/v1/app/{}/endpoint/", app_id),
+                ep,
                 StatusCode::CREATED,
             )
             .await
@@ -775,25 +793,25 @@ mod tests {
         let app_2 = create_test_app(&client, APP_NAME_2).await.unwrap();
 
         // CREATE
-        let app_1_ep_1 = post_endpoint(&client, &app_1, EP_URI_APP_1_EP_1_VER_1)
+        let app_1_ep_1 = post_endpoint_default(&client, &app_1, EP_URI_APP_1_EP_1_VER_1)
             .await
             .unwrap();
         assert_eq!(app_1_ep_1.url, EP_URI_APP_1_EP_1_VER_1);
         assert_eq!(app_1_ep_1.version, 1);
 
-        let app_1_ep_2 = post_endpoint(&client, &app_1, EP_URI_APP_1_EP_2)
+        let app_1_ep_2 = post_endpoint_default(&client, &app_1, EP_URI_APP_1_EP_2)
             .await
             .unwrap();
         assert_eq!(app_1_ep_2.url, EP_URI_APP_1_EP_2);
         assert_eq!(app_1_ep_2.version, 1);
 
-        let app_2_ep_1 = post_endpoint(&client, &app_2, EP_URI_APP_2_EP_1)
+        let app_2_ep_1 = post_endpoint_default(&client, &app_2, EP_URI_APP_2_EP_1)
             .await
             .unwrap();
         assert_eq!(app_2_ep_1.url, EP_URI_APP_2_EP_1);
         assert_eq!(app_2_ep_1.version, 1);
 
-        let app_2_ep_2 = post_endpoint(&client, &app_2, EP_URI_APP_2_EP_2)
+        let app_2_ep_2 = post_endpoint_default(&client, &app_2, EP_URI_APP_2_EP_2)
             .await
             .unwrap();
         assert_eq!(app_2_ep_2.url, EP_URI_APP_2_EP_2);
@@ -884,8 +902,101 @@ mod tests {
         delete_test_app(&client, app_2).await.unwrap();
     }
 
-    #[test]
-    fn test_uid() {}
+    /// Tests that there is at most one endpoint with a single UID for all endpoints associated with
+    /// any application
+    #[tokio::test]
+    async fn test_uid() {
+        let (client, _jh) = start_svix_server();
+
+        const APP_NAME_1: &str = "v1EndpointUidTestApp1";
+        const APP_NAME_2: &str = "v1EndpointUidTestApp2";
+
+        const EP_URI_APP_1_EP_1: &str = "http://v1endpointUidTestApp1Ep1.test";
+        const EP_URI_APP_1_EP_2: &str = "http://v1EndpointUidTestApp1Ep2.test";
+        const EP_URI_APP_2: &str = "http://v1EndpointUidTestApp2Ep1.test";
+
+        const DUPLICATE_UID: &str = "test_uid";
+
+        // Same App
+
+        // Double Create -- on creation, it should return an error if identical UIDs are used for
+        // endpoints in the same app
+        let app_id = create_test_app(&client, APP_NAME_1).await.unwrap();
+        let uid = EndpointUid(DUPLICATE_UID.to_owned());
+
+        let mut ep_1 = endpoint_in(EP_URI_APP_1_EP_1);
+        ep_1.uid = Some(uid.clone());
+
+        let mut ep_2 = endpoint_in(EP_URI_APP_1_EP_2);
+        ep_2.uid = Some(uid.clone());
+
+        let ep_1 = post_endpoint_in(&client, &app_id, ep_1).await.unwrap();
+        assert!(post_endpoint_in(&client, &app_id, ep_2).await.is_err());
+
+        // Update One to Existing -- on update it should return an error if attempting to change
+        // the UID to that of an existing endpoint associated with the same app
+        let ep_2 = post_endpoint_default(&client, &app_id, EP_URI_APP_1_EP_2)
+            .await
+            .unwrap();
+
+        let mut ep_2_with_invalid_uid = endpoint_in(EP_URI_APP_1_EP_2);
+        ep_2_with_invalid_uid.uid = Some(uid.clone());
+
+        assert!(client
+            .put::<_, EndpointOut>(
+                &format!("api/v1/app/{}/endpoint/{}/", app_id, ep_2.id),
+                ep_2_with_invalid_uid,
+                StatusCode::OK,
+            )
+            .await
+            .is_err());
+
+        // Update One to Identical -- however it should not return an error if updating the
+        // existing endpoint to one with the same UID
+        let mut ep_1_with_duplicate_id = endpoint_in(EP_URI_APP_1_EP_1);
+        ep_1_with_duplicate_id.uid = Some(uid.clone());
+
+        let ep_1_updated = client
+            .put::<_, EndpointOut>(
+                &format!("api/v1/app/{}/endpoint/{}/", app_id, ep_1.id),
+                ep_1_with_duplicate_id,
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
+        assert_eq!(ep_1.id, ep_1_updated.id);
+        assert_eq!(ep_1.uid, ep_1_updated.uid);
+
+        // Delete One then Create One -- UIDs may no be reused after deletion
+        delete_endpoint(&client, &app_id, &ep_1.id).await.unwrap();
+        delete_endpoint(&client, &app_id, &ep_2.id).await.unwrap();
+
+        let mut ep_1 = endpoint_in(EP_URI_APP_1_EP_1);
+        ep_1.uid = Some(uid.clone());
+        assert!(post_endpoint_in(&client, APP_NAME_1, ep_1).await.is_err());
+
+        delete_test_app(&client, app_id).await.unwrap();
+
+        // Different App -- however if they are associated with different applications, identical
+        // UIDs are valid
+        let app_1 = create_test_app(&client, APP_NAME_1).await.unwrap();
+        let app_2 = create_test_app(&client, APP_NAME_2).await.unwrap();
+
+        let mut ep_1 = endpoint_in(EP_URI_APP_1_EP_1);
+        ep_1.uid = Some(uid.clone());
+
+        let mut ep_2 = endpoint_in(EP_URI_APP_2);
+        ep_2.uid = Some(uid.clone());
+
+        let ep_1 = post_endpoint_in(&client, &app_1, ep_1).await.unwrap();
+        let ep_2 = post_endpoint_in(&client, &app_2, ep_2).await.unwrap();
+
+        delete_endpoint(&client, &app_1, &ep_1.id).await.unwrap();
+        delete_endpoint(&client, &app_2, &ep_2.id).await.unwrap();
+
+        delete_test_app(&client, app_1).await.unwrap();
+        delete_test_app(&client, app_2).await.unwrap();
+    }
 
     #[test]
     fn test_endpoint_secret_get_and_rotation() {}
