@@ -166,7 +166,7 @@ struct EndpointSecretRotateIn {
     key: Option<EndpointSecret>,
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct EndpointSecretOut {
     key: EndpointSecret,
@@ -658,7 +658,9 @@ mod tests {
     use reqwest::StatusCode;
     use sea_orm::ActiveValue::Set;
 
-    use super::{EndpointHeadersOut, EndpointHeadersPatchIn, EndpointIn, EndpointOut};
+    use super::{
+        EndpointHeadersOut, EndpointHeadersPatchIn, EndpointIn, EndpointOut, EndpointSecretOut,
+    };
     use crate::{
         core::types::{EndpointHeaders, EndpointUid},
         db::models::endpoint,
@@ -783,7 +785,7 @@ mod tests {
         const APP_NAME_1: &str = "v1EndpointCrudTestApp1";
         const APP_NAME_2: &str = "v1EndpointCrudTestApp2";
 
-        const EP_URI_APP_1_EP_1_VER_1: &str = "http://v1endpointcrudtestapp1ep1ver1.test";
+        const EP_URI_APP_1_EP_1_VER_1: &str = "http://v1Endpointcrudtestapp1ep1ver1.test";
         const EP_URI_APP_1_EP_1_VER_2: &str = "http://v1EndpointCrudTestApp1Ep1Ver2.test";
         const EP_URI_APP_1_EP_2: &str = "http://v1EndpointCrudTestApp1Ep2.test";
         const EP_URI_APP_2_EP_1: &str = "http://v1EndpointCrudTestApp2Ep1.test";
@@ -911,7 +913,7 @@ mod tests {
         const APP_NAME_1: &str = "v1EndpointUidTestApp1";
         const APP_NAME_2: &str = "v1EndpointUidTestApp2";
 
-        const EP_URI_APP_1_EP_1: &str = "http://v1endpointUidTestApp1Ep1.test";
+        const EP_URI_APP_1_EP_1: &str = "http://v1EndpointUidTestApp1Ep1.test";
         const EP_URI_APP_1_EP_2: &str = "http://v1EndpointUidTestApp1Ep2.test";
         const EP_URI_APP_2: &str = "http://v1EndpointUidTestApp2Ep1.test";
 
@@ -998,8 +1000,68 @@ mod tests {
         delete_test_app(&client, app_2).await.unwrap();
     }
 
-    #[test]
-    fn test_endpoint_secret_get_and_rotation() {}
+    // Simply tests that upon rotating an endpoint secret that it differs from the prior one
+    #[tokio::test]
+    async fn test_endpoint_secret_get_and_rotation() {
+        let (client, _jh) = start_svix_server();
+
+        const APP_NAME: &str = "v1EndpointSecretRotationTestApp";
+        const EP_URI: &str = "http://v1EndpointSecretRotationTestEp.test";
+
+        let app_id = create_test_app(&client, APP_NAME).await.unwrap();
+
+        let ep = post_endpoint_default(&client, &app_id, EP_URI)
+            .await
+            .unwrap();
+
+        let former_secret: EndpointSecretOut = client
+            .get(
+                &format!("api/v1/app/{}/endpoint/{}/secret/", app_id, ep.id),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
+
+        let _: EmptyResponse = client
+            .post(
+                &format!("api/v1/app/{}/endpoint/{}/secret/rotate/", app_id, ep.id),
+                serde_json::json!({ "key": null }),
+                StatusCode::NO_CONTENT,
+            )
+            .await
+            .unwrap();
+
+        assert!(
+            former_secret
+                != client
+                    .get(
+                        &format!("api/v1/app/{}/endpoint/{}/secret/", app_id, ep.id),
+                        StatusCode::OK
+                    )
+                    .await
+                    .unwrap()
+        );
+
+        let _: EmptyResponse = client
+            .post(
+                &format!("api/v1/app/{}/endpoint/{}/secret/rotate/", app_id, ep.id),
+                &former_secret,
+                StatusCode::NO_CONTENT,
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(
+            former_secret,
+            client
+                .get(
+                    &format!("api/v1/app/{}/endpoint/{}/secret/", app_id, ep.id),
+                    StatusCode::OK
+                )
+                .await
+                .unwrap()
+        );
+    }
 
     #[test]
     fn test_endpoint_headers_crud() {}
