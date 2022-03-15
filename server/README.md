@@ -120,3 +120,16 @@ Please run these two commands before pushing code:
 cargo clippy --fix
 cargo fmt
 ```
+
+## Testing
+
+When run with the `integration_testing` feature, `cargo test` will run tests that assume a running PostgreSQL and Redis database.
+These databases are configured with the same environment variables as with running the actual server.
+
+The easiest way to get these tests to pass is to:
+    1. Use the `testing-docker-compose.yml` file with `docker-compose` to launch the databases on their default ports.
+    2. Create a `.env` file as you would when running the server for real.
+    3. Migrate the database with `cargo run -- migrate`.
+    4. Run `cargo test --all-targets`
+
+Without this feature enabled, these tests will show as ignored when running `cargo test` and only pure functions may be tested.
