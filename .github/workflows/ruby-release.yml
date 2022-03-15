@@ -3,7 +3,10 @@ name: Ruby Release
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
+  pull_request:
+    paths:
+      - ".github/workflows/ruby-release.yml"
 
 jobs:
   dotnet:
@@ -30,14 +33,19 @@ jobs:
           cd ruby
           bundler exec rake build
 
-      - name: Publish
+      - name: Size
         run: |
-          mkdir -p "$HOME/.gem"
-          touch "$HOME/.gem/credentials"
-          chmod 0600 "$HOME/.gem/credentials"
-          printf -- "---\n:rubygems_api_key: %s\n" "$RUBYGEMS_AUTH_TOKEN" > "$HOME/.gem/credentials"
-
           cd ruby
-          gem push pkg/*.gem
-        env:
-          RUBYGEMS_AUTH_TOKEN: "${{secrets.RUBYGEMS_AUTH_TOKEN}}"
+          ls -la pkg/
+
+      # - name: Publish
+      #   run: |
+      #     mkdir -p "$HOME/.gem"
+      #     touch "$HOME/.gem/credentials"
+      #     chmod 0600 "$HOME/.gem/credentials"
+      #     printf -- "---\n:rubygems_api_key: %s\n" "$RUBYGEMS_AUTH_TOKEN" > "$HOME/.gem/credentials"
+
+      #     cd ruby
+      #     gem push pkg/*.gem
+      #   env:
+      #     RUBYGEMS_AUTH_TOKEN: "${{secrets.RUBYGEMS_AUTH_TOKEN}}"
