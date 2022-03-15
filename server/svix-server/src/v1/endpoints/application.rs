@@ -174,12 +174,14 @@ pub fn router() -> Router {
 }
 
 #[cfg(test)]
-mod tests {
+pub(crate) mod tests {
+    use anyhow::Result;
     use reqwest::StatusCode;
 
     use super::{ApplicationIn, ApplicationOut};
     use crate::{
-        test_util::{start_svix_server, IgnoredResponse},
+        core::types::ApplicationId,
+        test_util::{start_svix_server, IgnoredResponse, TestClient},
         v1::utils::ListResponse,
     };
 
@@ -190,7 +192,28 @@ mod tests {
         }
     }
 
+    /// A test utility for creating an application with the given name, returning its ID for use with
+    /// the creation of other objects. NOTE: You must call [`delete_test_app`] at the end of the test
+    /// to avoid leaving test records in the database.
+    pub(crate) async fn create_test_app(client: &TestClient, name: &str) -> Result<ApplicationId> {
+        Ok(client
+            .post::<_, ApplicationOut>("api/v1/app/", application_in(name), StatusCode::CREATED)
+            .await?
+            .id)
+    }
+
+    /// A test utility for deleting an application with the given ID used for cleaning up at the end
+    /// of a test.
+    pub(crate) async fn delete_test_app(client: &TestClient, id: ApplicationId) -> Result<()> {
+        let _: IgnoredResponse = client
+            .delete(&format!("api/v1/app/{}/", id), StatusCode::NO_CONTENT)
+            .await?;
+
+        Ok(())
+    }
+
     #[tokio::test]
+    #[cfg_attr(not(feature = "integration_testing"), ignore)]
     async fn test_crud() {
         let (client, _jh) = start_svix_server();
 
@@ -297,6 +320,7 @@ mod tests {
     }
 
     #[tokio::test]
+    #[cfg_attr(not(feature = "integration_testing"), ignore)]
     async fn test_list() {
         let (client, _jh) = start_svix_server();
 
