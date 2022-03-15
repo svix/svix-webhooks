@@ -657,7 +657,6 @@ mod tests {
     use anyhow::Result;
     use reqwest::StatusCode;
     use sea_orm::ActiveValue::Set;
-    use serde::de::IgnoredAny;
 
     use super::{
         EndpointHeadersOut, EndpointHeadersPatchIn, EndpointIn, EndpointOut, EndpointSecretOut,
@@ -1036,7 +1035,7 @@ mod tests {
                 .unwrap()
         );
 
-        let _: IgnoredAny = client
+        let _: IgnoredResponse = client
             .post(
                 &format!("api/v1/app/{}/endpoint/{}/secret/rotate/", app_id, ep.id),
                 &former_secret,
