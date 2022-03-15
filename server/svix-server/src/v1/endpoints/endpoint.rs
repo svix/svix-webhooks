@@ -1056,12 +1056,4 @@ mod tests {
                 .unwrap()
         );
     }
-
-    #[test]
-    #[cfg_attr(not(feature = "integration_testing"), ignore)]
-    fn test_endpoint_headers_crud() {
-        // TODO
-    }
-
-    // TODO: "Recover failed webhooks" after messages testing
 }
