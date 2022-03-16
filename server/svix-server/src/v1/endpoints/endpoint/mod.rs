@@ -268,12 +268,25 @@ pub fn router() -> Router {
 }
 
 #[cfg(test)]
-pub(self) mod tests {
+pub(crate) mod tests {
     use anyhow::Result;
     use reqwest::StatusCode;
 
     use super::{EndpointIn, EndpointOut};
-    use crate::test_util::{IgnoredResponse, TestClient};
+    use crate::{
+        core::types::{ApplicationId, EndpointId},
+        test_util::{IgnoredResponse, TestClient},
+    };
+
+    pub(crate) async fn create_test_endpoint(
+        client: &TestClient,
+        app_id: &ApplicationId,
+        url: &str,
+    ) -> Result<EndpointId> {
+        post_endpoint_default(client, &app_id, url)
+            .await
+            .map(|ep| ep.id)
+    }
 
     pub(super) fn endpoint_in(url: &str) -> EndpointIn {
         EndpointIn {
