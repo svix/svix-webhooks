@@ -1,8 +1,16 @@
-use std::net::TcpListener;
+use std::{collections::HashMap, net::TcpListener};
 
 use anyhow::{Context, Result};
+use axum::{
+    async_trait,
+    extract::{FromRequest, RequestParts},
+    headers::HeaderMap,
+    routing::post,
+    Json, Router, Server,
+};
 use reqwest::{Client, RequestBuilder, StatusCode};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
+use tokio::sync::{mpsc, oneshot};
 
 use crate::core::security::test_util::generate_token_random_org;
 
@@ -150,4 +158,42 @@ pub fn start_svix_server() -> (TestClient, tokio::task::JoinHandle<()>) {
     let jh = tokio::spawn(crate::run(cfg, Some(listener)));
 
     (TestClient::new(base_uri, &token), jh)
+}
+
+#[derive(Debug)]
+pub(crate) struct Request {
+    headers: HashMap<String, String>,
+    data: serde_json::Value,
+}
+
+pub(crate) fn start_test_server() -> (mpsc::Receiver<Request>, tokio::task::JoinHandle<()>, String)
+{
+    let (tx, rx) = mpsc::channel(16);
+
+    let router = Router::new().route(
+        "/",
+        post(
+            |h: HeaderMap, Json(data): Json<serde_json::Value>| async move {
+                let headers = h
+                    .iter()
+                    .map(|(k, v)| (k.as_str().to_owned(), v.to_str().unwrap().to_owned()))
+                    .collect();
+                tx.send(Request { headers, data }).await.unwrap();
+                "OK"
+            },
+        ),
+    );
+
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let uri = format!("http://{}", listener.local_addr().unwrap());
+
+    let jh = tokio::spawn(async move {
+        Server::from_tcp(listener)
+            .unwrap()
+            .serve(router.into_make_service())
+            .await
+            .unwrap();
+    });
+
+    (rx, jh, uri)
 }

@@ -32,6 +32,8 @@ mod worker;
 
 #[cfg(test)]
 pub(crate) mod test_util;
+#[cfg(test)]
+mod e2e_tests;
 
 const CRATE_NAME: &str = env!("CARGO_CRATE_NAME");
 
