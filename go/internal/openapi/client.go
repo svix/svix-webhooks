@@ -32,6 +32,7 @@ import (
 	"strings"
 	"time"
 	"unicode/utf8"
+	"math/rand"
 
 	"golang.org/x/oauth2"
 )
@@ -203,6 +204,7 @@ func (c *APIClient) callAPI(request *http.Request) (*http.Response, error) {
 	var resp *http.Response
 	var err error
 	sleepTime := time.Millisecond * 50
+	retryCount := 0
 	for try := 0; try < NumTries; try++ {
 		resp, err = c.cfg.HTTPClient.Do(request)
 		if err == nil && resp.StatusCode < 500 {
@@ -211,6 +213,8 @@ func (c *APIClient) callAPI(request *http.Request) (*http.Response, error) {
 		if try >= NumTries - 1 {
 			return resp, err
 		}
+		retryCount++
+		request.Header.Set("svix-retry-count",strconv.Itoa(retryCount))
 		time.Sleep(sleepTime)
 		sleepTime = sleepTime * 2
 	}
@@ -358,6 +362,8 @@ func (c *APIClient) prepareRequest(
 
 	// Add the user agent to the request.
 	localVarRequest.Header.Add("User-Agent", c.cfg.UserAgent)
+	rand.Seed(time.Now().UnixNano())
+	localVarRequest.Header.Add("svix-req-id",strconv.FormatUint(rand.Uint64(), 10))
 
 	if ctx != nil {
 		// add context to the request
