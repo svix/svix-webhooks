@@ -98,22 +98,22 @@ pub enum HttpErrorBody {
     Validation { detail: Vec<ValidationErrorItem> },
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, PartialEq)]
 /// Validation errors have their own schema to provide context for invalid requests eg. mismatched
 /// types and out of bounds values. There may be any number of these per 422 UNPROCESSABLE ENTITY
 /// error.
 pub struct ValidationErrorItem {
     /// The location as a [`Vec`] of [`String`]s -- often in the form `["body", "field_name"]`,
     /// `["query", "field_name"]`, etc. They may, however, be arbitarily deep.
-    loc: Vec<String>,
+    pub loc: Vec<String>,
 
     /// The message accompanying the validation error item.
-    msg: String,
+    pub msg: String,
 
     /// The type of error, often "type_error" or "value_error", but sometimes with more context like
     /// as "value_error.number.not_ge"
     #[serde(rename = "type")]
-    ty: String,
+    pub ty: String,
 }
 
 #[derive(Debug, Clone)]
@@ -194,7 +194,7 @@ impl From<HttpError> for Error {
 
 impl fmt::Display for HttpError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self.body {
+        match &self.body {
             HttpErrorBody::Standard { code, detail } => write!(
                 f,
                 "status={} code=\"{}\" detail=\"{}\"",

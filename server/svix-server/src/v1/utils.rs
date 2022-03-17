@@ -6,8 +6,8 @@ use std::{collections::HashSet, error::Error as StdError, ops::Deref, str::FromS
 use axum::{
     async_trait,
     body::HttpBody,
-    extract::{rejection::JsonRejection, FromRequest, Query, RequestParts},
-    BoxError, Json,
+    extract::{FromRequest, Query, RequestParts},
+    BoxError,
 };
 use chrono::{DateTime, Utc};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
@@ -16,7 +16,7 @@ use validator::Validate;
 
 use crate::{
     core::types::{EventTypeName, EventTypeNameSet},
-    error::{Error, HttpError, Result},
+    error::{Error, HttpError, Result, ValidationErrorItem},
 };
 
 const fn default_limit() -> u64 {
@@ -63,6 +63,62 @@ pub trait ModelOut {
     }
 }
 
+// TODO: Test
+/// Recursively searches a [`validator::ValidationErrors`] tree into a linear list of errors to be
+/// sent to the user
+fn validation_errors(
+    acc_path: Vec<String>,
+    err: validator::ValidationErrors,
+) -> Vec<ValidationErrorItem> {
+    err.into_errors()
+        .into_iter()
+        .map(|(k, v)| {
+            // Add the next field to the location
+            let mut loc = acc_path.clone();
+            loc.push(k.to_owned());
+
+            let out = match v {
+                // If it's a [`validator::ValidationErrorsKind::Field`], then it will be a vector of
+                // errors to map to [`ValidationErrorItem`]s and insert to [`out`] before the next
+                // iteration
+                validator::ValidationErrorsKind::Field(vec) => vec
+                    .into_iter()
+                    .map(|err| {
+                        Some(ValidationErrorItem {
+                            loc: loc.clone(),
+                            // TODO: Don't skip errors without messages if possible
+                            msg: err.message?.to_string(),
+                            ty: "value_error".to_owned(),
+                        })
+                    })
+                    .filter(|opt| opt.is_some())
+                    .map(|some| some.unwrap())
+                    .collect(),
+                // If it is a [`validator::ValidationErrorsKind::Struct`], then it will be another
+                // [`validator::ValidationErrors`] to search
+                validator::ValidationErrorsKind::Struct(errors) => validation_errors(loc, *errors),
+
+                // If it is a [`validator::ValidationErrorsKind::List`], then it will be an
+                // [`std::collections::BTreeMap`] of [`validator::ValidationErrors`] to search
+                validator::ValidationErrorsKind::List(map) => map
+                    .into_iter()
+                    .map(|(k, v)| {
+                        // Add the list index to the location
+                        let mut loc = loc.clone();
+                        loc.push(format!("[{}]", k));
+
+                        validation_errors(loc, *v)
+                    })
+                    .flatten()
+                    .collect(),
+            };
+
+            out
+        })
+        .flatten()
+        .collect()
+}
+
 #[derive(Debug, Clone, Copy, Default)]
 pub struct ValidatedJson<T>(pub T);
 
@@ -77,23 +133,35 @@ where
     type Rejection = Error;
 
     async fn from_request(req: &mut RequestParts<B>) -> Result<Self> {
-        let Json(value) = Json::<T>::from_request(req)
-            .await
-            .map_err(|err| match err {
-                JsonRejection::InvalidJsonBody(ref body_err) => HttpError::unprocessable_entity(
-                    None,
-                    Some(
-                        body_err
-                            .source()
-                            .map(|x| x.to_string())
-                            .unwrap_or_else(|| err.to_string()),
-                    ),
-                ),
-                _ => HttpError::bad_request(None, Some(err.to_string())),
-            })?;
-        value.validate().map_err(|x| {
-            let message = format!("Input validation error: [{}]", x).replace('\n', ", ");
-            HttpError::unprocessable_entity(None, Some(message))
+        let b = bytes::Bytes::from_request(req).await.map_err(|e| {
+            tracing::error!("Error reading body as bytes: {}", e);
+            HttpError::internal_server_errer(None, Some("Failed to read request body".to_owned()))
+        })?;
+        let mut de = serde_json::Deserializer::from_slice(&b);
+
+        let value: T = serde_path_to_error::deserialize(&mut de).map_err(|e| {
+            let mut path = e
+                .path()
+                .to_string()
+                .split('.')
+                .map(ToOwned::to_owned)
+                .collect::<Vec<String>>();
+            let inner = e.inner();
+
+            let mut loc = vec!["body".to_owned()];
+            loc.append(&mut path);
+            HttpError::unprocessable_entity(vec![ValidationErrorItem {
+                loc,
+                msg: inner
+                    .source()
+                    .map(ToString::to_string)
+                    .unwrap_or_else(|| e.to_string()),
+                ty: "value_error.jsondecode".to_owned(),
+            }])
+        })?;
+
+        value.validate().map_err(|e| {
+            HttpError::unprocessable_entity(validation_errors(vec!["body".to_owned()], e))
         })?;
         Ok(ValidatedJson(value))
     }
@@ -116,9 +184,8 @@ where
         let Query(value) = Query::<T>::from_request(req)
             .await
             .map_err(|err| HttpError::bad_request(None, Some(err.to_string())))?;
-        value.validate().map_err(|x| {
-            let message = format!("Input validation error: [{}]", x).replace('\n', ", ");
-            HttpError::unprocessable_entity(None, Some(message))
+        value.validate().map_err(|e| {
+            HttpError::unprocessable_entity(validation_errors(vec!["query".to_owned()], e))
         })?;
         Ok(ValidatedQuery(value))
     }
@@ -158,10 +225,11 @@ where
                 event_types.0.insert(EventTypeName(value));
             } else if key == "before" {
                 before = Some(DateTime::<Utc>::from_str(&value).map_err(|_| {
-                    HttpError::unprocessable_entity(
-                        None,
-                        Some("Unable to parse before".to_string()),
-                    )
+                    HttpError::unprocessable_entity(vec![ValidationErrorItem {
+                        loc: vec!["query".to_owned(), "before".to_owned()],
+                        msg: "Unable to parse before".to_owned(),
+                        ty: "value_error".to_owned(),
+                    }])
                 })?);
             }
         }
@@ -179,4 +247,80 @@ where
 
 pub async fn api_not_implemented() -> Result<()> {
     Err(HttpError::not_implemented(None, None).into())
+}
+
+#[cfg(test)]
+mod tests {
+    use validator::Validate;
+
+    use super::validation_errors;
+    use crate::error::ValidationErrorItem;
+
+    #[derive(Debug, Validate)]
+    struct ValidationErrorTestStruct {
+        #[validate(range(min = 10, message = "Below 10"))]
+        a: u32,
+
+        #[validate]
+        b: ValidationErrorTestStructInner,
+
+        #[validate]
+        c: Vec<ValidationErrorTestStructInner>,
+    }
+
+    #[derive(Debug, Validate)]
+    struct ValidationErrorTestStructInner {
+        #[validate(range(max = 10, message = "Above 10"))]
+        inner: u8,
+    }
+
+    #[test]
+    fn test_validation_errors_fn() {
+        let valid = ValidationErrorTestStruct {
+            a: 11,
+            b: ValidationErrorTestStructInner { inner: 1 },
+            c: vec![
+                ValidationErrorTestStructInner { inner: 2 },
+                ValidationErrorTestStructInner { inner: 3 },
+            ],
+        };
+        let invalid = ValidationErrorTestStruct {
+            a: 9,
+            b: ValidationErrorTestStructInner { inner: 11 },
+            c: vec![
+                ValidationErrorTestStructInner { inner: 12 },
+                ValidationErrorTestStructInner { inner: 13 },
+            ],
+        };
+
+        assert_eq!(valid.validate(), Ok(()));
+
+        let errs = invalid.validate().unwrap_err();
+        let errs = validation_errors(vec![], errs);
+
+        assert_eq!(errs.len(), 4);
+
+        assert!(errs.contains(&ValidationErrorItem {
+            loc: vec!["a".to_owned()],
+            msg: "Below 10".to_owned(),
+            ty: "value_error".to_owned(),
+        }));
+
+        assert!(errs.contains(&ValidationErrorItem {
+            loc: vec!["b".to_owned(), "inner".to_owned()],
+            msg: "Above 10".to_owned(),
+            ty: "value_error".to_owned(),
+        }));
+
+        assert!(errs.contains(&ValidationErrorItem {
+            loc: vec!["c".to_owned(), "[0]".to_owned(), "inner".to_owned()],
+            msg: "Above 10".to_owned(),
+            ty: "value_error".to_owned(),
+        }));
+        assert!(errs.contains(&ValidationErrorItem {
+            loc: vec!["c".to_owned(), "[1]".to_owned(), "inner".to_owned()],
+            msg: "Above 10".to_owned(),
+            ty: "value_error".to_owned(),
+        }));
+    }
 }
