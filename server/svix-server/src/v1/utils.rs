@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use std::{collections::HashSet, error::Error as StdError, ops::Deref, str::FromStr};
+use std::{borrow::Cow, collections::HashSet, error::Error as StdError, ops::Deref, str::FromStr};
 
 use axum::{
     async_trait,
@@ -63,7 +63,6 @@ pub trait ModelOut {
     }
 }
 
-// TODO: Test
 /// Recursively searches a [`validator::ValidationErrors`] tree into a linear list of errors to be
 /// sent to the user
 fn validation_errors(
@@ -87,7 +86,10 @@ fn validation_errors(
                         Some(ValidationErrorItem {
                             loc: loc.clone(),
                             // TODO: Don't skip errors without messages if possible
-                            msg: err.message?.to_string(),
+                            msg: err
+                                .message
+                                .unwrap_or(Cow::Borrowed("Validation error"))
+                                .to_string(),
                             ty: "value_error".to_owned(),
                         })
                     })
