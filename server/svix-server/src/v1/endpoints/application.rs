@@ -26,10 +26,10 @@ use crate::v1::utils::Pagination;
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize, Validate, ModelIn)]
 #[serde(rename_all = "camelCase")]
 struct ApplicationIn {
-    #[validate(length(min = 1))]
+    #[validate(length(min = 1, message = "Application names must be at least one character"))]
     name: String,
 
-    #[validate(range(min = 1))]
+    #[validate(range(min = 1, message = "Application rate limits must be at least 1 if set"))]
     #[serde(skip_serializing_if = "Option::is_none")]
     rate_limit: Option<u16>,
     /// Optional unique identifier for the application

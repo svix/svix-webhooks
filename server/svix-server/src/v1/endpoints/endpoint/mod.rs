@@ -56,16 +56,16 @@ struct EndpointIn {
     #[serde(skip_serializing_if = "String::is_empty")]
     description: String,
 
-    #[validate(range(min = 1))]
+    #[validate(range(min = 1, message = "Endpoint rate limits must be at least one if set"))]
     #[serde(skip_serializing_if = "Option::is_none")]
     rate_limit: Option<u16>,
     /// Optional unique identifier for the endpoint
     #[validate]
     #[serde(skip_serializing_if = "Option::is_none")]
     uid: Option<EndpointUid>,
-    #[validate(url)]
+    #[validate(url(message = "Endpoint URLs must be valid"))]
     url: String,
-    #[validate(range(min = 1))]
+    #[validate(range(min = 1, message = "Endpoint versions must be at least one"))]
     version: u16,
     #[serde(default)]
     #[serde(skip_serializing_if = "std::ops::Not::not")]
