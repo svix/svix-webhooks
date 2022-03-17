@@ -77,7 +77,7 @@ fn validation_errors(
             let mut loc = acc_path.clone();
             loc.push(k.to_owned());
 
-            let out = match v {
+            match v {
                 // If it's a [`validator::ValidationErrorsKind::Field`], then it will be a vector of
                 // errors to map to [`ValidationErrorItem`]s and insert to [`out`] before the next
                 // iteration
@@ -91,8 +91,8 @@ fn validation_errors(
                             ty: "value_error".to_owned(),
                         })
                     })
-                    .filter(|opt| opt.is_some())
-                    .map(|some| some.unwrap())
+                    .filter(Option::is_some)
+                    .flatten()
                     .collect(),
                 // If it is a [`validator::ValidationErrorsKind::Struct`], then it will be another
                 // [`validator::ValidationErrors`] to search
@@ -111,9 +111,7 @@ fn validation_errors(
                     })
                     .flatten()
                     .collect(),
-            };
-
-            out
+            }
         })
         .flatten()
         .collect()
