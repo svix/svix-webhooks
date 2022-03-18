@@ -44,15 +44,10 @@ jobs:
           command: build
           args: --target ${{ matrix.target }} --release --manifest-path server/svix-server/Cargo.toml
 
-      - name: Set environment variables for aarch64 MacOS
-        if: ${{ matrix.target == 'aarch64-apple-darwin' }}
-        run: echo SDKROOT="$(xcrun -sdk macosx11.1 --show-sdk-path)" >> "$GITHUB_ENV" && \
-             echo MACOSX_DEPLOYMENT_TARGET="$(xcrun -sdk macosx11.1 --show-sdk-platform-version)" >> "$GITHUB_ENV"
-
       - name: Release
         uses: actions/upload-artifact@v3
         with:
           name: svix-server-${{ matrix.target }}
-          path: server/target/release/svix-server*
+          path: server/svix-server/target/release/svix-server*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
