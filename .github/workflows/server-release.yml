@@ -7,21 +7,65 @@ on:
 jobs:
   release:
     name: release ${{ matrix.target }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         include:
           - target: x86_64-pc-windows-gnu
+            os: windows-latest
+            use-cross: false
             archive: zip
+
           - target: x86_64-unknown-linux-musl
+            os: ubuntu-latest
+            use-cross: false
             archive: tar.gz tar.xz
+
+          - target: aarch64-unknown-linux-musl
+            os: ubuntu-latest
+            use-cross: true
+            archive: tar.gz tar.xz
+
+          - target: x86_64-apple-darwin
+            os: macos-latest
+            use-cross: false
+            archive: zip
+
+          - target: aarch64-apple-darwin
+            os: macos-latest
+            use-cross: false
+            archive: zip
     steps:
       - uses: actions/checkout@master
-      - name: Compile and release
-        uses: rust-build/rust-build.action@latest
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          profile: minmimal
+          target: ${{ matrix.target }}
+
+      - name: Compile server
+        uses: actions-rs/cargo@v1
+        with:
+          use-cross: ${{ matrix.use-cross }}
+          command: build
+          args: --target ${{ matrix.target }} --release --manifest-path server/svix-server
+
+      - name: Set SDKROOT for MacOS
+        if: ${{ matrix.target == 'aarch64-apple-darwin' }}
+        run: echo "SDKROOT=${xcrun -sdk macosx11.1 --show-sdk-path)" >> $GITHUB_ENV
+
+      - name: Set MACOSX_DEPLOYMENT_TARGET for MacOS
+        if: ${{ matrix.target == 'aarch64-apple-darwin' }}
+        run: echo "MACOSX_DEPLOYMENT_TARGET=${xcrun -sdk macosx11.1 --show-sdk-platform-version)" >> $GITHUB_ENV
+    
+      - name: Release
+        uses: actions/upload-artifact@v3
+        with:
+          name: svix-server-${{ matrix.target }}
+          path: server/target/release/svix-server*
         env:
-          SRC_DIR: server/svix-server
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RUSTTARGET: ${{ matrix.target }}
-          ARCHIVE_TYPES: ${{ matrix.archive }}
