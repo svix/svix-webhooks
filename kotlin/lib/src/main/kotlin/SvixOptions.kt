@@ -1,7 +1,7 @@
 package com.svix.kotlin
 
 data class SvixOptions(val serverUrl: String = DEFAULT_URL) {
-    private val version = "0.54.0"
+    private val version = "0.54.1"
 
     companion object {
         const val DEFAULT_URL = "https://api.svix.com"

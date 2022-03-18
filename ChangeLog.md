@@ -3,6 +3,9 @@
 ## Next
 * 
 
+## Version 0.54.1
+* Server: fix release CI
+
 ## Version 0.54.0
 * Libs: add retry and request-id headers for easier debugging.
 * Server: add more release targets (macOS and aarch64).
