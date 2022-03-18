@@ -2,7 +2,6 @@
 import { BaseAPIRequestFactory, RequiredError } from './baseapi{{extensionForDeno}}';
 import {Configuration} from '../configuration{{extensionForDeno}}';
 import { RequestContext, HttpMethod, ResponseContext, HttpFile} from '../http/http{{extensionForDeno}}';
-import { randomBytes } from 'crypto';
 {{#platforms}}
 {{#node}}
 import * as FormData from "form-data";
@@ -60,7 +59,8 @@ export class {{classname}}RequestFactory extends BaseAPIRequestFactory {
         // Make Request Context
         const requestContext = _config.baseServer.makeRequestContext(localVarPath, HttpMethod.{{httpMethod}});
         requestContext.setHeaderParam("Accept", "application/json, */*;q=0.8")
-        requestContext.setHeaderParam("svix-req-id", randomBytes(32).toString('base64'))
+        const randomId = Math.floor(Math.random() * Math.pow(2, 32))
+        requestContext.setHeaderParam("svix-req-id", randomId.toString())
 
         // Query Params
         {{#queryParams}}

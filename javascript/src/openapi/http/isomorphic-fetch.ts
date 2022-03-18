@@ -25,7 +25,7 @@ export class IsomorphicFetchHttpLibrary implements HttpLibrary {
       };
       await sleep(nextInterval);
       const headers = request.getHeaders();
-      headers['svix-retry-count'] = `${retryCount}`
+      headers['svix-retry-count'] = retryCount.toString()
       return await this.sendWithRetry(request, --triesLeft, nextInterval * 2, ++retryCount);
     }
   
