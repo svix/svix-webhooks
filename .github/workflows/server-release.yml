@@ -58,11 +58,11 @@ jobs:
 
       - name: Set SDKROOT for MacOS
         if: ${{ matrix.target == 'aarch64-apple-darwin' }}
-        run: echo "SDKROOT="$(xcrun -sdk macosx11.1 --show-sdk-path)"" >> $GITHUB_ENV
+        run: echo SDKROOT="$(xcrun -sdk macosx11.1 --show-sdk-path)" >> $GITHUB_ENV
 
       - name: Set MACOSX_DEPLOYMENT_TARGET for MacOS
         if: ${{ matrix.target == 'aarch64-apple-darwin' }}
-        run: echo "MACOSX_DEPLOYMENT_TARGET="$(xcrun -sdk macosx11.1 --show-sdk-platform-version)"" >> $GITHUB_ENV
+        run: echo MACOSX_DEPLOYMENT_TARGET="$(xcrun -sdk macosx11.1 --show-sdk-platform-version)" >> $GITHUB_ENV
     
       # - name: Release
       #   uses: actions/upload-artifact@v3
