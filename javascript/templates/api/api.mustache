@@ -59,6 +59,8 @@ export class {{classname}}RequestFactory extends BaseAPIRequestFactory {
         // Make Request Context
         const requestContext = _config.baseServer.makeRequestContext(localVarPath, HttpMethod.{{httpMethod}});
         requestContext.setHeaderParam("Accept", "application/json, */*;q=0.8")
+        const randomId = Math.floor(Math.random() * Math.pow(2, 32))
+        requestContext.setHeaderParam("svix-req-id", randomId.toString())
 
         // Query Params
         {{#queryParams}}

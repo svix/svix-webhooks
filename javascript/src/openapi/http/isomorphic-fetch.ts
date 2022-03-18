@@ -8,11 +8,11 @@ const sleep = (interval: number) => new Promise(resolve => setTimeout(resolve, i
 export class IsomorphicFetchHttpLibrary implements HttpLibrary {
 
     public send(request: RequestContext): Observable<ResponseContext> {
-      const resultPromise = this.sendWithRetry(request, numRetries, 50);
+      const resultPromise = this.sendWithRetry(request, numRetries, 50, 1);
       return from<Promise<ResponseContext>>(resultPromise);
     }
 
-    private async sendWithRetry(request: RequestContext, triesLeft: number, nextInterval: number): Promise<ResponseContext> {
+    private async sendWithRetry(request: RequestContext, triesLeft: number, nextInterval: number, retryCount: number): Promise<ResponseContext> {
       try {
         const response = await this.sendOnce(request);
         if (triesLeft <= 0 || response.httpStatusCode < 500) {
@@ -24,7 +24,9 @@ export class IsomorphicFetchHttpLibrary implements HttpLibrary {
         }
       };
       await sleep(nextInterval);
-      return await this.sendWithRetry(request, --triesLeft, nextInterval * 2);
+      const headers = request.getHeaders();
+      headers['svix-retry-count'] = retryCount.toString()
+      return await this.sendWithRetry(request, --triesLeft, nextInterval * 2, ++retryCount);
     }
   
     private sendOnce(request: RequestContext): Promise<ResponseContext> {
