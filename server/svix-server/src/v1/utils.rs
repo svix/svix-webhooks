@@ -82,19 +82,14 @@ fn validation_errors(
                 // iteration
                 validator::ValidationErrorsKind::Field(vec) => vec
                     .into_iter()
-                    .map(|err| {
-                        Some(ValidationErrorItem {
-                            loc: loc.clone(),
-                            // TODO: Don't skip errors without messages if possible
-                            msg: err
-                                .message
-                                .unwrap_or(Cow::Borrowed("Validation error"))
-                                .to_string(),
-                            ty: "value_error".to_owned(),
-                        })
+                    .map(|err| ValidationErrorItem {
+                        loc: loc.clone(),
+                        msg: err
+                            .message
+                            .unwrap_or(Cow::Borrowed("Validation error"))
+                            .to_string(),
+                        ty: "value_error".to_owned(),
                     })
-                    .filter(Option::is_some)
-                    .flatten()
                     .collect(),
                 // If it is a [`validator::ValidationErrorsKind::Struct`], then it will be another
                 // [`validator::ValidationErrors`] to search
