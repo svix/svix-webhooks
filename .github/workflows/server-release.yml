@@ -3,7 +3,7 @@ name: Server Release
 on:
   pull_request:
     paths:
-      -'.github/workflows/server-release.yml'
+      - '.github/workflows/server-release.yml'
   release:
     types: [published]
 
