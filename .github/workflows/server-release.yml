@@ -47,7 +47,7 @@ jobs:
         with:
           toolchain: stable
           override: true
-          profile: minmimal
+          profile: minimal
           target: ${{ matrix.target }}
 
       - name: Compile server
