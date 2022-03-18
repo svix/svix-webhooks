@@ -48,7 +48,7 @@ jobs:
       - name: Install musl for x86_64-unknown-linux-musl
         if: ${{ matrix.target == 'x86_64-unknown-linux-musl' }}
         run: apt install musl-dev && apt install musl-tools
-            
+
       - name: Compile server
         uses: actions-rs/cargo@v1
         with:
