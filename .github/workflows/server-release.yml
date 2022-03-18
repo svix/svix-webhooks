@@ -1,6 +1,9 @@
 name: Server Release
 
 on:
+  pull_request:
+    paths:
+      - '.github/workflows/server-release.yml'
   release:
     types: [published]
 
@@ -62,10 +65,10 @@ jobs:
         if: ${{ matrix.target == 'aarch64-apple-darwin' }}
         run: echo "MACOSX_DEPLOYMENT_TARGET=${xcrun -sdk macosx11.1 --show-sdk-platform-version)" >> $GITHUB_ENV
     
-      - name: Release
-        uses: actions/upload-artifact@v3
-        with:
-          name: svix-server-${{ matrix.target }}
-          path: server/target/release/svix-server*
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Release
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: svix-server-${{ matrix.target }}
+      #     path: server/target/release/svix-server*
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
