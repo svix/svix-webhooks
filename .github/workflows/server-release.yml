@@ -48,6 +48,6 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: svix-server-${{ matrix.target }}
-          path: server/target/release/svix-server*
+          path: server/svix-server/target/release/svix-server*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
