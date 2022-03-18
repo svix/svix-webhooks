@@ -56,6 +56,7 @@ import org.threeten.bp.OffsetDateTime
 import org.threeten.bp.OffsetTime
 {{/threetenbp}}
 import kotlinx.coroutines.delay
+import kotlin.random.Random
 
 {{#nonPublicApi}}internal {{/nonPublicApi}}open class ApiClient(val baseUrl: String) {
     {{#nonPublicApi}}internal {{/nonPublicApi}}companion object {
@@ -305,6 +306,9 @@ import kotlinx.coroutines.delay
         if (requestConfig.headers[Accept].isNullOrEmpty()) {
             requestConfig.headers[Accept] = JsonMediaType
         }
+        if (requestConfig.headers["svix-req-id"].isNullOrEmpty()) {
+            requestConfig.headers["svix-req-id"] = Math.abs(Random.nextBits(32)).toString()
+        }
         val headers = requestConfig.headers
 
         if(headers[ContentType] ?: "" == "") {
@@ -334,14 +338,17 @@ import kotlinx.coroutines.delay
 
         var sleepTime = 50L
         val numRetries = 3
-        for (i in 0 until numRetries) {
-            if (response.isSuccessful && response.code < 500) {
+        var retryCount = 0
+        for (i in 0 until numRetries-1) {
+            if (response.isSuccessful || response.code < 500) {
                 break
             }
             response.close()
+            retryCount = retryCount.inc()
             delay(sleepTime)
             sleepTime = sleepTime * 2
-            response = client.newCall(request).execute()
+            var newRequest = request.newBuilder().header("svix-retry-count", retryCount.toString()).build()
+            response = client.newCall(newRequest).execute()
         }
 
         val accept = response.header(ContentType)?.substringBefore(";")?.lowercase(Locale.getDefault())
