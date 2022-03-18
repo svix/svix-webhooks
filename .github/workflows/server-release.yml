@@ -1,6 +1,9 @@
 name: Server Release
 
 on:
+  pull_request:
+    paths:
+      -'.github/workflows/server-release.yml'
   release:
     types: [published]
 
@@ -14,15 +17,19 @@ jobs:
         include:
           - target: x86_64-pc-windows-gnu
             os: windows-latest
+            extension: ".exe"
 
           - target: x86_64-unknown-linux-musl
             os: ubuntu-latest
+            extension: ""
 
           - target: x86_64-apple-darwin
             os: macos-latest
+            extension: ""
 
           - target: aarch64-apple-darwin
             os: macos-latest
+            extension: ""
     steps:
       - uses: actions/checkout@master
 
@@ -48,6 +55,6 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: svix-server-${{ matrix.target }}
-          path: server/target/${{ matrix.target }}/release/svix-server*
+          path: server/target/${{ matrix.target }}/release/svix-server#{{ matrix.extension }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
