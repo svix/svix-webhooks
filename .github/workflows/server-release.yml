@@ -14,23 +14,15 @@ jobs:
         include:
           - target: x86_64-pc-windows-gnu
             os: windows-latest
-            use-cross: false
-            archive: zip
 
           - target: x86_64-unknown-linux-musl
             os: ubuntu-latest
-            use-cross: false
-            archive: tar.gz tar.xz
 
           - target: x86_64-apple-darwin
             os: macos-latest
-            use-cross: false
-            archive: zip
 
           - target: aarch64-apple-darwin
             os: macos-latest
-            use-cross: false
-            archive: zip
     steps:
       - uses: actions/checkout@master
 
@@ -49,7 +41,6 @@ jobs:
       - name: Compile server
         uses: actions-rs/cargo@v1
         with:
-          use-cross: ${{ matrix.use-cross }}
           command: build
           args: --target ${{ matrix.target }} --release --manifest-path server/svix-server/Cargo.toml
 
