@@ -196,7 +196,7 @@ func (c *APIClient) callAPI(request *http.Request) (*http.Response, error) {
 			return resp, err
 		}
 		retryCount++
-		request.Header.Set("svix-retry-count",strconv.Itoa(retryCount))
+		request.Header.Set("svix-retry-count", strconv.Itoa(retryCount))
 		time.Sleep(sleepTime)
 		sleepTime = sleepTime * 2
 	}
@@ -345,7 +345,7 @@ func (c *APIClient) prepareRequest(
 	// Add the user agent to the request.
 	localVarRequest.Header.Add("User-Agent", c.cfg.UserAgent)
 	rand.Seed(time.Now().UnixNano())
-	localVarRequest.Header.Add("svix-req-id",strconv.FormatUint(rand.Uint64(), 10))
+	localVarRequest.Header.Add("svix-req-id", strconv.FormatUint(rand.Uint64(), 10))
 
 	if ctx != nil {
 		// add context to the request
