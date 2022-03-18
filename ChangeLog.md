@@ -3,6 +3,11 @@
 ## Next
 * 
 
+## Version 0.54.0
+* Libs: add retry and request-id headers for easier debugging.
+* Server: add more release targets (macOS and aarch64).
+* Server: make 422 errors compatible with the Svix service.
+
 ## Version 0.53.2
 * Ruby: Fix CI to not include Vendor data in package.
 
