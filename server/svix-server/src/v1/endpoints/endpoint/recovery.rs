@@ -17,7 +17,7 @@ use crate::{
         },
     },
     db::models::{application, endpoint, messagedestination},
-    error::{HttpError, Result},
+    error::{HttpError, Result, ValidationErrorItem},
     queue::{MessageTask, TaskQueueProducer},
     v1::utils::{EmptyResponse, ValidatedJson},
 };
@@ -87,10 +87,11 @@ pub(super) async fn recover_failed_webhooks(
     let timeframe = timeframe + chrono::Duration::minutes(5);
 
     if data.since < Utc::now() - timeframe {
-        return Err(HttpError::unprocessable_entity(
-            Some("value_error".to_owned()),
-            Some("Cannot recover messages more than 14 days old.".to_owned()),
-        )
+        return Err(HttpError::unprocessable_entity(vec![ValidationErrorItem {
+            loc: vec!["body".to_owned(), "since".to_owned()],
+            msg: "Cannot recover messages more than 14 days old.".to_owned(),
+            ty: "value_error".to_owned(),
+        }])
         .into());
     }
 
