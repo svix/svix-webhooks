@@ -206,7 +206,7 @@ mod tests {
         const APP_NAME_1: &str = "v1EndpointCrudTestApp1";
         const APP_NAME_2: &str = "v1EndpointCrudTestApp2";
 
-        const EP_URI_APP_1_EP_1_VER_1: &str = "http://v1Endpointcrudtestapp1ep1ver1.test";
+        const EP_URI_APP_1_EP_1_VER_1: &str = "http://v1EndpointCrudTestApp1Ep1Ver1.test";
         const EP_URI_APP_1_EP_1_VER_2: &str = "http://v1EndpointCrudTestApp1Ep1Ver2.test";
         const EP_URI_APP_1_EP_2: &str = "http://v1EndpointCrudTestApp1Ep2.test";
         const EP_URI_APP_2_EP_1: &str = "http://v1EndpointCrudTestApp2Ep1.test";

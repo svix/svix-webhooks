@@ -54,11 +54,11 @@ pub fn validate_channels_msg(
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Deserialize, Validate, ModelIn)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize, Validate, ModelIn)]
 #[serde(rename_all = "camelCase")]
 struct MessageIn {
     #[validate]
-    #[serde(rename = "eventId")]
+    #[serde(rename = "eventId", skip_serializing_if = "Option::is_none")]
     uid: Option<MessageUid>,
     #[validate]
     event_type: EventTypeName,
@@ -66,6 +66,7 @@ struct MessageIn {
 
     #[validate(custom = "validate_channels_msg")]
     #[validate]
+    #[serde(skip_serializing_if = "Option::is_none")]
     channels: Option<EventChannelSet>,
 }
 
@@ -82,7 +83,7 @@ impl ModelIn for MessageIn {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, ModelOut)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, ModelOut)]
 #[serde(rename_all = "camelCase")]
 struct MessageOut {
     #[serde(rename = "eventId")]
@@ -262,4 +263,94 @@ pub fn router() -> Router {
             .route("/msg/", post(create_message))
             .route("/msg/:msg_id/", get(get_message)),
     )
+}
+
+#[cfg(test)]
+pub(crate) mod tests {
+    use anyhow::Result;
+    use reqwest::StatusCode;
+    use serde::Serialize;
+
+    use super::{MessageIn, MessageOut};
+    use crate::{
+        core::types::EventTypeName,
+        test_util::start_svix_server,
+        v1::{
+            endpoints::{
+                application::tests::create_test_app, endpoint::tests::create_test_endpoint,
+            },
+            utils::ListResponse,
+        },
+    };
+
+    fn message_in<T: Serialize>(event_type: &str, payload: T) -> Result<MessageIn> {
+        Ok(MessageIn {
+            event_type: EventTypeName(event_type.to_owned()),
+            payload: serde_json::to_value(payload).unwrap(),
+
+            channels: None,
+            uid: None,
+        })
+    }
+
+    #[tokio::test]
+    #[cfg_attr(not(feature = "integration_testing"), ignore)]
+    async fn test_message_create_read_list() {
+        let (client, _jh) = start_svix_server();
+
+        let app_id = create_test_app(&client, "v1MessageCRTestApp")
+            .await
+            .unwrap();
+
+        let _endp_id = create_test_endpoint(&client, &app_id, "http://localhost:2/bad/url/")
+            .await
+            .unwrap();
+
+        // CREATE
+        let message_1: MessageOut = client
+            .post(
+                &format!("api/v1/app/{}/msg/", &app_id),
+                message_in(&app_id, serde_json::json!({"test": "value"})).unwrap(),
+                StatusCode::ACCEPTED,
+            )
+            .await
+            .unwrap();
+        let message_2: MessageOut = client
+            .post(
+                &format!("api/v1/app/{}/msg/", &app_id),
+                message_in(&app_id, serde_json::json!({"test": "value2"})).unwrap(),
+                StatusCode::ACCEPTED,
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(
+            client
+                .get::<MessageOut>(
+                    &format!("api/v1/app/{}/msg/{}", &app_id, &message_1.id),
+                    StatusCode::OK
+                )
+                .await
+                .unwrap(),
+            message_1
+        );
+        assert_eq!(
+            client
+                .get::<MessageOut>(
+                    &format!("api/v1/app/{}/msg/{}", &app_id, &message_2.id),
+                    StatusCode::OK
+                )
+                .await
+                .unwrap(),
+            message_2
+        );
+
+        let list: ListResponse<MessageOut> = client
+            .get(&format!("api/v1/app/{}/msg/", &app_id), StatusCode::OK)
+            .await
+            .unwrap();
+        assert_eq!(list.data.len(), 2);
+        assert!(list.data.contains(&message_1));
+        assert!(list.data.contains(&message_2));
+    }
 }

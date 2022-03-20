@@ -71,7 +71,7 @@ fn validation_errors(
 ) -> Vec<ValidationErrorItem> {
     err.into_errors()
         .into_iter()
-        .map(|(k, v)| {
+        .flat_map(|(k, v)| {
             // Add the next field to the location
             let mut loc = acc_path.clone();
             loc.push(k.to_owned());
@@ -99,18 +99,16 @@ fn validation_errors(
                 // [`std::collections::BTreeMap`] of [`validator::ValidationErrors`] to search
                 validator::ValidationErrorsKind::List(map) => map
                     .into_iter()
-                    .map(|(k, v)| {
+                    .flat_map(|(k, v)| {
                         // Add the list index to the location
                         let mut loc = loc.clone();
                         loc.push(format!("[{}]", k));
 
                         validation_errors(loc, *v)
                     })
-                    .flatten()
                     .collect(),
             }
         })
-        .flatten()
         .collect()
 }
 
