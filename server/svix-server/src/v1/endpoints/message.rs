@@ -273,8 +273,8 @@ pub(crate) mod tests {
 
     use super::{MessageIn, MessageOut};
     use crate::{
-        core::types::{ApplicationId, EventTypeName, MessageId},
-        test_util::{start_svix_server, TestClient},
+        core::types::EventTypeName,
+        test_util::start_svix_server,
         v1::{
             endpoints::{
                 application::tests::create_test_app, endpoint::tests::create_test_endpoint,
@@ -282,22 +282,6 @@ pub(crate) mod tests {
             utils::ListResponse,
         },
     };
-
-    pub(crate) async fn create_test_message<T: Serialize>(
-        client: &TestClient,
-        app_id: &ApplicationId,
-        event_type: &str,
-        payload: T,
-    ) -> Result<MessageId> {
-        client
-            .post(
-                &format!("api/v1/app/{}/msg/", &app_id),
-                message_in(event_type, payload)?,
-                StatusCode::CREATED,
-            )
-            .await
-            .map(|msg: MessageOut| msg.id)
-    }
 
     fn message_in<T: Serialize>(event_type: &str, payload: T) -> Result<MessageIn> {
         Ok(MessageIn {
