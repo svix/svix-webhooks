@@ -283,7 +283,7 @@ pub(crate) mod tests {
         app_id: &ApplicationId,
         url: &str,
     ) -> Result<EndpointId> {
-        post_endpoint_default(client, &app_id, url)
+        post_endpoint_default(client, app_id, url)
             .await
             .map(|ep| ep.id)
     }

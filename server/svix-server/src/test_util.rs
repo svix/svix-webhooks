@@ -1,16 +1,10 @@
 use std::{collections::HashMap, net::TcpListener};
 
 use anyhow::{Context, Result};
-use axum::{
-    async_trait,
-    extract::{FromRequest, RequestParts},
-    headers::HeaderMap,
-    routing::post,
-    Json, Router, Server,
-};
+use axum::{headers::HeaderMap, routing::post, Json, Router, Server};
 use reqwest::{Client, RequestBuilder, StatusCode};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
-use tokio::sync::{mpsc, oneshot};
+use tokio::sync::mpsc;
 
 use crate::core::security::test_util::generate_token_random_org;
 
