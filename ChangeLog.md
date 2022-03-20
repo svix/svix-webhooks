@@ -3,6 +3,9 @@
 ## Next
 * 
 
+## Version 0.54.2
+* Server: fix release CI round 2
+
 ## Version 0.54.1
 * Server: fix release CI
 
