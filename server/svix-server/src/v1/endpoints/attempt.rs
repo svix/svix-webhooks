@@ -154,11 +154,7 @@ async fn get_messageattempt(
 async fn resend_webhook(
     Extension(ref db): Extension<DatabaseConnection>,
     Extension(queue_tx): Extension<TaskQueueProducer>,
-    Path((_app_id, msg_id, endpoint_id)): Path<(
-        ApplicationIdOrUid,
-        MessageIdOrUid,
-        EndpointIdOrUid,
-    )>,
+    Path((_app_id, msg_id, endp_id)): Path<(ApplicationIdOrUid, MessageIdOrUid, EndpointIdOrUid)>,
     AuthenticatedApplication {
         permissions: _,
         app,
@@ -168,7 +164,7 @@ async fn resend_webhook(
         .one(db)
         .await?
         .ok_or_else(|| HttpError::not_found(None, None))?;
-    let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endpoint_id)
+    let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
         .one(db)
         .await?
         .ok_or_else(|| HttpError::not_found(None, None))?;
@@ -204,8 +200,8 @@ pub fn router() -> Router {
                     .route("/attempt/", get(list_messageattempts))
                     .route("/attempt/:attempt_id/", get(get_messageattempt))
                     .route("/endpoint/", get(api_not_implemented))
-                    .route("/endpoint/:endpoint_id/resend/", post(resend_webhook))
-                    .route("/endpoint/:endpoint_id/attempt/", get(api_not_implemented)),
+                    .route("/endpoint/:endp_id/resend/", post(resend_webhook))
+                    .route("/endpoint/:endp_id/attempt/", get(api_not_implemented)),
             )
             .route("endpoint/:endp_id/msg/", get(api_not_implemented))
             .route("attempt/endpoint/:endp_id/", get(api_not_implemented))
