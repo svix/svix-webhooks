@@ -7,7 +7,7 @@ use crate::{
         types::{
             ApplicationIdOrUid, BaseId, EndpointId, EndpointIdOrUid, EventChannel, EventChannelSet,
             EventTypeName, MessageAttemptId, MessageAttemptTriggerType, MessageId, MessageIdOrUid,
-            MessageStatus,
+            MessageStatus, MessageUid,
         },
     },
     db::models::{endpoint, message, messagedestination},
@@ -73,15 +73,33 @@ impl From<messageattempt::Model> for MessageAttemptOut {
 struct AttemptedMessageOut {
     event_type: EventTypeName,
     #[serde(skip_serializing_if = "Option::is_none")]
-    event_id: Option<MessageId>,
+    event_id: Option<MessageUid>,
     #[serde(skip_serializing_if = "Option::is_none")]
     channels: Option<EventChannelSet>,
     payload: serde_json::Value,
     id: MessageId,
-    timestamp: DateTime<Utc>,
+    timestamp: DateTimeWithTimeZone,
     status: MessageStatus,
     #[serde(skip_serializing_if = "Option::is_none")]
-    next_attempt: Option<DateTime<Utc>>,
+    next_attempt: Option<DateTimeWithTimeZone>,
+}
+
+impl AttemptedMessageOut {
+    pub fn from_message_and_destination(
+        message: message::Model,
+        destination: messagedestination::Model,
+    ) -> Self {
+        Self {
+            event_type: message.event_type,
+            event_id: message.uid,
+            channels: message.channels,
+            payload: message.payload,
+            id: message.id,
+            timestamp: message.created_at,
+            status: destination.status,
+            next_attempt: destination.next_attempt,
+        }
+    }
 }
 
 #[derive(Debug, Deserialize, Validate)]
