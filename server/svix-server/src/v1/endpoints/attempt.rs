@@ -5,13 +5,13 @@ use crate::{
     core::{
         security::AuthenticatedApplication,
         types::{
-            ApplicationIdOrUid, BaseId, EndpointId, EndpointIdOrUid, EventChannel, EventChannelSet,
-            EventTypeName, MessageAttemptId, MessageAttemptTriggerType, MessageId, MessageIdOrUid,
-            MessageStatus, MessageUid,
+            ApplicationId, ApplicationIdOrUid, BaseId, EndpointId, EndpointIdOrUid, EventChannel,
+            EventChannelSet, EventTypeName, MessageAttemptId, MessageAttemptTriggerType, MessageId,
+            MessageIdOrUid, MessageStatus, MessageUid,
         },
     },
     db::models::{endpoint, message, messagedestination},
-    error::{HttpError, Result},
+    error::{Error, HttpError},
     queue::{MessageTask, TaskQueueProducer},
     v1::utils::{
         api_not_implemented, EmptyResponse, ListResponse, MessageListFetchOptions, ModelOut,
@@ -26,8 +26,7 @@ use axum::{
 use chrono::{DateTime, Utc};
 
 use hyper::StatusCode;
-use sea_orm::{entity::prelude::*, QueryOrder};
-use sea_orm::{DatabaseConnection, QuerySelect};
+use sea_orm::{entity::prelude::*, DatabaseConnection, FromQueryResult, QueryOrder, QuerySelect};
 use serde::{Deserialize, Serialize};
 
 use svix_server_derive::ModelOut;
@@ -66,10 +65,13 @@ impl From<messageattempt::Model> for MessageAttemptOut {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, ModelOut)]
-#[serde(rename_all = "camelCase")]
 // TODO: Mostly similar to `v1::endpoints::message::MessageOut, is there some way to reduce
 // duplication cleanly?
+
+/// A model containing information on a given message plus additional fields on the last attempt for
+/// that message.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, ModelOut, FromQueryResult)]
+#[serde(rename_all = "camelCase")]
 struct AttemptedMessageOut {
     event_type: EventTypeName,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -102,6 +104,62 @@ impl AttemptedMessageOut {
     }
 }
 
+/// Additional parameters (besides pagination) in the query string for the "List Attempted Messages"
+/// enpoint.
+#[derive(Debug, Deserialize, Validate)]
+pub struct ListAttemptedMessagesQueryParameters {
+    #[validate]
+    channel: Option<EventChannel>,
+    status: Option<MessageStatus>,
+}
+
+/// GET /api/v1/app/:app_id/enpoint/:endp_id/msg/
+/// Fetches a list of [`AttemptedMessageOut`]s associated with a given app and endpoint.
+async fn list_attempted_messages(
+    Extension(ref db): Extension<DatabaseConnection>,
+    pagination: ValidatedQuery<Pagination<MessageId>>,
+    ValidatedQuery(ListAttemptedMessagesQueryParameters { channel, status }): ValidatedQuery<
+        ListAttemptedMessagesQueryParameters,
+    >,
+    Path((_app_id, endp_id)): Path<(ApplicationId, EndpointId)>,
+    AuthenticatedApplication {
+        permissions: _,
+        app: _,
+    }: AuthenticatedApplication,
+) -> Result<Json<ListResponse<AttemptedMessageOut>>, Error> {
+    let limit = pagination.limit;
+    let iterator = pagination.iterator.clone();
+
+    let mut msg_and_dest = messagedestination::Entity::secure_find_by_endpoint(endp_id)
+        .order_by_desc(messagedestination::Column::MsgId)
+        .limit(limit + 1)
+        .join(
+            sea_orm::JoinType::Join,
+            messagedestination::Entity::has_one(message::Entity).into(),
+        );
+
+    if let Some(iterator) = iterator {
+        msg_and_dest = msg_and_dest.filter(messagedestination::Column::MsgId.gt(iterator));
+    }
+
+    if let Some(channel) = channel {
+        msg_and_dest = msg_and_dest.filter(message::Column::Channels.contains(&channel));
+    }
+
+    if let Some(status) = status {
+        msg_and_dest = msg_and_dest.filter(messagedestination::Column::Status.eq(status));
+    }
+
+    let msg_and_dest = msg_and_dest
+        .group_by(message::Column::Id)
+        .into_model::<AttemptedMessageOut>();
+
+    Ok(Json(AttemptedMessageOut::list_response(
+        msg_and_dest.all(db).await?,
+        limit as usize,
+    )))
+}
+
 #[derive(Debug, Deserialize, Validate)]
 pub struct AttemptListFetchOptions {
     pub endpoint_id: Option<EndpointIdOrUid>,
@@ -125,7 +183,7 @@ async fn list_messageattempts(
         permissions: _,
         app,
     }: AuthenticatedApplication,
-) -> Result<Json<ListResponse<MessageAttemptOut>>> {
+) -> Result<Json<ListResponse<MessageAttemptOut>>, Error> {
     let limit = pagination.limit;
     let iterator = pagination
         .iterator
@@ -174,7 +232,7 @@ async fn get_messageattempt(
         permissions: _,
         app,
     }: AuthenticatedApplication,
-) -> Result<Json<MessageAttemptOut>> {
+) -> Result<Json<MessageAttemptOut>, Error> {
     let msg = message::Entity::secure_find_by_id_or_uid(app.id, msg_id)
         .one(db)
         .await?
@@ -196,7 +254,7 @@ async fn resend_webhook(
         permissions: _,
         app,
     }: AuthenticatedApplication,
-) -> Result<(StatusCode, Json<EmptyResponse>)> {
+) -> Result<(StatusCode, Json<EmptyResponse>), Error> {
     let msg = message::Entity::secure_find_by_id_or_uid(app.id.clone(), msg_id)
         .one(db)
         .await?
