@@ -5,8 +5,9 @@ use crate::{
     core::{
         security::AuthenticatedApplication,
         types::{
-            ApplicationIdOrUid, BaseId, EndpointId, EndpointIdOrUid, EventChannel,
-            MessageAttemptId, MessageAttemptTriggerType, MessageIdOrUid, MessageStatus,
+            ApplicationIdOrUid, BaseId, EndpointId, EndpointIdOrUid, EventChannel, EventChannelSet,
+            EventTypeName, MessageAttemptId, MessageAttemptTriggerType, MessageId, MessageIdOrUid,
+            MessageStatus,
         },
     },
     db::models::{endpoint, message, messagedestination},
@@ -63,6 +64,24 @@ impl From<messageattempt::Model> for MessageAttemptOut {
             created_at: model.created_at.into(),
         }
     }
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, ModelOut)]
+#[serde(rename_all = "camelCase")]
+// TODO: Mostly similar to `v1::endpoints::message::MessageOut, is there some way to reduce
+// duplication cleanly?
+struct AttemptedMessageOut {
+    event_type: EventTypeName,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    event_id: Option<MessageId>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    channels: Option<EventChannelSet>,
+    payload: serde_json::Value,
+    id: MessageId,
+    timestamp: DateTime<Utc>,
+    status: MessageStatus,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    next_attempt: Option<DateTime<Utc>>,
 }
 
 #[derive(Debug, Deserialize, Validate)]
