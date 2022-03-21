@@ -196,13 +196,19 @@ async fn resend_webhook(
 
 pub fn router() -> Router {
     Router::new().nest(
-        "/app/:app_id/msg/:msg_id",
+        "/app/:app_id/",
         Router::new()
-            .route("/attempt/", get(list_messageattempts))
-            .route("/attempt/:attempt_id/", get(get_messageattempt))
-            .route("/endpoint/", get(api_not_implemented))
-            .route("/endpoint/:endpoint_id/resend/", post(resend_webhook))
-            .route("/endpoint/:endpoint_id/attempt/", get(api_not_implemented)),
-        // FIXME: Missing the one for list attempted messages
+            .nest(
+                "msg/:msg_id",
+                Router::new()
+                    .route("/attempt/", get(list_messageattempts))
+                    .route("/attempt/:attempt_id/", get(get_messageattempt))
+                    .route("/endpoint/", get(api_not_implemented))
+                    .route("/endpoint/:endpoint_id/resend/", post(resend_webhook))
+                    .route("/endpoint/:endpoint_id/attempt/", get(api_not_implemented)),
+            )
+            .route("endpoint/:endp_id/msg/", get(api_not_implemented))
+            .route("attempt/endpoint/:endp_id/", get(api_not_implemented))
+            .route("attempt/msg/:msg_id/", get(api_not_implemented)),
     )
 }
