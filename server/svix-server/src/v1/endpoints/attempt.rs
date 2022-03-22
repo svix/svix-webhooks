@@ -11,7 +11,7 @@ use crate::{
         },
     },
     db::models::{endpoint, message, messagedestination},
-    error::{Error, HttpError},
+    error::{HttpError, Result},
     queue::{MessageTask, TaskQueueProducer},
     v1::utils::{
         api_not_implemented, EmptyResponse, ListResponse, MessageListFetchOptions, ModelOut,
@@ -126,7 +126,7 @@ async fn list_attempted_messages(
         permissions: _,
         app: _,
     }: AuthenticatedApplication,
-) -> Result<Json<ListResponse<AttemptedMessageOut>>, Error> {
+) -> Result<Json<ListResponse<AttemptedMessageOut>>> {
     let limit = pagination.limit;
     let iterator = pagination.iterator.clone();
 
@@ -183,7 +183,7 @@ async fn list_messageattempts(
         permissions: _,
         app,
     }: AuthenticatedApplication,
-) -> Result<Json<ListResponse<MessageAttemptOut>>, Error> {
+) -> Result<Json<ListResponse<MessageAttemptOut>>> {
     let limit = pagination.limit;
     let iterator = pagination
         .iterator
@@ -232,7 +232,7 @@ async fn get_messageattempt(
         permissions: _,
         app,
     }: AuthenticatedApplication,
-) -> Result<Json<MessageAttemptOut>, Error> {
+) -> Result<Json<MessageAttemptOut>> {
     let msg = message::Entity::secure_find_by_id_or_uid(app.id, msg_id)
         .one(db)
         .await?
@@ -254,7 +254,7 @@ async fn resend_webhook(
         permissions: _,
         app,
     }: AuthenticatedApplication,
-) -> Result<(StatusCode, Json<EmptyResponse>), Error> {
+) -> Result<(StatusCode, Json<EmptyResponse>)> {
     let msg = message::Entity::secure_find_by_id_or_uid(app.id.clone(), msg_id)
         .one(db)
         .await?
