@@ -82,7 +82,8 @@ struct AttemptedMessageOut {
     channels: Option<EventChannelSet>,
     payload: serde_json::Value,
     id: MessageId,
-    timestamp: DateTimeWithTimeZone,
+    #[serde(rename = "timestamp")]
+    created_at: DateTimeWithTimeZone,
     status: MessageStatus,
     #[serde(skip_serializing_if = "Option::is_none")]
     next_attempt: Option<DateTimeWithTimeZone>,
@@ -116,9 +117,18 @@ async fn list_attempted_messages(
     let mut msg_and_dest = messagedestination::Entity::secure_find_by_endpoint(endp_id)
         .order_by_desc(messagedestination::Column::MsgId)
         .limit(limit + 1)
+        .column_as(message::Column::Id, "id")
+        .column_as(message::Column::EventType, "event_type")
+        .column_as(message::Column::Uid, "event_id")
+        .column_as(message::Column::Channels, "channels")
+        .column_as(message::Column::Payload, "payload")
+        .column_as(message::Column::CreatedAt, "created_at")
         .join(
-            sea_orm::JoinType::Join,
-            messagedestination::Entity::has_one(message::Entity).into(),
+            sea_orm::JoinType::InnerJoin,
+            messagedestination::Entity::belongs_to(message::Entity)
+                .from(messagedestination::Column::MsgId)
+                .to(message::Column::Id)
+                .into(),
         );
 
     if let Some(iterator) = iterator {
@@ -135,10 +145,11 @@ async fn list_attempted_messages(
 
     let msg_and_dest = msg_and_dest
         .group_by(message::Column::Id)
+        .group_by(messagedestination::Column::Id)
         .into_model::<AttemptedMessageOut>();
 
     Ok(Json(AttemptedMessageOut::list_response(
-        msg_and_dest.all(db).await?,
+        msg_and_dest.all(db).await.unwrap(),
         limit as usize,
     )))
 }
@@ -281,8 +292,76 @@ pub fn router() -> Router {
                     .route("/endpoint/:endp_id/resend/", post(resend_webhook))
                     .route("/endpoint/:endp_id/attempt/", get(api_not_implemented)),
             )
-            .route("endpoint/:endp_id/msg/", get(api_not_implemented))
+            .route("endpoint/:endp_id/msg/", get(list_attempted_messages))
             .route("attempt/endpoint/:endp_id/", get(api_not_implemented))
             .route("attempt/msg/:msg_id/", get(api_not_implemented)),
     )
+}
+
+#[cfg(test)]
+mod tests {
+    use reqwest::StatusCode;
+
+    use super::AttemptedMessageOut;
+    use crate::{
+        test_util::start_svix_server,
+        v1::{
+            endpoints::{
+                application::tests::create_test_app, endpoint::tests::create_test_endpoint,
+                message::tests::create_test_message,
+            },
+            utils::ListResponse,
+        },
+    };
+
+    #[tokio::test]
+    async fn test_list_attempted_messages() {
+        let (client, _jh) = start_svix_server();
+
+        let app_id = create_test_app(&client, "v1AttemptListAttemptedMessagesTestApp")
+            .await
+            .unwrap();
+
+        let endp_id_1 = create_test_endpoint(&client, &app_id, "http://localhost:1/bad/url/")
+            .await
+            .unwrap();
+        let endp_id_2 = create_test_endpoint(&client, &app_id, "http://localhost:2/bad/url/")
+            .await
+            .unwrap();
+
+        let msg_1 = create_test_message(&client, &app_id, serde_json::json!({"test": "data1"}))
+            .await
+            .unwrap();
+        let msg_2 = create_test_message(&client, &app_id, serde_json::json!({"test": "data2"}))
+            .await
+            .unwrap();
+        let msg_3 = create_test_message(&client, &app_id, serde_json::json!({"test": "data3"}))
+            .await
+            .unwrap();
+
+        let list_1: ListResponse<AttemptedMessageOut> = client
+            .get(
+                &format!("api/v1/app/{}/endpoint/{}/msg/", app_id, endp_id_1),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
+        let list_2: ListResponse<AttemptedMessageOut> = client
+            .get(
+                &format!("api/v1/app/{}/endpoint/{}/msg/", app_id, endp_id_2),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
+
+        for list in [list_1, list_2] {
+            assert_eq!(list.data.len(), 3);
+
+            let message_ids: Vec<_> = list.data.into_iter().map(|amo| amo.id).collect();
+
+            assert!(message_ids.contains(&msg_1));
+            assert!(message_ids.contains(&msg_2));
+            assert!(message_ids.contains(&msg_3));
+        }
+    }
 }
