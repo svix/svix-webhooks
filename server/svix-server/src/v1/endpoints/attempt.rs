@@ -113,7 +113,6 @@ pub struct ListAttemptedMessagesQueryParameters {
     status: Option<MessageStatus>,
 }
 
-/// GET /api/v1/app/:app_id/enpoint/:endp_id/msg/
 /// Fetches a list of [`AttemptedMessageOut`]s associated with a given app and endpoint.
 async fn list_attempted_messages(
     Extension(ref db): Extension<DatabaseConnection>,
