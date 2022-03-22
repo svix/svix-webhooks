@@ -149,10 +149,6 @@ async fn list_attempted_messages(
         dests_and_msgs = dests_and_msgs.filter(messagedestination::Column::Status.eq(status));
     }
 
-    let dests_and_msgs = dests_and_msgs
-        .group_by(message::Column::Id)
-        .group_by(messagedestination::Column::Id);
-
     Ok(Json(AttemptedMessageOut::list_response(
         dests_and_msgs
             .all(db)
