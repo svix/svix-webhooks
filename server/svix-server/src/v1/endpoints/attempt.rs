@@ -65,8 +65,10 @@ impl From<messageattempt::Model> for MessageAttemptOut {
     }
 }
 
-// TODO: Mostly similar to `v1::endpoints::message::MessageOut, is there some way to reduce
-// duplication cleanly?
+// FIXME: Contains all members of a [`v1::endpoints::message::MessageOut`], so find a way to
+// #[serde(flatten)]` a [`super::message::MessageOut`] in cleanly. An attempt was made, but it would
+// require a custom [`ModelOut`] impl and another impl of [`sea_orm::TryGettable`] on the
+// [`super::message::MessageOut`] type in order for [`FromQueryResult`] to work.
 
 /// A model containing information on a given message plus additional fields on the last attempt for
 /// that message.
