@@ -11,7 +11,7 @@ use crate::{
         },
     },
     db::models::{endpoint, message, messagedestination},
-    error::{HttpError, Result},
+    error::{Error, HttpError, Result},
     queue::{MessageTask, TaskQueueProducer},
     v1::utils::{
         api_not_implemented, EmptyResponse, ListResponse, MessageListFetchOptions, ModelOut,
@@ -89,6 +89,24 @@ struct AttemptedMessageOut {
     next_attempt: Option<DateTimeWithTimeZone>,
 }
 
+impl AttemptedMessageOut {
+    pub fn from_dest_and_msg(
+        dest: messagedestination::Model,
+        msg: message::Model,
+    ) -> AttemptedMessageOut {
+        AttemptedMessageOut {
+            event_type: msg.event_type,
+            event_id: msg.uid,
+            channels: msg.channels,
+            payload: msg.payload,
+            id: msg.id,
+            created_at: msg.created_at,
+            status: dest.status,
+            next_attempt: dest.next_attempt,
+        }
+    }
+}
+
 /// Additional parameters (besides pagination) in the query string for the "List Attempted Messages"
 /// enpoint.
 #[derive(Debug, Deserialize, Validate)]
@@ -114,42 +132,45 @@ async fn list_attempted_messages(
     let limit = pagination.limit;
     let iterator = pagination.iterator.take();
 
-    let mut msg_and_dest = messagedestination::Entity::secure_find_by_endpoint(endp_id)
-        .order_by_desc(messagedestination::Column::MsgId)
-        .limit(limit + 1)
-        .column_as(message::Column::Id, "id")
-        .column_as(message::Column::EventType, "event_type")
-        .column_as(message::Column::Uid, "event_id")
-        .column_as(message::Column::Channels, "channels")
-        .column_as(message::Column::Payload, "payload")
-        .column_as(message::Column::CreatedAt, "created_at")
-        .join(
-            sea_orm::JoinType::InnerJoin,
-            messagedestination::Entity::belongs_to(message::Entity)
-                .from(messagedestination::Column::MsgId)
-                .to(message::Column::Id)
-                .into(),
-        );
+    let mut dests_and_msgs = messagedestination::Entity::secure_find_by_endpoint(endp_id)
+        .find_also_related(message::Entity)
+        .order_by_desc(messagedestination::Column::CreatedAt)
+        .limit(limit + 1);
 
     if let Some(iterator) = iterator {
-        msg_and_dest = msg_and_dest.filter(messagedestination::Column::MsgId.lt(iterator));
+        dests_and_msgs = dests_and_msgs.filter(messagedestination::Column::MsgId.lt(iterator));
     }
 
     if let Some(channel) = channel {
-        msg_and_dest = msg_and_dest.filter(message::Column::Channels.contains(&channel));
+        dests_and_msgs = dests_and_msgs.filter(message::Column::Channels.contains(&channel));
     }
 
     if let Some(status) = status {
-        msg_and_dest = msg_and_dest.filter(messagedestination::Column::Status.eq(status));
+        dests_and_msgs = dests_and_msgs.filter(messagedestination::Column::Status.eq(status));
     }
 
-    let msg_and_dest = msg_and_dest
+    let dests_and_msgs = dests_and_msgs
         .group_by(message::Column::Id)
-        .group_by(messagedestination::Column::Id)
-        .into_model::<AttemptedMessageOut>();
+        .group_by(messagedestination::Column::Id);
 
     Ok(Json(AttemptedMessageOut::list_response(
-        msg_and_dest.all(db).await.unwrap(),
+        dests_and_msgs
+            .all(db)
+            .await?
+            .into_iter()
+            .map(
+                |(dest, msg): (messagedestination::Model, Option<message::Model>)| {
+                    let msg = msg.ok_or_else(|| {
+                        tracing::error!(
+                            "messagedestination::Enitity has no associated message::Entity"
+                        );
+                        Error::Database("Malformed data".to_owned())
+                    })?;
+
+                    Ok(AttemptedMessageOut::from_dest_and_msg(dest, msg))
+                },
+            )
+            .collect::<Result<_>>()?,
         limit as usize,
     )))
 }
