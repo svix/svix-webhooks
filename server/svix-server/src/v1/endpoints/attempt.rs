@@ -332,6 +332,7 @@ mod tests {
     };
 
     #[tokio::test]
+    #[cfg_attr(not(feature = "integration_testing"), ignore)]
     async fn test_list_attempted_messages() {
         let (client, _jh) = start_svix_server();
 
