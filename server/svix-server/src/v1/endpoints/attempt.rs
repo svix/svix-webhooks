@@ -88,24 +88,6 @@ struct AttemptedMessageOut {
     next_attempt: Option<DateTimeWithTimeZone>,
 }
 
-impl AttemptedMessageOut {
-    pub fn from_message_and_destination(
-        message: message::Model,
-        destination: messagedestination::Model,
-    ) -> Self {
-        Self {
-            event_type: message.event_type,
-            event_id: message.uid,
-            channels: message.channels,
-            payload: message.payload,
-            id: message.id,
-            timestamp: message.created_at,
-            status: destination.status,
-            next_attempt: destination.next_attempt,
-        }
-    }
-}
-
 /// Additional parameters (besides pagination) in the query string for the "List Attempted Messages"
 /// enpoint.
 #[derive(Debug, Deserialize, Validate)]
