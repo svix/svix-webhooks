@@ -378,8 +378,12 @@ mod tests {
         for list in [list_1, list_2] {
             assert_eq!(list.data.len(), 3);
 
-            let message_ids: Vec<_> = list.data.into_iter().map(|amo| amo.id).collect();
+            // Assert order
+            assert_eq!(list.data[0].payload, serde_json::json!({"test": "data3"}));
+            assert_eq!(list.data[1].payload, serde_json::json!({"test": "data2"}));
+            assert_eq!(list.data[2].payload, serde_json::json!({"test": "data1"}));
 
+            let message_ids: Vec<_> = list.data.into_iter().map(|amo| amo.id).collect();
             assert!(message_ids.contains(&msg_1));
             assert!(message_ids.contains(&msg_2));
             assert!(message_ids.contains(&msg_3));
