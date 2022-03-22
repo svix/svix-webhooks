@@ -4,7 +4,7 @@ use std::{
 };
 
 use chrono::{DateTime, FixedOffset};
-use sea_orm::{ConnectionTrait, DatabaseConnection, DatabaseTransaction};
+use sea_orm::{DatabaseConnection, DatabaseTransaction, TransactionTrait};
 use serde::{Deserialize, Serialize};
 
 use crate::{
