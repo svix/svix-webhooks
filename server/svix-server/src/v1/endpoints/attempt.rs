@@ -118,7 +118,7 @@ pub struct ListAttemptedMessagesQueryParameters {
 /// Fetches a list of [`AttemptedMessageOut`]s associated with a given app and endpoint.
 async fn list_attempted_messages(
     Extension(ref db): Extension<DatabaseConnection>,
-    pagination: ValidatedQuery<Pagination<MessageId>>,
+    ValidatedQuery(mut pagination): ValidatedQuery<Pagination<MessageId>>,
     ValidatedQuery(ListAttemptedMessagesQueryParameters { channel, status }): ValidatedQuery<
         ListAttemptedMessagesQueryParameters,
     >,
@@ -129,7 +129,7 @@ async fn list_attempted_messages(
     }: AuthenticatedApplication,
 ) -> Result<Json<ListResponse<AttemptedMessageOut>>> {
     let limit = pagination.limit;
-    let iterator = pagination.iterator.clone();
+    let iterator = pagination.iterator.take();
 
     let mut msg_and_dest = messagedestination::Entity::secure_find_by_endpoint(endp_id)
         .order_by_desc(messagedestination::Column::MsgId)
