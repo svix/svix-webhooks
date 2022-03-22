@@ -138,7 +138,7 @@ async fn list_attempted_messages(
         );
 
     if let Some(iterator) = iterator {
-        msg_and_dest = msg_and_dest.filter(messagedestination::Column::MsgId.gt(iterator));
+        msg_and_dest = msg_and_dest.filter(messagedestination::Column::MsgId.lt(iterator));
     }
 
     if let Some(channel) = channel {
