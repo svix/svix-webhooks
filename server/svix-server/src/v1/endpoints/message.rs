@@ -32,7 +32,7 @@ use sea_orm::{
     sea_query::{Expr, IntoCondition},
     ActiveValue::Set,
 };
-use sea_orm::{ActiveModelTrait, ConnectionTrait, DatabaseConnection, QuerySelect};
+use sea_orm::{ActiveModelTrait, DatabaseConnection, QuerySelect, TransactionTrait};
 use serde::{Deserialize, Serialize};
 
 use svix_server_derive::{ModelIn, ModelOut};
