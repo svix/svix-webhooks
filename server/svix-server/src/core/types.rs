@@ -146,19 +146,19 @@ pub trait BaseId: Deref<Target = String> {
     }
 
     fn generate_(dt: Option<DateTime<Utc>>, payload: Option<&[u8]>) -> String {
-        let ksuid = Ksuid::new(dt, payload);
+        let ksuid = KsuidMs::new(dt, payload);
         format!("{}{}", Self::PREFIX, ksuid.to_string())
     }
 
     fn new(dt: Option<DateTime<Utc>>, payload: Option<&[u8]>) -> Self::Output;
 
     fn start_id(start: DateTime<Utc>) -> Self::Output {
-        let buf = [0u8; Ksuid::PAYLOAD_BYTES];
+        let buf = [0u8; KsuidMs::PAYLOAD_BYTES];
         Self::new(Some(start), Some(&buf[..]))
     }
 
     fn end_id(start: DateTime<Utc>) -> Self::Output {
-        let buf = [0xFFu8; Ksuid::PAYLOAD_BYTES];
+        let buf = [0xFFu8; KsuidMs::PAYLOAD_BYTES];
         Self::new(Some(start), Some(&buf[..]))
     }
 }
