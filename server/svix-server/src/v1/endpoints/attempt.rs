@@ -5,16 +5,19 @@ use crate::{
     core::{
         security::AuthenticatedApplication,
         types::{
-            ApplicationIdOrUid, BaseId, EndpointId, EndpointIdOrUid, EventChannel,
-            MessageAttemptId, MessageAttemptTriggerType, MessageIdOrUid, MessageStatus,
+            ApplicationId, ApplicationIdOrUid, BaseId, EndpointId, EndpointIdOrUid, EventChannel,
+            MessageAttemptId, MessageAttemptTriggerType, MessageId, MessageIdOrUid, MessageStatus,
         },
     },
     db::models::{endpoint, message, messagedestination},
-    error::{HttpError, Result},
+    error::{Error, HttpError, Result},
     queue::{MessageTask, TaskQueueProducer},
-    v1::utils::{
-        api_not_implemented, EmptyResponse, ListResponse, MessageListFetchOptions, ModelOut,
-        ValidatedQuery,
+    v1::{
+        endpoints::message::MessageOut,
+        utils::{
+            api_not_implemented, EmptyResponse, ListResponse, MessageListFetchOptions, ModelOut,
+            ValidatedQuery,
+        },
     },
 };
 use axum::{
@@ -25,8 +28,7 @@ use axum::{
 use chrono::{DateTime, Utc};
 
 use hyper::StatusCode;
-use sea_orm::{entity::prelude::*, QueryOrder};
-use sea_orm::{DatabaseConnection, QuerySelect};
+use sea_orm::{entity::prelude::*, DatabaseConnection, QueryOrder, QuerySelect};
 use serde::{Deserialize, Serialize};
 
 use svix_server_derive::ModelOut;
@@ -63,6 +65,97 @@ impl From<messageattempt::Model> for MessageAttemptOut {
             created_at: model.created_at.into(),
         }
     }
+}
+
+/// A model containing information on a given message plus additional fields on the last attempt for
+/// that message.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct AttemptedMessageOut {
+    #[serde(flatten)]
+    msg: MessageOut,
+    status: MessageStatus,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    next_attempt: Option<DateTimeWithTimeZone>,
+}
+
+impl ModelOut for AttemptedMessageOut {
+    fn id_copy(&self) -> String {
+        self.msg.id.0.clone()
+    }
+}
+
+impl AttemptedMessageOut {
+    pub fn from_dest_and_msg(
+        dest: messagedestination::Model,
+        msg: message::Model,
+    ) -> AttemptedMessageOut {
+        AttemptedMessageOut {
+            msg: msg.into(),
+            status: dest.status,
+            next_attempt: dest.next_attempt,
+        }
+    }
+}
+
+/// Additional parameters (besides pagination) in the query string for the "List Attempted Messages"
+/// enpoint.
+#[derive(Debug, Deserialize, Validate)]
+pub struct ListAttemptedMessagesQueryParameters {
+    #[validate]
+    channel: Option<EventChannel>,
+    status: Option<MessageStatus>,
+}
+
+/// Fetches a list of [`AttemptedMessageOut`]s associated with a given app and endpoint.
+async fn list_attempted_messages(
+    Extension(ref db): Extension<DatabaseConnection>,
+    ValidatedQuery(mut pagination): ValidatedQuery<Pagination<MessageId>>,
+    ValidatedQuery(ListAttemptedMessagesQueryParameters { channel, status }): ValidatedQuery<
+        ListAttemptedMessagesQueryParameters,
+    >,
+    Path((_app_id, endp_id)): Path<(ApplicationId, EndpointId)>,
+    AuthenticatedApplication {
+        permissions: _,
+        app: _,
+    }: AuthenticatedApplication,
+) -> Result<Json<ListResponse<AttemptedMessageOut>>> {
+    let limit = pagination.limit;
+    let iterator = pagination.iterator.take();
+
+    let mut dests_and_msgs = messagedestination::Entity::secure_find_by_endpoint(endp_id)
+        .find_also_related(message::Entity)
+        .order_by_desc(messagedestination::Column::CreatedAt)
+        .limit(limit + 1);
+
+    if let Some(iterator) = iterator {
+        dests_and_msgs = dests_and_msgs.filter(messagedestination::Column::MsgId.lt(iterator));
+    }
+
+    if let Some(channel) = channel {
+        dests_and_msgs = dests_and_msgs.filter(message::Column::Channels.contains(&channel));
+    }
+
+    if let Some(status) = status {
+        dests_and_msgs = dests_and_msgs.filter(messagedestination::Column::Status.eq(status));
+    }
+
+    Ok(Json(AttemptedMessageOut::list_response(
+        dests_and_msgs
+            .all(db)
+            .await?
+            .into_iter()
+            .map(
+                |(dest, msg): (messagedestination::Model, Option<message::Model>)| {
+                    let msg = msg.ok_or_else(|| {
+                        Error::Database("No associated message with messagedestination".to_owned())
+                    })?;
+                    Ok(AttemptedMessageOut::from_dest_and_msg(dest, msg))
+                },
+            )
+            .collect::<Result<_>>()?,
+        limit as usize,
+    )))
 }
 
 #[derive(Debug, Deserialize, Validate)]
@@ -154,11 +247,7 @@ async fn get_messageattempt(
 async fn resend_webhook(
     Extension(ref db): Extension<DatabaseConnection>,
     Extension(queue_tx): Extension<TaskQueueProducer>,
-    Path((_app_id, msg_id, endpoint_id)): Path<(
-        ApplicationIdOrUid,
-        MessageIdOrUid,
-        EndpointIdOrUid,
-    )>,
+    Path((_app_id, msg_id, endp_id)): Path<(ApplicationIdOrUid, MessageIdOrUid, EndpointIdOrUid)>,
     AuthenticatedApplication {
         permissions: _,
         app,
@@ -168,7 +257,7 @@ async fn resend_webhook(
         .one(db)
         .await?
         .ok_or_else(|| HttpError::not_found(None, None))?;
-    let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endpoint_id)
+    let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
         .one(db)
         .await?
         .ok_or_else(|| HttpError::not_found(None, None))?;
@@ -196,13 +285,101 @@ async fn resend_webhook(
 
 pub fn router() -> Router {
     Router::new().nest(
-        "/app/:app_id/msg/:msg_id",
+        "/app/:app_id/",
         Router::new()
-            .route("/attempt/", get(list_messageattempts))
-            .route("/attempt/:attempt_id/", get(get_messageattempt))
-            .route("/endpoint/", get(api_not_implemented))
-            .route("/endpoint/:endpoint_id/resend/", post(resend_webhook))
-            .route("/endpoint/:endpoint_id/attempt/", get(api_not_implemented)),
-        // FIXME: Missing the one for list attempted messages
+            .nest(
+                "msg/:msg_id",
+                Router::new()
+                    .route("/attempt/", get(list_messageattempts))
+                    .route("/attempt/:attempt_id/", get(get_messageattempt))
+                    .route("/endpoint/", get(api_not_implemented))
+                    .route("/endpoint/:endp_id/resend/", post(resend_webhook))
+                    .route("/endpoint/:endp_id/attempt/", get(api_not_implemented)),
+            )
+            .route("endpoint/:endp_id/msg/", get(list_attempted_messages))
+            .route("attempt/endpoint/:endp_id/", get(api_not_implemented))
+            .route("attempt/msg/:msg_id/", get(api_not_implemented)),
     )
+}
+
+#[cfg(test)]
+mod tests {
+    use reqwest::StatusCode;
+
+    use super::AttemptedMessageOut;
+    use crate::{
+        test_util::start_svix_server,
+        v1::{
+            endpoints::{
+                application::tests::create_test_app, endpoint::tests::create_test_endpoint,
+                message::tests::create_test_message,
+            },
+            utils::ListResponse,
+        },
+    };
+
+    #[tokio::test]
+    #[cfg_attr(not(feature = "integration_testing"), ignore)]
+    async fn test_list_attempted_messages() {
+        let (client, _jh) = start_svix_server();
+
+        let app_id = create_test_app(&client, "v1AttemptListAttemptedMessagesTestApp")
+            .await
+            .unwrap();
+
+        let endp_id_1 = create_test_endpoint(&client, &app_id, "http://localhost:1/bad/url/")
+            .await
+            .unwrap();
+        let endp_id_2 = create_test_endpoint(&client, &app_id, "http://localhost:2/bad/url/")
+            .await
+            .unwrap();
+
+        let msg_1 = create_test_message(&client, &app_id, serde_json::json!({"test": "data1"}))
+            .await
+            .unwrap();
+        let msg_2 = create_test_message(&client, &app_id, serde_json::json!({"test": "data2"}))
+            .await
+            .unwrap();
+        let msg_3 = create_test_message(&client, &app_id, serde_json::json!({"test": "data3"}))
+            .await
+            .unwrap();
+
+        let list_1: ListResponse<AttemptedMessageOut> = client
+            .get(
+                &format!("api/v1/app/{}/endpoint/{}/msg/", app_id, endp_id_1),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
+        let list_2: ListResponse<AttemptedMessageOut> = client
+            .get(
+                &format!("api/v1/app/{}/endpoint/{}/msg/", app_id, endp_id_2),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
+
+        for list in [list_1, list_2] {
+            assert_eq!(list.data.len(), 3);
+
+            // Assert order
+            assert_eq!(
+                list.data[0].msg.payload,
+                serde_json::json!({"test": "data3"})
+            );
+            assert_eq!(
+                list.data[1].msg.payload,
+                serde_json::json!({"test": "data2"})
+            );
+            assert_eq!(
+                list.data[2].msg.payload,
+                serde_json::json!({"test": "data1"})
+            );
+
+            let message_ids: Vec<_> = list.data.into_iter().map(|amo| amo.msg.id).collect();
+            assert!(message_ids.contains(&msg_1));
+            assert!(message_ids.contains(&msg_2));
+            assert!(message_ids.contains(&msg_3));
+        }
+    }
 }
