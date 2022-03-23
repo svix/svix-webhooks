@@ -6,16 +6,18 @@ use crate::{
         security::AuthenticatedApplication,
         types::{
             ApplicationId, ApplicationIdOrUid, BaseId, EndpointId, EndpointIdOrUid, EventChannel,
-            EventChannelSet, EventTypeName, MessageAttemptId, MessageAttemptTriggerType, MessageId,
-            MessageIdOrUid, MessageStatus, MessageUid,
+            MessageAttemptId, MessageAttemptTriggerType, MessageId, MessageIdOrUid, MessageStatus,
         },
     },
     db::models::{endpoint, message, messagedestination},
     error::{Error, HttpError, Result},
     queue::{MessageTask, TaskQueueProducer},
-    v1::utils::{
-        api_not_implemented, EmptyResponse, ListResponse, MessageListFetchOptions, ModelOut,
-        ValidatedQuery,
+    v1::{
+        endpoints::message::MessageOut,
+        utils::{
+            api_not_implemented, EmptyResponse, ListResponse, MessageListFetchOptions, ModelOut,
+            ValidatedQuery,
+        },
     },
 };
 use axum::{
@@ -65,27 +67,22 @@ impl From<messageattempt::Model> for MessageAttemptOut {
     }
 }
 
-// FIXME: Contains all members of a [`v1::endpoints::message::MessageOut`], so find a way to
-// #[serde(flatten)]` a [`super::message::MessageOut`] in cleanly. An attempt was made, but it would
-// require a custom [`ModelOut`] impl.
-
 /// A model containing information on a given message plus additional fields on the last attempt for
 /// that message.
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, ModelOut)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct AttemptedMessageOut {
-    event_type: EventTypeName,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    event_id: Option<MessageUid>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    channels: Option<EventChannelSet>,
-    payload: serde_json::Value,
-    id: MessageId,
-    #[serde(rename = "timestamp")]
-    created_at: DateTimeWithTimeZone,
+    #[serde(flatten)]
+    msg: MessageOut,
     status: MessageStatus,
     #[serde(skip_serializing_if = "Option::is_none")]
     next_attempt: Option<DateTimeWithTimeZone>,
+}
+
+impl ModelOut for AttemptedMessageOut {
+    fn id_copy(&self) -> String {
+        self.msg.id.0.clone()
+    }
 }
 
 impl AttemptedMessageOut {
@@ -94,12 +91,7 @@ impl AttemptedMessageOut {
         msg: message::Model,
     ) -> AttemptedMessageOut {
         AttemptedMessageOut {
-            event_type: msg.event_type,
-            event_id: msg.uid,
-            channels: msg.channels,
-            payload: msg.payload,
-            id: msg.id,
-            created_at: msg.created_at,
+            msg: msg.into(),
             status: dest.status,
             next_attempt: dest.next_attempt,
         }
@@ -371,11 +363,20 @@ mod tests {
             assert_eq!(list.data.len(), 3);
 
             // Assert order
-            assert_eq!(list.data[0].payload, serde_json::json!({"test": "data3"}));
-            assert_eq!(list.data[1].payload, serde_json::json!({"test": "data2"}));
-            assert_eq!(list.data[2].payload, serde_json::json!({"test": "data1"}));
+            assert_eq!(
+                list.data[0].msg.payload,
+                serde_json::json!({"test": "data3"})
+            );
+            assert_eq!(
+                list.data[1].msg.payload,
+                serde_json::json!({"test": "data2"})
+            );
+            assert_eq!(
+                list.data[2].msg.payload,
+                serde_json::json!({"test": "data1"})
+            );
 
-            let message_ids: Vec<_> = list.data.into_iter().map(|amo| amo.id).collect();
+            let message_ids: Vec<_> = list.data.into_iter().map(|amo| amo.msg.id).collect();
             assert!(message_ids.contains(&msg_1));
             assert!(message_ids.contains(&msg_2));
             assert!(message_ids.contains(&msg_3));

@@ -85,17 +85,17 @@ impl ModelIn for MessageIn {
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, ModelOut)]
 #[serde(rename_all = "camelCase")]
-struct MessageOut {
+pub(super) struct MessageOut {
     #[serde(rename = "eventId")]
-    uid: Option<MessageUid>,
-    event_type: EventTypeName,
-    payload: serde_json::Value,
+    pub(super) uid: Option<MessageUid>,
+    pub(super) event_type: EventTypeName,
+    pub(super) payload: serde_json::Value,
 
-    channels: Option<EventChannelSet>,
+    pub(super) channels: Option<EventChannelSet>,
 
-    id: MessageId,
+    pub(super) id: MessageId,
     #[serde(rename = "timestamp")]
-    created_at: DateTime<Utc>,
+    pub(super) created_at: DateTime<Utc>,
 }
 
 // FIXME: This can and should be a derive macro
