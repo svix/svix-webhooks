@@ -44,9 +44,11 @@ struct MessageAttemptOut {
     response_status_code: i16,
     status: MessageStatus,
     trigger_type: MessageAttemptTriggerType,
+    msg_id: MessageId,
     endpoint_id: EndpointId,
 
     id: MessageAttemptId,
+
     #[serde(rename = "timestamp")]
     created_at: DateTime<Utc>,
 }
@@ -59,6 +61,7 @@ impl From<messageattempt::Model> for MessageAttemptOut {
             response_status_code: model.response_status_code,
             status: model.status,
             trigger_type: model.trigger_type,
+            msg_id: model.msg_id,
             endpoint_id: model.endp_id,
 
             id: model.id,
