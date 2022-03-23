@@ -87,7 +87,7 @@ pub struct TaskQueueDelivery {
 impl TaskQueueDelivery {
     /// The `timestamp` is when this message will be delivered at
     fn new(task: QueueTask, timestamp: Option<DateTime<Utc>>) -> Self {
-        let ksuid = Ksuid::new(timestamp, None);
+        let ksuid = KsuidMs::new(timestamp, None);
         Self {
             id: ksuid.to_string(),
             task,

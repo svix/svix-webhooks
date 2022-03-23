@@ -75,7 +75,7 @@ pub async fn new_pair(
 
             // If the key is older than now, it means we should be processing keys
             let validity_limit =
-                Ksuid::new(Some(Utc::now() - task_validity_duration), None).to_string();
+                KsuidMs::new(Some(Utc::now() - task_validity_duration), None).to_string();
             if !keys.is_empty() && keys[0] <= validity_limit {
                 let keys: Vec<String> = pool.lrange(PROCESSING, 0isize, batch_size).await.unwrap();
                 for key in keys {
