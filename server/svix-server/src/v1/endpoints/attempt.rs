@@ -125,7 +125,7 @@ async fn list_attempted_messages(
 
     let mut dests_and_msgs = messagedestination::Entity::secure_find_by_endpoint(endp_id)
         .find_also_related(message::Entity)
-        .order_by_desc(messagedestination::Column::CreatedAt)
+        .order_by_desc(messagedestination::Column::MsgId)
         .limit(limit + 1);
 
     if let Some(iterator) = iterator {
