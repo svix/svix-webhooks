@@ -156,12 +156,8 @@ async fn list_attempted_messages(
             .map(
                 |(dest, msg): (messagedestination::Model, Option<message::Model>)| {
                     let msg = msg.ok_or_else(|| {
-                        tracing::error!(
-                            "messagedestination::Enitity has no associated message::Entity"
-                        );
-                        Error::Database("Malformed data".to_owned())
+                        Error::Database("No associated message with messagedestination".to_owned())
                     })?;
-
                     Ok(AttemptedMessageOut::from_dest_and_msg(dest, msg))
                 },
             )
