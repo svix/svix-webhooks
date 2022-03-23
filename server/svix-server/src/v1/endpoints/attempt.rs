@@ -26,7 +26,7 @@ use axum::{
 use chrono::{DateTime, Utc};
 
 use hyper::StatusCode;
-use sea_orm::{entity::prelude::*, DatabaseConnection, FromQueryResult, QueryOrder, QuerySelect};
+use sea_orm::{entity::prelude::*, DatabaseConnection, QueryOrder, QuerySelect};
 use serde::{Deserialize, Serialize};
 
 use svix_server_derive::ModelOut;
@@ -67,12 +67,11 @@ impl From<messageattempt::Model> for MessageAttemptOut {
 
 // FIXME: Contains all members of a [`v1::endpoints::message::MessageOut`], so find a way to
 // #[serde(flatten)]` a [`super::message::MessageOut`] in cleanly. An attempt was made, but it would
-// require a custom [`ModelOut`] impl and another impl of [`sea_orm::TryGettable`] on the
-// [`super::message::MessageOut`] type in order for [`FromQueryResult`] to work.
+// require a custom [`ModelOut`] impl.
 
 /// A model containing information on a given message plus additional fields on the last attempt for
 /// that message.
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, ModelOut, FromQueryResult)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, ModelOut)]
 #[serde(rename_all = "camelCase")]
 struct AttemptedMessageOut {
     event_type: EventTypeName,
