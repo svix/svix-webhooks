@@ -1,9 +1,10 @@
-use std::net::TcpListener;
+use std::{future::Future, net::TcpListener};
 
 use anyhow::{Context, Result};
 
 use reqwest::{Client, RequestBuilder, StatusCode};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
+use tokio::sync::mpsc;
 
 use crate::core::security::test_util::generate_token_random_org;
 
@@ -151,4 +152,66 @@ pub fn start_svix_server() -> (TestClient, tokio::task::JoinHandle<()>) {
     let jh = tokio::spawn(crate::run(cfg, Some(listener)));
 
     (TestClient::new(base_uri, &token), jh)
+}
+
+pub struct TestReceiver {
+    pub endpoint: String,
+    pub jh: tokio::task::JoinHandle<()>,
+    pub data_recv: mpsc::Receiver<serde_json::Value>,
+}
+
+impl TestReceiver {
+    pub fn start(resp_with: axum::http::StatusCode) -> Self {
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let endpoint = format!("http://{}/", listener.local_addr().unwrap());
+
+        let (tx, data_recv) = mpsc::channel(32);
+
+        let jh = tokio::spawn(async move {
+            axum::Server::from_tcp(listener)
+                .unwrap()
+                .serve(
+                    axum::Router::new()
+                        .route(
+                            "/",
+                            axum::routing::post(test_receiver_route).get(test_receiver_route),
+                        )
+                        .layer(axum::extract::Extension(tx))
+                        .layer(axum::extract::Extension(resp_with))
+                        .into_make_service(),
+                )
+                .await
+                .unwrap();
+        });
+
+        TestReceiver {
+            endpoint,
+            jh,
+            data_recv,
+        }
+    }
+}
+
+async fn test_receiver_route(
+    axum::Json(json): axum::Json<serde_json::Value>,
+    axum::extract::Extension(ref tx): axum::extract::Extension<mpsc::Sender<serde_json::Value>>,
+    axum::extract::Extension(code): axum::extract::Extension<axum::http::StatusCode>,
+) -> axum::http::StatusCode {
+    tx.send(json).await.unwrap();
+    code
+}
+
+pub async fn run_with_retries<F: Future<Output = Result<()>>, C: Fn() -> F>(f: C) -> Result<()> {
+    for attempt in 0..20 {
+        let out = f().await;
+        if out.is_ok() {
+            return Ok(());
+        }
+
+        println!("Attempt {}: {}", attempt, out.unwrap_err());
+
+        std::thread::sleep(std::time::Duration::from_millis(50));
+    }
+
+    anyhow::bail!("All attempts failed");
 }

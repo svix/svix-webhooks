@@ -6,7 +6,8 @@ use crate::{
         security::AuthenticatedApplication,
         types::{
             ApplicationId, ApplicationIdOrUid, BaseId, EndpointId, EndpointIdOrUid, EventChannel,
-            MessageAttemptId, MessageAttemptTriggerType, MessageId, MessageIdOrUid, MessageStatus,
+            EventTypeNameSet, MessageAttemptId, MessageAttemptTriggerType, MessageId,
+            MessageIdOrUid, MessageStatus, StatusCodeClass,
         },
     },
     db::models::{endpoint, message, messagedestination},
@@ -44,9 +45,11 @@ struct MessageAttemptOut {
     response_status_code: i16,
     status: MessageStatus,
     trigger_type: MessageAttemptTriggerType,
+    msg_id: MessageId,
     endpoint_id: EndpointId,
 
     id: MessageAttemptId,
+
     #[serde(rename = "timestamp")]
     created_at: DateTime<Utc>,
 }
@@ -59,6 +62,7 @@ impl From<messageattempt::Model> for MessageAttemptOut {
             response_status_code: model.response_status_code,
             status: model.status,
             trigger_type: model.trigger_type,
+            msg_id: model.msg_id,
             endpoint_id: model.endp_id,
 
             id: model.id,
@@ -154,6 +158,111 @@ async fn list_attempted_messages(
                 },
             )
             .collect::<Result<_>>()?,
+        limit as usize,
+    )))
+}
+
+/// Additional parameters (besides pagination) in the query string for the "List Attempts by
+/// Endpoint" enpoint.
+#[derive(Debug, Deserialize, Validate)]
+pub struct ListAttemptsByEndpointQueryParameters {
+    status: Option<MessageStatus>,
+    status_code_class: Option<StatusCodeClass>,
+    #[validate]
+    event_types: Option<EventTypeNameSet>,
+    #[validate]
+    channel: Option<EventChannel>,
+}
+
+/// Fetches a list of [`MessageAttemptOut`]s for a given endpoint ID
+async fn list_attempts_by_endpoint(
+    Extension(ref db): Extension<DatabaseConnection>,
+    ValidatedQuery(mut pagination): ValidatedQuery<Pagination<MessageAttemptId>>,
+    ValidatedQuery(ListAttemptsByEndpointQueryParameters {
+        status,
+        status_code_class,
+        event_types,
+        channel,
+    }): ValidatedQuery<ListAttemptsByEndpointQueryParameters>,
+    Path((_app_id, endp_id)): Path<(ApplicationId, EndpointId)>,
+    AuthenticatedApplication {
+        permissions: _,
+        app,
+    }: AuthenticatedApplication,
+) -> Result<Json<ListResponse<MessageAttemptOut>>> {
+    let limit = pagination.limit;
+    let iterator = pagination.iterator.take();
+
+    // Confirm endpoint ID belongs to the given application
+    if endpoint::Entity::secure_find_by_id(app.id, endp_id.clone())
+        .one(db)
+        .await?
+        .is_none()
+    {
+        return Err(Error::Http(HttpError::not_found(None, None)));
+    }
+
+    let mut query = messageattempt::Entity::secure_find_by_endpoint(endp_id)
+        .order_by_desc(messageattempt::Column::Id)
+        .limit(limit + 1);
+
+    if let Some(iterator) = iterator {
+        query = query.filter(messageattempt::Column::Id.lt(iterator));
+    }
+
+    if let Some(status) = status {
+        query = query.filter(messageattempt::Column::Status.eq(status));
+    }
+
+    query = match status_code_class {
+        Some(StatusCodeClass::CodeNone) => {
+            query.filter(messageattempt::Column::ResponseStatusCode.between(0, 99))
+        }
+
+        Some(StatusCodeClass::Code1xx) => {
+            query.filter(messageattempt::Column::ResponseStatusCode.between(100, 199))
+        }
+
+        Some(StatusCodeClass::Code2xx) => {
+            query.filter(messageattempt::Column::ResponseStatusCode.between(200, 299))
+        }
+
+        Some(StatusCodeClass::Code3xx) => {
+            query.filter(messageattempt::Column::ResponseStatusCode.between(300, 399))
+        }
+
+        Some(StatusCodeClass::Code4xx) => {
+            query.filter(messageattempt::Column::ResponseStatusCode.between(400, 499))
+        }
+
+        Some(StatusCodeClass::Code5xx) => {
+            query.filter(messageattempt::Column::ResponseStatusCode.between(500, 599))
+        }
+
+        None => query,
+    };
+
+    // The event_types and channel filter require joining the associated message
+    if event_types.is_some() || channel.is_some() {
+        query = query.join_rev(
+            sea_orm::JoinType::InnerJoin,
+            messageattempt::Entity::belongs_to(message::Entity)
+                .from(messageattempt::Column::MsgId)
+                .to(message::Column::Id)
+                .into(),
+        );
+
+        if let Some(EventTypeNameSet(event_types)) = event_types {
+            query = query.filter(message::Column::EventType.is_in(event_types))
+        }
+
+        if let Some(channel) = channel {
+            query = query.filter(message::Column::Channels.contains(&channel))
+        }
+    }
+
+    Ok(Json(MessageAttemptOut::list_response(
+        query.all(db).await?.into_iter().map(Into::into).collect(),
         limit as usize,
     )))
 }
@@ -297,7 +406,7 @@ pub fn router() -> Router {
                     .route("/endpoint/:endp_id/attempt/", get(api_not_implemented)),
             )
             .route("endpoint/:endp_id/msg/", get(list_attempted_messages))
-            .route("attempt/endpoint/:endp_id/", get(api_not_implemented))
+            .route("attempt/endpoint/:endp_id/", get(list_attempts_by_endpoint))
             .route("attempt/msg/:msg_id/", get(api_not_implemented)),
     )
 }
@@ -306,9 +415,9 @@ pub fn router() -> Router {
 mod tests {
     use reqwest::StatusCode;
 
-    use super::AttemptedMessageOut;
+    use super::{AttemptedMessageOut, MessageAttemptOut};
     use crate::{
-        test_util::start_svix_server,
+        test_util::{run_with_retries, start_svix_server, TestReceiver},
         v1::{
             endpoints::{
                 application::tests::create_test_app, endpoint::tests::create_test_endpoint,
@@ -327,10 +436,13 @@ mod tests {
             .await
             .unwrap();
 
-        let endp_id_1 = create_test_endpoint(&client, &app_id, "http://localhost:1/bad/url/")
+        let receiver_1 = TestReceiver::start(axum::http::StatusCode::OK);
+        let receiver_2 = TestReceiver::start(axum::http::StatusCode::OK);
+
+        let endp_id_1 = create_test_endpoint(&client, &app_id, &receiver_1.endpoint)
             .await
             .unwrap();
-        let endp_id_2 = create_test_endpoint(&client, &app_id, "http://localhost:2/bad/url/")
+        let endp_id_2 = create_test_endpoint(&client, &app_id, &receiver_2.endpoint)
             .await
             .unwrap();
 
@@ -372,5 +484,81 @@ mod tests {
             assert!(message_ids.contains(&msg_2));
             assert!(message_ids.contains(&msg_3));
         }
+    }
+
+    #[tokio::test]
+    #[cfg_attr(not(feature = "integration_testing"), ignore)]
+    async fn test_list_attempts_by_endpoint() {
+        let (client, _jh) = start_svix_server();
+
+        let app_id = create_test_app(&client, "v1AttemptListAttemptsByEndpointTestApp")
+            .await
+            .unwrap();
+
+        let receiver_1 = TestReceiver::start(axum::http::StatusCode::OK);
+        let receiver_2 = TestReceiver::start(axum::http::StatusCode::OK);
+
+        let endp_id_1 = create_test_endpoint(&client, &app_id, &receiver_1.endpoint)
+            .await
+            .unwrap();
+        let endp_id_2 = create_test_endpoint(&client, &app_id, &receiver_2.endpoint)
+            .await
+            .unwrap();
+
+        let msg_1 = create_test_message(&client, &app_id, serde_json::json!({"test": "data1"}))
+            .await
+            .unwrap();
+        let msg_2 = create_test_message(&client, &app_id, serde_json::json!({"test": "data2"}))
+            .await
+            .unwrap();
+        let msg_3 = create_test_message(&client, &app_id, serde_json::json!({"test": "data3"}))
+            .await
+            .unwrap();
+
+        // And wait at most one second for all attempts to be processed
+        run_with_retries(|| async {
+            for endp_id in [endp_id_1.clone(), endp_id_2.clone()] {
+                let list: ListResponse<MessageAttemptOut> = client
+                    .get(
+                        &format!("api/v1/app/{}/attempt/endpoint/{}/", app_id, endp_id),
+                        StatusCode::OK,
+                    )
+                    .await
+                    .unwrap();
+
+                if list.data.len() != 3 {
+                    anyhow::bail!("list len {}, not 3", list.data.len());
+                }
+            }
+
+            Ok(())
+        })
+        .await
+        .unwrap();
+
+        let list_1: ListResponse<MessageAttemptOut> = client
+            .get(
+                &format!("api/v1/app/{}/attempt/endpoint/{}/", app_id, endp_id_1),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
+        let list_2: ListResponse<MessageAttemptOut> = client
+            .get(
+                &format!("api/v1/app/{}/attempt/endpoint/{}/", app_id, endp_id_2),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
+
+        for list in [list_1, list_2] {
+            let message_ids: Vec<_> = list.data.into_iter().map(|amo| amo.msg_id).collect();
+            assert!(message_ids.contains(&msg_1));
+            assert!(message_ids.contains(&msg_2));
+            assert!(message_ids.contains(&msg_3));
+        }
+
+        receiver_1.jh.abort();
+        receiver_2.jh.abort();
     }
 }
