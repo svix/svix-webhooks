@@ -174,6 +174,96 @@ pub struct ListAttemptsByEndpointQueryParameters {
     channel: Option<EventChannel>,
 }
 
+/// Fetches a list of [`MessageAttemptOut`]s for a given endpoint ID
+async fn list_attempts_by_endpoint(
+    Extension(ref db): Extension<DatabaseConnection>,
+    ValidatedQuery(mut pagination): ValidatedQuery<Pagination<MessageAttemptId>>,
+    ValidatedQuery(ListAttemptsByEndpointQueryParameters {
+        status,
+        status_code_class,
+        event_types,
+        channel,
+    }): ValidatedQuery<ListAttemptsByEndpointQueryParameters>,
+    Path((_app_id, endp_id)): Path<(ApplicationId, EndpointId)>,
+    AuthenticatedApplication {
+        permissions: _,
+        app,
+    }: AuthenticatedApplication,
+) -> Result<Json<ListResponse<MessageAttemptOut>>> {
+    let limit = pagination.limit;
+    let iterator = pagination.iterator.take();
+
+    // Confirm endpoint ID belongs to the given application
+    if endpoint::Entity::secure_find_by_id(app.id, endp_id.clone())
+        .one(db)
+        .await?
+        .is_none()
+    {
+        return Err(Error::Http(HttpError::not_found(None, None)));
+    }
+
+    let mut query = messageattempt::Entity::secure_find_by_endpoint(endp_id)
+        .order_by_desc(messageattempt::Column::Id)
+        .limit(limit + 1);
+
+    if let Some(iterator) = iterator {
+        query = query.filter(messageattempt::Column::Id.lt(iterator));
+    }
+
+    if let Some(status) = status {
+        query = query.filter(messageattempt::Column::Status.eq(status));
+    }
+
+    query = match status_code_class {
+        Some(StatusCodeClass::Code1xx) => {
+            query.filter(messageattempt::Column::ResponseStatusCode.lt(100i16))
+        }
+
+        Some(StatusCodeClass::Code2xx) => {
+            query.filter(messageattempt::Column::ResponseStatusCode.between(199i16, 300i16))
+        }
+
+        Some(StatusCodeClass::Code3xx) => {
+            query.filter(messageattempt::Column::ResponseStatusCode.between(299i16, 400i16))
+        }
+
+        Some(StatusCodeClass::Code4xx) => {
+            query.filter(messageattempt::Column::ResponseStatusCode.between(399i16, 500i16))
+        }
+
+        Some(StatusCodeClass::Code5xx) => {
+            query.filter(messageattempt::Column::ResponseStatusCode.between(599i16, 600i16))
+        }
+
+        Some(StatusCodeClass::CodeNone) => query,
+        None => query,
+    };
+
+    // The event_types and channel filter require joining the associated message
+    if event_types.is_some() || channel.is_some() {
+        query = query.join_rev(
+            sea_orm::JoinType::InnerJoin,
+            messageattempt::Entity::belongs_to(message::Entity)
+                .from(messageattempt::Column::MsgId)
+                .to(message::Column::Id)
+                .into(),
+        );
+
+        if let Some(EventTypeNameSet(event_types)) = event_types {
+            query = query.filter(message::Column::EventType.is_in(event_types))
+        }
+
+        if let Some(channel) = channel {
+            query = query.filter(message::Column::Channels.contains(&channel))
+        }
+    }
+
+    Ok(Json(MessageAttemptOut::list_response(
+        query.all(db).await?.into_iter().map(Into::into).collect(),
+        limit as usize,
+    )))
+}
+
 #[derive(Debug, Deserialize, Validate)]
 pub struct AttemptListFetchOptions {
     pub endpoint_id: Option<EndpointIdOrUid>,
@@ -313,7 +403,7 @@ pub fn router() -> Router {
                     .route("/endpoint/:endp_id/attempt/", get(api_not_implemented)),
             )
             .route("endpoint/:endp_id/msg/", get(list_attempted_messages))
-            .route("attempt/endpoint/:endp_id/", get(api_not_implemented))
+            .route("attempt/endpoint/:endp_id/", get(list_attempts_by_endpoint))
             .route("attempt/msg/:msg_id/", get(api_not_implemented)),
     )
 }
