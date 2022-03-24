@@ -515,7 +515,7 @@ mod tests {
             .await
             .unwrap();
 
-        // And wait at most two seconds for all attempts to be processed
+        // And wait at most one second for all attempts to be processed
         run_with_retries(|| async {
             let list_1: ListResponse<MessageAttemptOut> = client
                 .get(
