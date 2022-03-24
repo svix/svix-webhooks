@@ -412,9 +412,9 @@ pub fn router() -> Router {
 mod tests {
     use reqwest::StatusCode;
 
-    use super::AttemptedMessageOut;
+    use super::{AttemptedMessageOut, MessageAttemptOut};
     use crate::{
-        test_util::start_svix_server,
+        test_util::{run_with_retries, start_svix_server, TestReceiver},
         v1::{
             endpoints::{
                 application::tests::create_test_app, endpoint::tests::create_test_endpoint,
@@ -433,10 +433,13 @@ mod tests {
             .await
             .unwrap();
 
-        let endp_id_1 = create_test_endpoint(&client, &app_id, "http://localhost:1/bad/url/")
+        let receiver_1 = TestReceiver::start(axum::http::StatusCode::OK);
+        let receiver_2 = TestReceiver::start(axum::http::StatusCode::OK);
+
+        let endp_id_1 = create_test_endpoint(&client, &app_id, &receiver_1.endpoint)
             .await
             .unwrap();
-        let endp_id_2 = create_test_endpoint(&client, &app_id, "http://localhost:2/bad/url/")
+        let endp_id_2 = create_test_endpoint(&client, &app_id, &receiver_2.endpoint)
             .await
             .unwrap();
 
@@ -478,5 +481,118 @@ mod tests {
             assert!(message_ids.contains(&msg_2));
             assert!(message_ids.contains(&msg_3));
         }
+    }
+
+    #[tokio::test]
+    #[cfg_attr(not(feature = "integration_testing"), ignore)]
+    async fn test_list_attempts_by_endpoint() {
+        let (client, _jh) = start_svix_server();
+
+        let app_id = create_test_app(&client, "v1AttemptListAttemptsByEndpointTestApp")
+            .await
+            .unwrap();
+
+        let receiver_1 = TestReceiver::start(axum::http::StatusCode::OK);
+        let receiver_2 = TestReceiver::start(axum::http::StatusCode::OK);
+
+        // Wait at most a second (50ms * 20 retries) for a successful response from that endpoint
+        run_with_retries(
+            || {
+                let endp_1 = receiver_1.endpoint.clone();
+                let endp_2 = receiver_2.endpoint.clone();
+                async {
+                    let client = reqwest::Client::new();
+
+                    if client
+                        .post(endp_1)
+                        .json(&serde_json::json!({"test": "value"}))
+                        .send()
+                        .await?
+                        .status()
+                        != StatusCode::OK
+                    {
+                        anyhow::bail!("Status not OK")
+                    };
+
+                    if client
+                        .post(endp_2)
+                        .json(&serde_json::json!({"test": "value"}))
+                        .send()
+                        .await?
+                        .status()
+                        != StatusCode::OK
+                    {
+                        anyhow::bail!("Status not OK")
+                    };
+
+                    Ok(())
+                }
+            },
+            20,
+        )
+        .await
+        .unwrap();
+
+        let endp_id_1 = create_test_endpoint(&client, &app_id, &receiver_1.endpoint)
+            .await
+            .unwrap();
+        let endp_id_2 = create_test_endpoint(&client, &app_id, &receiver_2.endpoint)
+            .await
+            .unwrap();
+
+        let msg_1 = create_test_message(&client, &app_id, serde_json::json!({"test": "data1"}))
+            .await
+            .unwrap();
+        let msg_2 = create_test_message(&client, &app_id, serde_json::json!({"test": "data2"}))
+            .await
+            .unwrap();
+        let msg_3 = create_test_message(&client, &app_id, serde_json::json!({"test": "data3"}))
+            .await
+            .unwrap();
+
+        // And wait at most two seconds for all attempts to be processed
+        run_with_retries(
+            || async {
+                let list_1: ListResponse<MessageAttemptOut> = client
+                    .get(
+                        &format!("api/v1/app/{}/attempt/endpoint/{}/", app_id, endp_id_1),
+                        StatusCode::OK,
+                    )
+                    .await
+                    .unwrap();
+                let list_2: ListResponse<MessageAttemptOut> = client
+                    .get(
+                        &format!("api/v1/app/{}/attempt/endpoint/{}/", app_id, endp_id_2),
+                        StatusCode::OK,
+                    )
+                    .await
+                    .unwrap();
+
+                for (num, list) in [list_1, list_2].into_iter().enumerate() {
+                    if list.data.len() != 3 {
+                        anyhow::bail!("List {} length {}, expected 3", num, list.data.len());
+                    }
+
+                    let message_ids: Vec<_> = list.data.into_iter().map(|amo| amo.msg_id).collect();
+                    if !message_ids.contains(&msg_1) {
+                        anyhow::bail!("message_ids for list {} does not contain msg_1", num)
+                    }
+                    if !message_ids.contains(&msg_2) {
+                        anyhow::bail!("message_ids for list {} does not contain msg_2", num)
+                    }
+                    if !message_ids.contains(&msg_3) {
+                        anyhow::bail!("message_ids for list {} does not contain msg_3", num)
+                    }
+                }
+
+                Ok(())
+            },
+            40,
+        )
+        .await
+        .unwrap();
+
+        receiver_1.jh.abort();
+        receiver_2.jh.abort();
     }
 }
