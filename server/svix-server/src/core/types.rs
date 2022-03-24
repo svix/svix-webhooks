@@ -542,8 +542,20 @@ pub enum MessageStatus {
     Sending = 3,
 }
 
+#[repr(i16)]
+#[derive(Clone, Debug, Copy, PartialEq, IntoPrimitive, TryFromPrimitive)]
+pub enum StatusCodeClass {
+    CodeNone = 0,
+    Code1xx = 100,
+    Code2xx = 200,
+    Code3xx = 300,
+    Code4xx = 400,
+    Code5xx = 500,
+}
+
 enum_wrapper!(MessageAttemptTriggerType);
 enum_wrapper!(MessageStatus);
+enum_wrapper!(StatusCodeClass);
 
 #[cfg(test)]
 mod tests {

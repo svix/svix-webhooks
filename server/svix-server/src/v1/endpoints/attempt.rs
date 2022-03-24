@@ -6,7 +6,8 @@ use crate::{
         security::AuthenticatedApplication,
         types::{
             ApplicationId, ApplicationIdOrUid, BaseId, EndpointId, EndpointIdOrUid, EventChannel,
-            MessageAttemptId, MessageAttemptTriggerType, MessageId, MessageIdOrUid, MessageStatus,
+            EventTypeNameSet, MessageAttemptId, MessageAttemptTriggerType, MessageId,
+            MessageIdOrUid, MessageStatus, StatusCodeClass,
         },
     },
     db::models::{endpoint, message, messagedestination},
@@ -159,6 +160,18 @@ async fn list_attempted_messages(
             .collect::<Result<_>>()?,
         limit as usize,
     )))
+}
+
+/// Additional parameters (besides pagination) in the query string for the "List Attempts by
+/// Endpoint" enpoint.
+#[derive(Debug, Deserialize, Validate)]
+pub struct ListAttemptsByEndpointQueryParameters {
+    status: Option<MessageStatus>,
+    status_code_class: Option<StatusCodeClass>,
+    #[validate]
+    event_types: Option<EventTypeNameSet>,
+    #[validate]
+    channel: Option<EventChannel>,
 }
 
 #[derive(Debug, Deserialize, Validate)]
