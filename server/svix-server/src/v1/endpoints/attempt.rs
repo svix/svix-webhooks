@@ -125,7 +125,7 @@ async fn list_attempted_messages(
 
     let mut dests_and_msgs = messagedestination::Entity::secure_find_by_endpoint(endp_id)
         .find_also_related(message::Entity)
-        .order_by_desc(messagedestination::Column::CreatedAt)
+        .order_by_desc(messagedestination::Column::MsgId)
         .limit(limit + 1);
 
     if let Some(iterator) = iterator {
@@ -363,18 +363,9 @@ mod tests {
             assert_eq!(list.data.len(), 3);
 
             // Assert order
-            assert_eq!(
-                list.data[0].msg.payload,
-                serde_json::json!({"test": "data3"})
-            );
-            assert_eq!(
-                list.data[1].msg.payload,
-                serde_json::json!({"test": "data2"})
-            );
-            assert_eq!(
-                list.data[2].msg.payload,
-                serde_json::json!({"test": "data1"})
-            );
+            assert_eq!(list.data[0].msg.id, msg_3);
+            assert_eq!(list.data[1].msg.id, msg_2);
+            assert_eq!(list.data[2].msg.id, msg_1);
 
             let message_ids: Vec<_> = list.data.into_iter().map(|amo| amo.msg.id).collect();
             assert!(message_ids.contains(&msg_1));
