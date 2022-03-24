@@ -496,40 +496,37 @@ mod tests {
         let receiver_2 = TestReceiver::start(axum::http::StatusCode::OK);
 
         // Wait at most a second (50ms * 20 retries) for a successful response from that endpoint
-        run_with_retries(
-            || {
-                let endp_1 = receiver_1.endpoint.clone();
-                let endp_2 = receiver_2.endpoint.clone();
-                async {
-                    let client = reqwest::Client::new();
+        run_with_retries(|| {
+            let endp_1 = receiver_1.endpoint.clone();
+            let endp_2 = receiver_2.endpoint.clone();
+            async {
+                let client = reqwest::Client::new();
 
-                    if client
-                        .post(endp_1)
-                        .json(&serde_json::json!({"test": "value"}))
-                        .send()
-                        .await?
-                        .status()
-                        != StatusCode::OK
-                    {
-                        anyhow::bail!("Status not OK")
-                    };
+                if client
+                    .post(endp_1)
+                    .json(&serde_json::json!({"test": "value"}))
+                    .send()
+                    .await?
+                    .status()
+                    != StatusCode::OK
+                {
+                    anyhow::bail!("Status not OK")
+                };
 
-                    if client
-                        .post(endp_2)
-                        .json(&serde_json::json!({"test": "value"}))
-                        .send()
-                        .await?
-                        .status()
-                        != StatusCode::OK
-                    {
-                        anyhow::bail!("Status not OK")
-                    };
+                if client
+                    .post(endp_2)
+                    .json(&serde_json::json!({"test": "value"}))
+                    .send()
+                    .await?
+                    .status()
+                    != StatusCode::OK
+                {
+                    anyhow::bail!("Status not OK")
+                };
 
-                    Ok(())
-                }
-            },
-            20,
-        )
+                Ok(())
+            }
+        })
         .await
         .unwrap();
 
@@ -551,44 +548,41 @@ mod tests {
             .unwrap();
 
         // And wait at most two seconds for all attempts to be processed
-        run_with_retries(
-            || async {
-                let list_1: ListResponse<MessageAttemptOut> = client
-                    .get(
-                        &format!("api/v1/app/{}/attempt/endpoint/{}/", app_id, endp_id_1),
-                        StatusCode::OK,
-                    )
-                    .await
-                    .unwrap();
-                let list_2: ListResponse<MessageAttemptOut> = client
-                    .get(
-                        &format!("api/v1/app/{}/attempt/endpoint/{}/", app_id, endp_id_2),
-                        StatusCode::OK,
-                    )
-                    .await
-                    .unwrap();
+        run_with_retries(|| async {
+            let list_1: ListResponse<MessageAttemptOut> = client
+                .get(
+                    &format!("api/v1/app/{}/attempt/endpoint/{}/", app_id, endp_id_1),
+                    StatusCode::OK,
+                )
+                .await
+                .unwrap();
+            let list_2: ListResponse<MessageAttemptOut> = client
+                .get(
+                    &format!("api/v1/app/{}/attempt/endpoint/{}/", app_id, endp_id_2),
+                    StatusCode::OK,
+                )
+                .await
+                .unwrap();
 
-                for (num, list) in [list_1, list_2].into_iter().enumerate() {
-                    if list.data.len() != 3 {
-                        anyhow::bail!("List {} length {}, expected 3", num, list.data.len());
-                    }
-
-                    let message_ids: Vec<_> = list.data.into_iter().map(|amo| amo.msg_id).collect();
-                    if !message_ids.contains(&msg_1) {
-                        anyhow::bail!("message_ids for list {} does not contain msg_1", num)
-                    }
-                    if !message_ids.contains(&msg_2) {
-                        anyhow::bail!("message_ids for list {} does not contain msg_2", num)
-                    }
-                    if !message_ids.contains(&msg_3) {
-                        anyhow::bail!("message_ids for list {} does not contain msg_3", num)
-                    }
+            for (num, list) in [list_1, list_2].into_iter().enumerate() {
+                if list.data.len() != 3 {
+                    anyhow::bail!("List {} length {}, expected 3", num, list.data.len());
                 }
 
-                Ok(())
-            },
-            40,
-        )
+                let message_ids: Vec<_> = list.data.into_iter().map(|amo| amo.msg_id).collect();
+                if !message_ids.contains(&msg_1) {
+                    anyhow::bail!("message_ids for list {} does not contain msg_1", num)
+                }
+                if !message_ids.contains(&msg_2) {
+                    anyhow::bail!("message_ids for list {} does not contain msg_2", num)
+                }
+                if !message_ids.contains(&msg_3) {
+                    anyhow::bail!("message_ids for list {} does not contain msg_3", num)
+                }
+            }
+
+            Ok(())
+        })
         .await
         .unwrap();
 

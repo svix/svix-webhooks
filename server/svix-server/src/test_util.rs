@@ -201,11 +201,8 @@ async fn test_receiver_route(
     code
 }
 
-pub async fn run_with_retries<F: Future<Output = Result<()>>, C: Fn() -> F>(
-    f: C,
-    max_attempts: usize,
-) -> Result<()> {
-    for attempt in 0..max_attempts {
+pub async fn run_with_retries<F: Future<Output = Result<()>>, C: Fn() -> F>(f: C) -> Result<()> {
+    for attempt in 0..20 {
         let out = f().await;
         if out.is_ok() {
             return Ok(());
