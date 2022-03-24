@@ -498,41 +498,6 @@ mod tests {
         let receiver_1 = TestReceiver::start(axum::http::StatusCode::OK);
         let receiver_2 = TestReceiver::start(axum::http::StatusCode::OK);
 
-        // Wait at most a second (50ms * 20 retries) for a successful response from that endpoint
-        run_with_retries(|| {
-            let endp_1 = receiver_1.endpoint.clone();
-            let endp_2 = receiver_2.endpoint.clone();
-            async {
-                let client = reqwest::Client::new();
-
-                if client
-                    .post(endp_1)
-                    .json(&serde_json::json!({"test": "value"}))
-                    .send()
-                    .await?
-                    .status()
-                    != StatusCode::OK
-                {
-                    anyhow::bail!("Status not OK")
-                };
-
-                if client
-                    .post(endp_2)
-                    .json(&serde_json::json!({"test": "value"}))
-                    .send()
-                    .await?
-                    .status()
-                    != StatusCode::OK
-                {
-                    anyhow::bail!("Status not OK")
-                };
-
-                Ok(())
-            }
-        })
-        .await
-        .unwrap();
-
         let endp_id_1 = create_test_endpoint(&client, &app_id, &receiver_1.endpoint)
             .await
             .unwrap();
