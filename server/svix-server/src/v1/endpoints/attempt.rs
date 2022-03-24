@@ -216,23 +216,23 @@ async fn list_attempts_by_endpoint(
 
     query = match status_code_class {
         Some(StatusCodeClass::Code1xx) => {
-            query.filter(messageattempt::Column::ResponseStatusCode.lt(100i16))
+            query.filter(messageattempt::Column::ResponseStatusCode.lt(200))
         }
 
         Some(StatusCodeClass::Code2xx) => {
-            query.filter(messageattempt::Column::ResponseStatusCode.between(199i16, 300i16))
+            query.filter(messageattempt::Column::ResponseStatusCode.between(200, 299))
         }
 
         Some(StatusCodeClass::Code3xx) => {
-            query.filter(messageattempt::Column::ResponseStatusCode.between(299i16, 400i16))
+            query.filter(messageattempt::Column::ResponseStatusCode.between(300, 399))
         }
 
         Some(StatusCodeClass::Code4xx) => {
-            query.filter(messageattempt::Column::ResponseStatusCode.between(399i16, 500i16))
+            query.filter(messageattempt::Column::ResponseStatusCode.between(400, 499))
         }
 
         Some(StatusCodeClass::Code5xx) => {
-            query.filter(messageattempt::Column::ResponseStatusCode.between(599i16, 600i16))
+            query.filter(messageattempt::Column::ResponseStatusCode.between(500, 599))
         }
 
         Some(StatusCodeClass::CodeNone) => query,
