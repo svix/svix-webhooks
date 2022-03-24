@@ -517,35 +517,17 @@ mod tests {
 
         // And wait at most one second for all attempts to be processed
         run_with_retries(|| async {
-            let list_1: ListResponse<MessageAttemptOut> = client
-                .get(
-                    &format!("api/v1/app/{}/attempt/endpoint/{}/", app_id, endp_id_1),
-                    StatusCode::OK,
-                )
-                .await
-                .unwrap();
-            let list_2: ListResponse<MessageAttemptOut> = client
-                .get(
-                    &format!("api/v1/app/{}/attempt/endpoint/{}/", app_id, endp_id_2),
-                    StatusCode::OK,
-                )
-                .await
-                .unwrap();
+            for endp_id in [endp_id_1.clone(), endp_id_2.clone()] {
+                let list: ListResponse<MessageAttemptOut> = client
+                    .get(
+                        &format!("api/v1/app/{}/attempt/endpoint/{}/", app_id, endp_id),
+                        StatusCode::OK,
+                    )
+                    .await
+                    .unwrap();
 
-            for (num, list) in [list_1, list_2].into_iter().enumerate() {
                 if list.data.len() != 3 {
-                    anyhow::bail!("List {} length {}, expected 3", num, list.data.len());
-                }
-
-                let message_ids: Vec<_> = list.data.into_iter().map(|amo| amo.msg_id).collect();
-                if !message_ids.contains(&msg_1) {
-                    anyhow::bail!("message_ids for list {} does not contain msg_1", num)
-                }
-                if !message_ids.contains(&msg_2) {
-                    anyhow::bail!("message_ids for list {} does not contain msg_2", num)
-                }
-                if !message_ids.contains(&msg_3) {
-                    anyhow::bail!("message_ids for list {} does not contain msg_3", num)
+                    anyhow::bail!("list len {}, not 3", list.data.len());
                 }
             }
 
@@ -553,6 +535,28 @@ mod tests {
         })
         .await
         .unwrap();
+
+        let list_1: ListResponse<MessageAttemptOut> = client
+            .get(
+                &format!("api/v1/app/{}/attempt/endpoint/{}/", app_id, endp_id_1),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
+        let list_2: ListResponse<MessageAttemptOut> = client
+            .get(
+                &format!("api/v1/app/{}/attempt/endpoint/{}/", app_id, endp_id_2),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
+
+        for list in [list_1, list_2] {
+            let message_ids: Vec<_> = list.data.into_iter().map(|amo| amo.msg_id).collect();
+            assert!(message_ids.contains(&msg_1));
+            assert!(message_ids.contains(&msg_2));
+            assert!(message_ids.contains(&msg_3));
+        }
 
         receiver_1.jh.abort();
         receiver_2.jh.abort();
