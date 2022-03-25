@@ -3,8 +3,8 @@
 
 use axum::Router;
 
-mod endpoints;
-pub(crate) mod utils;
+pub mod endpoints;
+pub mod utils;
 
 pub fn router() -> Router {
     let ret = Router::new()

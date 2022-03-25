@@ -1,14 +1,20 @@
+// Dead code is allowed because not everything is used in all of the tests
+#![allow(dead_code)]
+
 use std::{future::Future, net::TcpListener, sync::Arc};
 
 use anyhow::{Context, Result};
 
-use crate::core::{
-    security::generate_token,
-    types::{BaseId, OrganizationId},
-};
 use reqwest::{Client, RequestBuilder, StatusCode};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use tokio::sync::mpsc;
+
+use svix_server::core::{
+    security::generate_token,
+    types::{BaseId, OrganizationId},
+};
+
+pub mod common_calls;
 
 pub struct TestClient {
     base_uri: String,
@@ -146,20 +152,20 @@ impl TestClient {
 
 pub fn start_svix_server() -> (TestClient, tokio::task::JoinHandle<()>) {
     let _ = dotenv::dotenv();
-    let cfg = crate::cfg::load().unwrap();
+    let cfg = svix_server::cfg::load().unwrap();
 
     // Change the queue type to in-memory. This is necessary so test workers don't pick up messages
     // from other tests whose threads then abort at the end of a test before associated database
     // transactions are complete.
     let mut cfg = cfg.as_ref().clone();
-    cfg.queue_type = crate::cfg::QueueType::Memory;
+    cfg.queue_type = svix_server::cfg::QueueType::Memory;
     let cfg = Arc::new(cfg);
 
     let token = generate_token(&cfg.jwt_secret, OrganizationId::new(None, None)).unwrap();
     let listener = TcpListener::bind("127.0.0.1:0").unwrap();
     let base_uri = format!("http://{}", listener.local_addr().unwrap());
 
-    let jh = tokio::spawn(crate::run(cfg, Some(listener)));
+    let jh = tokio::spawn(svix_server::run(cfg, Some(listener)));
 
     (TestClient::new(base_uri, &token), jh)
 }
