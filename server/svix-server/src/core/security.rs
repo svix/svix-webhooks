@@ -22,7 +22,7 @@ use crate::{
 use super::types::{ApplicationIdOrUid, OrganizationId};
 
 /// The default org_id we use (useful for generating JWTs when testing).
-fn org_id() -> OrganizationId {
+pub fn default_org_id() -> OrganizationId {
     OrganizationId("org_23rb8YdGqMT0qIzpgGwdXfHirMu".to_owned())
 }
 
@@ -114,10 +114,10 @@ where
     }
 }
 
-pub fn generate_token(keys: &Keys) -> Result<String> {
+pub fn generate_token(keys: &Keys, org_id: OrganizationId) -> Result<String> {
     let claims = Claims::create(Duration::from_hours(24 * 365 * 10))
         .with_issuer(env!("CARGO_PKG_NAME"))
-        .with_subject(org_id().0);
+        .with_subject(org_id.0);
     Ok(keys.key.authenticate(claims).unwrap())
 }
 
@@ -131,18 +131,5 @@ impl Keys {
         Self {
             key: HS256Key::from_bytes(secret),
         }
-    }
-}
-
-#[cfg(test)]
-pub(crate) mod test_util {
-    use super::*;
-    use crate::core::types::BaseId;
-
-    pub fn generate_token_random_org(keys: &Keys) -> Result<String> {
-        let claims = Claims::create(Duration::from_hours(24 * 365 * 10))
-            .with_issuer(env!("CARGO_PKG_NAME"))
-            .with_subject(OrganizationId::new(None, None).0);
-        Ok(keys.key.authenticate(claims).unwrap())
     }
 }

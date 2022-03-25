@@ -17,7 +17,10 @@ use tower_http::trace::TraceLayer;
 
 use crate::{
     cfg::Configuration,
-    core::{cache::RedisCache, security::generate_token},
+    core::{
+        cache::RedisCache,
+        security::{default_org_id, generate_token},
+    },
     db::init_db,
     worker::worker_loop,
 };
@@ -169,7 +172,7 @@ async fn main() {
         command: JwtCommands::Generate,
     }) = &args.command
     {
-        let token = generate_token(&cfg.jwt_secret).unwrap();
+        let token = generate_token(&cfg.jwt_secret, default_org_id()).unwrap();
         println!("Token (Bearer): {}", token);
         exit(0);
     }
