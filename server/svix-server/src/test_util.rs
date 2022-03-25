@@ -2,11 +2,13 @@ use std::{future::Future, net::TcpListener, sync::Arc};
 
 use anyhow::{Context, Result};
 
+use crate::core::{
+    security::generate_token,
+    types::{BaseId, OrganizationId},
+};
 use reqwest::{Client, RequestBuilder, StatusCode};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use tokio::sync::mpsc;
-
-use crate::core::security::test_util::generate_token_random_org;
 
 pub struct TestClient {
     base_uri: String,
@@ -153,7 +155,7 @@ pub fn start_svix_server() -> (TestClient, tokio::task::JoinHandle<()>) {
     cfg.queue_type = crate::cfg::QueueType::Memory;
     let cfg = Arc::new(cfg);
 
-    let token = generate_token_random_org(&cfg.jwt_secret).unwrap();
+    let token = generate_token(&cfg.jwt_secret, OrganizationId::new(None, None)).unwrap();
     let listener = TcpListener::bind("127.0.0.1:0").unwrap();
     let base_uri = format!("http://{}", listener.local_addr().unwrap());
 
