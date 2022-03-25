@@ -6,12 +6,13 @@ use crate::{
         security::AuthenticatedApplication,
         types::{
             ApplicationId, ApplicationIdOrUid, BaseId, EndpointId, EndpointIdOrUid, EndpointUid,
-            EventChannel, EventTypeNameSet, MessageAttemptId, MessageAttemptTriggerType, MessageId,
-            MessageIdOrUid, MessageStatus, StatusCodeClass,
+            EventChannel, EventChannelSet, EventTypeNameSet, MessageAttemptId,
+            MessageAttemptTriggerType, MessageEndpointId, MessageId, MessageIdOrUid, MessageStatus,
+            StatusCodeClass,
         },
     },
     db::models::{endpoint, message, messagedestination},
-    error::{Error, HttpError, Result, ValidationErrorItem},
+    error::{Error, HttpError, Result},
     queue::{MessageTask, TaskQueueProducer},
     v1::{
         endpoints::message::MessageOut,
@@ -336,6 +337,37 @@ async fn list_attempts_by_msg(
         query.all(db).await?.into_iter().map(Into::into).collect(),
         limit as usize,
     )))
+}
+
+/// A type combining information from [`messagedestination::Model`]s, [`message::Model`]s and
+/// [`endpoint::Model`]s to output information on attempted destinations
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, ModelOut)]
+#[serde(rename_all = "camelCase")]
+struct MessageEndpointOut {
+    uid: Option<EndpointUid>,
+    url: String,
+    version: i32,
+    description: Option<String>,
+    filter_types: Option<EventTypeNameSet>,
+    channels: Option<EventChannelSet>,
+    disabled: Option<bool>,
+    rate_limit: Option<i32>,
+    id: EndpointId,
+    created_at: DateTime<Utc>,
+    status: MessageStatus,
+    next_attempt: Option<DateTime<Utc>>,
+}
+
+async fn list_attempted_destinations(
+    Extension(ref db): Extension<DatabaseConnection>,
+    ValidatedQuery(mut pagination): ValidatedQuery<Pagination<MessageEndpointId>>,
+    Path((_app_id, msg_id)): Path<(ApplicationId, MessageId)>,
+    AuthenticatedApplication {
+        permissions: _,
+        app,
+    }: AuthenticatedApplication,
+) -> Result<Json<ListResponse<MessageEndpointOut>>> {
+    Err(HttpError::not_implemented(None, None).into())
 }
 
 #[derive(Debug, Deserialize, Validate)]
