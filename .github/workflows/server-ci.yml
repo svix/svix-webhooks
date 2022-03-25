@@ -73,7 +73,6 @@ jobs:
       env:
         DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
         SVIX_REDIS_DSN: "redis://localhost:6379"
-        SVIX_QUEUE_TYPE: "memory"
         SVIX_JWT_SECRET: "test value"
       with:
         command: test
