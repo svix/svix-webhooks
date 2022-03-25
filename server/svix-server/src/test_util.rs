@@ -1,4 +1,4 @@
-use std::{future::Future, net::TcpListener};
+use std::{future::Future, net::TcpListener, sync::Arc};
 
 use anyhow::{Context, Result};
 
@@ -145,6 +145,14 @@ impl TestClient {
 pub fn start_svix_server() -> (TestClient, tokio::task::JoinHandle<()>) {
     let _ = dotenv::dotenv();
     let cfg = crate::cfg::load().unwrap();
+
+    // Change the queue type to in-memory. This is necessary so test workers don't pick up messages
+    // from other tests whose threads then abort at the end of a test before associated database
+    // transactions are complete.
+    let mut cfg = cfg.as_ref().clone();
+    cfg.queue_type = crate::cfg::QueueType::Memory;
+    let cfg = Arc::new(cfg);
+
     let token = generate_token_random_org(&cfg.jwt_secret).unwrap();
     let listener = TcpListener::bind("127.0.0.1:0").unwrap();
     let base_uri = format!("http://{}", listener.local_addr().unwrap());
