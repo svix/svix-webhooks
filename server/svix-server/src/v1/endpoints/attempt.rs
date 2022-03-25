@@ -5,13 +5,13 @@ use crate::{
     core::{
         security::AuthenticatedApplication,
         types::{
-            ApplicationId, ApplicationIdOrUid, BaseId, EndpointId, EndpointIdOrUid, EventChannel,
-            EventTypeNameSet, MessageAttemptId, MessageAttemptTriggerType, MessageId,
+            ApplicationId, ApplicationIdOrUid, BaseId, EndpointId, EndpointIdOrUid, EndpointUid,
+            EventChannel, EventTypeNameSet, MessageAttemptId, MessageAttemptTriggerType, MessageId,
             MessageIdOrUid, MessageStatus, StatusCodeClass,
         },
     },
     db::models::{endpoint, message, messagedestination},
-    error::{Error, HttpError, Result},
+    error::{Error, HttpError, Result, ValidationErrorItem},
     queue::{MessageTask, TaskQueueProducer},
     v1::{
         endpoints::message::MessageOut,
@@ -162,8 +162,8 @@ async fn list_attempted_messages(
     )))
 }
 
-/// Additional parameters (besides pagination) in the query string for the "List Attempts by
-/// Endpoint" enpoint and "List Attempts by Msg" endpoint.
+/// Additional parameters (besides pagination, and one parameter for by message) in the query string
+/// for the "List Attempts by Endpoint" enpoint and "List Attempts by Msg" endpoint.
 #[derive(Debug, Deserialize, Validate)]
 pub struct ListAttemptsByEndpointOrMsgQueryParameters {
     status: Option<MessageStatus>,
@@ -174,6 +174,8 @@ pub struct ListAttemptsByEndpointOrMsgQueryParameters {
     channel: Option<EventChannel>,
 }
 
+// Applies filters from the [`ListAttemptsByEndpointOrMsgQueryParameters`] of the
+// [`list_attempts_by_endpoint`] and [`list_attempts_by_msg`] endpoints that are common
 fn list_attempts_by_endpoint_or_message_query_filters(
     mut query: Select<messageattempt::Entity>,
     params: ListAttemptsByEndpointOrMsgQueryParameters,
@@ -271,11 +273,25 @@ async fn list_attempts_by_endpoint(
     )))
 }
 
+/// Flattens in a [`ListAttemptsByEndpointOrMsgQueryParameters`] and adds one extra query parameter
+#[derive(Debug, Deserialize, Validate)]
+pub struct ListAttemptsByMsgQueryParameters {
+    #[serde(flatten)]
+    #[validate]
+    common: ListAttemptsByEndpointOrMsgQueryParameters,
+
+    #[validate]
+    endpoint_id: Option<EndpointIdOrUid>,
+}
+
 /// Fetches a list of [`MessageAttemptOut`]s for a given message ID
 async fn list_attempts_by_msg(
     Extension(ref db): Extension<DatabaseConnection>,
     ValidatedQuery(mut pagination): ValidatedQuery<Pagination<MessageAttemptId>>,
-    ValidatedQuery(query_params): ValidatedQuery<ListAttemptsByEndpointOrMsgQueryParameters>,
+    ValidatedQuery(ListAttemptsByMsgQueryParameters {
+        common,
+        endpoint_id: endpoint_id_or_uid,
+    }): ValidatedQuery<ListAttemptsByMsgQueryParameters>,
     Path((_app_id, msg_id)): Path<(ApplicationId, MessageId)>,
     AuthenticatedApplication {
         permissions: _,
@@ -286,7 +302,7 @@ async fn list_attempts_by_msg(
     let iterator = pagination.iterator.take();
 
     // Confirm message ID belongs to the given application
-    if message::Entity::secure_find_by_id(app.id, msg_id.clone())
+    if message::Entity::secure_find_by_id(app.id.clone(), msg_id.clone())
         .one(db)
         .await?
         .is_none()
@@ -302,7 +318,19 @@ async fn list_attempts_by_msg(
         query = query.filter(messageattempt::Column::Id.lt(iterator));
     }
 
-    query = list_attempts_by_endpoint_or_message_query_filters(query, query_params);
+    if let Some(endpoint_id_or_uid) = endpoint_id_or_uid {
+        // Ensure the endpoint ID belongs to the given application
+        if let Some(endp) = endpoint::Entity::secure_find_by_id_or_uid(app.id, endpoint_id_or_uid)
+            .one(db)
+            .await?
+        {
+            query = query.filter(messageattempt::Column::EndpId.eq(endp.id));
+        } else {
+            return Err(Error::Http(HttpError::not_found(None, None)));
+        }
+    }
+
+    query = list_attempts_by_endpoint_or_message_query_filters(query, common);
 
     Ok(Json(MessageAttemptOut::list_response(
         query.all(db).await?.into_iter().map(Into::into).collect(),
