@@ -58,7 +58,6 @@ async fn delete_endpoint(client: &TestClient, app_id: &ApplicationId, ep_id: &st
 }
 
 #[tokio::test]
-#[cfg_attr(not(feature = "integration_testing"), ignore)]
 async fn test_crud() {
     let (client, _jh) = start_svix_server();
 
@@ -200,7 +199,6 @@ async fn test_crud() {
 /// Tests that there is at most one endpoint with a single UID for all endpoints associated with
 /// any application
 #[tokio::test]
-#[cfg_attr(not(feature = "integration_testing"), ignore)]
 async fn test_uid() {
     let (client, _jh) = start_svix_server();
 
@@ -290,7 +288,6 @@ async fn test_uid() {
 
 // Simply tests that upon rotating an endpoint secret that it differs from the prior one
 #[tokio::test]
-#[cfg_attr(not(feature = "integration_testing"), ignore)]
 async fn test_endpoint_secret_get_and_rotation() {
     let (client, _jh) = start_svix_server();
 

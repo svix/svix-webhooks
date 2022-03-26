@@ -13,7 +13,6 @@ use utils::{
 };
 
 #[tokio::test]
-#[cfg_attr(not(feature = "integration_testing"), ignore)]
 async fn test_message_create_read_list() {
     let (client, _jh) = start_svix_server();
 
