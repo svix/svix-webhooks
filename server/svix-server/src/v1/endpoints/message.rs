@@ -56,18 +56,18 @@ pub fn validate_channels_msg(
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize, Validate, ModelIn)]
 #[serde(rename_all = "camelCase")]
-struct MessageIn {
+pub struct MessageIn {
     #[validate]
     #[serde(rename = "eventId", skip_serializing_if = "Option::is_none")]
-    uid: Option<MessageUid>,
+    pub uid: Option<MessageUid>,
     #[validate]
-    event_type: EventTypeName,
-    payload: serde_json::Value,
+    pub event_type: EventTypeName,
+    pub payload: serde_json::Value,
 
     #[validate(custom = "validate_channels_msg")]
     #[validate]
     #[serde(skip_serializing_if = "Option::is_none")]
-    channels: Option<EventChannelSet>,
+    pub channels: Option<EventChannelSet>,
 }
 
 // FIXME: This can and should be a derive macro
@@ -85,17 +85,17 @@ impl ModelIn for MessageIn {
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, ModelOut)]
 #[serde(rename_all = "camelCase")]
-pub(super) struct MessageOut {
+pub struct MessageOut {
     #[serde(rename = "eventId")]
-    pub(super) uid: Option<MessageUid>,
-    pub(super) event_type: EventTypeName,
-    pub(super) payload: serde_json::Value,
+    pub uid: Option<MessageUid>,
+    pub event_type: EventTypeName,
+    pub payload: serde_json::Value,
 
-    pub(super) channels: Option<EventChannelSet>,
+    pub channels: Option<EventChannelSet>,
 
-    pub(super) id: MessageId,
+    pub id: MessageId,
     #[serde(rename = "timestamp")]
-    pub(super) created_at: DateTime<Utc>,
+    pub created_at: DateTime<Utc>,
 }
 
 // FIXME: This can and should be a derive macro
@@ -263,110 +263,4 @@ pub fn router() -> Router {
             .route("/msg/", post(create_message))
             .route("/msg/:msg_id/", get(get_message)),
     )
-}
-
-#[cfg(test)]
-pub(crate) mod tests {
-    use anyhow::Result;
-    use reqwest::StatusCode;
-    use serde::Serialize;
-
-    use super::{MessageIn, MessageOut};
-    use crate::{
-        core::types::{ApplicationId, EventTypeName, MessageId},
-        test_util::{start_svix_server, TestClient},
-        v1::{
-            endpoints::{
-                application::tests::create_test_app, endpoint::tests::create_test_endpoint,
-            },
-            utils::ListResponse,
-        },
-    };
-
-    pub(crate) async fn create_test_message(
-        client: &TestClient,
-        app_id: &ApplicationId,
-        data: serde_json::Value,
-    ) -> Result<MessageId> {
-        let msg: MessageOut = client
-            .post(
-                &format!("api/v1/app/{}/msg/", &app_id),
-                message_in(app_id, data)?,
-                StatusCode::ACCEPTED,
-            )
-            .await?;
-
-        Ok(msg.id)
-    }
-
-    fn message_in<T: Serialize>(event_type: &str, payload: T) -> Result<MessageIn> {
-        Ok(MessageIn {
-            event_type: EventTypeName(event_type.to_owned()),
-            payload: serde_json::to_value(payload).unwrap(),
-
-            channels: None,
-            uid: None,
-        })
-    }
-
-    #[tokio::test]
-    #[cfg_attr(not(feature = "integration_testing"), ignore)]
-    async fn test_message_create_read_list() {
-        let (client, _jh) = start_svix_server();
-
-        let app_id = create_test_app(&client, "v1MessageCRTestApp")
-            .await
-            .unwrap();
-
-        let _endp_id = create_test_endpoint(&client, &app_id, "http://localhost:2/bad/url/")
-            .await
-            .unwrap();
-
-        // CREATE
-        let message_1: MessageOut = client
-            .post(
-                &format!("api/v1/app/{}/msg/", &app_id),
-                message_in(&app_id, serde_json::json!({"test": "value"})).unwrap(),
-                StatusCode::ACCEPTED,
-            )
-            .await
-            .unwrap();
-        let message_2: MessageOut = client
-            .post(
-                &format!("api/v1/app/{}/msg/", &app_id),
-                message_in(&app_id, serde_json::json!({"test": "value2"})).unwrap(),
-                StatusCode::ACCEPTED,
-            )
-            .await
-            .unwrap();
-
-        assert_eq!(
-            client
-                .get::<MessageOut>(
-                    &format!("api/v1/app/{}/msg/{}", &app_id, &message_1.id),
-                    StatusCode::OK
-                )
-                .await
-                .unwrap(),
-            message_1
-        );
-        assert_eq!(
-            client
-                .get::<MessageOut>(
-                    &format!("api/v1/app/{}/msg/{}", &app_id, &message_2.id),
-                    StatusCode::OK
-                )
-                .await
-                .unwrap(),
-            message_2
-        );
-
-        let list: ListResponse<MessageOut> = client
-            .get(&format!("api/v1/app/{}/msg/", &app_id), StatusCode::OK)
-            .await
-            .unwrap();
-        assert_eq!(list.data.len(), 2);
-        assert!(list.data.contains(&message_1));
-        assert!(list.data.contains(&message_2));
-    }
 }

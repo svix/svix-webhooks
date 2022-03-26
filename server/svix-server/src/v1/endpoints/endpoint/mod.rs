@@ -51,39 +51,39 @@ pub fn validate_channels_endpoint(
 
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize, Validate, ModelIn)]
 #[serde(rename_all = "camelCase")]
-struct EndpointIn {
+pub struct EndpointIn {
     #[serde(default)]
     #[serde(skip_serializing_if = "String::is_empty")]
-    description: String,
+    pub description: String,
 
     #[validate(range(min = 1, message = "Endpoint rate limits must be at least one if set"))]
     #[serde(skip_serializing_if = "Option::is_none")]
-    rate_limit: Option<u16>,
+    pub rate_limit: Option<u16>,
     /// Optional unique identifier for the endpoint
     #[validate]
     #[serde(skip_serializing_if = "Option::is_none")]
-    uid: Option<EndpointUid>,
+    pub uid: Option<EndpointUid>,
     #[validate(url(message = "Endpoint URLs must be valid"))]
-    url: String,
+    pub url: String,
     #[validate(range(min = 1, message = "Endpoint versions must be at least one"))]
-    version: u16,
+    pub version: u16,
     #[serde(default)]
     #[serde(skip_serializing_if = "std::ops::Not::not")]
-    disabled: bool,
+    pub disabled: bool,
     #[serde(rename = "filterTypes")]
     #[validate(custom = "validate_event_types_ids")]
     #[validate]
     #[serde(skip_serializing_if = "Option::is_none")]
-    event_types_ids: Option<EventTypeNameSet>,
+    pub event_types_ids: Option<EventTypeNameSet>,
     #[validate(custom = "validate_channels_endpoint")]
     #[validate]
     #[serde(skip_serializing_if = "Option::is_none")]
-    channels: Option<EventChannelSet>,
+    pub channels: Option<EventChannelSet>,
 
     #[serde(default)]
     #[serde(rename = "secret")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    key: Option<EndpointSecret>,
+    pub key: Option<EndpointSecret>,
 }
 
 // FIXME: This can and should be a derive macro
@@ -107,21 +107,21 @@ impl ModelIn for EndpointIn {
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, ModelOut)]
 #[serde(rename_all = "camelCase")]
-struct EndpointOut {
-    description: String,
-    rate_limit: Option<u16>,
+pub struct EndpointOut {
+    pub description: String,
+    pub rate_limit: Option<u16>,
     /// Optional unique identifier for the endpoint
-    uid: Option<EndpointUid>,
-    url: String,
-    version: u16,
-    disabled: bool,
+    pub uid: Option<EndpointUid>,
+    pub url: String,
+    pub version: u16,
+    pub disabled: bool,
     #[serde(rename = "filterTypes")]
-    event_types_ids: Option<EventTypeNameSet>,
-    channels: Option<EventChannelSet>,
+    pub event_types_ids: Option<EventTypeNameSet>,
+    pub channels: Option<EventChannelSet>,
 
-    id: EndpointId,
-    created_at: DateTime<Utc>,
-    updated_at: DateTime<Utc>,
+    pub id: EndpointId,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
 }
 
 // FIXME: This can and should be a derive macro
@@ -146,26 +146,26 @@ impl From<endpoint::Model> for EndpointOut {
 
 #[derive(Clone, Debug, PartialEq, Validate, Deserialize)]
 #[serde(rename_all = "camelCase")]
-struct EndpointSecretRotateIn {
+pub struct EndpointSecretRotateIn {
     #[serde(default)]
     key: Option<EndpointSecret>,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-struct EndpointSecretOut {
+pub struct EndpointSecretOut {
     key: EndpointSecret,
 }
 
 #[derive(Clone, Debug, PartialEq, Validate, Deserialize)]
 #[serde(rename_all = "camelCase")]
-struct RecoverIn {
+pub struct RecoverIn {
     since: DateTime<Utc>,
 }
 
 #[derive(Clone, Debug, PartialEq, Validate, Deserialize)]
 #[serde(rename_all = "camelCase")]
-struct EndpointHeadersIn {
+pub struct EndpointHeadersIn {
     #[validate]
     headers: EndpointHeaders,
 }
@@ -265,99 +265,4 @@ pub fn router() -> Router {
                     .put(headers::update_endpoint_headers),
             ),
     )
-}
-
-#[cfg(test)]
-pub(crate) mod tests {
-    use anyhow::Result;
-    use reqwest::StatusCode;
-
-    use super::{EndpointIn, EndpointOut};
-    use crate::{
-        core::types::{ApplicationId, EndpointId},
-        test_util::{IgnoredResponse, TestClient},
-    };
-
-    pub(crate) async fn create_test_endpoint(
-        client: &TestClient,
-        app_id: &ApplicationId,
-        url: &str,
-    ) -> Result<EndpointId> {
-        post_endpoint_default(client, app_id, url)
-            .await
-            .map(|ep| ep.id)
-    }
-
-    pub(super) fn endpoint_in(url: &str) -> EndpointIn {
-        EndpointIn {
-            url: url.to_owned(),
-            version: 1,
-            ..Default::default()
-        }
-    }
-
-    pub(super) async fn post_endpoint_default(
-        client: &TestClient,
-        app_id: &str,
-        ep_url: &str,
-    ) -> Result<EndpointOut> {
-        client
-            .post(
-                &format!("api/v1/app/{}/endpoint/", app_id),
-                endpoint_in(ep_url),
-                StatusCode::CREATED,
-            )
-            .await
-    }
-
-    pub(super) async fn post_endpoint_in(
-        client: &TestClient,
-        app_id: &str,
-        ep: EndpointIn,
-    ) -> Result<EndpointOut> {
-        client
-            .post(
-                &format!("api/v1/app/{}/endpoint/", app_id),
-                ep,
-                StatusCode::CREATED,
-            )
-            .await
-    }
-
-    pub(super) async fn get_endpoint(
-        client: &TestClient,
-        app_id: &str,
-        ep_id: &str,
-    ) -> Result<EndpointOut> {
-        client
-            .get(
-                &format!("api/v1/app/{}/endpoint/{}/", app_id, ep_id),
-                StatusCode::OK,
-            )
-            .await
-    }
-
-    pub(super) async fn get_404(client: &TestClient, app_id: &str, ep_id: &str) -> Result<()> {
-        let _: IgnoredResponse = client
-            .get(
-                &format!("api/v1/app/{}/endpoint/{}/", app_id, ep_id),
-                StatusCode::NOT_FOUND,
-            )
-            .await?;
-        Ok(())
-    }
-
-    pub(super) async fn delete_endpoint(
-        client: &TestClient,
-        app_id: &str,
-        ep_id: &str,
-    ) -> Result<()> {
-        let _: IgnoredResponse = client
-            .delete(
-                &format!("api/v1/app/{}/endpoint/{}/", app_id, ep_id),
-                StatusCode::NO_CONTENT,
-            )
-            .await?;
-        Ok(())
-    }
 }

@@ -37,9 +37,9 @@ pub struct EmptyResponse {}
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct ListResponse<T: Clone> {
-    pub(crate) data: Vec<T>,
-    pub(crate) iterator: Option<String>,
-    pub(crate) done: bool,
+    pub data: Vec<T>,
+    pub iterator: Option<String>,
+    pub done: bool,
 }
 
 pub trait ModelIn {

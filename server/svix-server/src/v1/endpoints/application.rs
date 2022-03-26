@@ -25,17 +25,17 @@ use crate::v1::utils::Pagination;
 
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize, Validate, ModelIn)]
 #[serde(rename_all = "camelCase")]
-struct ApplicationIn {
+pub struct ApplicationIn {
     #[validate(length(min = 1, message = "Application names must be at least one character"))]
-    name: String,
+    pub name: String,
 
     #[validate(range(min = 1, message = "Application rate limits must be at least 1 if set"))]
     #[serde(skip_serializing_if = "Option::is_none")]
-    rate_limit: Option<u16>,
+    pub rate_limit: Option<u16>,
     /// Optional unique identifier for the application
     #[validate]
     #[serde(skip_serializing_if = "Option::is_none")]
-    uid: Option<ApplicationUid>,
+    pub uid: Option<ApplicationUid>,
 }
 
 // FIXME: This can and should be a derive macro
@@ -51,17 +51,17 @@ impl ModelIn for ApplicationIn {
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, ModelOut)]
 #[serde(rename_all = "camelCase")]
-struct ApplicationOut {
+pub struct ApplicationOut {
     // FIXME: Do we want to use serde(flatten) or just duplicate the keys?
     #[serde(skip_serializing_if = "Option::is_none")]
-    uid: Option<ApplicationUid>,
-    name: String,
+    pub uid: Option<ApplicationUid>,
+    pub name: String,
     #[serde(skip_serializing_if = "Option::is_none")]
-    rate_limit: Option<u16>,
+    pub rate_limit: Option<u16>,
 
-    id: ApplicationId,
-    created_at: DateTime<Utc>,
-    updated_at: DateTime<Utc>,
+    pub id: ApplicationId,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
 }
 
 // FIXME: This can and should be a derive macro
@@ -171,188 +171,4 @@ pub fn router() -> Router {
                 .put(update_application)
                 .delete(delete_application),
         )
-}
-
-#[cfg(test)]
-pub(crate) mod tests {
-    use anyhow::Result;
-    use reqwest::StatusCode;
-
-    use super::{ApplicationIn, ApplicationOut};
-    use crate::{
-        core::types::ApplicationId,
-        test_util::{start_svix_server, IgnoredResponse, TestClient},
-        v1::utils::ListResponse,
-    };
-
-    fn application_in(name: &str) -> ApplicationIn {
-        ApplicationIn {
-            name: name.to_owned(),
-            ..Default::default()
-        }
-    }
-
-    /// A test utility for creating an application with the given name, returning its ID for use with
-    /// the creation of other objects. NOTE: You must call [`delete_test_app`] at the end of the test
-    /// to avoid leaving test records in the database.
-    pub(crate) async fn create_test_app(client: &TestClient, name: &str) -> Result<ApplicationId> {
-        Ok(client
-            .post::<_, ApplicationOut>("api/v1/app/", application_in(name), StatusCode::CREATED)
-            .await?
-            .id)
-    }
-
-    /// A test utility for deleting an application with the given ID used for cleaning up at the end
-    /// of a test.
-    pub(crate) async fn delete_test_app(client: &TestClient, id: ApplicationId) -> Result<()> {
-        let _: IgnoredResponse = client
-            .delete(&format!("api/v1/app/{}/", id), StatusCode::NO_CONTENT)
-            .await?;
-
-        Ok(())
-    }
-
-    #[tokio::test]
-    #[cfg_attr(not(feature = "integration_testing"), ignore)]
-    async fn test_crud() {
-        let (client, _jh) = start_svix_server();
-
-        const APP_NAME_1_1: &str = "v1ApplicationCrudTest11";
-        const APP_NAME_1_2: &str = "v1ApplicationCrudTest12";
-        const APP_NAME_2_1: &str = "v1ApplicationCrudTest21";
-        const APP_NAME_2_2: &str = "v1ApplicationCrudTest22";
-
-        // CREATE
-        let app_1: ApplicationOut = client
-            .post(
-                "api/v1/app/",
-                application_in(APP_NAME_1_1),
-                StatusCode::CREATED,
-            )
-            .await
-            .unwrap();
-        assert_eq!(app_1.name, APP_NAME_1_1);
-
-        let app_2: ApplicationOut = client
-            .post(
-                "api/v1/app/",
-                application_in(APP_NAME_2_1),
-                StatusCode::CREATED,
-            )
-            .await
-            .unwrap();
-        assert_eq!(app_2.name, APP_NAME_2_1);
-
-        // READ
-        assert_eq!(
-            client
-                .get::<ApplicationOut>(&format!("api/v1/app/{}/", app_1.id), StatusCode::OK)
-                .await
-                .unwrap(),
-            app_1
-        );
-
-        assert_eq!(
-            client
-                .get::<ApplicationOut>(&format!("api/v1/app/{}/", app_2.id), StatusCode::OK,)
-                .await
-                .unwrap(),
-            app_2
-        );
-
-        // UPDATE
-        let app_1_id = app_1.id;
-        let app_1: ApplicationOut = client
-            .put(
-                &format!("api/v1/app/{}", app_1_id),
-                application_in(APP_NAME_1_2),
-                StatusCode::OK,
-            )
-            .await
-            .unwrap();
-
-        let app_2_id = app_2.id;
-        let app_2: ApplicationOut = client
-            .put(
-                &format!("api/v1/app/{}", app_2_id),
-                application_in(APP_NAME_2_2),
-                StatusCode::OK,
-            )
-            .await
-            .unwrap();
-
-        // CONFIRM UPDATE
-        assert_eq!(
-            client
-                .get::<ApplicationOut>(&format!("api/v1/app/{}/", app_1_id), StatusCode::OK,)
-                .await
-                .unwrap(),
-            app_1
-        );
-
-        assert_eq!(
-            client
-                .get::<ApplicationOut>(&format!("api/v1/app/{}/", app_2_id), StatusCode::OK,)
-                .await
-                .unwrap(),
-            app_2
-        );
-
-        // DELETE
-        let _: IgnoredResponse = client
-            .delete(&format!("api/v1/app/{}/", app_1.id), StatusCode::NO_CONTENT)
-            .await
-            .unwrap();
-        let _: IgnoredResponse = client
-            .delete(&format!("api/v1/app/{}/", app_2.id), StatusCode::NO_CONTENT)
-            .await
-            .unwrap();
-
-        // CONFIRM DELETION
-        let _: IgnoredResponse = client
-            .get(&format!("api/v1/app/{}/", app_1.id), StatusCode::NOT_FOUND)
-            .await
-            .unwrap();
-        let _: IgnoredResponse = client
-            .get(&format!("api/v1/app/{}/", app_2.id), StatusCode::NOT_FOUND)
-            .await
-            .unwrap();
-    }
-
-    #[tokio::test]
-    #[cfg_attr(not(feature = "integration_testing"), ignore)]
-    async fn test_list() {
-        let (client, _jh) = start_svix_server();
-
-        const APP_NAME_1: &str = "v1ApplicationCrudTest1";
-        const APP_NAME_2: &str = "v1ApplicationCrudTest2";
-
-        // CREATE
-        let app_1 = client
-            .post(
-                "api/v1/app/",
-                application_in(APP_NAME_1),
-                StatusCode::CREATED,
-            )
-            .await
-            .unwrap();
-
-        let app_2 = client
-            .post(
-                "api/v1/app/",
-                application_in(APP_NAME_2),
-                StatusCode::CREATED,
-            )
-            .await
-            .unwrap();
-
-        let list = client
-            .get::<ListResponse<ApplicationOut>>("api/v1/app/", StatusCode::OK)
-            .await
-            .unwrap();
-
-        assert_eq!(list.data.len(), 2);
-        assert!(list.data.contains(&app_1));
-        assert!(list.data.contains(&app_2));
-    }
 }
