@@ -16,7 +16,6 @@ use utils::{
 };
 
 #[tokio::test]
-#[cfg_attr(not(feature = "integration_testing"), ignore)]
 async fn test_list_attempted_messages() {
     let (client, _jh) = start_svix_server();
 
@@ -70,7 +69,6 @@ async fn test_list_attempted_messages() {
 }
 
 #[tokio::test]
-#[cfg_attr(not(feature = "integration_testing"), ignore)]
 async fn test_list_attempts_by_endpoint() {
     let (client, _jh) = start_svix_server();
 

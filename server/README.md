@@ -123,7 +123,7 @@ cargo fmt
 
 ## Testing
 
-When run with the `integration_testing` feature, `cargo test` will run tests that assume a running PostgreSQL and Redis database.
+By default, `cargo test` will run the full test suite which assumes a running PostgreSQL and Redis database.
 These databases are configured with the same environment variables as with running the actual server.
 
 The easiest way to get these tests to pass is to:
@@ -132,4 +132,6 @@ The easiest way to get these tests to pass is to:
     3. Migrate the database with `cargo run -- migrate`.
     4. Run `cargo test --all-targets`
 
-Without this feature enabled, these tests will show as ignored when running `cargo test` and only pure functions may be tested.
+Alternatively, if you're only interested in running unit tests, you can just run `cargo test --lib`. These tests don't make any assumptions about the surrounding environment.
+
+To run only a specific test (e.g. only the application tests), you can use the `--test` flag to `cargo test` which supports common Unix glob patterns. For example: `cargo test --test '*app*'`.

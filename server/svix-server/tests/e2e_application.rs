@@ -10,7 +10,6 @@ mod utils;
 use utils::{common_calls::application_in, start_svix_server, IgnoredResponse};
 
 #[tokio::test]
-#[cfg_attr(not(feature = "integration_testing"), ignore)]
 async fn test_crud() {
     let (client, _jh) = start_svix_server();
 
@@ -117,7 +116,6 @@ async fn test_crud() {
 }
 
 #[tokio::test]
-#[cfg_attr(not(feature = "integration_testing"), ignore)]
 async fn test_list() {
     let (client, _jh) = start_svix_server();
 
