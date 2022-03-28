@@ -16,10 +16,7 @@ use crate::{
     queue::{MessageTask, TaskQueueProducer},
     v1::{
         endpoints::message::MessageOut,
-        utils::{
-            api_not_implemented, EmptyResponse, ListResponse, MessageListFetchOptions, ModelOut,
-            ValidatedQuery,
-        },
+        utils::{EmptyResponse, ListResponse, MessageListFetchOptions, ModelOut, ValidatedQuery},
     },
 };
 use axum::{
@@ -442,6 +439,38 @@ async fn list_attempted_destinations(
 }
 
 #[derive(Debug, Deserialize, Validate)]
+pub struct ListAttemptsForEndpointQueryParameters {
+    #[validate]
+    pub channel: Option<EventChannel>,
+    pub status: Option<MessageStatus>,
+}
+
+async fn list_attempts_for_endpoint(
+    extension: Extension<DatabaseConnection>,
+    pagination: ValidatedQuery<Pagination<MessageAttemptId>>,
+    ValidatedQuery(ListAttemptsForEndpointQueryParameters { channel, status }): ValidatedQuery<
+        ListAttemptsForEndpointQueryParameters,
+    >,
+    list_filter: MessageListFetchOptions,
+    Path((app_id, msg_id, endp_id)): Path<(ApplicationIdOrUid, MessageIdOrUid, EndpointIdOrUid)>,
+    auth_app: AuthenticatedApplication,
+) -> Result<Json<ListResponse<MessageAttemptOut>>> {
+    list_messageattempts(
+        extension,
+        pagination,
+        ValidatedQuery(AttemptListFetchOptions {
+            endpoint_id: Some(endp_id),
+            channel,
+            status,
+        }),
+        list_filter,
+        Path((app_id, msg_id)),
+        auth_app,
+    )
+    .await
+}
+
+#[derive(Debug, Deserialize, Validate)]
 pub struct AttemptListFetchOptions {
     pub endpoint_id: Option<EndpointIdOrUid>,
     #[validate]
@@ -577,7 +606,10 @@ pub fn router() -> Router {
                     .route("/attempt/:attempt_id/", get(get_messageattempt))
                     .route("/endpoint/", get(list_attempted_destinations))
                     .route("/endpoint/:endp_id/resend/", post(resend_webhook))
-                    .route("/endpoint/:endp_id/attempt/", get(api_not_implemented)),
+                    .route(
+                        "/endpoint/:endp_id/attempt/",
+                        get(list_attempts_for_endpoint),
+                    ),
             )
             .route("endpoint/:endp_id/msg/", get(list_attempted_messages))
             .route("attempt/endpoint/:endp_id/", get(list_attempts_by_endpoint))
