@@ -6,8 +6,8 @@ use crate::{
         security::AuthenticatedApplication,
         types::{
             ApplicationId, ApplicationIdOrUid, BaseId, EndpointId, EndpointIdOrUid, EventChannel,
-            EventTypeNameSet, MessageAttemptId, MessageAttemptTriggerType, MessageId,
-            MessageIdOrUid, MessageStatus, StatusCodeClass,
+            EventTypeNameSet, MessageAttemptId, MessageAttemptTriggerType, MessageEndpointId,
+            MessageId, MessageIdOrUid, MessageStatus, StatusCodeClass,
         },
     },
     db::models::{endpoint, message, messagedestination},
@@ -15,10 +15,7 @@ use crate::{
     queue::{MessageTask, TaskQueueProducer},
     v1::{
         endpoints::message::MessageOut,
-        utils::{
-            api_not_implemented, EmptyResponse, ListResponse, MessageListFetchOptions, ModelOut,
-            ValidatedQuery,
-        },
+        utils::{EmptyResponse, ListResponse, MessageListFetchOptions, ModelOut, ValidatedQuery},
     },
 };
 use axum::{
@@ -174,35 +171,17 @@ pub struct ListAttemptsByEndpointQueryParameters {
     channel: Option<EventChannel>,
 }
 
-/// Fetches a list of [`MessageAttemptOut`]s for a given endpoint ID
-async fn list_attempts_by_endpoint(
-    Extension(ref db): Extension<DatabaseConnection>,
-    ValidatedQuery(mut pagination): ValidatedQuery<Pagination<MessageAttemptId>>,
-    ValidatedQuery(ListAttemptsByEndpointQueryParameters {
-        status,
-        status_code_class,
-        event_types,
-        channel,
-    }): ValidatedQuery<ListAttemptsByEndpointQueryParameters>,
-    Path((_app_id, endp_id)): Path<(ApplicationId, EndpointId)>,
-    AuthenticatedApplication {
-        permissions: _,
-        app,
-    }: AuthenticatedApplication,
-) -> Result<Json<ListResponse<MessageAttemptOut>>> {
-    let limit = pagination.limit;
-    let iterator = pagination.iterator.take();
-
-    // Confirm endpoint ID belongs to the given application
-    if endpoint::Entity::secure_find_by_id(app.id, endp_id.clone())
-        .one(db)
-        .await?
-        .is_none()
-    {
-        return Err(Error::Http(HttpError::not_found(None, None)));
-    }
-
-    let mut query = messageattempt::Entity::secure_find_by_endpoint(endp_id)
+// Applies filters common to [`list_attempts_by_endpoint`] and [`list_attempts_by_msg`]
+fn list_attempts_by_endpoint_or_message_filters(
+    query: Select<messageattempt::Entity>,
+    limit: u64,
+    iterator: Option<MessageAttemptId>,
+    status: Option<MessageStatus>,
+    status_code_class: Option<StatusCodeClass>,
+    event_types: Option<EventTypeNameSet>,
+    channel: Option<EventChannel>,
+) -> Select<messageattempt::Entity> {
+    let mut query = query
         .order_by_desc(messageattempt::Column::Id)
         .limit(limit + 1);
 
@@ -261,10 +240,233 @@ async fn list_attempts_by_endpoint(
         }
     }
 
+    query
+}
+
+/// Fetches a list of [`MessageAttemptOut`]s for a given endpoint ID
+async fn list_attempts_by_endpoint(
+    Extension(ref db): Extension<DatabaseConnection>,
+    ValidatedQuery(mut pagination): ValidatedQuery<Pagination<MessageAttemptId>>,
+    ValidatedQuery(ListAttemptsByEndpointQueryParameters {
+        status,
+        status_code_class,
+        event_types,
+        channel,
+    }): ValidatedQuery<ListAttemptsByEndpointQueryParameters>,
+    Path((_app_id, endp_id)): Path<(ApplicationId, EndpointId)>,
+    AuthenticatedApplication {
+        permissions: _,
+        app,
+    }: AuthenticatedApplication,
+) -> Result<Json<ListResponse<MessageAttemptOut>>> {
+    let limit = pagination.limit;
+    let iterator = pagination.iterator.take();
+
+    // Confirm endpoint ID belongs to the given application
+    if endpoint::Entity::secure_find_by_id(app.id, endp_id.clone())
+        .one(db)
+        .await?
+        .is_none()
+    {
+        return Err(Error::Http(HttpError::not_found(None, None)));
+    }
+
+    let query = list_attempts_by_endpoint_or_message_filters(
+        messageattempt::Entity::secure_find_by_endpoint(endp_id),
+        limit,
+        iterator,
+        status,
+        status_code_class,
+        event_types,
+        channel,
+    );
+
     Ok(Json(MessageAttemptOut::list_response(
         query.all(db).await?.into_iter().map(Into::into).collect(),
         limit as usize,
     )))
+}
+
+/// Flattens in a [`ListAttemptsByEndpointOrMsgQueryParameters`] and adds one extra query parameter
+#[derive(Debug, Deserialize, Validate)]
+pub struct ListAttemptsByMsgQueryParameters {
+    status: Option<MessageStatus>,
+    status_code_class: Option<StatusCodeClass>,
+    #[validate]
+    event_types: Option<EventTypeNameSet>,
+    #[validate]
+    channel: Option<EventChannel>,
+    #[validate]
+    endpoint_id: Option<EndpointIdOrUid>,
+}
+
+/// Fetches a list of [`MessageAttemptOut`]s for a given message ID
+async fn list_attempts_by_msg(
+    Extension(ref db): Extension<DatabaseConnection>,
+    ValidatedQuery(mut pagination): ValidatedQuery<Pagination<MessageAttemptId>>,
+    ValidatedQuery(ListAttemptsByMsgQueryParameters {
+        status,
+        status_code_class,
+        event_types,
+        channel,
+        endpoint_id,
+    }): ValidatedQuery<ListAttemptsByMsgQueryParameters>,
+    Path((_app_id, msg_id)): Path<(ApplicationId, MessageId)>,
+    AuthenticatedApplication {
+        permissions: _,
+        app,
+    }: AuthenticatedApplication,
+) -> Result<Json<ListResponse<MessageAttemptOut>>> {
+    let limit = pagination.limit;
+    let iterator = pagination.iterator.take();
+
+    // Confirm message ID belongs to the given application
+    if message::Entity::secure_find_by_id(app.id.clone(), msg_id.clone())
+        .one(db)
+        .await?
+        .is_none()
+    {
+        return Err(Error::Http(HttpError::not_found(None, None)));
+    }
+
+    let mut query = list_attempts_by_endpoint_or_message_filters(
+        messageattempt::Entity::secure_find_by_msg(msg_id),
+        limit,
+        iterator,
+        status,
+        status_code_class,
+        event_types,
+        channel,
+    );
+
+    if let Some(endpoint_id) = endpoint_id {
+        // Ensure the endpoint ID/UID belongs to the given application
+        if let Some(endp) = endpoint::Entity::secure_find_by_id_or_uid(app.id, endpoint_id)
+            .one(db)
+            .await?
+        {
+            // And filter by its ID incase a UID was used
+            query = query.filter(messageattempt::Column::EndpId.eq(endp.id));
+        } else {
+            return Err(Error::Http(HttpError::not_found(None, None)));
+        }
+    }
+
+    Ok(Json(MessageAttemptOut::list_response(
+        query.all(db).await?.into_iter().map(Into::into).collect(),
+        limit as usize,
+    )))
+}
+
+/// A type combining information from [`messagedestination::Model`]s and [`endpoint::Model`]s to
+/// output information on attempted destinations
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct MessageEndpointOut {
+    #[serde(flatten)]
+    endpoint: super::endpoint::EndpointOut,
+    status: MessageStatus,
+    next_attempt: Option<DateTime<Utc>>,
+}
+
+impl ModelOut for MessageEndpointOut {
+    fn id_copy(&self) -> String {
+        self.endpoint.id.0.clone()
+    }
+}
+
+impl MessageEndpointOut {
+    fn from_dest_and_endp(dest: messagedestination::Model, endp: endpoint::Model) -> Self {
+        MessageEndpointOut {
+            endpoint: endp.into(),
+            status: dest.status,
+            next_attempt: dest.next_attempt.map(Into::into),
+        }
+    }
+}
+
+async fn list_attempted_destinations(
+    Extension(ref db): Extension<DatabaseConnection>,
+    ValidatedQuery(mut pagination): ValidatedQuery<Pagination<MessageEndpointId>>,
+    Path((_app_id, msg_id)): Path<(ApplicationId, MessageIdOrUid)>,
+    AuthenticatedApplication {
+        permissions: _,
+        app,
+    }: AuthenticatedApplication,
+) -> Result<Json<ListResponse<MessageEndpointOut>>> {
+    let limit = pagination.limit;
+    let iterator = pagination.iterator.take();
+
+    // Confirm message ID belongs to the given application while fetching the ID in case a UID was
+    // given
+    let msg_id = if let Some(message) =
+        message::Entity::secure_find_by_id_or_uid(app.id.clone(), msg_id.clone())
+            .one(db)
+            .await?
+    {
+        message.id
+    } else {
+        return Err(Error::Http(HttpError::not_found(None, None)));
+    };
+
+    // Fetch the [`messagedestination::Model`] and associated [`endpoint::Model`]
+    let mut query = messagedestination::Entity::secure_find_by_msg(msg_id)
+        .find_also_related(endpoint::Entity)
+        .order_by_desc(messagedestination::Column::Id)
+        .limit(limit + 1);
+
+    if let Some(iterator) = iterator {
+        query = query.filter(messagedestination::Column::Id.lt(iterator));
+    }
+
+    Ok(Json(AttemptedMessageOut::list_response(
+        query
+            .all(db)
+            .await?
+            .into_iter()
+            .map(
+                |(dest, endp): (messagedestination::Model, Option<endpoint::Model>)| {
+                    let endp = endp.ok_or_else(|| {
+                        Error::Database("No associated endpoint with messagedestination".to_owned())
+                    })?;
+                    Ok(MessageEndpointOut::from_dest_and_endp(dest, endp))
+                },
+            )
+            .collect::<Result<_>>()?,
+        limit as usize,
+    )))
+}
+
+#[derive(Debug, Deserialize, Validate)]
+pub struct ListAttemptsForEndpointQueryParameters {
+    #[validate]
+    pub channel: Option<EventChannel>,
+    pub status: Option<MessageStatus>,
+}
+
+async fn list_attempts_for_endpoint(
+    extension: Extension<DatabaseConnection>,
+    pagination: ValidatedQuery<Pagination<MessageAttemptId>>,
+    ValidatedQuery(ListAttemptsForEndpointQueryParameters { channel, status }): ValidatedQuery<
+        ListAttemptsForEndpointQueryParameters,
+    >,
+    list_filter: MessageListFetchOptions,
+    Path((app_id, msg_id, endp_id)): Path<(ApplicationIdOrUid, MessageIdOrUid, EndpointIdOrUid)>,
+    auth_app: AuthenticatedApplication,
+) -> Result<Json<ListResponse<MessageAttemptOut>>> {
+    list_messageattempts(
+        extension,
+        pagination,
+        ValidatedQuery(AttemptListFetchOptions {
+            endpoint_id: Some(endp_id),
+            channel,
+            status,
+        }),
+        list_filter,
+        Path((app_id, msg_id)),
+        auth_app,
+    )
+    .await
 }
 
 #[derive(Debug, Deserialize, Validate)]
@@ -401,12 +603,15 @@ pub fn router() -> Router {
                 Router::new()
                     .route("/attempt/", get(list_messageattempts))
                     .route("/attempt/:attempt_id/", get(get_messageattempt))
-                    .route("/endpoint/", get(api_not_implemented))
+                    .route("/endpoint/", get(list_attempted_destinations))
                     .route("/endpoint/:endp_id/resend/", post(resend_webhook))
-                    .route("/endpoint/:endp_id/attempt/", get(api_not_implemented)),
+                    .route(
+                        "/endpoint/:endp_id/attempt/",
+                        get(list_attempts_for_endpoint),
+                    ),
             )
             .route("endpoint/:endp_id/msg/", get(list_attempted_messages))
             .route("attempt/endpoint/:endp_id/", get(list_attempts_by_endpoint))
-            .route("attempt/msg/:msg_id/", get(api_not_implemented)),
+            .route("attempt/msg/:msg_id/", get(list_attempts_by_msg)),
     )
 }
