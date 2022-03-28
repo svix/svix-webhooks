@@ -309,7 +309,7 @@ async fn list_attempts_by_msg(
         status_code_class,
         event_types,
         channel,
-        endpoint_id: endpoint_id_or_uid,
+        endpoint_id,
     }): ValidatedQuery<ListAttemptsByMsgQueryParameters>,
     Path((_app_id, msg_id)): Path<(ApplicationId, MessageId)>,
     AuthenticatedApplication {
@@ -339,12 +339,13 @@ async fn list_attempts_by_msg(
         channel,
     );
 
-    if let Some(endpoint_id_or_uid) = endpoint_id_or_uid {
-        // Ensure the endpoint ID belongs to the given application
-        if let Some(endp) = endpoint::Entity::secure_find_by_id_or_uid(app.id, endpoint_id_or_uid)
+    if let Some(endpoint_id) = endpoint_id {
+        // Ensure the endpoint ID/UID belongs to the given application
+        if let Some(endp) = endpoint::Entity::secure_find_by_id_or_uid(app.id, endpoint_id)
             .one(db)
             .await?
         {
+            // And filter by its ID incase a UID was used
             query = query.filter(messageattempt::Column::EndpId.eq(endp.id));
         } else {
             return Err(Error::Http(HttpError::not_found(None, None)));
