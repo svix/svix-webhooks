@@ -364,7 +364,6 @@ async fn list_attempts_by_msg(
 struct MessageEndpointOut {
     #[serde(flatten)]
     endpoint: super::endpoint::EndpointOut,
-    created_at: DateTime<Utc>,
     status: MessageStatus,
     next_attempt: Option<DateTime<Utc>>,
 }
@@ -379,7 +378,6 @@ impl MessageEndpointOut {
     fn from_dest_and_endp(dest: messagedestination::Model, endp: endpoint::Model) -> Self {
         MessageEndpointOut {
             endpoint: endp.into(),
-            created_at: dest.created_at.into(),
             status: dest.status,
             next_attempt: dest.next_attempt.map(Into::into),
         }
