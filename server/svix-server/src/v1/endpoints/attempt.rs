@@ -339,8 +339,8 @@ async fn list_attempts_by_msg(
     )))
 }
 
-/// A type combining information from [`messagedestination::Model`]s, [`message::Model`]s and
-/// [`endpoint::Model`]s to output information on attempted destinations
+/// A type combining information from [`messagedestination::Model`]s and [`endpoint::Model`]s to
+/// output information on attempted destinations
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, ModelOut)]
 #[serde(rename_all = "camelCase")]
 struct MessageEndpointOut {
@@ -358,6 +358,37 @@ struct MessageEndpointOut {
     next_attempt: Option<DateTime<Utc>>,
 }
 
+impl MessageEndpointOut {
+    fn from_dest_and_endp(dest: messagedestination::Model, endp: endpoint::Model) -> Self {
+        MessageEndpointOut {
+            uid: endp.uid,
+            url: endp.url,
+            version: endp.version,
+            description: {
+                if endp.description.is_empty() {
+                    None
+                } else {
+                    Some(endp.description)
+                }
+            },
+            filter_types: endp.event_types_ids,
+            channels: endp.channels,
+            disabled: {
+                if !endp.disabled {
+                    None
+                } else {
+                    Some(false)
+                }
+            },
+            rate_limit: endp.rate_limit,
+            id: endp.id,
+            created_at: dest.created_at.into(),
+            status: dest.status,
+            next_attempt: dest.next_attempt.map(Into::into),
+        }
+    }
+}
+
 async fn list_attempted_destinations(
     Extension(ref db): Extension<DatabaseConnection>,
     ValidatedQuery(mut pagination): ValidatedQuery<Pagination<MessageEndpointId>>,
@@ -367,7 +398,44 @@ async fn list_attempted_destinations(
         app,
     }: AuthenticatedApplication,
 ) -> Result<Json<ListResponse<MessageEndpointOut>>> {
-    Err(HttpError::not_implemented(None, None).into())
+    let limit = pagination.limit;
+    let iterator = pagination.iterator.take();
+
+    // Confirm message ID belongs to the given application
+    if message::Entity::secure_find_by_id(app.id.clone(), msg_id.clone())
+        .one(db)
+        .await?
+        .is_none()
+    {
+        return Err(Error::Http(HttpError::not_found(None, None)));
+    }
+
+    // Fetch the [`messagedestination::Model`] and associated [`endpoint::Model`]
+    let mut query = messagedestination::Entity::secure_find_by_msg(msg_id)
+        .find_also_related(endpoint::Entity)
+        .order_by_desc(messagedestination::Column::Id)
+        .limit(limit + 1);
+
+    if let Some(iterator) = iterator {
+        query = query.filter(messagedestination::Column::Id.lt(iterator));
+    }
+
+    Ok(Json(AttemptedMessageOut::list_response(
+        query
+            .all(db)
+            .await?
+            .into_iter()
+            .map(
+                |(dest, endp): (messagedestination::Model, Option<endpoint::Model>)| {
+                    let endp = endp.ok_or_else(|| {
+                        Error::Database("No associated endpoint with messagedestination".to_owned())
+                    })?;
+                    Ok(MessageEndpointOut::from_dest_and_endp(dest, endp))
+                },
+            )
+            .collect::<Result<_>>()?,
+        limit as usize,
+    )))
 }
 
 #[derive(Debug, Deserialize, Validate)]
@@ -504,7 +572,7 @@ pub fn router() -> Router {
                 Router::new()
                     .route("/attempt/", get(list_messageattempts))
                     .route("/attempt/:attempt_id/", get(get_messageattempt))
-                    .route("/endpoint/", get(api_not_implemented))
+                    .route("/endpoint/", get(list_attempted_destinations))
                     .route("/endpoint/:endp_id/resend/", post(resend_webhook))
                     .route("/endpoint/:endp_id/attempt/", get(api_not_implemented)),
             )
