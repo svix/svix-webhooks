@@ -5,10 +5,9 @@ use crate::{
     core::{
         security::AuthenticatedApplication,
         types::{
-            ApplicationId, ApplicationIdOrUid, BaseId, EndpointId, EndpointIdOrUid, EndpointUid,
-            EventChannel, EventChannelSet, EventTypeNameSet, MessageAttemptId,
-            MessageAttemptTriggerType, MessageEndpointId, MessageId, MessageIdOrUid, MessageStatus,
-            StatusCodeClass,
+            ApplicationId, ApplicationIdOrUid, BaseId, EndpointId, EndpointIdOrUid, EventChannel,
+            EventTypeNameSet, MessageAttemptId, MessageAttemptTriggerType, MessageEndpointId,
+            MessageId, MessageIdOrUid, MessageStatus, StatusCodeClass,
         },
     },
     db::models::{endpoint, message, messagedestination},
@@ -360,47 +359,26 @@ async fn list_attempts_by_msg(
 
 /// A type combining information from [`messagedestination::Model`]s and [`endpoint::Model`]s to
 /// output information on attempted destinations
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, ModelOut)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct MessageEndpointOut {
-    uid: Option<EndpointUid>,
-    url: String,
-    version: i32,
-    description: Option<String>,
-    filter_types: Option<EventTypeNameSet>,
-    channels: Option<EventChannelSet>,
-    disabled: Option<bool>,
-    rate_limit: Option<i32>,
-    id: EndpointId,
+    #[serde(flatten)]
+    endpoint: super::endpoint::EndpointOut,
     created_at: DateTime<Utc>,
     status: MessageStatus,
     next_attempt: Option<DateTime<Utc>>,
 }
 
+impl ModelOut for MessageEndpointOut {
+    fn id_copy(&self) -> String {
+        self.endpoint.id.0.clone()
+    }
+}
+
 impl MessageEndpointOut {
     fn from_dest_and_endp(dest: messagedestination::Model, endp: endpoint::Model) -> Self {
         MessageEndpointOut {
-            uid: endp.uid,
-            url: endp.url,
-            version: endp.version,
-            description: {
-                if endp.description.is_empty() {
-                    None
-                } else {
-                    Some(endp.description)
-                }
-            },
-            filter_types: endp.event_types_ids,
-            channels: endp.channels,
-            disabled: {
-                if !endp.disabled {
-                    None
-                } else {
-                    Some(false)
-                }
-            },
-            rate_limit: endp.rate_limit,
-            id: endp.id,
+            endpoint: endp.into(),
             created_at: dest.created_at.into(),
             status: dest.status,
             next_attempt: dest.next_attempt.map(Into::into),
