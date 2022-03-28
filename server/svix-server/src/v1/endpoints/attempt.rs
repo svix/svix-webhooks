@@ -160,10 +160,10 @@ async fn list_attempted_messages(
     )))
 }
 
-/// Additional parameters (besides pagination, and one parameter for by message) in the query string
-/// for the "List Attempts by Endpoint" enpoint and "List Attempts by Msg" endpoint.
+/// Additional parameters (besides pagination) in the query string for the "List Attempts by
+/// Endpoint" enpoint.
 #[derive(Debug, Deserialize, Validate)]
-pub struct ListAttemptsByEndpointOrMsgQueryParameters {
+pub struct ListAttemptsByEndpointQueryParameters {
     status: Option<MessageStatus>,
     status_code_class: Option<StatusCodeClass>,
     #[validate]
@@ -172,17 +172,29 @@ pub struct ListAttemptsByEndpointOrMsgQueryParameters {
     channel: Option<EventChannel>,
 }
 
-// Applies filters from the [`ListAttemptsByEndpointOrMsgQueryParameters`] of the
-// [`list_attempts_by_endpoint`] and [`list_attempts_by_msg`] endpoints that are common
-fn list_attempts_by_endpoint_or_message_query_filters(
-    mut query: Select<messageattempt::Entity>,
-    params: ListAttemptsByEndpointOrMsgQueryParameters,
+// Applies filters common to [`list_attempts_by_endpoint`] and [`list_attempts_by_msg`]
+fn list_attempts_by_endpoint_or_message_filters(
+    query: Select<messageattempt::Entity>,
+    limit: u64,
+    iterator: Option<MessageAttemptId>,
+    status: Option<MessageStatus>,
+    status_code_class: Option<StatusCodeClass>,
+    event_types: Option<EventTypeNameSet>,
+    channel: Option<EventChannel>,
 ) -> Select<messageattempt::Entity> {
-    if let Some(status) = params.status {
+    let mut query = query
+        .order_by_desc(messageattempt::Column::Id)
+        .limit(limit + 1);
+
+    if let Some(iterator) = iterator {
+        query = query.filter(messageattempt::Column::Id.lt(iterator));
+    }
+
+    if let Some(status) = status {
         query = query.filter(messageattempt::Column::Status.eq(status));
     }
 
-    query = match params.status_code_class {
+    query = match status_code_class {
         Some(StatusCodeClass::CodeNone) => {
             query.filter(messageattempt::Column::ResponseStatusCode.between(0, 99))
         }
@@ -211,7 +223,7 @@ fn list_attempts_by_endpoint_or_message_query_filters(
     };
 
     // The event_types and channel filter require joining the associated message
-    if params.event_types.is_some() || params.channel.is_some() {
+    if event_types.is_some() || channel.is_some() {
         query = query.join_rev(
             sea_orm::JoinType::InnerJoin,
             messageattempt::Entity::belongs_to(message::Entity)
@@ -220,11 +232,11 @@ fn list_attempts_by_endpoint_or_message_query_filters(
                 .into(),
         );
 
-        if let Some(EventTypeNameSet(event_types)) = params.event_types {
+        if let Some(EventTypeNameSet(event_types)) = event_types {
             query = query.filter(message::Column::EventType.is_in(event_types))
         }
 
-        if let Some(channel) = params.channel {
+        if let Some(channel) = channel {
             query = query.filter(message::Column::Channels.contains(&channel))
         }
     }
@@ -236,7 +248,12 @@ fn list_attempts_by_endpoint_or_message_query_filters(
 async fn list_attempts_by_endpoint(
     Extension(ref db): Extension<DatabaseConnection>,
     ValidatedQuery(mut pagination): ValidatedQuery<Pagination<MessageAttemptId>>,
-    ValidatedQuery(query_params): ValidatedQuery<ListAttemptsByEndpointOrMsgQueryParameters>,
+    ValidatedQuery(ListAttemptsByEndpointQueryParameters {
+        status,
+        status_code_class,
+        event_types,
+        channel,
+    }): ValidatedQuery<ListAttemptsByEndpointQueryParameters>,
     Path((_app_id, endp_id)): Path<(ApplicationId, EndpointId)>,
     AuthenticatedApplication {
         permissions: _,
@@ -255,15 +272,15 @@ async fn list_attempts_by_endpoint(
         return Err(Error::Http(HttpError::not_found(None, None)));
     }
 
-    let mut query = messageattempt::Entity::secure_find_by_endpoint(endp_id)
-        .order_by_desc(messageattempt::Column::Id)
-        .limit(limit + 1);
-
-    if let Some(iterator) = iterator {
-        query = query.filter(messageattempt::Column::Id.lt(iterator));
-    }
-
-    query = list_attempts_by_endpoint_or_message_query_filters(query, query_params);
+    let query = list_attempts_by_endpoint_or_message_filters(
+        messageattempt::Entity::secure_find_by_endpoint(endp_id),
+        limit,
+        iterator,
+        status,
+        status_code_class,
+        event_types,
+        channel,
+    );
 
     Ok(Json(MessageAttemptOut::list_response(
         query.all(db).await?.into_iter().map(Into::into).collect(),
@@ -274,10 +291,12 @@ async fn list_attempts_by_endpoint(
 /// Flattens in a [`ListAttemptsByEndpointOrMsgQueryParameters`] and adds one extra query parameter
 #[derive(Debug, Deserialize, Validate)]
 pub struct ListAttemptsByMsgQueryParameters {
-    #[serde(flatten)]
+    status: Option<MessageStatus>,
+    status_code_class: Option<StatusCodeClass>,
     #[validate]
-    common: ListAttemptsByEndpointOrMsgQueryParameters,
-
+    event_types: Option<EventTypeNameSet>,
+    #[validate]
+    channel: Option<EventChannel>,
     #[validate]
     endpoint_id: Option<EndpointIdOrUid>,
 }
@@ -287,7 +306,10 @@ async fn list_attempts_by_msg(
     Extension(ref db): Extension<DatabaseConnection>,
     ValidatedQuery(mut pagination): ValidatedQuery<Pagination<MessageAttemptId>>,
     ValidatedQuery(ListAttemptsByMsgQueryParameters {
-        common,
+        status,
+        status_code_class,
+        event_types,
+        channel,
         endpoint_id: endpoint_id_or_uid,
     }): ValidatedQuery<ListAttemptsByMsgQueryParameters>,
     Path((_app_id, msg_id)): Path<(ApplicationId, MessageId)>,
@@ -308,13 +330,15 @@ async fn list_attempts_by_msg(
         return Err(Error::Http(HttpError::not_found(None, None)));
     }
 
-    let mut query = messageattempt::Entity::secure_find_by_msg(msg_id)
-        .order_by_desc(messageattempt::Column::Id)
-        .limit(limit + 1);
-
-    if let Some(iterator) = iterator {
-        query = query.filter(messageattempt::Column::Id.lt(iterator));
-    }
+    let mut query = list_attempts_by_endpoint_or_message_filters(
+        messageattempt::Entity::secure_find_by_msg(msg_id),
+        limit,
+        iterator,
+        status,
+        status_code_class,
+        event_types,
+        channel,
+    );
 
     if let Some(endpoint_id_or_uid) = endpoint_id_or_uid {
         // Ensure the endpoint ID belongs to the given application
@@ -327,8 +351,6 @@ async fn list_attempts_by_msg(
             return Err(Error::Http(HttpError::not_found(None, None)));
         }
     }
-
-    query = list_attempts_by_endpoint_or_message_query_filters(query, common);
 
     Ok(Json(MessageAttemptOut::list_response(
         query.all(db).await?.into_iter().map(Into::into).collect(),
