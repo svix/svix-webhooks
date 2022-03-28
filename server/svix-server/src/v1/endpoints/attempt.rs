@@ -392,7 +392,7 @@ impl MessageEndpointOut {
 async fn list_attempted_destinations(
     Extension(ref db): Extension<DatabaseConnection>,
     ValidatedQuery(mut pagination): ValidatedQuery<Pagination<MessageEndpointId>>,
-    Path((_app_id, msg_id)): Path<(ApplicationId, MessageId)>,
+    Path((_app_id, msg_id)): Path<(ApplicationId, MessageIdOrUid)>,
     AuthenticatedApplication {
         permissions: _,
         app,
@@ -401,14 +401,17 @@ async fn list_attempted_destinations(
     let limit = pagination.limit;
     let iterator = pagination.iterator.take();
 
-    // Confirm message ID belongs to the given application
-    if message::Entity::secure_find_by_id(app.id.clone(), msg_id.clone())
-        .one(db)
-        .await?
-        .is_none()
+    // Confirm message ID belongs to the given application while fetching the ID in case a UID was
+    // given
+    let msg_id = if let Some(message) =
+        message::Entity::secure_find_by_id_or_uid(app.id.clone(), msg_id.clone())
+            .one(db)
+            .await?
     {
+        message.id
+    } else {
         return Err(Error::Http(HttpError::not_found(None, None)));
-    }
+    };
 
     // Fetch the [`messagedestination::Model`] and associated [`endpoint::Model`]
     let mut query = messagedestination::Entity::secure_find_by_msg(msg_id)
