@@ -345,13 +345,7 @@ macro_rules! create_all_id_types {
 
         impl Validate for $name_id_or_uid {
             fn validate(&self) -> Result<(), validator::ValidationErrors> {
-                if self.0.starts_with($key_prefix) {
-                    let as_id: $name_id = self.clone().into();
-                    as_id.validate()
-                } else {
-                    let as_uid: $name_uid = self.clone().into();
-                    as_uid.validate()
-                }
+                validate_limited_str(&self.0)
             }
         }
     };
