@@ -627,3 +627,99 @@ pub fn router() -> Router {
             .route("attempt/msg/:msg_id/", get(list_attempts_by_msg)),
     )
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{
+        AttemptListFetchOptions, ListAttemptedMessagesQueryParameters,
+        ListAttemptsByEndpointQueryParameters, ListAttemptsByMsgQueryParameters,
+        ListAttemptsForEndpointQueryParameters,
+    };
+    use serde_json::json;
+    use validator::Validate;
+
+    const INVALID_CHANNEL: &str = "$$invalid-channel";
+    const VALID_CHANNEL: &str = "valid-channel";
+    const INVALID_EVENT_TYPES: &[&str] = &["valid-event-type", "&&invalid-event-type"];
+    const VALID_EVENT_TYPES: &[&str] = &["valid-event-type", "another-valid-event-type"];
+    const INVALID_ENDPOINT_ID: &str = "$$invalid-endpoint";
+    const VALID_ENDPOINT_ID: &str = "ep_valid-endpoint";
+
+    #[test]
+    fn test_list_attempted_messages_query_params_validation() {
+        let q: ListAttemptedMessagesQueryParameters =
+            serde_json::from_value(json!({ "channel": INVALID_CHANNEL })).unwrap();
+        assert!(q.validate().is_err());
+
+        let q: ListAttemptedMessagesQueryParameters =
+            serde_json::from_value(json!({ "channel": VALID_CHANNEL })).unwrap();
+        q.validate().unwrap();
+    }
+
+    #[test]
+    fn test_list_attempts_by_endpoint_query_parameters_validation() {
+        let q: ListAttemptsByEndpointQueryParameters =
+            serde_json::from_value(json!({ "event_types": INVALID_EVENT_TYPES })).unwrap();
+        assert!(q.validate().is_err());
+
+        let q: ListAttemptsByEndpointQueryParameters =
+            serde_json::from_value(json!({ "channel": INVALID_CHANNEL })).unwrap();
+        assert!(q.validate().is_err());
+    }
+
+    #[test]
+    fn test_list_attempts_by_msg_query_parameters_validation() {
+        let q: ListAttemptsByMsgQueryParameters =
+            serde_json::from_value(json!({ "event_types": INVALID_EVENT_TYPES })).unwrap();
+        assert!(q.validate().is_err());
+
+        let q: ListAttemptsByMsgQueryParameters =
+            serde_json::from_value(json!({ "channel": INVALID_CHANNEL })).unwrap();
+        assert!(q.validate().is_err());
+
+        let q: ListAttemptsByMsgQueryParameters =
+            serde_json::from_value(json!({ "endpoint_id": INVALID_ENDPOINT_ID })).unwrap();
+        assert!(q.validate().is_err());
+
+        let q: ListAttemptsByMsgQueryParameters = serde_json::from_value(json!(
+            {
+                "event_types": VALID_EVENT_TYPES,
+                "channel": VALID_CHANNEL,
+                "endpoint_id": VALID_ENDPOINT_ID
+            }
+        ))
+        .unwrap();
+        q.validate().unwrap();
+    }
+
+    #[test]
+    fn test_list_attempts_for_endpoint_query_parameters_validation() {
+        let q: ListAttemptsForEndpointQueryParameters =
+            serde_json::from_value(json!({ "channel": INVALID_CHANNEL })).unwrap();
+        assert!(q.validate().is_err());
+
+        let q: ListAttemptsForEndpointQueryParameters =
+            serde_json::from_value(json!({ "channel": VALID_CHANNEL })).unwrap();
+        q.validate().unwrap();
+    }
+
+    #[test]
+    fn test_attempt_list_fetch_options_validation() {
+        let q: AttemptListFetchOptions =
+            serde_json::from_value(json!({ "endpoint_id": INVALID_ENDPOINT_ID })).unwrap();
+        assert!(q.validate().is_err());
+
+        let q: AttemptListFetchOptions =
+            serde_json::from_value(json!({ "channel": INVALID_CHANNEL })).unwrap();
+        assert!(q.validate().is_err());
+
+        let q: AttemptListFetchOptions = serde_json::from_value(json!(
+            {
+                "endpoint_id": VALID_ENDPOINT_ID,
+                "channel": VALID_CHANNEL
+            }
+        ))
+        .unwrap();
+        q.validate().unwrap();
+    }
+}
