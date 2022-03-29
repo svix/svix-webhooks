@@ -26,7 +26,7 @@ use axum::{
 use chrono::{DateTime, Utc};
 
 use hyper::StatusCode;
-use sea_orm::{entity::prelude::*, DatabaseConnection, QueryOrder, QuerySelect};
+use sea_orm::{entity::prelude::*, sea_query::Expr, DatabaseConnection, QueryOrder, QuerySelect};
 use serde::{Deserialize, Serialize};
 
 use svix_server_derive::ModelOut;
@@ -134,7 +134,8 @@ async fn list_attempted_messages(
     }
 
     if let Some(channel) = channel {
-        dests_and_msgs = dests_and_msgs.filter(message::Column::Channels.contains(&channel));
+        dests_and_msgs =
+            dests_and_msgs.filter(Expr::cust_with_values("channels ?? ?", vec![channel]));
     }
 
     if let Some(status) = status {
@@ -232,11 +233,11 @@ fn list_attempts_by_endpoint_or_message_filters(
         );
 
         if let Some(EventTypeNameSet(event_types)) = event_types {
-            query = query.filter(message::Column::EventType.is_in(event_types))
+            query = query.filter(message::Column::EventType.is_in(event_types));
         }
 
         if let Some(channel) = channel {
-            query = query.filter(message::Column::Channels.contains(&channel))
+            query = query.filter(Expr::cust_with_values("channels ?? ?", vec![channel]));
         }
     }
 
@@ -471,6 +472,7 @@ async fn list_attempts_for_endpoint(
 
 #[derive(Debug, Deserialize, Validate)]
 pub struct AttemptListFetchOptions {
+    #[validate]
     pub endpoint_id: Option<EndpointIdOrUid>,
     #[validate]
     pub channel: Option<EventChannel>,
@@ -483,7 +485,7 @@ async fn list_messageattempts(
     pagination: ValidatedQuery<Pagination<MessageAttemptId>>,
     ValidatedQuery(AttemptListFetchOptions {
         endpoint_id,
-        channel: _,
+        channel,
         status,
     }): ValidatedQuery<AttemptListFetchOptions>,
     list_filter: MessageListFetchOptions,
@@ -522,6 +524,14 @@ async fn list_messageattempts(
 
     if let Some(status) = status {
         query = query.filter(messageattempt::Column::Status.eq(status))
+    }
+
+    if let Some(channel) = channel {
+        query = query.filter(Expr::cust_with_values("channels ?? ?", vec![channel]));
+    }
+
+    if let Some(EventTypeNameSet(event_types)) = list_filter.event_types {
+        query = query.filter(message::Column::EventType.is_in(event_types));
     }
 
     Ok(Json(MessageAttemptOut::list_response(

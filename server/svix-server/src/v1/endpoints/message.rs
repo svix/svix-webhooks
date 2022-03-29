@@ -9,8 +9,9 @@ use crate::{
         message_app::CreateMessageApp,
         security::AuthenticatedApplication,
         types::{
-            ApplicationIdOrUid, BaseId, EventChannelSet, EventTypeName, MessageAttemptTriggerType,
-            MessageId, MessageIdOrUid, MessageStatus, MessageUid,
+            ApplicationIdOrUid, BaseId, EventChannel, EventChannelSet, EventTypeName,
+            EventTypeNameSet, MessageAttemptTriggerType, MessageId, MessageIdOrUid, MessageStatus,
+            MessageUid,
         },
     },
     db::models::messagedestination,
@@ -28,10 +29,7 @@ use axum::{
 use chrono::{DateTime, Utc};
 use hyper::StatusCode;
 use sea_orm::{entity::prelude::*, QueryOrder};
-use sea_orm::{
-    sea_query::{Expr, IntoCondition},
-    ActiveValue::Set,
-};
+use sea_orm::{sea_query::Expr, ActiveValue::Set};
 use sea_orm::{ActiveModelTrait, DatabaseConnection, QuerySelect, TransactionTrait};
 use serde::{Deserialize, Serialize};
 
@@ -114,9 +112,16 @@ impl From<message::Model> for MessageOut {
     }
 }
 
+#[derive(Clone, Debug, Deserialize, Validate)]
+pub struct ListMessagesQueryParams {
+    #[validate]
+    channel: Option<EventChannel>,
+}
+
 async fn list_messages(
     Extension(ref db): Extension<DatabaseConnection>,
     pagination: ValidatedQuery<Pagination<MessageId>>,
+    ValidatedQuery(ListMessagesQueryParams { channel }): ValidatedQuery<ListMessagesQueryParams>,
     list_filter: MessageListFetchOptions,
     AuthenticatedApplication {
         permissions: _,
@@ -137,15 +142,12 @@ async fn list_messages(
         query = query.filter(message::Column::Id.lt(iterator));
     }
 
-    if let Some(event_types) = list_filter.event_types {
-        let vals = event_types
-            .0
-            .iter()
-            .map(|_| "?")
-            .collect::<Vec<&str>>()
-            .join(",");
-        let cond = format!("event_type in ({})", vals);
-        query = query.filter(Expr::cust_with_values(&cond, event_types.0).into_condition());
+    if let Some(EventTypeNameSet(event_types)) = list_filter.event_types {
+        query = query.filter(message::Column::EventType.is_in(event_types));
+    }
+
+    if let Some(channel) = channel {
+        query = query.filter(Expr::cust_with_values("channels ?? ?", vec![channel]));
     }
 
     Ok(Json(MessageOut::list_response(
