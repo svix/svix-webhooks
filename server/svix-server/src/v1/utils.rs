@@ -246,8 +246,10 @@ pub async fn api_not_implemented() -> Result<()> {
 mod tests {
     use validator::Validate;
 
-    use super::validation_errors;
+    use super::{default_limit, validation_errors, Pagination};
+    use crate::core::types::ApplicationUid;
     use crate::error::ValidationErrorItem;
+    use serde_json::json;
 
     #[derive(Debug, Validate)]
     struct ValidationErrorTestStruct {
@@ -315,5 +317,22 @@ mod tests {
             msg: "Above 10".to_owned(),
             ty: "value_error".to_owned(),
         }));
+    }
+
+    #[test]
+    fn test_pagination_defaults() {
+        let p: Pagination<ApplicationUid> = serde_json::from_value(json!({})).unwrap();
+        assert_eq!(p.limit, default_limit());
+    }
+
+    #[test]
+    fn test_pagination_validation() {
+        let p: Pagination<ApplicationUid> =
+            serde_json::from_value(json!({"iterator": "$$invalid-appuid"})).unwrap();
+        assert!(p.validate().is_err());
+
+        let p: Pagination<ApplicationUid> =
+            serde_json::from_value(json!({ "iterator": "valid-appuid"})).unwrap();
+        p.validate().unwrap();
     }
 }
