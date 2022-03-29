@@ -233,13 +233,7 @@ fn list_attempts_by_endpoint_or_message_filters(
         );
 
         if let Some(EventTypeNameSet(event_types)) = event_types {
-            let vals = event_types
-                .iter()
-                .map(|_| "?")
-                .collect::<Vec<&str>>()
-                .join(",");
-            let cond = format!("event_type in ({})", vals);
-            query = query.filter(Expr::cust_with_values(&cond, event_types));
+            query = query.filter(message::Column::EventType.is_in(event_types));
         }
 
         if let Some(channel) = channel {
@@ -537,13 +531,7 @@ async fn list_messageattempts(
     }
 
     if let Some(EventTypeNameSet(event_types)) = list_filter.event_types {
-        let vals = event_types
-            .iter()
-            .map(|_| "?")
-            .collect::<Vec<&str>>()
-            .join(",");
-        let cond = format!("event_type in ({})", vals);
-        query = query.filter(Expr::cust_with_values(&cond, event_types));
+        query = query.filter(message::Column::EventType.is_in(event_types));
     }
 
     Ok(Json(MessageAttemptOut::list_response(
