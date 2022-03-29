@@ -24,11 +24,83 @@ const fn default_limit() -> u64 {
 }
 
 #[derive(Debug, Deserialize, Validate)]
-pub struct Pagination<T: Validate> {
+pub struct Pagination<T: Validate + Clone> {
     #[serde(default = "default_limit")]
     pub limit: u64,
     #[validate]
     pub iterator: Option<T>,
+}
+
+#[derive(Debug, Deserialize, Validate)]
+pub struct ReversablePagination<T: 'static + Validate + Clone + From<String>> {
+    #[serde(default = "default_limit")]
+    pub limit: u64,
+    #[validate]
+    pub iterator: Option<PaginationIterator<T>>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum PaginationIterator<T: Validate + Clone> {
+    Normal(T),
+    Prev(T),
+}
+
+impl<'de, T: 'static + Deserialize<'de> + Validate + Clone + From<String>> Deserialize<'de>
+    for PaginationIterator<T>
+{
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        deserializer.deserialize_any(Visitor(std::marker::PhantomData))
+    }
+}
+
+impl<T: Validate + Clone> Validate for PaginationIterator<T> {
+    fn validate(&self) -> std::result::Result<(), validator::ValidationErrors> {
+        match self {
+            PaginationIterator::Normal(val) => val.validate(),
+            PaginationIterator::Prev(val) => val.validate(),
+        }
+    }
+}
+
+struct Visitor<'de, T: Deserialize<'de> + Validate + Clone>(
+    std::marker::PhantomData<fn() -> &'de T>,
+);
+
+impl<'de, T: Deserialize<'de> + Validate + Clone + From<String>> serde::de::Visitor<'de>
+    for Visitor<'de, T>
+{
+    type Value = PaginationIterator<T>;
+
+    fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+        formatter.write_str("an iterator value")
+    }
+
+    fn visit_string<E>(self, v: String) -> std::result::Result<Self::Value, E>
+    where
+        E: serde::de::Error,
+    {
+        if v.starts_with('-') {
+            let v = v.trim_start_matches('-');
+            Ok(PaginationIterator::Prev(T::from(v.to_owned())))
+        } else {
+            Ok(PaginationIterator::Normal(T::from(v)))
+        }
+    }
+
+    fn visit_str<E>(self, v: &str) -> std::result::Result<Self::Value, E>
+    where
+        E: serde::de::Error,
+    {
+        if v.starts_with('-') {
+            let v = v.trim_start_matches('-');
+            Ok(PaginationIterator::Prev(T::from(v.to_owned())))
+        } else {
+            Ok(PaginationIterator::Normal(T::from(v.to_owned())))
+        }
+    }
 }
 
 #[derive(Serialize)]
@@ -334,5 +406,33 @@ mod tests {
         let p: Pagination<ApplicationUid> =
             serde_json::from_value(json!({ "iterator": "valid-appuid"})).unwrap();
         p.validate().unwrap();
+    }
+
+    #[derive(Debug, serde::Deserialize, PartialEq)]
+    struct TestPaginationDeserializationStruct {
+        iterator: super::PaginationIterator<crate::core::types::MessageId>,
+    }
+
+    #[test]
+    fn test_pagination_deserialization() {
+        let a = serde_json::json!({"iterator": "msg_274DTsX0wVTSLvo91QopQgZrjDV"});
+        let b = serde_json::json!({"iterator": "-msg_274DTsX0wVTSLvo91QopQgZrjDV"});
+
+        assert_eq!(
+            serde_json::from_value::<TestPaginationDeserializationStruct>(a).unwrap(),
+            TestPaginationDeserializationStruct {
+                iterator: super::PaginationIterator::Normal(crate::core::types::MessageId(
+                    "msg_274DTsX0wVTSLvo91QopQgZrjDV".to_owned()
+                ))
+            }
+        );
+        assert_eq!(
+            serde_json::from_value::<TestPaginationDeserializationStruct>(b).unwrap(),
+            TestPaginationDeserializationStruct {
+                iterator: super::PaginationIterator::Prev(crate::core::types::MessageId(
+                    "msg_274DTsX0wVTSLvo91QopQgZrjDV".to_owned()
+                ))
+            }
+        );
     }
 }
