@@ -9,8 +9,8 @@ use crate::{
         message_app::CreateMessageApp,
         security::AuthenticatedApplication,
         types::{
-            ApplicationIdOrUid, BaseId, EventChannelSet, EventTypeName, MessageAttemptTriggerType,
-            MessageId, MessageIdOrUid, MessageStatus, MessageUid,
+            ApplicationIdOrUid, BaseId, EventChannel, EventChannelSet, EventTypeName,
+            MessageAttemptTriggerType, MessageId, MessageIdOrUid, MessageStatus, MessageUid,
         },
     },
     db::models::messagedestination,
@@ -114,9 +114,16 @@ impl From<message::Model> for MessageOut {
     }
 }
 
+#[derive(Clone, Debug, Deserialize, Validate)]
+pub struct ListMessagesQueryParams {
+    #[validate]
+    channel: Option<EventChannel>,
+}
+
 async fn list_messages(
     Extension(ref db): Extension<DatabaseConnection>,
     pagination: ValidatedQuery<Pagination<MessageId>>,
+    ValidatedQuery(ListMessagesQueryParams { channel }): ValidatedQuery<ListMessagesQueryParams>,
     list_filter: MessageListFetchOptions,
     AuthenticatedApplication {
         permissions: _,
@@ -146,6 +153,10 @@ async fn list_messages(
             .join(",");
         let cond = format!("event_type in ({})", vals);
         query = query.filter(Expr::cust_with_values(&cond, event_types.0).into_condition());
+    }
+
+    if let Some(channel) = channel {
+        query = query.filter(Expr::cust_with_values("channels ?? ?", vec![channel]));
     }
 
     Ok(Json(MessageOut::list_response(
