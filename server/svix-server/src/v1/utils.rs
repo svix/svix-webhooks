@@ -80,6 +80,7 @@ pub struct EmptyResponse {}
 pub struct ListResponse<T: Clone> {
     pub data: Vec<T>,
     pub iterator: Option<String>,
+    pub prev_iterator: Option<String>,
     pub done: bool,
 }
 
@@ -95,10 +96,14 @@ pub trait ModelOut {
     fn list_response<T: ModelOut + Clone>(mut data: Vec<T>, limit: usize) -> ListResponse<T> {
         let done = data.len() <= limit;
         data.truncate(limit);
+
+        let prev_iterator = data.first().map(|x| format!("-{}", x.id_copy()));
         let iterator = data.last().map(|x| x.id_copy());
+
         ListResponse {
             data,
             iterator,
+            prev_iterator,
             done,
         }
     }
