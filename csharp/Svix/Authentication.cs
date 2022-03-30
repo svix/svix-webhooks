@@ -1,6 +1,12 @@
 ﻿using System;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Svix.Abstractions;
 using Svix.Api;
+using Svix.Client;
+using Svix.Model;
 
 namespace Svix
 {
@@ -14,24 +20,88 @@ namespace Svix
             _authenticationApi = authenticationApi ?? throw new ArgumentNullException(nameof(authenticationApi));
         }
 
-        public void GetDashboardAccess()
+        public DashboardAccessOut GetDashboardAccess(string appId, string idempotencyKey = default)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                var lMessage = _authenticationApi.GetDashboardAccessApiV1AuthDashboardAccessAppIdPost(
+                    appId,
+                    idempotencyKey);
+
+                return lMessage;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(GetDashboardAccess)} failed");
+
+                if (Throw)
+                    throw;
+
+                return null;
+            }
         }
 
-        public void GetDashboardAccessAsync()
+        public async Task<DashboardAccessOut> GetDashboardAccessAsync(string appId, string idempotencyKey = default,
+            CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var lMessage = await _authenticationApi.GetDashboardAccessApiV1AuthDashboardAccessAppIdPostAsync(
+                    appId,
+                    idempotencyKey);
+
+                return lMessage;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(GetDashboardAccessAsync)} failed");
+
+                if (Throw)
+                    throw;
+
+                return null;
+            }
         }
 
-        public void Logout()
+        public bool Logout(string idempotencyKey = default)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                var lResult = _authenticationApi.LogoutApiV1AuthLogoutPostWithHttpInfo(
+                    idempotencyKey);
+
+                return lResult.StatusCode == HttpStatusCode.NoContent;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(Logout)} failed");
+
+                if (Throw)
+                    throw;
+
+                return false;
+            }
         }
 
-        public void LogoutAsync()
+        public async Task<bool> LogoutAsync(string idempotencyKey = default, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var lResult = await _authenticationApi.LogoutApiV1AuthLogoutPostWithHttpInfoAsync(
+                    idempotencyKey,
+                    cancellationToken);
+
+                return lResult.StatusCode == HttpStatusCode.NoContent;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(LogoutAsync)} failed");
+
+                if (Throw)
+                    throw;
+
+                return false;
+            }
         }
     }
 }
