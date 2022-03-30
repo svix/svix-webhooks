@@ -164,6 +164,7 @@ async fn list_attempted_messages(
             )
             .collect::<Result<_>>()?,
         limit as usize,
+        false,
     )))
 }
 
@@ -285,6 +286,8 @@ async fn list_attempts_by_endpoint(
     let limit = pagination.limit;
     let iterator = pagination.iterator.take();
 
+    let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
+
     // Confirm endpoint ID belongs to the given application
     if endpoint::Entity::secure_find_by_id(app.id, endp_id.clone())
         .one(db)
@@ -307,6 +310,7 @@ async fn list_attempts_by_endpoint(
     Ok(Json(MessageAttemptOut::list_response(
         query.all(db).await?.into_iter().map(Into::into).collect(),
         limit as usize,
+        is_prev,
     )))
 }
 
@@ -345,6 +349,8 @@ async fn list_attempts_by_msg(
     let limit = pagination.limit;
     let iterator = pagination.iterator.take();
 
+    let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
+
     // Confirm message ID belongs to the given application
     if message::Entity::secure_find_by_id(app.id.clone(), msg_id.clone())
         .one(db)
@@ -380,6 +386,7 @@ async fn list_attempts_by_msg(
     Ok(Json(MessageAttemptOut::list_response(
         query.all(db).await?.into_iter().map(Into::into).collect(),
         limit as usize,
+        is_prev,
     )))
 }
 
@@ -459,6 +466,7 @@ async fn list_attempted_destinations(
             )
             .collect::<Result<_>>()?,
         limit as usize,
+        false,
     )))
 }
 
@@ -561,6 +569,7 @@ async fn list_messageattempts(
     Ok(Json(MessageAttemptOut::list_response(
         query.all(db).await?.into_iter().map(|x| x.into()).collect(),
         limit as usize,
+        false,
     )))
 }
 

@@ -85,9 +85,21 @@ pub trait ModelIn {
 pub trait ModelOut {
     fn id_copy(&self) -> String;
 
-    fn list_response<T: ModelOut + Clone>(mut data: Vec<T>, limit: usize) -> ListResponse<T> {
+    fn list_response<T: ModelOut + Clone>(
+        mut data: Vec<T>,
+        limit: usize,
+        is_prev_iter: bool,
+    ) -> ListResponse<T> {
         let done = data.len() <= limit;
-        data.truncate(limit);
+
+        if is_prev_iter {
+            let i = data.len() - limit;
+            if i > 0 {
+                data = data.drain(i..).collect();
+            }
+        } else {
+            data.truncate(limit);
+        }
 
         let prev_iterator = data.first().map(|x| format!("-{}", x.id_copy()));
         let iterator = data.last().map(|x| x.id_copy());
