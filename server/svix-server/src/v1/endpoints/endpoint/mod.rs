@@ -266,3 +266,113 @@ pub fn router() -> Router {
             ),
     )
 }
+
+#[cfg(test)]
+mod tests {
+
+    use super::{EndpointHeadersIn, EndpointHeadersPatchIn, EndpointIn};
+    use serde_json::json;
+    use std::collections::HashMap;
+    use validator::Validate;
+
+    const URL_VALID: &str = "https://www.example.com";
+    const URL_INVALID: &str = "invalid url";
+    const VERSION_VALID: u16 = 1;
+    const VERSION_INVALID: u16 = 0;
+    const RATE_LIMIT_VALID: u16 = 1;
+    const RATE_LIMIT_INVALID: u16 = 0;
+    const EVENT_TYPES_INVALID: &[&str] = &["valid-event-type", "&&invalid-event-type"];
+    const EVENT_TYPES_VALID: &[&str] = &["valid-event-type1", "valid-event-type2"];
+    const EVENT_CHANNELS_INVALID: &[&str] = &["valid-event-channel", "&&invalid-event-channel"];
+    const EVENT_CHANNELS_VALID: &[&str] = &["valid-event-channel1", "valid-event-channel2"];
+    const ENDPOINT_ID_INVALID: &str = "$$invalid-endpoint";
+    const ENDPOINT_ID_VALID: &str = "valid-endpoint";
+
+    #[test]
+    fn test_endpoint_in_validation() {
+        let invalid_1: EndpointIn = serde_json::from_value(json!({
+             "version": VERSION_INVALID,
+             "url": URL_VALID
+        }))
+        .unwrap();
+
+        let invalid_2: EndpointIn = serde_json::from_value(json!({
+             "version": VERSION_VALID,
+             "url": URL_INVALID
+        }))
+        .unwrap();
+
+        let invalid_3: EndpointIn = serde_json::from_value(json!({
+             "version": VERSION_VALID,
+             "url": URL_VALID,
+             "rateLimit": RATE_LIMIT_INVALID
+        }))
+        .unwrap();
+
+        let invalid_4: EndpointIn = serde_json::from_value(json!({
+             "version": VERSION_VALID,
+             "url": URL_VALID,
+             "uid": ENDPOINT_ID_INVALID
+        }))
+        .unwrap();
+
+        let invalid_5: EndpointIn = serde_json::from_value(json!({
+             "version": VERSION_VALID,
+             "url": URL_VALID,
+             "filterTypes": EVENT_TYPES_INVALID
+        }))
+        .unwrap();
+
+        let invalid_6: EndpointIn = serde_json::from_value(json!({
+             "version": VERSION_VALID,
+             "url": URL_VALID,
+             "channels": EVENT_CHANNELS_INVALID
+        }))
+        .unwrap();
+
+        for e in [
+            invalid_1, invalid_2, invalid_3, invalid_4, invalid_5, invalid_6,
+        ] {
+            assert!(e.validate().is_err());
+        }
+
+        let valid: EndpointIn = serde_json::from_value(json!({
+             "version": VERSION_VALID,
+             "url": URL_VALID,
+             "rateLimit": RATE_LIMIT_VALID,
+             "uid": ENDPOINT_ID_VALID,
+             "filterTypes": EVENT_TYPES_VALID,
+             "channels": EVENT_CHANNELS_VALID
+        }))
+        .unwrap();
+        valid.validate().unwrap();
+    }
+
+    #[test]
+    fn test_endpoint_headers_in_validation() {
+        let headers_valid = HashMap::from([("x-valid", "1")]);
+        let headers_invalid = HashMap::from([("x-invalid???", "1")]);
+
+        let invalid: EndpointHeadersIn =
+            serde_json::from_value(json!({ "headers": headers_invalid })).unwrap();
+        assert!(invalid.validate().is_err());
+
+        let valid: EndpointHeadersIn =
+            serde_json::from_value(json!({ "headers": headers_valid })).unwrap();
+        valid.validate().unwrap();
+    }
+
+    #[test]
+    fn test_endpoint_headers_patch_in_validation() {
+        let headers_valid = HashMap::from([("x-valid", "1")]);
+        let headers_invalid = HashMap::from([("x-invalid???", "1")]);
+
+        let invalid: EndpointHeadersPatchIn =
+            serde_json::from_value(json!({ "headers": headers_invalid })).unwrap();
+        assert!(invalid.validate().is_err());
+
+        let valid: EndpointHeadersPatchIn =
+            serde_json::from_value(json!({ "headers": headers_valid })).unwrap();
+        valid.validate().unwrap();
+    }
+}

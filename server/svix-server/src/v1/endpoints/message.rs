@@ -266,3 +266,66 @@ pub fn router() -> Router {
             .route("/msg/:msg_id/", get(get_message)),
     )
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{ListMessagesQueryParams, MessageIn};
+    use serde_json::json;
+    use validator::Validate;
+
+    const CHANNEL_INVALID: &str = "$$invalid-channel";
+    const CHANNEL_VALID: &str = "valid-channel";
+    const EVENT_TYPE_INVALID: &str = "$$invalid-eventType";
+    const EVENT_TYPE_VALID: &str = "valid-eventType";
+    const EVENT_ID_INVALID: &str = "$$invalid-eventId";
+    const EVENT_ID_VALID: &str = "valid-eventId";
+    const EVENT_CHANNELS_INVALID: &[&str] = &["valid-event-channel", "&&invalid-event-channel"];
+    const EVENT_CHANNELS_VALID: &[&str] = &["valid-event-channel1", "valid-event-channel2"];
+
+    #[test]
+    fn test_message_in_validation() {
+        let invalid_1: MessageIn = serde_json::from_value(json!({
+            "eventId": EVENT_ID_INVALID,
+            "eventType": EVENT_TYPE_VALID,
+            "payload": {}
+        }))
+        .unwrap();
+
+        let invalid_2: MessageIn = serde_json::from_value(json!({
+            "eventType": EVENT_TYPE_INVALID,
+            "payload": {}
+        }))
+        .unwrap();
+
+        let invalid_3: MessageIn = serde_json::from_value(json!({
+            "eventType": EVENT_TYPE_VALID,
+            "payload": {},
+            "channels": EVENT_CHANNELS_INVALID
+        }))
+        .unwrap();
+
+        for m in [invalid_1, invalid_2, invalid_3] {
+            assert!(m.validate().is_err());
+        }
+
+        let valid: MessageIn = serde_json::from_value(json!({
+            "eventId": EVENT_ID_VALID,
+            "eventType": EVENT_TYPE_VALID,
+            "payload": {},
+            "channels": EVENT_CHANNELS_VALID
+        }))
+        .unwrap();
+        valid.validate().unwrap();
+    }
+
+    #[test]
+    fn test_list_messages_query_params_validation() {
+        let invalid: ListMessagesQueryParams =
+            serde_json::from_value(json!({ "channel": CHANNEL_INVALID })).unwrap();
+        assert!(invalid.validate().is_err());
+
+        let valid: ListMessagesQueryParams =
+            serde_json::from_value(json!({ "channel": CHANNEL_VALID })).unwrap();
+        valid.validate().unwrap();
+    }
+}
