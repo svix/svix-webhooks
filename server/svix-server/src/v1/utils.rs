@@ -52,7 +52,14 @@ impl<'de, T: 'static + Deserialize<'de> + Validate + From<String>> Deserialize<'
     where
         D: serde::Deserializer<'de>,
     {
-        deserializer.deserialize_any(Visitor(std::marker::PhantomData))
+        String::deserialize(deserializer).map(|s| {
+            if s.starts_with('-') {
+                let s = s.trim_start_matches('-');
+                PaginationIterator::Prev(T::from(s.to_owned()))
+            } else {
+                PaginationIterator::Normal(T::from(s))
+            }
+        })
     }
 }
 
@@ -61,42 +68,6 @@ impl<T: Validate> Validate for PaginationIterator<T> {
         match self {
             PaginationIterator::Normal(val) => val.validate(),
             PaginationIterator::Prev(val) => val.validate(),
-        }
-    }
-}
-
-struct Visitor<'de, T: Deserialize<'de> + Validate>(std::marker::PhantomData<fn() -> &'de T>);
-
-impl<'de, T: Deserialize<'de> + Validate + From<String>> serde::de::Visitor<'de>
-    for Visitor<'de, T>
-{
-    type Value = PaginationIterator<T>;
-
-    fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-        formatter.write_str("an iterator value")
-    }
-
-    fn visit_string<E>(self, v: String) -> std::result::Result<Self::Value, E>
-    where
-        E: serde::de::Error,
-    {
-        if v.starts_with('-') {
-            let v = v.trim_start_matches('-');
-            Ok(PaginationIterator::Prev(T::from(v.to_owned())))
-        } else {
-            Ok(PaginationIterator::Normal(T::from(v)))
-        }
-    }
-
-    fn visit_str<E>(self, v: &str) -> std::result::Result<Self::Value, E>
-    where
-        E: serde::de::Error,
-    {
-        if v.starts_with('-') {
-            let v = v.trim_start_matches('-');
-            Ok(PaginationIterator::Prev(T::from(v.to_owned())))
-        } else {
-            Ok(PaginationIterator::Normal(T::from(v.to_owned())))
         }
     }
 }
