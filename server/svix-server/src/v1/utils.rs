@@ -45,8 +45,7 @@ impl<'de, T: 'static + Deserialize<'de> + Validate + From<String>> Deserialize<'
         D: serde::Deserializer<'de>,
     {
         String::deserialize(deserializer).map(|s| {
-            if s.starts_with('-') {
-                let s = s.trim_start_matches('-');
+            if let Some(s) = s.strip_prefix('-') {
                 ReversibleIterator::Prev(T::from(s.to_owned()))
             } else {
                 ReversibleIterator::Normal(T::from(s))
