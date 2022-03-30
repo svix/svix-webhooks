@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -24,7 +25,12 @@ namespace Svix
         {
             try
             {
-                throw new NotImplementedException();
+                var lIntegration = _integrationApi.CreateIntegrationApiV1AppAppIdIntegrationPost(
+                    appId,
+                    integration,
+                    idempotencyKey);
+
+                return lIntegration;
             }
             catch (ApiException e)
             {
@@ -42,7 +48,13 @@ namespace Svix
         {
             try
             {
-                throw new NotImplementedException();
+                var lIntegration = await _integrationApi.CreateIntegrationApiV1AppAppIdIntegrationPostAsync(
+                    appId,
+                    integration,
+                    idempotencyKey,
+                    cancellationToken);
+
+                return lIntegration;
             }
             catch (ApiException e)
             {
@@ -59,7 +71,12 @@ namespace Svix
         {
             try
             {
-                throw new NotImplementedException();
+                var lResponse = _integrationApi.DeleteIntegrationApiV1AppAppIdIntegrationIntegIdDeleteWithHttpInfo(
+                    integrationId,
+                    appId,
+                    idempotencyKey);
+
+                return lResponse.StatusCode == HttpStatusCode.NoContent;
             }
             catch (ApiException e)
             {
@@ -77,7 +94,13 @@ namespace Svix
         {
             try
             {
-                throw new NotImplementedException();
+                var lResponse = await _integrationApi.DeleteIntegrationApiV1AppAppIdIntegrationIntegIdDeleteWithHttpInfoAsync(
+                    integrationId,
+                    appId,
+                    idempotencyKey,
+                    cancellationToken);
+
+                return lResponse.StatusCode == HttpStatusCode.NoContent;
             }
             catch (ApiException e)
             {
@@ -94,7 +117,12 @@ namespace Svix
         {
             try
             {
-                throw new NotImplementedException();
+                var lIntegration = _integrationApi.GetIntegrationApiV1AppAppIdIntegrationIntegIdGet(
+                    integrationId,
+                    appId,
+                    idempotencyKey);
+
+                return lIntegration;
             }
             catch (ApiException e)
             {
@@ -107,11 +135,17 @@ namespace Svix
             }
         }
 
-        public async Task<IntegrationOut> GetAsync(string appId, string integrationId, string idempotencyKey = default)
+        public async Task<IntegrationOut> GetAsync(string appId, string integrationId, string idempotencyKey = default, CancellationToken cancellationToken = default)
         {
             try
             {
-                throw new NotImplementedException();
+                var lIntegration = await _integrationApi.GetIntegrationApiV1AppAppIdIntegrationIntegIdGetAsync(
+                    integrationId,
+                    appId,
+                    idempotencyKey,
+                    cancellationToken);
+
+                return lIntegration;
             }
             catch (ApiException e)
             {
@@ -128,7 +162,12 @@ namespace Svix
         {
             try
             {
-                throw new NotImplementedException();
+                var lResponse = _integrationApi.GetIntegrationKeyApiV1AppAppIdIntegrationIntegIdKeyGet(
+                    integrationId,
+                    appId,
+                    idempotencyKey);
+
+                return lResponse.Key;
             }
             catch (ApiException e)
             {
@@ -146,7 +185,13 @@ namespace Svix
         {
             try
             {
-                throw new NotImplementedException();
+                var lResponse = await _integrationApi.GetIntegrationKeyApiV1AppAppIdIntegrationIntegIdKeyGetAsync(
+                    integrationId,
+                    appId,
+                    idempotencyKey,
+                    cancellationToken);
+
+                return lResponse.Key;
             }
             catch (ApiException e)
             {
@@ -163,7 +208,13 @@ namespace Svix
         {
             try
             {
-                throw new NotImplementedException();
+                var lResult = _integrationApi.ListIntegrationsApiV1AppAppIdIntegrationGet(
+                    appId,
+                    options?.Iterator,
+                    options?.Limit,
+                    idempotencyKey);
+
+                return lResult.Data;
             }
             catch (ApiException e)
             {
@@ -181,7 +232,14 @@ namespace Svix
         {
             try
             {
-                throw new NotImplementedException();
+                var lResult = await _integrationApi.ListIntegrationsApiV1AppAppIdIntegrationGetAsync(
+                    appId,
+                    options?.Iterator,
+                    options?.Limit,
+                    idempotencyKey,
+                    cancellationToken);
+
+                return lResult.Data;
             }
             catch (ApiException e)
             {
@@ -198,7 +256,12 @@ namespace Svix
         {
             try
             {
-                throw new NotImplementedException();
+                var lResponse = _integrationApi.RotateIntegrationKeyApiV1AppAppIdIntegrationIntegIdKeyRotatePost(
+                    integrationId,
+                    appId,
+                    idempotencyKey);
+
+                return lResponse.Key;
             }
             catch (ApiException e)
             {
@@ -216,7 +279,13 @@ namespace Svix
         {
             try
             {
-                throw new NotImplementedException();
+                var lResponse = await _integrationApi.RotateIntegrationKeyApiV1AppAppIdIntegrationIntegIdKeyRotatePostAsync(
+                    integrationId,
+                    appId,
+                    idempotencyKey,
+                    cancellationToken);
+
+                return lResponse.Key;
             }
             catch (ApiException e)
             {
@@ -229,11 +298,17 @@ namespace Svix
             }
         }
 
-        public IntegrationOut Update(string appId, string integrationId, IntegrationIn integration, string idempotencyKey = default)
+        public IntegrationOut Update(string appId, string integrationId, IntegrationUpdate integration, string idempotencyKey = default)
         {
             try
             {
-                throw new NotImplementedException();
+                var lIntegration = _integrationApi.UpdateIntegrationApiV1AppAppIdIntegrationIntegIdPut(
+                    integrationId,
+                    appId,
+                    integration,
+                    idempotencyKey);
+
+                return lIntegration;
             }
             catch (ApiException e)
             {
@@ -246,11 +321,17 @@ namespace Svix
             }
         }
 
-        public async Task<IntegrationOut> UpdateAsync(string appId, string integrationId, IntegrationIn integration, string idempotencyKey = default)
+        public async Task<IntegrationOut> UpdateAsync(string appId, string integrationId, IntegrationUpdate integration, string idempotencyKey = default)
         {
             try
             {
-                throw new NotImplementedException();
+                var lIntegration = await _integrationApi.UpdateIntegrationApiV1AppAppIdIntegrationIntegIdPutAsync(
+                    integrationId,
+                    appId,
+                    integration,
+                    idempotencyKey);
+
+                return lIntegration;
             }
             catch (ApiException e)
             {

@@ -20,7 +20,7 @@ namespace Svix.Abstractions
         
         IntegrationOut Get(string appId, string integrationId, string idempotencyKey = default);
         
-        Task<IntegrationOut> GetAsync(string appId, string integrationId, string idempotencyKey = default);
+        Task<IntegrationOut> GetAsync(string appId, string integrationId, string idempotencyKey = default, CancellationToken cancellationToken = default);
 
         string GetKey(string appId, string integrationId, string idempotencyKey = default);
 
@@ -37,8 +37,8 @@ namespace Svix.Abstractions
         Task<string> RotateKeyAsync(string appId, string integrationId, string idempotencyKey = default, 
             CancellationToken cancellationToken = default);
         
-        IntegrationOut Update(string appId, string integrationId, IntegrationIn integration, string idempotencyKey = default);
+        IntegrationOut Update(string appId, string integrationId, IntegrationUpdate integration, string idempotencyKey = default);
         
-        Task<IntegrationOut> UpdateAsync(string appId, string integrationId, IntegrationIn integration, string idempotencyKey = default);
+        Task<IntegrationOut> UpdateAsync(string appId, string integrationId, IntegrationUpdate integration, string idempotencyKey = default);
     }
 }
