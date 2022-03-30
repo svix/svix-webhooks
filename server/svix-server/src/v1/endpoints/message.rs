@@ -96,6 +96,15 @@ pub struct MessageOut {
     pub created_at: DateTime<Utc>,
 }
 
+impl MessageOut {
+    fn without_payload(model: message::Model) -> Self {
+        Self {
+            payload: serde_json::json!({}),
+            ..model.into()
+        }
+    }
+}
+
 // FIXME: This can and should be a derive macro
 impl From<message::Model> for MessageOut {
     fn from(model: message::Model) -> Self {
@@ -112,16 +121,25 @@ impl From<message::Model> for MessageOut {
     }
 }
 
+fn default_true() -> bool {
+    true
+}
+
 #[derive(Clone, Debug, Deserialize, Validate)]
 pub struct ListMessagesQueryParams {
     #[validate]
     channel: Option<EventChannel>,
+    #[serde(default = "default_true")]
+    with_content: bool,
 }
 
 async fn list_messages(
     Extension(ref db): Extension<DatabaseConnection>,
     pagination: ValidatedQuery<Pagination<MessageId>>,
-    ValidatedQuery(ListMessagesQueryParams { channel }): ValidatedQuery<ListMessagesQueryParams>,
+    ValidatedQuery(ListMessagesQueryParams {
+        channel,
+        with_content,
+    }): ValidatedQuery<ListMessagesQueryParams>,
     list_filter: MessageListFetchOptions,
     AuthenticatedApplication {
         permissions: _,
@@ -151,16 +169,36 @@ async fn list_messages(
     }
 
     Ok(Json(MessageOut::list_response(
-        query.all(db).await?.into_iter().map(|x| x.into()).collect(),
+        query
+            .all(db)
+            .await?
+            .into_iter()
+            .map(|x| {
+                if with_content {
+                    x.into()
+                } else {
+                    MessageOut::without_payload(x)
+                }
+            })
+            .collect(),
         limit as usize,
         false,
     )))
+}
+
+#[derive(Debug, Deserialize, Validate)]
+pub struct CreateMessageQueryParams {
+    #[serde(default = "default_true")]
+    with_content: bool,
 }
 
 async fn create_message(
     Extension(ref db): Extension<DatabaseConnection>,
     Extension(queue_tx): Extension<TaskQueueProducer>,
     Extension(redis_cache): Extension<Option<RedisCache>>,
+    ValidatedQuery(CreateMessageQueryParams { with_content }): ValidatedQuery<
+        CreateMessageQueryParams,
+    >,
     ValidatedJson(data): ValidatedJson<MessageIn>,
     AuthenticatedApplication { permissions, app }: AuthenticatedApplication,
 ) -> Result<(StatusCode, Json<MessageOut>)> {
@@ -239,13 +277,23 @@ async fn create_message(
     for task in tasks {
         queue_tx.send(task, None).await?;
     }
-
-    Ok((StatusCode::ACCEPTED, Json(msg.into())))
+    let msg_out = if with_content {
+        msg.into()
+    } else {
+        MessageOut::without_payload(msg)
+    };
+    Ok((StatusCode::ACCEPTED, Json(msg_out)))
 }
 
+#[derive(Debug, Deserialize, Validate)]
+pub struct GetMessageQueryParams {
+    #[serde(default = "default_true")]
+    with_content: bool,
+}
 async fn get_message(
     Extension(ref db): Extension<DatabaseConnection>,
     Path((_app_id, msg_id)): Path<(ApplicationIdOrUid, MessageIdOrUid)>,
+    ValidatedQuery(GetMessageQueryParams { with_content }): ValidatedQuery<GetMessageQueryParams>,
     AuthenticatedApplication {
         permissions: _,
         app,
@@ -255,7 +303,12 @@ async fn get_message(
         .one(db)
         .await?
         .ok_or_else(|| HttpError::not_found(None, None))?;
-    Ok(Json(msg.into()))
+    let msg_out = if with_content {
+        msg.into()
+    } else {
+        MessageOut::without_payload(msg)
+    };
+    Ok(Json(msg_out))
 }
 
 pub fn router() -> Router {
@@ -270,7 +323,10 @@ pub fn router() -> Router {
 
 #[cfg(test)]
 mod tests {
-    use super::{ListMessagesQueryParams, MessageIn};
+    use super::{
+        default_true, CreateMessageQueryParams, GetMessageQueryParams, ListMessagesQueryParams,
+        MessageIn,
+    };
     use serde_json::json;
     use validator::Validate;
 
@@ -328,5 +384,22 @@ mod tests {
         let valid: ListMessagesQueryParams =
             serde_json::from_value(json!({ "channel": CHANNEL_VALID })).unwrap();
         valid.validate().unwrap();
+    }
+
+    #[test]
+    fn test_default_true() {
+        assert!(default_true());
+    }
+
+    #[test]
+    fn test_create_message_query_params_default() {
+        let q: CreateMessageQueryParams = serde_json::from_value(json!({})).unwrap();
+        assert!(q.with_content);
+    }
+
+    #[test]
+    fn test_get_message_query_params_default() {
+        let q: GetMessageQueryParams = serde_json::from_value(json!({})).unwrap();
+        assert!(q.with_content);
     }
 }
