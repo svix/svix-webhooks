@@ -1,25 +1,36 @@
-﻿namespace Svix.Abstractions
+﻿using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Svix.Model;
+using Svix.Models;
+
+namespace Svix.Abstractions
 {
     public interface IEventType
     {
-        void Archive();
+        bool Archive(string eventType, string idempotencyKey = default);
         
-        void ArchiveAsync();
+        Task<bool> ArchiveAsync(string eventType, string idempotencyKey = default, 
+            CancellationToken cancellationToken = default);
 
-        void Create();
+        EventTypeOut Create(EventTypeIn eventType, string idempotencyKey = default);
         
-        void CreateAsync();
+        Task<EventTypeOut> CreateAsync(EventTypeIn eventType, string idempotencyKey = default, 
+            CancellationToken cancellationToken = default);
 
-        void Get();
+        EventTypeOut Get(string eventType, string idempotencyKey = default);
         
-        void GetAsync();
+        Task<EventTypeOut> GetAsync(string eventType, string idempotencyKey = default, 
+            CancellationToken cancellationToken = default);
 
-        void List();
+        List<EventTypeOut> List(EventTypeListOptions options, string idempotencyKey = default);
         
-        void ListAsync();
+        Task<List<EventTypeOut>> ListAsync(EventTypeListOptions options, string idempotencyKey = default, 
+            CancellationToken cancellationToken = default);
 
-        void Update();
+        EventTypeOut Update(string eventType, EventTypeUpdate update, string idempotencyKey = default);
         
-        void UpdateAsync();
+        Task<EventTypeOut> UpdateAsync(string eventType, EventTypeUpdate update, string idempotencyKey = default, 
+            CancellationToken cancellationToken = default);
     }
 }
