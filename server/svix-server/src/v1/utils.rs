@@ -31,22 +31,14 @@ pub struct Pagination<T: Validate> {
     pub iterator: Option<T>,
 }
 
-#[derive(Debug, Deserialize, Validate)]
-pub struct ReversiblePagination<T: 'static + Validate + From<String>> {
-    #[serde(default = "default_limit")]
-    pub limit: u64,
-    #[validate]
-    pub iterator: Option<PaginationIterator<T>>,
-}
-
 #[derive(Debug, PartialEq)]
-pub enum PaginationIterator<T: Validate> {
+pub enum ReversibleIterator<T: Validate> {
     Normal(T),
     Prev(T),
 }
 
 impl<'de, T: 'static + Deserialize<'de> + Validate + From<String>> Deserialize<'de>
-    for PaginationIterator<T>
+    for ReversibleIterator<T>
 {
     fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
     where
@@ -55,19 +47,19 @@ impl<'de, T: 'static + Deserialize<'de> + Validate + From<String>> Deserialize<'
         String::deserialize(deserializer).map(|s| {
             if s.starts_with('-') {
                 let s = s.trim_start_matches('-');
-                PaginationIterator::Prev(T::from(s.to_owned()))
+                ReversibleIterator::Prev(T::from(s.to_owned()))
             } else {
-                PaginationIterator::Normal(T::from(s))
+                ReversibleIterator::Normal(T::from(s))
             }
         })
     }
 }
 
-impl<T: Validate> Validate for PaginationIterator<T> {
+impl<T: Validate> Validate for ReversibleIterator<T> {
     fn validate(&self) -> std::result::Result<(), validator::ValidationErrors> {
         match self {
-            PaginationIterator::Normal(val) => val.validate(),
-            PaginationIterator::Prev(val) => val.validate(),
+            ReversibleIterator::Normal(val) => val.validate(),
+            ReversibleIterator::Prev(val) => val.validate(),
         }
     }
 }
@@ -384,7 +376,7 @@ mod tests {
 
     #[derive(Debug, serde::Deserialize, PartialEq)]
     struct TestPaginationDeserializationStruct {
-        iterator: super::PaginationIterator<crate::core::types::MessageId>,
+        iterator: super::ReversibleIterator<crate::core::types::MessageId>,
     }
 
     #[test]
@@ -395,7 +387,7 @@ mod tests {
         assert_eq!(
             serde_json::from_value::<TestPaginationDeserializationStruct>(a).unwrap(),
             TestPaginationDeserializationStruct {
-                iterator: super::PaginationIterator::Normal(crate::core::types::MessageId(
+                iterator: super::ReversibleIterator::Normal(crate::core::types::MessageId(
                     "msg_274DTsX0wVTSLvo91QopQgZrjDV".to_owned()
                 ))
             }
@@ -403,7 +395,7 @@ mod tests {
         assert_eq!(
             serde_json::from_value::<TestPaginationDeserializationStruct>(b).unwrap(),
             TestPaginationDeserializationStruct {
-                iterator: super::PaginationIterator::Prev(crate::core::types::MessageId(
+                iterator: super::ReversibleIterator::Prev(crate::core::types::MessageId(
                     "msg_274DTsX0wVTSLvo91QopQgZrjDV".to_owned()
                 ))
             }

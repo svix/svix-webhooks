@@ -16,8 +16,8 @@ use crate::{
     v1::{
         endpoints::message::MessageOut,
         utils::{
-            EmptyResponse, ListResponse, MessageListFetchOptions, ModelOut, PaginationIterator,
-            ReversiblePagination, ValidatedQuery,
+            EmptyResponse, ListResponse, MessageListFetchOptions, ModelOut, ReversibleIterator,
+            ValidatedQuery,
         },
     },
 };
@@ -183,14 +183,14 @@ pub struct ListAttemptsByEndpointQueryParameters {
 fn list_attempts_by_endpoint_or_message_filters(
     mut query: Select<messageattempt::Entity>,
     limit: u64,
-    iterator: Option<PaginationIterator<MessageAttemptId>>,
+    iterator: Option<ReversibleIterator<MessageAttemptId>>,
     status: Option<MessageStatus>,
     status_code_class: Option<StatusCodeClass>,
     event_types: Option<EventTypeNameSet>,
     channel: Option<EventChannel>,
 ) -> Select<messageattempt::Entity> {
     query = match iterator {
-        Some(PaginationIterator::Prev(id)) => query.filter(
+        Some(ReversibleIterator::Prev(id)) => query.filter(
             Condition::any().add(
                 messageattempt::Column::Id.in_subquery(
                     Query::select()
@@ -202,7 +202,7 @@ fn list_attempts_by_endpoint_or_message_filters(
                 ),
             ),
         ),
-        Some(PaginationIterator::Normal(id)) => query.filter(messageattempt::Column::Id.lt(id)),
+        Some(ReversibleIterator::Normal(id)) => query.filter(messageattempt::Column::Id.lt(id)),
         None => query,
     };
 
@@ -267,7 +267,9 @@ fn list_attempts_by_endpoint_or_message_filters(
 /// Fetches a list of [`MessageAttemptOut`]s for a given endpoint ID
 async fn list_attempts_by_endpoint(
     Extension(ref db): Extension<DatabaseConnection>,
-    ValidatedQuery(mut pagination): ValidatedQuery<ReversiblePagination<MessageAttemptId>>,
+    ValidatedQuery(mut pagination): ValidatedQuery<
+        Pagination<ReversibleIterator<MessageAttemptId>>,
+    >,
     ValidatedQuery(ListAttemptsByEndpointQueryParameters {
         status,
         status_code_class,
@@ -324,7 +326,9 @@ pub struct ListAttemptsByMsgQueryParameters {
 /// Fetches a list of [`MessageAttemptOut`]s for a given message ID
 async fn list_attempts_by_msg(
     Extension(ref db): Extension<DatabaseConnection>,
-    ValidatedQuery(mut pagination): ValidatedQuery<ReversiblePagination<MessageAttemptId>>,
+    ValidatedQuery(mut pagination): ValidatedQuery<
+        Pagination<ReversibleIterator<MessageAttemptId>>,
+    >,
     ValidatedQuery(ListAttemptsByMsgQueryParameters {
         status,
         status_code_class,
