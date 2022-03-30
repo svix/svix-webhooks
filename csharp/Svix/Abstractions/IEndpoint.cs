@@ -1,49 +1,66 @@
-﻿namespace Svix.Abstractions
+﻿using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Svix.Model;
+using Svix.Models;
+
+namespace Svix.Abstractions
 {
     public interface IEndpoint
     {
-        void Create();
+        EndpointOut Create(string appId, EndpointIn endpoint, string idempotencyKey = default);
 
-        void CreateAsync();
+        Task<EndpointOut> CreateAsync(string appId, EndpointIn endpoint, string idempotencyKey = default, 
+            CancellationToken cancellationToken = default);
 
-        void Delete();
+        bool Delete(string appId, string endpointId, string idempotencyKey = default);
 
-        void DeleteAsync();
+        Task<bool> DeleteAsync(string appId, string endpointId, string idempotencyKey = default, 
+            CancellationToken cancellationToken = default);
         
-        void Get();
+        EndpointOut Get(string appId, string endpointId, string idempotencyKey = default);
 
-        void GetAsync();
+        Task<EndpointOut> GetAsync(string appId, string endpointId, string idempotencyKey = default,
+            CancellationToken cancellationToken = default);
 
-        void GetHeaders();
+        EndpointHeadersOut GetHeaders(string appId, string endpointId, string idempotencyKey = default);
 
-        void GetHeadersAsync();
+        Task<EndpointHeadersOut> GetHeadersAsync(string appId, string endpointId, string idempotencyKey = default, 
+            CancellationToken cancellationToken = default);
         
-        void GetSecret();
+        string GetSecret(string appId, string endpointId, string idempotencyKey = default);
 
-        void GetSecretAsync();
+        Task<string> GetSecretAsync(string appId, string endpointId, string idempotencyKey = default, 
+            CancellationToken cancellationToken = default);
         
-        void List();
+        List<EndpointOut> List(string appId, ListOptions options, string idempotencyKey = default);
 
-        void ListAsync();
+        Task<List<EndpointOut>> ListAsync(string appId, ListOptions options, string idempotencyKey = default, 
+            CancellationToken cancellationToken = default);
 
-        void PatchHeaders();
+        bool PatchHeaders(string appId, string endpointId, EndpointHeadersIn headers, string idempotencyKey = default);
 
-        void PatchHeadersAsync();
+        Task<bool> PatchHeadersAsync(string appId, string endpointId, EndpointHeadersIn headers, 
+            string idempotencyKey = default, CancellationToken cancellationToken = default);
         
-        void Recover();
+        bool Recover(string appId, string endpointId, RecoverIn recover, string idempotencyKey = default);
 
-        void RecoverAsync();
+        Task<bool> RecoverAsync(string appId, string endpointId, RecoverIn recover, string idempotencyKey = default, 
+            CancellationToken cancellationToken = default);
         
-        void RotateSecret();
+        bool RotateSecret(string appId, string endpointId, EndpointSecretRotateIn secret, string idempotencyKey = default);
 
-        void RotateSecretAsync();
+        Task<bool> RotateSecretAsync(string appId, string endpointId, EndpointSecretRotateIn secret, string idempotencyKey = default, 
+            CancellationToken cancellationToken = default);
 
-        void Update();
+        EndpointOut Update(string appId, string endpointId, EndpointUpdate endpoint, string idempotencyKey = default);
 
-        void UpdateAsync();
+        Task<EndpointOut> UpdateAsync(string appId, string endpointId, EndpointUpdate endpoint, string idempotencyKey = default, 
+            CancellationToken cancellationToken = default);
 
-        void UpdateHeaders();
+        bool UpdateHeaders(string appId, string endpointId, EndpointHeadersIn headers, string idempotencyKey = default);
 
-        void UpdateHeadersAsync();
+        Task<bool> UpdateHeadersAsync(string appId, string endpointId, EndpointHeadersIn headers, 
+            string idempotencyKey = default, CancellationToken cancellationToken = default);
     }
 }
