@@ -182,7 +182,7 @@ pub struct ListAttemptsByEndpointQueryParameters {
 
 // Applies filters common to [`list_attempts_by_endpoint`] and [`list_attempts_by_msg`]
 fn list_attempts_by_endpoint_or_message_filters(
-    mut query: Select<messageattempt::Entity>,
+    query: Select<messageattempt::Entity>,
     limit: u64,
     iterator: Option<ReversibleIterator<MessageAttemptId>>,
     status: Option<MessageStatus>,
@@ -190,7 +190,7 @@ fn list_attempts_by_endpoint_or_message_filters(
     event_types: Option<EventTypeNameSet>,
     channel: Option<EventChannel>,
 ) -> Select<messageattempt::Entity> {
-    query = match iterator {
+    let query = match iterator {
         Some(ReversibleIterator::Prev(id)) => query.filter(
             Condition::any().add(
                 messageattempt::Column::Id.in_subquery(
@@ -207,7 +207,7 @@ fn list_attempts_by_endpoint_or_message_filters(
         None => query,
     };
 
-    query = query
+    let mut query = query
         .limit(limit + 1)
         .order_by_desc(messageattempt::Column::Id);
 
