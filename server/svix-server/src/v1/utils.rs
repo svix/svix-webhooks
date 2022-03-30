@@ -24,7 +24,7 @@ const fn default_limit() -> u64 {
 }
 
 #[derive(Debug, Deserialize, Validate)]
-pub struct Pagination<T: Validate + Clone> {
+pub struct Pagination<T: Validate> {
     #[serde(default = "default_limit")]
     pub limit: u64,
     #[validate]
@@ -32,20 +32,20 @@ pub struct Pagination<T: Validate + Clone> {
 }
 
 #[derive(Debug, Deserialize, Validate)]
-pub struct ReversablePagination<T: 'static + Validate + Clone + From<String>> {
+pub struct ReversablePagination<T: 'static + Validate + From<String>> {
     #[serde(default = "default_limit")]
     pub limit: u64,
     #[validate]
     pub iterator: Option<PaginationIterator<T>>,
 }
 
-#[derive(Debug, Clone, PartialEq)]
-pub enum PaginationIterator<T: Validate + Clone> {
+#[derive(Debug, PartialEq)]
+pub enum PaginationIterator<T: Validate> {
     Normal(T),
     Prev(T),
 }
 
-impl<'de, T: 'static + Deserialize<'de> + Validate + Clone + From<String>> Deserialize<'de>
+impl<'de, T: 'static + Deserialize<'de> + Validate + From<String>> Deserialize<'de>
     for PaginationIterator<T>
 {
     fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
@@ -56,7 +56,7 @@ impl<'de, T: 'static + Deserialize<'de> + Validate + Clone + From<String>> Deser
     }
 }
 
-impl<T: Validate + Clone> Validate for PaginationIterator<T> {
+impl<T: Validate> Validate for PaginationIterator<T> {
     fn validate(&self) -> std::result::Result<(), validator::ValidationErrors> {
         match self {
             PaginationIterator::Normal(val) => val.validate(),
@@ -65,11 +65,9 @@ impl<T: Validate + Clone> Validate for PaginationIterator<T> {
     }
 }
 
-struct Visitor<'de, T: Deserialize<'de> + Validate + Clone>(
-    std::marker::PhantomData<fn() -> &'de T>,
-);
+struct Visitor<'de, T: Deserialize<'de> + Validate>(std::marker::PhantomData<fn() -> &'de T>);
 
-impl<'de, T: Deserialize<'de> + Validate + Clone + From<String>> serde::de::Visitor<'de>
+impl<'de, T: Deserialize<'de> + Validate + From<String>> serde::de::Visitor<'de>
     for Visitor<'de, T>
 {
     type Value = PaginationIterator<T>;
