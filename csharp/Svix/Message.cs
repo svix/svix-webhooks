@@ -1,6 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Svix.Abstractions;
 using Svix.Api;
+using Svix.Client;
+using Svix.Model;
+using Svix.Models;
 
 namespace Svix
 {
@@ -14,34 +22,152 @@ namespace Svix
             _messageApi = messageApi ?? throw new ArgumentException(nameof(messageApi));
         }
 
-        public void Create()
+        public MessageOut Create(string appId, MessageIn message, MessageCreateOptions options, string idempotencyKey = default)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                message = message ?? throw new ArgumentNullException(nameof(message));
+                
+                var lApplication = _messageApi.CreateMessageApiV1AppAppIdMsgPost(
+                    appId,
+                    message,
+                    options?.WithContent,
+                    idempotencyKey);
+
+                return lApplication;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(List)} failed");
+
+                if (Throw)
+                    throw;
+
+                return null;
+            }
         }
 
-        public void CreateAsync()
+        public async Task<MessageOut> CreateAsync(string appId, MessageIn message, MessageCreateOptions options, string idempotencyKey = default, CancellationToken cancellationToken = default)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                message = message ?? throw new ArgumentNullException(nameof(message));
+                
+                var lApplication = await _messageApi.CreateMessageApiV1AppAppIdMsgPostAsync(
+                    appId,
+                    message,
+                    options?.WithContent,
+                    idempotencyKey,
+                    cancellationToken);
+
+                return lApplication;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(List)} failed");
+
+                if (Throw)
+                    throw;
+
+                return null;
+            }
         }
 
-        public void Get()
+        public MessageOut Get(string messageId, string appId, string idempotencyKey = default)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                var lMessage = _messageApi.GetMessageApiV1AppAppIdMsgMsgIdGet(
+                    messageId,
+                    appId,
+                    idempotencyKey);
+
+                return lMessage;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(List)} failed");
+
+                if (Throw)
+                    throw;
+
+                return null;
+            }
         }
 
-        public void GetAsync()
+        public async Task<MessageOut> GetAsync(string messageId, string appId, string idempotencyKey = default, CancellationToken cancellationToken = default)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                var lMessage = await _messageApi.GetMessageApiV1AppAppIdMsgMsgIdGetAsync(
+                    messageId,
+                    appId,
+                    idempotencyKey);
+
+                return lMessage;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(List)} failed");
+
+                if (Throw)
+                    throw;
+
+                return null;
+            }
         }
 
-        public void List()
+        public List<MessageOut> List(string appId, MessageListOptions options, string idempotencyKey = default)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                var lResponse = _messageApi.ListMessagesApiV1AppAppIdMsgGet(
+                    appId, 
+                    options?.Iterator,
+                    options?.Limit,
+                    options?.EventTypes?.ToList(),
+                    options?.Channel,
+                    options?.Before,
+                    idempotencyKey);
+
+                return lResponse?.Data;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(List)} failed");
+
+                if (Throw)
+                    throw;
+                
+                return new List<MessageOut>();
+            }
         }
 
-        public void ListAsync()
+        public async Task<List<MessageOut>> ListAsync(string appId, MessageListOptions options, string idempotencyKey = default, CancellationToken cancellationToken = default)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                var lResponse = await _messageApi.ListMessagesApiV1AppAppIdMsgGetAsync(
+                    appId, 
+                    options?.Iterator,
+                    options?.Limit,
+                    options?.EventTypes?.ToList(),
+                    options?.Channel,
+                    options?.Before,
+                    idempotencyKey,
+                    cancellationToken);
+
+                return lResponse?.Data;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(ListAsync)} failed");
+
+                if (Throw)
+                    throw;
+                
+                return new List<MessageOut>();
+            }
         }
     }
 }

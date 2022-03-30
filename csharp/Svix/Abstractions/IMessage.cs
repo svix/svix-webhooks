@@ -1,17 +1,27 @@
-﻿namespace Svix.Abstractions
+﻿using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Svix.Model;
+using Svix.Models;
+
+namespace Svix.Abstractions
 {
     public interface IMessage
     {
-        void Create();
+        MessageOut Create(string appId, MessageIn message, MessageCreateOptions options, 
+            string idempotencyKey = default);
         
-        void CreateAsync();
+        Task<MessageOut> CreateAsync(string appId, MessageIn message, MessageCreateOptions options, 
+            string idempotencyKey = default, CancellationToken cancellationToken = default);
 
-        void Get();
+        MessageOut Get(string messageId, string appId, string idempotencyKey = default);
         
-        void GetAsync();
+        Task<MessageOut> GetAsync(string messageId, string appId, string idempotencyKey = default,
+            CancellationToken cancellationToken = default);
 
-        void List();
+        List<MessageOut> List(string appId, MessageListOptions options, string idempotencyKey = default);
         
-        void ListAsync();
+        Task<List<MessageOut>> ListAsync(string appId, MessageListOptions options, string idempotencyKey = default,
+            CancellationToken cancellationToken = default);
     }
 }
