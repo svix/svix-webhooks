@@ -15,7 +15,10 @@ use crate::{
     queue::{MessageTask, TaskQueueProducer},
     v1::{
         endpoints::message::MessageOut,
-        utils::{EmptyResponse, ListResponse, MessageListFetchOptions, ModelOut, ValidatedQuery},
+        utils::{
+            EmptyResponse, ListResponse, MessageListFetchOptions, ModelOut, PaginationIterator,
+            ReversiblePagination, ValidatedQuery,
+        },
     },
 };
 use axum::{
@@ -26,7 +29,11 @@ use axum::{
 use chrono::{DateTime, Utc};
 
 use hyper::StatusCode;
-use sea_orm::{entity::prelude::*, sea_query::Expr, DatabaseConnection, QueryOrder, QuerySelect};
+use sea_orm::{
+    entity::prelude::*,
+    sea_query::{Expr, Order, Query},
+    Condition, DatabaseConnection, QueryOrder, QuerySelect,
+};
 use serde::{Deserialize, Serialize};
 
 use svix_server_derive::ModelOut;
@@ -174,21 +181,37 @@ pub struct ListAttemptsByEndpointQueryParameters {
 
 // Applies filters common to [`list_attempts_by_endpoint`] and [`list_attempts_by_msg`]
 fn list_attempts_by_endpoint_or_message_filters(
-    query: Select<messageattempt::Entity>,
+    mut query: Select<messageattempt::Entity>,
     limit: u64,
-    iterator: Option<MessageAttemptId>,
+    iterator: Option<PaginationIterator<MessageAttemptId>>,
     status: Option<MessageStatus>,
     status_code_class: Option<StatusCodeClass>,
     event_types: Option<EventTypeNameSet>,
     channel: Option<EventChannel>,
 ) -> Select<messageattempt::Entity> {
-    let mut query = query
-        .order_by_desc(messageattempt::Column::Id)
-        .limit(limit + 1);
-
-    if let Some(iterator) = iterator {
-        query = query.filter(messageattempt::Column::Id.lt(iterator));
-    }
+    query = match iterator {
+        Some(PaginationIterator::Prev(id)) => query
+            .filter(
+                Condition::any().add(
+                    messageattempt::Column::Id.in_subquery(
+                        Query::select()
+                            .column(messageattempt::Column::Id)
+                            .and_where(messageattempt::Column::Id.gt(id))
+                            .order_by_columns(vec![(messageattempt::Column::Id, Order::Asc)])
+                            .limit(limit + 1)
+                            .to_owned(),
+                    ),
+                ),
+            )
+            .order_by_desc(messageattempt::Column::Id),
+        Some(PaginationIterator::Normal(id)) => query
+            .limit(limit + 1)
+            .order_by_desc(messageattempt::Column::Id)
+            .filter(messageattempt::Column::Id.lt(id)),
+        None => query
+            .limit(limit + 1)
+            .order_by_desc(messageattempt::Column::Id),
+    };
 
     if let Some(status) = status {
         query = query.filter(messageattempt::Column::Status.eq(status));
@@ -247,7 +270,7 @@ fn list_attempts_by_endpoint_or_message_filters(
 /// Fetches a list of [`MessageAttemptOut`]s for a given endpoint ID
 async fn list_attempts_by_endpoint(
     Extension(ref db): Extension<DatabaseConnection>,
-    ValidatedQuery(mut pagination): ValidatedQuery<Pagination<MessageAttemptId>>,
+    ValidatedQuery(mut pagination): ValidatedQuery<ReversiblePagination<MessageAttemptId>>,
     ValidatedQuery(ListAttemptsByEndpointQueryParameters {
         status,
         status_code_class,
@@ -304,7 +327,7 @@ pub struct ListAttemptsByMsgQueryParameters {
 /// Fetches a list of [`MessageAttemptOut`]s for a given message ID
 async fn list_attempts_by_msg(
     Extension(ref db): Extension<DatabaseConnection>,
-    ValidatedQuery(mut pagination): ValidatedQuery<Pagination<MessageAttemptId>>,
+    ValidatedQuery(mut pagination): ValidatedQuery<ReversiblePagination<MessageAttemptId>>,
     ValidatedQuery(ListAttemptsByMsgQueryParameters {
         status,
         status_code_class,
