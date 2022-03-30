@@ -47,6 +47,7 @@ pub(super) async fn list_endpoints(
     Ok(Json(EndpointOut::list_response(
         query.all(db).await?.into_iter().map(|x| x.into()).collect(),
         limit as usize,
+        false,
     )))
 }
 

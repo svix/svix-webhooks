@@ -31,6 +31,38 @@ pub struct Pagination<T: Validate> {
     pub iterator: Option<T>,
 }
 
+#[derive(Debug, PartialEq)]
+pub enum ReversibleIterator<T: Validate> {
+    Normal(T),
+    Prev(T),
+}
+
+impl<'de, T: 'static + Deserialize<'de> + Validate + From<String>> Deserialize<'de>
+    for ReversibleIterator<T>
+{
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        String::deserialize(deserializer).map(|s| {
+            if let Some(s) = s.strip_prefix('-') {
+                ReversibleIterator::Prev(T::from(s.to_owned()))
+            } else {
+                ReversibleIterator::Normal(T::from(s))
+            }
+        })
+    }
+}
+
+impl<T: Validate> Validate for ReversibleIterator<T> {
+    fn validate(&self) -> std::result::Result<(), validator::ValidationErrors> {
+        match self {
+            ReversibleIterator::Normal(val) => val.validate(),
+            ReversibleIterator::Prev(val) => val.validate(),
+        }
+    }
+}
+
 #[derive(Serialize)]
 pub struct EmptyResponse {}
 
@@ -39,6 +71,7 @@ pub struct EmptyResponse {}
 pub struct ListResponse<T: Clone> {
     pub data: Vec<T>,
     pub iterator: Option<String>,
+    pub prev_iterator: Option<String>,
     pub done: bool,
 }
 
@@ -51,13 +84,28 @@ pub trait ModelIn {
 pub trait ModelOut {
     fn id_copy(&self) -> String;
 
-    fn list_response<T: ModelOut + Clone>(mut data: Vec<T>, limit: usize) -> ListResponse<T> {
+    fn list_response<T: ModelOut + Clone>(
+        mut data: Vec<T>,
+        limit: usize,
+        is_prev_iter: bool,
+    ) -> ListResponse<T> {
         let done = data.len() <= limit;
-        data.truncate(limit);
+
+        if data.len() > limit {
+            if is_prev_iter {
+                data = data.drain(data.len() - limit..).collect();
+            } else {
+                data.truncate(limit);
+            }
+        }
+
+        let prev_iterator = data.first().map(|x| format!("-{}", x.id_copy()));
         let iterator = data.last().map(|x| x.id_copy());
+
         ListResponse {
             data,
             iterator,
+            prev_iterator,
             done,
         }
     }
@@ -334,5 +382,33 @@ mod tests {
         let p: Pagination<ApplicationUid> =
             serde_json::from_value(json!({ "iterator": "valid-appuid"})).unwrap();
         p.validate().unwrap();
+    }
+
+    #[derive(Debug, serde::Deserialize, PartialEq)]
+    struct TestPaginationDeserializationStruct {
+        iterator: super::ReversibleIterator<crate::core::types::MessageId>,
+    }
+
+    #[test]
+    fn test_pagination_deserialization() {
+        let a = serde_json::json!({"iterator": "msg_274DTsX0wVTSLvo91QopQgZrjDV"});
+        let b = serde_json::json!({"iterator": "-msg_274DTsX0wVTSLvo91QopQgZrjDV"});
+
+        assert_eq!(
+            serde_json::from_value::<TestPaginationDeserializationStruct>(a).unwrap(),
+            TestPaginationDeserializationStruct {
+                iterator: super::ReversibleIterator::Normal(crate::core::types::MessageId(
+                    "msg_274DTsX0wVTSLvo91QopQgZrjDV".to_owned()
+                ))
+            }
+        );
+        assert_eq!(
+            serde_json::from_value::<TestPaginationDeserializationStruct>(b).unwrap(),
+            TestPaginationDeserializationStruct {
+                iterator: super::ReversibleIterator::Prev(crate::core::types::MessageId(
+                    "msg_274DTsX0wVTSLvo91QopQgZrjDV".to_owned()
+                ))
+            }
+        );
     }
 }

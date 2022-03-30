@@ -126,6 +126,7 @@ async fn list_event_types(
     Ok(Json(EventTypeOut::list_response(
         query.all(db).await?.into_iter().map(|x| x.into()).collect(),
         limit as usize,
+        false,
     )))
 }
 

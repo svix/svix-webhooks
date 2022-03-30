@@ -15,7 +15,10 @@ use crate::{
     queue::{MessageTask, TaskQueueProducer},
     v1::{
         endpoints::message::MessageOut,
-        utils::{EmptyResponse, ListResponse, MessageListFetchOptions, ModelOut, ValidatedQuery},
+        utils::{
+            EmptyResponse, ListResponse, MessageListFetchOptions, ModelOut, ReversibleIterator,
+            ValidatedQuery,
+        },
     },
 };
 use axum::{
@@ -157,6 +160,7 @@ async fn list_attempted_messages(
             )
             .collect::<Result<_>>()?,
         limit as usize,
+        false,
     )))
 }
 
@@ -176,19 +180,25 @@ pub struct ListAttemptsByEndpointQueryParameters {
 fn list_attempts_by_endpoint_or_message_filters(
     query: Select<messageattempt::Entity>,
     limit: u64,
-    iterator: Option<MessageAttemptId>,
+    iterator: Option<ReversibleIterator<MessageAttemptId>>,
     status: Option<MessageStatus>,
     status_code_class: Option<StatusCodeClass>,
     event_types: Option<EventTypeNameSet>,
     channel: Option<EventChannel>,
 ) -> Select<messageattempt::Entity> {
-    let mut query = query
-        .order_by_desc(messageattempt::Column::Id)
-        .limit(limit + 1);
-
-    if let Some(iterator) = iterator {
-        query = query.filter(messageattempt::Column::Id.lt(iterator));
-    }
+    let mut query = match iterator {
+        Some(ReversibleIterator::Prev(id)) => query
+            .limit(limit + 1)
+            .order_by_asc(messageattempt::Column::Id)
+            .filter(messageattempt::Column::Id.gt(id)),
+        Some(ReversibleIterator::Normal(id)) => query
+            .limit(limit + 1)
+            .order_by_desc(messageattempt::Column::Id)
+            .filter(messageattempt::Column::Id.lt(id)),
+        None => query
+            .limit(limit + 1)
+            .order_by_desc(messageattempt::Column::Id),
+    };
 
     if let Some(status) = status {
         query = query.filter(messageattempt::Column::Status.eq(status));
@@ -247,7 +257,9 @@ fn list_attempts_by_endpoint_or_message_filters(
 /// Fetches a list of [`MessageAttemptOut`]s for a given endpoint ID
 async fn list_attempts_by_endpoint(
     Extension(ref db): Extension<DatabaseConnection>,
-    ValidatedQuery(mut pagination): ValidatedQuery<Pagination<MessageAttemptId>>,
+    ValidatedQuery(mut pagination): ValidatedQuery<
+        Pagination<ReversibleIterator<MessageAttemptId>>,
+    >,
     ValidatedQuery(ListAttemptsByEndpointQueryParameters {
         status,
         status_code_class,
@@ -262,6 +274,8 @@ async fn list_attempts_by_endpoint(
 ) -> Result<Json<ListResponse<MessageAttemptOut>>> {
     let limit = pagination.limit;
     let iterator = pagination.iterator.take();
+
+    let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
 
     // Confirm endpoint ID belongs to the given application
     if endpoint::Entity::secure_find_by_id(app.id, endp_id.clone())
@@ -282,9 +296,18 @@ async fn list_attempts_by_endpoint(
         channel,
     );
 
+    let out = query.all(db).await?.into_iter();
+
+    let out = if is_prev {
+        out.rev().map(Into::into).collect()
+    } else {
+        out.map(Into::into).collect()
+    };
+
     Ok(Json(MessageAttemptOut::list_response(
-        query.all(db).await?.into_iter().map(Into::into).collect(),
+        out,
         limit as usize,
+        is_prev,
     )))
 }
 
@@ -304,7 +327,9 @@ pub struct ListAttemptsByMsgQueryParameters {
 /// Fetches a list of [`MessageAttemptOut`]s for a given message ID
 async fn list_attempts_by_msg(
     Extension(ref db): Extension<DatabaseConnection>,
-    ValidatedQuery(mut pagination): ValidatedQuery<Pagination<MessageAttemptId>>,
+    ValidatedQuery(mut pagination): ValidatedQuery<
+        Pagination<ReversibleIterator<MessageAttemptId>>,
+    >,
     ValidatedQuery(ListAttemptsByMsgQueryParameters {
         status,
         status_code_class,
@@ -320,6 +345,8 @@ async fn list_attempts_by_msg(
 ) -> Result<Json<ListResponse<MessageAttemptOut>>> {
     let limit = pagination.limit;
     let iterator = pagination.iterator.take();
+
+    let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
 
     // Confirm message ID belongs to the given application
     if message::Entity::secure_find_by_id(app.id.clone(), msg_id.clone())
@@ -353,9 +380,18 @@ async fn list_attempts_by_msg(
         }
     }
 
+    let out = query.all(db).await?.into_iter();
+
+    let out = if is_prev {
+        out.rev().map(Into::into).collect()
+    } else {
+        out.map(Into::into).collect()
+    };
+
     Ok(Json(MessageAttemptOut::list_response(
-        query.all(db).await?.into_iter().map(Into::into).collect(),
+        out,
         limit as usize,
+        is_prev,
     )))
 }
 
@@ -435,6 +471,7 @@ async fn list_attempted_destinations(
             )
             .collect::<Result<_>>()?,
         limit as usize,
+        false,
     )))
 }
 
@@ -537,6 +574,7 @@ async fn list_messageattempts(
     Ok(Json(MessageAttemptOut::list_response(
         query.all(db).await?.into_iter().map(|x| x.into()).collect(),
         limit as usize,
+        false,
     )))
 }
 

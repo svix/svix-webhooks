@@ -294,6 +294,12 @@ macro_rules! create_id_type {
                 )))
             }
         }
+
+        impl From<String> for $name_id {
+            fn from(s: String) -> Self {
+                $name_id(s)
+            }
+        }
     };
 }
 
