@@ -380,11 +380,13 @@ async fn list_attempts_by_msg(
         }
     }
 
-    let mut out: Vec<_> = query.all(db).await?.into_iter().map(Into::into).collect();
+    let out = query.all(db).await?.into_iter();
 
-    if is_prev {
-        out = out.into_iter().rev().collect();
-    }
+    let out = if is_prev {
+        out.rev().map(Into::into).collect()
+    } else {
+        out.map(Into::into).collect()
+    };
 
     Ok(Json(MessageAttemptOut::list_response(
         out,
