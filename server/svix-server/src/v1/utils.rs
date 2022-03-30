@@ -32,7 +32,7 @@ pub struct Pagination<T: Validate> {
 }
 
 #[derive(Debug, Deserialize, Validate)]
-pub struct ReversablePagination<T: 'static + Validate + From<String>> {
+pub struct ReversiblePagination<T: 'static + Validate + From<String>> {
     #[serde(default = "default_limit")]
     pub limit: u64,
     #[validate]
