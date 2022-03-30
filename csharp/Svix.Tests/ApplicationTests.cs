@@ -137,7 +137,7 @@ namespace Svix.Tests
         public void ApplicationList_WithoutOptions_CallsApi_WithoutOptions()
         {
             // Arrange
-            ApplicationListOptions lOptions = null;
+            ListOptions lOptions = null;
             
             // Act
             var lResult = _svixClient.Application
@@ -151,7 +151,7 @@ namespace Svix.Tests
         public async void ApplicationListAsync_WithoutOptions_CallsApi_WithoutOptions()
         {
             // Arrange
-            ApplicationListOptions lOptions = null;
+            ListOptions lOptions = null;
             
             // Act
             var lResult = _svixClient.Application
@@ -168,7 +168,7 @@ namespace Svix.Tests
             var lIterator = "app_1srOrx2ZWZBpBUvZwXKQmoEYga2";
             var lLimit = 30;
             
-            var lOptions = new ApplicationListOptions
+            var lOptions = new ListOptions
             {
                 Iterator = lIterator,
                 Limit = lLimit
@@ -189,7 +189,7 @@ namespace Svix.Tests
             var lIterator = "app_1srOrx2ZWZBpBUvZwXKQmoEYga2";
             var lLimit = 30;
             
-            var lOptions = new ApplicationListOptions
+            var lOptions = new ListOptions
             {
                 Iterator = lIterator,
                 Limit = lLimit

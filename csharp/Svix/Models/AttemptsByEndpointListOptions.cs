@@ -2,8 +2,12 @@
 
 namespace Svix.Models
 {
-    public sealed class MessageListOptions : ListOptions
+    public sealed class AttemptsByEndpointListOptions : ListOptions
     {
+        public int? Status { get; set; }
+        
+        public int? StatusCodeClass { get; set; }
+
         public string[] EventTypes { get; set; }
 
         public string? Channel { get; set; }

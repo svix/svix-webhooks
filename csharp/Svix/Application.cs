@@ -156,7 +156,7 @@ namespace Svix
             }
         }
         
-        public List<ApplicationOut> List(ApplicationListOptions options = null, string idempotencyKey = default)
+        public List<ApplicationOut> List(ListOptions options = null, string idempotencyKey = default)
         {
             try
             {
@@ -178,7 +178,7 @@ namespace Svix
             }
         }
 
-        public async Task<List<ApplicationOut>> ListAsync(ApplicationListOptions options, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        public async Task<List<ApplicationOut>> ListAsync(ListOptions options, string idempotencyKey = default, CancellationToken cancellationToken = default)
         {
             try
             {

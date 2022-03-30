@@ -2,12 +2,8 @@
 
 namespace Svix.Models
 {
-    public class MessageAttemptListOptions
+    public class MessageAttemptListOptions : ListOptions
     {
-        public string? Iterator { get; set; }
-
-        public int? Limit { get; set; }
-
         public string? Channel { get; set; }
 
         public int? Status { get; set; }
