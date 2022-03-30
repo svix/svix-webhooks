@@ -91,12 +91,12 @@ pub trait ModelOut {
     ) -> ListResponse<T> {
         let done = data.len() <= limit;
 
-        if is_prev_iter {
-            if data.len() > limit {
+        if data.len() > limit {
+            if is_prev_iter {
                 data = data.drain(data.len() - limit..).collect();
+            } else {
+                data.truncate(limit);
             }
-        } else {
-            data.truncate(limit);
         }
 
         let prev_iterator = data.first().map(|x| format!("-{}", x.id_copy()));
