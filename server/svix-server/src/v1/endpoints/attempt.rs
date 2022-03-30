@@ -190,28 +190,25 @@ fn list_attempts_by_endpoint_or_message_filters(
     channel: Option<EventChannel>,
 ) -> Select<messageattempt::Entity> {
     query = match iterator {
-        Some(PaginationIterator::Prev(id)) => query
-            .filter(
-                Condition::any().add(
-                    messageattempt::Column::Id.in_subquery(
-                        Query::select()
-                            .column(messageattempt::Column::Id)
-                            .and_where(messageattempt::Column::Id.gt(id))
-                            .order_by_columns(vec![(messageattempt::Column::Id, Order::Asc)])
-                            .limit(limit + 1)
-                            .to_owned(),
-                    ),
+        Some(PaginationIterator::Prev(id)) => query.filter(
+            Condition::any().add(
+                messageattempt::Column::Id.in_subquery(
+                    Query::select()
+                        .column(messageattempt::Column::Id)
+                        .and_where(messageattempt::Column::Id.gt(id))
+                        .order_by_columns(vec![(messageattempt::Column::Id, Order::Asc)])
+                        .limit(limit + 1)
+                        .to_owned(),
                 ),
-            )
-            .order_by_desc(messageattempt::Column::Id),
-        Some(PaginationIterator::Normal(id)) => query
-            .limit(limit + 1)
-            .order_by_desc(messageattempt::Column::Id)
-            .filter(messageattempt::Column::Id.lt(id)),
-        None => query
-            .limit(limit + 1)
-            .order_by_desc(messageattempt::Column::Id),
+            ),
+        ),
+        Some(PaginationIterator::Normal(id)) => query.filter(messageattempt::Column::Id.lt(id)),
+        None => query,
     };
+
+    query = query
+        .limit(limit + 1)
+        .order_by_desc(messageattempt::Column::Id);
 
     if let Some(status) = status {
         query = query.filter(messageattempt::Column::Status.eq(status));
