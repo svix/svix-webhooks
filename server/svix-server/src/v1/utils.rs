@@ -93,9 +93,8 @@ pub trait ModelOut {
         let done = data.len() <= limit;
 
         if is_prev_iter {
-            let i = data.len() - limit;
-            if i > 0 {
-                data = data.drain(i..).collect();
+            if data.len() > limit {
+                data = data.drain(data.len() - limit..).collect();
             }
         } else {
             data.truncate(limit);
