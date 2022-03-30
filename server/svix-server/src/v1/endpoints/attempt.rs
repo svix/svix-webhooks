@@ -29,11 +29,7 @@ use axum::{
 use chrono::{DateTime, Utc};
 
 use hyper::StatusCode;
-use sea_orm::{
-    entity::prelude::*,
-    sea_query::{Expr, Order, Query},
-    Condition, DatabaseConnection, QueryOrder, QuerySelect,
-};
+use sea_orm::{entity::prelude::*, sea_query::Expr, DatabaseConnection, QueryOrder, QuerySelect};
 use serde::{Deserialize, Serialize};
 
 use svix_server_derive::ModelOut;
@@ -190,25 +186,18 @@ fn list_attempts_by_endpoint_or_message_filters(
     event_types: Option<EventTypeNameSet>,
     channel: Option<EventChannel>,
 ) -> Select<messageattempt::Entity> {
-    let query = query
-        .limit(limit + 1)
-        .order_by_desc(messageattempt::Column::Id);
-
     let mut query = match iterator {
-        Some(ReversibleIterator::Prev(id)) => query.filter(
-            Condition::any().add(
-                messageattempt::Column::Id.in_subquery(
-                    Query::select()
-                        .column(messageattempt::Column::Id)
-                        .and_where(messageattempt::Column::Id.gt(id))
-                        .order_by_columns(vec![(messageattempt::Column::Id, Order::Asc)])
-                        .limit(limit + 1)
-                        .to_owned(),
-                ),
-            ),
-        ),
-        Some(ReversibleIterator::Normal(id)) => query.filter(messageattempt::Column::Id.lt(id)),
-        None => query,
+        Some(ReversibleIterator::Prev(id)) => query
+            .limit(limit + 1)
+            .order_by_asc(messageattempt::Column::Id)
+            .filter(messageattempt::Column::Id.gt(id)),
+        Some(ReversibleIterator::Normal(id)) => query
+            .limit(limit + 1)
+            .order_by_desc(messageattempt::Column::Id)
+            .filter(messageattempt::Column::Id.lt(id)),
+        None => query
+            .limit(limit + 1)
+            .order_by_desc(messageattempt::Column::Id),
     };
 
     if let Some(status) = status {
@@ -307,8 +296,14 @@ async fn list_attempts_by_endpoint(
         channel,
     );
 
+    let mut out: Vec<_> = query.all(db).await?.into_iter().map(Into::into).collect();
+
+    if is_prev {
+        out = out.into_iter().rev().collect();
+    }
+
     Ok(Json(MessageAttemptOut::list_response(
-        query.all(db).await?.into_iter().map(Into::into).collect(),
+        out,
         limit as usize,
         is_prev,
     )))
@@ -383,8 +378,14 @@ async fn list_attempts_by_msg(
         }
     }
 
+    let mut out: Vec<_> = query.all(db).await?.into_iter().map(Into::into).collect();
+
+    if is_prev {
+        out = out.into_iter().rev().collect();
+    }
+
     Ok(Json(MessageAttemptOut::list_response(
-        query.all(db).await?.into_iter().map(Into::into).collect(),
+        out,
         limit as usize,
         is_prev,
     )))
