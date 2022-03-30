@@ -1,4 +1,4 @@
-﻿using Svix.Model;
+﻿using Svix.Models;
 
 namespace Svix.Models
 {

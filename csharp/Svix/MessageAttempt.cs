@@ -78,16 +78,28 @@ namespace Svix
             }
         }
 
-        public List<MessageAttemptEndpointOut> ListAttemptsByEndpoint(string appId, string endpointId, AttemptsByEndpointListOptions options,
-            string idempotencyKey = default)
+        public List<MessageAttemptEndpointOut> ListAttemptsForEndpoint(string appId, string messageId, 
+            string endpointId, AttemptsByEndpointListOptions options, string idempotencyKey = default)
         {
             try
             {
-                throw new NotImplementedException();
+                var lResults = _messageAttemptApi.ListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGet(
+                    messageId,
+                    appId,
+                    endpointId,
+                    options?.Iterator,
+                    options?.Limit,
+                    options?.EventTypes?.ToList(),
+                    options?.Channel,
+                    (Svix.Model.MessageStatus)options?.Status,
+                    options?.Before,
+                    idempotencyKey);
+
+                return lResults.Data;
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(ListAttemptsByEndpoint)} failed");
+                Logger?.LogError(e, $"{nameof(ListAttemptsForEndpoint)} failed");
 
                 if (Throw)
                     throw;
@@ -96,16 +108,30 @@ namespace Svix
             }
         }
 
-        public async Task<List<MessageAttemptEndpointOut>> ListAttemptsByEndpointAsync(string appId, string endpointId, AttemptsByEndpointListOptions options,
-            string idempotencyKey = default, CancellationToken cancellationToken = default)
+        public async Task<List<MessageAttemptEndpointOut>> ListAttemptsForEndpointAsync(string appId, 
+            string messageId,  string endpointId, AttemptsByEndpointListOptions options, string idempotencyKey = default, 
+            CancellationToken cancellationToken = default)
         {
             try
             {
-                throw new NotImplementedException();
+                var lResults = await _messageAttemptApi.ListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGetAsync(
+                    messageId,
+                    appId,
+                    endpointId,
+                    options?.Iterator,
+                    options?.Limit,
+                    options?.EventTypes?.ToList(),
+                    options?.Channel,
+                    (Svix.Model.MessageStatus)options?.Status,
+                    options?.Before,
+                    idempotencyKey,
+                    cancellationToken);
+
+                return lResults.Data;
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(ListAttemptsByEndpointAsync)} failed");
+                Logger?.LogError(e, $"{nameof(ListAttemptsForEndpointAsync)} failed");
 
                 if (Throw)
                     throw;
@@ -114,16 +140,24 @@ namespace Svix
             }
         }
 
-        public List<MessageAttemptOut> ListAttemptsByMessage(string appId, string messageId, MessageAttemptByMessageListOptions options,
+        public List<MessageAttemptOut> ListAttempts(string appId, string messageId, MessageAttemptListOptions options,
             string idempotencyKey = default)
         {
             try
             {
-                throw new NotImplementedException();
+                var lResults = _messageAttemptApi.ListAttemptsApiV1AppAppIdMsgMsgIdAttemptGet(
+                    appId,
+                    messageId,
+                    options?.Iterator,
+                    options?.Limit,
+                    (Svix.Model.MessageStatus)options?.Status,
+                    idempotencyKey);
+
+                return lResults.Data;
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(ListAttemptsByMessage)} failed");
+                Logger?.LogError(e, $"{nameof(ListAttempts)} failed");
 
                 if (Throw)
                     throw;
@@ -132,16 +166,25 @@ namespace Svix
             }
         }
 
-        public async Task<List<MessageAttemptOut>> ListAttemptsByMessageAsync(string appId, string messageId, MessageAttemptByMessageListOptions options,
+        public async Task<List<MessageAttemptOut>> ListAttemptsAsync(string appId, string messageId, MessageAttemptListOptions options,
             string idempotencyKey = default, CancellationToken cancellationToken = default)
         {
             try
             {
-                throw new NotImplementedException();
+                var lResults = await _messageAttemptApi.ListAttemptsApiV1AppAppIdMsgMsgIdAttemptGetAsync(
+                    appId,
+                    messageId,
+                    options?.Iterator,
+                    options?.Limit,
+                    (Svix.Model.MessageStatus)options?.Status,
+                    idempotencyKey,
+                    cancellationToken);
+
+                return lResults.Data;
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(ListAttemptsByMessageAsync)} failed");
+                Logger?.LogError(e, $"{nameof(ListAttemptsAsync)} failed");
 
                 if (Throw)
                     throw;
