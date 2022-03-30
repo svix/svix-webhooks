@@ -190,7 +190,11 @@ fn list_attempts_by_endpoint_or_message_filters(
     event_types: Option<EventTypeNameSet>,
     channel: Option<EventChannel>,
 ) -> Select<messageattempt::Entity> {
-    let query = match iterator {
+    let query = query
+        .limit(limit + 1)
+        .order_by_desc(messageattempt::Column::Id);
+
+    let mut query = match iterator {
         Some(ReversibleIterator::Prev(id)) => query.filter(
             Condition::any().add(
                 messageattempt::Column::Id.in_subquery(
@@ -206,10 +210,6 @@ fn list_attempts_by_endpoint_or_message_filters(
         Some(ReversibleIterator::Normal(id)) => query.filter(messageattempt::Column::Id.lt(id)),
         None => query,
     };
-
-    let mut query = query
-        .limit(limit + 1)
-        .order_by_desc(messageattempt::Column::Id);
 
     if let Some(status) = status {
         query = query.filter(messageattempt::Column::Status.eq(status));
