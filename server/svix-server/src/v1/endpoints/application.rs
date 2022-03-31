@@ -173,3 +173,43 @@ pub fn router() -> Router {
                 .delete(delete_application),
         )
 }
+
+#[cfg(test)]
+mod tests {
+    use super::ApplicationIn;
+    use serde_json::json;
+    use validator::Validate;
+
+    const APP_NAME_INVALID: &str = "";
+    const APP_NAME_VALID: &str = "test-app";
+    const RATE_LIMIT_INVALID: u16 = 0;
+    const RATE_LIMIT_VALID: u16 = 1;
+    const UID_INVALID: &str = "$$invalid-uid";
+    const UID_VALID: &str = "valid-uid";
+
+    #[test]
+    fn test_application_in_validation() {
+        let invalid_1: ApplicationIn =
+            serde_json::from_value(json!({ "name": APP_NAME_INVALID })).unwrap();
+        let invalid_2: ApplicationIn = serde_json::from_value(json!({
+                    "name": APP_NAME_VALID, 
+                    "rateLimit": RATE_LIMIT_INVALID }))
+        .unwrap();
+        let invalid_3: ApplicationIn = serde_json::from_value(json!({ 
+                    "name": APP_NAME_VALID, 
+                    "uid": UID_INVALID }))
+        .unwrap();
+
+        for a in [invalid_1, invalid_2, invalid_3] {
+            assert!(a.validate().is_err());
+        }
+
+        let valid: ApplicationIn = serde_json::from_value(json!({
+            "name": APP_NAME_VALID,
+            "rateLimit": RATE_LIMIT_VALID,
+            "uid": UID_VALID,
+        }))
+        .unwrap();
+        valid.validate().unwrap();
+    }
+}
