@@ -26,14 +26,14 @@ use crate::core::security::Permissions;
 use crate::db::models::eventtype;
 use crate::v1::utils::Pagination;
 
-#[derive(Clone, Debug, PartialEq, Deserialize, Validate, ModelIn)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Validate, ModelIn)]
 #[serde(rename_all = "camelCase")]
-struct EventTypeIn {
-    name: EventTypeName,
-    description: String,
+pub struct EventTypeIn {
+    pub name: EventTypeName,
+    pub description: String,
     #[serde(default, rename = "archived")]
-    deleted: bool,
-    schemas: Option<serde_json::Value>,
+    pub deleted: bool,
+    pub schemas: Option<serde_json::Value>,
 }
 
 // FIXME: This can and should be a derive macro
@@ -68,17 +68,26 @@ impl ModelIn for EventTypeUpdate {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, ModelOut)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, ModelOut)]
 #[serde(rename_all = "camelCase")]
-struct EventTypeOut {
-    name: EventTypeName,
-    description: String,
+pub struct EventTypeOut {
+    pub name: EventTypeName,
+    pub description: String,
     #[serde(rename = "archived")]
-    deleted: bool,
-    schemas: Option<serde_json::Value>,
+    pub deleted: bool,
+    pub schemas: Option<serde_json::Value>,
 
-    created_at: DateTime<Utc>,
-    updated_at: DateTime<Utc>,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
+}
+
+impl EventTypeOut {
+    fn without_payload(model: eventtype::Model) -> Self {
+        Self {
+            schemas: None,
+            ..model.into()
+        }
+    }
 }
 
 // FIXME: This can and should be a derive macro
@@ -100,6 +109,8 @@ impl From<eventtype::Model> for EventTypeOut {
 pub struct ListFetchOptions {
     #[serde(default)]
     pub include_archived: bool,
+    #[serde(default)]
+    pub with_content: bool,
 }
 
 async fn list_event_types(
@@ -124,7 +135,18 @@ async fn list_event_types(
     }
 
     Ok(Json(EventTypeOut::list_response(
-        query.all(db).await?.into_iter().map(|x| x.into()).collect(),
+        query
+            .all(db)
+            .await?
+            .into_iter()
+            .map(|x| {
+                if !fetch_options.with_content {
+                    EventTypeOut::without_payload(x)
+                } else {
+                    x.into()
+                }
+            })
+            .collect(),
         limit as usize,
         false,
     )))
@@ -225,4 +247,18 @@ pub fn router() -> Router {
             "/event-type/schema/generate-example/",
             post(api_not_implemented),
         )
+}
+
+#[cfg(test)]
+mod tests {
+
+    use super::ListFetchOptions;
+    use serde_json::json;
+
+    #[test]
+    fn test_list_fetch_options_default() {
+        let l: ListFetchOptions = serde_json::from_value(json!({})).unwrap();
+        assert!(!l.include_archived);
+        assert!(!l.with_content);
+    }
 }

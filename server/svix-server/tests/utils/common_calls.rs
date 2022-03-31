@@ -10,6 +10,7 @@ use svix_server::{
     v1::endpoints::{
         application::{ApplicationIn, ApplicationOut},
         endpoint::{EndpointIn, EndpointOut},
+        event_type::EventTypeIn,
         message::{MessageIn, MessageOut},
     },
 };
@@ -93,4 +94,13 @@ pub async fn create_test_message(
             StatusCode::ACCEPTED,
         )
         .await
+}
+
+pub fn event_type_in<T: Serialize>(name: &str, payload: T) -> Result<EventTypeIn> {
+    Ok(EventTypeIn {
+        name: EventTypeName(name.to_owned()),
+        description: "test-event-description".to_owned(),
+        deleted: false,
+        schemas: Some(serde_json::to_value(payload)?),
+    })
 }
