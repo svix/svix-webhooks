@@ -31,10 +31,11 @@ impl RelationTrait for Relation {
 
 impl ActiveModelBehavior for ActiveModel {
     fn new() -> Self {
+        let timestamp = Utc::now();
         Self {
-            id: Set(EventTypeId::new(None, None)),
-            created_at: Set(Utc::now().into()),
-            updated_at: Set(Utc::now().into()),
+            id: Set(EventTypeId::new(timestamp.into(), None)),
+            created_at: Set(timestamp.into()),
+            updated_at: Set(timestamp.into()),
             deleted: Set(false),
             ..ActiveModelTrait::default()
         }

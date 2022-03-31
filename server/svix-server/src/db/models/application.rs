@@ -44,10 +44,11 @@ impl Related<super::message::Entity> for Entity {
 
 impl ActiveModelBehavior for ActiveModel {
     fn new() -> Self {
+        let timestamp = Utc::now();
         Self {
-            id: Set(ApplicationId::new(None, None)),
-            created_at: Set(Utc::now().into()),
-            updated_at: Set(Utc::now().into()),
+            id: Set(ApplicationId::new(timestamp.into(), None)),
+            created_at: Set(timestamp.into()),
+            updated_at: Set(timestamp.into()),
             deleted: Set(false),
             ..ActiveModelTrait::default()
         }
