@@ -49,10 +49,11 @@ impl Related<super::messagedestination::Entity> for Entity {
 
 impl ActiveModelBehavior for ActiveModel {
     fn new() -> Self {
+        let timestamp = Utc::now();
         Self {
-            id: Set(MessageAttemptId::new(None, None)),
-            created_at: Set(Utc::now().into()),
-            updated_at: Set(Utc::now().into()),
+            id: Set(MessageAttemptId::new(timestamp.into(), None)),
+            created_at: Set(timestamp.into()),
+            updated_at: Set(timestamp.into()),
             ..ActiveModelTrait::default()
         }
     }
