@@ -174,30 +174,52 @@ pub struct ListAttemptsByEndpointQueryParameters {
     event_types: Option<EventTypeNameSet>,
     #[validate]
     channel: Option<EventChannel>,
+    before: Option<DateTime<Utc>>,
+    after: Option<DateTime<Utc>>,
+}
+
+pub struct PaginationInformation {
+    limit: u64,
+    before: Option<DateTime<Utc>>,
+    after: Option<DateTime<Utc>>,
+    iterator: Option<ReversibleIterator<MessageAttemptId>>,
 }
 
 // Applies filters common to [`list_attempts_by_endpoint`] and [`list_attempts_by_msg`]
 fn list_attempts_by_endpoint_or_message_filters(
     query: Select<messageattempt::Entity>,
-    limit: u64,
-    iterator: Option<ReversibleIterator<MessageAttemptId>>,
+    pagination: PaginationInformation,
     status: Option<MessageStatus>,
     status_code_class: Option<StatusCodeClass>,
     event_types: Option<EventTypeNameSet>,
     channel: Option<EventChannel>,
 ) -> Select<messageattempt::Entity> {
-    let mut query = match iterator {
+    let mut query = match pagination.iterator {
         Some(ReversibleIterator::Prev(id)) => query
-            .limit(limit + 1)
+            .limit(pagination.limit + 1)
             .order_by_asc(messageattempt::Column::Id)
             .filter(messageattempt::Column::Id.gt(id)),
         Some(ReversibleIterator::Normal(id)) => query
-            .limit(limit + 1)
+            .limit(pagination.limit + 1)
             .order_by_desc(messageattempt::Column::Id)
             .filter(messageattempt::Column::Id.lt(id)),
-        None => query
-            .limit(limit + 1)
-            .order_by_desc(messageattempt::Column::Id),
+        None => {
+            if let Some(before) = pagination.before {
+                query
+                    .limit(pagination.limit + 1)
+                    .order_by_desc(messageattempt::Column::Id)
+                    .filter(messageattempt::Column::Id.lt(MessageAttemptId::start_id(before)))
+            } else if let Some(after) = pagination.after {
+                query
+                    .limit(pagination.limit + 1)
+                    .order_by_asc(messageattempt::Column::Id)
+                    .filter(messageattempt::Column::Id.gt(MessageAttemptId::end_id(after)))
+            } else {
+                query
+                    .limit(pagination.limit + 1)
+                    .order_by_desc(messageattempt::Column::Id)
+            }
+        }
     };
 
     if let Some(status) = status {
@@ -265,6 +287,8 @@ async fn list_attempts_by_endpoint(
         status_code_class,
         event_types,
         channel,
+        before,
+        after,
     }): ValidatedQuery<ListAttemptsByEndpointQueryParameters>,
     Path((_app_id, endp_id)): Path<(ApplicationId, EndpointId)>,
     AuthenticatedApplication {
@@ -275,7 +299,8 @@ async fn list_attempts_by_endpoint(
     let limit = pagination.limit;
     let iterator = pagination.iterator.take();
 
-    let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
+    let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)))
+        || (after.is_some() && before.is_none());
 
     // Confirm endpoint ID belongs to the given application
     if endpoint::Entity::secure_find_by_id(app.id, endp_id.clone())
@@ -288,8 +313,12 @@ async fn list_attempts_by_endpoint(
 
     let query = list_attempts_by_endpoint_or_message_filters(
         messageattempt::Entity::secure_find_by_endpoint(endp_id),
-        limit,
-        iterator,
+        PaginationInformation {
+            limit,
+            before,
+            after,
+            iterator,
+        },
         status,
         status_code_class,
         event_types,
@@ -322,6 +351,8 @@ pub struct ListAttemptsByMsgQueryParameters {
     channel: Option<EventChannel>,
     #[validate]
     endpoint_id: Option<EndpointIdOrUid>,
+    before: Option<DateTime<Utc>>,
+    after: Option<DateTime<Utc>>,
 }
 
 /// Fetches a list of [`MessageAttemptOut`]s for a given message ID
@@ -336,6 +367,8 @@ async fn list_attempts_by_msg(
         event_types,
         channel,
         endpoint_id,
+        before,
+        after,
     }): ValidatedQuery<ListAttemptsByMsgQueryParameters>,
     Path((_app_id, msg_id)): Path<(ApplicationId, MessageId)>,
     AuthenticatedApplication {
@@ -346,7 +379,8 @@ async fn list_attempts_by_msg(
     let limit = pagination.limit;
     let iterator = pagination.iterator.take();
 
-    let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
+    let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)))
+        || (after.is_some() && before.is_none());
 
     // Confirm message ID belongs to the given application
     if message::Entity::secure_find_by_id(app.id.clone(), msg_id.clone())
@@ -359,8 +393,12 @@ async fn list_attempts_by_msg(
 
     let mut query = list_attempts_by_endpoint_or_message_filters(
         messageattempt::Entity::secure_find_by_msg(msg_id),
-        limit,
-        iterator,
+        PaginationInformation {
+            limit,
+            before,
+            after,
+            iterator,
+        },
         status,
         status_code_class,
         event_types,
