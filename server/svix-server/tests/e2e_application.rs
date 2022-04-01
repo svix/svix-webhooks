@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
+use std::time::Duration;
+
 use reqwest::StatusCode;
 
 use svix_server::{
@@ -123,36 +125,47 @@ async fn test_crud() {
 async fn test_list() {
     let (client, _jh) = start_svix_server();
 
-    const APP_NAME_1: &str = "v1ApplicationCrudTest1";
-    const APP_NAME_2: &str = "v1ApplicationCrudTest2";
-
-    // CREATE
-    let app_1: ApplicationOut = client
-        .post(
-            "api/v1/app/",
-            application_in(APP_NAME_1),
-            StatusCode::CREATED,
-        )
-        .await
-        .unwrap();
-
-    let app_2: ApplicationOut = client
-        .post(
-            "api/v1/app/",
-            application_in(APP_NAME_2),
-            StatusCode::CREATED,
-        )
-        .await
-        .unwrap();
+    // Create multiple applications
+    let mut apps = Vec::new();
+    for i in 0..10 {
+        let app: ApplicationOut = client
+            .post(
+                "api/v1/app/",
+                application_in(&format!("App {i}")),
+                StatusCode::CREATED,
+            )
+            .await
+            .unwrap();
+        // Sleep for 5ms because KsuidMs has 4ms accuracy so things got out of order
+        tokio::time::sleep(Duration::from_millis(5)).await;
+        apps.push(app);
+    }
 
     let list = client
         .get::<ListResponse<ApplicationOut>>("api/v1/app/", StatusCode::OK)
         .await
         .unwrap();
 
-    assert_eq!(list.data.len(), 2);
-    assert_eq!(&app_1, list.data.get(0).unwrap());
-    assert_eq!(&app_2, list.data.get(1).unwrap());
+    assert_eq!(list.data.len(), 10);
+
+    for i in 0..10 {
+        assert_eq!(apps.get(i), list.data.get(i))
+    }
+
+    // Limit results
+    let list = client
+        .get::<ListResponse<ApplicationOut>>("api/v1/app/?limit=1", StatusCode::OK)
+        .await
+        .unwrap();
+
+    assert_eq!(list.data.len(), 1);
+
+    let list = client
+        .get::<ListResponse<ApplicationOut>>("api/v1/app/?limit=500", StatusCode::OK)
+        .await
+        .unwrap();
+
+    assert_eq!(list.data.len(), 10);
 }
 
 #[tokio::test]
@@ -344,6 +357,40 @@ async fn test_uid() {
     // Make sure we can't fetch by the old UID
     let _: IgnoredResponse = client
         .get(&format!("api/v1/app/{}/", "app3"), StatusCode::NOT_FOUND)
+        .await
+        .unwrap();
+}
+
+#[tokio::test]
+async fn test_uid_across_users() {
+    let (client, _jh) = start_svix_server();
+    let (client2, _jh2) = start_svix_server();
+
+    // Make sure that uids aren't unique across different users
+
+    let _app: ApplicationOut = client
+        .post(
+            "api/v1/app/",
+            ApplicationIn {
+                name: "App 1".to_owned(),
+                uid: Some(ApplicationUid("app1".to_owned())),
+                ..Default::default()
+            },
+            StatusCode::CREATED,
+        )
+        .await
+        .unwrap();
+
+    let _app2: ApplicationOut = client2
+        .post(
+            "api/v1/app/",
+            ApplicationIn {
+                name: "App 1".to_owned(),
+                uid: Some(ApplicationUid("app1".to_owned())),
+                ..Default::default()
+            },
+            StatusCode::CREATED,
+        )
         .await
         .unwrap();
 }
