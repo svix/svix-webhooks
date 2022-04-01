@@ -185,6 +185,7 @@ async fn dispatch(
             } else {
                 MessageStatus::Fail
             };
+            let http_error = res.error_for_status_ref().err();
             let body = res
                 .text()
                 .await
@@ -196,7 +197,10 @@ async fn dispatch(
 
                 ..attempt
             };
-            Ok(attempt)
+            match http_error {
+                Some(err) => Err((attempt, err)),
+                None => Ok(attempt),
+            }
         }
         Err(err) => {
             let attempt = messageattempt::ActiveModel {

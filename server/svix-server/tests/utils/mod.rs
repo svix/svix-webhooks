@@ -9,9 +9,12 @@ use reqwest::{Client, RequestBuilder, StatusCode};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use tokio::sync::mpsc;
 
-use svix_server::core::{
-    security::generate_token,
-    types::{BaseId, OrganizationId},
+use svix_server::{
+    cfg::ConfigurationInner,
+    core::{
+        security::generate_token,
+        types::{BaseId, OrganizationId},
+    },
 };
 
 pub mod common_calls;
@@ -150,7 +153,7 @@ impl TestClient {
     }
 }
 
-pub fn start_svix_server() -> (TestClient, tokio::task::JoinHandle<()>) {
+pub fn get_default_test_config() -> ConfigurationInner {
     let _ = dotenv::dotenv();
     let cfg = svix_server::cfg::load().unwrap();
 
@@ -159,7 +162,17 @@ pub fn start_svix_server() -> (TestClient, tokio::task::JoinHandle<()>) {
     // transactions are complete.
     let mut cfg = cfg.as_ref().clone();
     cfg.queue_type = svix_server::cfg::QueueType::Memory;
-    let cfg = Arc::new(cfg);
+    cfg
+}
+
+pub fn start_svix_server() -> (TestClient, tokio::task::JoinHandle<()>) {
+    start_svix_server_with_cfg(&get_default_test_config())
+}
+
+pub fn start_svix_server_with_cfg(
+    cfg: &ConfigurationInner,
+) -> (TestClient, tokio::task::JoinHandle<()>) {
+    let cfg = Arc::new(cfg.clone());
 
     let token = generate_token(&cfg.jwt_secret, OrganizationId::new(None, None)).unwrap();
     let listener = TcpListener::bind("127.0.0.1:0").unwrap();
