@@ -516,7 +516,6 @@ pub struct AttemptListFetchOptions {
     pub status: Option<MessageStatus>,
 }
 
-// FIXME: add filtering by event_types/channel
 async fn list_messageattempts(
     Extension(ref db): Extension<DatabaseConnection>,
     pagination: ValidatedQuery<Pagination<MessageAttemptId>>,
