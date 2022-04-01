@@ -217,14 +217,18 @@ async fn test_receiver_route(
     code
 }
 
-pub async fn run_with_retries<F: Future<Output = Result<()>>, C: Fn() -> F>(f: C) -> Result<()> {
+pub async fn run_with_retries<O, F, C>(f: C) -> Result<O>
+where
+    F: Future<Output = Result<O>>,
+    C: Fn() -> F,
+{
     for attempt in 0..20 {
         let out = f().await;
         if out.is_ok() {
-            return Ok(());
+            return out;
+        } else if let Err(err) = out {
+            println!("Attempt {}: {}", attempt, err);
         }
-
-        println!("Attempt {}: {}", attempt, out.unwrap_err());
 
         std::thread::sleep(std::time::Duration::from_millis(50));
     }
