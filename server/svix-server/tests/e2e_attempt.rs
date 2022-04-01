@@ -234,3 +234,191 @@ async fn test_message_attempts() {
     receiver.jh.abort();
     try_message_attempts(&receiver.endpoint, MessageStatus::Fail, 0, None).await;
 }
+
+#[tokio::test]
+async fn test_pagination() {
+    let (client, _jh) = start_svix_server();
+
+    // Setup three endpoints and six messages so there's a sufficient number to test pagination
+    let app = create_test_app(&client, "app1").await.unwrap();
+
+    let mut receivers = Vec::new();
+    for _ in 0..3 {
+        receivers.push(TestReceiver::start(StatusCode::OK));
+    }
+
+    let mut eps = Vec::new();
+    for receiver in &receivers {
+        eps.push(
+            create_test_endpoint(&client, &app.id, &receiver.endpoint)
+                .await
+                .unwrap(),
+        );
+    }
+
+    let mut messages = Vec::new();
+    for i in 1..=6usize {
+        messages.push(
+            create_test_message(
+                &client,
+                &app.id,
+                serde_json::json!({
+                    "test": i,
+                }),
+            )
+            .await
+            .unwrap(),
+        );
+    }
+
+    // Wait until all attempts were made
+    run_with_retries(|| async {
+        for endp_id in eps.iter().map(|ep| &ep.id) {
+            let list: ListResponse<MessageAttemptOut> = client
+                .get(
+                    &format!("api/v1/app/{}/attempt/endpoint/{}/", app.id, endp_id),
+                    StatusCode::OK,
+                )
+                .await
+                .unwrap();
+
+            if list.data.len() != 6 {
+                anyhow::bail!("list len {}, not 6", list.data.len());
+            }
+        }
+
+        Ok(())
+    })
+    .await
+    .unwrap();
+
+    // By endpoint
+    for ep in &eps {
+        let all_attempts: ListResponse<MessageAttemptOut> = client
+            .get(
+                &format!("api/v1/app/{}/attempt/endpoint/{}/", app.id, ep.id),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
+
+        // Test Limit
+        let first_three: ListResponse<MessageAttemptOut> = client
+            .get(
+                &format!("api/v1/app/{}/attempt/endpoint/{}/?limit=3", app.id, ep.id),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(all_attempts.data.len(), 6);
+        assert_eq!(first_three.data.len(), 3);
+
+        assert_eq!(all_attempts.data[0], first_three.data[0]);
+        assert_eq!(all_attempts.data[1], first_three.data[1]);
+        assert_eq!(all_attempts.data[2], first_three.data[2]);
+
+        // Forward iterator
+        let last_three_manual: ListResponse<MessageAttemptOut> = client
+            .get(
+                &format!(
+                    "api/v1/app/{}/attempt/endpoint/{}/?limit=3&iterator={}",
+                    app.id, ep.id, all_attempts.data[2].id
+                ),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
+
+        let last_three_iter_field: ListResponse<MessageAttemptOut> = client
+            .get(
+                &format!(
+                    "api/v1/app/{}/attempt/endpoint/{}/?limit=3&iterator={}",
+                    app.id,
+                    ep.id,
+                    first_three.iterator.unwrap()
+                ),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(last_three_manual.data, last_three_iter_field.data);
+
+        assert_eq!(last_three_manual.data.len(), 3);
+        assert_eq!(all_attempts.data[3], last_three_manual.data[0]);
+        assert_eq!(all_attempts.data[4], last_three_manual.data[1]);
+        assert_eq!(all_attempts.data[5], last_three_manual.data[2]);
+        assert!(last_three_manual.done);
+
+        // `prev` iterator
+        let two_and_three: ListResponse<MessageAttemptOut> = client
+            .get(
+                &format!(
+                    "api/v1/app/{}/attempt/endpoint/{}/?limit=2&iterator={}",
+                    app.id,
+                    ep.id,
+                    last_three_manual.prev_iterator.unwrap()
+                ),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(two_and_three.data.len(), 2);
+        assert_eq!(all_attempts.data[1], two_and_three.data[0]);
+        assert_eq!(all_attempts.data[2], two_and_three.data[1]);
+        assert!(!two_and_three.done);
+
+        let one: ListResponse<MessageAttemptOut> = client
+            .get(
+                &format!(
+                    "api/v1/app/{}/attempt/endpoint/{}/?limit=2&iterator={}",
+                    app.id,
+                    ep.id,
+                    two_and_three.prev_iterator.unwrap()
+                ),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(one.data.len(), 1);
+        assert_eq!(all_attempts.data[0], one.data[0]);
+        assert!(one.done);
+
+        // `after` field
+        let first_three_by_time: ListResponse<MessageAttemptOut> = client
+            .get(
+                &format!(
+                    "api/v1/app/{}/attempt/endpoint/{}/?after={}",
+                    app.id, ep.id, all_attempts.data[3].created_at,
+                ),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
+        assert_eq!(first_three_by_time.data.len(), 3);
+        assert_eq!(all_attempts.data[0], first_three_by_time.data[0]);
+        assert_eq!(all_attempts.data[1], first_three_by_time.data[1]);
+        assert_eq!(all_attempts.data[2], first_three_by_time.data[2]);
+
+        // `before field`
+        let last_three_by_time: ListResponse<MessageAttemptOut> = client
+            .get(
+                &format!(
+                    "api/v1/app/{}/attempt/endpoint/{}/?before={}",
+                    app.id, ep.id, all_attempts.data[2].created_at,
+                ),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
+        assert_eq!(last_three_by_time.data.len(), 3);
+        assert_eq!(all_attempts.data[3], last_three_by_time.data[0]);
+        assert_eq!(all_attempts.data[4], last_three_by_time.data[1]);
+        assert_eq!(all_attempts.data[5], last_three_by_time.data[2]);
+    }
+
+    // TODO: By message
+}

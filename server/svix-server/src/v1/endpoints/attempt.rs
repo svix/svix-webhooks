@@ -279,9 +279,11 @@ async fn list_attempts_by_endpoint(
     let limit = pagination.limit;
     let iterator = pagination.iterator.take().or_else(|| {
         if let Some(before) = before {
-            Some(ReversibleIterator::Prev(MessageAttemptId::start_id(before)))
+            Some(ReversibleIterator::Normal(MessageAttemptId::start_id(
+                before,
+            )))
         } else {
-            after.map(|after| ReversibleIterator::Normal(MessageAttemptId::end_id(after)))
+            after.map(|after| ReversibleIterator::Prev(MessageAttemptId::end_id(after)))
         }
     });
 
