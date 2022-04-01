@@ -1,19 +1,19 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use std::time::Duration;
-
 use reqwest::StatusCode;
 
 use svix_server::{
-    core::types::ApplicationUid,
+    core::types::ApplicationUid, v1::endpoints::application::ApplicationIn,
     v1::endpoints::application::ApplicationOut,
-    v1::{endpoints::application::ApplicationIn, utils::ListResponse},
 };
 
 mod utils;
 
-use utils::{common_calls::application_in, start_svix_server, IgnoredResponse};
+use utils::{
+    common_calls::{application_in, common_test_list},
+    start_svix_server, IgnoredResponse,
+};
 
 #[tokio::test]
 async fn test_crud() {
@@ -125,47 +125,14 @@ async fn test_crud() {
 async fn test_list() {
     let (client, _jh) = start_svix_server();
 
-    // Create multiple applications
-    let mut apps = Vec::new();
-    for i in 0..10 {
-        let app: ApplicationOut = client
-            .post(
-                "api/v1/app/",
-                application_in(&format!("App {i}")),
-                StatusCode::CREATED,
-            )
-            .await
-            .unwrap();
-        // Sleep for 5ms because KsuidMs has 4ms accuracy so things got out of order
-        tokio::time::sleep(Duration::from_millis(5)).await;
-        apps.push(app);
-    }
-
-    let list = client
-        .get::<ListResponse<ApplicationOut>>("api/v1/app/", StatusCode::OK)
-        .await
-        .unwrap();
-
-    assert_eq!(list.data.len(), 10);
-
-    for i in 0..10 {
-        assert_eq!(apps.get(i), list.data.get(i))
-    }
-
-    // Limit results
-    let list = client
-        .get::<ListResponse<ApplicationOut>>("api/v1/app/?limit=1", StatusCode::OK)
-        .await
-        .unwrap();
-
-    assert_eq!(list.data.len(), 1);
-
-    let list = client
-        .get::<ListResponse<ApplicationOut>>("api/v1/app/?limit=500", StatusCode::OK)
-        .await
-        .unwrap();
-
-    assert_eq!(list.data.len(), 10);
+    common_test_list::<ApplicationOut, ApplicationIn>(
+        &client,
+        "api/v1/app/",
+        |i| application_in(&format!("App {i}")),
+        true,
+    )
+    .await
+    .unwrap();
 }
 
 #[tokio::test]

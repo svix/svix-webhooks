@@ -1,21 +1,26 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
+use std::time::Duration;
+
 use anyhow::Result;
 use reqwest::StatusCode;
 
-use serde::Serialize;
+use serde::{de::DeserializeOwned, Serialize};
 use svix_server::{
     core::types::{ApplicationId, EventTypeName},
-    v1::endpoints::{
-        application::{ApplicationIn, ApplicationOut},
-        endpoint::{EndpointIn, EndpointOut},
-        event_type::EventTypeIn,
-        message::{MessageIn, MessageOut},
+    v1::{
+        endpoints::{
+            application::{ApplicationIn, ApplicationOut},
+            endpoint::{EndpointIn, EndpointOut},
+            event_type::EventTypeIn,
+            message::{MessageIn, MessageOut},
+        },
+        utils::ListResponse,
     },
 };
 
-use super::{IgnoredResponse, TestClient};
+use super::{run_with_retries, IgnoredResponse, TestClient};
 
 // App
 
@@ -103,4 +108,103 @@ pub fn event_type_in<T: Serialize>(name: &str, payload: T) -> Result<EventTypeIn
         deleted: false,
         schemas: Some(serde_json::to_value(payload)?),
     })
+}
+
+// Common tests
+pub async fn common_test_list<
+    ModelOut: DeserializeOwned + Clone + PartialEq + std::fmt::Debug,
+    ModelIn: Serialize,
+>(
+    client: &TestClient,
+    path: &str,
+    create_model: fn(usize) -> ModelIn,
+    sort_asc: bool,
+) -> Result<()> {
+    let mut items = Vec::new();
+    for i in 0..10 {
+        let item: ModelOut = client
+            .post(path, create_model(i), StatusCode::CREATED)
+            .await
+            .unwrap();
+        // Sleep for 5ms because KsuidMs has 4ms accuracy so things got out of order
+        tokio::time::sleep(Duration::from_millis(5)).await;
+        items.push(item);
+    }
+
+    let list = run_with_retries(|| async {
+        let list = client
+            .get::<ListResponse<ModelOut>>(&format!("{path}?with_content=true"), StatusCode::OK)
+            .await
+            .unwrap();
+
+        assert_eq!(list.data.len(), 10);
+
+        Ok(list)
+    })
+    .await
+    .unwrap();
+
+    if sort_asc {
+        for i in 0..10 {
+            assert_eq!(items.get(i), list.data.get(i));
+        }
+    } else {
+        for i in 0..10 {
+            assert_eq!(items.get(10 - i), list.data.get(i));
+        }
+    }
+
+    // Limit results
+    let list = client
+        .get::<ListResponse<ModelOut>>(&format!("{}?limit=1", path), StatusCode::OK)
+        .await
+        .unwrap();
+
+    assert_eq!(list.data.len(), 1);
+    assert!(!list.done);
+
+    let list = client
+        .get::<ListResponse<ModelOut>>(&format!("{}?limit=500", path), StatusCode::OK)
+        .await
+        .unwrap();
+
+    assert_eq!(list.data.len(), 10);
+    assert!(list.done);
+
+    let list = client
+        .get::<ListResponse<ModelOut>>(&format!("{}?limit=10", path), StatusCode::OK)
+        .await
+        .unwrap();
+
+    assert_eq!(list.data.len(), 10);
+    assert!(list.done);
+
+    let list = client
+        .get::<ListResponse<ModelOut>>(&format!("{}?limit=6", path), StatusCode::OK)
+        .await
+        .unwrap();
+
+    assert_eq!(list.data.len(), 6);
+    assert!(!list.done);
+
+    let list = client
+        .get::<ListResponse<ModelOut>>(
+            &format!("{}?limit=6&iterator={}", path, list.iterator.unwrap()),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(list.data.len(), 4);
+    assert!(list.done);
+
+    let _list = client
+        .get::<IgnoredResponse>(
+            &format!("{}?limit=6&iterator=BAD-$$$ITERATOR", path),
+            StatusCode::UNPROCESSABLE_ENTITY,
+        )
+        .await
+        .unwrap();
+
+    Ok(())
 }
