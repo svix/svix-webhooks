@@ -3,11 +3,17 @@
 
 use reqwest::StatusCode;
 
-use svix_server::v1::{endpoints::event_type::EventTypeOut, utils::ListResponse};
+use svix_server::v1::{
+    endpoints::event_type::{EventTypeIn, EventTypeOut},
+    utils::ListResponse,
+};
 
 mod utils;
 
-use utils::{common_calls::event_type_in, start_svix_server};
+use utils::{
+    common_calls::{common_test_list, event_type_in},
+    start_svix_server,
+};
 
 #[tokio::test]
 async fn test_event_type_create_read_list() {
@@ -46,4 +52,24 @@ async fn test_event_type_create_read_list() {
         schemas: None,
         ..et
     }));
+}
+
+#[tokio::test]
+async fn test_list() {
+    let (client, _jh) = start_svix_server();
+
+    common_test_list::<EventTypeOut, EventTypeIn>(
+        &client,
+        "api/v1/event-type/",
+        |i| {
+            event_type_in(
+                &format!("test-event-type-{i}"),
+                serde_json::json!({"test": "value"}),
+            )
+            .unwrap()
+        },
+        true,
+    )
+    .await
+    .unwrap();
 }

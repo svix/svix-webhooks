@@ -7,7 +7,7 @@ use reqwest::StatusCode;
 use svix_server::{
     core::types::{ApplicationId, EndpointUid},
     v1::{
-        endpoints::endpoint::{EndpointOut, EndpointSecretOut},
+        endpoints::endpoint::{EndpointIn, EndpointOut, EndpointSecretOut},
         utils::ListResponse,
     },
 };
@@ -16,7 +16,8 @@ mod utils;
 
 use utils::{
     common_calls::{
-        create_test_app, create_test_endpoint, delete_test_app, endpoint_in, post_endpoint,
+        common_test_list, create_test_app, create_test_endpoint, delete_test_app, endpoint_in,
+        post_endpoint,
     },
     start_svix_server, IgnoredResponse, TestClient,
 };
@@ -194,6 +195,21 @@ async fn test_crud() {
     get_endpoint_404(&client, &app_2, &app_2_ep_2.id)
         .await
         .unwrap();
+}
+
+#[tokio::test]
+async fn test_list() {
+    let (client, _jh) = start_svix_server();
+
+    let app_id = create_test_app(&client, "App1").await.unwrap().id;
+    common_test_list::<EndpointOut, EndpointIn>(
+        &client,
+        &format!("api/v1/app/{app_id}/endpoint/"),
+        |i| endpoint_in(&format!("https://localhost/{i}")),
+        true,
+    )
+    .await
+    .unwrap();
 }
 
 /// Tests that there is at most one endpoint with a single UID for all endpoints associated with
