@@ -241,7 +241,15 @@ async fn test_uid() {
     ep_2.uid = Some(uid.clone());
 
     let ep_1 = post_endpoint(&client, &app_id, ep_1).await.unwrap();
-    assert!(post_endpoint(&client, &app_id, ep_2).await.is_err());
+
+    client
+        .post::<_, IgnoredResponse>(
+            &format!("api/v1/app/{}/endpoint/", app_id),
+            ep_2,
+            StatusCode::CONFLICT,
+        )
+        .await
+        .unwrap();
 
     // Update One to Existing -- on update it should return an error if attempting to change
     // the UID to that of an existing endpoint associated with the same app
@@ -249,17 +257,17 @@ async fn test_uid() {
         .await
         .unwrap();
 
-    let mut ep_2_with_invalid_uid = endpoint_in(EP_URI_APP_1_EP_2);
-    ep_2_with_invalid_uid.uid = Some(uid.clone());
+    let mut ep_2_with_duplicate_uid = endpoint_in(EP_URI_APP_1_EP_2);
+    ep_2_with_duplicate_uid.uid = Some(uid.clone());
 
-    assert!(client
-        .put::<_, EndpointOut>(
+    client
+        .put::<_, IgnoredResponse>(
             &format!("api/v1/app/{}/endpoint/{}/", app_id, ep_2.id),
-            ep_2_with_invalid_uid,
-            StatusCode::OK,
+            ep_2_with_duplicate_uid,
+            StatusCode::CONFLICT,
         )
         .await
-        .is_err());
+        .unwrap();
 
     // Update One to Identical -- however it should not return an error if updating the
     // existing endpoint to one with the same UID
@@ -277,13 +285,20 @@ async fn test_uid() {
     assert_eq!(ep_1.id, ep_1_updated.id);
     assert_eq!(ep_1.uid, ep_1_updated.uid);
 
-    // Delete One then Create One -- UIDs may no be reused after deletion
+    // Delete One then Create One -- UIDs may be reused after deletion
     delete_endpoint(&client, &app_id, &ep_1.id).await.unwrap();
     delete_endpoint(&client, &app_id, &ep_2.id).await.unwrap();
 
     let mut ep_1 = endpoint_in(EP_URI_APP_1_EP_1);
     ep_1.uid = Some(uid.clone());
-    assert!(post_endpoint(&client, APP_NAME_1, ep_1).await.is_err());
+    client
+        .post::<_, IgnoredResponse>(
+            &format!("api/v1/app/{}/endpoint/", &app_id),
+            ep_1,
+            StatusCode::CREATED,
+        )
+        .await
+        .unwrap();
 
     delete_test_app(&client, app_id).await.unwrap();
 
