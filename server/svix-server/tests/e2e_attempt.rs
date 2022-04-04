@@ -313,10 +313,7 @@ async fn test_pagination_by_endpoint() {
 
         assert_eq!(all_attempts.data.len(), 6);
         assert_eq!(first_three.data.len(), 3);
-
-        assert_eq!(all_attempts.data[0], first_three.data[0]);
-        assert_eq!(all_attempts.data[1], first_three.data[1]);
-        assert_eq!(all_attempts.data[2], first_three.data[2]);
+        assert_eq!(&all_attempts.data[0..3], first_three.data.as_slice());
 
         // Forward iterator
         let last_three_manual: ListResponse<MessageAttemptOut> = client
@@ -346,9 +343,7 @@ async fn test_pagination_by_endpoint() {
         assert_eq!(last_three_manual.data, last_three_iter_field.data);
 
         assert_eq!(last_three_manual.data.len(), 3);
-        assert_eq!(all_attempts.data[3], last_three_manual.data[0]);
-        assert_eq!(all_attempts.data[4], last_three_manual.data[1]);
-        assert_eq!(all_attempts.data[5], last_three_manual.data[2]);
+        assert_eq!(&all_attempts.data[3..6], last_three_manual.data.as_slice());
         assert!(last_three_manual.done);
 
         // `prev` iterator
@@ -366,8 +361,7 @@ async fn test_pagination_by_endpoint() {
             .unwrap();
 
         assert_eq!(two_and_three.data.len(), 2);
-        assert_eq!(all_attempts.data[1], two_and_three.data[0]);
-        assert_eq!(all_attempts.data[2], two_and_three.data[1]);
+        assert_eq!(&all_attempts.data[1..3], two_and_three.data.as_slice());
         assert!(!two_and_three.done);
 
         let one: ListResponse<MessageAttemptOut> = client
@@ -399,9 +393,10 @@ async fn test_pagination_by_endpoint() {
             .await
             .unwrap();
         assert_eq!(first_three_by_time.data.len(), 3);
-        assert_eq!(all_attempts.data[0], first_three_by_time.data[0]);
-        assert_eq!(all_attempts.data[1], first_three_by_time.data[1]);
-        assert_eq!(all_attempts.data[2], first_three_by_time.data[2]);
+        assert_eq!(
+            &all_attempts.data[0..3],
+            first_three_by_time.data.as_slice()
+        );
 
         // `before field`
         let last_three_by_time: ListResponse<MessageAttemptOut> = client
@@ -415,9 +410,7 @@ async fn test_pagination_by_endpoint() {
             .await
             .unwrap();
         assert_eq!(last_three_by_time.data.len(), 3);
-        assert_eq!(all_attempts.data[3], last_three_by_time.data[0]);
-        assert_eq!(all_attempts.data[4], last_three_by_time.data[1]);
-        assert_eq!(all_attempts.data[5], last_three_by_time.data[2]);
+        assert_eq!(&all_attempts.data[3..6], last_three_by_time.data.as_slice());
     }
 }
 
@@ -498,9 +491,7 @@ async fn test_pagination_by_msg() {
         assert_eq!(all_attempts.data.len(), 6);
         assert_eq!(first_three.data.len(), 3);
 
-        assert_eq!(all_attempts.data[0], first_three.data[0]);
-        assert_eq!(all_attempts.data[1], first_three.data[1]);
-        assert_eq!(all_attempts.data[2], first_three.data[2]);
+        assert_eq!(&all_attempts.data[0..3], first_three.data.as_slice());
 
         // Forward iterator
         let last_three_manual: ListResponse<MessageAttemptOut> = client
@@ -530,9 +521,7 @@ async fn test_pagination_by_msg() {
         assert_eq!(last_three_manual.data, last_three_iter_field.data);
 
         assert_eq!(last_three_manual.data.len(), 3);
-        assert_eq!(all_attempts.data[3], last_three_manual.data[0]);
-        assert_eq!(all_attempts.data[4], last_three_manual.data[1]);
-        assert_eq!(all_attempts.data[5], last_three_manual.data[2]);
+        assert_eq!(&all_attempts.data[3..6], last_three_manual.data.as_slice());
         assert!(last_three_manual.done);
 
         // `prev` iterator
@@ -550,8 +539,7 @@ async fn test_pagination_by_msg() {
             .unwrap();
 
         assert_eq!(two_and_three.data.len(), 2);
-        assert_eq!(all_attempts.data[1], two_and_three.data[0]);
-        assert_eq!(all_attempts.data[2], two_and_three.data[1]);
+        assert_eq!(&all_attempts.data[1..3], two_and_three.data.as_slice());
         assert!(!two_and_three.done);
 
         let one: ListResponse<MessageAttemptOut> = client
