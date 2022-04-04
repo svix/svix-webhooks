@@ -4,3 +4,6 @@
 #PHP
 /vendor/
 composer.lock
+
+#IDE
+.vscode
