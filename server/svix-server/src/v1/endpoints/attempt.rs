@@ -5,7 +5,7 @@ use crate::{
     core::{
         security::AuthenticatedApplication,
         types::{
-            ApplicationId, ApplicationIdOrUid, BaseId, EndpointId, EndpointIdOrUid, EventChannel,
+            ApplicationId, ApplicationIdOrUid, EndpointId, EndpointIdOrUid, EventChannel,
             EventTypeNameSet, MessageAttemptId, MessageAttemptTriggerType, MessageEndpointId,
             MessageId, MessageIdOrUid, MessageStatus, StatusCodeClass,
         },
@@ -491,14 +491,19 @@ pub struct ListAttemptsForEndpointQueryParameters {
     #[validate]
     pub channel: Option<EventChannel>,
     pub status: Option<MessageStatus>,
+    pub before: Option<DateTime<Utc>>,
+    pub after: Option<DateTime<Utc>>,
 }
 
 async fn list_attempts_for_endpoint(
     extension: Extension<DatabaseConnection>,
-    pagination: ValidatedQuery<Pagination<MessageAttemptId>>,
-    ValidatedQuery(ListAttemptsForEndpointQueryParameters { channel, status }): ValidatedQuery<
-        ListAttemptsForEndpointQueryParameters,
-    >,
+    pagination: ValidatedQuery<Pagination<ReversibleIterator<MessageAttemptId>>>,
+    ValidatedQuery(ListAttemptsForEndpointQueryParameters {
+        channel,
+        status,
+        before,
+        after,
+    }): ValidatedQuery<ListAttemptsForEndpointQueryParameters>,
     list_filter: MessageListFetchOptions,
     Path((app_id, msg_id, endp_id)): Path<(ApplicationIdOrUid, MessageIdOrUid, EndpointIdOrUid)>,
     auth_app: AuthenticatedApplication,
@@ -510,6 +515,8 @@ async fn list_attempts_for_endpoint(
             endpoint_id: Some(endp_id),
             channel,
             status,
+            before,
+            after,
         }),
         list_filter,
         Path((app_id, msg_id)),
@@ -525,15 +532,19 @@ pub struct AttemptListFetchOptions {
     #[validate]
     pub channel: Option<EventChannel>,
     pub status: Option<MessageStatus>,
+    pub before: Option<DateTime<Utc>>,
+    pub after: Option<DateTime<Utc>>,
 }
 
 async fn list_messageattempts(
     Extension(ref db): Extension<DatabaseConnection>,
-    pagination: ValidatedQuery<Pagination<MessageAttemptId>>,
+    ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<MessageAttemptId>>>,
     ValidatedQuery(AttemptListFetchOptions {
         endpoint_id,
         channel,
         status,
+        before,
+        after,
     }): ValidatedQuery<AttemptListFetchOptions>,
     list_filter: MessageListFetchOptions,
     Path((_app_id, msg_id)): Path<(ApplicationIdOrUid, MessageIdOrUid)>,
@@ -542,24 +553,12 @@ async fn list_messageattempts(
         app,
     }: AuthenticatedApplication,
 ) -> Result<Json<ListResponse<MessageAttemptOut>>> {
-    let limit = pagination.limit;
-    let iterator = pagination
-        .iterator
-        .clone()
-        .or_else(|| list_filter.before.map(MessageAttemptId::start_id));
-
     let msg = message::Entity::secure_find_by_id_or_uid(app.id.clone(), msg_id)
         .one(db)
         .await?
         .ok_or_else(|| HttpError::not_found(None, None))?;
 
-    let mut query = messageattempt::Entity::secure_find_by_msg(msg.id)
-        .order_by_desc(messageattempt::Column::Id)
-        .limit(limit + 1);
-
-    if let Some(iterator) = iterator {
-        query = query.filter(messageattempt::Column::Id.lt(iterator))
-    }
+    let mut query = messageattempt::Entity::secure_find_by_msg(msg.id);
 
     if let Some(endpoint_id) = endpoint_id {
         let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endpoint_id)
@@ -581,9 +580,25 @@ async fn list_messageattempts(
         query = query.filter(message::Column::EventType.is_in(event_types));
     }
 
+    let query = apply_pagination(
+        query,
+        messageattempt::Column::Id,
+        pagination.limit,
+        pagination.iterator,
+        before,
+        after,
+    );
+
+    let out = match query {
+        ReversibleSelect::Forward(q) => q.all(db).await?.into_iter().map(Into::into).collect(),
+        ReversibleSelect::Reversed(q) => {
+            q.all(db).await?.into_iter().rev().map(Into::into).collect()
+        }
+    };
+
     Ok(Json(MessageAttemptOut::list_response(
-        query.all(db).await?.into_iter().map(|x| x.into()).collect(),
-        limit as usize,
+        out,
+        pagination.limit as usize,
         false,
     )))
 }
