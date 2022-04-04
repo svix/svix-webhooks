@@ -16,8 +16,8 @@ use crate::{
     v1::{
         endpoints::message::MessageOut,
         utils::{
-            apply_pagination, EmptyResponse, ListResponse, MessageListFetchOptions, ModelOut,
-            ReversibleIterator, ReversibleSelect, ValidatedQuery,
+            apply_pagination, iterator_from_before_or_after, EmptyResponse, ListResponse,
+            MessageListFetchOptions, ModelOut, ReversibleIterator, ValidatedQuery,
         },
     },
 };
@@ -141,16 +141,16 @@ async fn list_attempted_messages(
         dests_and_msgs = dests_and_msgs.filter(messagedestination::Column::Status.eq(status));
     }
 
+    let iterator = iterator_from_before_or_after(pagination.iterator, before, after);
+    let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
+
     let dests_and_msgs = apply_pagination(
         dests_and_msgs,
         messagedestination::Column::Id,
         pagination.limit,
-        pagination.iterator,
-        before,
-        after,
+        iterator,
     );
 
-    let is_prev = matches!(dests_and_msgs, ReversibleSelect::Reversed(_));
     let into = |(dest, msg): (messagedestination::Model, Option<message::Model>)| {
         let msg = msg.ok_or_else(|| {
             Error::Database("No associated message with messagedestination".to_owned())
@@ -158,20 +158,21 @@ async fn list_attempted_messages(
         Ok(AttemptedMessageOut::from_dest_and_msg(dest, msg))
     };
 
-    let out = match dests_and_msgs {
-        ReversibleSelect::Forward(q) => q
-            .all(db)
-            .await?
-            .into_iter()
-            .map(into)
-            .collect::<Result<_>>()?,
-        ReversibleSelect::Reversed(q) => q
+    let out = if is_prev {
+        dests_and_msgs
             .all(db)
             .await?
             .into_iter()
             .rev()
             .map(into)
-            .collect::<Result<_>>()?,
+            .collect::<Result<_>>()?
+    } else {
+        dests_and_msgs
+            .all(db)
+            .await?
+            .into_iter()
+            .map(into)
+            .collect::<Result<_>>()?
     };
 
     Ok(Json(AttemptedMessageOut::list_response(
@@ -292,22 +293,25 @@ async fn list_attempts_by_endpoint(
         channel,
     );
 
+    let iterator = iterator_from_before_or_after(pagination.iterator, before, after);
+    let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
     let query = apply_pagination(
         query,
         messageattempt::Column::Id,
         pagination.limit,
-        pagination.iterator,
-        before,
-        after,
+        iterator,
     );
 
-    let is_prev = matches!(query, ReversibleSelect::Reversed(_));
-    let out = match query {
-        ReversibleSelect::Forward(q) => q.all(db).await?.into_iter().map(Into::into).collect(),
-
-        ReversibleSelect::Reversed(q) => {
-            q.all(db).await?.into_iter().rev().map(Into::into).collect()
-        }
+    let out = if is_prev {
+        query
+            .all(db)
+            .await?
+            .into_iter()
+            .rev()
+            .map(Into::into)
+            .collect()
+    } else {
+        query.all(db).await?.into_iter().map(Into::into).collect()
     };
 
     Ok(Json(MessageAttemptOut::list_response(
@@ -381,22 +385,24 @@ async fn list_attempts_by_msg(
         }
     }
 
+    let iterator = iterator_from_before_or_after(pagination.iterator, before, after);
+    let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
     let query = apply_pagination(
         query,
         messageattempt::Column::Id,
         pagination.limit,
-        pagination.iterator,
-        before,
-        after,
+        iterator,
     );
-
-    let is_prev = matches!(query, ReversibleSelect::Reversed(_));
-    let out = match query {
-        ReversibleSelect::Forward(q) => q.all(db).await?.into_iter().map(Into::into).collect(),
-
-        ReversibleSelect::Reversed(q) => {
-            q.all(db).await?.into_iter().rev().map(Into::into).collect()
-        }
+    let out = if is_prev {
+        query
+            .all(db)
+            .await?
+            .into_iter()
+            .rev()
+            .map(Into::into)
+            .collect()
+    } else {
+        query.all(db).await?.into_iter().map(Into::into).collect()
     };
 
     Ok(Json(MessageAttemptOut::list_response(
@@ -580,20 +586,24 @@ async fn list_messageattempts(
         query = query.filter(message::Column::EventType.is_in(event_types));
     }
 
+    let iterator = iterator_from_before_or_after(pagination.iterator, before, after);
+    let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
     let query = apply_pagination(
         query,
         messageattempt::Column::Id,
         pagination.limit,
-        pagination.iterator,
-        before,
-        after,
+        iterator,
     );
-
-    let out = match query {
-        ReversibleSelect::Forward(q) => q.all(db).await?.into_iter().map(Into::into).collect(),
-        ReversibleSelect::Reversed(q) => {
-            q.all(db).await?.into_iter().rev().map(Into::into).collect()
-        }
+    let out = if is_prev {
+        query
+            .all(db)
+            .await?
+            .into_iter()
+            .rev()
+            .map(Into::into)
+            .collect()
+    } else {
+        query.all(db).await?.into_iter().map(Into::into).collect()
     };
 
     Ok(Json(MessageAttemptOut::list_response(
