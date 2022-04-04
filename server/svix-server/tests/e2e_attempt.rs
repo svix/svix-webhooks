@@ -647,7 +647,7 @@ async fn test_pagination_forward_and_back() {
         .unwrap();
 
     let mut messages = Vec::new();
-    for i in 1..=20usize {
+    for i in 1..=28usize {
         messages.push(
             create_test_message(
                 &client,
@@ -671,8 +671,8 @@ async fn test_pagination_forward_and_back() {
             .await
             .unwrap();
 
-        if list.data.len() != 20 {
-            anyhow::bail!("list len {}, not 20", list.data.len());
+        if list.data.len() != 28 {
+            anyhow::bail!("list len {}, not 28", list.data.len());
         }
 
         Ok(())
@@ -710,7 +710,7 @@ async fn test_pagination_forward_and_back() {
         iterator = out.iterator;
     }
 
-    assert_eq!(forward_msgs.len(), 20);
+    assert_eq!(forward_msgs.len(), 28);
 
     // Go backwards
     let mut backwards_msgs = Vec::new();
@@ -739,6 +739,7 @@ async fn test_pagination_forward_and_back() {
         prev_iterator = out.prev_iterator;
     }
 
-    assert_eq!(backwards_msgs.len(), 10);
-    assert_eq!(&forward_msgs[0..10], backwards_msgs.as_slice());
+    assert_eq!(backwards_msgs.len(), 20);
+    assert_eq!(&forward_msgs[0..10], &backwards_msgs[10..20]);
+    assert_eq!(&forward_msgs[10..20], &backwards_msgs[0..10]);
 }
