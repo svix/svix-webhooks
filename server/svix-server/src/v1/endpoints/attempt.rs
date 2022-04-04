@@ -416,7 +416,7 @@ async fn list_attempts_by_msg(
 /// output information on attempted destinations
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-struct MessageEndpointOut {
+pub struct MessageEndpointOut {
     #[serde(flatten)]
     endpoint: super::endpoint::EndpointOut,
     status: MessageStatus,
