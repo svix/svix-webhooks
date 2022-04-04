@@ -4,21 +4,24 @@
 use std::time::Duration;
 
 use anyhow::Result;
+use chrono::{DateTime, Utc};
 use reqwest::StatusCode;
 
 use serde::{de::DeserializeOwned, Serialize};
 use svix_server::{
-    core::types::{ApplicationId, EventTypeName},
+    core::types::{ApplicationId, EventTypeName, MessageId},
     v1::{
         endpoints::{
             application::{ApplicationIn, ApplicationOut},
-            endpoint::{EndpointIn, EndpointOut},
+            attempt::MessageAttemptOut,
+            endpoint::{EndpointIn, EndpointOut, RecoverIn},
             event_type::EventTypeIn,
             message::{MessageIn, MessageOut},
         },
         utils::ListResponse,
     },
 };
+use tokio::time::sleep;
 
 use super::{run_with_retries, IgnoredResponse, TestClient};
 
@@ -207,4 +210,45 @@ pub async fn common_test_list<
         .unwrap();
 
     Ok(())
+}
+
+pub async fn wait_for_msg_retries(retry_schedule: &[Duration]) {
+    for i in retry_schedule {
+        sleep(*i).await;
+    }
+    // Give attempts buffer time to complete:
+    sleep(Duration::from_millis(50)).await;
+}
+
+pub async fn recover_webhooks(client: &TestClient, since: DateTime<Utc>, url: &str) {
+    let _: serde_json::Value = client
+        .post(url, RecoverIn { since }, StatusCode::ACCEPTED)
+        .await
+        .unwrap();
+}
+
+pub async fn get_msg_attempt_list_and_assert_count(
+    client: &TestClient,
+    app_id: &ApplicationId,
+    msg_id: &MessageId,
+    expected_count: usize,
+) -> Result<ListResponse<MessageAttemptOut>> {
+    run_with_retries(|| async {
+        let list: ListResponse<MessageAttemptOut> = client
+            .get(
+                &format!("api/v1/app/{}/attempt/msg/{}", app_id, msg_id),
+                StatusCode::OK,
+            )
+            .await?;
+
+        if list.data.len() != expected_count {
+            anyhow::bail!(
+                "Attempt count {} does not match expected length {}",
+                list.data.len(),
+                expected_count
+            );
+        }
+        Ok(list)
+    })
+    .await
 }

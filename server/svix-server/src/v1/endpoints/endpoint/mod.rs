@@ -157,10 +157,10 @@ pub struct EndpointSecretOut {
     key: EndpointSecret,
 }
 
-#[derive(Clone, Debug, PartialEq, Validate, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Validate, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct RecoverIn {
-    since: DateTime<Utc>,
+    pub since: DateTime<Utc>,
 }
 
 #[derive(Clone, Debug, PartialEq, Validate, Deserialize)]
