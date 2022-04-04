@@ -109,32 +109,28 @@ pub struct ListAttemptedMessagesQueryParameters {
     #[validate]
     channel: Option<EventChannel>,
     status: Option<MessageStatus>,
+    before: Option<DateTime<Utc>>,
+    after: Option<DateTime<Utc>>,
 }
 
 /// Fetches a list of [`AttemptedMessageOut`]s associated with a given app and endpoint.
 async fn list_attempted_messages(
     Extension(ref db): Extension<DatabaseConnection>,
-    ValidatedQuery(mut pagination): ValidatedQuery<Pagination<MessageId>>,
-    ValidatedQuery(ListAttemptedMessagesQueryParameters { channel, status }): ValidatedQuery<
-        ListAttemptedMessagesQueryParameters,
-    >,
+    ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<MessageId>>>,
+    ValidatedQuery(ListAttemptedMessagesQueryParameters {
+        channel,
+        status,
+        before,
+        after,
+    }): ValidatedQuery<ListAttemptedMessagesQueryParameters>,
     Path((_app_id, endp_id)): Path<(ApplicationId, EndpointId)>,
     AuthenticatedApplication {
         permissions: _,
         app: _,
     }: AuthenticatedApplication,
 ) -> Result<Json<ListResponse<AttemptedMessageOut>>> {
-    let limit = pagination.limit;
-    let iterator = pagination.iterator.take();
-
     let mut dests_and_msgs = messagedestination::Entity::secure_find_by_endpoint(endp_id)
-        .find_also_related(message::Entity)
-        .order_by_desc(messagedestination::Column::MsgId)
-        .limit(limit + 1);
-
-    if let Some(iterator) = iterator {
-        dests_and_msgs = dests_and_msgs.filter(messagedestination::Column::MsgId.lt(iterator));
-    }
+        .find_also_related(message::Entity);
 
     if let Some(channel) = channel {
         dests_and_msgs =
@@ -145,22 +141,43 @@ async fn list_attempted_messages(
         dests_and_msgs = dests_and_msgs.filter(messagedestination::Column::Status.eq(status));
     }
 
-    Ok(Json(AttemptedMessageOut::list_response(
-        dests_and_msgs
+    let dests_and_msgs = apply_pagination(
+        dests_and_msgs,
+        messagedestination::Column::Id,
+        pagination.limit,
+        pagination.iterator,
+        before,
+        after,
+    );
+
+    let is_prev = matches!(dests_and_msgs, ReversibleSelect::Reversed(_));
+    let into = |(dest, msg): (messagedestination::Model, Option<message::Model>)| {
+        let msg = msg.ok_or_else(|| {
+            Error::Database("No associated message with messagedestination".to_owned())
+        })?;
+        Ok(AttemptedMessageOut::from_dest_and_msg(dest, msg))
+    };
+
+    let out = match dests_and_msgs {
+        ReversibleSelect::Forward(q) => q
             .all(db)
             .await?
             .into_iter()
-            .map(
-                |(dest, msg): (messagedestination::Model, Option<message::Model>)| {
-                    let msg = msg.ok_or_else(|| {
-                        Error::Database("No associated message with messagedestination".to_owned())
-                    })?;
-                    Ok(AttemptedMessageOut::from_dest_and_msg(dest, msg))
-                },
-            )
+            .map(into)
             .collect::<Result<_>>()?,
-        limit as usize,
-        false,
+        ReversibleSelect::Reversed(q) => q
+            .all(db)
+            .await?
+            .into_iter()
+            .rev()
+            .map(into)
+            .collect::<Result<_>>()?,
+    };
+
+    Ok(Json(AttemptedMessageOut::list_response(
+        out,
+        pagination.limit as usize,
+        is_prev,
     )))
 }
 

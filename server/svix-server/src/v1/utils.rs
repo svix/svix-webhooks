@@ -10,7 +10,7 @@ use axum::{
     BoxError,
 };
 use chrono::{DateTime, Utc};
-use sea_orm::{ColumnTrait, EntityTrait, QueryFilter, QueryOrder, QuerySelect, Select};
+use sea_orm::{ColumnTrait, QueryFilter, QueryOrder, QuerySelect};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
 use validator::Validate;
@@ -64,23 +64,23 @@ impl<T: Validate> Validate for ReversibleIterator<T> {
     }
 }
 
-pub enum ReversibleSelect<E: EntityTrait> {
-    Forward(Select<E>),
-    Reversed(Select<E>),
+pub enum ReversibleSelect<T: QuerySelect> {
+    Forward(T),
+    Reversed(T),
 }
 
 pub fn apply_pagination<
-    E: EntityTrait,
+    Q: QuerySelect + QueryOrder + QueryFilter,
     C: ColumnTrait,
     I: BaseId<Output = I> + Validate + Into<sea_orm::Value>,
 >(
-    query: Select<E>,
+    query: Q,
     sort_column: C,
     limit: u64,
     iterator: Option<ReversibleIterator<I>>,
     before: Option<DateTime<Utc>>,
     after: Option<DateTime<Utc>>,
-) -> ReversibleSelect<E> {
+) -> ReversibleSelect<Q> {
     let iterator = iterator.or_else(|| {
         before
             .map(|time| ReversibleIterator::Normal(I::start_id(time)))
