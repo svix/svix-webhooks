@@ -10,12 +10,13 @@ use axum::{
     BoxError,
 };
 use chrono::{DateTime, Utc};
+use sea_orm::{ColumnTrait, QueryFilter, QueryOrder, QuerySelect};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
 use validator::Validate;
 
 use crate::{
-    core::types::{EventTypeName, EventTypeNameSet},
+    core::types::{BaseId, EventTypeName, EventTypeNameSet},
     error::{Error, HttpError, Result, ValidationErrorItem},
 };
 
@@ -60,6 +61,46 @@ impl<T: Validate> Validate for ReversibleIterator<T> {
             ReversibleIterator::Normal(val) => val.validate(),
             ReversibleIterator::Prev(val) => val.validate(),
         }
+    }
+}
+
+/// For use in creating a [`ReversibleIterator`] from `before` and `after` timestamps should one not
+/// already be present
+pub fn iterator_from_before_or_after<I: BaseId<Output = I> + Validate>(
+    iterator: Option<ReversibleIterator<I>>,
+    before: Option<DateTime<Utc>>,
+    after: Option<DateTime<Utc>>,
+) -> Option<ReversibleIterator<I>> {
+    iterator.or_else(|| {
+        before
+            .map(|time| ReversibleIterator::Normal(I::start_id(time)))
+            .or_else(|| after.map(|time| ReversibleIterator::Prev(I::end_id(time))))
+    })
+}
+
+/// Applies sorting and filtration to a query from its iterator, sort column, and limit
+pub fn apply_pagination<
+    Q: QuerySelect + QueryOrder + QueryFilter,
+    C: ColumnTrait,
+    I: BaseId<Output = I> + Validate + Into<sea_orm::Value>,
+>(
+    query: Q,
+    sort_column: C,
+    limit: u64,
+    iterator: Option<ReversibleIterator<I>>,
+) -> Q {
+    let query = query.limit(limit + 1);
+
+    match iterator {
+        Some(ReversibleIterator::Prev(id)) => {
+            query.order_by_asc(sort_column).filter(sort_column.gt(id))
+        }
+
+        Some(ReversibleIterator::Normal(id)) => {
+            query.order_by_desc(sort_column).filter(sort_column.lt(id))
+        }
+
+        None => query.order_by_desc(sort_column),
     }
 }
 
