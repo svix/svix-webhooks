@@ -469,7 +469,9 @@ async fn test_pagination_by_msg() {
         Ok(())
     })
     .await
-    .unwrap(); // By message
+    .unwrap();
+
+    // By message
     for msg in &messages {
         let all_attempts: ListResponse<MessageAttemptOut> = client
             .get(
@@ -630,4 +632,113 @@ async fn test_pagination_by_msg() {
     fn sub_5ms<T: chrono::TimeZone>(dur: chrono::DateTime<T>) -> chrono::DateTime<T> {
         dur - chrono::Duration::from_std(std::time::Duration::from_millis(5)).unwrap()
     }
+}
+
+#[tokio::test]
+async fn test_pagination_forward_and_back() {
+    let (client, _) = start_svix_server();
+
+    let app = create_test_app(&client, "test_app").await.unwrap();
+
+    let receiver = TestReceiver::start(StatusCode::OK);
+
+    let ep = create_test_endpoint(&client, &app.id, &receiver.endpoint)
+        .await
+        .unwrap();
+
+    let mut messages = Vec::new();
+    for i in 1..=20usize {
+        messages.push(
+            create_test_message(
+                &client,
+                &app.id,
+                serde_json::json!({
+                    "test": i,
+                }),
+            )
+            .await
+            .unwrap(),
+        );
+    }
+
+    // Wait until all attempts were made
+    run_with_retries(|| async {
+        let list: ListResponse<MessageAttemptOut> = client
+            .get(
+                &format!("api/v1/app/{}/attempt/endpoint/{}/", app.id, ep.id),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
+
+        if list.data.len() != 20 {
+            anyhow::bail!("list len {}, not 20", list.data.len());
+        }
+
+        Ok(())
+    })
+    .await
+    .unwrap();
+
+    // Go forward
+    let mut forward_msgs = Vec::new();
+    let mut done = false;
+    let mut prev_iterator = None;
+    let mut iterator = None;
+
+    while !done {
+        let iter_suffix = if let Some(iter) = iterator {
+            format!("&iterator={}", iter)
+        } else {
+            String::new()
+        };
+
+        let mut out: ListResponse<MessageAttemptOut> = client
+            .get(
+                &format!(
+                    "api/v1/app/{}/attempt/endpoint/{}/?limit=10{}",
+                    app.id, ep.id, iter_suffix
+                ),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
+
+        forward_msgs.append(&mut out.data);
+        done = out.done;
+        prev_iterator = out.prev_iterator;
+        iterator = out.iterator;
+    }
+
+    assert_eq!(forward_msgs.len(), 20);
+
+    // Go backwards
+    let mut backwards_msgs = Vec::new();
+    let mut done = false;
+
+    while !done {
+        let iter_suffix = if let Some(iter) = prev_iterator {
+            format!("&iterator={}", iter)
+        } else {
+            String::new()
+        };
+
+        let mut out: ListResponse<MessageAttemptOut> = client
+            .get(
+                &format!(
+                    "api/v1/app/{}/attempt/endpoint/{}/?limit=10{}",
+                    app.id, ep.id, iter_suffix
+                ),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
+
+        backwards_msgs.append(&mut out.data);
+        done = out.done;
+        prev_iterator = out.prev_iterator;
+    }
+
+    assert_eq!(backwards_msgs.len(), 10);
+    assert_eq!(&forward_msgs[0..10], backwards_msgs.as_slice());
 }
