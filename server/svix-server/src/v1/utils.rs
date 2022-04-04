@@ -10,12 +10,13 @@ use axum::{
     BoxError,
 };
 use chrono::{DateTime, Utc};
+use sea_orm::{ColumnTrait, EntityTrait, QueryFilter, QueryOrder, QuerySelect, Select};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
 use validator::Validate;
 
 use crate::{
-    core::types::{EventTypeName, EventTypeNameSet},
+    core::types::{BaseId, EventTypeName, EventTypeNameSet},
     error::{Error, HttpError, Result, ValidationErrorItem},
 };
 
@@ -60,6 +61,44 @@ impl<T: Validate> Validate for ReversibleIterator<T> {
             ReversibleIterator::Normal(val) => val.validate(),
             ReversibleIterator::Prev(val) => val.validate(),
         }
+    }
+}
+
+pub enum ReversibleSelect<E: EntityTrait> {
+    Forward(Select<E>),
+    Reversed(Select<E>),
+}
+
+pub fn apply_pagination<
+    E: EntityTrait,
+    C: ColumnTrait,
+    I: BaseId<Output = I> + Validate + Into<sea_orm::Value>,
+>(
+    query: Select<E>,
+    sort_column: C,
+    limit: u64,
+    iterator: Option<ReversibleIterator<I>>,
+    before: Option<DateTime<Utc>>,
+    after: Option<DateTime<Utc>>,
+) -> ReversibleSelect<E> {
+    let iterator = iterator.or_else(|| {
+        before
+            .map(|time| ReversibleIterator::Normal(I::start_id(time)))
+            .or_else(|| after.map(|time| ReversibleIterator::Prev(I::end_id(time))))
+    });
+
+    let query = query.limit(limit + 1);
+
+    match iterator {
+        Some(ReversibleIterator::Prev(id)) => {
+            ReversibleSelect::Reversed(query.order_by_asc(sort_column).filter(sort_column.gt(id)))
+        }
+
+        Some(ReversibleIterator::Normal(id)) => {
+            ReversibleSelect::Forward(query.order_by_desc(sort_column).filter(sort_column.lt(id)))
+        }
+
+        None => ReversibleSelect::Forward(query.order_by_desc(sort_column)),
     }
 }
 
