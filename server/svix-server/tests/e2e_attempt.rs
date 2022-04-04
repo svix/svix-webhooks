@@ -710,7 +710,7 @@ async fn test_pagination_forward_and_back() {
         iterator = out.iterator;
     }
 
-    assert_eq!(forward_msgs.len(), 28);
+    assert_eq!(forward_msgs.len(), messages.len());
 
     // Go backwards
     let mut backwards_msgs = Vec::new();
@@ -739,6 +739,7 @@ async fn test_pagination_forward_and_back() {
         prev_iterator = out.prev_iterator;
     }
 
+    // Skips the last eight because the prev_iterator is that of the third page of eight going forward
     assert_eq!(backwards_msgs.len(), 20);
     assert_eq!(&forward_msgs[0..10], &backwards_msgs[10..20]);
     assert_eq!(&forward_msgs[10..20], &backwards_msgs[0..10]);
