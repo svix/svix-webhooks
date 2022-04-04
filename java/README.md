@@ -51,7 +51,7 @@ Add this dependency to your project's POM:
 <dependency>
   <groupId>com.svix</groupId>
   <artifactId>svix</artifactId>
-  <version>0.54.2</version>
+  <version>0.55.0</version>
   <scope>compile</scope>
 </dependency>
 ```
@@ -61,7 +61,7 @@ Add this dependency to your project's POM:
 Add this dependency to your project's build file:
 
 ```groovy
-implementation "com.svix:svix:0.54.2"
+implementation "com.svix:svix:0.55.0"
 ```
 
 # Development

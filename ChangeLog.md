@@ -3,6 +3,14 @@
 ## Next
 * 
 
+## Version 0.55.0
+* Server: fix marking of some HTTP errors as failed.
+* Server: change base docker image to debian-slim
+* Server: update deps.
+* Server: added missing list attempts endpoints and missing query parameters to some endpoints.
+* Server: switch to KsuidMs for extra precision.
+* Server: add missing validation for `IdOrUid` so that they return 422.
+
 ## Version 0.54.2
 * Server: fix release CI round 2
 
