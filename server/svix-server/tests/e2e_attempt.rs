@@ -14,12 +14,15 @@ use svix_server::{
 mod utils;
 
 use utils::{
-    common_calls::{create_test_app, create_test_endpoint, create_test_message},
+    common_calls::{
+        create_test_app, create_test_endpoint, create_test_message,
+        get_msg_attempt_list_and_assert_count,
+    },
     get_default_test_config, run_with_retries, start_svix_server, start_svix_server_with_cfg,
     TestReceiver,
 };
 
-use tokio::time::{sleep, Duration};
+use std::time::Duration;
 
 #[tokio::test]
 async fn test_list_attempted_messages() {
@@ -152,12 +155,8 @@ async fn test_list_attempts_by_endpoint() {
     receiver_2.jh.abort();
 }
 
-async fn try_message_attempts(
-    endpoint: &str,
-    msg_status: MessageStatus,
-    status_code: i16,
-    attempt_count: Option<usize>,
-) {
+#[tokio::test]
+async fn test_message_attempts() {
     let mut cfg = get_default_test_config();
     cfg.retry_schedule = (0..2)
         .into_iter()
@@ -166,50 +165,6 @@ async fn try_message_attempts(
 
     let (client, _jh) = start_svix_server_with_cfg(&cfg);
 
-    let app_id = create_test_app(&client, "app1").await.unwrap().id;
-
-    let endp_id = create_test_endpoint(&client, &app_id, endpoint)
-        .await
-        .unwrap()
-        .id;
-
-    let msg = create_test_message(&client, &app_id, serde_json::json!({"test": "data1"}))
-        .await
-        .unwrap();
-
-    for i in &cfg.retry_schedule {
-        sleep(*i).await;
-    }
-    // Give attempts buffer time to complete:
-    sleep(Duration::from_millis(50)).await;
-
-    let list = run_with_retries(|| async {
-        let list: ListResponse<MessageAttemptOut> = client
-            .get(
-                &format!("api/v1/app/{}/attempt/msg/{}", app_id, &msg.id),
-                StatusCode::OK,
-            )
-            .await
-            .unwrap();
-
-        let attempt_count = attempt_count.unwrap_or(cfg.retry_schedule.len() + 1);
-        if list.data.len() != attempt_count {
-            anyhow::bail!("Attempt count does not match retry_schedule length");
-        }
-        Ok(list)
-    })
-    .await
-    .unwrap();
-
-    for i in list.data.iter() {
-        assert_eq!(i.status, msg_status);
-        assert_eq!(i.response_status_code, status_code);
-        assert_eq!(i.endpoint_id, endp_id);
-    }
-}
-
-#[tokio::test]
-async fn test_message_attempts() {
     for (status_code, msg_status, attempt_count) in [
         // Success
         (StatusCode::OK, MessageStatus::Success, Some(1)),
@@ -218,21 +173,71 @@ async fn test_message_attempts() {
         // HTTP 500
         (StatusCode::INTERNAL_SERVER_ERROR, MessageStatus::Fail, None),
     ] {
+        let app_id = create_test_app(&client, "app").await.unwrap().id;
+
         let receiver = TestReceiver::start(status_code);
-        try_message_attempts(
-            &receiver.endpoint,
-            msg_status,
-            status_code.as_u16().try_into().unwrap(),
-            attempt_count,
+
+        let endp_id = create_test_endpoint(&client, &app_id, &receiver.endpoint)
+            .await
+            .unwrap()
+            .id;
+
+        let msg = create_test_message(&client, &app_id, serde_json::json!({"test": "data"}))
+            .await
+            .unwrap();
+
+        let list = get_msg_attempt_list_and_assert_count(
+            &client,
+            &app_id,
+            &msg.id,
+            attempt_count.unwrap_or(&cfg.retry_schedule.len() + 1),
         )
-        .await;
+        .await
+        .unwrap();
+
+        for i in list.data.iter() {
+            assert_eq!(i.status, msg_status);
+            println!("{} {}", i.response_status_code, status_code);
+            assert_eq!(
+                i.response_status_code,
+                TryInto::<i16>::try_into(status_code.as_u16()).unwrap()
+            );
+            assert_eq!(i.endpoint_id, endp_id);
+        }
         receiver.jh.abort();
     }
 
     // non-HTTP-related failures:
+    let app_id = create_test_app(&client, "app").await.unwrap().id;
+
     let receiver = TestReceiver::start(StatusCode::OK);
+
+    // stop receiver before beginning tests:
     receiver.jh.abort();
-    try_message_attempts(&receiver.endpoint, MessageStatus::Fail, 0, None).await;
+
+    let endp_id = create_test_endpoint(&client, &app_id, &receiver.endpoint)
+        .await
+        .unwrap()
+        .id;
+
+    let msg = create_test_message(&client, &app_id, serde_json::json!({"test": "data1"}))
+        .await
+        .unwrap();
+
+    let list = get_msg_attempt_list_and_assert_count(
+        &client,
+        &app_id,
+        &msg.id,
+        &cfg.retry_schedule.len() + 1,
+    )
+    .await
+    .unwrap();
+
+    for i in list.data.iter() {
+        assert_eq!(i.status, MessageStatus::Fail);
+        assert_eq!(i.response_status_code, 0);
+        assert_eq!(i.endpoint_id, endp_id);
+    }
 }
 
 #[tokio::test]
