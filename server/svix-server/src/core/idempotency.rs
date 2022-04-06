@@ -18,17 +18,26 @@ use tower::Service;
 
 use super::cache::{CacheKey, CacheValue, RedisCache};
 
+/// Returns the default exipry period for cached responses
 const fn expiry_default() -> Duration {
     Duration::from_secs(60 * 60 * 12)
+}
+
+/// Returns the default expiry period for the starting lock
+const fn expiry_starting() -> Duration {
+    Duration::from_secs(20)
 }
 
 /// The data structure containing all necessary components of a response ready to be (de)serialiZed
 /// from/into the cache
 #[derive(Deserialize, Serialize)]
-struct SerializedResponse {
-    code: u16,
-    headers: Option<HashMap<String, String>>,
-    body: Option<serde_json::Value>,
+enum SerializedResponse {
+    Start,
+    Finished {
+        code: u16,
+        headers: Option<HashMap<String, String>>,
+        body: Option<serde_json::Value>,
+    },
 }
 impl CacheValue for SerializedResponse {
     type Key = IdempotencyKey;
@@ -95,22 +104,100 @@ where
                     // Check Redis now
                     if let Ok(resp) = redis.get::<SerializedResponse>(&key).await {
                         if let Some(resp) = resp {
-                            let mut out = Json(resp.body).into_response();
+                            match resp {
+                                // If the value is a starting value, the operation is still in progress
+                                SerializedResponse::Start => {
+                                    let mut total_delay_duration =
+                                        std::time::Duration::from_millis(0);
+                                    let out = loop {
+                                        match redis.get::<SerializedResponse>(&key).await {
+                                            Ok(Some(SerializedResponse::Start)) => {
+                                                if total_delay_duration > expiry_starting() {
+                                                    // TODO Better response
+                                                    break Ok(StatusCode::INTERNAL_SERVER_ERROR
+                                                        .into_response());
+                                                }
 
-                            let status = out.status_mut();
-                            *status = resp.code.try_into().unwrap();
+                                                total_delay_duration +=
+                                                    std::time::Duration::from_millis(200);
+                                                tokio::time::sleep(
+                                                    std::time::Duration::from_millis(200),
+                                                )
+                                                .await;
+                                            }
+                                            Ok(Some(SerializedResponse::Finished {
+                                                code,
+                                                headers,
+                                                body,
+                                            })) => {
+                                                let mut out = Json(body).into_response();
 
-                            if let Some(resp_headers) = resp.headers {
-                                let headers = out.headers_mut();
-                                *headers = resp_headers
-                                    .iter()
-                                    .map(|(k, v)| (k.parse().unwrap(), v.parse().unwrap()))
-                                    .collect();
+                                                let status = out.status_mut();
+                                                *status = code.try_into().unwrap();
+
+                                                if let Some(resp_headers) = headers {
+                                                    let headers = out.headers_mut();
+                                                    *headers = resp_headers
+                                                        .iter()
+                                                        .map(|(k, v)| {
+                                                            (k.parse().unwrap(), v.parse().unwrap())
+                                                        })
+                                                        .collect();
+                                                }
+
+                                                break Ok(out);
+                                            }
+
+                                            // Start value has expired
+                                            // TODO: Better response
+                                            Ok(None) => {
+                                                break Ok(StatusCode::INTERNAL_SERVER_ERROR
+                                                    .into_response())
+                                            }
+
+                                            Err(_) => {
+                                                break Ok(StatusCode::INTERNAL_SERVER_ERROR
+                                                    .into_response())
+                                            }
+                                        }
+                                    };
+
+                                    out
+                                }
+                                // If a finished value, just return that response
+                                SerializedResponse::Finished {
+                                    code,
+                                    headers,
+                                    body,
+                                } => {
+                                    let mut out = Json(body).into_response();
+
+                                    let status = out.status_mut();
+                                    *status = code.try_into().unwrap();
+
+                                    if let Some(resp_headers) = headers {
+                                        let headers = out.headers_mut();
+                                        *headers = resp_headers
+                                            .iter()
+                                            .map(|(k, v)| (k.parse().unwrap(), v.parse().unwrap()))
+                                            .collect();
+                                    }
+
+                                    Ok(out)
+                                }
                             }
-
-                            Ok(out)
                         } else {
                             // Not in redis, so get the result and cache it
+
+                            // But first set the start value
+                            if redis
+                                .set(&key, &SerializedResponse::Start, expiry_default())
+                                .await
+                                .is_err()
+                            {
+                                return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
+                            }
+
                             let (parts, mut body) = service
                                 .call(Request::from_parts(parts, body))
                                 .await
@@ -128,7 +215,7 @@ where
                                 .clone()
                                 .map(|b| serde_json::from_slice::<serde_json::Value>(&b));
 
-                            let resp = SerializedResponse {
+                            let resp = SerializedResponse::Finished {
                                 code: parts.status.into(),
                                 headers: Some(
                                     parts
