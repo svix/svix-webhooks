@@ -49,7 +49,8 @@ impl AsRef<str> for IdempotencyKey {
 }
 
 /// The idempotency middleware itself -- inserted in place of a regular route
-pub struct IdempotencyService<S> {
+#[derive(Clone)]
+pub struct IdempotencyService<S: Clone> {
     redis: RedisCache,
     service: S,
 }
@@ -117,11 +118,10 @@ where
                             // TODO: Error handling where [`Result::ok`] is used as well as the
                             // [`Result::unwrap`] in the header mapping
 
-                            let bytes = body
-                                .data()
-                                .await
-                                .map(|result| result.ok())
-                                .flatten()
+                            let bytes = body.data().await.and_then(Result::ok);
+
+                            let json = bytes
+                                .clone()
                                 .map(|b| serde_json::from_slice::<serde_json::Value>(&b));
 
                             let resp = SerializedResponse {
@@ -135,14 +135,15 @@ where
                                         })
                                         .collect(),
                                 ),
-                                body: bytes.map(Result::ok).flatten(),
+                                body: json.and_then(Result::ok),
                             };
 
                             if redis.set(&key, &resp, expiry_default()).await.is_err() {
                                 return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
                             }
 
-                            Ok(Response::from_parts(parts, body))
+                            let bytes = bytes.unwrap_or_default();
+                            Ok(Response::from_parts(parts, Body::from(bytes)).into_response())
                         }
                     } else {
                         // If redis errors, return an error
@@ -160,5 +161,166 @@ where
                     .map(IntoResponse::into_response)
             }
         })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::{net::TcpListener, sync::Arc};
+
+    use axum::{extract::Extension, routing::get, Router, Server};
+    use reqwest::Client;
+    use tokio::{sync::Mutex, task::JoinHandle};
+
+    use super::IdempotencyService;
+    use crate::core::{
+        cache::RedisCache,
+        security::{default_org_id, generate_token},
+    };
+
+    /// Starts a basic Axum server with one endpoint which counts the number of times the endpoint
+    /// has been polled from. This will be nested in the [`IdempotencyService`] such that, providing
+    /// a key may result in the count not increasing and a prior result being displayed.
+    ///
+    /// This function will return a join handle to that server, its URL and an [`Arc<Mutex<usize>>`]
+    /// that points to the count of the server such that its internal state may be monitored.
+    async fn start_service() -> (JoinHandle<()>, String, Arc<Mutex<usize>>) {
+        dotenv::dotenv().ok();
+        let cfg = crate::cfg::load().unwrap();
+
+        let redis_pool = bb8::Pool::builder()
+            .build(
+                bb8_redis::RedisConnectionManager::new(cfg.redis_dsn.as_deref().unwrap()).unwrap(),
+            )
+            .await
+            .unwrap();
+
+        let cache = RedisCache::new(redis_pool);
+
+        let count = Arc::new(Mutex::new(0));
+
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let endpoint = format!("http://{}/", listener.local_addr().unwrap());
+
+        let jh = tokio::spawn({
+            let count = count.clone();
+            async move {
+                Server::from_tcp(listener)
+                    .unwrap()
+                    .serve(
+                        Router::new()
+                            .route(
+                                "/",
+                                IdempotencyService {
+                                    redis: cache,
+                                    service: get(service_endpoint),
+                                },
+                            )
+                            .layer(Extension(count))
+                            .into_make_service(),
+                    )
+                    .await
+                    .unwrap();
+            }
+        });
+
+        (jh, endpoint, count)
+    }
+
+    /// Only to be used via [`start_service`] -- this is the actual endpoint implementation
+    async fn service_endpoint(Extension(count): Extension<Arc<Mutex<usize>>>) -> String {
+        let mut count = count.lock().await;
+        *count += 1;
+
+        format!("{}", count)
+    }
+
+    #[tokio::test]
+    async fn test_basic_idempotency() {
+        let (_jh, endpoint, count) = start_service().await;
+        let client = Client::new();
+
+        // Generate a new token so that keys are unique
+        dotenv::dotenv().ok();
+        let cfg = crate::cfg::load().unwrap();
+        let token = generate_token(&cfg.jwt_secret, default_org_id())
+            .unwrap()
+            .to_string();
+
+        // Sanity check on test service
+        assert_eq!(*count.lock().await, 0);
+        let _ = client.get(&endpoint).send().await;
+        assert_eq!(*count.lock().await, 1);
+
+        // Idempotency key not yet used -- should increment
+        let resp_1 = client
+            .get(&endpoint)
+            .header("idempotency-key", "1")
+            .header("Authorization", &token)
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(*count.lock().await, 2);
+
+        // Now used the count should not increment
+        let resp_2 = client
+            .get(&endpoint)
+            .header("idempotency-key", "1")
+            .header("Authorization", &token)
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(*count.lock().await, 2);
+
+        // And the responses should be equivalent
+        assert_eq!(resp_1.status(), resp_2.status());
+        //assert_eq!(resp_1.headers(), resp_2.headers());
+        assert_eq!(resp_1.text().await.unwrap(), resp_2.text().await.unwrap());
+
+        // No key -- should increment
+        let _ = client.get(&endpoint).send().await;
+        assert_eq!(*count.lock().await, 3);
+
+        // Same key -- should not increment
+        let _ = client
+            .get(&endpoint)
+            .header("idempotency-key", "1")
+            .header("Authorization", &token)
+            .send()
+            .await;
+        assert_eq!(*count.lock().await, 3);
+
+        // New key -- should increment
+        let resp_1 = client
+            .get(&endpoint)
+            .header("idempotency-key", "2")
+            .header("Authorization", &token)
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(*count.lock().await, 4);
+
+        // Old key -- shouldn't increment
+        let _ = client
+            .get(&endpoint)
+            .header("idempotency-key", "1")
+            .header("Authorization", &token)
+            .send()
+            .await;
+        assert_eq!(*count.lock().await, 4);
+
+        // Key 2, shouldn't increment and should equal resp_1
+        let resp_2 = client
+            .get(&endpoint)
+            .header("idempotency-key", "2")
+            .header("Authorization", &token)
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(*count.lock().await, 4);
+
+        assert_eq!(resp_1.status(), resp_2.status());
+        assert_eq!(resp_1.headers(), resp_2.headers());
+        assert_eq!(resp_1.text().await.unwrap(), resp_2.text().await.unwrap());
     }
 }
