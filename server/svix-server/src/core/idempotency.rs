@@ -12,6 +12,7 @@ use axum::{
     response::IntoResponse,
     Json,
 };
+use blake2::{Blake2b512, Digest};
 use serde::{Deserialize, Serialize};
 use tower::Service;
 
@@ -36,7 +37,10 @@ impl CacheValue for SerializedResponse {
 struct IdempotencyKey(String);
 impl IdempotencyKey {
     fn new(auth_token: &str, key: &str, url: &str) -> IdempotencyKey {
-        IdempotencyKey(format!("{}:{}:{}", auth_token, key, url))
+        let mut hasher = Blake2b512::new();
+        hasher.update(format!("{}:{}:{}", auth_token, key, url));
+        let res = hasher.finalize();
+        IdempotencyKey(base64::encode(&res))
     }
 }
 impl CacheKey for IdempotencyKey {
