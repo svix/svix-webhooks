@@ -80,17 +80,26 @@ fn finished_serialized_response_to_reponse(
 }
 
 struct IdempotencyKey(String);
+
 impl IdempotencyKey {
     fn new(auth_token: &str, key: &str, url: &str) -> IdempotencyKey {
         let mut hasher = Blake2b512::new();
-        hasher.update(format!("{}:{}:{}", auth_token, key, url));
+
+        hasher.update(auth_token);
+        hasher.update(":");
+        hasher.update(key);
+        hasher.update(":");
+        hasher.update(url);
+
         let res = hasher.finalize();
         IdempotencyKey(base64::encode(&res))
     }
 }
+
 impl CacheKey for IdempotencyKey {
     const PREFIX_CACHE: &'static str = "SVIX_IDEMPOTENCY_CACHE";
 }
+
 impl AsRef<str> for IdempotencyKey {
     fn as_ref(&self) -> &str {
         &self.0
