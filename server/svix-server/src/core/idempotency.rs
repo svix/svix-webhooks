@@ -85,11 +85,7 @@ impl IdempotencyKey {
     fn new(auth_token: &str, key: &str, url: &str) -> IdempotencyKey {
         let mut hasher = Blake2b512::new();
 
-        hasher.update(auth_token);
-        hasher.update(":");
-        hasher.update(key);
-        hasher.update(":");
-        hasher.update(url);
+        hasher.update(format!("{}:{}:{}", auth_token, key, url));
 
         let res = hasher.finalize();
         IdempotencyKey(base64::encode(&res))
@@ -269,25 +265,29 @@ mod tests {
     use std::{net::TcpListener, sync::Arc};
 
     use axum::{extract::Extension, routing::get, Router, Server};
+    use http::StatusCode;
     use reqwest::Client;
     use tokio::{sync::Mutex, task::JoinHandle};
 
     use super::IdempotencyService;
     use crate::core::{
         cache::RedisCache,
-        security::{default_org_id, generate_token},
+        security::generate_token,
+        types::{BaseId, OrganizationId},
     };
-
-    // TODO: Test start lock
-    // TODO: Test empty responses
 
     /// Starts a basic Axum server with one endpoint which counts the number of times the endpoint
     /// has been polled from. This will be nested in the [`IdempotencyService`] such that, providing
     /// a key may result in the count not increasing and a prior result being displayed.
     ///
+    /// This function takes a variable length of time to complete with the delay input used for
+    /// testing the start lock.
+    ///
     /// This function will return a join handle to that server, its URL and an [`Arc<Mutex<usize>>`]
     /// that points to the count of the server such that its internal state may be monitored.
-    async fn start_service() -> (JoinHandle<()>, String, Arc<Mutex<usize>>) {
+    async fn start_service(
+        wait: Option<std::time::Duration>,
+    ) -> (JoinHandle<()>, String, Arc<Mutex<usize>>) {
         dotenv::dotenv().ok();
         let cfg = crate::cfg::load().unwrap();
 
@@ -320,6 +320,7 @@ mod tests {
                                 },
                             )
                             .layer(Extension(count))
+                            .layer(Extension(wait))
                             .into_make_service(),
                     )
                     .await
@@ -331,22 +332,29 @@ mod tests {
     }
 
     /// Only to be used via [`start_service`] -- this is the actual endpoint implementation
-    async fn service_endpoint(Extension(count): Extension<Arc<Mutex<usize>>>) -> String {
+    async fn service_endpoint(
+        Extension(count): Extension<Arc<Mutex<usize>>>,
+        Extension(wait): Extension<Option<std::time::Duration>>,
+    ) -> String {
         let mut count = count.lock().await;
         *count += 1;
+
+        if let Some(wait) = wait {
+            tokio::time::sleep(wait).await;
+        }
 
         format!("{}", count)
     }
 
     #[tokio::test]
     async fn test_basic_idempotency() {
-        let (_jh, endpoint, count) = start_service().await;
+        let (_jh, endpoint, count) = start_service(None).await;
         let client = Client::new();
 
         // Generate a new token so that keys are unique
         dotenv::dotenv().ok();
         let cfg = crate::cfg::load().unwrap();
-        let token = generate_token(&cfg.jwt_secret, default_org_id())
+        let token = generate_token(&cfg.jwt_secret, OrganizationId::new(None, None))
             .unwrap()
             .to_string();
 
@@ -424,6 +432,154 @@ mod tests {
 
         assert_eq!(resp_1.status(), resp_2.status());
         assert_eq!(resp_1.headers(), resp_2.headers());
+        assert_eq!(resp_1.text().await.unwrap(), resp_2.text().await.unwrap());
+    }
+
+    #[tokio::test]
+    async fn test_lock() {
+        // The sleep interval is 200ms, so have it wait 300ms causing it to sleep twice. This
+        // means it should take at least 400ms for the second task to respond.
+        let (_jh, endpoint, _count) =
+            start_service(Some(std::time::Duration::from_millis(300))).await;
+        let client = Client::new();
+
+        // Generate a new token so that keys are unique
+        dotenv::dotenv().ok();
+        let cfg = crate::cfg::load().unwrap();
+
+        let token = generate_token(&cfg.jwt_secret, OrganizationId::new(None, None))
+            .unwrap()
+            .to_string();
+
+        let start = std::time::Instant::now();
+
+        let resp_1_jh = tokio::spawn(
+            client
+                .get(&endpoint)
+                .header("idempotency-key", "1")
+                .header("Authorization", &token)
+                .send(),
+        );
+
+        // It takes a couple of ms for the lock to register
+        tokio::time::sleep(std::time::Duration::from_millis(5)).await;
+
+        let resp_2_jh = tokio::spawn(
+            client
+                .get(&endpoint)
+                .header("idempotency-key", "1")
+                .header("Authorization", &token)
+                .send(),
+        );
+
+        let resp_1 = resp_1_jh.await.unwrap().unwrap();
+        let resp_1_instant = std::time::Instant::now();
+
+        let resp_2 = resp_2_jh.await.unwrap().unwrap();
+        let resp_2_instant = std::time::Instant::now();
+
+        assert!(resp_1_instant - start < std::time::Duration::from_millis(350));
+        assert!(resp_2_instant - start > std::time::Duration::from_millis(400));
+
+        // And the responses should be equivalent
+        assert_eq!(resp_1.status(), resp_2.status());
+        //assert_eq!(resp_1.headers(), resp_2.headers());
+        assert_eq!(resp_1.text().await.unwrap(), resp_2.text().await.unwrap());
+    }
+
+    /// Starts a server just like [`start_service`] but it returns an empty body. The count is
+    /// recorded in the HTTP status code.
+    async fn start_empty_service() -> (JoinHandle<()>, String, Arc<Mutex<u16>>) {
+        dotenv::dotenv().ok();
+        let cfg = crate::cfg::load().unwrap();
+
+        let redis_pool = bb8::Pool::builder()
+            .build(
+                bb8_redis::RedisConnectionManager::new(cfg.redis_dsn.as_deref().unwrap()).unwrap(),
+            )
+            .await
+            .unwrap();
+
+        let cache = RedisCache::new(redis_pool);
+
+        let count = Arc::new(Mutex::new(199));
+
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let endpoint = format!("http://{}/", listener.local_addr().unwrap());
+
+        let jh = tokio::spawn({
+            let count = count.clone();
+            async move {
+                Server::from_tcp(listener)
+                    .unwrap()
+                    .serve(
+                        Router::new()
+                            .route(
+                                "/",
+                                IdempotencyService {
+                                    redis: cache,
+                                    service: get(empty_service_endpoint),
+                                },
+                            )
+                            .layer(Extension(count))
+                            .into_make_service(),
+                    )
+                    .await
+                    .unwrap();
+            }
+        });
+
+        (jh, endpoint, count)
+    }
+
+    /// Only to be used via [`start_empty_service`] -- this is the actual endpoint implementation
+    async fn empty_service_endpoint(Extension(count): Extension<Arc<Mutex<u16>>>) -> StatusCode {
+        let mut count = count.lock().await;
+        *count += 1;
+
+        StatusCode::from_u16(*count).unwrap()
+    }
+
+    #[tokio::test]
+    async fn test_empty_body() {
+        let (_jh, endpoint, count) = start_empty_service().await;
+        let client = Client::new();
+
+        // Generate a new token so that keys are unique
+        dotenv::dotenv().ok();
+        let cfg = crate::cfg::load().unwrap();
+        let token = generate_token(&cfg.jwt_secret, OrganizationId::new(None, None))
+            .unwrap()
+            .to_string();
+
+        // Sanity check on test service
+        assert_eq!(*count.lock().await, 199);
+        let _ = client.get(&endpoint).send().await.unwrap();
+        assert_eq!(*count.lock().await, 200);
+
+        // Idempotency key not yet used -- should increment
+        let resp_1 = client
+            .get(&endpoint)
+            .header("idempotency-key", "1")
+            .header("Authorization", &token)
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(*count.lock().await, 201);
+
+        // Now used the count should not increment
+        let resp_2 = client
+            .get(&endpoint)
+            .header("idempotency-key", "1")
+            .header("Authorization", &token)
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(*count.lock().await, 201);
+
+        // And the responses should be equivalent
+        assert_eq!(resp_1.status(), resp_2.status());
+        //assert_eq!(resp_1.headers(), resp_2.headers());
         assert_eq!(resp_1.text().await.unwrap(), resp_2.text().await.unwrap());
     }
 }
