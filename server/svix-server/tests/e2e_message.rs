@@ -103,7 +103,7 @@ async fn test_message_create_read_list_with_content() {
 
     let msg_2_wo_payload: MessageOut = client
         .post(
-            &format!("api/v1/app/{}/msg?with_content=false", &app_id),
+            &format!("api/v1/app/{}/msg/?with_content=false", &app_id),
             message_in(&app_id, msg_payload.clone()).unwrap(),
             StatusCode::ACCEPTED,
         )
@@ -138,7 +138,7 @@ async fn test_message_create_read_list_with_content() {
         assert_eq!(
             client
                 .get::<MessageOut>(
-                    &format!("api/v1/app/{}/msg/{}?with_content=false", &app_id, &m.id),
+                    &format!("api/v1/app/{}/msg/{}/?with_content=false", &app_id, &m.id),
                     StatusCode::OK
                 )
                 .await
@@ -157,7 +157,7 @@ async fn test_message_create_read_list_with_content() {
 
     let list: ListResponse<MessageOut> = client
         .get(
-            &format!("api/v1/app/{}/msg?with_content=false", &app_id),
+            &format!("api/v1/app/{}/msg/?with_content=false", &app_id),
             StatusCode::OK,
         )
         .await

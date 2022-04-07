@@ -59,7 +59,7 @@ mod development {
         type Rejection = Error;
 
         async fn from_request(req: &mut RequestParts<B>) -> Result<Self> {
-            let headers = format!("{:?}", req.headers().unwrap());
+            let headers = format!("{:?}", req.headers());
             Ok(EchoData { headers })
         }
     }

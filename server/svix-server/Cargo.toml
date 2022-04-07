@@ -19,7 +19,7 @@ dotenv = "0.15.0"
 getrandom = "0.2.4"
 hmac-sha256 = "1"
 clap = { version = "3.0.10", features = ["derive"] }
-axum = { version = "0.4.8", features = ["headers"] }
+axum = { version = "0.5.1", features = ["headers"] }
 base64 = "0.13.0"
 hyper = { version = "0.14.16", features = ["full"] }
 tokio = { version = "1.15.0", features = ["full"] }

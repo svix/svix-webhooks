@@ -682,7 +682,7 @@ pub fn router() -> Router {
         "/app/:app_id/",
         Router::new()
             .nest(
-                "msg/:msg_id",
+                "/msg/:msg_id",
                 Router::new()
                     // NOTE: [`list_messageattempts`] is deprecated
                     .route("/attempt/", get(list_messageattempts))
@@ -695,9 +695,12 @@ pub fn router() -> Router {
                         get(list_attempts_for_endpoint),
                     ),
             )
-            .route("endpoint/:endp_id/msg/", get(list_attempted_messages))
-            .route("attempt/endpoint/:endp_id/", get(list_attempts_by_endpoint))
-            .route("attempt/msg/:msg_id/", get(list_attempts_by_msg)),
+            .route("/endpoint/:endp_id/msg/", get(list_attempted_messages))
+            .route(
+                "/attempt/endpoint/:endp_id/",
+                get(list_attempts_by_endpoint),
+            )
+            .route("/attempt/msg/:msg_id/", get(list_attempts_by_msg)),
     )
 }
 
