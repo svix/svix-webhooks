@@ -21,6 +21,7 @@ pub mod db;
 pub mod error;
 pub mod queue;
 pub mod v1;
+pub mod webhook;
 pub mod worker;
 
 pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
