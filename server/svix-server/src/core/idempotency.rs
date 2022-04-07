@@ -46,6 +46,27 @@ impl CacheValue for SerializedResponse {
     type Key = IdempotencyKey;
 }
 
+fn finished_serialized_response_to_reponse(
+    code: u16,
+    headers: Option<HashMap<String, String>>,
+    body: Option<serde_json::Value>,
+) -> Response<BoxBody> {
+    let mut out = Json(body).into_response();
+
+    let status = out.status_mut();
+    *status = code.try_into().unwrap();
+
+    if let Some(resp_headers) = headers {
+        let headers = out.headers_mut();
+        *headers = resp_headers
+            .iter()
+            .map(|(k, v)| (k.parse().unwrap(), v.parse().unwrap()))
+            .collect();
+    }
+
+    out
+}
+
 struct IdempotencyKey(String);
 impl IdempotencyKey {
     fn new(auth_token: &str, key: &str, url: &str) -> IdempotencyKey {
@@ -62,6 +83,18 @@ impl AsRef<str> for IdempotencyKey {
     fn as_ref(&self) -> &str {
         &self.0
     }
+}
+
+async fn resolve_service<S>(
+    mut service: S,
+    req: Request<Body>,
+) -> Result<Response<BoxBody>, Infallible>
+where
+    S: Service<Request<Body>, Error = Infallible> + Clone + Send + 'static,
+    S::Response: IntoResponse,
+    S::Future: Send + 'static,
+{
+    service.call(req).await.map(IntoResponse::into_response)
 }
 
 /// The idempotency middleware itself -- inserted in place of a regular route
@@ -89,170 +122,125 @@ where
     }
 
     fn call(&mut self, req: Request<Body>) -> Self::Future {
-        let mut service = self.service.clone();
+        let service = self.service.clone();
         let redis = self.redis.clone();
 
         Box::pin(async move {
             let (parts, body) = req.into_parts();
 
-            if let (Some(auth), Some(key)) = (
-                parts.headers.get("Authorization"),
-                parts.headers.get("idempotency-key"),
-            ) {
-                // Some idempotency-key -- try to convert to &str
-                if let (Ok(auth), Ok(key)) = (auth.to_str(), key.to_str()) {
-                    let uri = parts.uri.to_string();
-                    let key = IdempotencyKey::new(auth, key, &uri);
-
-                    // Check Redis now
-                    if let Ok(resp) = redis.get::<SerializedResponse>(&key).await {
-                        if let Some(resp) = resp {
-                            match resp {
-                                // If the value is a starting value, the operation is still in progress
-                                SerializedResponse::Start => {
-                                    let mut total_delay_duration =
-                                        std::time::Duration::from_millis(0);
-                                    let out = loop {
-                                        match redis.get::<SerializedResponse>(&key).await {
-                                            Ok(Some(SerializedResponse::Start)) => {
-                                                if total_delay_duration > expiry_starting() {
-                                                    // TODO Better response
-                                                    break Ok(StatusCode::INTERNAL_SERVER_ERROR
-                                                        .into_response());
-                                                }
-
-                                                total_delay_duration +=
-                                                    std::time::Duration::from_millis(200);
-                                                tokio::time::sleep(
-                                                    std::time::Duration::from_millis(200),
-                                                )
-                                                .await;
-                                            }
-                                            Ok(Some(SerializedResponse::Finished {
-                                                code,
-                                                headers,
-                                                body,
-                                            })) => {
-                                                let mut out = Json(body).into_response();
-
-                                                let status = out.status_mut();
-                                                *status = code.try_into().unwrap();
-
-                                                if let Some(resp_headers) = headers {
-                                                    let headers = out.headers_mut();
-                                                    *headers = resp_headers
-                                                        .iter()
-                                                        .map(|(k, v)| {
-                                                            (k.parse().unwrap(), v.parse().unwrap())
-                                                        })
-                                                        .collect();
-                                                }
-
-                                                break Ok(out);
-                                            }
-
-                                            // Start value has expired
-                                            // TODO: Better response
-                                            Ok(None) => {
-                                                break Ok(StatusCode::INTERNAL_SERVER_ERROR
-                                                    .into_response())
-                                            }
-
-                                            Err(_) => {
-                                                break Ok(StatusCode::INTERNAL_SERVER_ERROR
-                                                    .into_response())
-                                            }
-                                        }
-                                    };
-
-                                    out
-                                }
-                                // If a finished value, just return that response
-                                SerializedResponse::Finished {
-                                    code,
-                                    headers,
-                                    body,
-                                } => {
-                                    let mut out = Json(body).into_response();
-
-                                    let status = out.status_mut();
-                                    *status = code.try_into().unwrap();
-
-                                    if let Some(resp_headers) = headers {
-                                        let headers = out.headers_mut();
-                                        *headers = resp_headers
-                                            .iter()
-                                            .map(|(k, v)| (k.parse().unwrap(), v.parse().unwrap()))
-                                            .collect();
-                                    }
-
-                                    Ok(out)
-                                }
-                            }
-                        } else {
-                            // Not in redis, so get the result and cache it
-
-                            // But first set the start value
-                            if redis
-                                .set(&key, &SerializedResponse::Start, expiry_default())
-                                .await
-                                .is_err()
-                            {
-                                return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
-                            }
-
-                            let (parts, mut body) = service
-                                .call(Request::from_parts(parts, body))
-                                .await
-                                .map(IntoResponse::into_response)
-                                // Infallible
-                                .unwrap()
-                                .into_parts();
-
-                            // TODO: Error handling where [`Result::ok`] is used as well as the
-                            // [`Result::unwrap`] in the header mapping
-
-                            let bytes = body.data().await.and_then(Result::ok);
-
-                            let json = bytes
-                                .clone()
-                                .map(|b| serde_json::from_slice::<serde_json::Value>(&b));
-
-                            let resp = SerializedResponse::Finished {
-                                code: parts.status.into(),
-                                headers: Some(
-                                    parts
-                                        .headers
-                                        .iter()
-                                        .map(|(k, v)| {
-                                            (k.as_str().to_owned(), v.to_str().unwrap().to_owned())
-                                        })
-                                        .collect(),
-                                ),
-                                body: json.and_then(Result::ok),
-                            };
-
-                            if redis.set(&key, &resp, expiry_default()).await.is_err() {
-                                return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
-                            }
-
-                            let bytes = bytes.unwrap_or_default();
-                            Ok(Response::from_parts(parts, Body::from(bytes)).into_response())
-                        }
-                    } else {
-                        // If redis errors, return an error
-                        Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response())
-                    }
+            let auth =
+                if let Some(Ok(auth)) = parts.headers.get("Authorization").map(|v| v.to_str()) {
+                    auth
                 } else {
-                    // If conversion to &str fails, return err
-                    Ok(StatusCode::UNPROCESSABLE_ENTITY.into_response())
+                    // No auth token -- pass off to service and do not cache
+                    return resolve_service(service, Request::from_parts(parts, body)).await;
+                };
+
+            let key =
+                if let Some(Ok(key)) = parts.headers.get("idempotency-key").map(|v| v.to_str()) {
+                    key
+                } else {
+                    // No idempotency-key -- pass off to service and do not cache
+                    return resolve_service(service, Request::from_parts(parts, body)).await;
+                };
+
+            let uri = parts.uri.to_string();
+            let key = IdempotencyKey::new(auth, key, &uri);
+
+            // Check Redis now
+            match redis.get::<SerializedResponse>(&key).await {
+                // If the value is a starting value, the operation is still in progress
+                Ok(Some(SerializedResponse::Start)) => {
+                    let mut total_delay_duration = std::time::Duration::from_millis(0);
+                    let out = loop {
+                        match redis.get::<SerializedResponse>(&key).await {
+                            Ok(Some(SerializedResponse::Start)) => {
+                                if total_delay_duration > expiry_starting() {
+                                    // TODO Better response
+                                    break Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
+                                }
+
+                                total_delay_duration += std::time::Duration::from_millis(200);
+                                tokio::time::sleep(std::time::Duration::from_millis(200)).await;
+                            }
+                            Ok(Some(SerializedResponse::Finished {
+                                code,
+                                headers,
+                                body,
+                            })) => {
+                                break Ok(finished_serialized_response_to_reponse(
+                                    code, headers, body,
+                                ));
+                            }
+
+                            // Start value has expired
+                            // TODO: Better response
+                            Ok(None) => break Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response()),
+
+                            Err(_) => break Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response()),
+                        }
+                    };
+
+                    out
                 }
-            } else {
-                // No idempotency-key -- pass off to service and do not cache
-                service
-                    .call(Request::from_parts(parts, body))
-                    .await
-                    .map(IntoResponse::into_response)
+
+                // The operation is finished and cached, so just return it
+                Ok(Some(SerializedResponse::Finished {
+                    code,
+                    headers,
+                    body,
+                })) => Ok(finished_serialized_response_to_reponse(code, headers, body)),
+
+                // Not in redis, so get the result and cache it
+                Ok(None) => {
+                    // First set the start value as a lock
+                    if redis
+                        .set(&key, &SerializedResponse::Start, expiry_default())
+                        .await
+                        .is_err()
+                    {
+                        return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
+                    }
+
+                    let (parts, mut body) =
+                        resolve_service(service, Request::from_parts(parts, body))
+                            .await
+                            // Infallible
+                            .unwrap()
+                            .into_parts();
+
+                    // TODO: Error handling where [`Result::ok`] is used as well as the
+                    // [`Result::unwrap`] in the header mapping
+
+                    let bytes = body.data().await.and_then(Result::ok);
+
+                    let json = bytes
+                        .clone()
+                        .map(|b| serde_json::from_slice::<serde_json::Value>(&b));
+
+                    let resp = SerializedResponse::Finished {
+                        code: parts.status.into(),
+                        headers: Some(
+                            parts
+                                .headers
+                                .iter()
+                                .map(|(k, v)| {
+                                    (k.as_str().to_owned(), v.to_str().unwrap().to_owned())
+                                })
+                                .collect(),
+                        ),
+                        body: json.and_then(Result::ok),
+                    };
+
+                    if redis.set(&key, &resp, expiry_default()).await.is_err() {
+                        return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
+                    }
+
+                    let bytes = bytes.unwrap_or_default();
+                    Ok(Response::from_parts(parts, Body::from(bytes)).into_response())
+                }
+
+                Err(_) => Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response()),
             }
         })
     }
