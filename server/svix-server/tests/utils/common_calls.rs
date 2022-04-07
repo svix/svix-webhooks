@@ -78,6 +78,21 @@ pub async fn post_endpoint(
         .await
 }
 
+pub async fn put_endpoint(
+    client: &TestClient,
+    app_id: &str,
+    ep_id: &str,
+    ep: EndpointIn,
+) -> Result<EndpointOut> {
+    client
+        .put(
+            &format!("api/v1/app/{}/endpoint/{}", app_id, ep_id),
+            ep,
+            StatusCode::OK,
+        )
+        .await
+}
+
 // Message
 
 pub fn message_in<T: Serialize>(event_type: &str, payload: T) -> Result<MessageIn> {

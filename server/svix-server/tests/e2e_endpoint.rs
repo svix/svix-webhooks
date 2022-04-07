@@ -1,18 +1,22 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use std::time::Duration;
+use std::{collections::HashSet, time::Duration};
 
 use anyhow::Result;
 use chrono::{DateTime, Utc};
 use reqwest::StatusCode;
 
 use svix_server::{
-    core::types::{ApplicationId, EndpointId, EndpointUid},
+    core::types::{
+        ApplicationId, EndpointId, EndpointSecret, EndpointUid, EventChannel, EventChannelSet,
+        EventTypeName, EventTypeNameSet, ExpiringSigningKeys,
+    },
     v1::{
         endpoints::{
             endpoint::{EndpointIn, EndpointOut, EndpointSecretOut, RecoverIn},
-            message::MessageOut,
+            event_type::EventTypeOut,
+            message::{MessageIn, MessageOut},
         },
         utils::ListResponse,
     },
@@ -24,8 +28,8 @@ use tokio::time::sleep;
 use utils::{
     common_calls::{
         common_test_list, create_test_app, create_test_endpoint, create_test_message,
-        delete_test_app, endpoint_in, get_msg_attempt_list_and_assert_count, post_endpoint,
-        recover_webhooks, wait_for_msg_retries,
+        delete_test_app, endpoint_in, event_type_in, get_msg_attempt_list_and_assert_count,
+        post_endpoint, put_endpoint, recover_webhooks, wait_for_msg_retries,
     },
     get_default_test_config, start_svix_server, start_svix_server_with_cfg, IgnoredResponse,
     TestClient, TestReceiver,
@@ -514,5 +518,397 @@ async fn test_recovery_expected_retry_counts() {
         )
         .await
         .unwrap();
+    }
+}
+
+#[tokio::test]
+async fn test_endpoint_rotate_max() {
+    let (client, _jh) = start_svix_server();
+
+    let app_id = create_test_app(&client, "app1").await.unwrap().id;
+
+    let endp_id = create_test_endpoint(&client, &app_id, "http://www.example.com")
+        .await
+        .unwrap()
+        .id;
+
+    for _ in 0..ExpiringSigningKeys::MAX_OLD_KEYS {
+        let _: IgnoredResponse = client
+            .post(
+                &format!("api/v1/app/{}/endpoint/{}/secret/rotate/", app_id, endp_id),
+                serde_json::json!({ "key": null }),
+                StatusCode::NO_CONTENT,
+            )
+            .await
+            .unwrap();
+    }
+
+    let _: IgnoredResponse = client
+        .post(
+            &format!("api/v1/app/{}/endpoint/{}/secret/rotate/", app_id, endp_id),
+            serde_json::json!({ "key": null }),
+            StatusCode::BAD_REQUEST,
+        )
+        .await
+        .unwrap();
+}
+
+// TODO: test_endpoint_rotate_signing_e2e
+
+#[tokio::test]
+async fn test_custom_endpoint_secret() {
+    let (client, _jh) = start_svix_server();
+
+    let app_id = create_test_app(&client, "app1").await.unwrap().id;
+
+    let secret = EndpointSecret::generate().unwrap();
+
+    let ep_in = EndpointIn {
+        url: "http://www.example.com".to_owned(),
+        version: 1,
+        key: Some(secret.clone()),
+        ..Default::default()
+    };
+
+    let endp_1 = post_endpoint(&client, &app_id, ep_in.clone())
+        .await
+        .unwrap();
+
+    let endp_2 = post_endpoint(&client, &app_id, ep_in.clone())
+        .await
+        .unwrap();
+
+    for ep in [endp_1, endp_2] {
+        assert_eq!(
+            secret,
+            client
+                .get::<EndpointSecretOut>(
+                    &format!("api/v1/app/{}/endpoint/{}/secret/", app_id, ep.id),
+                    StatusCode::OK
+                )
+                .await
+                .unwrap()
+                .key
+        );
+    }
+}
+
+// TODO: this depends on proper validation of incoming EndpointSecrets
+#[tokio::test]
+#[ignore]
+async fn test_invalid_endpoint_secret() {
+    let (client, _jh) = start_svix_server();
+
+    let app_id = create_test_app(&client, "app1").await.unwrap().id;
+
+    let ep_in: serde_json::Value = serde_json::json!({
+        "url": "http://www.example.com".to_owned(),
+        "version": 1,
+        "secret": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD".to_owned(),
+    });
+
+    let _: IgnoredResponse = client
+        .post(
+            &format!("api/v1/app/{}/endpoint/", app_id),
+            ep_in,
+            StatusCode::UNPROCESSABLE_ENTITY,
+        )
+        .await
+        .unwrap();
+}
+
+#[tokio::test]
+async fn test_endpoint_filter_events() {
+    let (client, _jh) = start_svix_server();
+
+    let app_id = create_test_app(&client, "app1").await.unwrap().id;
+
+    let ep_empty_events: serde_json::Value = serde_json::json!({
+        "url": "http://www.example.com",
+        "version": 1,
+        "filterTypes": []
+    });
+
+    let ep_with_events: serde_json::Value = serde_json::json!({
+        "url": "http://www.example.com",
+        "version": 1,
+        "filterTypes": ["et1"]
+    });
+
+    let ep_no_events: serde_json::Value = serde_json::json!({
+        "url": "http://www.example.com",
+        "version": 1
+    });
+
+    let expected_et = EventTypeNameSet(HashSet::from([EventTypeName("et1".to_owned())]));
+
+    let _ep_with_empty_events: IgnoredResponse = client
+        .post(
+            &format!("api/v1/app/{}/endpoint/", app_id),
+            ep_empty_events,
+            StatusCode::UNPROCESSABLE_ENTITY,
+        )
+        .await
+        .unwrap();
+
+    let _ep_with_nonexistent_event: IgnoredResponse = client
+        .post(
+            &format!("api/v1/app/{}/endpoint/", app_id),
+            ep_with_events.to_owned(),
+            StatusCode::UNPROCESSABLE_ENTITY,
+        )
+        .await
+        .unwrap();
+
+    let _et: EventTypeOut = client
+        .post(
+            "api/v1/event-type",
+            event_type_in("et1", serde_json::json!({"test": "value"})).unwrap(),
+            StatusCode::CREATED,
+        )
+        .await
+        .unwrap();
+
+    let ep_with_valid_event: EndpointOut = client
+        .post(
+            &format!("api/v1/app/{}/endpoint/", app_id),
+            ep_with_events.to_owned(),
+            StatusCode::CREATED,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(ep_with_valid_event.event_types_ids.unwrap(), expected_et);
+
+    let ep_removed_events: EndpointOut = client
+        .put(
+            &format!("api/v1/app/{}/endpoint/{}", app_id, ep_with_valid_event.id),
+            ep_no_events.to_owned(),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert!(ep_removed_events.event_types_ids.is_none());
+
+    let ep_removed_events = get_endpoint(&client, &app_id, &ep_removed_events.id)
+        .await
+        .unwrap();
+
+    assert!(ep_removed_events.event_types_ids.is_none());
+
+    let ep_updated_events: EndpointOut = client
+        .put(
+            &format!("api/v1/app/{}/endpoint/{}", app_id, ep_with_valid_event.id),
+            ep_with_events.to_owned(),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(ep_updated_events.event_types_ids.unwrap(), expected_et);
+
+    let ep_updated_events: EndpointOut = get_endpoint(&client, &app_id, &ep_with_valid_event.id)
+        .await
+        .unwrap();
+
+    assert_eq!(ep_updated_events.event_types_ids.unwrap(), expected_et);
+}
+
+#[tokio::test]
+async fn test_endpoint_filter_channels() {
+    let (client, _jh) = start_svix_server();
+
+    let app_id = create_test_app(&client, "app1").await.unwrap().id;
+
+    // Channels must not be empty:
+    let ep_empty_channels: serde_json::Value = serde_json::json!({
+        "url": "http://www.example.com",
+        "version": 1,
+        "channels": []
+    });
+
+    let ep_with_channels: serde_json::Value = serde_json::json!({
+        "url": "http://www.example.com",
+        "version": 1,
+        "channels": ["tag1"]
+    });
+
+    let ep_without_channels: serde_json::Value = serde_json::json!({
+        "url": "http://www.example.com",
+        "version": 1
+    });
+
+    let expected_ec = EventChannelSet(HashSet::from([EventChannel("tag1".to_owned())]));
+
+    let _ep_w_empty_channel: IgnoredResponse = client
+        .post(
+            &format!("api/v1/app/{}/endpoint/", app_id),
+            ep_empty_channels,
+            StatusCode::UNPROCESSABLE_ENTITY,
+        )
+        .await
+        .unwrap();
+
+    let ep_with_channel: EndpointOut = client
+        .post(
+            &format!("api/v1/app/{}/endpoint/", app_id),
+            ep_with_channels.to_owned(),
+            StatusCode::CREATED,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(ep_with_channel.channels.unwrap(), expected_ec);
+
+    let ep_with_deleted_channel: EndpointOut = client
+        .put(
+            &format!("api/v1/app/{}/endpoint/{}", app_id, ep_with_channel.id),
+            ep_without_channels,
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert!(ep_with_deleted_channel.channels.is_none());
+
+    // GET / assert channels empty
+    let ep_with_deleted_channel: EndpointOut = get_endpoint(&client, &app_id, &ep_with_channel.id)
+        .await
+        .unwrap();
+
+    assert!(ep_with_deleted_channel.channels.is_none());
+
+    // Update with channels:
+    let updated_ep_with_channel: EndpointOut = client
+        .put(
+            &format!(
+                "api/v1/app/{}/endpoint/{}",
+                app_id, ep_with_deleted_channel.id
+            ),
+            ep_with_channels,
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(updated_ep_with_channel.channels.unwrap(), expected_ec);
+
+    // GET / assert channels match
+    let updated_ep_with_channel: EndpointOut =
+        get_endpoint(&client, &app_id, &updated_ep_with_channel.id)
+            .await
+            .unwrap();
+
+    assert_eq!(updated_ep_with_channel.channels.unwrap(), expected_ec);
+}
+
+#[tokio::test]
+async fn test_rate_limit() {
+    let (client, _jh) = start_svix_server();
+
+    let app_id = create_test_app(&client, "app1").await.unwrap().id;
+
+    let ep_in = EndpointIn {
+        url: "http://www.example.com".to_owned(),
+        version: 1,
+        rate_limit: Some(100),
+        ..Default::default()
+    };
+
+    let endp = post_endpoint(&client, &app_id, ep_in.clone())
+        .await
+        .unwrap();
+
+    assert_eq!(endp.rate_limit.unwrap(), 100);
+
+    let endp = put_endpoint(
+        &client,
+        &app_id,
+        &endp.id,
+        EndpointIn {
+            rate_limit: None,
+            ..ep_in.clone()
+        },
+    )
+    .await
+    .unwrap();
+
+    assert!(endp.rate_limit.is_none());
+
+    let endp = get_endpoint(&client, &app_id, &endp.id).await.unwrap();
+
+    assert!(endp.rate_limit.is_none());
+}
+
+// TODO test_soft_limit
+
+#[tokio::test]
+async fn test_msg_event_types_filter() {
+    let (client, _jh) = start_svix_server();
+
+    let app_id = create_test_app(&client, "app1").await.unwrap().id;
+
+    let receiver = TestReceiver::start(StatusCode::OK);
+
+    for et in [
+        event_type_in("et1", serde_json::json!({"test": "value"})).unwrap(),
+        event_type_in("et2", serde_json::json!({"test": "value"})).unwrap(),
+    ] {
+        let _: EventTypeOut = client
+            .post("api/v1/event-type", et, StatusCode::CREATED)
+            .await
+            .unwrap();
+    }
+
+    for event_types in [
+        Some(EventTypeNameSet(HashSet::from([EventTypeName(
+            "et1".to_owned(),
+        )]))),
+        Some(EventTypeNameSet(HashSet::from([
+            EventTypeName("et1".to_owned()),
+            EventTypeName("et2".to_owned()),
+        ]))),
+        None,
+    ] {
+        post_endpoint(
+            &client,
+            &app_id,
+            EndpointIn {
+                url: receiver.endpoint.to_owned(),
+                version: 1,
+                event_types_ids: event_types,
+                ..Default::default()
+            },
+        )
+        .await
+        .unwrap();
+    }
+
+    // Number of attempts should match based on event-types registered to endpoints
+    for (event_name, expected_count) in [
+        (EventTypeName("et1".to_owned()), 3),
+        (EventTypeName("et2".to_owned()), 2),
+    ] {
+        let msg: MessageOut = client
+            .post(
+                &format!("api/v1/app/{}/msg/", &app_id),
+                MessageIn {
+                    channels: None,
+                    event_type: event_name,
+                    payload: serde_json::json!({}),
+                    uid: None,
+                },
+                StatusCode::ACCEPTED,
+            )
+            .await
+            .unwrap();
+
+        tokio::time::sleep(Duration::from_millis(10)).await;
+
+        let _list =
+            get_msg_attempt_list_and_assert_count(&client, &app_id, &msg.id, expected_count)
+                .await
+                .unwrap();
     }
 }

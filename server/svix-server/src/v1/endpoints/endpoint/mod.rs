@@ -154,7 +154,7 @@ pub struct EndpointSecretRotateIn {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointSecretOut {
-    key: EndpointSecret,
+    pub key: EndpointSecret,
 }
 
 #[derive(Clone, Debug, PartialEq, Validate, Serialize, Deserialize)]
