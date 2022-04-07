@@ -1,5 +1,8 @@
+// SPDX-FileCopyrightText: © 2022 Svix Authors
+// SPDX-License-Identifier: MIT
+
 //! Defines idempotency middleware for the Axum server which first looks up the given key for an
-//! existing resposne before routing to the given endpoint's function, and caches any such results
+//! existing response before routing to the given endpoint's function, and caches any such results
 //! such that subsequent requests to that endpoint with the same key will return the same response.
 //!
 //! Responses are cached for twelve hours by default.
@@ -28,7 +31,7 @@ const fn expiry_starting() -> Duration {
     Duration::from_secs(20)
 }
 
-/// The data structure containing all necessary components of a response ready to be (de)serialiZed
+/// The data structure containing all necessary components of a response ready to be (de)serialized
 /// from/into the cache
 #[derive(Deserialize, Serialize)]
 enum SerializedResponse {
