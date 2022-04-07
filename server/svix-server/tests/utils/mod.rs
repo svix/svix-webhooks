@@ -72,10 +72,9 @@ impl TestClient {
             );
         }
 
-        Ok(resp
-            .json()
+        resp.json()
             .await
-            .context("error receiving/parsing response")?)
+            .context("error receiving/parsing response")
     }
 
     pub async fn post<I: Serialize, O: DeserializeOwned>(
@@ -97,10 +96,9 @@ impl TestClient {
             );
         }
 
-        Ok(resp
-            .json()
+        resp.json()
             .await
-            .context("error receiving/parsing response")?)
+            .context("error receiving/parsing response")
     }
 
     pub async fn put<I: Serialize, O: DeserializeOwned>(
@@ -122,10 +120,9 @@ impl TestClient {
             );
         }
 
-        Ok(resp
-            .json()
+        resp.json()
             .await
-            .context("error receiving/parsing response")?)
+            .context("error receiving/parsing response")
     }
 
     pub async fn delete<O: DeserializeOwned>(
@@ -146,10 +143,9 @@ impl TestClient {
             );
         }
 
-        Ok(resp
-            .json()
+        resp.json()
             .await
-            .context("error receiving/parsing response")?)
+            .context("error receiving/parsing response")
     }
 }
 
