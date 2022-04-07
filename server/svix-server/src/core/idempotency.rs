@@ -13,7 +13,6 @@ use axum::{
     body::{Body, BoxBody, HttpBody},
     http::{Request, Response, StatusCode},
     response::IntoResponse,
-    Json,
 };
 use blake2::{Blake2b512, Digest};
 use serde::{Deserialize, Serialize};
@@ -39,7 +38,7 @@ enum SerializedResponse {
     Finished {
         code: u16,
         headers: Option<HashMap<String, Vec<u8>>>,
-        body: Option<serde_json::Value>,
+        body: Option<Vec<u8>>,
     },
 }
 impl CacheValue for SerializedResponse {
@@ -62,9 +61,9 @@ pub enum ConversionToResponseError {
 fn finished_serialized_response_to_reponse(
     code: u16,
     headers: Option<HashMap<String, Vec<u8>>>,
-    body: Option<serde_json::Value>,
+    body: Option<Vec<u8>>,
 ) -> Result<Response<BoxBody>, ConversionToResponseError> {
-    let mut out = Json(body).into_response();
+    let mut out = body.unwrap_or_default().into_response();
 
     let status = out.status_mut();
     *status = code.try_into()?;
@@ -229,10 +228,6 @@ where
                     // TODO: Don't skip over Err value
                     let bytes = body.data().await.and_then(Result::ok);
 
-                    let json = bytes
-                        .clone()
-                        .map(|b| serde_json::from_slice::<serde_json::Value>(&b));
-
                     let resp = SerializedResponse::Finished {
                         code: parts.status.into(),
                         headers: Some(
@@ -242,8 +237,7 @@ where
                                 .map(|(k, v)| (k.as_str().to_owned(), v.as_bytes().to_owned()))
                                 .collect(),
                         ),
-                        // TODO: Don't skip over deserialization errors
-                        body: json.and_then(Result::ok),
+                        body: bytes.clone().map(|b| b.to_vec()),
                     };
 
                     if redis.set(&key, &resp, expiry_default()).await.is_err() {
