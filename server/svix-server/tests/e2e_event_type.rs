@@ -37,7 +37,7 @@ async fn test_event_type_create_read_list() {
     );
 
     let list: ListResponse<EventTypeOut> = client
-        .get("api/v1/event-type?with_content=true", StatusCode::OK)
+        .get("api/v1/event-type/?with_content=true", StatusCode::OK)
         .await
         .unwrap();
     assert_eq!(list.data.len(), 1);
