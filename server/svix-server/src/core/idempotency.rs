@@ -38,7 +38,7 @@ enum SerializedResponse {
     Start,
     Finished {
         code: u16,
-        headers: Option<HashMap<String, String>>,
+        headers: Option<HashMap<String, Vec<u8>>>,
         body: Option<serde_json::Value>,
     },
 }
@@ -46,25 +46,38 @@ impl CacheValue for SerializedResponse {
     type Key = IdempotencyKey;
 }
 
+#[derive(thiserror::Error, Debug)]
+pub enum ConversionToResponseError {
+    #[error("the status code is out of bounds")]
+    StatusError(#[from] http::status::InvalidStatusCode),
+
+    #[error("a header name is invalid")]
+    FromStr(#[from] http::header::InvalidHeaderName),
+    #[error("a header value is invalid")]
+    InvalidHeaderValue(#[from] http::header::InvalidHeaderValue),
+}
+
+/// Will never error as long as Redis doesn't corrupt -- never use this with anything but values
+/// from Redis which were put in via the idempotency service from known good requests.
 fn finished_serialized_response_to_reponse(
     code: u16,
-    headers: Option<HashMap<String, String>>,
+    headers: Option<HashMap<String, Vec<u8>>>,
     body: Option<serde_json::Value>,
-) -> Response<BoxBody> {
+) -> Result<Response<BoxBody>, ConversionToResponseError> {
     let mut out = Json(body).into_response();
 
     let status = out.status_mut();
-    *status = code.try_into().unwrap();
+    *status = code.try_into()?;
 
     if let Some(resp_headers) = headers {
         let headers = out.headers_mut();
         *headers = resp_headers
             .iter()
-            .map(|(k, v)| (k.parse().unwrap(), v.parse().unwrap()))
-            .collect();
+            .map(|(k, v)| Ok((k.parse()?, http::HeaderValue::from_bytes(v)?)))
+            .collect::<Result<_, ConversionToResponseError>>()?;
     }
 
-    out
+    Ok(out)
 }
 
 struct IdempotencyKey(String);
@@ -170,7 +183,10 @@ where
                             })) => {
                                 break Ok(finished_serialized_response_to_reponse(
                                     code, headers, body,
-                                ));
+                                )
+                                .unwrap_or_else(|_| {
+                                    StatusCode::INTERNAL_SERVER_ERROR.into_response()
+                                }));
                             }
 
                             // Start value has expired
@@ -189,7 +205,8 @@ where
                     code,
                     headers,
                     body,
-                })) => Ok(finished_serialized_response_to_reponse(code, headers, body)),
+                })) => Ok(finished_serialized_response_to_reponse(code, headers, body)
+                    .unwrap_or_else(|_| StatusCode::INTERNAL_SERVER_ERROR.into_response())),
 
                 // Not in redis, so get the result and cache it
                 Ok(None) => {
@@ -209,9 +226,7 @@ where
                             .unwrap()
                             .into_parts();
 
-                    // TODO: Error handling where [`Result::ok`] is used as well as the
-                    // [`Result::unwrap`] in the header mapping
-
+                    // TODO: Don't skip over Err value
                     let bytes = body.data().await.and_then(Result::ok);
 
                     let json = bytes
@@ -224,11 +239,10 @@ where
                             parts
                                 .headers
                                 .iter()
-                                .map(|(k, v)| {
-                                    (k.as_str().to_owned(), v.to_str().unwrap().to_owned())
-                                })
+                                .map(|(k, v)| (k.as_str().to_owned(), v.as_bytes().to_owned()))
                                 .collect(),
                         ),
+                        // TODO: Don't skip over deserialization errors
                         body: json.and_then(Result::ok),
                     };
 
@@ -236,6 +250,7 @@ where
                         return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
                     }
 
+                    // Assumes None to be an empty byte array
                     let bytes = bytes.unwrap_or_default();
                     Ok(Response::from_parts(parts, Body::from(bytes)).into_response())
                 }
@@ -259,6 +274,9 @@ mod tests {
         cache::RedisCache,
         security::{default_org_id, generate_token},
     };
+
+    // TODO: Test start lock
+    // TODO: Test empty responses
 
     /// Starts a basic Axum server with one endpoint which counts the number of times the endpoint
     /// has been polled from. This will be nested in the [`IdempotencyService`] such that, providing
