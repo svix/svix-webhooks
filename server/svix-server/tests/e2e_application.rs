@@ -361,3 +361,36 @@ async fn test_uid_across_users() {
         .await
         .unwrap();
 }
+
+#[tokio::test]
+async fn test_idempotency() {
+    let (client, _jh) = start_svix_server();
+
+    let app1: ApplicationOut = client
+        .post_with_idempotency(
+            "api/v1/app/",
+            "1",
+            ApplicationIn {
+                name: "Some unique name".to_owned(),
+                ..Default::default()
+            },
+            StatusCode::CREATED,
+        )
+        .await
+        .unwrap();
+
+    let app2: ApplicationOut = client
+        .post_with_idempotency(
+            "api/v1/app/",
+            "1",
+            ApplicationIn {
+                name: "Some less unique name".to_owned(),
+                ..Default::default()
+            },
+            StatusCode::CREATED,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(app1, app2);
+}

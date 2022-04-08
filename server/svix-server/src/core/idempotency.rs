@@ -117,8 +117,8 @@ where
 /// The idempotency middleware itself -- inserted in place of a regular route
 #[derive(Clone)]
 pub struct IdempotencyService<S: Clone> {
-    redis: RedisCache,
-    service: S,
+    pub redis: RedisCache,
+    pub service: S,
 }
 
 impl<S> Service<Request<Body>> for IdempotencyService<S>
@@ -144,6 +144,11 @@ where
 
         Box::pin(async move {
             let (parts, body) = req.into_parts();
+
+            // If not a POST request, simply resolve the service as usual
+            if parts.method != http::Method::POST {
+                return resolve_service(service, Request::from_parts(parts, body)).await;
+            }
 
             let auth =
                 if let Some(Ok(auth)) = parts.headers.get("Authorization").map(|v| v.to_str()) {
@@ -264,7 +269,7 @@ where
 mod tests {
     use std::{net::TcpListener, sync::Arc};
 
-    use axum::{extract::Extension, routing::get, Router, Server};
+    use axum::{extract::Extension, routing::post, Router, Server};
     use http::StatusCode;
     use reqwest::Client;
     use tokio::{sync::Mutex, task::JoinHandle};
@@ -316,7 +321,7 @@ mod tests {
                                 "/",
                                 IdempotencyService {
                                     redis: cache,
-                                    service: get(service_endpoint),
+                                    service: post(service_endpoint),
                                 },
                             )
                             .layer(Extension(count))
@@ -360,12 +365,12 @@ mod tests {
 
         // Sanity check on test service
         assert_eq!(*count.lock().await, 0);
-        let _ = client.get(&endpoint).send().await;
+        let _ = client.post(&endpoint).send().await;
         assert_eq!(*count.lock().await, 1);
 
         // Idempotency key not yet used -- should increment
         let resp_1 = client
-            .get(&endpoint)
+            .post(&endpoint)
             .header("idempotency-key", "1")
             .header("Authorization", &token)
             .send()
@@ -375,7 +380,7 @@ mod tests {
 
         // Now used the count should not increment
         let resp_2 = client
-            .get(&endpoint)
+            .post(&endpoint)
             .header("idempotency-key", "1")
             .header("Authorization", &token)
             .send()
@@ -389,12 +394,12 @@ mod tests {
         assert_eq!(resp_1.text().await.unwrap(), resp_2.text().await.unwrap());
 
         // No key -- should increment
-        let _ = client.get(&endpoint).send().await;
+        let _ = client.post(&endpoint).send().await;
         assert_eq!(*count.lock().await, 3);
 
         // Same key -- should not increment
         let _ = client
-            .get(&endpoint)
+            .post(&endpoint)
             .header("idempotency-key", "1")
             .header("Authorization", &token)
             .send()
@@ -403,7 +408,7 @@ mod tests {
 
         // New key -- should increment
         let resp_1 = client
-            .get(&endpoint)
+            .post(&endpoint)
             .header("idempotency-key", "2")
             .header("Authorization", &token)
             .send()
@@ -413,7 +418,7 @@ mod tests {
 
         // Old key -- shouldn't increment
         let _ = client
-            .get(&endpoint)
+            .post(&endpoint)
             .header("idempotency-key", "1")
             .header("Authorization", &token)
             .send()
@@ -422,7 +427,7 @@ mod tests {
 
         // Key 2, shouldn't increment and should equal resp_1
         let resp_2 = client
-            .get(&endpoint)
+            .post(&endpoint)
             .header("idempotency-key", "2")
             .header("Authorization", &token)
             .send()
@@ -455,7 +460,7 @@ mod tests {
 
         let resp_1_jh = tokio::spawn(
             client
-                .get(&endpoint)
+                .post(&endpoint)
                 .header("idempotency-key", "1")
                 .header("Authorization", &token)
                 .send(),
@@ -466,7 +471,7 @@ mod tests {
 
         let resp_2_jh = tokio::spawn(
             client
-                .get(&endpoint)
+                .post(&endpoint)
                 .header("idempotency-key", "1")
                 .header("Authorization", &token)
                 .send(),
@@ -518,7 +523,7 @@ mod tests {
                                 "/",
                                 IdempotencyService {
                                     redis: cache,
-                                    service: get(empty_service_endpoint),
+                                    service: post(empty_service_endpoint),
                                 },
                             )
                             .layer(Extension(count))
@@ -554,12 +559,12 @@ mod tests {
 
         // Sanity check on test service
         assert_eq!(*count.lock().await, 199);
-        let _ = client.get(&endpoint).send().await.unwrap();
+        let _ = client.post(&endpoint).send().await.unwrap();
         assert_eq!(*count.lock().await, 200);
 
         // Idempotency key not yet used -- should increment
         let resp_1 = client
-            .get(&endpoint)
+            .post(&endpoint)
             .header("idempotency-key", "1")
             .header("Authorization", &token)
             .send()
@@ -569,7 +574,7 @@ mod tests {
 
         // Now used the count should not increment
         let resp_2 = client
-            .get(&endpoint)
+            .post(&endpoint)
             .header("idempotency-key", "1")
             .header("Authorization", &token)
             .send()

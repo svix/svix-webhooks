@@ -2,7 +2,11 @@
 // SPDX-License-Identifier: MIT
 
 use crate::{
-    core::types::{ApplicationId, ApplicationIdOrUid, ApplicationUid},
+    core::{
+        cache::RedisCache,
+        idempotency::IdempotencyService,
+        types::{ApplicationId, ApplicationIdOrUid, ApplicationUid},
+    },
     error::{HttpError, Result},
     v1::utils::{
         validate_no_control_characters, EmptyResponse, ListResponse, ModelIn, ModelOut,
@@ -168,16 +172,27 @@ async fn delete_application(
     Ok((StatusCode::NO_CONTENT, Json(EmptyResponse {})))
 }
 
-pub fn router() -> Router {
-    Router::new()
-        .route("/app/", get(list_applications))
-        .route("/app/", post(create_application))
-        .route(
-            "/app/:app_id/",
-            get(get_application)
-                .put(update_application)
-                .delete(delete_application),
-        )
+pub fn router(redis: Option<RedisCache>) -> Router {
+    let mut router = Router::new();
+
+    if let Some(redis) = redis {
+        router = router.route(
+            "/app/",
+            IdempotencyService {
+                redis,
+                service: post(create_application).get(list_applications),
+            },
+        );
+    } else {
+        router = router.route("/app/", post(create_application).get(list_applications));
+    }
+
+    router.route(
+        "/app/:app_id/",
+        get(get_application)
+            .put(update_application)
+            .delete(delete_application),
+    )
 }
 
 #[cfg(test)]
@@ -202,7 +217,7 @@ mod tests {
                     "rateLimit": RATE_LIMIT_INVALID }))
         .unwrap();
         let invalid_3: ApplicationIn = serde_json::from_value(json!({
-                    "name": APP_NAME_VALID,
+                    "name": APP_NAME_VALID, 
                     "uid": UID_INVALID }))
         .unwrap();
 

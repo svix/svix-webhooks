@@ -3,14 +3,16 @@
 
 use axum::Router;
 
+use crate::core::cache::RedisCache;
+
 pub mod endpoints;
 pub mod utils;
 
-pub fn router() -> Router {
+pub fn router(redis: Option<RedisCache>) -> Router {
     let ret = Router::new()
         .merge(endpoints::health::router())
         .merge(auth::router())
-        .merge(endpoints::application::router())
+        .merge(endpoints::application::router(redis))
         .merge(endpoints::endpoint::router())
         .merge(endpoints::event_type::router())
         .merge(endpoints::message::router())
