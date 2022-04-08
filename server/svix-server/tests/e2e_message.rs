@@ -47,7 +47,7 @@ async fn test_message_create_read_list() {
     assert_eq!(
         client
             .get::<MessageOut>(
-                &format!("api/v1/app/{}/msg/{}", &app_id, &message_1.id),
+                &format!("api/v1/app/{}/msg/{}/", &app_id, &message_1.id),
                 StatusCode::OK
             )
             .await
@@ -57,7 +57,7 @@ async fn test_message_create_read_list() {
     assert_eq!(
         client
             .get::<MessageOut>(
-                &format!("api/v1/app/{}/msg/{}", &app_id, &message_2.id),
+                &format!("api/v1/app/{}/msg/{}/", &app_id, &message_2.id),
                 StatusCode::OK
             )
             .await
@@ -125,7 +125,7 @@ async fn test_message_create_read_list_with_content() {
         assert_eq!(
             client
                 .get::<MessageOut>(
-                    &format!("api/v1/app/{}/msg/{}", &app_id, &m.id),
+                    &format!("api/v1/app/{}/msg/{}/", &app_id, &m.id),
                     StatusCode::OK
                 )
                 .await

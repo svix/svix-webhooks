@@ -86,7 +86,7 @@ pub async fn put_endpoint(
 ) -> Result<EndpointOut> {
     client
         .put(
-            &format!("api/v1/app/{}/endpoint/{}", app_id, ep_id),
+            &format!("api/v1/app/{}/endpoint/{}/", app_id, ep_id),
             ep,
             StatusCode::OK,
         )
@@ -251,7 +251,7 @@ pub async fn get_msg_attempt_list_and_assert_count(
     run_with_retries(|| async {
         let list: ListResponse<MessageAttemptOut> = client
             .get(
-                &format!("api/v1/app/{}/attempt/msg/{}", app_id, msg_id),
+                &format!("api/v1/app/{}/attempt/msg/{}/", app_id, msg_id),
                 StatusCode::OK,
             )
             .await?;
