@@ -6,7 +6,11 @@ mod recovery;
 mod secrets;
 
 use crate::{
-    core::types::{EndpointId, EndpointUid, EventChannelSet, EventTypeNameSet},
+    core::{
+        cache::RedisCache,
+        idempotency::IdempotencyService,
+        types::{EndpointId, EndpointUid, EventChannelSet, EventTypeNameSet},
+    },
     v1::utils::{api_not_implemented, validate_no_control_characters, ModelIn},
 };
 use axum::{
@@ -232,12 +236,17 @@ impl ModelIn for EndpointHeadersPatchIn {
     }
 }
 
-pub fn router() -> Router {
+pub fn router(redis: Option<RedisCache>) -> Router {
     Router::new().nest(
         "/app/:app_id",
         Router::new()
-            .route("/endpoint/", get(crud::list_endpoints))
-            .route("/endpoint/", post(crud::create_endpoint))
+            .route(
+                "/endpoint/",
+                IdempotencyService {
+                    redis: redis.clone(),
+                    service: post(crud::create_endpoint).get(crud::list_endpoints),
+                },
+            )
             .route(
                 "/endpoint/:endp_id/",
                 get(crud::get_endpoint)
@@ -250,16 +259,25 @@ pub fn router() -> Router {
             )
             .route(
                 "/endpoint/:endp_id/secret/rotate/",
-                post(secrets::rotate_endpoint_secret),
+                IdempotencyService {
+                    redis: redis.clone(),
+                    service: post(secrets::rotate_endpoint_secret),
+                },
             )
             .route("/endpoint/:endp_id/stats/", get(api_not_implemented))
             .route(
                 "/endpoint/:endp_id/send-example/",
-                post(api_not_implemented),
+                IdempotencyService {
+                    redis: redis.clone(),
+                    service: post(api_not_implemented),
+                },
             )
             .route(
                 "/endpoint/:endp_id/recover/",
-                post(recovery::recover_failed_webhooks),
+                IdempotencyService {
+                    redis,
+                    service: post(recovery::recover_failed_webhooks),
+                },
             )
             .route(
                 "/endpoint/:endp_id/headers/",

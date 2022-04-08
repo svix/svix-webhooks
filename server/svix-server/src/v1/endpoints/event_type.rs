@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 use crate::{
-    core::types::EventTypeName,
+    core::{cache::RedisCache, idempotency::IdempotencyService, types::EventTypeName},
     error::{HttpError, Result},
     v1::utils::{
         api_not_implemented, validate_no_control_characters, EmptyResponse, ListResponse, ModelIn,
@@ -235,10 +235,15 @@ async fn delete_event_type(
     Ok((StatusCode::NO_CONTENT, Json(EmptyResponse {})))
 }
 
-pub fn router() -> Router {
+pub fn router(redis: Option<RedisCache>) -> Router {
     Router::new()
-        .route("/event-type/", get(list_event_types))
-        .route("/event-type/", post(create_event_type))
+        .route(
+            "/event-type/",
+            IdempotencyService {
+                redis: redis.clone(),
+                service: post(create_event_type).get(list_event_types),
+            },
+        )
         .route(
             "/event-type/:event_type_name/",
             get(get_event_type)
@@ -247,7 +252,10 @@ pub fn router() -> Router {
         )
         .route(
             "/event-type/schema/generate-example/",
-            post(api_not_implemented),
+            IdempotencyService {
+                redis,
+                service: post(api_not_implemented),
+            },
         )
 }
 

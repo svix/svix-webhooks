@@ -173,26 +173,20 @@ async fn delete_application(
 }
 
 pub fn router(redis: Option<RedisCache>) -> Router {
-    let mut router = Router::new();
-
-    if let Some(redis) = redis {
-        router = router.route(
+    Router::new()
+        .route(
             "/app/",
             IdempotencyService {
                 redis,
                 service: post(create_application).get(list_applications),
             },
-        );
-    } else {
-        router = router.route("/app/", post(create_application).get(list_applications));
-    }
-
-    router.route(
-        "/app/:app_id/",
-        get(get_application)
-            .put(update_application)
-            .delete(delete_application),
-    )
+        )
+        .route(
+            "/app/:app_id/",
+            get(get_application)
+                .put(update_application)
+                .delete(delete_application),
+        )
 }
 
 #[cfg(test)]

@@ -12,11 +12,11 @@ pub fn router(redis: Option<RedisCache>) -> Router {
     let ret = Router::new()
         .merge(endpoints::health::router())
         .merge(auth::router())
-        .merge(endpoints::application::router(redis))
-        .merge(endpoints::endpoint::router())
-        .merge(endpoints::event_type::router())
-        .merge(endpoints::message::router())
-        .merge(endpoints::attempt::router());
+        .merge(endpoints::application::router(redis.clone()))
+        .merge(endpoints::endpoint::router(redis.clone()))
+        .merge(endpoints::event_type::router(redis.clone()))
+        .merge(endpoints::message::router(redis.clone()))
+        .merge(endpoints::attempt::router(redis));
 
     #[cfg(debug_assertions)]
     if cfg!(debug_assertions) {

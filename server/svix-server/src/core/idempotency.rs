@@ -117,7 +117,7 @@ where
 /// The idempotency middleware itself -- inserted in place of a regular route
 #[derive(Clone)]
 pub struct IdempotencyService<S: Clone> {
-    pub redis: RedisCache,
+    pub redis: Option<RedisCache>,
     pub service: S,
 }
 
@@ -139,129 +139,139 @@ where
     }
 
     fn call(&mut self, req: Request<Body>) -> Self::Future {
-        let service = self.service.clone();
+        let mut service = self.service.clone();
         let redis = self.redis.clone();
 
-        Box::pin(async move {
-            let (parts, body) = req.into_parts();
+        if let Some(redis) = redis {
+            Box::pin(async move {
+                let (parts, body) = req.into_parts();
 
-            // If not a POST request, simply resolve the service as usual
-            if parts.method != http::Method::POST {
-                return resolve_service(service, Request::from_parts(parts, body)).await;
-            }
+                // If not a POST request, simply resolve the service as usual
+                if parts.method != http::Method::POST {
+                    return resolve_service(service, Request::from_parts(parts, body)).await;
+                }
 
-            let auth =
-                if let Some(Ok(auth)) = parts.headers.get("Authorization").map(|v| v.to_str()) {
+                let auth = if let Some(Ok(auth)) =
+                    parts.headers.get("Authorization").map(|v| v.to_str())
+                {
                     auth
                 } else {
                     // No auth token -- pass off to service and do not cache
                     return resolve_service(service, Request::from_parts(parts, body)).await;
                 };
 
-            let key =
-                if let Some(Ok(key)) = parts.headers.get("idempotency-key").map(|v| v.to_str()) {
+                let key = if let Some(Ok(key)) =
+                    parts.headers.get("idempotency-key").map(|v| v.to_str())
+                {
                     key
                 } else {
                     // No idempotency-key -- pass off to service and do not cache
                     return resolve_service(service, Request::from_parts(parts, body)).await;
                 };
 
-            let uri = parts.uri.to_string();
-            let key = IdempotencyKey::new(auth, key, &uri);
+                let uri = parts.uri.to_string();
+                let key = IdempotencyKey::new(auth, key, &uri);
 
-            // Check Redis now
-            match redis.get::<SerializedResponse>(&key).await {
-                // If the value is a starting value, the operation is still in progress
-                Ok(Some(SerializedResponse::Start)) => {
-                    let mut total_delay_duration = std::time::Duration::from_millis(0);
-                    let out = loop {
-                        match redis.get::<SerializedResponse>(&key).await {
-                            Ok(Some(SerializedResponse::Start)) => {
-                                if total_delay_duration > expiry_starting() {
-                                    // TODO Better response
-                                    break Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
+                // Check Redis now
+                match redis.get::<SerializedResponse>(&key).await {
+                    // If the value is a starting value, the operation is still in progress
+                    Ok(Some(SerializedResponse::Start)) => {
+                        let mut total_delay_duration = std::time::Duration::from_millis(0);
+                        let out = loop {
+                            match redis.get::<SerializedResponse>(&key).await {
+                                Ok(Some(SerializedResponse::Start)) => {
+                                    if total_delay_duration > expiry_starting() {
+                                        // TODO Better response
+                                        break Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
+                                    }
+
+                                    total_delay_duration += std::time::Duration::from_millis(200);
+                                    tokio::time::sleep(std::time::Duration::from_millis(200)).await;
+                                }
+                                Ok(Some(SerializedResponse::Finished {
+                                    code,
+                                    headers,
+                                    body,
+                                })) => {
+                                    break Ok(finished_serialized_response_to_reponse(
+                                        code, headers, body,
+                                    )
+                                    .unwrap_or_else(|_| {
+                                        StatusCode::INTERNAL_SERVER_ERROR.into_response()
+                                    }));
                                 }
 
-                                total_delay_duration += std::time::Duration::from_millis(200);
-                                tokio::time::sleep(std::time::Duration::from_millis(200)).await;
+                                // Start value has expired
+                                // TODO: Better response
+                                Ok(None) => {
+                                    break Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response())
+                                }
+
+                                Err(_) => {
+                                    break Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response())
+                                }
                             }
-                            Ok(Some(SerializedResponse::Finished {
-                                code,
-                                headers,
-                                body,
-                            })) => {
-                                break Ok(finished_serialized_response_to_reponse(
-                                    code, headers, body,
-                                )
-                                .unwrap_or_else(|_| {
-                                    StatusCode::INTERNAL_SERVER_ERROR.into_response()
-                                }));
-                            }
+                        };
 
-                            // Start value has expired
-                            // TODO: Better response
-                            Ok(None) => break Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response()),
-
-                            Err(_) => break Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response()),
-                        }
-                    };
-
-                    out
-                }
-
-                // The operation is finished and cached, so just return it
-                Ok(Some(SerializedResponse::Finished {
-                    code,
-                    headers,
-                    body,
-                })) => Ok(finished_serialized_response_to_reponse(code, headers, body)
-                    .unwrap_or_else(|_| StatusCode::INTERNAL_SERVER_ERROR.into_response())),
-
-                // Not in redis, so get the result and cache it
-                Ok(None) => {
-                    // First set the start value as a lock
-                    if redis
-                        .set(&key, &SerializedResponse::Start, expiry_default())
-                        .await
-                        .is_err()
-                    {
-                        return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
+                        out
                     }
 
-                    let (parts, mut body) =
-                        resolve_service(service, Request::from_parts(parts, body))
+                    // The operation is finished and cached, so just return it
+                    Ok(Some(SerializedResponse::Finished {
+                        code,
+                        headers,
+                        body,
+                    })) => Ok(finished_serialized_response_to_reponse(code, headers, body)
+                        .unwrap_or_else(|_| StatusCode::INTERNAL_SERVER_ERROR.into_response())),
+
+                    // Not in redis, so get the result and cache it
+                    Ok(None) => {
+                        // First set the start value as a lock
+                        if redis
+                            .set(&key, &SerializedResponse::Start, expiry_default())
                             .await
-                            // Infallible
-                            .unwrap()
-                            .into_parts();
+                            .is_err()
+                        {
+                            return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
+                        }
 
-                    // TODO: Don't skip over Err value
-                    let bytes = body.data().await.and_then(Result::ok);
+                        let (parts, mut body) =
+                            resolve_service(service, Request::from_parts(parts, body))
+                                .await
+                                // Infallible
+                                .unwrap()
+                                .into_parts();
 
-                    let resp = SerializedResponse::Finished {
-                        code: parts.status.into(),
-                        headers: Some(
-                            parts
-                                .headers
-                                .iter()
-                                .map(|(k, v)| (k.as_str().to_owned(), v.as_bytes().to_owned()))
-                                .collect(),
-                        ),
-                        body: bytes.clone().map(|b| b.to_vec()),
-                    };
+                        // TODO: Don't skip over Err value
+                        let bytes = body.data().await.and_then(Result::ok);
 
-                    if redis.set(&key, &resp, expiry_default()).await.is_err() {
-                        return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
+                        let resp = SerializedResponse::Finished {
+                            code: parts.status.into(),
+                            headers: Some(
+                                parts
+                                    .headers
+                                    .iter()
+                                    .map(|(k, v)| (k.as_str().to_owned(), v.as_bytes().to_owned()))
+                                    .collect(),
+                            ),
+                            body: bytes.clone().map(|b| b.to_vec()),
+                        };
+
+                        if redis.set(&key, &resp, expiry_default()).await.is_err() {
+                            return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
+                        }
+
+                        // Assumes None to be an empty byte array
+                        let bytes = bytes.unwrap_or_default();
+                        Ok(Response::from_parts(parts, Body::from(bytes)).into_response())
                     }
 
-                    // Assumes None to be an empty byte array
-                    let bytes = bytes.unwrap_or_default();
-                    Ok(Response::from_parts(parts, Body::from(bytes)).into_response())
+                    Err(_) => Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response()),
                 }
-
-                Err(_) => Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response()),
-            }
-        })
+            })
+        } else {
+            Box::pin(async move { Ok(service.call(req).await.into_response()) })
+        }
     }
 }
 
@@ -320,7 +330,7 @@ mod tests {
                             .route(
                                 "/",
                                 IdempotencyService {
-                                    redis: cache,
+                                    redis: Some(cache),
                                     service: post(service_endpoint),
                                 },
                             )
@@ -522,7 +532,7 @@ mod tests {
                             .route(
                                 "/",
                                 IdempotencyService {
-                                    redis: cache,
+                                    redis: Some(cache),
                                     service: post(empty_service_endpoint),
                                 },
                             )

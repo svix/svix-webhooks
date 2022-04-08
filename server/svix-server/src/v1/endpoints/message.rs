@@ -6,6 +6,7 @@ use std::{collections::HashSet, time::Duration};
 use crate::{
     core::{
         cache::RedisCache,
+        idempotency::IdempotencyService,
         message_app::CreateMessageApp,
         security::AuthenticatedApplication,
         types::{
@@ -307,12 +308,17 @@ async fn get_message(
     Ok(Json(msg_out))
 }
 
-pub fn router() -> Router {
+pub fn router(redis: Option<RedisCache>) -> Router {
     Router::new().nest(
         "/app/:app_id",
         Router::new()
-            .route("/msg/", get(list_messages))
-            .route("/msg/", post(create_message))
+            .route(
+                "/msg/",
+                IdempotencyService {
+                    redis,
+                    service: post(create_message).get(list_messages),
+                },
+            )
             .route("/msg/:msg_id/", get(get_message)),
     )
 }
