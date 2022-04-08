@@ -682,7 +682,7 @@ async fn test_endpoint_filter_events() {
 
     let ep_removed_events: EndpointOut = client
         .put(
-            &format!("api/v1/app/{}/endpoint/{}", app_id, ep_with_valid_event.id),
+            &format!("api/v1/app/{}/endpoint/{}/", app_id, ep_with_valid_event.id),
             ep_no_events.to_owned(),
             StatusCode::OK,
         )
@@ -699,7 +699,7 @@ async fn test_endpoint_filter_events() {
 
     let ep_updated_events: EndpointOut = client
         .put(
-            &format!("api/v1/app/{}/endpoint/{}", app_id, ep_with_valid_event.id),
+            &format!("api/v1/app/{}/endpoint/{}/", app_id, ep_with_valid_event.id),
             ep_with_events.to_owned(),
             StatusCode::OK,
         )
@@ -763,7 +763,7 @@ async fn test_endpoint_filter_channels() {
 
     let ep_with_deleted_channel: EndpointOut = client
         .put(
-            &format!("api/v1/app/{}/endpoint/{}", app_id, ep_with_channel.id),
+            &format!("api/v1/app/{}/endpoint/{}/", app_id, ep_with_channel.id),
             ep_without_channels,
             StatusCode::OK,
         )
@@ -783,7 +783,7 @@ async fn test_endpoint_filter_channels() {
     let updated_ep_with_channel: EndpointOut = client
         .put(
             &format!(
-                "api/v1/app/{}/endpoint/{}",
+                "api/v1/app/{}/endpoint/{}/",
                 app_id, ep_with_deleted_channel.id
             ),
             ep_with_channels,

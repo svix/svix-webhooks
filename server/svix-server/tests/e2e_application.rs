@@ -66,7 +66,7 @@ async fn test_crud() {
     let app_1_id = app_1.id;
     let app_1: ApplicationOut = client
         .put(
-            &format!("api/v1/app/{}", app_1_id),
+            &format!("api/v1/app/{}/", app_1_id),
             application_in(APP_NAME_1_2),
             StatusCode::OK,
         )
@@ -76,7 +76,7 @@ async fn test_crud() {
     let app_2_id = app_2.id;
     let app_2: ApplicationOut = client
         .put(
-            &format!("api/v1/app/{}", app_2_id),
+            &format!("api/v1/app/{}/", app_2_id),
             application_in(APP_NAME_2_2),
             StatusCode::OK,
         )

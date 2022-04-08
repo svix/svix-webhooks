@@ -30,7 +30,7 @@ async fn test_event_type_create_read_list() {
 
     assert_eq!(
         client
-            .get::<EventTypeOut>(&format!("api/v1/event-type/{}", &et.name), StatusCode::OK)
+            .get::<EventTypeOut>(&format!("api/v1/event-type/{}/", &et.name), StatusCode::OK)
             .await
             .unwrap(),
         et
