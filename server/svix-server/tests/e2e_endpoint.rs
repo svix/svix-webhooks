@@ -668,7 +668,6 @@ async fn test_custom_endpoint_secret() {
     }
 }
 
-// TODO: this depends on proper validation of incoming EndpointSecrets
 #[tokio::test]
 #[ignore]
 async fn test_invalid_endpoint_secret() {
@@ -676,20 +675,25 @@ async fn test_invalid_endpoint_secret() {
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
-    let ep_in: serde_json::Value = serde_json::json!({
-        "url": "http://www.example.com".to_owned(),
-        "version": 1,
-        "secret": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD".to_owned(),
-    });
+    let secret_invalid_prefix = "hwsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD".to_owned();
+    let secret_too_short = "whsec_C2FVsBQIhrscChlQIM+b5sSYspob7oD".to_owned();
 
-    let _: IgnoredResponse = client
-        .post(
-            &format!("api/v1/app/{}/endpoint/", app_id),
-            ep_in,
-            StatusCode::UNPROCESSABLE_ENTITY,
-        )
-        .await
-        .unwrap();
+    for sec in [secret_invalid_prefix, secret_too_short] {
+        let ep_in: serde_json::Value = serde_json::json!({
+            "url": "http://www.example.com".to_owned(),
+            "version": 1,
+            "secret": sec,
+        });
+
+        let _: IgnoredResponse = client
+            .post(
+                &format!("api/v1/app/{}/endpoint/", app_id),
+                ep_in,
+                StatusCode::UNPROCESSABLE_ENTITY,
+            )
+            .await
+            .unwrap();
+    }
 }
 
 #[tokio::test]
