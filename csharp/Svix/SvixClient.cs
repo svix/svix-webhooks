@@ -43,7 +43,7 @@ namespace Svix
 
         public SvixClient(string token, ISvixOptions options, ILogger<SvixClient> logger = null
             , IApplicationApi applicationApi = null, IAuthenticationApi authenticationApi = null, IEndpointApi endpointApi = null
-            , IEventTypeApi EventTypeApi = null, IHealthApi healthApi = null, IIntegrationApi integrationApi = null
+            , IEventTypeApi eventTypeApi = null, IHealthApi healthApi = null, IIntegrationApi integrationApi = null
             , IMessageApi messageApi = null, IMessageAttemptApi messageAttemptApi = null)
         {
             Logger = logger;
@@ -53,7 +53,7 @@ namespace Svix
             Application = new Application(this, applicationApi ?? new ApplicationApi(Config));
             Authentication = new Authentication(this, authenticationApi ?? new AuthenticationApi(Config));
             Endpoint = new Endpoint(this, endpointApi ?? new EndpointApi(Config));
-            EventType = new EventType(this, EventTypeApi ?? new EventTypeApi(Config));
+            EventType = new EventType(this, eventTypeApi ?? new EventTypeApi(Config));
             Health = new Health(this, healthApi ?? new HealthApi(Config));
             Integration = new Integration(this, integrationApi ?? new IntegrationApi(Config));
             Message = new Message(this, messageApi ?? new MessageApi(Config));
