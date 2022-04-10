@@ -816,7 +816,11 @@ class ClientBase:
 
         host = options.server_url or DEFAULT_SERVER_URL
         client = AuthenticatedClient(
-            base_url=host, token=auth_token, headers={"user-agent": f"svix-libs/{__version__}/python"}
+            base_url=host,
+            token=auth_token,
+            headers={"user-agent": f"svix-libs/{__version__}/python"},
+            verify_ssl=True,
+            timeout=15,
         )
         self._client = client
 
