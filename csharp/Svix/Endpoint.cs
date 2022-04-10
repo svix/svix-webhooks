@@ -21,8 +21,7 @@ namespace Svix
         {
             _endpointApi = endpoingApi ?? throw new ArgumentNullException(nameof(_endpointApi));
         }
-
-
+        
         public EndpointOut Create(string appId, EndpointIn endpoint, string idempotencyKey = default)
         {
             try
