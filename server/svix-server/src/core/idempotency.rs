@@ -155,21 +155,21 @@ where
                     return resolve_service(service, Request::from_parts(parts, body)).await;
                 }
 
-                let auth = if let Some(Ok(auth)) =
-                    parts.headers.get("Authorization").map(|v| v.to_str())
-                {
-                    auth
-                } else {
-                    // No auth token -- pass off to service and do not cache
-                    return resolve_service(service, Request::from_parts(parts, body)).await;
-                };
-
                 let key = if let Some(Ok(key)) =
                     parts.headers.get("idempotency-key").map(|v| v.to_str())
                 {
                     key
                 } else {
                     // No idempotency-key -- pass off to service and do not cache
+                    return resolve_service(service, Request::from_parts(parts, body)).await;
+                };
+
+                let auth = if let Some(Ok(auth)) =
+                    parts.headers.get("Authorization").map(|v| v.to_str())
+                {
+                    auth
+                } else {
+                    // No auth token -- pass off to service and do not cache
                     return resolve_service(service, Request::from_parts(parts, body)).await;
                 };
 
