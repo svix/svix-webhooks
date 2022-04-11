@@ -688,7 +688,7 @@ pub fn router() -> Router {
                     .route("/attempt/", get(list_messageattempts))
                     .route("/attempt/:attempt_id/", get(get_messageattempt))
                     .route("/endpoint/", get(list_attempted_destinations))
-                    .route("/endpoint/:endp_id/resent/", post(resend_webhook))
+                    .route("/endpoint/:endp_id/resend/", post(resend_webhook))
                     // NOTE: [`list_attempts_for_endpoint`] is deprecated
                     .route(
                         "/endpoint/:endp_id/attempt/",
