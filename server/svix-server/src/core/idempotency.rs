@@ -328,7 +328,7 @@ mod tests {
                     .unwrap()
                     .serve(
                         Router::new()
-                            .route("/", post(service_endpoint))
+                            .route("/", post(service_endpoint).get(service_endpoint))
                             .layer(
                                 ServiceBuilder::new().layer_fn(|service| IdempotencyService {
                                     redis: Some(cache.clone()),
@@ -449,6 +449,16 @@ mod tests {
         assert_eq!(resp_1.status(), resp_2.status());
         assert_eq!(resp_1.headers(), resp_2.headers());
         assert_eq!(resp_1.text().await.unwrap(), resp_2.text().await.unwrap());
+
+        // Key 2, but with GET should increment as it is not a POST request
+        let _ = client
+            .get(&endpoint)
+            .header("idempotency-key", "2")
+            .header("Authorization", &token)
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(*count.lock().await, 5);
     }
 
     #[tokio::test]
