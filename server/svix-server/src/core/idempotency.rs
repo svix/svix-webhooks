@@ -85,7 +85,11 @@ impl IdempotencyKey {
     fn new(auth_token: &str, key: &str, url: &str) -> IdempotencyKey {
         let mut hasher = Blake2b512::new();
 
-        hasher.update(format!("{}:{}:{}", auth_token, key, url));
+        hasher.update(auth_token);
+        hasher.update(":");
+        hasher.update(key);
+        hasher.update(":");
+        hasher.update(url);
 
         let res = hasher.finalize();
         IdempotencyKey(base64::encode(&res))
