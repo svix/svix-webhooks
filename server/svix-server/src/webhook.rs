@@ -114,7 +114,7 @@ impl Webhook {
         headers
             .get(svix_hdr)
             .or_else(|| headers.get(unbranded_hdr))
-            .ok_or_else(|| WebhookError::MissingHeader(err_name))?
+            .ok_or(WebhookError::MissingHeader(err_name))?
             .to_str()
             .map_err(|_| WebhookError::InvalidHeader(err_name))
     }

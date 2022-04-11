@@ -17,6 +17,8 @@ use svix_server::{
     },
 };
 
+use http::HeaderMap;
+
 pub mod common_calls;
 
 pub struct TestClient {
@@ -183,6 +185,7 @@ pub struct TestReceiver {
     pub endpoint: String,
     pub jh: tokio::task::JoinHandle<()>,
     pub data_recv: mpsc::Receiver<serde_json::Value>,
+    pub header_recv: mpsc::Receiver<HeaderMap>,
 }
 
 impl TestReceiver {
@@ -191,6 +194,7 @@ impl TestReceiver {
         let endpoint = format!("http://{}/", listener.local_addr().unwrap());
 
         let (tx, data_recv) = mpsc::channel(32);
+        let (header_tx, header_recv) = mpsc::channel(32);
 
         let jh = tokio::spawn(async move {
             axum::Server::from_tcp(listener)
@@ -202,6 +206,7 @@ impl TestReceiver {
                             axum::routing::post(test_receiver_route).get(test_receiver_route),
                         )
                         .layer(axum::extract::Extension(tx))
+                        .layer(axum::extract::Extension(header_tx))
                         .layer(axum::extract::Extension(resp_with))
                         .into_make_service(),
                 )
@@ -213,6 +218,7 @@ impl TestReceiver {
             endpoint,
             jh,
             data_recv,
+            header_recv,
         }
     }
 }
@@ -220,9 +226,12 @@ impl TestReceiver {
 async fn test_receiver_route(
     axum::Json(json): axum::Json<serde_json::Value>,
     axum::extract::Extension(ref tx): axum::extract::Extension<mpsc::Sender<serde_json::Value>>,
+    axum::extract::Extension(ref header_tx): axum::extract::Extension<mpsc::Sender<HeaderMap>>,
     axum::extract::Extension(code): axum::extract::Extension<axum::http::StatusCode>,
+    headers: HeaderMap,
 ) -> axum::http::StatusCode {
     tx.send(json).await.unwrap();
+    header_tx.send(headers).await.unwrap();
     code
 }
 

@@ -20,6 +20,7 @@ use svix_server::{
         },
         utils::ListResponse,
     },
+    webhook::Webhook,
 };
 
 mod utils;
@@ -553,7 +554,81 @@ async fn test_endpoint_rotate_max() {
         .unwrap();
 }
 
-// TODO: test_endpoint_rotate_signing_e2e
+#[tokio::test]
+async fn test_endpoint_rotate_signing_e2e() {
+    let (client, _jh) = start_svix_server();
+
+    let app_id = create_test_app(&client, "app1").await.unwrap().id;
+
+    let mut receiver = TestReceiver::start(StatusCode::OK);
+
+    let endp = create_test_endpoint(&client, &app_id, &receiver.endpoint)
+        .await
+        .unwrap();
+
+    let secret1: EndpointSecretOut = client
+        .get(
+            &format!("api/v1/app/{}/endpoint/{}/secret/", app_id, endp.id),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    let _: IgnoredResponse = client
+        .post(
+            &format!("api/v1/app/{}/endpoint/{}/secret/rotate/", app_id, endp.id),
+            serde_json::json!({ "key": null }),
+            StatusCode::NO_CONTENT,
+        )
+        .await
+        .unwrap();
+
+    let secret2: EndpointSecretOut = client
+        .get(
+            &format!("api/v1/app/{}/endpoint/{}/secret/", app_id, endp.id),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_ne!(secret1.key, secret2.key);
+
+    let secret3_key = EndpointSecret::generate().unwrap();
+
+    let _: IgnoredResponse = client
+        .post(
+            &format!("api/v1/app/{}/endpoint/{}/secret/rotate/", app_id, endp.id),
+            serde_json::json!({ "key": secret3_key }),
+            StatusCode::NO_CONTENT,
+        )
+        .await
+        .unwrap();
+
+    let secret3: EndpointSecretOut = client
+        .get(
+            &format!("api/v1/app/{}/endpoint/{}/secret/", app_id, endp.id),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(secret3_key, secret3.key);
+
+    let raw_payload = r#"{"test":"data1"}"#;
+    let payload = serde_json::from_str(raw_payload).unwrap();
+    let _msg = create_test_message(&client, &app_id, payload)
+        .await
+        .unwrap();
+
+    let last_headers = receiver.header_recv.recv().await.unwrap();
+    let last_body = receiver.data_recv.recv().await.unwrap().to_string();
+
+    for sec in [secret1, secret2, secret3] {
+        let sec = base64::encode(&sec.key.0);
+        let wh = Webhook::new(sec).unwrap();
+        wh.verify(last_body.as_bytes(), &last_headers).unwrap();
+    }
+}
 
 #[tokio::test]
 async fn test_custom_endpoint_secret() {
@@ -840,8 +915,6 @@ async fn test_rate_limit() {
 
     assert!(endp.rate_limit.is_none());
 }
-
-// TODO test_soft_limit
 
 #[tokio::test]
 async fn test_msg_event_types_filter() {
