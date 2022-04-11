@@ -273,7 +273,7 @@ async fn create_message(
             .exec(db)
             .await?;
     }
-    txn.commit().await.unwrap();
+    txn.commit().await?;
     for task in tasks {
         queue_tx.send(task, None).await?;
     }
