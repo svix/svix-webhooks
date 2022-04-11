@@ -1,7 +1,10 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use std::{collections::HashSet, time::Duration};
+use std::{
+    collections::{HashMap, HashSet},
+    time::Duration,
+};
 
 use anyhow::Result;
 use chrono::{DateTime, Utc};
@@ -9,12 +12,15 @@ use reqwest::StatusCode;
 
 use svix_server::{
     core::types::{
-        ApplicationId, EndpointId, EndpointSecret, EndpointUid, EventChannel, EventChannelSet,
-        EventTypeName, EventTypeNameSet, ExpiringSigningKeys,
+        ApplicationId, EndpointHeaders, EndpointId, EndpointSecret, EndpointUid, EventChannel,
+        EventChannelSet, EventTypeName, EventTypeNameSet, ExpiringSigningKeys,
     },
     v1::{
         endpoints::{
-            endpoint::{EndpointIn, EndpointOut, EndpointSecretOut, RecoverIn},
+            endpoint::{
+                EndpointHeadersIn, EndpointHeadersOut, EndpointHeadersPatchIn, EndpointIn,
+                EndpointOut, EndpointSecretOut, RecoverIn,
+            },
             event_type::EventTypeOut,
             message::{MessageIn, MessageOut},
         },
@@ -987,5 +993,231 @@ async fn test_msg_event_types_filter() {
             get_msg_attempt_list_and_assert_count(&client, &app_id, &msg.id, expected_count)
                 .await
                 .unwrap();
+    }
+}
+
+#[tokio::test]
+async fn test_msg_channels_filter() {
+    let (client, _jh) = start_svix_server();
+
+    let app_id = create_test_app(&client, "app1").await.unwrap().id;
+
+    let receiver = TestReceiver::start(StatusCode::OK);
+
+    let ec = EventChannelSet(HashSet::from([EventChannel("tag1".to_owned())]));
+
+    for channels in [Some(ec.clone()), None] {
+        let _endp = post_endpoint(
+            &client,
+            &app_id,
+            EndpointIn {
+                url: receiver.endpoint.to_owned(),
+                version: 1,
+                channels,
+                ..Default::default()
+            },
+        )
+        .await
+        .unwrap();
+    }
+
+    for (channels, expected_count) in [(Some(ec.clone()), 2), (None, 1)] {
+        let msg: MessageOut = client
+            .post(
+                &format!("api/v1/app/{}/msg/", &app_id),
+                MessageIn {
+                    channels: channels.clone(),
+                    event_type: EventTypeName("et1".to_owned()),
+                    payload: serde_json::json!({}),
+                    uid: None,
+                },
+                StatusCode::ACCEPTED,
+            )
+            .await
+            .unwrap();
+
+        tokio::time::sleep(Duration::from_millis(100)).await;
+
+        let _list =
+            get_msg_attempt_list_and_assert_count(&client, &app_id, &msg.id, expected_count)
+                .await
+                .unwrap();
+
+        let msg: MessageOut = client
+            .get(
+                &format!("api/v1/app/{}/msg/{}", &app_id, &msg.id),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(msg.channels, channels);
+    }
+}
+
+#[tokio::test]
+async fn test_endpoint_headers_manipulation() {
+    let (client, _jh) = start_svix_server();
+
+    let app_id = create_test_app(&client, "app1").await.unwrap().id;
+
+    let endp = create_test_endpoint(&client, &app_id, "http://www.example.com")
+        .await
+        .unwrap();
+
+    for bad_hdr in [
+        "content-length",
+        "some:thing",
+        "some\u{0000}thing",
+        "svix-foo",
+        "x-svix-foo",
+        "x-amzn-foo",
+    ] {
+        let _: IgnoredResponse = client
+            .put(
+                &format!("api/v1/app/{}/endpoint/{}/headers", app_id, endp.id),
+                serde_json::json!({ "headers": { bad_hdr: "123"}}),
+                StatusCode::UNPROCESSABLE_ENTITY,
+            )
+            .await
+            .unwrap();
+    }
+
+    let org_headers = EndpointHeadersIn {
+        headers: EndpointHeaders(HashMap::from([
+            ("x-test-1".to_owned(), "1".to_owned()),
+            ("x-test-2".to_owned(), "2".to_owned()),
+        ])),
+    };
+
+    let updated_headers = EndpointHeadersIn {
+        headers: EndpointHeaders(HashMap::from([
+            ("x-test-1".to_owned(), "3".to_owned()),
+            ("x-test-2".to_owned(), "2".to_owned()),
+        ])),
+    };
+
+    for hdrs in [&org_headers, &updated_headers] {
+        let _: IgnoredResponse = client
+            .put(
+                &format!("api/v1/app/{}/endpoint/{}/headers", app_id, endp.id),
+                hdrs,
+                StatusCode::NO_CONTENT,
+            )
+            .await
+            .unwrap();
+
+        let recvd_headers: EndpointHeadersOut = client
+            .get(
+                &format!("api/v1/app/{}/endpoint/{}/headers", app_id, endp.id),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(hdrs.headers.0, recvd_headers.headers);
+    }
+
+    let patched_headers_in = EndpointHeadersPatchIn {
+        headers: EndpointHeaders(HashMap::from([("x-test-3".to_owned(), "4".to_owned())])),
+    };
+
+    let _: IgnoredResponse = client
+        .patch(
+            &format!("api/v1/app/{}/endpoint/{}/headers", app_id, endp.id),
+            &patched_headers_in,
+            StatusCode::NO_CONTENT,
+        )
+        .await
+        .unwrap();
+
+    let recvd_headers: EndpointHeadersOut = client
+        .get(
+            &format!("api/v1/app/{}/endpoint/{}/headers", app_id, endp.id),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(
+        HashMap::from([
+            ("x-test-1".to_owned(), "3".to_owned()),
+            ("x-test-2".to_owned(), "2".to_owned()),
+            ("x-test-3".to_owned(), "4".to_owned()),
+        ]),
+        recvd_headers.headers
+    );
+
+    let redacted_headers = EndpointHeadersIn {
+        headers: EndpointHeaders(HashMap::from([
+            ("x-test-1".to_owned(), "1".to_owned()),
+            ("authorization".to_owned(), "secret".to_owned()),
+        ])),
+    };
+
+    let _: IgnoredResponse = client
+        .put(
+            &format!("api/v1/app/{}/endpoint/{}/headers", app_id, endp.id),
+            redacted_headers,
+            StatusCode::NO_CONTENT,
+        )
+        .await
+        .unwrap();
+
+    let recvd_headers: EndpointHeadersOut = client
+        .get(
+            &format!("api/v1/app/{}/endpoint/{}/headers", app_id, endp.id),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(
+        HashMap::from([("x-test-1".to_owned(), "1".to_owned())]),
+        recvd_headers.headers
+    );
+
+    assert_eq!(
+        HashSet::from(["authorization".to_owned()]),
+        recvd_headers.sensitive
+    );
+}
+
+#[tokio::test]
+async fn test_endpoint_headers_sending() {
+    let (client, _jh) = start_svix_server();
+
+    let app_id = create_test_app(&client, "app1").await.unwrap().id;
+
+    let mut receiver = TestReceiver::start(StatusCode::OK);
+
+    let endp = create_test_endpoint(&client, &app_id, &receiver.endpoint)
+        .await
+        .unwrap();
+
+    let headers = EndpointHeadersIn {
+        headers: EndpointHeaders(HashMap::from([
+            ("x-test-1".to_owned(), "1".to_owned()),
+            ("x-test-2".to_owned(), "2".to_owned()),
+        ])),
+    };
+
+    let _: IgnoredResponse = client
+        .put(
+            &format!("api/v1/app/{}/endpoint/{}/headers", app_id, endp.id),
+            &headers,
+            StatusCode::NO_CONTENT,
+        )
+        .await
+        .unwrap();
+
+    create_test_message(&client, &app_id, serde_json::json!({"test": "data1"}))
+        .await
+        .unwrap();
+
+    let last_headers = receiver.header_recv.recv().await.unwrap();
+
+    for (k, v) in &headers.headers.0 {
+        assert_eq!(v, last_headers.get(k).unwrap().to_str().unwrap());
     }
 }

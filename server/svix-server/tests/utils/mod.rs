@@ -149,6 +149,30 @@ impl TestClient {
             .await
             .context("error receiving/parsing response")
     }
+
+    pub async fn patch<I: Serialize, O: DeserializeOwned>(
+        &self,
+        endpoint: &str,
+        input: I,
+        expected_code: StatusCode,
+    ) -> Result<O> {
+        let mut req = self.client.patch(self.build_uri(endpoint));
+        req = self.add_headers(req).json(&input);
+
+        let resp = req.send().await.context("error sending request")?;
+
+        if resp.status() != expected_code {
+            anyhow::bail!(
+                "assertation failed: expected status {}, actual status {}",
+                expected_code,
+                resp.status()
+            );
+        }
+
+        resp.json()
+            .await
+            .context("error receiving/parsing response")
+    }
 }
 
 pub fn get_default_test_config() -> ConfigurationInner {
