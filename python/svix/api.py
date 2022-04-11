@@ -621,12 +621,15 @@ class MessageAsync(ApiBase):
         )
 
     async def create(self, app_id: str, message_in: MessageIn, options: PostOptions = PostOptions()) -> MessageOut:
-        return await create_message_api_v1_app_app_id_msg_post.asyncio(
+        ret = await create_message_api_v1_app_app_id_msg_post.asyncio(
             client=self._client,
             app_id=app_id,
             json_body=message_in,
+            with_content=False,
             **options.to_dict(),
         )
+        ret.payload = message_in.payload
+        return ret
 
     async def get(self, app_id: str, msg_id: str) -> MessageOut:
         return await get_message_api_v1_app_app_id_msg_msg_id_get.asyncio(
@@ -645,12 +648,15 @@ class Message(ApiBase):
         )
 
     def create(self, app_id: str, message_in: MessageIn, options: PostOptions = PostOptions()) -> MessageOut:
-        return create_message_api_v1_app_app_id_msg_post.sync(
+        ret = create_message_api_v1_app_app_id_msg_post.sync(
             client=self._client,
             app_id=app_id,
             json_body=message_in,
+            with_content=False,
             **options.to_dict(),
         )
+        ret.payload = message_in.payload
+        return ret
 
     def get(self, app_id: str, msg_id: str) -> MessageOut:
         return get_message_api_v1_app_app_id_msg_msg_id_get.sync(
