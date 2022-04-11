@@ -3,6 +3,13 @@
 ## Next
 * 
 
+## Version 0.56.0
+* Libs/Python: fix user agent to actually work.
+* Libs/Python: increase read timeout.
+* Server: extend prev_iterator implementation to allow for before and after.
+* Server: update Axum dep to latest version.
+* Server: add more tests to the suite.
+
 ## Version 0.55.0
 * Server: fix marking of some HTTP errors as failed.
 * Server: change base docker image to debian-slim
