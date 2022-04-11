@@ -80,6 +80,7 @@ pub struct EndpointIn {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub channels: Option<EventChannelSet>,
 
+    #[validate]
     #[serde(default)]
     #[serde(rename = "secret")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -147,6 +148,7 @@ impl From<endpoint::Model> for EndpointOut {
 #[derive(Clone, Debug, PartialEq, Validate, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointSecretRotateIn {
+    #[validate]
     #[serde(default)]
     key: Option<EndpointSecret>,
 }

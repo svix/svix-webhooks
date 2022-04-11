@@ -450,13 +450,39 @@ impl<'de> Deserialize<'de> for EndpointSecret {
         use serde::de::Error;
         String::deserialize(deserializer)
             .and_then(|string| {
-                base64::decode(&string[Self::PREFIX.len()..])
-                    .map_err(|err| Error::custom(err.to_string()))
+                string
+                    .get(Self::PREFIX.len()..)
+                    .ok_or(Error::custom("invalid prefix".to_string()))
+                    .and_then(|string| {
+                        base64::decode(string).map_err(|err| Error::custom(err.to_string()))
+                    })
             })
             .map(EndpointSecret)
     }
 }
 
+impl Validate for EndpointSecret {
+    fn validate(&self) -> std::result::Result<(), ValidationErrors> {
+        let re = format!(
+            r"^{}[a-zA-Z0-9+/]{{{}}}$",
+            EndpointSecret::PREFIX,
+            (EndpointSecret::KEY_SIZE * 4 / 3)
+        );
+        let re = regex::Regex::new(&re).unwrap();
+        let mut errors = ValidationErrors::new();
+
+        let encoded = format!("{}{}", EndpointSecret::PREFIX, base64::encode(&self.0));
+        if !re.is_match(encoded.as_str()) {
+            errors.add(ALL_ERROR, ValidationError::new("invalid secret"));
+        }
+
+        if errors.is_empty() {
+            Ok(())
+        } else {
+            Err(errors)
+        }
+    }
+}
 impl From<EndpointSecret> for sea_orm::Value {
     fn from(v: EndpointSecret) -> Self {
         Self::Bytes(Some(Box::new(v.0)))
@@ -573,7 +599,7 @@ enum_wrapper!(StatusCodeClass);
 mod tests {
     use crate::core::types::{EventChannel, EventTypeName};
 
-    use super::{ApplicationId, ApplicationUid, EndpointHeaders};
+    use super::{ApplicationId, ApplicationUid, EndpointHeaders, EndpointSecret};
     use std::collections::HashMap;
     use validator::Validate;
 
@@ -665,19 +691,47 @@ mod tests {
 
     #[test]
     fn test_endpoint_headers_deserialization() {
-        let js = r#"
-            {
-                "NOT_UPPER_CASE": "TRUE",
-                "is_lower_case": "true"
-            }
-        "#;
-        let eph: EndpointHeaders = serde_json::from_str(js).unwrap();
+        let js = serde_json::json!(
+        {
+            "NOT_UPPER_CASE": "TRUE",
+            "is_lower_case": "true"
+        });
+        let eph: EndpointHeaders = serde_json::from_value(js).unwrap();
         assert_eq!(
             HashMap::from([
                 ("not_upper_case".to_owned(), "TRUE".to_owned()),
                 ("is_lower_case".to_owned(), "true".to_owned()),
             ]),
             eph.0
+        );
+    }
+
+    #[test]
+    fn test_endpoint_secret_validation() {
+        let secret = EndpointSecret(base64::decode("bm90LXZhbGlkCg==").unwrap());
+        assert!(secret.validate().is_err());
+
+        let secret = EndpointSecret(base64::decode("C2FVsBQIhrscChlQIMV+b5sSYspob7oD").unwrap());
+        secret.validate().unwrap();
+    }
+
+    #[derive(serde::Deserialize)]
+    struct EndpointSecretTestStruct {
+        key: EndpointSecret,
+    }
+
+    #[test]
+    fn test_endpoint_secret_deserialization() {
+        for key in ["w", "whsec_%", "whsec_wronglength"] {
+            let js = serde_json::json!({ "key": key });
+            assert!(serde_json::from_value::<EndpointSecretTestStruct>(js).is_err());
+        }
+
+        let js = serde_json::json!({ "key": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD" });
+        let ep = serde_json::from_value::<EndpointSecretTestStruct>(js).unwrap();
+        assert_eq!(
+            base64::decode("C2FVsBQIhrscChlQIMV+b5sSYspob7oD").unwrap(),
+            ep.key.0
         );
     }
 }
