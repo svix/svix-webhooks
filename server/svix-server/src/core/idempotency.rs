@@ -179,46 +179,7 @@ where
                 // Check Redis now
                 match redis.get::<SerializedResponse>(&key).await {
                     // If the value is a starting value, the operation is still in progress
-                    Ok(Some(SerializedResponse::Start)) => {
-                        let mut total_delay_duration = std::time::Duration::from_millis(0);
-                        let out = loop {
-                            match redis.get::<SerializedResponse>(&key).await {
-                                Ok(Some(SerializedResponse::Start)) => {
-                                    if total_delay_duration > expiry_starting() {
-                                        // TODO Better response
-                                        break Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
-                                    }
-
-                                    total_delay_duration += std::time::Duration::from_millis(200);
-                                    tokio::time::sleep(std::time::Duration::from_millis(200)).await;
-                                }
-                                Ok(Some(SerializedResponse::Finished {
-                                    code,
-                                    headers,
-                                    body,
-                                })) => {
-                                    break Ok(finished_serialized_response_to_reponse(
-                                        code, headers, body,
-                                    )
-                                    .unwrap_or_else(|_| {
-                                        StatusCode::INTERNAL_SERVER_ERROR.into_response()
-                                    }));
-                                }
-
-                                // Start value has expired
-                                // TODO: Better response
-                                Ok(None) => {
-                                    break Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response())
-                                }
-
-                                Err(_) => {
-                                    break Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response())
-                                }
-                            }
-                        };
-
-                        out
-                    }
+                    Ok(Some(SerializedResponse::Start)) => lock_loop(&redis, &key).await,
 
                     // The operation is finished and cached, so just return it
                     Ok(Some(SerializedResponse::Finished {
@@ -230,44 +191,13 @@ where
 
                     // Not in redis, so get the result and cache it
                     Ok(None) => {
-                        // First set the start value as a lock
-                        if redis
-                            .set(&key, &SerializedResponse::Start, expiry_default())
-                            .await
-                            .is_err()
-                        {
-                            return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
-                        }
-
-                        let (parts, mut body) =
-                            resolve_service(service, Request::from_parts(parts, body))
-                                .await
-                                // Infallible
-                                .unwrap()
-                                .into_parts();
-
-                        // TODO: Don't skip over Err value
-                        let bytes = body.data().await.and_then(Result::ok);
-
-                        let resp = SerializedResponse::Finished {
-                            code: parts.status.into(),
-                            headers: Some(
-                                parts
-                                    .headers
-                                    .iter()
-                                    .map(|(k, v)| (k.as_str().to_owned(), v.as_bytes().to_owned()))
-                                    .collect(),
-                            ),
-                            body: bytes.clone().map(|b| b.to_vec()),
-                        };
-
-                        if redis.set(&key, &resp, expiry_default()).await.is_err() {
-                            return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
-                        }
-
-                        // Assumes None to be an empty byte array
-                        let bytes = bytes.unwrap_or_default();
-                        Ok(Response::from_parts(parts, Body::from(bytes)).into_response())
+                        resolve_and_cache_response(
+                            &redis,
+                            &key,
+                            service,
+                            Request::from_parts(parts, body),
+                        )
+                        .await
                     }
 
                     Err(_) => Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response()),
@@ -277,6 +207,96 @@ where
             Box::pin(async move { Ok(service.call(req).await.into_response()) })
         }
     }
+}
+
+/// If the Redis value for a given idempotency key is a [`SerializedResponse::Start`] value, then
+/// loop until it has been completed or times out
+async fn lock_loop(
+    redis: &RedisCache,
+    key: &IdempotencyKey,
+) -> Result<Response<BoxBody>, Infallible> {
+    let mut total_delay_duration = std::time::Duration::from_millis(0);
+    let out = loop {
+        match redis.get::<SerializedResponse>(key).await {
+            Ok(Some(SerializedResponse::Start)) => {
+                if total_delay_duration > expiry_starting() {
+                    // TODO Better response
+                    break Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
+                }
+
+                total_delay_duration += std::time::Duration::from_millis(200);
+                tokio::time::sleep(std::time::Duration::from_millis(200)).await;
+            }
+            Ok(Some(SerializedResponse::Finished {
+                code,
+                headers,
+                body,
+            })) => {
+                break Ok(finished_serialized_response_to_reponse(code, headers, body)
+                    .unwrap_or_else(|_| StatusCode::INTERNAL_SERVER_ERROR.into_response()));
+            }
+
+            // Start value has expired
+            // TODO: Better response
+            Ok(None) => break Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response()),
+
+            Err(_) => break Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response()),
+        }
+    };
+
+    out
+}
+
+/// If there is no value associated with a key, resolve the service and cache the result, but first
+/// set a lock value so further requests with that key stall until this one is complete
+async fn resolve_and_cache_response<S>(
+    redis: &RedisCache,
+    key: &IdempotencyKey,
+    service: S,
+    request: Request<Body>,
+) -> Result<Response<BoxBody>, Infallible>
+where
+    S: Service<Request<Body>, Error = Infallible> + Clone + Send + 'static,
+    S::Response: IntoResponse,
+    S::Future: Send + 'static,
+{
+    // First set the start value as a lock
+    if redis
+        .set(key, &SerializedResponse::Start, expiry_default())
+        .await
+        .is_err()
+    {
+        return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
+    }
+
+    let (parts, mut body) = resolve_service(service, request)
+        .await
+        // Infallible
+        .unwrap()
+        .into_parts();
+
+    // TODO: Don't skip over Err value
+    let bytes = body.data().await.and_then(Result::ok);
+
+    let resp = SerializedResponse::Finished {
+        code: parts.status.into(),
+        headers: Some(
+            parts
+                .headers
+                .iter()
+                .map(|(k, v)| (k.as_str().to_owned(), v.as_bytes().to_owned()))
+                .collect(),
+        ),
+        body: bytes.clone().map(|b| b.to_vec()),
+    };
+
+    if redis.set(key, &resp, expiry_default()).await.is_err() {
+        return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
+    }
+
+    // Assumes None to be an empty byte array
+    let bytes = bytes.unwrap_or_default();
+    Ok(Response::from_parts(parts, Body::from(bytes)).into_response())
 }
 
 #[cfg(test)]
