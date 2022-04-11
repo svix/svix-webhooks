@@ -3,8 +3,6 @@
 
 use crate::{
     core::{
-        cache::RedisCache,
-        idempotency::IdempotencyService,
         security::AuthenticatedApplication,
         types::{
             ApplicationId, ApplicationIdOrUid, EndpointId, EndpointIdOrUid, EventChannel,
@@ -679,7 +677,7 @@ async fn resend_webhook(
     Ok((StatusCode::ACCEPTED, Json(EmptyResponse {})))
 }
 
-pub fn router(redis: Option<RedisCache>) -> Router {
+pub fn router() -> Router {
     Router::new().nest(
         "/app/:app_id/",
         Router::new()
@@ -690,13 +688,7 @@ pub fn router(redis: Option<RedisCache>) -> Router {
                     .route("/attempt/", get(list_messageattempts))
                     .route("/attempt/:attempt_id/", get(get_messageattempt))
                     .route("/endpoint/", get(list_attempted_destinations))
-                    .route(
-                        "/endpoint/:endp_id/resent/",
-                        IdempotencyService {
-                            redis,
-                            service: post(resend_webhook),
-                        },
-                    )
+                    .route("/endpoint/:endp_id/resent/", post(resend_webhook))
                     // NOTE: [`list_attempts_for_endpoint`] is deprecated
                     .route(
                         "/endpoint/:endp_id/attempt/",

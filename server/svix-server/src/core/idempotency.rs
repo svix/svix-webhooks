@@ -283,6 +283,7 @@ mod tests {
     use http::StatusCode;
     use reqwest::Client;
     use tokio::{sync::Mutex, task::JoinHandle};
+    use tower::ServiceBuilder;
 
     use super::IdempotencyService;
     use crate::core::{
@@ -327,12 +328,12 @@ mod tests {
                     .unwrap()
                     .serve(
                         Router::new()
-                            .route(
-                                "/",
-                                IdempotencyService {
-                                    redis: Some(cache),
-                                    service: post(service_endpoint),
-                                },
+                            .route("/", post(service_endpoint))
+                            .layer(
+                                ServiceBuilder::new().layer_fn(|service| IdempotencyService {
+                                    redis: Some(cache.clone()),
+                                    service,
+                                }),
                             )
                             .layer(Extension(count))
                             .layer(Extension(wait))
@@ -529,12 +530,12 @@ mod tests {
                     .unwrap()
                     .serve(
                         Router::new()
-                            .route(
-                                "/",
-                                IdempotencyService {
-                                    redis: Some(cache),
-                                    service: post(empty_service_endpoint),
-                                },
+                            .route("/", post(empty_service_endpoint))
+                            .layer(
+                                ServiceBuilder::new().layer_fn(|service| IdempotencyService {
+                                    redis: Some(cache.clone()),
+                                    service,
+                                }),
                             )
                             .layer(Extension(count))
                             .into_make_service(),

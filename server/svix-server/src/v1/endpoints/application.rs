@@ -2,11 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 use crate::{
-    core::{
-        cache::RedisCache,
-        idempotency::IdempotencyService,
-        types::{ApplicationId, ApplicationIdOrUid, ApplicationUid},
-    },
+    core::types::{ApplicationId, ApplicationIdOrUid, ApplicationUid},
     error::{HttpError, Result},
     v1::utils::{
         validate_no_control_characters, EmptyResponse, ListResponse, ModelIn, ModelOut,
@@ -172,15 +168,9 @@ async fn delete_application(
     Ok((StatusCode::NO_CONTENT, Json(EmptyResponse {})))
 }
 
-pub fn router(redis: Option<RedisCache>) -> Router {
+pub fn router() -> Router {
     Router::new()
-        .route(
-            "/app/",
-            IdempotencyService {
-                redis,
-                service: post(create_application).get(list_applications),
-            },
-        )
+        .route("/app/", post(create_application).get(list_applications))
         .route(
             "/app/:app_id/",
             get(get_application)

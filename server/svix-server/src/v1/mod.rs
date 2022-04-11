@@ -3,20 +3,18 @@
 
 use axum::Router;
 
-use crate::core::cache::RedisCache;
-
 pub mod endpoints;
 pub mod utils;
 
-pub fn router(redis: Option<RedisCache>) -> Router {
+pub fn router() -> Router {
     let ret = Router::new()
         .merge(endpoints::health::router())
         .merge(auth::router())
-        .merge(endpoints::application::router(redis.clone()))
-        .merge(endpoints::endpoint::router(redis.clone()))
-        .merge(endpoints::event_type::router(redis.clone()))
-        .merge(endpoints::message::router(redis.clone()))
-        .merge(endpoints::attempt::router(redis));
+        .merge(endpoints::application::router())
+        .merge(endpoints::endpoint::router())
+        .merge(endpoints::event_type::router())
+        .merge(endpoints::message::router())
+        .merge(endpoints::attempt::router());
 
     #[cfg(debug_assertions)]
     if cfg!(debug_assertions) {
