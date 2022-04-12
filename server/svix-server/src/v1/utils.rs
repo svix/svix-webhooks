@@ -465,8 +465,8 @@ mod tests {
 
     #[test]
     fn test_validate_no_control_characters() {
-        let a = "Test";
-        let b = "Test\u{0000}";
+        let a = "A good string";
+        let b = "A\u{0000} bad string";
 
         assert!(validate_no_control_characters(a).is_ok());
         assert!(validate_no_control_characters(b).is_err());
