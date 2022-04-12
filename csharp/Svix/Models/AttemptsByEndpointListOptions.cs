@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Svix.Models
 {
@@ -6,7 +7,7 @@ namespace Svix.Models
     {
         public int? Status { get; set; }
 
-        public string[] EventTypes { get; set; }
+        public List<string> EventTypes { get; set; }
 
         public string? Channel { get; set; }
 

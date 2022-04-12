@@ -37,7 +37,7 @@ namespace Svix
                     options?.Before,
                     idempotencyKey);
 
-                return lResults.Data;
+                return lResults?.Data;
             }
             catch (ApiException e)
             {
@@ -65,7 +65,7 @@ namespace Svix
                     idempotencyKey,
                     cancellationToken);
 
-                return lResults.Data;
+                return lResults?.Data;
             }
             catch (ApiException e)
             {
@@ -89,13 +89,13 @@ namespace Svix
                     endpointId,
                     options?.Iterator,
                     options?.Limit,
-                    options?.EventTypes?.ToList(),
+                    options?.EventTypes,
                     options?.Channel,
                     (Svix.Model.MessageStatus)options?.Status,
                     options?.Before,
                     idempotencyKey);
 
-                return lResults.Data;
+                return lResults?.Data;
             }
             catch (ApiException e)
             {
@@ -127,7 +127,7 @@ namespace Svix
                     idempotencyKey,
                     cancellationToken);
 
-                return lResults.Data;
+                return lResults?.Data;
             }
             catch (ApiException e)
             {
@@ -153,7 +153,7 @@ namespace Svix
                     (Svix.Model.MessageStatus)options?.Status,
                     idempotencyKey);
 
-                return lResults.Data;
+                return lResults?.Data;
             }
             catch (ApiException e)
             {
@@ -180,7 +180,7 @@ namespace Svix
                     idempotencyKey,
                     cancellationToken);
 
-                return lResults.Data;
+                return lResults?.Data;
             }
             catch (ApiException e)
             {
@@ -205,7 +205,7 @@ namespace Svix
                     options?.Limit,
                     idempotencyKey);
 
-                return lResults.Data;
+                return lResults?.Data;
             }
             catch (ApiException e)
             {
@@ -232,7 +232,7 @@ namespace Svix
                     idempotencyKey,
                     cancellationToken);
 
-                return lResults.Data;
+                return lResults?.Data;
             }
             catch (ApiException e)
             {
