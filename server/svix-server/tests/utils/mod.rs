@@ -248,7 +248,7 @@ where
             println!("Attempt {}: {}", attempt, err);
         }
 
-        std::thread::sleep(std::time::Duration::from_millis(50));
+        tokio::time::sleep(std::time::Duration::from_millis(50)).await;
     }
 
     anyhow::bail!("All attempts failed");
