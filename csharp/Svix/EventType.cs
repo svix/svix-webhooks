@@ -162,7 +162,7 @@ namespace Svix
                     options?.IncludeArchived,
                     idempotencyKey);
 
-                return lResults.Data;
+                return lResults?.Data;
             }
             catch (ApiException e)
             {
@@ -188,7 +188,7 @@ namespace Svix
                     idempotencyKey,
                     cancellationToken);
 
-                return lResults.Data;
+                return lResults?.Data;
             }
             catch (ApiException e)
             {
