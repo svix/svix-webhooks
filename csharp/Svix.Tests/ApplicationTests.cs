@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Net;
 using Moq;
 using Svix.Abstractions;
 using Svix.Api;
+using Svix.Client;
 using Svix.Model;
 using Svix.Models;
 using Xunit;
@@ -36,10 +38,6 @@ namespace Svix.Tests
         [Fact]
         public void ApplicationCreate_WithoutApplication_ThrowsException()
         {
-            // Arrange
-
-            // Act
-           
             // Assert
             Assert.Throws<ArgumentNullException>(() => _svixClient.Application.Create(null, null));
         }
@@ -47,10 +45,6 @@ namespace Svix.Tests
         [Fact]
         public async void ApplicationCreateAsync_WithoutApplication_ThrowsException()
         {
-            // Arrange
-
-            // Act
-            
             // Assert
             Assert.ThrowsAsync<ArgumentNullException>(() => _svixClient.Application.CreateAsync(null, null, null, default));
         }
@@ -132,6 +126,68 @@ namespace Svix.Tests
             // Assert
             _mockApplicationApi.Verify(x => x.CreateApplicationApiV1AppPostAsync(lApplication, true, null, default));
         }
+
+        [Fact]
+        public void ApplicationDelete_CallsAPi_WithParams()
+        {
+            // Arrange 
+            string lApplicationId = "app_1srOrx2ZWZBpBUvZwXKQmoEYga2";
+            string lIdempotencyKey = Guid.NewGuid().ToString();
+            
+            _mockApplicationApi.Setup(x => x.DeleteApplicationApiV1AppAppIdDeleteWithHttpInfo(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(new ApiResponse<object>(HttpStatusCode.NoContent, null));
+            
+            // Act 
+            var lResult = _svixClient.Application.Delete(lApplicationId, lIdempotencyKey);
+            
+            // Assert
+            _mockApplicationApi.Verify(x => x.DeleteApplicationApiV1AppAppIdDeleteWithHttpInfo(lApplicationId, lIdempotencyKey));
+        }
+        
+        [Fact]
+        public void ApplicationDeleteAsync_CallsAPi_WithParams()
+        {
+            // Arrange 
+            string lApplicationId = "app_1srOrx2ZWZBpBUvZwXKQmoEYga2";
+            string lIdempotencyKey = Guid.NewGuid().ToString();
+            
+            _mockApplicationApi.Setup(x => x.DeleteApplicationApiV1AppAppIdDeleteWithHttpInfoAsync(It.IsAny<string>(), It.IsAny<string>(), default))
+                .ReturnsAsync(new ApiResponse<object>(HttpStatusCode.NoContent, null));
+            
+            // Act 
+            var lResult = _svixClient.Application.DeleteAsync(lApplicationId, lIdempotencyKey, default);
+            
+            // Assert
+            _mockApplicationApi.Verify(x => x.DeleteApplicationApiV1AppAppIdDeleteWithHttpInfoAsync(lApplicationId, lIdempotencyKey, default));
+        }
+        
+        [Fact]
+        public void ApplicationGet_CallsAPi_WithParams()
+        {
+            // Arrange 
+            string lApplicationId = "app_1srOrx2ZWZBpBUvZwXKQmoEYga2";
+            string lIdempotencyKey = Guid.NewGuid().ToString();
+
+            // Act 
+            var lResult = _svixClient.Application.Get(lApplicationId, lIdempotencyKey);
+            
+            // Assert
+            _mockApplicationApi.Verify(x => x.GetApplicationApiV1AppAppIdGet(lApplicationId, lIdempotencyKey));
+        }
+        
+        [Fact]
+        public void ApplicationGetAsync_CallsAPi_WithParams()
+        {
+            // Arrange 
+            string lApplicationId = "app_1srOrx2ZWZBpBUvZwXKQmoEYga2";
+            string lIdempotencyKey = Guid.NewGuid().ToString();
+
+            // Act 
+            var lResult = _svixClient.Application.GetAsync(lApplicationId, lIdempotencyKey, default);
+            
+            // Assert
+            _mockApplicationApi.Verify(x => x.GetApplicationApiV1AppAppIdGetAsync(lApplicationId, lIdempotencyKey, default));
+        }
         
         [Fact]
         public void ApplicationList_WithoutOptions_CallsApi_WithoutOptions()
@@ -201,6 +257,38 @@ namespace Svix.Tests
             
             // Assert
             _mockApplicationApi.Verify(x => x.ListApplicationsApiV1AppGetAsync(lIterator, lLimit, null, default));
+        }
+        
+        [Fact]
+        public void ApplicationUpdate_CallsAPi_WithParams()
+        {
+            // Arrange 
+            string lApplicationId = "app_1srOrx2ZWZBpBUvZwXKQmoEYga2";
+            string lIdempotencyKey = Guid.NewGuid().ToString();
+
+            var lApplication = new ApplicationIn("MyApplication");
+            
+            // Act 
+            var lResult = _svixClient.Application.Update(lApplicationId, lApplication, lIdempotencyKey);
+            
+            // Assert
+            _mockApplicationApi.Verify(x => x.UpdateApplicationApiV1AppAppIdPut(lApplicationId, lApplication, lIdempotencyKey));
+        }
+        
+        [Fact]
+        public void ApplicationUpdateAsync_CallsAPi_WithParams()
+        {
+            // Arrange 
+            string lApplicationId = "app_1srOrx2ZWZBpBUvZwXKQmoEYga2";
+            string lIdempotencyKey = Guid.NewGuid().ToString();
+
+            var lApplication = new ApplicationIn("MyApplication");
+            
+            // Act 
+            var lResult = _svixClient.Application.UpdateAsync(lApplicationId, lApplication, lIdempotencyKey, default);
+            
+            // Assert
+            _mockApplicationApi.Verify(x => x.UpdateApplicationApiV1AppAppIdPutAsync(lApplicationId, lApplication, lIdempotencyKey, default));
         }
     }
 }

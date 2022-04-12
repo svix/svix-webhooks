@@ -37,7 +37,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(List)} failed");
+                Logger?.LogError(e, $"{nameof(Create)} failed");
 
                 if (Throw)
                     throw;
@@ -62,7 +62,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(List)} failed");
+                Logger?.LogError(e, $"{nameof(CreateAsync)} failed");
 
                 if (Throw)
                     throw;
@@ -83,7 +83,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(List)} failed");
+                Logger?.LogError(e, $"{nameof(Delete)} failed");
 
                 if (Throw)
                     throw;
@@ -105,7 +105,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(List)} failed");
+                Logger?.LogError(e, $"{nameof(DeleteAsync)} failed");
 
                 if (Throw)
                     throw;
@@ -126,7 +126,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(List)} failed");
+                Logger?.LogError(e, $"{nameof(Get)} failed");
 
                 if (Throw)
                     throw;
@@ -147,7 +147,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(List)} failed");
+                Logger?.LogError(e, $"{nameof(GetAsync)} failed");
 
                 if (Throw)
                     throw;
@@ -214,7 +214,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(List)} failed");
+                Logger?.LogError(e, $"{nameof(Update)} failed");
 
                 if (Throw)
                     throw;
@@ -237,7 +237,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(List)} failed");
+                Logger?.LogError(e, $"{nameof(UpdateAsync)} failed");
 
                 if (Throw)
                     throw;

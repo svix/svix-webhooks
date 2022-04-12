@@ -18,6 +18,11 @@ namespace Svix.Abstractions
             
         Task<bool> DeleteAsync(string appId, string idempotencyKey = default,
             CancellationToken cancellationToken = default);
+
+        ApplicationOut Get(string appId, string idempotencyKey = default);
+
+        Task<ApplicationOut> GetAsync(string appId, string idempotencyKey = default,
+            CancellationToken cancellationToken = default);
         
         List<ApplicationOut> List(ListOptions options, string idempotencyKey = default);
         
