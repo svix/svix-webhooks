@@ -345,7 +345,7 @@ pub fn validate_no_control_characters(str: &str) -> std::result::Result<(), Vali
 mod tests {
     use validator::Validate;
 
-    use super::{default_limit, validation_errors, Pagination};
+    use super::{default_limit, validate_no_control_characters, validation_errors, Pagination};
     use crate::core::types::ApplicationUid;
     use crate::error::ValidationErrorItem;
     use serde_json::json;
@@ -461,5 +461,15 @@ mod tests {
                 ))
             }
         );
+    }
+
+    #[test]
+    fn test_validate_no_control_characters() {
+        let a = "Test";
+        let b = "Test\u{0000}";
+
+        assert!(validate_no_control_characters(a).is_ok());
+        print!("{:?}", b);
+        assert!(validate_no_control_characters(b).is_err());
     }
 }
