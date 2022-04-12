@@ -3,8 +3,10 @@ using System.Collections.Generic;
 
 namespace Svix.Models
 {
-    public sealed class AttemptsByEndpointListOptions : ListOptions
+    public sealed class AttemptsByMessageListOptions : ListOptions
     {
+        public string? EndpointId { get; set; }
+        
         public int? Status { get; set; }
         
         public int? Code { get; set; }
