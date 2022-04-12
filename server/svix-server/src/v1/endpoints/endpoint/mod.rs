@@ -7,7 +7,7 @@ mod secrets;
 
 use crate::{
     core::types::{EndpointId, EndpointUid, EventChannelSet, EventTypeNameSet},
-    v1::utils::{api_not_implemented, validate_no_control_characters,  ModelIn},
+    v1::utils::{api_not_implemented, validate_no_control_characters, ModelIn},
 };
 use axum::{
     routing::{get, post},

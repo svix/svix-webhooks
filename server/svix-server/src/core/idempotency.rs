@@ -261,7 +261,7 @@ where
     S::Future: Send + 'static,
 {
     // First set the start value as a lock
-    if redis
+    match redis
         .set(
             key,
             &SerializedResponse::Start,
@@ -269,9 +269,20 @@ where
             NxStatus::SetIfNx,
         )
         .await
-        .is_err()
     {
-        return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
+        // If it's set continue
+        Ok(true) => {}
+
+        // If the key already exists, wait a little and enter the lock loop -- wait so that you
+        // don't immediately return 500 if the [`SerializedResponse::Start`] value isn't completely
+        // set upon entering
+        Ok(false) => {
+            tokio::time::sleep(Duration::from_millis(200)).await;
+            return lock_loop(redis, key).await;
+        }
+
+        // If it errors, something is up with Redis, so return 500
+        Err(_) => return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response()),
     }
 
     let (parts, mut body) = resolve_service(service, request)
@@ -519,9 +530,6 @@ mod tests {
                 .header("Authorization", &token)
                 .send(),
         );
-
-        // It takes a couple of ms for the lock to register
-        tokio::time::sleep(std::time::Duration::from_millis(5)).await;
 
         let resp_2_jh = tokio::spawn(
             client
