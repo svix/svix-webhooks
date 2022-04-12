@@ -506,6 +506,34 @@ pub struct ExpiringSigningKey {
 pub struct EndpointHeaders(pub HashMap<String, String>);
 json_wrapper!(EndpointHeaders);
 
+impl EndpointHeaders {
+    const FORBIDDEN_KEYS: &'static [&'static str] = &[
+        "user-agent",
+        "keep-alive",
+        "proxy-authenticate",
+        "proxy-authorization",
+        "te",
+        "trailers",
+        "transfer-encoding",
+        "upgrade",
+        "age",
+        "cache-control",
+        "clear-site-data",
+        "expires",
+        "pragma",
+        "warning",
+        "content-length",
+        "content-type",
+        "content-encoding",
+        "content-language",
+        "content-location",
+    ];
+    const FORBIDDEN_PREFIXES: &'static [&'static str] = &[
+        "x-amz-", "x-amzn-", "x-google", "x-goog-", "x-gfe", "x-amz-", "x-azure-", "x-fd-",
+        "x-svix-", "svix-",
+    ];
+}
+
 impl<'de> Deserialize<'de> for EndpointHeaders {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
@@ -529,6 +557,20 @@ impl Validate for EndpointHeaders {
             if let Err(_e) = http::header::HeaderValue::try_from(v) {
                 errors.add(ALL_ERROR, ValidationError::new("Invalid Header Value."));
             }
+            if Self::FORBIDDEN_KEYS.contains(&k.as_str()) {
+                errors.add(
+                    ALL_ERROR,
+                    ValidationError::new("Header uses a forbidden key."),
+                );
+            }
+            Self::FORBIDDEN_PREFIXES.iter().for_each(|p| {
+                if k.starts_with(p) {
+                    errors.add(
+                        ALL_ERROR,
+                        ValidationError::new("Header starts with a forbidden prefix."),
+                    )
+                }
+            })
         });
         if errors.is_empty() {
             Ok(())
@@ -659,6 +701,20 @@ mod tests {
             ("invalid\0".to_owned(), "true".to_owned()),
             ("valid".to_owned(), "true".to_owned()),
         ]);
+        let endpoint_headers = EndpointHeaders(hdr_map);
+        assert!(endpoint_headers.validate().is_err());
+
+        let hdr_map = HashMap::from([(
+            EndpointHeaders::FORBIDDEN_KEYS[0].to_owned(),
+            "true".to_owned(),
+        )]);
+        let endpoint_headers = EndpointHeaders(hdr_map);
+        assert!(endpoint_headers.validate().is_err());
+
+        let hdr_map = HashMap::from([(
+            EndpointHeaders::FORBIDDEN_PREFIXES[0].to_owned(),
+            "true".to_owned(),
+        )]);
         let endpoint_headers = EndpointHeaders(hdr_map);
         assert!(endpoint_headers.validate().is_err());
     }
