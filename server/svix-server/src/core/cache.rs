@@ -261,7 +261,7 @@ mod tests {
             .await
             .unwrap();
         let cache = RedisCache::new(redis_pool.clone());
-        let key = TestKeyA::new("key".to_owned());
+        let key = TestKeyA::new("nx_status_test_key".to_owned());
 
         assert!(cache
             .set(
@@ -271,7 +271,7 @@ mod tests {
                 NxStatus::SetIfNx
             )
             .await
-            .unwrap(),);
+            .unwrap());
         assert_eq!(cache.get(&key).await.unwrap(), Some(TestValA(1)));
 
         assert!(!cache
