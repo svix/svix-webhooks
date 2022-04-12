@@ -73,7 +73,7 @@ namespace Svix
             }
         }
 
-        public MessageOut Get(string messageId, string appId, string idempotencyKey = default)
+        public MessageOut Get(string appId, string messageId, string idempotencyKey = default)
         {
             try
             {
@@ -95,7 +95,7 @@ namespace Svix
             }
         }
 
-        public async Task<MessageOut> GetAsync(string messageId, string appId, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        public async Task<MessageOut> GetAsync(string appId, string messageId, string idempotencyKey = default, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -125,7 +125,7 @@ namespace Svix
                     appId, 
                     options?.Iterator,
                     options?.Limit,
-                    options?.EventTypes?.ToList(),
+                    options?.EventTypes,
                     options?.Channel,
                     options?.Before,
                     idempotencyKey);

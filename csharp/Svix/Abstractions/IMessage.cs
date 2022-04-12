@@ -14,9 +14,9 @@ namespace Svix.Abstractions
         Task<MessageOut> CreateAsync(string appId, MessageIn message, MessageCreateOptions options, 
             string idempotencyKey = default, CancellationToken cancellationToken = default);
 
-        MessageOut Get(string messageId, string appId, string idempotencyKey = default);
+        MessageOut Get(string appId, string messageId, string idempotencyKey = default);
         
-        Task<MessageOut> GetAsync(string messageId, string appId, string idempotencyKey = default,
+        Task<MessageOut> GetAsync(string appId, string messageId, string idempotencyKey = default,
             CancellationToken cancellationToken = default);
 
         List<MessageOut> List(string appId, MessageListOptions options, string idempotencyKey = default);
