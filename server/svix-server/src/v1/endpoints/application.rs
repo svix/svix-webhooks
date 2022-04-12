@@ -195,11 +195,11 @@ mod tests {
         let invalid_1: ApplicationIn =
             serde_json::from_value(json!({ "name": APP_NAME_INVALID })).unwrap();
         let invalid_2: ApplicationIn = serde_json::from_value(json!({
-                    "name": APP_NAME_VALID, 
+                    "name": APP_NAME_VALID,
                     "rateLimit": RATE_LIMIT_INVALID }))
         .unwrap();
-        let invalid_3: ApplicationIn = serde_json::from_value(json!({ 
-                    "name": APP_NAME_VALID, 
+        let invalid_3: ApplicationIn = serde_json::from_value(json!({
+                    "name": APP_NAME_VALID,
                     "uid": UID_INVALID }))
         .unwrap();
 
