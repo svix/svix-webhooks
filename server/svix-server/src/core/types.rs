@@ -450,6 +450,9 @@ impl<'de> Deserialize<'de> for EndpointSecret {
         use serde::de::Error;
         String::deserialize(deserializer)
             .and_then(|string| {
+                if !string.starts_with(Self::PREFIX) {
+                    return Err(Error::custom("invalid prefix".to_string()));
+                }
                 string
                     .get(Self::PREFIX.len()..)
                     .ok_or(Error::custom("invalid prefix".to_string()))
@@ -463,17 +466,10 @@ impl<'de> Deserialize<'de> for EndpointSecret {
 
 impl Validate for EndpointSecret {
     fn validate(&self) -> std::result::Result<(), ValidationErrors> {
-        let re = format!(
-            r"^{}[a-zA-Z0-9+/]{{{}}}$",
-            EndpointSecret::PREFIX,
-            (EndpointSecret::KEY_SIZE * 4 / 3)
-        );
-        let re = regex::Regex::new(&re).unwrap();
         let mut errors = ValidationErrors::new();
 
-        let encoded = format!("{}{}", EndpointSecret::PREFIX, base64::encode(&self.0));
-        if !re.is_match(encoded.as_str()) {
-            errors.add(ALL_ERROR, ValidationError::new("invalid secret"));
+        if self.0.len() != EndpointSecret::KEY_SIZE {
+            errors.add(ALL_ERROR, ValidationError::new("secret length invalid"));
         }
 
         if errors.is_empty() {
@@ -778,7 +774,12 @@ mod tests {
 
     #[test]
     fn test_endpoint_secret_deserialization() {
-        for key in ["w", "whsec_%", "whsec_wronglength"] {
+        for key in [
+            "w",
+            "whsec_%",
+            "whsec_wronglength",
+            "hwsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD",
+        ] {
             let js = serde_json::json!({ "key": key });
             assert!(serde_json::from_value::<EndpointSecretTestStruct>(js).is_err());
         }

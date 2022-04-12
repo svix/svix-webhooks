@@ -675,16 +675,16 @@ async fn test_custom_endpoint_secret() {
 }
 
 #[tokio::test]
-#[ignore]
 async fn test_invalid_endpoint_secret() {
     let (client, _jh) = start_svix_server();
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
-    let secret_invalid_prefix = "hwsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD".to_owned();
-    let secret_too_short = "whsec_C2FVsBQIhrscChlQIM+b5sSYspob7oD".to_owned();
+    let secret_too_short = "whsec_C2FVsBQIhrscChlQIM+b5sSYspob".to_owned();
+    let secret_too_long = "whsec_C2FVsBQIhrscChlQIM+b5sSYspob7oDazfgh".to_owned();
+    let invalid_prefix = "hwsec_C2FVsBQIhrscChlQIM+b5sSYspob7oDazfgh".to_owned();
 
-    for sec in [secret_invalid_prefix, secret_too_short] {
+    for sec in [secret_too_short, secret_too_long, invalid_prefix] {
         let ep_in: serde_json::Value = serde_json::json!({
             "url": "http://www.example.com".to_owned(),
             "version": 1,
