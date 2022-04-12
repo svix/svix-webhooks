@@ -128,6 +128,7 @@ namespace Svix
                     options?.EventTypes,
                     options?.Channel,
                     options?.Before,
+                    options?.After,
                     idempotencyKey);
 
                 return lResponse?.Data;
@@ -154,6 +155,7 @@ namespace Svix
                     options?.EventTypes,
                     options?.Channel,
                     options?.Before,
+                    options?.After,
                     idempotencyKey,
                     cancellationToken);
 

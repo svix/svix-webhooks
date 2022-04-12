@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Moq;
 using Svix.Abstractions;
@@ -112,6 +112,7 @@ namespace Svix.Tests
             {
                 Iterator = "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                 Before = DateTime.Today,
+                After = DateTime.Today.Subtract(TimeSpan.FromDays(7)),
                 Channel = "project_1337",
                 Limit = 50,
                 EventTypes = new List<string> { "user.signup" }
@@ -121,7 +122,7 @@ namespace Svix.Tests
             var lResult = _svixClient.Message.List(lApplicationId, lOptions, lIdempotencyKey);
             
             // Assert
-            _mockMessageApi.Verify(x => x.ListMessagesApiV1AppAppIdMsgGet(lApplicationId, lOptions.Iterator, lOptions.Limit, lOptions.EventTypes, lOptions.Channel, lOptions.Before, lIdempotencyKey));
+            _mockMessageApi.Verify(x => x.ListMessagesApiV1AppAppIdMsgGet(lApplicationId, lOptions.Iterator, lOptions.Limit, lOptions.EventTypes, lOptions.Channel, lOptions.Before, lOptions.After, lIdempotencyKey));
         }
         
         [Fact]
@@ -135,6 +136,7 @@ namespace Svix.Tests
             {
                 Iterator = "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                 Before = DateTime.Today,
+                After = DateTime.Today.Subtract(TimeSpan.FromDays(7)),
                 Channel = "project_1337",
                 Limit = 50,
                 EventTypes = new List<string> { "user.signup" }
@@ -144,7 +146,7 @@ namespace Svix.Tests
             var lResult = _svixClient.Message.ListAsync(lApplicationId, lOptions, lIdempotencyKey, default);
             
             // Assert
-            _mockMessageApi.Verify(x => x.ListMessagesApiV1AppAppIdMsgGetAsync(lApplicationId, lOptions.Iterator, lOptions.Limit, lOptions.EventTypes, lOptions.Channel, lOptions.Before, lIdempotencyKey, default));
+            _mockMessageApi.Verify(x => x.ListMessagesApiV1AppAppIdMsgGetAsync(lApplicationId, lOptions.Iterator, lOptions.Limit, lOptions.EventTypes, lOptions.Channel, lOptions.Before, lOptions.After, lIdempotencyKey, default));
         }
     }
 }
