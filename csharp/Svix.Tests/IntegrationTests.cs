@@ -30,11 +30,6 @@ namespace Svix.Tests
                 integrationApi: _mockIntegrationApi.Object);
         }
 
-        public void Dispose()
-        {
-            
-        }
-        
         [Fact]
         public void IntegrationCreate_CallsApi_WithParams()
         {

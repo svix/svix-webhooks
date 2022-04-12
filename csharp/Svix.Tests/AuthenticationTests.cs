@@ -28,11 +28,6 @@ namespace Svix.Tests
                 authenticationApi: _mockAuthenticationApi.Object);
         }
 
-        public void Dispose()
-        {
-            
-        }
-
         [Fact]
         public void AuthenticationGetDashboardAccess_CallsApi_WithParams()
         {

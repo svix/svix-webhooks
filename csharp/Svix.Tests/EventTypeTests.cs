@@ -30,11 +30,6 @@ namespace Svix.Tests
                 eventTypeApi: _mockEventTypeApi.Object);
         }
 
-        public void Dispose()
-        {
-            
-        }
-        
         [Fact]
         public void EventTypeArchive_CallsApi_WithParams()
         {

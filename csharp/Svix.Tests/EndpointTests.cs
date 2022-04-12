@@ -31,11 +31,6 @@ namespace Svix.Tests
                 endpointApi: _mockEndpointApi.Object);
         }
 
-        public void Dispose()
-        {
-            
-        }
-
         [Fact]
         public void EndpointCreate_CallsApi_WithParams()
         {
@@ -205,7 +200,6 @@ namespace Svix.Tests
         {
             // Arrange
             string lApplicationId = "app_1srOrx2ZWZBpBUvZwXKQmoEYga2";
-            string lEndpointId = "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2";
             string lIdempotencyKey = Guid.NewGuid().ToString();
             
             var lIterator = "app_1srOrx2ZWZBpBUvZwXKQmoEYga2";
@@ -228,7 +222,6 @@ namespace Svix.Tests
         {
             // Arrange
             string lApplicationId = "app_1srOrx2ZWZBpBUvZwXKQmoEYga2";
-            string lEndpointId = "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2";
             string lIdempotencyKey = Guid.NewGuid().ToString();
             
             var lIterator = "app_1srOrx2ZWZBpBUvZwXKQmoEYga2";

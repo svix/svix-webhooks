@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "bump-version": "node tools/bump_version.js",
-    "update-postman": "node tools/update_postman.js"
+    "update-postman": "node tools/update_postman.js",
     "generate": "yarn gen:python && yarn gen:javascript && yarn gen:go && yarn gen:java && yarn gen:kotlin && yarn gen:ruby && yarn gen:csharp",
     "gen:python": "openapi-generator-cli generate -i openapi.json -g python -o python/ -c python/openapi-generator-config.json -t python/templates",
     "gen:javascript": "openapi-generator-cli generate -i openapi.json -g typescript -o javascript/src/openapi -c javascript/openapi-generator-config.json",

@@ -29,11 +29,6 @@ namespace Svix.Tests
                 _mockOptions.Object,
                 applicationApi: _mockApplicationApi.Object);
         }
-        
-        public void Dispose()
-        {
-            // empty
-        }
 
         [Fact]
         public void ApplicationCreate_WithoutApplication_ThrowsException()
@@ -43,7 +38,7 @@ namespace Svix.Tests
         }
         
         [Fact]
-        public async void ApplicationCreateAsync_WithoutApplication_ThrowsException()
+        public void ApplicationCreateAsync_WithoutApplication_ThrowsException()
         {
             // Assert
             Assert.ThrowsAsync<ArgumentNullException>(() => _svixClient.Application.CreateAsync(null, null, null, default));
@@ -68,7 +63,7 @@ namespace Svix.Tests
         }
         
         [Fact]
-        public async void ApplicationCreateAsync_WithoutOptions_CallsApi_WithoutOptions()
+        public void ApplicationCreateAsync_WithoutOptions_CallsApi_WithoutOptions()
         {
             // Arrange
             var lName = "app_name_08q73yhrngv";
@@ -204,7 +199,7 @@ namespace Svix.Tests
         }
         
         [Fact]
-        public async void ApplicationListAsync_WithoutOptions_CallsApi_WithoutOptions()
+        public void ApplicationListAsync_WithoutOptions_CallsApi_WithoutOptions()
         {
             // Arrange
             ListOptions lOptions = null;
@@ -239,7 +234,7 @@ namespace Svix.Tests
         }
         
         [Fact]
-        public async void ApplicationListAsync_WithOptions_CallsApi_WithOptions()
+        public void ApplicationListAsync_WithOptions_CallsApi_WithOptions()
         {
             // Arrange
             var lIterator = "app_1srOrx2ZWZBpBUvZwXKQmoEYga2";

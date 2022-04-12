@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Moq;
 using Svix.Abstractions;
@@ -29,11 +29,6 @@ namespace Svix.Tests
                 messageApi: _mockMessageApi.Object);
         }
 
-        public void Dispose()
-        {
-            
-        }
-        
         [Fact]
         public void MessageCreate_CallsApi_WithParams()
         {
