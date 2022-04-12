@@ -4,7 +4,10 @@
 use crate::{
     core::types::{ApplicationId, ApplicationIdOrUid, ApplicationUid},
     error::{HttpError, Result},
-    v1::utils::{EmptyResponse, ListResponse, ModelIn, ModelOut, ValidatedJson, ValidatedQuery, validate_no_control_characters},
+    v1::utils::{
+        validate_no_control_characters, EmptyResponse, ListResponse, ModelIn, ModelOut,
+        ValidatedJson, ValidatedQuery,
+    },
 };
 use axum::{
     extract::{Extension, Path},

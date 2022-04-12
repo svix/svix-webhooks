@@ -5,8 +5,8 @@ use crate::{
     core::types::EventTypeName,
     error::{HttpError, Result},
     v1::utils::{
-        api_not_implemented, validate_no_control_characters, EmptyResponse, ListResponse, ModelIn, ModelOut, ValidatedJson,
-        ValidatedQuery,
+        api_not_implemented, validate_no_control_characters, EmptyResponse, ListResponse, ModelIn,
+        ModelOut, ValidatedJson, ValidatedQuery,
     },
 };
 use axum::{
