@@ -52,6 +52,7 @@ impl ModelIn for EventTypeIn {
 #[derive(Clone, Debug, PartialEq, Deserialize, Validate, ModelIn)]
 #[serde(rename_all = "camelCase")]
 struct EventTypeUpdate {
+    #[validate(custom = "validate_no_control_characters")]
     description: String,
     #[serde(default, rename = "archived")]
     deleted: bool,
