@@ -54,6 +54,15 @@ macro_rules! kv_def {
 }
 pub(crate) use kv_def;
 
+/// A simple enum used to provide context to the arguments of the [`RedisCache`] set command. This
+/// enum controls whether the Redis command is passed the "NX" flag which only sets a value if it
+/// does not already exist
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum NxStatus {
+    AlwaysSet,
+    SetIfNx,
+}
+
 /// A Redis-based cache of data to avoid expensive fetches from PostgreSQL. Simply a wrapper over
 /// Redis.
 #[derive(Debug, Clone)]
@@ -76,22 +85,34 @@ impl RedisCache {
 
     /// Sets a CacheKey to its associated CacheValue.
     /// Note that the [`Duration`] used is down to millisecond precision.
-    pub async fn set<T: CacheValue>(&self, key: &T::Key, value: &T, ttl: Duration) -> Result<()> {
+    /// Returns whether the key was set
+    pub async fn set<T: CacheValue>(
+        &self,
+        key: &T::Key,
+        value: &T,
+        ttl: Duration,
+        nx: NxStatus,
+    ) -> Result<bool> {
         let mut pool = self.redis.get().await?;
 
-        pool.pset_ex(
-            key.as_ref(),
-            serde_json::to_string(value)?,
-            ttl.as_millis().try_into().map_err(|e| {
-                Error::Input(format!(
-                    "Duration given cannot be converted to usize: {}",
-                    e
-                ))
-            })?,
-        )
-        .await?;
+        let mut cmd = redis::Cmd::set(key.as_ref(), serde_json::to_string(value)?);
 
-        Ok(())
+        cmd.arg("PX");
+        let ttl_as_millis: u64 = ttl.as_millis().try_into().map_err(|e| {
+            Error::Input(format!(
+                "Duration given cannot be converted to usize: {}",
+                e
+            ))
+        })?;
+        cmd.arg(ttl_as_millis);
+
+        if nx == NxStatus::SetIfNx {
+            cmd.arg("NX");
+        }
+
+        let res: Option<()> = cmd.query_async(&mut *pool).await?;
+
+        Ok(res.is_some())
     }
 
     #[cfg(test)]
@@ -150,11 +171,21 @@ mod tests {
 
         // Create
         assert!(cache
-            .set(&first_key, &first_val_a, Duration::from_secs(30))
+            .set(
+                &first_key,
+                &first_val_a,
+                Duration::from_secs(30),
+                NxStatus::AlwaysSet
+            )
             .await
             .is_ok());
         assert!(cache
-            .set(&second_key, &second_val_a, Duration::from_secs(30))
+            .set(
+                &second_key,
+                &second_val_a,
+                Duration::from_secs(30),
+                NxStatus::AlwaysSet
+            )
             .await
             .is_ok());
 
@@ -164,11 +195,21 @@ mod tests {
 
         // Update (overwrite)
         assert!(cache
-            .set(&first_key, &first_val_b, Duration::from_secs(30))
+            .set(
+                &first_key,
+                &first_val_b,
+                Duration::from_secs(30),
+                NxStatus::AlwaysSet
+            )
             .await
             .is_ok());
         assert!(cache
-            .set(&second_key, &second_val_b, Duration::from_secs(30))
+            .set(
+                &second_key,
+                &second_val_b,
+                Duration::from_secs(30),
+                NxStatus::AlwaysSet
+            )
             .await
             .is_ok());
 
@@ -198,10 +239,52 @@ mod tests {
         let key = TestKeyA::new("key".to_owned());
 
         assert!(cache
-            .set(&key, &TestValA(1), Duration::from_secs(1))
+            .set(
+                &key,
+                &TestValA(1),
+                Duration::from_secs(1),
+                NxStatus::AlwaysSet
+            )
             .await
             .is_ok());
         tokio::time::sleep(std::time::Duration::from_millis(1200)).await;
         assert_eq!(cache.get::<TestValA>(&key).await.unwrap(), None);
+    }
+
+    #[tokio::test]
+    async fn test_cache_nx_status() {
+        dotenv::dotenv().ok();
+        let cfg = crate::cfg::load().unwrap();
+
+        let redis_pool = bb8::Pool::builder()
+            .build(RedisConnectionManager::new(cfg.redis_dsn.as_deref().unwrap()).unwrap())
+            .await
+            .unwrap();
+        let cache = RedisCache::new(redis_pool.clone());
+        let key = TestKeyA::new("key".to_owned());
+
+        assert!(cache
+            .set(
+                &key,
+                &TestValA(1),
+                Duration::from_secs(30),
+                NxStatus::SetIfNx
+            )
+            .await
+            .unwrap(),);
+        assert_eq!(cache.get(&key).await.unwrap(), Some(TestValA(1)));
+
+        assert!(!cache
+            .set(
+                &key,
+                &TestValA(2),
+                Duration::from_secs(30),
+                NxStatus::SetIfNx
+            )
+            .await
+            .unwrap());
+        assert_eq!(cache.get(&key).await.unwrap(), Some(TestValA(1)));
+
+        assert!(cache.delete(&key).await.is_ok());
     }
 }
