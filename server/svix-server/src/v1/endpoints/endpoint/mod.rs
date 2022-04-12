@@ -166,11 +166,11 @@ pub struct RecoverIn {
     pub since: DateTime<Utc>,
 }
 
-#[derive(Clone, Debug, PartialEq, Validate, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Validate, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointHeadersIn {
     #[validate]
-    headers: EndpointHeaders,
+    pub headers: EndpointHeaders,
 }
 
 impl ModelIn for EndpointHeadersIn {
@@ -181,11 +181,11 @@ impl ModelIn for EndpointHeadersIn {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Default)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase")]
-struct EndpointHeadersOut {
-    headers: HashMap<String, String>,
-    sensitive: HashSet<String>,
+pub struct EndpointHeadersOut {
+    pub headers: HashMap<String, String>,
+    pub sensitive: HashSet<String>,
 }
 
 impl EndpointHeadersOut {
@@ -212,11 +212,11 @@ impl From<EndpointHeaders> for EndpointHeadersOut {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Validate, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Validate, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
-struct EndpointHeadersPatchIn {
+pub struct EndpointHeadersPatchIn {
     #[validate]
-    headers: EndpointHeaders,
+    pub headers: EndpointHeaders,
 }
 
 impl ModelIn for EndpointHeadersPatchIn {
