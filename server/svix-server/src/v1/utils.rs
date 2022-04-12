@@ -469,7 +469,6 @@ mod tests {
         let b = "Test\u{0000}";
 
         assert!(validate_no_control_characters(a).is_ok());
-        print!("{:?}", b);
         assert!(validate_no_control_characters(b).is_err());
     }
 }
