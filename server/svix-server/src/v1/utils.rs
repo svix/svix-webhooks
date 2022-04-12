@@ -10,10 +10,10 @@ use axum::{
     BoxError,
 };
 use chrono::{DateTime, Utc};
+use regex::Regex;
 use sea_orm::{ColumnTrait, QueryFilter, QueryOrder, QuerySelect};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
-
-use validator::Validate;
+use validator::{Validate, ValidationError};
 
 use crate::{
     core::types::{BaseId, EventTypeName, EventTypeNameSet},
@@ -331,11 +331,21 @@ pub async fn api_not_implemented() -> Result<()> {
     Err(HttpError::not_implemented(None, None).into())
 }
 
+pub fn validate_no_control_characters(str: &str) -> std::result::Result<(), ValidationError> {
+    let re = Regex::new(r"[\x00-\x08]").unwrap();
+    if re.is_match(str) {
+        return Err(ValidationError::new(
+            "Control characters 0x00-0x08 not allowed.",
+        ));
+    }
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use validator::Validate;
 
-    use super::{default_limit, validation_errors, Pagination};
+    use super::{default_limit, validate_no_control_characters, validation_errors, Pagination};
     use crate::core::types::ApplicationUid;
     use crate::error::ValidationErrorItem;
     use serde_json::json;
@@ -451,5 +461,14 @@ mod tests {
                 ))
             }
         );
+    }
+
+    #[test]
+    fn test_validate_no_control_characters() {
+        let a = "A good string";
+        let b = "A\u{0000} bad string";
+
+        assert!(validate_no_control_characters(a).is_ok());
+        assert!(validate_no_control_characters(b).is_err());
     }
 }

@@ -4,7 +4,10 @@
 use crate::{
     core::types::{ApplicationId, ApplicationIdOrUid, ApplicationUid},
     error::{HttpError, Result},
-    v1::utils::{EmptyResponse, ListResponse, ModelIn, ModelOut, ValidatedJson, ValidatedQuery},
+    v1::utils::{
+        validate_no_control_characters, EmptyResponse, ListResponse, ModelIn, ModelOut,
+        ValidatedJson, ValidatedQuery,
+    },
 };
 use axum::{
     extract::{Extension, Path},
@@ -26,7 +29,10 @@ use crate::v1::utils::Pagination;
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize, Validate, ModelIn)]
 #[serde(rename_all = "camelCase")]
 pub struct ApplicationIn {
-    #[validate(length(min = 1, message = "Application names must be at least one character"))]
+    #[validate(
+        length(min = 1, message = "Application names must be at least one character"),
+        custom = "validate_no_control_characters"
+    )]
     pub name: String,
 
     #[validate(range(min = 1, message = "Application rate limits must be at least 1 if set"))]
@@ -192,11 +198,11 @@ mod tests {
         let invalid_1: ApplicationIn =
             serde_json::from_value(json!({ "name": APP_NAME_INVALID })).unwrap();
         let invalid_2: ApplicationIn = serde_json::from_value(json!({
-                    "name": APP_NAME_VALID, 
+                    "name": APP_NAME_VALID,
                     "rateLimit": RATE_LIMIT_INVALID }))
         .unwrap();
-        let invalid_3: ApplicationIn = serde_json::from_value(json!({ 
-                    "name": APP_NAME_VALID, 
+        let invalid_3: ApplicationIn = serde_json::from_value(json!({
+                    "name": APP_NAME_VALID,
                     "uid": UID_INVALID }))
         .unwrap();
 

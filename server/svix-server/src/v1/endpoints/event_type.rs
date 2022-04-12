@@ -5,8 +5,8 @@ use crate::{
     core::types::EventTypeName,
     error::{HttpError, Result},
     v1::utils::{
-        api_not_implemented, EmptyResponse, ListResponse, ModelIn, ModelOut, ValidatedJson,
-        ValidatedQuery,
+        api_not_implemented, validate_no_control_characters, EmptyResponse, ListResponse, ModelIn,
+        ModelOut, ValidatedJson, ValidatedQuery,
     },
 };
 use axum::{
@@ -30,6 +30,7 @@ use crate::v1::utils::Pagination;
 #[serde(rename_all = "camelCase")]
 pub struct EventTypeIn {
     pub name: EventTypeName,
+    #[validate(custom = "validate_no_control_characters")]
     pub description: String,
     #[serde(default, rename = "archived")]
     pub deleted: bool,
@@ -51,6 +52,7 @@ impl ModelIn for EventTypeIn {
 #[derive(Clone, Debug, PartialEq, Deserialize, Validate, ModelIn)]
 #[serde(rename_all = "camelCase")]
 struct EventTypeUpdate {
+    #[validate(custom = "validate_no_control_characters")]
     description: String,
     #[serde(default, rename = "archived")]
     deleted: bool,
