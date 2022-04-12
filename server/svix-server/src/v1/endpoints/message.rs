@@ -9,16 +9,16 @@ use crate::{
         message_app::CreateMessageApp,
         security::AuthenticatedApplication,
         types::{
-            ApplicationIdOrUid, BaseId, EventChannel, EventChannelSet, EventTypeName,
-            EventTypeNameSet, MessageAttemptTriggerType, MessageId, MessageIdOrUid, MessageStatus,
-            MessageUid,
+            ApplicationIdOrUid, EventChannel, EventChannelSet, EventTypeName, EventTypeNameSet,
+            MessageAttemptTriggerType, MessageId, MessageIdOrUid, MessageStatus, MessageUid,
         },
     },
     db::models::messagedestination,
     error::{Error, HttpError, Result},
     queue::{MessageTask, TaskQueueProducer},
     v1::utils::{
-        ListResponse, MessageListFetchOptions, ModelIn, ModelOut, ValidatedJson, ValidatedQuery,
+        apply_pagination, iterator_from_before_or_after, ListResponse, MessageListFetchOptions,
+        ModelIn, ModelOut, ReversibleIterator, ValidatedJson, ValidatedQuery,
     },
 };
 use axum::{
@@ -28,9 +28,9 @@ use axum::{
 };
 use chrono::{DateTime, Utc};
 use hyper::StatusCode;
-use sea_orm::{entity::prelude::*, QueryOrder};
+use sea_orm::entity::prelude::*;
 use sea_orm::{sea_query::Expr, ActiveValue::Set};
-use sea_orm::{ActiveModelTrait, DatabaseConnection, QuerySelect, TransactionTrait};
+use sea_orm::{ActiveModelTrait, DatabaseConnection, TransactionTrait};
 use serde::{Deserialize, Serialize};
 
 use svix_server_derive::{ModelIn, ModelOut};
@@ -131,14 +131,17 @@ pub struct ListMessagesQueryParams {
     channel: Option<EventChannel>,
     #[serde(default = "default_true")]
     with_content: bool,
+
+    after: Option<DateTime<Utc>>,
 }
 
 async fn list_messages(
     Extension(ref db): Extension<DatabaseConnection>,
-    pagination: ValidatedQuery<Pagination<MessageId>>,
+    ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<MessageId>>>,
     ValidatedQuery(ListMessagesQueryParams {
         channel,
         with_content,
+        after,
     }): ValidatedQuery<ListMessagesQueryParams>,
     list_filter: MessageListFetchOptions,
     AuthenticatedApplication {
@@ -147,18 +150,8 @@ async fn list_messages(
     }: AuthenticatedApplication,
 ) -> Result<Json<ListResponse<MessageOut>>> {
     let limit = pagination.limit;
-    let iterator = pagination
-        .iterator
-        .clone()
-        .or_else(|| list_filter.before.map(MessageId::start_id));
 
-    let mut query = message::Entity::secure_find(app.id)
-        .order_by_desc(message::Column::Id)
-        .limit(limit + 1);
-
-    if let Some(iterator) = iterator {
-        query = query.filter(message::Column::Id.lt(iterator));
-    }
+    let mut query = message::Entity::secure_find(app.id);
 
     if let Some(EventTypeNameSet(event_types)) = list_filter.event_types {
         query = query.filter(message::Column::EventType.is_in(event_types));
@@ -168,22 +161,25 @@ async fn list_messages(
         query = query.filter(Expr::cust_with_values("channels ?? ?", vec![channel]));
     }
 
-    Ok(Json(MessageOut::list_response(
-        query
-            .all(db)
-            .await?
-            .into_iter()
-            .map(|x| {
-                if with_content {
-                    x.into()
-                } else {
-                    MessageOut::without_payload(x)
-                }
-            })
-            .collect(),
-        limit as usize,
-        false,
-    )))
+    let iterator = iterator_from_before_or_after(pagination.iterator, list_filter.before, after);
+    let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
+
+    let query = apply_pagination(query, message::Column::Id, pagination.limit, iterator);
+    let into = |x: message::Model| {
+        if with_content {
+            x.into()
+        } else {
+            MessageOut::without_payload(x)
+        }
+    };
+
+    let out = if is_prev {
+        query.all(db).await?.into_iter().rev().map(into).collect()
+    } else {
+        query.all(db).await?.into_iter().map(into).collect()
+    };
+
+    Ok(Json(MessageOut::list_response(out, limit as usize, false)))
 }
 
 #[derive(Debug, Deserialize, Validate)]
