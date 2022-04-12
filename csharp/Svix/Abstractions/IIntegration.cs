@@ -39,6 +39,6 @@ namespace Svix.Abstractions
         
         IntegrationOut Update(string appId, string integrationId, IntegrationUpdate integration, string idempotencyKey = default);
         
-        Task<IntegrationOut> UpdateAsync(string appId, string integrationId, IntegrationUpdate integration, string idempotencyKey = default);
+        Task<IntegrationOut> UpdateAsync(string appId, string integrationId, IntegrationUpdate integration, string idempotencyKey = default, CancellationToken cancellationToken = default);
     }
 }

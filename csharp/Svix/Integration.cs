@@ -214,7 +214,7 @@ namespace Svix
                     options?.Limit,
                     idempotencyKey);
 
-                return lResult.Data;
+                return lResult?.Data;
             }
             catch (ApiException e)
             {
@@ -239,7 +239,7 @@ namespace Svix
                     idempotencyKey,
                     cancellationToken);
 
-                return lResult.Data;
+                return lResult?.Data;
             }
             catch (ApiException e)
             {
@@ -321,7 +321,7 @@ namespace Svix
             }
         }
 
-        public async Task<IntegrationOut> UpdateAsync(string appId, string integrationId, IntegrationUpdate integration, string idempotencyKey = default)
+        public async Task<IntegrationOut> UpdateAsync(string appId, string integrationId, IntegrationUpdate integration, string idempotencyKey = default, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -329,7 +329,8 @@ namespace Svix
                     integrationId,
                     appId,
                     integration,
-                    idempotencyKey);
+                    idempotencyKey,
+                    cancellationToken);
 
                 return lIntegration;
             }
