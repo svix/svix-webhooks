@@ -38,7 +38,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(List)} failed");
+                Logger?.LogError(e, $"{nameof(Create)} failed");
 
                 if (Throw)
                     throw;
@@ -64,7 +64,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(List)} failed");
+                Logger?.LogError(e, $"{nameof(CreateAsync)} failed");
 
                 if (Throw)
                     throw;
@@ -86,7 +86,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(List)} failed");
+                Logger?.LogError(e, $"{nameof(Get)} failed");
 
                 if (Throw)
                     throw;
@@ -108,7 +108,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(List)} failed");
+                Logger?.LogError(e, $"{nameof(GetAsync)} failed");
 
                 if (Throw)
                     throw;
@@ -151,7 +151,7 @@ namespace Svix
                     appId, 
                     options?.Iterator,
                     options?.Limit,
-                    options?.EventTypes?.ToList(),
+                    options?.EventTypes,
                     options?.Channel,
                     options?.Before,
                     idempotencyKey,
