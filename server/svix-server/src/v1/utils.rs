@@ -12,8 +12,8 @@ use axum::{
 use chrono::{DateTime, Utc};
 use sea_orm::{ColumnTrait, QueryFilter, QueryOrder, QuerySelect};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
-
-use validator::Validate;
+use validator::{Validate, ValidationError};
+use regex::Regex;
 
 use crate::{
     core::types::{BaseId, EventTypeName, EventTypeNameSet},
@@ -329,6 +329,14 @@ where
 
 pub async fn api_not_implemented() -> Result<()> {
     Err(HttpError::not_implemented(None, None).into())
+}
+
+pub fn validate_no_control_characters(str: &str) -> std::result::Result<(), ValidationError> {
+    let re = Regex::new(r"[\x00-\x08]").unwrap();
+    if re.is_match(str) {
+        return Err(ValidationError::new("Control characters 0x00-0x08 not allowed."));
+    }
+    Ok(())
 }
 
 #[cfg(test)]

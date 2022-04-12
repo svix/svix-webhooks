@@ -4,7 +4,7 @@
 use crate::{
     core::types::{ApplicationId, ApplicationIdOrUid, ApplicationUid},
     error::{HttpError, Result},
-    v1::utils::{EmptyResponse, ListResponse, ModelIn, ModelOut, ValidatedJson, ValidatedQuery},
+    v1::utils::{EmptyResponse, ListResponse, ModelIn, ModelOut, ValidatedJson, ValidatedQuery, validate_no_control_characters},
 };
 use axum::{
     extract::{Extension, Path},
@@ -26,7 +26,10 @@ use crate::v1::utils::Pagination;
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize, Validate, ModelIn)]
 #[serde(rename_all = "camelCase")]
 pub struct ApplicationIn {
-    #[validate(length(min = 1, message = "Application names must be at least one character"))]
+    #[validate(
+        length(min = 1, message = "Application names must be at least one character"),
+        custom = "validate_no_control_characters"
+    )]
     pub name: String,
 
     #[validate(range(min = 1, message = "Application rate limits must be at least 1 if set"))]

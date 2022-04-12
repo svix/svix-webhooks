@@ -7,7 +7,7 @@ mod secrets;
 
 use crate::{
     core::types::{EndpointId, EndpointUid, EventChannelSet, EventTypeNameSet},
-    v1::utils::{api_not_implemented, ModelIn},
+    v1::utils::{api_not_implemented, validate_no_control_characters, ModelIn},
 };
 use axum::{
     routing::{get, post},
@@ -54,6 +54,7 @@ pub fn validate_channels_endpoint(
 pub struct EndpointIn {
     #[serde(default)]
     #[serde(skip_serializing_if = "String::is_empty")]
+    #[validate(custom = "validate_no_control_characters")]
     pub description: String,
 
     #[validate(range(min = 1, message = "Endpoint rate limits must be at least one if set"))]
