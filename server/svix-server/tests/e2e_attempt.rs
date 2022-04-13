@@ -4,9 +4,14 @@
 use reqwest::StatusCode;
 
 use svix_server::{
-    core::types::MessageStatus,
+    core::types::{ApplicationId, EndpointId, MessageId, MessageStatus},
     v1::{
-        endpoints::attempt::{AttemptedMessageOut, MessageAttemptOut},
+        endpoints::{
+            application::ApplicationOut,
+            attempt::{AttemptedMessageOut, MessageAttemptOut},
+            endpoint::EndpointOut,
+            message::MessageOut,
+        },
         utils::ListResponse,
     },
 };
@@ -19,7 +24,7 @@ use utils::{
         get_msg_attempt_list_and_assert_count,
     },
     get_default_test_config, run_with_retries, start_svix_server, start_svix_server_with_cfg,
-    TestReceiver,
+    TestClient, TestReceiver,
 };
 
 use std::time::Duration;
@@ -195,7 +200,7 @@ async fn test_message_attempts() {
         .await
         .unwrap();
 
-        for i in list.data.iter() {
+        for i in &list.data {
             assert_eq!(i.status, msg_status);
             println!("{} {}", i.response_status_code, status_code);
             assert_eq!(
@@ -233,19 +238,49 @@ async fn test_message_attempts() {
     .await
     .unwrap();
 
-    for i in list.data.iter() {
+    for i in &list.data {
         assert_eq!(i.status, MessageStatus::Fail);
         assert_eq!(i.response_status_code, 0);
         assert_eq!(i.endpoint_id, endp_id);
     }
 }
 
-#[tokio::test]
-async fn test_pagination_by_endpoint() {
-    let (client, _jh) = start_svix_server();
+async fn get_paginated_attempts_by_endpoint(
+    client: &TestClient,
+    app_id: &ApplicationId,
+    ep_id: &EndpointId,
+    query_params: Option<&str>,
+) -> anyhow::Result<ListResponse<MessageAttemptOut>> {
+    if let Some(query_params) = query_params {
+        client
+            .get(
+                &format!(
+                    "api/v1/app/{}/attempt/endpoint/{}/?{}",
+                    app_id, ep_id, query_params
+                ),
+                StatusCode::OK,
+            )
+            .await
+    } else {
+        client
+            .get(
+                &format!("api/v1/app/{}/attempt/endpoint/{}/", app_id, ep_id,),
+                StatusCode::OK,
+            )
+            .await
+    }
+}
 
+async fn pagination_test_setup(
+    client: &TestClient,
+) -> (
+    ApplicationOut,
+    Vec<TestReceiver>,
+    Vec<EndpointOut>,
+    Vec<MessageOut>,
+) {
     // Setup six endpoints and six messages so there's a sufficient number to test pagination
-    let app = create_test_app(&client, "app1").await.unwrap();
+    let app = create_test_app(client, "app1").await.unwrap();
 
     let mut receivers = Vec::new();
     for _ in 0..6 {
@@ -255,7 +290,7 @@ async fn test_pagination_by_endpoint() {
     let mut eps = Vec::new();
     for receiver in &receivers {
         eps.push(
-            create_test_endpoint(&client, &app.id, &receiver.endpoint)
+            create_test_endpoint(client, &app.id, &receiver.endpoint)
                 .await
                 .unwrap(),
         );
@@ -265,7 +300,7 @@ async fn test_pagination_by_endpoint() {
     for i in 1..=6usize {
         messages.push(
             create_test_message(
-                &client,
+                client,
                 &app.id,
                 serde_json::json!({
                     "test": i,
@@ -279,11 +314,7 @@ async fn test_pagination_by_endpoint() {
     // Wait until all attempts were made
     run_with_retries(|| async {
         for endp_id in eps.iter().map(|ep| &ep.id) {
-            let list: ListResponse<MessageAttemptOut> = client
-                .get(
-                    &format!("api/v1/app/{}/attempt/endpoint/{}/", app.id, endp_id),
-                    StatusCode::OK,
-                )
+            let list = get_paginated_attempts_by_endpoint(client, &app.id, endp_id, None)
                 .await
                 .unwrap();
 
@@ -297,345 +328,183 @@ async fn test_pagination_by_endpoint() {
     .await
     .unwrap();
 
+    (app, receivers, eps, messages)
+}
+
+#[tokio::test]
+async fn test_pagination_by_endpoint() {
+    let (client, _jh) = start_svix_server();
+    let (app, _receivers, eps, _messages) = pagination_test_setup(&client).await;
+
     // By endpoint
     for ep in &eps {
-        let all_attempts: ListResponse<MessageAttemptOut> = client
-            .get(
-                &format!("api/v1/app/{}/attempt/endpoint/{}/", app.id, ep.id),
-                StatusCode::OK,
-            )
-            .await
-            .unwrap();
+        macro_rules! attempts_by_endpoint {
+            () => {
+                get_paginated_attempts_by_endpoint(&client, &app.id, &ep.id, None).await
+            };
+
+            ($query:tt) => {
+                get_paginated_attempts_by_endpoint(&client, &app.id, &ep.id, Some(&$query)).await
+            };
+        }
+
+        let all_attempts = attempts_by_endpoint!().unwrap();
 
         // Test Limit
-        let first_three: ListResponse<MessageAttemptOut> = client
-            .get(
-                &format!("api/v1/app/{}/attempt/endpoint/{}/?limit=3", app.id, ep.id),
-                StatusCode::OK,
-            )
-            .await
-            .unwrap();
-
+        let first_three = attempts_by_endpoint!("limit=3").unwrap();
         assert_eq!(all_attempts.data.len(), 6);
-        assert_eq!(first_three.data.len(), 3);
         assert_eq!(&all_attempts.data[0..3], first_three.data.as_slice());
 
         // Forward iterator
-        let last_three_manual: ListResponse<MessageAttemptOut> = client
-            .get(
-                &format!(
-                    "api/v1/app/{}/attempt/endpoint/{}/?limit=3&iterator={}",
-                    app.id, ep.id, all_attempts.data[2].id
-                ),
-                StatusCode::OK,
-            )
-            .await
-            .unwrap();
+        let query = format!("limit=3&iterator={}", all_attempts.data[2].id);
+        let last_three_manual = attempts_by_endpoint!(query).unwrap();
 
-        let last_three_iter_field: ListResponse<MessageAttemptOut> = client
-            .get(
-                &format!(
-                    "api/v1/app/{}/attempt/endpoint/{}/?limit=3&iterator={}",
-                    app.id,
-                    ep.id,
-                    first_three.iterator.unwrap()
-                ),
-                StatusCode::OK,
-            )
-            .await
-            .unwrap();
+        let query = format!("limit=3&iterator={}", first_three.iterator.unwrap());
+        let last_three_iter_field = attempts_by_endpoint!(query).unwrap();
 
         assert_eq!(last_three_manual.data, last_three_iter_field.data);
 
-        assert_eq!(last_three_manual.data.len(), 3);
         assert_eq!(&all_attempts.data[3..6], last_three_manual.data.as_slice());
         assert!(last_three_manual.done);
 
         // `prev` iterator
-        let two_and_three: ListResponse<MessageAttemptOut> = client
-            .get(
-                &format!(
-                    "api/v1/app/{}/attempt/endpoint/{}/?limit=2&iterator={}",
-                    app.id,
-                    ep.id,
-                    last_three_manual.prev_iterator.unwrap()
-                ),
-                StatusCode::OK,
-            )
-            .await
-            .unwrap();
+        let query = format!(
+            "limit=2&iterator={}",
+            last_three_iter_field.prev_iterator.unwrap()
+        );
+        let two_and_three = attempts_by_endpoint!(query).unwrap();
 
-        assert_eq!(two_and_three.data.len(), 2);
         assert_eq!(&all_attempts.data[1..3], two_and_three.data.as_slice());
         assert!(!two_and_three.done);
 
-        let one: ListResponse<MessageAttemptOut> = client
-            .get(
-                &format!(
-                    "api/v1/app/{}/attempt/endpoint/{}/?limit=2&iterator={}",
-                    app.id,
-                    ep.id,
-                    two_and_three.prev_iterator.unwrap()
-                ),
-                StatusCode::OK,
-            )
-            .await
-            .unwrap();
+        let query = format!("limit=2&iterator={}", two_and_three.prev_iterator.unwrap());
+        let one = attempts_by_endpoint!(query).unwrap();
 
-        assert_eq!(one.data.len(), 1);
-        assert_eq!(all_attempts.data[0], one.data[0]);
+        assert_eq!(&all_attempts.data[0..1], one.data.as_slice());
         assert!(one.done);
 
         // `after` field
-        let first_three_by_time: ListResponse<MessageAttemptOut> = client
-            .get(
-                &format!(
-                    "api/v1/app/{}/attempt/endpoint/{}/?after={}",
-                    app.id, ep.id, all_attempts.data[3].created_at,
-                ),
-                StatusCode::OK,
-            )
-            .await
-            .unwrap();
-        assert_eq!(first_three_by_time.data.len(), 3);
+        let query = format!("after={}", all_attempts.data[3].created_at);
+        let first_three_by_time = attempts_by_endpoint!(query).unwrap();
         assert_eq!(
             &all_attempts.data[0..3],
             first_three_by_time.data.as_slice()
         );
 
         // `before field`
-        let last_three_by_time: ListResponse<MessageAttemptOut> = client
+        let query = format!("before={}", all_attempts.data[2].created_at);
+        let last_three_by_time = attempts_by_endpoint!(query).unwrap();
+        assert_eq!(&all_attempts.data[3..6], last_three_by_time.data.as_slice());
+    }
+}
+
+/// Adds 5ms to a [`chrono::DateTime`] for testing `before` and `after`
+fn add_5ms<T: chrono::TimeZone>(dur: chrono::DateTime<T>) -> chrono::DateTime<T> {
+    dur + chrono::Duration::from_std(std::time::Duration::from_millis(5)).unwrap()
+}
+
+/// Subtracts 5ms to a [`chrono::DateTime`] for testing `before` and `after`
+fn sub_5ms<T: chrono::TimeZone>(dur: chrono::DateTime<T>) -> chrono::DateTime<T> {
+    dur - chrono::Duration::from_std(std::time::Duration::from_millis(5)).unwrap()
+}
+
+async fn get_paginated_attempts_by_message(
+    client: &TestClient,
+    app_id: &ApplicationId,
+    ep_id: &MessageId,
+    query_params: Option<&str>,
+) -> anyhow::Result<ListResponse<MessageAttemptOut>> {
+    if let Some(query_params) = query_params {
+        client
             .get(
                 &format!(
-                    "api/v1/app/{}/attempt/endpoint/{}/?before={}",
-                    app.id, ep.id, all_attempts.data[2].created_at,
+                    "api/v1/app/{}/attempt/msg/{}/?{}",
+                    app_id, ep_id, query_params
                 ),
                 StatusCode::OK,
             )
             .await
-            .unwrap();
-        assert_eq!(last_three_by_time.data.len(), 3);
-        assert_eq!(&all_attempts.data[3..6], last_three_by_time.data.as_slice());
+    } else {
+        client
+            .get(
+                &format!("api/v1/app/{}/attempt/msg/{}/", app_id, ep_id,),
+                StatusCode::OK,
+            )
+            .await
     }
 }
 
 #[tokio::test]
 async fn test_pagination_by_msg() {
     let (client, _jh) = start_svix_server();
-
-    // Setup six endpoints and six messages so there's a sufficient number to test pagination
-    let app = create_test_app(&client, "app1").await.unwrap();
-
-    let mut receivers = Vec::new();
-    for _ in 0..6 {
-        receivers.push(TestReceiver::start(StatusCode::OK));
-    }
-
-    let mut eps = Vec::new();
-    for receiver in &receivers {
-        eps.push(
-            create_test_endpoint(&client, &app.id, &receiver.endpoint)
-                .await
-                .unwrap(),
-        );
-    }
-
-    let mut messages = Vec::new();
-    for i in 1..=6usize {
-        messages.push(
-            create_test_message(
-                &client,
-                &app.id,
-                serde_json::json!({
-                    "test": i,
-                }),
-            )
-            .await
-            .unwrap(),
-        );
-    }
-
-    // Wait until all attempts were made
-    run_with_retries(|| async {
-        for endp_id in eps.iter().map(|ep| &ep.id) {
-            let list: ListResponse<MessageAttemptOut> = client
-                .get(
-                    &format!("api/v1/app/{}/attempt/endpoint/{}/", app.id, endp_id),
-                    StatusCode::OK,
-                )
-                .await
-                .unwrap();
-
-            if list.data.len() != 6 {
-                anyhow::bail!("list len {}, not 6", list.data.len());
-            }
-        }
-
-        Ok(())
-    })
-    .await
-    .unwrap();
+    let (app, _receivers, _eps, messages) = pagination_test_setup(&client).await;
 
     // By message
     for msg in &messages {
-        let all_attempts: ListResponse<MessageAttemptOut> = client
-            .get(
-                &format!("api/v1/app/{}/attempt/msg/{}/", app.id, msg.id),
-                StatusCode::OK,
-            )
-            .await
-            .unwrap();
+        macro_rules! attempts_by_msg {
+            () => {
+                get_paginated_attempts_by_message(&client, &app.id, &msg.id, None).await
+            };
+
+            ($query:tt) => {
+                get_paginated_attempts_by_message(&client, &app.id, &msg.id, Some(&$query)).await
+            };
+        }
+
+        let all_attempts = attempts_by_msg!().unwrap();
 
         // Test Limit
-        let first_three: ListResponse<MessageAttemptOut> = client
-            .get(
-                &format!("api/v1/app/{}/attempt/msg/{}/?limit=3", app.id, msg.id),
-                StatusCode::OK,
-            )
-            .await
-            .unwrap();
-
+        let first_three = attempts_by_msg!("limit=3").unwrap();
         assert_eq!(all_attempts.data.len(), 6);
-        assert_eq!(first_three.data.len(), 3);
-
         assert_eq!(&all_attempts.data[0..3], first_three.data.as_slice());
 
         // Forward iterator
-        let last_three_manual: ListResponse<MessageAttemptOut> = client
-            .get(
-                &format!(
-                    "api/v1/app/{}/attempt/msg/{}/?limit=3&iterator={}",
-                    app.id, msg.id, all_attempts.data[2].id
-                ),
-                StatusCode::OK,
-            )
-            .await
-            .unwrap();
+        let query = format!("limit=3&iterator={}", all_attempts.data[2].id);
+        let last_three_manual = attempts_by_msg!(query).unwrap();
 
-        let last_three_iter_field: ListResponse<MessageAttemptOut> = client
-            .get(
-                &format!(
-                    "api/v1/app/{}/attempt/msg/{}/?limit=3&iterator={}",
-                    app.id,
-                    msg.id,
-                    first_three.iterator.unwrap()
-                ),
-                StatusCode::OK,
-            )
-            .await
-            .unwrap();
+        let query = format!("limit=3&iterator={}", first_three.iterator.unwrap());
+        let last_three_iter_field = attempts_by_msg!(query).unwrap();
 
         assert_eq!(last_three_manual.data, last_three_iter_field.data);
-
-        assert_eq!(last_three_manual.data.len(), 3);
         assert_eq!(&all_attempts.data[3..6], last_three_manual.data.as_slice());
         assert!(last_three_manual.done);
 
         // `prev` iterator
-        let two_and_three: ListResponse<MessageAttemptOut> = client
-            .get(
-                &format!(
-                    "api/v1/app/{}/attempt/msg/{}/?limit=2&iterator={}",
-                    app.id,
-                    msg.id,
-                    last_three_manual.prev_iterator.unwrap()
-                ),
-                StatusCode::OK,
-            )
-            .await
-            .unwrap();
+        let query = format!(
+            "limit=2&iterator={}",
+            last_three_manual.prev_iterator.unwrap()
+        );
+        let two_and_three = attempts_by_msg!(query).unwrap();
 
-        assert_eq!(two_and_three.data.len(), 2);
         assert_eq!(&all_attempts.data[1..3], two_and_three.data.as_slice());
         assert!(!two_and_three.done);
 
-        let one: ListResponse<MessageAttemptOut> = client
-            .get(
-                &format!(
-                    "api/v1/app/{}/attempt/msg/{}/?limit=2&iterator={}",
-                    app.id,
-                    msg.id,
-                    two_and_three.prev_iterator.unwrap()
-                ),
-                StatusCode::OK,
-            )
-            .await
-            .unwrap();
+        let query = format!("limit=2&iterator={}", two_and_three.prev_iterator.unwrap());
+        let one = attempts_by_msg!(query).unwrap();
 
-        assert_eq!(one.data.len(), 1);
-        assert_eq!(all_attempts.data[0], one.data[0]);
+        assert_eq!(&all_attempts.data[0..1], one.data.as_slice());
         assert!(one.done);
 
         // Because messages are dispatched so quickly, a different approach than above needs to be tested
         // for checking by time.
 
         // `after` field
-        let all_six_by_time: ListResponse<MessageAttemptOut> = client
-            .get(
-                &format!(
-                    "api/v1/app/{}/attempt/msg/{}/?after={}",
-                    app.id,
-                    msg.id,
-                    sub_5ms(all_attempts.data[5].created_at)
-                ),
-                StatusCode::OK,
-            )
-            .await
-            .unwrap();
+        let query = format!("after={}", sub_5ms(all_attempts.data[5].created_at));
+        let all_six_by_time = attempts_by_msg!(query).unwrap();
         assert_eq!(all_attempts.data, all_six_by_time.data);
 
-        let none_by_time: ListResponse<MessageAttemptOut> = client
-            .get(
-                &format!(
-                    "api/v1/app/{}/attempt/msg/{}/?after={}",
-                    app.id,
-                    msg.id,
-                    add_5ms(all_attempts.data[0].created_at)
-                ),
-                StatusCode::OK,
-            )
-            .await
-            .unwrap();
+        let query = format!("after={}", add_5ms(all_attempts.data[0].created_at));
+        let none_by_time = attempts_by_msg!(query).unwrap();
         assert!(none_by_time.data.is_empty());
 
         // `before field`
-        let all_six_by_time: ListResponse<MessageAttemptOut> = client
-            .get(
-                &format!(
-                    "api/v1/app/{}/attempt/msg/{}/?before={}",
-                    app.id,
-                    msg.id,
-                    add_5ms(all_attempts.data[0].created_at),
-                ),
-                StatusCode::OK,
-            )
-            .await
-            .unwrap();
+        let query = format!("before={}", add_5ms(all_attempts.data[0].created_at));
+        let all_six_by_time = attempts_by_msg!(query).unwrap();
         assert_eq!(all_attempts.data, all_six_by_time.data);
 
-        let none_by_time: ListResponse<MessageAttemptOut> = client
-            .get(
-                &format!(
-                    "api/v1/app/{}/attempt/msg/{}/?before={}",
-                    app.id,
-                    msg.id,
-                    sub_5ms(all_attempts.data[5].created_at),
-                ),
-                StatusCode::OK,
-            )
-            .await
-            .unwrap();
+        let query = format!("before={}", sub_5ms(all_attempts.data[5].created_at));
+        let none_by_time = attempts_by_msg!(query).unwrap();
         assert!(none_by_time.data.is_empty());
-    }
-
-    /// Adds 5ms to a [`chrono::DateTime`] for testing `before` and `after`
-    fn add_5ms<T: chrono::TimeZone>(dur: chrono::DateTime<T>) -> chrono::DateTime<T> {
-        dur + chrono::Duration::from_std(std::time::Duration::from_millis(5)).unwrap()
-    }
-
-    /// Subtracts 5ms to a [`chrono::DateTime`] for testing `before` and `after`
-    fn sub_5ms<T: chrono::TimeZone>(dur: chrono::DateTime<T>) -> chrono::DateTime<T> {
-        dur - chrono::Duration::from_std(std::time::Duration::from_millis(5)).unwrap()
     }
 }
 
