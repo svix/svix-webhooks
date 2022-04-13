@@ -21,7 +21,6 @@ use svix_server::{
         utils::ListResponse,
     },
 };
-use tokio::time::sleep;
 
 use super::{run_with_retries, IgnoredResponse, TestClient};
 
@@ -225,14 +224,6 @@ pub async fn common_test_list<
         .unwrap();
 
     Ok(())
-}
-
-pub async fn wait_for_msg_retries(retry_schedule: &[Duration]) {
-    for i in retry_schedule {
-        sleep(*i).await;
-    }
-    // Give attempts buffer time to complete:
-    sleep(Duration::from_millis(50)).await;
 }
 
 pub async fn recover_webhooks(client: &TestClient, since: DateTime<Utc>, url: &str) {
