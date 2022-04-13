@@ -12,38 +12,38 @@ mod utils;
 
 use utils::{
     common_calls::{application_in, common_test_list},
-    start_svix_server, IgnoredResponse,
+    start_svix_server, IgnoredResponse, TestClient,
 };
 
 #[tokio::test]
 async fn test_crud() {
     let (client, _jh) = start_svix_server();
 
-    const APP_NAME_1_1: &str = "v1ApplicationCrudTest11";
-    const APP_NAME_1_2: &str = "v1ApplicationCrudTest12";
-    const APP_NAME_2_1: &str = "v1ApplicationCrudTest21";
-    const APP_NAME_2_2: &str = "v1ApplicationCrudTest22";
+    let app_name_1_1: &str = "v1ApplicationCrudTest11";
+    let app_name_1_2: &str = "v1ApplicationCrudTest12";
+    let app_name_2_1: &str = "v1ApplicationCrudTest21";
+    let app_name_2_2: &str = "v1ApplicationCrudTest22";
 
     // CREATE
     let app_1: ApplicationOut = client
         .post(
             "api/v1/app/",
-            application_in(APP_NAME_1_1),
+            application_in(app_name_1_1),
             StatusCode::CREATED,
         )
         .await
         .unwrap();
-    assert_eq!(app_1.name, APP_NAME_1_1);
+    assert_eq!(app_1.name, app_name_1_1);
 
     let app_2: ApplicationOut = client
         .post(
             "api/v1/app/",
-            application_in(APP_NAME_2_1),
+            application_in(app_name_2_1),
             StatusCode::CREATED,
         )
         .await
         .unwrap();
-    assert_eq!(app_2.name, APP_NAME_2_1);
+    assert_eq!(app_2.name, app_name_2_1);
 
     // READ
     assert_eq!(
@@ -67,7 +67,7 @@ async fn test_crud() {
     let app_1: ApplicationOut = client
         .put(
             &format!("api/v1/app/{}/", app_1_id),
-            application_in(APP_NAME_1_2),
+            application_in(app_name_1_2),
             StatusCode::OK,
         )
         .await
@@ -77,7 +77,7 @@ async fn test_crud() {
     let app_2: ApplicationOut = client
         .put(
             &format!("api/v1/app/{}/", app_2_id),
-            application_in(APP_NAME_2_2),
+            application_in(app_name_2_2),
             StatusCode::OK,
         )
         .await
@@ -135,23 +135,26 @@ async fn test_list() {
     .unwrap();
 }
 
-#[tokio::test]
-async fn test_uid() {
-    let (client, _jh) = start_svix_server();
-
-    let app: ApplicationOut = client
+async fn uid_test_setup(client: &TestClient) -> ApplicationOut {
+    client
         .post(
             "api/v1/app/",
             ApplicationIn {
                 name: "App 1".to_owned(),
                 uid: Some(ApplicationUid("app1".to_owned())),
-                ..Default::default()
+                ..ApplicationIn::default()
             },
             StatusCode::CREATED,
         )
         .await
-        .unwrap();
+        .unwrap()
+}
 
+#[tokio::test]
+async fn test_uid_create_with_same() {
+    let (client, _jh) = start_svix_server();
+
+    let app: ApplicationOut = uid_test_setup(&client).await;
     assert_ne!(app.id.0, app.uid.unwrap().0);
 
     // Can't create another app with the same uid twice
@@ -161,12 +164,20 @@ async fn test_uid() {
             ApplicationIn {
                 name: "App 1".to_owned(),
                 uid: Some(ApplicationUid("app1".to_owned())),
-                ..Default::default()
+                ..ApplicationIn::default()
             },
             StatusCode::CONFLICT,
         )
         .await
         .unwrap();
+}
+
+#[tokio::test]
+async fn test_uid_update_to_exisiting() {
+    let (client, _jh) = start_svix_server();
+
+    let app: ApplicationOut = uid_test_setup(&client).await;
+    assert_ne!(app.id.0, app.uid.unwrap().0);
 
     // Can't update an app to an existing uid (when we have no uid)
     let app2: ApplicationOut = client
@@ -174,7 +185,7 @@ async fn test_uid() {
             "api/v1/app/",
             ApplicationIn {
                 name: "App 2".to_owned(),
-                ..Default::default()
+                ..ApplicationIn::default()
             },
             StatusCode::CREATED,
         )
@@ -187,7 +198,7 @@ async fn test_uid() {
             ApplicationIn {
                 name: "App 2".to_owned(),
                 uid: Some(ApplicationUid("app1".to_owned())),
-                ..Default::default()
+                ..ApplicationIn::default()
             },
             StatusCode::CONFLICT,
         )
@@ -201,7 +212,7 @@ async fn test_uid() {
             ApplicationIn {
                 name: "App 2".to_owned(),
                 uid: Some(ApplicationUid("app2".to_owned())),
-                ..Default::default()
+                ..ApplicationIn::default()
             },
             StatusCode::CREATED,
         )
@@ -214,9 +225,30 @@ async fn test_uid() {
             ApplicationIn {
                 name: "App 2".to_owned(),
                 uid: Some(ApplicationUid("app1".to_owned())),
-                ..Default::default()
+                ..ApplicationIn::default()
             },
             StatusCode::CONFLICT,
+        )
+        .await
+        .unwrap();
+}
+
+#[tokio::test]
+async fn test_uid_update_to_deleted() {
+    let (client, _jh) = start_svix_server();
+
+    let app: ApplicationOut = uid_test_setup(&client).await;
+    assert_ne!(app.id.0, app.uid.unwrap().0);
+
+    // Create app2
+    let app2: ApplicationOut = client
+        .post(
+            "api/v1/app/",
+            ApplicationIn {
+                name: "App 2".to_owned(),
+                ..ApplicationIn::default()
+            },
+            StatusCode::CREATED,
         )
         .await
         .unwrap();
@@ -234,7 +266,7 @@ async fn test_uid() {
             ApplicationIn {
                 name: "App 2".to_owned(),
                 uid: Some(ApplicationUid("app1".to_owned())),
-                ..Default::default()
+                ..ApplicationIn::default()
             },
             StatusCode::OK,
         )
@@ -248,20 +280,42 @@ async fn test_uid() {
         )
         .await
         .unwrap();
+}
+
+#[tokio::test]
+async fn test_uid_create_with_deleted() {
+    let (client, _jh) = start_svix_server();
+
+    let app: ApplicationOut = uid_test_setup(&client).await;
+    assert_ne!(app.id.0, app.uid.unwrap().0);
+
+    // Delete app1
+    let _: IgnoredResponse = client
+        .delete(&format!("api/v1/app/{}/", app.id), StatusCode::NO_CONTENT)
+        .await
+        .unwrap();
 
     // Create an app with the same UID again (after it was deleted)
-    let app: ApplicationOut = client
-        .post(
+    assert!(client
+        .post::<_, ApplicationOut>(
             "api/v1/app/",
             ApplicationIn {
                 name: "App 1".to_owned(),
                 uid: Some(ApplicationUid("app1".to_owned())),
-                ..Default::default()
+                ..ApplicationIn::default()
             },
             StatusCode::CREATED,
         )
         .await
-        .unwrap();
+        .is_ok());
+}
+
+#[tokio::test]
+async fn test_uid_update_and_removal() {
+    let (client, _jh) = start_svix_server();
+
+    let app: ApplicationOut = uid_test_setup(&client).await;
+    assert_ne!(app.id.0, app.uid.unwrap().0);
 
     // Can update an app with a UID
     let _: IgnoredResponse = client
@@ -270,7 +324,7 @@ async fn test_uid() {
             ApplicationIn {
                 name: "App 1".to_owned(),
                 uid: Some(ApplicationUid("app1".to_owned())),
-                ..Default::default()
+                ..ApplicationIn::default()
             },
             StatusCode::OK,
         )
@@ -284,7 +338,7 @@ async fn test_uid() {
             ApplicationIn {
                 name: "App 1".to_owned(),
                 uid: Some(ApplicationUid("app3".to_owned())),
-                ..Default::default()
+                ..ApplicationIn::default()
             },
             StatusCode::OK,
         )
@@ -306,7 +360,7 @@ async fn test_uid() {
             &format!("api/v1/app/{}/", app.id),
             ApplicationIn {
                 name: "App 1".to_owned(),
-                ..Default::default()
+                ..ApplicationIn::default()
             },
             StatusCode::OK,
         )
@@ -341,7 +395,7 @@ async fn test_uid_across_users() {
             ApplicationIn {
                 name: "App 1".to_owned(),
                 uid: Some(ApplicationUid("app1".to_owned())),
-                ..Default::default()
+                ..ApplicationIn::default()
             },
             StatusCode::CREATED,
         )
@@ -354,7 +408,7 @@ async fn test_uid_across_users() {
             ApplicationIn {
                 name: "App 1".to_owned(),
                 uid: Some(ApplicationUid("app1".to_owned())),
-                ..Default::default()
+                ..ApplicationIn::default()
             },
             StatusCode::CREATED,
         )
