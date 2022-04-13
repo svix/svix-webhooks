@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     core::{
-        cache::{kv_def, CacheKey, CacheValue, NxStatus, RedisCache},
+        cache::{kv_def, CacheKey, CacheValue, RedisCache},
         types::{
             ApplicationId, ApplicationUid, EndpointHeaders, EndpointId, EndpointSecret,
             EventChannelSet, EventTypeNameSet, ExpiringSigningKeys, OrganizationId,
@@ -100,7 +100,7 @@ impl CreateMessageApp {
 
         // Insert it into Redis
         if let Some(redis) = redis {
-            let _ = redis.set(&cache_key, &out, ttl, NxStatus::AlwaysSet).await;
+            let _ = redis.set(&cache_key, &out, ttl).await;
         }
 
         Ok(Some(out))

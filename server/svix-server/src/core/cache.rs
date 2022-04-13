@@ -54,15 +54,6 @@ macro_rules! kv_def {
 }
 pub(crate) use kv_def;
 
-/// A simple enum used to provide context to the arguments of the [`RedisCache`] set command. This
-/// enum controls whether the Redis command is passed the "NX" flag which only sets a value if it
-/// does not already exist
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub enum NxStatus {
-    AlwaysSet,
-    SetIfNx,
-}
-
 /// A Redis-based cache of data to avoid expensive fetches from PostgreSQL. Simply a wrapper over
 /// Redis.
 #[derive(Debug, Clone)]
@@ -85,13 +76,31 @@ impl RedisCache {
 
     /// Sets a CacheKey to its associated CacheValue.
     /// Note that the [`Duration`] used is down to millisecond precision.
+    pub async fn set<T: CacheValue>(&self, key: &T::Key, value: &T, ttl: Duration) -> Result<()> {
+        let mut pool = self.redis.get().await?;
+
+        pool.pset_ex(
+            key.as_ref(),
+            serde_json::to_string(value)?,
+            ttl.as_millis().try_into().map_err(|e| {
+                Error::Input(format!(
+                    "Duration given cannot be converted to usize: {}",
+                    e
+                ))
+            })?,
+        )
+        .await
+        .map_err(Into::into)
+    }
+
+    /// Sets a CacheKey to its associated CacheValue.
+    /// Note that the [`Duration`] used is down to millisecond precision.
     /// Returns whether the key was set
-    pub async fn set<T: CacheValue>(
+    pub async fn set_if_not_exists<T: CacheValue>(
         &self,
         key: &T::Key,
         value: &T,
         ttl: Duration,
-        nx: NxStatus,
     ) -> Result<bool> {
         let mut pool = self.redis.get().await?;
 
@@ -106,9 +115,7 @@ impl RedisCache {
         })?;
         cmd.arg(ttl_as_millis);
 
-        if nx == NxStatus::SetIfNx {
-            cmd.arg("NX");
-        }
+        cmd.arg("NX");
 
         let res: Option<()> = cmd.query_async(&mut *pool).await?;
 
@@ -171,21 +178,11 @@ mod tests {
 
         // Create
         assert!(cache
-            .set(
-                &first_key,
-                &first_val_a,
-                Duration::from_secs(30),
-                NxStatus::AlwaysSet
-            )
+            .set(&first_key, &first_val_a, Duration::from_secs(30),)
             .await
             .is_ok());
         assert!(cache
-            .set(
-                &second_key,
-                &second_val_a,
-                Duration::from_secs(30),
-                NxStatus::AlwaysSet
-            )
+            .set(&second_key, &second_val_a, Duration::from_secs(30),)
             .await
             .is_ok());
 
@@ -195,21 +192,11 @@ mod tests {
 
         // Update (overwrite)
         assert!(cache
-            .set(
-                &first_key,
-                &first_val_b,
-                Duration::from_secs(30),
-                NxStatus::AlwaysSet
-            )
+            .set(&first_key, &first_val_b, Duration::from_secs(30),)
             .await
             .is_ok());
         assert!(cache
-            .set(
-                &second_key,
-                &second_val_b,
-                Duration::from_secs(30),
-                NxStatus::AlwaysSet
-            )
+            .set(&second_key, &second_val_b, Duration::from_secs(30),)
             .await
             .is_ok());
 
@@ -239,12 +226,7 @@ mod tests {
         let key = TestKeyA::new("key".to_owned());
 
         assert!(cache
-            .set(
-                &key,
-                &TestValA(1),
-                Duration::from_secs(1),
-                NxStatus::AlwaysSet
-            )
+            .set(&key, &TestValA(1), Duration::from_secs(1),)
             .await
             .is_ok());
         tokio::time::sleep(std::time::Duration::from_millis(1200)).await;
@@ -264,23 +246,13 @@ mod tests {
         let key = TestKeyA::new("nx_status_test_key".to_owned());
 
         assert!(cache
-            .set(
-                &key,
-                &TestValA(1),
-                Duration::from_secs(30),
-                NxStatus::SetIfNx
-            )
+            .set_if_not_exists(&key, &TestValA(1), Duration::from_secs(30),)
             .await
             .unwrap());
         assert_eq!(cache.get(&key).await.unwrap(), Some(TestValA(1)));
 
         assert!(!cache
-            .set(
-                &key,
-                &TestValA(2),
-                Duration::from_secs(30),
-                NxStatus::SetIfNx
-            )
+            .set_if_not_exists(&key, &TestValA(2), Duration::from_secs(30),)
             .await
             .unwrap());
         assert_eq!(cache.get(&key).await.unwrap(), Some(TestValA(1)));

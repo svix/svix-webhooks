@@ -18,7 +18,7 @@ use blake2::{Blake2b512, Digest};
 use serde::{Deserialize, Serialize};
 use tower::Service;
 
-use super::cache::{CacheKey, CacheValue, NxStatus, RedisCache};
+use super::cache::{CacheKey, CacheValue, RedisCache};
 
 /// Returns the default exipry period for cached responses
 const fn expiry_default() -> Duration {
@@ -178,12 +178,7 @@ where
 
                 // First set the start value as a lock
                 match redis
-                    .set(
-                        &key,
-                        &SerializedResponse::Start,
-                        expiry_starting(),
-                        NxStatus::SetIfNx,
-                    )
+                    .set_if_not_exists(&key, &SerializedResponse::Start, expiry_starting())
                     .await
                 {
                     // If it's set continue resolving the service and cache the response
@@ -294,11 +289,7 @@ where
         body: bytes.clone().map(|b| b.to_vec()),
     };
 
-    if redis
-        .set(key, &resp, expiry_default(), NxStatus::AlwaysSet)
-        .await
-        .is_err()
-    {
+    if redis.set(key, &resp, expiry_default()).await.is_err() {
         return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
     }
 
