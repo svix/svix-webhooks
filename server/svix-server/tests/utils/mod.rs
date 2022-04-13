@@ -264,7 +264,7 @@ where
     F: Future<Output = Result<O>>,
     C: Fn() -> F,
 {
-    for attempt in 0..20 {
+    for attempt in 0..50 {
         let out = f().await;
         if out.is_ok() {
             return out;
