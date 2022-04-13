@@ -82,88 +82,76 @@ async fn delete_endpoint(client: &TestClient, app_id: &ApplicationId, ep_id: &st
 async fn test_crud() {
     let (client, _jh) = start_svix_server();
 
-    const APP_NAME_1: &str = "v1EndpointCrudTestApp1";
-    const APP_NAME_2: &str = "v1EndpointCrudTestApp2";
+    let app_name_1: &str = "v1EndpointCrudTestApp1";
+    let app_name_2: &str = "v1EndpointCrudTestApp2";
 
-    const EP_URI_APP_1_EP_1_VER_1: &str = "http://v1EndpointCrudTestApp1Ep1Ver1.test";
-    const EP_URI_APP_1_EP_1_VER_2: &str = "http://v1EndpointCrudTestApp1Ep1Ver2.test";
-    const EP_URI_APP_1_EP_2: &str = "http://v1EndpointCrudTestApp1Ep2.test";
-    const EP_URI_APP_2_EP_1: &str = "http://v1EndpointCrudTestApp2Ep1.test";
-    const EP_URI_APP_2_EP_2: &str = "http://v1EndpointCrudTestApp2Ep2.test";
+    let ep_uri_app_1_ep_1_ver_1: &str = "http://v1EndpointCrudTestApp1Ep1Ver1.test";
+    let ep_uri_app_1_ep_1_ver_2: &str = "http://v1EndpointCrudTestApp1Ep1Ver2.test";
+    let ep_uri_app_1_ep_2: &str = "http://v1EndpointCrudTestApp1Ep2.test";
+    let ep_uri_app_2_ep_1: &str = "http://v1EndpointCrudTestApp2Ep1.test";
+    let ep_uri_app_2_ep_2: &str = "http://v1EndpointCrudTestApp2Ep2.test";
 
-    let app_1 = create_test_app(&client, APP_NAME_1).await.unwrap().id;
-    let app_2 = create_test_app(&client, APP_NAME_2).await.unwrap().id;
+    let app_1 = create_test_app(&client, app_name_1).await.unwrap().id;
+    let app_2 = create_test_app(&client, app_name_2).await.unwrap().id;
 
     // CREATE
-    let app_1_ep_1 = create_test_endpoint(&client, &app_1, EP_URI_APP_1_EP_1_VER_1)
+    let app_1_ep_1 = create_test_endpoint(&client, &app_1, ep_uri_app_1_ep_1_ver_1)
         .await
         .unwrap();
-    assert_eq!(app_1_ep_1.url, EP_URI_APP_1_EP_1_VER_1);
+    assert_eq!(app_1_ep_1.url, ep_uri_app_1_ep_1_ver_1);
     assert_eq!(app_1_ep_1.version, 1);
 
-    let app_1_ep_2 = create_test_endpoint(&client, &app_1, EP_URI_APP_1_EP_2)
+    let app_1_ep_2 = create_test_endpoint(&client, &app_1, ep_uri_app_1_ep_2)
         .await
         .unwrap();
-    assert_eq!(app_1_ep_2.url, EP_URI_APP_1_EP_2);
+    assert_eq!(app_1_ep_2.url, ep_uri_app_1_ep_2);
     assert_eq!(app_1_ep_2.version, 1);
 
-    let app_2_ep_1 = create_test_endpoint(&client, &app_2, EP_URI_APP_2_EP_1)
+    let app_2_ep_1 = create_test_endpoint(&client, &app_2, ep_uri_app_2_ep_1)
         .await
         .unwrap();
-    assert_eq!(app_2_ep_1.url, EP_URI_APP_2_EP_1);
+    assert_eq!(app_2_ep_1.url, ep_uri_app_2_ep_1);
     assert_eq!(app_2_ep_1.version, 1);
 
-    let app_2_ep_2 = create_test_endpoint(&client, &app_2, EP_URI_APP_2_EP_2)
+    let app_2_ep_2 = create_test_endpoint(&client, &app_2, ep_uri_app_2_ep_2)
         .await
         .unwrap();
-    assert_eq!(app_2_ep_2.url, EP_URI_APP_2_EP_2);
+    assert_eq!(app_2_ep_2.url, ep_uri_app_2_ep_2);
     assert_eq!(app_2_ep_2.version, 1);
 
     // READ
 
     // Can read from correct app
-    assert_eq!(
-        get_endpoint(&client, &app_1, &app_1_ep_1.id).await.unwrap(),
-        app_1_ep_1
-    );
-    assert_eq!(
-        get_endpoint(&client, &app_1, &app_1_ep_2.id).await.unwrap(),
-        app_1_ep_2
-    );
-    assert_eq!(
-        get_endpoint(&client, &app_2, &app_2_ep_1.id).await.unwrap(),
-        app_2_ep_1
-    );
-    assert_eq!(
-        get_endpoint(&client, &app_2, &app_2_ep_2.id).await.unwrap(),
-        app_2_ep_2
-    );
+    for (app, ep) in [
+        (&app_1, &app_1_ep_1),
+        (&app_1, &app_1_ep_2),
+        (&app_2, &app_2_ep_1),
+        (&app_2, &app_2_ep_2),
+    ] {
+        assert_eq!(get_endpoint(&client, app, &ep.id).await.unwrap(), *ep);
+    }
 
     // Can't read from incorrect app
-    get_endpoint_404(&client, &app_2, &app_1_ep_1.id)
-        .await
-        .unwrap();
-    get_endpoint_404(&client, &app_2, &app_1_ep_2.id)
-        .await
-        .unwrap();
-    get_endpoint_404(&client, &app_1, &app_2_ep_1.id)
-        .await
-        .unwrap();
-    get_endpoint_404(&client, &app_1, &app_2_ep_2.id)
-        .await
-        .unwrap();
+    for (app, ep) in [
+        (&app_2, &app_1_ep_1),
+        (&app_2, &app_1_ep_2),
+        (&app_1, &app_2_ep_1),
+        (&app_1, &app_2_ep_2),
+    ] {
+        get_endpoint_404(&client, app, &ep.id).await.unwrap();
+    }
 
     // UPDATE
     let app_1_ep_1_id = app_1_ep_1.id;
     let app_1_ep_1: EndpointOut = client
         .put(
             &format!("api/v1/app/{}/endpoint/{}/", app_1, app_1_ep_1_id),
-            endpoint_in(EP_URI_APP_1_EP_1_VER_2),
+            endpoint_in(ep_uri_app_1_ep_1_ver_2),
             StatusCode::OK,
         )
         .await
         .unwrap();
-    assert_eq!(app_1_ep_1.url, EP_URI_APP_1_EP_1_VER_2);
+    assert_eq!(app_1_ep_1.url, ep_uri_app_1_ep_1_ver_2);
 
     // CONFIRM UPDATE
     assert_eq!(
@@ -188,33 +176,16 @@ async fn test_crud() {
     assert!(list_app_2.data.contains(&app_2_ep_1));
     assert!(list_app_2.data.contains(&app_2_ep_2));
 
-    // DELETE
-    delete_endpoint(&client, &app_1, &app_1_ep_1.id)
-        .await
-        .unwrap();
-    delete_endpoint(&client, &app_1, &app_1_ep_2.id)
-        .await
-        .unwrap();
-    delete_endpoint(&client, &app_2, &app_2_ep_1.id)
-        .await
-        .unwrap();
-    delete_endpoint(&client, &app_2, &app_2_ep_2.id)
-        .await
-        .unwrap();
-
-    // CONFIRM DELETION
-    get_endpoint_404(&client, &app_1, &app_1_ep_1.id)
-        .await
-        .unwrap();
-    get_endpoint_404(&client, &app_1, &app_1_ep_2.id)
-        .await
-        .unwrap();
-    get_endpoint_404(&client, &app_2, &app_2_ep_1.id)
-        .await
-        .unwrap();
-    get_endpoint_404(&client, &app_2, &app_2_ep_2.id)
-        .await
-        .unwrap();
+    // DELETE AND CONFIRM DELETION
+    for (app, ep) in [
+        (&app_1, &app_1_ep_1),
+        (&app_1, &app_1_ep_2),
+        (&app_2, &app_2_ep_1),
+        (&app_2, &app_2_ep_2),
+    ] {
+        delete_endpoint(&client, app, &ep.id).await.unwrap();
+        get_endpoint_404(&client, app, &ep.id).await.unwrap();
+    }
 }
 
 #[tokio::test]
@@ -238,26 +209,26 @@ async fn test_list() {
 async fn test_uid() {
     let (client, _jh) = start_svix_server();
 
-    const APP_NAME_1: &str = "v1EndpointUidTestApp1";
-    const APP_NAME_2: &str = "v1EndpointUidTestApp2";
+    let app_name_1: &str = "v1EndpointUidTestApp1";
+    let app_name_2: &str = "v1EndpointUidTestApp2";
 
-    const EP_URI_APP_1_EP_1: &str = "http://v1EndpointUidTestApp1Ep1.test";
-    const EP_URI_APP_1_EP_2: &str = "http://v1EndpointUidTestApp1Ep2.test";
-    const EP_URI_APP_2: &str = "http://v1EndpointUidTestApp2Ep1.test";
+    let ep_uri_app_1_ep_1: &str = "http://v1EndpointUidTestApp1Ep1.test";
+    let ep_uri_app_1_ep_2: &str = "http://v1EndpointUidTestApp1Ep2.test";
+    let ep_uri_app_2: &str = "http://v1EndpointUidTestApp2Ep1.test";
 
-    const DUPLICATE_UID: &str = "test_uid";
+    let duplicate_uid: &str = "test_uid";
 
     // Same App
 
     // Double Create -- on creation, it should return an error if identical UIDs are used for
     // endpoints in the same app
-    let app_id = create_test_app(&client, APP_NAME_1).await.unwrap().id;
-    let uid = EndpointUid(DUPLICATE_UID.to_owned());
+    let app_id = create_test_app(&client, app_name_1).await.unwrap().id;
+    let uid = EndpointUid(duplicate_uid.to_owned());
 
-    let mut ep_1 = endpoint_in(EP_URI_APP_1_EP_1);
+    let mut ep_1 = endpoint_in(ep_uri_app_1_ep_1);
     ep_1.uid = Some(uid.clone());
 
-    let mut ep_2 = endpoint_in(EP_URI_APP_1_EP_2);
+    let mut ep_2 = endpoint_in(ep_uri_app_1_ep_2);
     ep_2.uid = Some(uid.clone());
 
     let ep_1 = post_endpoint(&client, &app_id, ep_1).await.unwrap();
@@ -273,11 +244,11 @@ async fn test_uid() {
 
     // Update One to Existing -- on update it should return an error if attempting to change
     // the UID to that of an existing endpoint associated with the same app
-    let ep_2 = create_test_endpoint(&client, &app_id, EP_URI_APP_1_EP_2)
+    let ep_2 = create_test_endpoint(&client, &app_id, ep_uri_app_1_ep_2)
         .await
         .unwrap();
 
-    let mut ep_2_with_duplicate_uid = endpoint_in(EP_URI_APP_1_EP_2);
+    let mut ep_2_with_duplicate_uid = endpoint_in(ep_uri_app_1_ep_2);
     ep_2_with_duplicate_uid.uid = Some(uid.clone());
 
     client
@@ -291,7 +262,7 @@ async fn test_uid() {
 
     // Update One to Identical -- however it should not return an error if updating the
     // existing endpoint to one with the same UID
-    let mut ep_1_with_duplicate_id = endpoint_in(EP_URI_APP_1_EP_1);
+    let mut ep_1_with_duplicate_id = endpoint_in(ep_uri_app_1_ep_1);
     ep_1_with_duplicate_id.uid = Some(uid.clone());
 
     let ep_1_updated = client
@@ -309,7 +280,7 @@ async fn test_uid() {
     delete_endpoint(&client, &app_id, &ep_1.id).await.unwrap();
     delete_endpoint(&client, &app_id, &ep_2.id).await.unwrap();
 
-    let mut ep_1 = endpoint_in(EP_URI_APP_1_EP_1);
+    let mut ep_1 = endpoint_in(ep_uri_app_1_ep_1);
     ep_1.uid = Some(uid.clone());
     client
         .post::<_, IgnoredResponse>(
@@ -324,17 +295,17 @@ async fn test_uid() {
 
     // Different App -- however if they are associated with different applications, identical
     // UIDs are valid
-    let app_1 = create_test_app(&client, APP_NAME_1).await.unwrap().id;
-    let app_2 = create_test_app(&client, APP_NAME_2).await.unwrap().id;
+    let app_1 = create_test_app(&client, app_name_1).await.unwrap().id;
+    let app_2 = create_test_app(&client, app_name_2).await.unwrap().id;
 
-    let mut ep_1 = endpoint_in(EP_URI_APP_1_EP_1);
+    let mut ep_1 = endpoint_in(ep_uri_app_1_ep_1);
     ep_1.uid = Some(uid.clone());
 
-    let mut ep_2 = endpoint_in(EP_URI_APP_2);
+    let mut ep_2 = endpoint_in(ep_uri_app_2);
     ep_2.uid = Some(uid.clone());
 
-    let _ = post_endpoint(&client, &app_1, ep_1).await.unwrap();
-    let _ = post_endpoint(&client, &app_2, ep_2).await.unwrap();
+    std::mem::drop(post_endpoint(&client, &app_1, ep_1).await.unwrap());
+    std::mem::drop(post_endpoint(&client, &app_2, ep_2).await.unwrap());
 }
 
 // Simply tests that upon rotating an endpoint secret that it differs from the prior one
@@ -342,12 +313,12 @@ async fn test_uid() {
 async fn test_endpoint_secret_get_and_rotation() {
     let (client, _jh) = start_svix_server();
 
-    const APP_NAME: &str = "v1EndpointSecretRotationTestApp";
-    const EP_URI: &str = "http://v1EndpointSecretRotationTestEp.test";
+    let app_name: &str = "v1EndpointSecretRotationTestApp";
+    let ep_uri: &str = "http://v1EndpointSecretRotationTestEp.test";
 
-    let app_id = create_test_app(&client, APP_NAME).await.unwrap().id;
+    let app_id = create_test_app(&client, app_name).await.unwrap().id;
 
-    let ep = create_test_endpoint(&client, &app_id, EP_URI)
+    let ep = create_test_endpoint(&client, &app_id, ep_uri)
         .await
         .unwrap();
 
@@ -413,16 +384,18 @@ async fn test_recovery_should_fail_if_start_time_too_old() {
         .unwrap()
         .id;
 
-    let _: serde_json::Value = client
-        .post(
-            &format!("api/v1/app/{}/endpoint/{}/recover/", app_id, endp_id),
-            RecoverIn {
-                since: Utc::now() - chrono::Duration::weeks(3),
-            },
-            StatusCode::UNPROCESSABLE_ENTITY,
-        )
-        .await
-        .unwrap();
+    std::mem::drop(
+        client
+            .post::<_, serde_json::Value>(
+                &format!("api/v1/app/{}/endpoint/{}/recover/", app_id, endp_id),
+                RecoverIn {
+                    since: Utc::now() - chrono::Duration::weeks(3),
+                },
+                StatusCode::UNPROCESSABLE_ENTITY,
+            )
+            .await
+            .unwrap(),
+    );
 }
 
 async fn create_failed_message_attempts() -> (
@@ -648,7 +621,7 @@ async fn test_custom_endpoint_secret() {
         url: "http://www.example.com".to_owned(),
         version: 1,
         key: Some(secret.clone()),
-        ..Default::default()
+        ..EndpointIn::default()
     };
 
     let endp_1 = post_endpoint(&client, &app_id, ep_in.clone())
@@ -739,7 +712,7 @@ async fn test_endpoint_filter_events() {
     let _ep_with_nonexistent_event: IgnoredResponse = client
         .post(
             &format!("api/v1/app/{}/endpoint/", app_id),
-            ep_with_events.to_owned(),
+            ep_with_events.clone(),
             StatusCode::UNPROCESSABLE_ENTITY,
         )
         .await
@@ -757,7 +730,7 @@ async fn test_endpoint_filter_events() {
     let ep_with_valid_event: EndpointOut = client
         .post(
             &format!("api/v1/app/{}/endpoint/", app_id),
-            ep_with_events.to_owned(),
+            ep_with_events.clone(),
             StatusCode::CREATED,
         )
         .await
@@ -768,7 +741,7 @@ async fn test_endpoint_filter_events() {
     let ep_removed_events: EndpointOut = client
         .put(
             &format!("api/v1/app/{}/endpoint/{}/", app_id, ep_with_valid_event.id),
-            ep_no_events.to_owned(),
+            ep_no_events.clone(),
             StatusCode::OK,
         )
         .await
@@ -785,7 +758,7 @@ async fn test_endpoint_filter_events() {
     let ep_updated_events: EndpointOut = client
         .put(
             &format!("api/v1/app/{}/endpoint/{}/", app_id, ep_with_valid_event.id),
-            ep_with_events.to_owned(),
+            ep_with_events.clone(),
             StatusCode::OK,
         )
         .await
@@ -838,7 +811,7 @@ async fn test_endpoint_filter_channels() {
     let ep_with_channel: EndpointOut = client
         .post(
             &format!("api/v1/app/{}/endpoint/", app_id),
-            ep_with_channels.to_owned(),
+            ep_with_channels.clone(),
             StatusCode::CREATED,
         )
         .await
@@ -898,7 +871,7 @@ async fn test_rate_limit() {
         url: "http://www.example.com".to_owned(),
         version: 1,
         rate_limit: Some(100),
-        ..Default::default()
+        ..EndpointIn::default()
     };
 
     let endp = post_endpoint(&client, &app_id, ep_in.clone())
@@ -938,10 +911,12 @@ async fn test_msg_event_types_filter() {
         event_type_in("et1", serde_json::json!({"test": "value"})).unwrap(),
         event_type_in("et2", serde_json::json!({"test": "value"})).unwrap(),
     ] {
-        let _: EventTypeOut = client
-            .post("api/v1/event-type", et, StatusCode::CREATED)
-            .await
-            .unwrap();
+        std::mem::drop(
+            client
+                .post::<_, EventTypeOut>("api/v1/event-type", et, StatusCode::CREATED)
+                .await
+                .unwrap(),
+        );
     }
 
     for event_types in [
@@ -958,10 +933,10 @@ async fn test_msg_event_types_filter() {
             &client,
             &app_id,
             EndpointIn {
-                url: receiver.endpoint.to_owned(),
+                url: receiver.endpoint.clone(),
                 version: 1,
                 event_types_ids: event_types,
-                ..Default::default()
+                ..EndpointIn::default()
             },
         )
         .await
@@ -1011,10 +986,10 @@ async fn test_msg_channels_filter() {
             &client,
             &app_id,
             EndpointIn {
-                url: receiver.endpoint.to_owned(),
+                url: receiver.endpoint.clone(),
                 version: 1,
                 channels,
-                ..Default::default()
+                ..EndpointIn::default()
             },
         )
         .await
@@ -1056,7 +1031,7 @@ async fn test_msg_channels_filter() {
 }
 
 #[tokio::test]
-async fn test_endpoint_headers_manipulation() {
+async fn test_bad_headers() {
     let (client, _jh) = start_svix_server();
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
@@ -1082,6 +1057,17 @@ async fn test_endpoint_headers_manipulation() {
             .await
             .unwrap();
     }
+}
+
+#[tokio::test]
+async fn test_endpoint_headers_manipulation() {
+    let (client, _jh) = start_svix_server();
+
+    let app_id = create_test_app(&client, "app1").await.unwrap().id;
+
+    let endp = create_test_endpoint(&client, &app_id, "http://www.example.com")
+        .await
+        .unwrap();
 
     let org_headers = EndpointHeadersIn {
         headers: EndpointHeaders(HashMap::from([
