@@ -90,7 +90,7 @@ async fn test_message_create_read_list_with_content() {
 
     let msg_payload = serde_json::json!({"test": "value"});
 
-    let msg_1_w_payload: MessageOut = client
+    let msg_1_with_payload: MessageOut = client
         .post(
             &format!("api/v1/app/{}/msg", &app_id),
             message_in(&app_id, msg_payload.clone()).unwrap(),
@@ -99,7 +99,7 @@ async fn test_message_create_read_list_with_content() {
         .await
         .unwrap();
 
-    assert_eq!(msg_1_w_payload.payload, msg_payload);
+    assert_eq!(msg_1_with_payload.payload, msg_payload);
 
     let msg_2_wo_payload: MessageOut = client
         .post(
@@ -114,14 +114,14 @@ async fn test_message_create_read_list_with_content() {
 
     let msg_1_wo_payload = MessageOut {
         payload: serde_json::json!({}),
-        ..msg_1_w_payload.clone()
+        ..msg_1_with_payload.clone()
     };
-    let msg_2_w_payload = MessageOut {
+    let msg_2_with_payload = MessageOut {
         payload: msg_payload,
         ..msg_2_wo_payload.clone()
     };
 
-    for m in [&msg_1_w_payload, &msg_2_w_payload] {
+    for m in [&msg_1_with_payload, &msg_2_with_payload] {
         assert_eq!(
             client
                 .get::<MessageOut>(
@@ -152,8 +152,8 @@ async fn test_message_create_read_list_with_content() {
         .await
         .unwrap();
     assert_eq!(list.data.len(), 2);
-    assert!(list.data.contains(&msg_1_w_payload));
-    assert!(list.data.contains(&msg_2_w_payload));
+    assert!(list.data.contains(&msg_1_with_payload));
+    assert!(list.data.contains(&msg_2_with_payload));
 
     let list: ListResponse<MessageOut> = client
         .get(
