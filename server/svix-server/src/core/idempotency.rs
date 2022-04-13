@@ -176,21 +176,18 @@ where
                 let uri = parts.uri.to_string();
                 let key = IdempotencyKey::new(auth, key, &uri);
 
-                // Check Redis now
-                match redis.get::<SerializedResponse>(&key).await {
-                    // If the value is a starting value, the operation is still in progress
-                    Ok(Some(SerializedResponse::Start)) => lock_loop(&redis, &key).await,
-
-                    // The operation is finished and cached, so just return it
-                    Ok(Some(SerializedResponse::Finished {
-                        code,
-                        headers,
-                        body,
-                    })) => Ok(finished_serialized_response_to_reponse(code, headers, body)
-                        .unwrap_or_else(|_| StatusCode::INTERNAL_SERVER_ERROR.into_response())),
-
-                    // Not in redis, so get the result and cache it
-                    Ok(None) => {
+                // First set the start value as a lock
+                match redis
+                    .set(
+                        &key,
+                        &SerializedResponse::Start,
+                        expiry_starting(),
+                        NxStatus::SetIfNx,
+                    )
+                    .await
+                {
+                    // If it's set continue resolving the service and cache the response
+                    Ok(true) => {
                         resolve_and_cache_response(
                             &redis,
                             &key,
@@ -200,6 +197,10 @@ where
                         .await
                     }
 
+                    // If the key already exists, enter the lock loop
+                    Ok(false) => lock_loop(&redis, &key).await,
+
+                    // If it errors, something is up with Redis, so return 500
                     Err(_) => Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response()),
                 }
             })
@@ -209,15 +210,17 @@ where
     }
 }
 
-/// If the Redis value for a given idempotency key is a [`SerializedResponse::Start`] value, then
-/// loop until it has been completed or times out
+/// If the lock could not be set, then another request with that key has been completed or is being
+/// completed, so loop until it has been completed or times out
 async fn lock_loop(
     redis: &RedisCache,
     key: &IdempotencyKey,
 ) -> Result<Response<BoxBody>, Infallible> {
     let mut total_delay_duration = std::time::Duration::from_millis(0);
+
     let out = loop {
         match redis.get::<SerializedResponse>(key).await {
+            // Request setting the lock has not been resolved yet, so wait a little and loop again
             Ok(Some(SerializedResponse::Start)) => {
                 if total_delay_duration > expiry_starting() {
                     // TODO Better response
@@ -227,6 +230,8 @@ async fn lock_loop(
                 total_delay_duration += std::time::Duration::from_millis(200);
                 tokio::time::sleep(std::time::Duration::from_millis(200)).await;
             }
+
+            // Value has been retreived from cache, so return it
             Ok(Some(SerializedResponse::Finished {
                 code,
                 headers,
@@ -236,9 +241,17 @@ async fn lock_loop(
                     .unwrap_or_else(|_| StatusCode::INTERNAL_SERVER_ERROR.into_response()));
             }
 
-            // Start value has expired
-            // TODO: Better response
-            Ok(None) => break Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response()),
+            // Start value has expired or hasn't finished being set by Redis yet
+            Ok(None) => {
+                if total_delay_duration == std::time::Duration::from_millis(0) {
+                    // Loop at least once so if two requests fire at the same time, the lock has a
+                    // chance to finish writing
+                    total_delay_duration += std::time::Duration::from_millis(200);
+                    tokio::time::sleep(std::time::Duration::from_millis(200)).await;
+                } else {
+                    break Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
+                }
+            }
 
             Err(_) => break Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response()),
         }
@@ -260,31 +273,6 @@ where
     S::Response: IntoResponse,
     S::Future: Send + 'static,
 {
-    // First set the start value as a lock
-    match redis
-        .set(
-            key,
-            &SerializedResponse::Start,
-            expiry_default(),
-            NxStatus::SetIfNx,
-        )
-        .await
-    {
-        // If it's set continue
-        Ok(true) => {}
-
-        // If the key already exists, wait a little and enter the lock loop -- wait so that you
-        // don't immediately return 500 if the [`SerializedResponse::Start`] value isn't completely
-        // set upon entering
-        Ok(false) => {
-            tokio::time::sleep(Duration::from_millis(200)).await;
-            return lock_loop(redis, key).await;
-        }
-
-        // If it errors, something is up with Redis, so return 500
-        Err(_) => return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response()),
-    }
-
     let (parts, mut body) = resolve_service(service, request)
         .await
         // Infallible
