@@ -37,6 +37,27 @@ where
         .collect())
 }
 
+fn deserialize_redis_dsn<'de, D>(
+    deserializer: D,
+) -> std::result::Result<Option<Vec<String>>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let buf = String::deserialize(deserializer)?;
+
+    let v: Vec<String> = buf
+        .split(',')
+        .into_iter()
+        .map(|x| x.to_string())
+        .collect();
+
+    if v.is_empty() {
+        Ok(None)
+    } else {
+        Ok(Some(v))
+    }
+}
+
 const DEFAULTS: &str = r#"
 # Default configuration file
 # Values here can also be set by setting the appropriate env var, e.g. SVIX_DB_DSN for db_dsn
@@ -59,6 +80,9 @@ retry_schedule = "5,300,1800,7200,18000,36000,36000"
 
 # The DSN for redis (can be left empty if not using redis)
 # redis_dsn = "redis://redis:6379"
+
+# If true, a clustered redis client will be used.
+cluster_redis = false
 
 # What kind of message queue to use. Supported: memory, redis (must have redis_dsn configured).
 queue_type = "redis"
@@ -93,8 +117,13 @@ pub struct ConfigurationInner {
 
     /// The DSN for the database. Only postgres is currently supported.
     pub db_dsn: String,
+
     /// The DSN for redis (can be left empty if not using redis)
-    pub redis_dsn: Option<String>,
+    #[serde(deserialize_with = "deserialize_redis_dsn")]
+    pub redis_dsn: Option<Vec<String>>,
+
+    /// If true, a clustered redis client will be used.
+    pub cluster_redis: bool,
 
     /// What kind of message queue to use. Supported: memory, redis (must have redis_dsn configured).
     pub queue_type: QueueType,
@@ -126,6 +155,7 @@ pub enum LogLevel {
 pub enum QueueType {
     Memory,
     Redis,
+    RedisCluster,
 }
 
 impl ToString for LogLevel {

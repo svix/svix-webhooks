@@ -2,7 +2,7 @@ use std::ops::DerefMut;
 
 use axum::async_trait;
 
-use redis::{IntoConnectionInfo, RedisError, ErrorKind, aio::ConnectionLike};
+use redis::{aio::ConnectionLike, ErrorKind, IntoConnectionInfo, RedisError};
 use redis_cluster_async::Client;
 
 #[derive(Clone)]
@@ -32,8 +32,7 @@ impl bb8::ManageConnection for RedisClusterConnectionManager {
     async fn is_valid(
         &self,
         conn: &mut bb8::PooledConnection<'_, Self>,
-    ) -> Result<(), Self::Error> 
-    {
+    ) -> Result<(), Self::Error> {
         let pong: String = redis::cmd("PING").query_async(conn.deref_mut()).await?;
         match pong.as_str() {
             "PONG" => Ok(()),
