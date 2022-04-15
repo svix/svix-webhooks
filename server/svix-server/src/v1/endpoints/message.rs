@@ -16,6 +16,7 @@ use crate::{
     db::models::messagedestination,
     error::{Error, HttpError, Result},
     queue::{MessageTask, TaskQueueProducer},
+    redis::RedisClusterConnectionManager,
     v1::utils::{
         apply_pagination, iterator_from_before_or_after, ListResponse, MessageListFetchOptions,
         ModelIn, ModelOut, ReversibleIterator, ValidatedJson, ValidatedQuery,
@@ -26,8 +27,10 @@ use axum::{
     routing::{get, post},
     Json, Router,
 };
+use bb8::ManageConnection;
 use chrono::{DateTime, Utc};
 use hyper::StatusCode;
+use redis::aio::ConnectionLike;
 use sea_orm::entity::prelude::*;
 use sea_orm::{sea_query::Expr, ActiveValue::Set};
 use sea_orm::{ActiveModelTrait, DatabaseConnection, TransactionTrait};
@@ -188,16 +191,20 @@ pub struct CreateMessageQueryParams {
     with_content: bool,
 }
 
-async fn create_message(
+async fn create_message<M>(
     Extension(ref db): Extension<DatabaseConnection>,
     Extension(queue_tx): Extension<TaskQueueProducer>,
-    Extension(redis_cache): Extension<Option<RedisCache>>,
+    Extension(redis_cache): Extension<Option<RedisCache<M>>>,
     ValidatedQuery(CreateMessageQueryParams { with_content }): ValidatedQuery<
         CreateMessageQueryParams,
     >,
     ValidatedJson(data): ValidatedJson<MessageIn>,
     AuthenticatedApplication { permissions, app }: AuthenticatedApplication,
-) -> Result<(StatusCode, Json<MessageOut>)> {
+) -> Result<(StatusCode, Json<MessageOut>)>
+where
+    M: ManageConnection + Clone,
+    M::Connection: ConnectionLike,
+{
     let create_message_app = CreateMessageApp::layered_fetch(
         redis_cache.as_ref(),
         db,
@@ -312,7 +319,10 @@ pub fn router() -> Router {
         "/app/:app_id",
         Router::new()
             .route("/msg/", get(list_messages))
-            .route("/msg/", post(create_message))
+            .route(
+                "/msg/",
+                post(create_message::<RedisClusterConnectionManager>),
+            )
             .route("/msg/:msg_id/", get(get_message)),
     )
 }

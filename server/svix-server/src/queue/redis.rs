@@ -18,10 +18,10 @@
 use std::time::Duration;
 
 use axum::async_trait;
-use bb8::Pool;
-use bb8_redis::RedisConnectionManager;
+use bb8::{ManageConnection, Pool};
+
 use chrono::Utc;
-use redis::{AsyncCommands, RedisWrite, ToRedisArgs};
+use redis::{aio::ConnectionLike, AsyncCommands, RedisWrite, ToRedisArgs};
 use svix_ksuid::*;
 use tokio::time::sleep;
 
@@ -41,9 +41,11 @@ const DELAYED: &str = "svix_queue_delayed";
 /// After this limit a task should be taken out of the processing queue and rescheduled
 const TASK_VALIDITY_DURATION: Duration = Duration::from_secs(45);
 
-pub async fn new_pair(
-    pool: Pool<RedisConnectionManager>,
-) -> (TaskQueueProducer, TaskQueueConsumer) {
+pub async fn new_pair<M>(pool: Pool<M>) -> (TaskQueueProducer, TaskQueueConsumer)
+where
+    M: ManageConnection + Clone,
+    M::Connection: ConnectionLike,
+{
     let worker_pool = pool.clone();
     tokio::spawn(async move {
         // FIXME: enforce we only have one such worker (locking)
@@ -115,8 +117,12 @@ impl ToRedisArgs for Direction {
 }
 
 #[derive(Clone)]
-pub struct RedisQueueProducer {
-    pool: Pool<RedisConnectionManager>,
+pub struct RedisQueueProducer<M>
+where
+    M: ManageConnection + Clone,
+    M::Connection: ConnectionLike,
+{
+    pool: Pool<M>,
 }
 
 fn to_redis_key(delivery: &TaskQueueDelivery) -> String {
@@ -136,7 +142,11 @@ fn from_redis_key(key: &str) -> TaskQueueDelivery {
 }
 
 #[async_trait]
-impl TaskQueueSend for RedisQueueProducer {
+impl<M> TaskQueueSend for RedisQueueProducer<M>
+where
+    M: ManageConnection + Clone,
+    M::Connection: ConnectionLike,
+{
     async fn send(&self, task: QueueTask, delay: Option<Duration>) -> Result<()> {
         let mut pool = self.pool.get().await.unwrap();
         let timestamp = delay.map(|delay| Utc::now() + chrono::Duration::from_std(delay).unwrap());
@@ -182,12 +192,20 @@ impl TaskQueueSend for RedisQueueProducer {
     }
 }
 
-pub struct RedisQueueConsumer {
-    pool: Pool<RedisConnectionManager>,
+pub struct RedisQueueConsumer<M>
+where
+    M: ManageConnection,
+    M::Connection: ConnectionLike,
+{
+    pool: Pool<M>,
 }
 
 #[async_trait]
-impl TaskQueueReceive for RedisQueueConsumer {
+impl<M> TaskQueueReceive for RedisQueueConsumer<M>
+where
+    M: ManageConnection,
+    M::Connection: ConnectionLike,
+{
     async fn receive(&mut self) -> Result<TaskQueueDelivery> {
         let mut pool = self.pool.get().await.unwrap();
         let key: String = redis::cmd("BLMOVE")

@@ -49,6 +49,7 @@ sea-orm = { version = "0.7.1", features = [ "sqlx-postgres", "runtime-tokio-rust
 sqlx = { version = "0.5", features = [ "runtime-tokio-rustls", "postgres", "migrate" ] }
 http = "0.2"
 time = { version = "0.3.9", features = [ "std" ]}
+redis_cluster_async = "0.7.0"
 
 [dev-dependencies]
 anyhow = "1.0.56"

@@ -1,8 +1,8 @@
 use std::time::Duration;
 
-use bb8::Pool;
-use bb8_redis::RedisConnectionManager;
-use redis::{AsyncCommands, RedisError};
+use bb8::{ManageConnection, Pool};
+
+use redis::{aio::ConnectionLike, AsyncCommands, RedisError};
 use serde::{de::DeserializeOwned, Serialize};
 
 /// Errors internal to the cache
@@ -57,17 +57,29 @@ pub(crate) use kv_def;
 /// A Redis-based cache of data to avoid expensive fetches from PostgreSQL. Simply a wrapper over
 /// Redis.
 #[derive(Debug, Clone)]
-pub struct RedisCache {
-    redis: Pool<RedisConnectionManager>,
+pub struct RedisCache<M>
+where
+    M: ManageConnection + Clone,
+    M::Connection: ConnectionLike,
+{
+    redis: Pool<M>,
 }
 
-impl RedisCache {
-    pub fn new(redis: Pool<RedisConnectionManager>) -> RedisCache {
+impl<M> RedisCache<M>
+where
+    M: ManageConnection + Clone,
+    M::Connection: ConnectionLike,
+{
+    pub fn new(redis: Pool<M>) -> RedisCache<M> {
         RedisCache { redis }
     }
 
     pub async fn get<T: CacheValue>(&self, key: &T::Key) -> Result<Option<T>> {
-        let mut pool = self.redis.get().await?;
+        let mut pool = self
+            .redis
+            .get()
+            .await
+            .map_err(|_| Error::Input("FIXME".to_string()))?;
         let fetched = pool.get::<&str, Option<String>>(key.as_ref()).await?;
         Ok(fetched
             .map(|json| serde_json::from_str(&json))
@@ -77,7 +89,11 @@ impl RedisCache {
     /// Sets a CacheKey to its associated CacheValue.
     /// Note that the [`Duration`] used is down to millisecond precision.
     pub async fn set<T: CacheValue>(&self, key: &T::Key, value: &T, ttl: Duration) -> Result<()> {
-        let mut pool = self.redis.get().await?;
+        let mut pool = self
+            .redis
+            .get()
+            .await
+            .map_err(|_| Error::Input("FIXME".to_string()))?;
 
         pool.pset_ex(
             key.as_ref(),
@@ -96,7 +112,11 @@ impl RedisCache {
 
     #[cfg(test)]
     pub async fn delete<T: CacheKey>(&self, key: &T) -> Result<()> {
-        let mut pool = self.redis.get().await?;
+        let mut pool = self
+            .redis
+            .get()
+            .await
+            .map_err(|_| Error::Input("FIXME".to_string()))?;
         pool.del(key.as_ref()).await?;
 
         Ok(())
@@ -106,6 +126,7 @@ impl RedisCache {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use bb8_redis::RedisConnectionManager;
     use serde::Deserialize;
 
     // Test structures

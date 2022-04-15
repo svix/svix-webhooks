@@ -3,7 +3,9 @@ use std::{
     time::Duration,
 };
 
+use bb8::ManageConnection;
 use chrono::{DateTime, FixedOffset};
+use redis::aio::ConnectionLike;
 use sea_orm::{DatabaseConnection, DatabaseTransaction, TransactionTrait};
 use serde::{Deserialize, Serialize};
 
@@ -64,14 +66,18 @@ impl CreateMessageApp {
     /// Fetches all information for creating a [`CreateMessageApp`] from the Redis cache if it
     /// exists or from PostgreSQL otherwise. If the RedisCache is Some, but does not contain the
     /// requisite information, fetch it from PostgreSQL and insert the data into the cache.
-    pub async fn layered_fetch(
-        redis: Option<&RedisCache>,
+    pub async fn layered_fetch<M>(
+        redis: Option<&RedisCache<M>>,
         pg: &DatabaseConnection,
         app: Option<application::Model>,
         app_id: ApplicationId,
         org_id: OrganizationId,
         ttl: Duration,
-    ) -> Result<Option<CreateMessageApp>> {
+    ) -> Result<Option<CreateMessageApp>>
+    where
+        M: ManageConnection + Clone,
+        M::Connection: ConnectionLike,
+    {
         let cache_key = AppEndpointKey::new(org_id.clone(), app_id.clone());
 
         // First check Redis

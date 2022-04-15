@@ -10,7 +10,9 @@ use crate::core::{
 use crate::db::models::{message, messageattempt, messagedestination};
 use crate::error::{Error, Result};
 use crate::queue::{MessageTask, QueueTask, TaskQueueConsumer, TaskQueueProducer};
+use bb8::ManageConnection;
 use chrono::Utc;
+use redis::aio::ConnectionLike;
 use reqwest::header::{HeaderMap, HeaderName};
 use sea_orm::entity::prelude::*;
 use sea_orm::ActiveValue::Set;
@@ -67,13 +69,17 @@ fn generate_msg_headers(
 }
 
 /// Dispatches one webhook
-async fn dispatch(
+async fn dispatch<M>(
     cfg: Configuration,
     db: &DatabaseConnection,
-    redis_cache: Option<RedisCache>,
+    redis_cache: Option<RedisCache<M>>,
     queue_tx: &TaskQueueProducer,
     msg_task: MessageTask,
-) -> Result<()> {
+) -> Result<()>
+where
+    M: ManageConnection + Clone,
+    M::Connection: ConnectionLike,
+{
     tracing::trace!("Dispatch: {} {}", &msg_task.msg_id, &msg_task.endpoint_id);
 
     let app_id = &msg_task.app_id;
@@ -278,13 +284,17 @@ async fn dispatch(
 }
 
 /// Listens on the message queue for new tasks
-pub async fn worker_loop(
+pub async fn worker_loop<M>(
     cfg: Configuration,
     pool: DatabaseConnection,
-    redis_cache: Option<RedisCache>,
+    redis_cache: Option<RedisCache<M>>,
     queue_tx: TaskQueueProducer,
     mut queue_rx: TaskQueueConsumer,
-) -> Result<()> {
+) -> Result<()>
+where
+    M: ManageConnection + Clone,
+    M::Connection: ConnectionLike,
+{
     loop {
         let pool = pool.clone();
         match queue_rx.receive().await {
