@@ -155,7 +155,7 @@ mod tests {
         let cfg = crate::cfg::load().unwrap();
 
         let redis_pool = bb8::Pool::builder()
-            .build(RedisConnectionManager::new(cfg.redis_dsn.as_deref().unwrap()).unwrap())
+            .build(RedisConnectionManager::new(cfg.redis_dsn.as_ref().unwrap().get(0).unwrap().to_string()).unwrap())
             .await
             .unwrap();
 
@@ -212,7 +212,7 @@ mod tests {
         let cfg = crate::cfg::load().unwrap();
 
         let redis_pool = bb8::Pool::builder()
-            .build(RedisConnectionManager::new(cfg.redis_dsn.as_deref().unwrap()).unwrap())
+            .build(RedisConnectionManager::new(cfg.redis_dsn.as_ref().unwrap().get(0).unwrap().to_string()).unwrap())
             .await
             .unwrap();
         let cache = RedisCache::new(redis_pool.clone());

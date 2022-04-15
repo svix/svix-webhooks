@@ -66,9 +66,8 @@ impl CreateMessageApp {
     /// Fetches all information for creating a [`CreateMessageApp`] from the Redis cache if it
     /// exists or from PostgreSQL otherwise. If the RedisCache is Some, but does not contain the
     /// requisite information, fetch it from PostgreSQL and insert the data into the cache.
-    pub async fn layered_fetch<M, N>(
+    pub async fn layered_fetch<M>(
         redis: Option<&RedisCache<M>>,
-        redis_cluster: Option<&RedisCache<N>>,
         pg: &DatabaseConnection,
         app: Option<application::Model>,
         app_id: ApplicationId,
@@ -78,17 +77,11 @@ impl CreateMessageApp {
     where
         M: ManageConnection + Clone,
         M::Connection: ConnectionLike,
-        N: ManageConnection + Clone,
-        N::Connection: ConnectionLike,
     {
         let cache_key = AppEndpointKey::new(org_id.clone(), app_id.clone());
 
         // First check Redis
         if let Some(redis) = redis {
-            if let Ok(Some(cma)) = redis.get(&cache_key).await {
-                return Ok(Some(cma));
-            }
-        } else if let Some(redis) = redis_cluster {
             if let Ok(Some(cma)) = redis.get(&cache_key).await {
                 return Ok(Some(cma));
             }

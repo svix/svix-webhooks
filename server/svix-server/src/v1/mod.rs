@@ -2,18 +2,24 @@
 // SPDX-License-Identifier: MIT
 
 use axum::Router;
+use bb8::ManageConnection;
+use redis::aio::ConnectionLike;
 
 pub mod endpoints;
 pub mod utils;
 
-pub fn router() -> Router {
+pub fn router<M>() -> Router
+where
+    M: ManageConnection + Clone,
+    M::Connection: ConnectionLike,
+{
     let ret = Router::new()
         .merge(endpoints::health::router())
         .merge(auth::router())
         .merge(endpoints::application::router())
         .merge(endpoints::endpoint::router())
         .merge(endpoints::event_type::router())
-        .merge(endpoints::message::router())
+        .merge(endpoints::message::router::<M>())
         .merge(endpoints::attempt::router());
 
     #[cfg(debug_assertions)]

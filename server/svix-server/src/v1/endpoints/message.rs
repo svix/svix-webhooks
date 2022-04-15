@@ -16,7 +16,6 @@ use crate::{
     db::models::messagedestination,
     error::{Error, HttpError, Result},
     queue::{MessageTask, TaskQueueProducer},
-    redis::RedisClusterConnectionManager,
     v1::utils::{
         apply_pagination, iterator_from_before_or_after, ListResponse, MessageListFetchOptions,
         ModelIn, ModelOut, ReversibleIterator, ValidatedJson, ValidatedQuery,
@@ -28,7 +27,7 @@ use axum::{
     Json, Router,
 };
 use bb8::ManageConnection;
-use bb8_redis::RedisConnectionManager;
+
 use chrono::{DateTime, Utc};
 use hyper::StatusCode;
 use redis::aio::ConnectionLike;
@@ -192,11 +191,10 @@ pub struct CreateMessageQueryParams {
     with_content: bool,
 }
 
-async fn create_message<M,N>(
+async fn create_message<M>(
     Extension(ref db): Extension<DatabaseConnection>,
     Extension(queue_tx): Extension<TaskQueueProducer>,
     Extension(redis_cache): Extension<Option<RedisCache<M>>>,
-    Extension(redis_cluster_cache): Extension<Option<RedisCache<N>>>,
     ValidatedQuery(CreateMessageQueryParams { with_content }): ValidatedQuery<
         CreateMessageQueryParams,
     >,
@@ -206,12 +204,9 @@ async fn create_message<M,N>(
 where
     M: ManageConnection + Clone,
     M::Connection: ConnectionLike,
-    N: ManageConnection + Clone,
-    N::Connection: ConnectionLike,
 {
     let create_message_app = CreateMessageApp::layered_fetch(
         redis_cache.as_ref(),
-        redis_cluster_cache.as_ref(),
         db,
         Some(app.clone()),
         app.id.clone(),
@@ -319,15 +314,16 @@ async fn get_message(
     Ok(Json(msg_out))
 }
 
-pub fn router() -> Router {
+pub fn router<M>() -> Router
+where
+    M: ManageConnection + Clone,
+    M::Connection: ConnectionLike,
+{
     Router::new().nest(
         "/app/:app_id",
         Router::new()
             .route("/msg/", get(list_messages))
-            .route(
-                "/msg/",
-                post(create_message::<RedisConnectionManager, RedisClusterConnectionManager>),
-            )
+            .route("/msg/", post(create_message::<M>))
             .route("/msg/:msg_id/", get(get_message)),
     )
 }

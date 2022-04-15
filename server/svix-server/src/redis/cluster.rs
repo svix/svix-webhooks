@@ -2,7 +2,7 @@ use std::ops::DerefMut;
 
 use axum::async_trait;
 
-use redis::{aio::ConnectionLike, ErrorKind, IntoConnectionInfo, RedisError};
+use redis::{ErrorKind, IntoConnectionInfo, RedisError};
 use redis_cluster_async::Client;
 
 #[derive(Clone)]

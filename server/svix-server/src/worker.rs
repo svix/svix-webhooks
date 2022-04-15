@@ -69,19 +69,16 @@ fn generate_msg_headers(
 }
 
 /// Dispatches one webhook
-async fn dispatch<M, N>(
+async fn dispatch<M>(
     cfg: Configuration,
     db: &DatabaseConnection,
     redis_cache: Option<RedisCache<M>>,
-    redis_cluster_cache: Option<RedisCache<N>>,
     queue_tx: &TaskQueueProducer,
     msg_task: MessageTask,
 ) -> Result<()>
 where
     M: ManageConnection + Clone,
     M::Connection: ConnectionLike,
-    N: ManageConnection + Clone,
-    N::Connection: ConnectionLike,
 {
     tracing::trace!("Dispatch: {} {}", &msg_task.msg_id, &msg_task.endpoint_id);
 
@@ -102,7 +99,6 @@ where
 
     let endp: CreateMessageEndpoint = CreateMessageApp::layered_fetch(
         redis_cache.as_ref(),
-        redis_cluster_cache.as_ref(),
         db,
         None,
         app_id.clone(),
@@ -288,19 +284,16 @@ where
 }
 
 /// Listens on the message queue for new tasks
-pub async fn worker_loop<M, N>(
+pub async fn worker_loop<M>(
     cfg: Configuration,
     pool: DatabaseConnection,
     redis_cache: Option<RedisCache<M>>,
-    redis_cluster_cache: Option<RedisCache<N>>,
     queue_tx: TaskQueueProducer,
     mut queue_rx: TaskQueueConsumer,
 ) -> Result<()>
 where
     M: ManageConnection + Clone,
     M::Connection: ConnectionLike,
-    N: ManageConnection + Clone,
-    N::Connection: ConnectionLike,
 {
     loop {
         let pool = pool.clone();
@@ -312,9 +305,8 @@ where
                 match queue_task {
                     QueueTask::MessageV1(msg) => {
                         let cache = redis_cache.clone();
-                        let cluster_cache = redis_cluster_cache.clone();
                         tokio::spawn(async move {
-                            if let Err(err) = dispatch(cfg, &pool, cache, cluster_cache,&queue_tx, msg).await {
+                            if let Err(err) = dispatch(cfg, &pool, cache, &queue_tx, msg).await {
                                 tracing::error!("Error executing task: {}", err);
                                 queue_tx.nack(delivery).await.unwrap();
                             } else {

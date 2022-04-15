@@ -45,11 +45,7 @@ where
 {
     let buf = String::deserialize(deserializer)?;
 
-    let v: Vec<String> = buf
-        .split(',')
-        .into_iter()
-        .map(|x| x.to_string())
-        .collect();
+    let v: Vec<String> = buf.split(',').into_iter().map(|x| x.to_string()).collect();
 
     if v.is_empty() {
         Ok(None)
@@ -81,10 +77,7 @@ retry_schedule = "5,300,1800,7200,18000,36000,36000"
 # The DSN for redis (can be left empty if not using redis)
 # redis_dsn = "redis://redis:6379"
 
-# If true, a clustered redis client will be used.
-cluster_redis = false
-
-# What kind of message queue to use. Supported: memory, redis (must have redis_dsn configured).
+# What kind of message queue to use. Supported: memory, redis (must have redis_dsn configured), rediscluster (add multiple hosts to redis_dsn separated by commas).
 queue_type = "redis"
 
 # If true, headers are prefixed with `Webhook-`, otherwise with `Svix-` (default).
@@ -122,10 +115,7 @@ pub struct ConfigurationInner {
     #[serde(deserialize_with = "deserialize_redis_dsn")]
     pub redis_dsn: Option<Vec<String>>,
 
-    /// If true, a clustered redis client will be used.
-    pub cluster_redis: bool,
-
-    /// What kind of message queue to use. Supported: memory, redis (must have redis_dsn configured).
+    /// What kind of message queue to use. Supported: memory, redis (must have redis_dsn configured), rediscluster (add multiple hosts to redis_dsn separated by commas).
     pub queue_type: QueueType,
 
     /// If true, headers are prefixed with `Webhook-`, otherwise with `Svix-` (default).
