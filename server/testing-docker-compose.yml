@@ -14,5 +14,69 @@ services:
     ports:
       - "6379:6379"
 
+  # Redis cluster
+  redis-cluster:
+    image: "bitnami/redis-cluster:6.2"
+    environment:
+      ALLOW_EMPTY_PASSWORD: "yes"
+      REDIS_NODES: "redis-cluster redis-cluster-node-0 redis-cluster-node-1 redis-cluster-node-2 redis-cluster-node-3 redis-cluster-node-4"
+      REDIS_CLUSTER_CREATOR: "yes"
+      REDIS_CLUSTER_REPLICAS: "1"
+      REDIS_CLUSTER_ANNOUNCE_PORT: "6380"
+    ports:
+      - "6380:6379"
+    depends_on:
+      - redis-cluster-node-0
+      - redis-cluster-node-1
+      - redis-cluster-node-2
+      - redis-cluster-node-3
+      - redis-cluster-node-4
+
+  redis-cluster-node-0:
+    image: "bitnami/redis-cluster:6.2"
+    ports:
+      - "6381:6379"
+    environment:
+      ALLOW_EMPTY_PASSWORD: "yes"
+      REDIS_NODES: "redis-cluster redis-cluster-node-0 redis-cluster-node-1 redis-cluster-node-2 redis-cluster-node-3 redis-cluster-node-4"
+      REDIS_CLUSTER_ANNOUNCE_PORT: "6381"
+
+  redis-cluster-node-1:
+    image: "bitnami/redis-cluster:6.2"
+    ports:
+      - "6382:6379"
+    environment:
+      ALLOW_EMPTY_PASSWORD: "yes"
+      REDIS_NODES: "redis-cluster redis-cluster-node-0 redis-cluster-node-1 redis-cluster-node-2 redis-cluster-node-3 redis-cluster-node-4"
+      REDIS_CLUSTER_ANNOUNCE_PORT: "6382"
+
+  redis-cluster-node-2:
+    image: "bitnami/redis-cluster:6.2"
+    ports:
+      - "6383:6379"
+    environment:
+      ALLOW_EMPTY_PASSWORD: "yes"
+      REDIS_NODES: "redis-cluster redis-cluster-node-0 redis-cluster-node-1 redis-cluster-node-2 redis-cluster-node-3 redis-cluster-node-4"
+      REDIS_CLUSTER_ANNOUNCE_PORT: "6383"
+
+  redis-cluster-node-3:
+    image: "bitnami/redis-cluster:6.2"
+    ports:
+      - "6384:6379"
+    environment:
+      ALLOW_EMPTY_PASSWORD: "yes"
+      REDIS_NODES: "redis-cluster redis-cluster-node-0 redis-cluster-node-1 redis-cluster-node-2 redis-cluster-node-3 redis-cluster-node-4"
+      REDIS_CLUSTER_ANNOUNCE_PORT: "6384"
+
+  redis-cluster-node-4:
+    image: "bitnami/redis-cluster:6.2"
+    ports:
+      - "6385:6379"
+    environment:
+      ALLOW_EMPTY_PASSWORD: "yes"
+      REDIS_NODES: "redis-cluster redis-cluster-node-0 redis-cluster-node-1 redis-cluster-node-2 redis-cluster-node-3 redis-cluster-node-4"
+      REDIS_CLUSTER_ANNOUNCE_PORT: "6385"
+
 volumes:
   postgres-data:
+

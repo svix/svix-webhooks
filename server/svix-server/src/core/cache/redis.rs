@@ -4,27 +4,28 @@
 use std::time::Duration;
 
 use axum::async_trait;
-use bb8::Pool;
-use bb8_redis::RedisConnectionManager;
-use redis::AsyncCommands;
+
 use serde_json;
+
+use crate::redis::{PoolLike, SvixRedisPool};
 
 use super::{Cache, CacheBehavior, CacheKey, CacheValue, Error, Result};
 
-pub fn new(redis: Pool<RedisConnectionManager>) -> Cache {
+pub fn new(redis: SvixRedisPool) -> Cache {
     RedisCache { redis }.into()
 }
 
 #[derive(Clone)]
 pub struct RedisCache {
-    redis: Pool<RedisConnectionManager>,
+    redis: SvixRedisPool,
 }
 
 #[async_trait]
 impl CacheBehavior for RedisCache {
     async fn get<T: CacheValue>(&self, key: &T::Key) -> Result<Option<T>> {
         let mut pool = self.redis.get().await.unwrap();
-        let fetched = pool.get::<&str, Option<String>>(key.as_ref()).await?;
+
+        let fetched: Option<String> = pool.query_async(redis::Cmd::get(key.as_ref())).await?;
 
         Ok(fetched
             .map(|json| serde_json::from_str(&json))
@@ -34,7 +35,7 @@ impl CacheBehavior for RedisCache {
     async fn set<T: CacheValue>(&self, key: &T::Key, value: &T, ttl: Duration) -> Result<()> {
         let mut pool = self.redis.get().await?;
 
-        pool.pset_ex(
+        pool.query_async(redis::Cmd::pset_ex(
             key.as_ref(),
             serde_json::to_string(value)?,
             ttl.as_millis().try_into().map_err(|e| {
@@ -43,14 +44,15 @@ impl CacheBehavior for RedisCache {
                     e
                 ))
             })?,
-        )
+        ))
         .await
         .map_err(Into::into)
     }
 
     async fn delete<T: CacheKey>(&self, key: &T) -> Result<()> {
         let mut pool = self.redis.get().await?;
-        pool.del(key.as_ref()).await?;
+
+        pool.query_async(redis::Cmd::del(key.as_ref())).await?;
 
         Ok(())
     }
@@ -76,7 +78,7 @@ impl CacheBehavior for RedisCache {
 
         cmd.arg("NX");
 
-        let res: Option<()> = cmd.query_async(&mut *pool).await?;
+        let res: Option<()> = pool.query_async(cmd).await?;
 
         Ok(res.is_some())
     }
@@ -86,6 +88,8 @@ impl CacheBehavior for RedisCache {
 mod tests {
     use super::{super::kv_def, *};
     use serde::{Deserialize, Serialize};
+
+    use crate::cfg::CacheType;
 
     // Test structures
 
@@ -112,12 +116,23 @@ mod tests {
         dotenv::dotenv().ok();
         let cfg = crate::cfg::load().unwrap();
 
-        let redis_pool = bb8::Pool::builder()
-            .build(RedisConnectionManager::new(cfg.redis_dsn.as_deref().unwrap()).unwrap())
-            .await
-            .unwrap();
-
-        let cache = new(redis_pool.clone());
+        let redis_cache = match cfg.cache_type {
+            CacheType::RedisCluster => {
+                let mgr =
+                    crate::redis::create_redis_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), true)
+                        .await;
+                Some(mgr)
+            }
+            _ => {
+                let mgr = crate::redis::create_redis_pool(
+                    cfg.redis_dsn.as_ref().unwrap().as_str(),
+                    false,
+                )
+                .await;
+                Some(mgr)
+            }
+        };
+        let cache = super::new(redis_cache.unwrap());
 
         let (first_key, first_val_a, first_val_b) =
             (TestKeyA::new("1".to_owned()), TestValA(1), TestValA(2));
@@ -169,11 +184,24 @@ mod tests {
         dotenv::dotenv().ok();
         let cfg = crate::cfg::load().unwrap();
 
-        let redis_pool = bb8::Pool::builder()
-            .build(RedisConnectionManager::new(cfg.redis_dsn.as_deref().unwrap()).unwrap())
-            .await
-            .unwrap();
-        let cache = new(redis_pool.clone());
+        let redis_cache = match cfg.cache_type {
+            CacheType::RedisCluster => {
+                let mgr =
+                    crate::redis::create_redis_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), true)
+                        .await;
+                Some(mgr)
+            }
+            _ => {
+                let mgr = crate::redis::create_redis_pool(
+                    cfg.redis_dsn.as_ref().unwrap().as_str(),
+                    false,
+                )
+                .await;
+                Some(mgr)
+            }
+        };
+        let cache = crate::cache::redis::new(redis_cache.unwrap());
+
         let key = TestKeyA::new("key".to_owned());
 
         assert!(cache
@@ -189,11 +217,24 @@ mod tests {
         dotenv::dotenv().ok();
         let cfg = crate::cfg::load().unwrap();
 
-        let redis_pool = bb8::Pool::builder()
-            .build(RedisConnectionManager::new(cfg.redis_dsn.as_deref().unwrap()).unwrap())
-            .await
-            .unwrap();
-        let cache = new(redis_pool.clone());
+        let redis_cache = match cfg.cache_type {
+            CacheType::RedisCluster => {
+                let mgr =
+                    crate::redis::create_redis_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), true)
+                        .await;
+                Some(mgr)
+            }
+            _ => {
+                let mgr = crate::redis::create_redis_pool(
+                    cfg.redis_dsn.as_ref().unwrap().as_str(),
+                    false,
+                )
+                .await;
+                Some(mgr)
+            }
+        };
+        let cache = super::new(redis_cache.unwrap());
+
         let key = TestKeyA::new("nx_status_test_key".to_owned());
 
         assert!(cache

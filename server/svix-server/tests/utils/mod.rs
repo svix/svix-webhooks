@@ -88,19 +88,26 @@ impl TestClient {
         let mut req = self.client.post(self.build_uri(endpoint));
         req = self.add_headers(req).json(&input);
 
-        let resp = req.send().await.context("error sending request")?;
+        let resp = req.send().await;
+        match resp {
+            Ok(resp) => {
+                if resp.status() != expected_code {
+                    anyhow::bail!(
+                        "assertation failed: expected status {}, actual status {}",
+                        expected_code,
+                        resp.status()
+                    );
+                }
 
-        if resp.status() != expected_code {
-            anyhow::bail!(
-                "assertation failed: expected status {}, actual status {}",
-                expected_code,
-                resp.status()
-            );
+                resp.json()
+                    .await
+                    .context("error receiving/parsing response")
+            }
+            Err(e) => {
+                println!("Unexpected request error: {:?}", e);
+                Err(e.into())
+            }
         }
-
-        resp.json()
-            .await
-            .context("error receiving/parsing response")
     }
 
     pub async fn post_with_idempotency<I: Serialize, O: DeserializeOwned>(

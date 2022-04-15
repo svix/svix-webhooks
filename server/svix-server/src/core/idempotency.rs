@@ -14,8 +14,10 @@ use axum::{
     http::{Request, Response, StatusCode},
     response::IntoResponse,
 };
+
 use blake2::{Blake2b512, Digest};
 use http::request::Parts;
+
 use serde::{Deserialize, Serialize};
 use tower::Service;
 
@@ -386,16 +388,8 @@ mod tests {
         wait: Option<std::time::Duration>,
     ) -> (JoinHandle<()>, String, Arc<Mutex<usize>>) {
         dotenv::dotenv().ok();
-        let cfg = crate::cfg::load().unwrap();
 
-        let redis_pool = bb8::Pool::builder()
-            .build(
-                bb8_redis::RedisConnectionManager::new(cfg.redis_dsn.as_deref().unwrap()).unwrap(),
-            )
-            .await
-            .unwrap();
-
-        let cache = cache::redis::new(redis_pool);
+        let cache = cache::memory::new();
 
         let count = Arc::new(Mutex::new(0));
 
@@ -595,16 +589,8 @@ mod tests {
     /// recorded in the HTTP status code.
     async fn start_empty_service() -> (JoinHandle<()>, String, Arc<Mutex<u16>>) {
         dotenv::dotenv().ok();
-        let cfg = crate::cfg::load().unwrap();
 
-        let redis_pool = bb8::Pool::builder()
-            .build(
-                bb8_redis::RedisConnectionManager::new(cfg.redis_dsn.as_deref().unwrap()).unwrap(),
-            )
-            .await
-            .unwrap();
-
-        let cache = cache::redis::new(redis_pool);
+        let cache = cache::memory::new();
 
         let count = Arc::new(Mutex::new(199));
 
