@@ -15,10 +15,12 @@ use axum::{
     response::IntoResponse,
 };
 use blake2::{Blake2b512, Digest};
+use http::request::Parts;
 use serde::{Deserialize, Serialize};
 use tower::Service;
 
 use super::cache::{CacheKey, CacheValue, RedisCache};
+use crate::error::Error;
 
 /// Returns the default exipry period for cached responses
 const fn expiry_default() -> Duration {
@@ -28,6 +30,12 @@ const fn expiry_default() -> Duration {
 /// Returns the default expiry period for the starting lock
 const fn expiry_starting() -> Duration {
     Duration::from_secs(20)
+}
+
+/// Returns the duration to sleep before retrying to find a [`SerializedResponse::Finished`] in the
+/// cache
+const fn wait_duration() -> Duration {
+    Duration::from_millis(200)
 }
 
 /// The data structure containing all necessary components of a response ready to be (de)serialized
@@ -118,7 +126,7 @@ where
     service.call(req).await.map(IntoResponse::into_response)
 }
 
-/// The idempotency middleware itself -- inserted in place of a regular route
+/// The idempotency middleware itself -- used via the [`Router::layer`] method
 #[derive(Clone)]
 pub struct IdempotencyService<S: Clone> {
     pub redis: Option<RedisCache>,
@@ -155,49 +163,68 @@ where
                     return resolve_service(service, Request::from_parts(parts, body)).await;
                 }
 
-                let key = if let Some(Ok(key)) =
-                    parts.headers.get("idempotency-key").map(|v| v.to_str())
-                {
+                // Retreive `IdempotencyKey` from header and URL parts, but returning the service
+                // normally in the event a key could not be created.
+                let key = if let Some(key) = get_key(&parts) {
                     key
                 } else {
-                    // No idempotency-key -- pass off to service and do not cache
                     return resolve_service(service, Request::from_parts(parts, body)).await;
                 };
 
-                let auth = if let Some(Ok(auth)) =
-                    parts.headers.get("Authorization").map(|v| v.to_str())
-                {
-                    auth
-                } else {
-                    // No auth token -- pass off to service and do not cache
-                    return resolve_service(service, Request::from_parts(parts, body)).await;
-                };
-
-                let uri = parts.uri.to_string();
-                let key = IdempotencyKey::new(auth, key, &uri);
-
-                // First set the start value as a lock
-                match redis
+                // Set the [`SerializedResponse::Start`] lock if the key does not exist in the cache
+                // returning whether the value was set
+                let set = if let Ok(set) = redis
                     .set_if_not_exists(&key, &SerializedResponse::Start, expiry_starting())
                     .await
                 {
-                    // If it's set continue resolving the service and cache the response
-                    Ok(true) => {
-                        resolve_and_cache_response(
-                            &redis,
-                            &key,
-                            service,
-                            Request::from_parts(parts, body),
-                        )
-                        .await
+                    set
+                } else {
+                    return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
+                };
+
+                // If the value was not set, first check the cache for a `Finished` cache value. If
+                // it is instead `None` or the value is a `Start` lock, then enter a loop checking
+                // it every 200ms.
+                //
+                // If at any point the cache returns an `Err`, then return 500 response
+                if !set {
+                    match redis.get::<SerializedResponse>(&key).await {
+                        Ok(Some(SerializedResponse::Finished {
+                            code,
+                            headers,
+                            body,
+                        })) => {
+                            return Ok(finished_serialized_response_to_reponse(code, headers, body)
+                                .unwrap_or_else(|_| {
+                                    StatusCode::INTERNAL_SERVER_ERROR.into_response()
+                                }))
+                        }
+
+                        Ok(Some(SerializedResponse::Start)) | Ok(None) => {
+                            if let Ok(Some(SerializedResponse::Finished {
+                                code,
+                                headers,
+                                body,
+                            })) = lock_loop(&redis, &key).await
+                            {
+                                return Ok(finished_serialized_response_to_reponse(
+                                    code, headers, body,
+                                )
+                                .unwrap_or_else(|_| {
+                                    StatusCode::INTERNAL_SERVER_ERROR.into_response()
+                                }));
+                            }
+                        }
+
+                        Err(_) => return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response()),
                     }
+                };
 
-                    // If the key already exists, enter the lock loop
-                    Ok(false) => lock_loop(&redis, &key).await,
-
-                    // If it errors, something is up with Redis, so return 500
-                    Err(_) => Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response()),
-                }
+                // If it's set or the lock or the `lock_loop` returns Ok(None), then the key has no
+                // value, so continue resolving the service while caching the response for 2xx
+                // responses
+                resolve_and_cache_response(&redis, &key, service, Request::from_parts(parts, body))
+                    .await
             })
         } else {
             Box::pin(async move { Ok(service.call(req).await.into_response()) })
@@ -205,58 +232,60 @@ where
     }
 }
 
+/// Retreives an [`IdempotencyKey`] from the [`Parts`] of a [`Request`] returning None in the event
+/// that not all erquisite parts are there.
+fn get_key(parts: &Parts) -> Option<IdempotencyKey> {
+    let key = if let Some(Ok(key)) = parts.headers.get("idempotency-key").map(|v| v.to_str()) {
+        key
+    } else {
+        // No idempotency-key -- pass off to service and do not cache
+        return None;
+    };
+
+    let auth = if let Some(Ok(auth)) = parts.headers.get("Authorization").map(|v| v.to_str()) {
+        auth
+    } else {
+        // No auth token -- pass off to service and do not cache
+        return None;
+    };
+
+    let uri = parts.uri.to_string();
+
+    Some(IdempotencyKey::new(auth, key, &uri))
+}
+
 /// If the lock could not be set, then another request with that key has been completed or is being
 /// completed, so loop until it has been completed or times out
 async fn lock_loop(
     redis: &RedisCache,
     key: &IdempotencyKey,
-) -> Result<Response<BoxBody>, Infallible> {
+) -> Result<Option<SerializedResponse>, Error> {
     let mut total_delay_duration = std::time::Duration::from_millis(0);
 
-    let out = loop {
+    loop {
+        total_delay_duration += wait_duration();
+        tokio::time::sleep(wait_duration()).await;
+
         match redis.get::<SerializedResponse>(key).await {
+            // Value has been retreived from cache, so return it
+            Ok(Some(resp @ SerializedResponse::Finished { .. })) => return Ok(Some(resp)),
+
             // Request setting the lock has not been resolved yet, so wait a little and loop again
             Ok(Some(SerializedResponse::Start)) => {
                 if total_delay_duration > expiry_starting() {
-                    // TODO Better response
-                    break Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
-                }
-
-                total_delay_duration += std::time::Duration::from_millis(200);
-                tokio::time::sleep(std::time::Duration::from_millis(200)).await;
-            }
-
-            // Value has been retreived from cache, so return it
-            Ok(Some(SerializedResponse::Finished {
-                code,
-                headers,
-                body,
-            })) => {
-                break Ok(finished_serialized_response_to_reponse(code, headers, body)
-                    .unwrap_or_else(|_| StatusCode::INTERNAL_SERVER_ERROR.into_response()));
-            }
-
-            // Start value has expired or hasn't finished being set by Redis yet
-            Ok(None) => {
-                if total_delay_duration == std::time::Duration::from_millis(0) {
-                    // Loop at least once so if two requests fire at the same time, the lock has a
-                    // chance to finish writing
-                    total_delay_duration += std::time::Duration::from_millis(200);
-                    tokio::time::sleep(std::time::Duration::from_millis(200)).await;
-                } else {
-                    break Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
+                    return Ok(None);
                 }
             }
 
-            Err(_) => break Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response()),
+            // Start value has expired
+            Ok(None) => return Ok(None),
+
+            Err(e) => return Err(Error::Database(e.to_string())),
         }
-    };
-
-    out
+    }
 }
 
-/// If there is no value associated with a key, resolve the service and cache the result, but first
-/// set a lock value so further requests with that key stall until this one is complete
+/// Resolves the service and chaches the result assuming the response is successful
 async fn resolve_and_cache_response<S>(
     redis: &RedisCache,
     key: &IdempotencyKey,
@@ -274,28 +303,39 @@ where
         .unwrap()
         .into_parts();
 
-    // TODO: Don't skip over Err value
-    let bytes = body.data().await.and_then(Result::ok);
+    // If a 2xx response, cache the actual response
+    if parts.status.is_success() {
+        // TODO: Don't skip over Err value
+        let bytes = body.data().await.and_then(Result::ok);
 
-    let resp = SerializedResponse::Finished {
-        code: parts.status.into(),
-        headers: Some(
-            parts
-                .headers
-                .iter()
-                .map(|(k, v)| (k.as_str().to_owned(), v.as_bytes().to_owned()))
-                .collect(),
-        ),
-        body: bytes.clone().map(|b| b.to_vec()),
-    };
+        let resp = SerializedResponse::Finished {
+            code: parts.status.into(),
+            headers: Some(
+                parts
+                    .headers
+                    .iter()
+                    .map(|(k, v)| (k.as_str().to_owned(), v.as_bytes().to_owned()))
+                    .collect(),
+            ),
+            body: bytes.clone().map(|b| b.to_vec()),
+        };
 
-    if redis.set(key, &resp, expiry_default()).await.is_err() {
-        return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
+        if redis.set(key, &resp, expiry_default()).await.is_err() {
+            return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
+        }
+
+        // Assumes None to be an empty byte array
+        let bytes = bytes.unwrap_or_default();
+        Ok(Response::from_parts(parts, Body::from(bytes)).into_response())
     }
+    // If any other status, unset the start lock and return the response
+    else {
+        if redis.delete(key).await.is_err() {
+            return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
+        }
 
-    // Assumes None to be an empty byte array
-    let bytes = bytes.unwrap_or_default();
-    Ok(Response::from_parts(parts, Body::from(bytes)).into_response())
+        Ok(Response::from_parts(parts, body).into_response())
+    }
 }
 
 #[cfg(test)]

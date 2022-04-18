@@ -122,7 +122,6 @@ impl RedisCache {
         Ok(res.is_some())
     }
 
-    #[cfg(test)]
     pub async fn delete<T: CacheKey>(&self, key: &T) -> Result<()> {
         let mut pool = self.redis.get().await?;
         pool.del(key.as_ref()).await?;
