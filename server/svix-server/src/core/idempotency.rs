@@ -186,6 +186,8 @@ where
                 // it is instead `None` or the value is a `Start` lock, then enter a loop checking
                 // it every 200ms.
                 //
+                // If the loop times out, then reset the lock and proceed to resolve the service.
+                //
                 // If at any point the cache returns an `Err`, then return 500 response
                 if !set {
                     match redis.get::<SerializedResponse>(&key).await {
@@ -213,6 +215,21 @@ where
                                 .unwrap_or_else(|_| {
                                     StatusCode::INTERNAL_SERVER_ERROR.into_response()
                                 }));
+                            } else {
+                                // Set the lock if it returns `Ok(None)` and continue to resolve
+                                // as normal, but return 500 if the lock cannot be set
+                                if !matches!(
+                                    redis
+                                        .set_if_not_exists(
+                                            &key,
+                                            &SerializedResponse::Start,
+                                            expiry_starting(),
+                                        )
+                                        .await,
+                                    Ok(true)
+                                ) {
+                                    return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
+                                }
                             }
                         }
 
