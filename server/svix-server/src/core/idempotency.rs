@@ -173,23 +173,23 @@ where
 
                 // Set the [`SerializedResponse::Start`] lock if the key does not exist in the cache
                 // returning whether the value was set
-                let set = if let Ok(set) = redis
+                let lock_acquired = if let Ok(lock_acquired) = redis
                     .set_if_not_exists(&key, &SerializedResponse::Start, expiry_starting())
                     .await
                 {
-                    set
+                    lock_acquired
                 } else {
                     return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
                 };
 
-                // If the value was not set, first check the cache for a `Finished` cache value. If
+                // If the lock was not set, first check the cache for a `Finished` cache value. If
                 // it is instead `None` or the value is a `Start` lock, then enter a loop checking
                 // it every 200ms.
                 //
                 // If the loop times out, then reset the lock and proceed to resolve the service.
                 //
                 // If at any point the cache returns an `Err`, then return 500 response
-                if !set {
+                if !lock_acquired {
                     match redis.get::<SerializedResponse>(&key).await {
                         Ok(Some(SerializedResponse::Finished {
                             code,
