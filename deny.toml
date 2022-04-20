@@ -13,9 +13,11 @@ unmaintained = "warn"
 yanked = "warn"
 notice = "warn"
 ignore = [
-	# TODO: Update `time` crate when possible
+    # TODO: Update `time` crate when possible. Old versions are currently required for `sqlx` and
+    # `sea-orm`
     "RUSTSEC-2020-0071",
-	# TODO: Eliminate `chrono` crate
+
+	# TODO: Eliminate `chrono` crate when `time` update is possible.
     "RUSTSEC-2020-0159",
 ]
 
