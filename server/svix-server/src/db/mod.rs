@@ -13,7 +13,10 @@ static MIGRATIONS: sqlx::migrate::Migrator = sqlx::migrate!();
 async fn connect(cfg: &Configuration) -> sqlx::Pool<sqlx::Postgres> {
     tracing::debug!("DB: Initializing pool");
     if DbBackend::Postgres.is_prefix_of(&cfg.db_dsn) {
-        PgPoolOptions::new().connect(&cfg.db_dsn).await.unwrap()
+        PgPoolOptions::new()
+            .connect(&cfg.db_dsn)
+            .await
+            .expect("Error connectiong to Postgres")
     } else {
         panic!("db_dsn format not recognized. {}", &cfg.db_dsn)
     }

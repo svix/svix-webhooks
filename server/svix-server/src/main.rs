@@ -47,7 +47,7 @@ async fn main() {
     dotenv().ok();
 
     let args = Args::parse();
-    let cfg = cfg::load().unwrap();
+    let cfg = cfg::load().expect("Error loading configuration");
 
     if cfg!(debug_assertions) && std::env::var_os("RUST_LOG").is_none() {
         std::env::set_var(
@@ -70,7 +70,8 @@ async fn main() {
         command: JwtCommands::Generate,
     }) = &args.command
     {
-        let token = generate_token(&cfg.jwt_secret, default_org_id()).unwrap();
+        let token =
+            generate_token(&cfg.jwt_secret, default_org_id()).expect("Error generating token");
         println!("Token (Bearer): {}", token);
         exit(0);
     }

@@ -34,8 +34,14 @@ pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
     let pool = init_db(&cfg).await;
     let redis_pool = if let Some(redis_dsn) = &cfg.redis_dsn {
         tracing::debug!("Redis: Initializing pool");
-        let manager = RedisConnectionManager::new(redis_dsn.to_string()).unwrap();
-        Some(bb8::Pool::builder().build(manager).await.unwrap())
+        let manager =
+            RedisConnectionManager::new(redis_dsn.to_string()).expect("Error initializing Redis");
+        Some(
+            bb8::Pool::builder()
+                .build(manager)
+                .await
+                .expect("Error initializing Redis"),
+        )
     } else {
         None
     };
@@ -77,15 +83,15 @@ pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
     let with_api = cfg.api_enabled;
     let with_worker = cfg.worker_enabled;
 
-    let listen_address = SocketAddr::from_str(&cfg.listen_address).unwrap();
-
+    let listen_address =
+        SocketAddr::from_str(&cfg.listen_address).expect("Error parsing server listen address");
     let (server, worker_loop) = tokio::join!(
         async {
             if with_api {
                 if let Some(l) = listener {
                     tracing::debug!("API: Listening on {}", l.local_addr().unwrap());
                     axum::Server::from_tcp(l)
-                        .unwrap()
+                        .expect("Error starting http server")
                         .serve(app.into_make_service())
                         .await
                 } else {
@@ -109,6 +115,6 @@ pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
             }
         },
     );
-    server.unwrap();
-    worker_loop.unwrap();
+    server.expect("Error initializing server");
+    worker_loop.expect("Error initializing worker");
 }

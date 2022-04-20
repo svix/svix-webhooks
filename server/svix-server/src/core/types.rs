@@ -87,7 +87,7 @@ macro_rules! json_wrapper {
     ($name_id:ty) => {
         impl From<$name_id> for sea_orm::Value {
             fn from(v: $name_id) -> Self {
-                let v = serde_json::to_value(v).unwrap();
+                let v = serde_json::to_value(v).expect("Error serializing JSON");
                 Self::Json(Some(Box::new(v)))
             }
         }
@@ -95,7 +95,7 @@ macro_rules! json_wrapper {
         impl TryGetable for $name_id {
             fn try_get(res: &QueryResult, pre: &str, col: &str) -> Result<Self, TryGetError> {
                 match Json::try_get(res, pre, col) {
-                    Ok(v) => Ok(serde_json::from_value(v).unwrap()),
+                    Ok(v) => Ok(serde_json::from_value(v).expect("Error deserializing JSON")),
                     Err(e) => Err(e),
                 }
             }
@@ -110,7 +110,9 @@ macro_rules! json_wrapper {
         impl ValueType for $name_id {
             fn try_from(v: Value) -> Result<Self, ValueTypeErr> {
                 match v {
-                    Value::Json(Some(x)) => Ok(serde_json::from_value(*x).unwrap()),
+                    Value::Json(Some(x)) => {
+                        Ok(serde_json::from_value(*x).expect("Error deserializing JSON"))
+                    }
                     _ => Err(ValueTypeErr),
                 }
             }

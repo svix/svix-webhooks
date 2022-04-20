@@ -33,7 +33,7 @@ where
     Ok(buf
         .split(',')
         .into_iter()
-        .map(|x| Duration::new(x.parse().unwrap(), 0))
+        .map(|x| Duration::new(x.parse().expect("Error parsing duration"), 0))
         .collect())
 }
 
@@ -152,8 +152,8 @@ pub fn load() -> Result<Arc<ConfigurationInner>> {
         .merge(Toml::file("config.toml"))
         .merge(Env::prefixed("SVIX_"))
         .extract()
-        .unwrap();
+        .expect("Error loading configuration");
 
-    config.validate().unwrap();
+    config.validate().expect("Error validating configuration");
     Ok(Arc::from(config))
 }
