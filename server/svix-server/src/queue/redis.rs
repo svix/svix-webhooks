@@ -61,7 +61,7 @@ pub async fn new_pair(
             if !keys.is_empty() {
                 // FIXME: needs to be a transaction
                 let keys: Vec<(String, String)> =
-                     pool.zpopmin(DELAYED, keys.len() as isize).await.unwrap();
+                    pool.zpopmin(DELAYED, keys.len() as isize).await.unwrap();
                 let keys: Vec<String> = keys.into_iter().map(|x| x.0).collect();
                 let _: () = pool.rpush(MAIN, keys).await.unwrap();
             } else {

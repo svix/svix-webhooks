@@ -305,10 +305,14 @@ pub async fn worker_loop(
                         tokio::spawn(async move {
                             if let Err(err) = dispatch(cfg, &pool, cache, &queue_tx, msg).await {
                                 tracing::error!("Error executing task: {}", err);
-                                queue_tx.nack(delivery).await.expect("Error sending 'nack' to Redis after task execution error");
+                                queue_tx.nack(delivery).await.expect(
+                                    "Error sending 'nack' to Redis after task execution error",
+                                );
                             } else {
                                 // No unwrap
-                                queue_tx.ack(delivery).await.expect("Error sending 'ack' to Redis after successful task execution");
+                                queue_tx.ack(delivery).await.expect(
+                                    "Error sending 'ack' to Redis after successful task execution",
+                                );
                             }
                         });
                     }
