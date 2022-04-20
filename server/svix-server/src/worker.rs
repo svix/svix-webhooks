@@ -40,9 +40,14 @@ fn generate_msg_headers(
         .collect::<Vec<String>>()
         .join(" ");
     let mut headers = HeaderMap::new();
-    let id = msg_id.0.parse().unwrap();
-    let timestamp = timestamp.to_string().parse().unwrap();
-    let signatures_str = signatures_str.parse().unwrap();
+    let id = msg_id.0.parse().expect("Error parsing message id");
+    let timestamp = timestamp
+        .to_string()
+        .parse()
+        .expect("Error parsing message timestamp");
+    let signatures_str = signatures_str
+        .parse()
+        .expect("Error parsing message signatures");
     if whitelabel_headers {
         headers.insert("webhook-id", id);
         headers.insert("webhook-timestamp", timestamp);
@@ -111,8 +116,7 @@ async fn dispatch(
         ))
     })?;
 
-    // FIXME: no unwrap
-    let body = serde_json::to_string(&msg.payload).unwrap();
+    let body = serde_json::to_string(&msg.payload).expect("Error parsing messages body");
     let headers = {
         let keys: Vec<&EndpointSecret> = if let Some(ref old_keys) = endp.old_signing_keys {
             iter::once(&endp.key)
@@ -131,7 +135,13 @@ async fn dispatch(
             &keys,
             &endp.url,
         );
-        headers.insert("user-agent", USER_AGENT.to_string().parse().unwrap());
+        headers.insert(
+            "user-agent",
+            USER_AGENT
+                .to_string()
+                .parse()
+                .expect("Error parsing user-agent"),
+        );
         headers
     };
 
@@ -243,7 +253,10 @@ async fn dispatch(
                 let duration = cfg.retry_schedule[attempt_count];
                 let msg_dest = messagedestination::ActiveModel {
                     next_attempt: Set(Some(
-                        (Utc::now() + chrono::Duration::from_std(duration).unwrap()).into(),
+                        (Utc::now()
+                            + chrono::Duration::from_std(duration)
+                                .expect("Error parsing duration"))
+                        .into(),
                     )),
                     ..msg_dest.into()
                 };
@@ -298,10 +311,10 @@ pub async fn worker_loop(
                         tokio::spawn(async move {
                             if let Err(err) = dispatch(cfg, &pool, cache, &queue_tx, msg).await {
                                 tracing::error!("Error executing task: {}", err);
-                                queue_tx.nack(delivery).await.unwrap();
+                                queue_tx.nack(delivery).await.expect("Error executing task");
                             } else {
                                 // No unwrap
-                                queue_tx.ack(delivery).await.unwrap();
+                                queue_tx.ack(delivery).await.expect("Error executing task");
                             }
                         });
                     }
