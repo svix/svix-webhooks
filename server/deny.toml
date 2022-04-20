@@ -13,6 +13,8 @@ unmaintained = "warn"
 yanked = "warn"
 notice = "warn"
 ignore = [
+	# TODO: Update `time` crate when possible
+    "RUSTSEC-2020-0071",
 	# TODO: Eliminate `chrono` crate
     "RUSTSEC-2020-0159",
 ]
