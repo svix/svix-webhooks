@@ -455,7 +455,7 @@ impl<'de> Deserialize<'de> for EndpointSecret {
                 }
                 string
                     .get(Self::PREFIX.len()..)
-                    .ok_or(Error::custom("invalid prefix".to_string()))
+                    .ok_or_else(|| Error::custom("invalid prefix".to_string()))
                     .and_then(|string| {
                         base64::decode(string).map_err(|err| Error::custom(err.to_string()))
                     })

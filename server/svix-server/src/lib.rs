@@ -11,9 +11,15 @@ use std::{
     net::{SocketAddr, TcpListener},
     str::FromStr,
 };
+use tower::ServiceBuilder;
 use tower_http::trace::TraceLayer;
 
-use crate::{cfg::Configuration, core::cache::RedisCache, db::init_db, worker::worker_loop};
+use crate::{
+    cfg::Configuration,
+    core::{cache::RedisCache, idempotency::IdempotencyService},
+    db::init_db,
+    worker::worker_loop,
+};
 
 pub mod cfg;
 pub mod core;
@@ -53,6 +59,12 @@ pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
     let mut app = Router::new()
         .nest("/api/v1", v1::router())
         .layer(TraceLayer::new_for_http().on_request(()))
+        .layer(
+            ServiceBuilder::new().layer_fn(|service| IdempotencyService {
+                redis: redis_cache.clone(),
+                service,
+            }),
+        )
         .layer(Extension(pool.clone()))
         .layer(Extension(queue_tx.clone()))
         .layer(Extension(cfg.clone()))

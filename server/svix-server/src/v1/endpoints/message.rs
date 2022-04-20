@@ -311,8 +311,7 @@ pub fn router() -> Router {
     Router::new().nest(
         "/app/:app_id",
         Router::new()
-            .route("/msg/", get(list_messages))
-            .route("/msg/", post(create_message))
+            .route("/msg/", post(create_message).get(list_messages))
             .route("/msg/:msg_id/", get(get_message)),
     )
 }

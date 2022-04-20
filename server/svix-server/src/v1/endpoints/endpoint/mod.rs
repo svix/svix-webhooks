@@ -236,8 +236,10 @@ pub fn router() -> Router {
     Router::new().nest(
         "/app/:app_id",
         Router::new()
-            .route("/endpoint/", get(crud::list_endpoints))
-            .route("/endpoint/", post(crud::create_endpoint))
+            .route(
+                "/endpoint/",
+                post(crud::create_endpoint).get(crud::list_endpoints),
+            )
             .route(
                 "/endpoint/:endp_id/",
                 get(crud::get_endpoint)

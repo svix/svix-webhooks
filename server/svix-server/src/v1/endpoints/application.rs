@@ -170,8 +170,7 @@ async fn delete_application(
 
 pub fn router() -> Router {
     Router::new()
-        .route("/app/", get(list_applications))
-        .route("/app/", post(create_application))
+        .route("/app/", post(create_application).get(list_applications))
         .route(
             "/app/:app_id/",
             get(get_application)
@@ -202,7 +201,7 @@ mod tests {
                     "rateLimit": RATE_LIMIT_INVALID }))
         .unwrap();
         let invalid_3: ApplicationIn = serde_json::from_value(json!({
-                    "name": APP_NAME_VALID,
+                    "name": APP_NAME_VALID, 
                     "uid": UID_INVALID }))
         .unwrap();
 

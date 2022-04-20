@@ -103,6 +103,32 @@ impl TestClient {
             .context("error receiving/parsing response")
     }
 
+    pub async fn post_with_idempotency<I: Serialize, O: DeserializeOwned>(
+        &self,
+        endpoint: &str,
+        idempotency_key: &str,
+        input: I,
+        expected_code: StatusCode,
+    ) -> Result<O> {
+        let mut req = self.client.post(self.build_uri(endpoint));
+        req = self
+            .add_headers(req)
+            .header("idempotency-key", idempotency_key)
+            .json(&input);
+
+        let resp = req.send().await.context("error sending request")?;
+
+        if resp.status() != expected_code {
+            anyhow::bail!(
+                "assertation failed: expected status {}, actual status {}",
+                expected_code,
+                resp.status()
+            );
+        }
+
+        resp.json().await.context("error receiving/paring response")
+    }
+
     pub async fn put<I: Serialize, O: DeserializeOwned>(
         &self,
         endpoint: &str,

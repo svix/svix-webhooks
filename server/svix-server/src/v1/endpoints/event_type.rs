@@ -237,8 +237,10 @@ async fn delete_event_type(
 
 pub fn router() -> Router {
     Router::new()
-        .route("/event-type/", get(list_event_types))
-        .route("/event-type/", post(create_event_type))
+        .route(
+            "/event-type/",
+            post(create_event_type).get(list_event_types),
+        )
         .route(
             "/event-type/:event_type_name/",
             get(get_event_type)
