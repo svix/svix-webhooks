@@ -72,7 +72,7 @@ pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
     let with_worker = cfg.worker_enabled;
 
     let listen_address =
-        SocketAddr::from_str(&cfg.listen_address).expect("Error coercing http address");
+        SocketAddr::from_str(&cfg.listen_address).expect("Error parsing server listen address");
     let (server, worker_loop) = tokio::join!(
         async {
             if with_api {

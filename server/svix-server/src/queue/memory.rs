@@ -28,9 +28,7 @@ pub struct MemoryQueueProducer {
 impl TaskQueueSend for MemoryQueueProducer {
     async fn send(&self, msg: QueueTask, delay: Option<Duration>) -> Result<()> {
         let tx = self.tx.clone();
-        let timestamp = delay.map(|delay| {
-            Utc::now() + chrono::Duration::from_std(delay).expect("Error parsing delay")
-        });
+        let timestamp = delay.map(|delay| Utc::now() + chrono::Duration::from_std(delay).unwrap());
         let delivery = TaskQueueDelivery::new(msg, timestamp);
         tokio::spawn(async move {
             // We just assume memory queue always works, so we can defer the error handling

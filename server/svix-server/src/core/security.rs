@@ -118,10 +118,7 @@ pub fn generate_token(keys: &Keys, org_id: OrganizationId) -> Result<String> {
     let claims = Claims::create(Duration::from_hours(24 * 365 * 10))
         .with_issuer(env!("CARGO_PKG_NAME"))
         .with_subject(org_id.0);
-    Ok(keys
-        .key
-        .authenticate(claims)
-        .expect("Error generating token"))
+    Ok(keys.key.authenticate(claims).unwrap())
 }
 
 #[derive(Clone, Debug)]

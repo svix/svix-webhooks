@@ -52,23 +52,18 @@ pub async fn new_pair(
 
         let pool = worker_pool;
         loop {
-            let mut pool = pool.get().await.expect("Error getting Redis connection");
+            let mut pool = pool.get().await.unwrap();
             let timestamp = Utc::now().timestamp();
             let keys: Vec<String> = pool
                 .zrangebyscore_limit(DELAYED, 0isize, timestamp, 0isize, batch_size)
                 .await
-                .expect("Error getting keys from Redis");
+                .unwrap();
             if !keys.is_empty() {
                 // FIXME: needs to be a transaction
-                let keys: Vec<(String, String)> = pool
-                    .zpopmin(DELAYED, keys.len() as isize)
-                    .await
-                    .expect("Error popping keys from Redis");
+                let keys: Vec<(String, String)> =
+                     pool.zpopmin(DELAYED, keys.len() as isize).await.unwrap();
                 let keys: Vec<String> = keys.into_iter().map(|x| x.0).collect();
-                let _: () = pool
-                    .rpush(MAIN, keys)
-                    .await
-                    .expect("Error pushing keys to Redis");
+                let _: () = pool.rpush(MAIN, keys).await.unwrap();
             } else {
                 // Wait for half a second before attempting to fetch again if nothing was found
                 sleep(Duration::from_millis(500)).await;
@@ -76,31 +71,19 @@ pub async fn new_pair(
 
             // Every iteration here also check whether the processing queue has items that should
             // be picked back up
-            let keys: Vec<String> = pool
-                .lrange(PROCESSING, 0isize, 1isize)
-                .await
-                .expect("Error getting keys from Redis");
+            let keys: Vec<String> = pool.lrange(PROCESSING, 0isize, 1isize).await.unwrap();
 
             // If the key is older than now, it means we should be processing keys
             let validity_limit =
                 KsuidMs::new(Some(Utc::now() - task_validity_duration), None).to_string();
             if !keys.is_empty() && keys[0] <= validity_limit {
-                let keys: Vec<String> = pool
-                    .lrange(PROCESSING, 0isize, batch_size)
-                    .await
-                    .expect("Error getting keys from Redis");
+                let keys: Vec<String> = pool.lrange(PROCESSING, 0isize, batch_size).await.unwrap();
                 for key in keys {
                     if key <= validity_limit {
                         // We use LREM to be sure we only delete the keys we should be deleting
                         tracing::trace!("Pushing back overdue task to queue {}", key);
-                        let _: () = pool
-                            .rpush(MAIN, &key)
-                            .await
-                            .expect("Error pushing key to Redis");
-                        let _: () = pool
-                            .lrem(PROCESSING, 1, &key)
-                            .await
-                            .expect("Error removing key from Redis");
+                        let _: () = pool.rpush(MAIN, &key).await.unwrap();
+                        let _: () = pool.lrem(PROCESSING, 1, &key).await.unwrap();
                     }
                 }
             }
@@ -140,41 +123,32 @@ fn to_redis_key(delivery: &TaskQueueDelivery) -> String {
     format!(
         "{}|{}",
         delivery.id,
-        serde_json::to_string(&delivery.task).expect("Error serializing task")
+        serde_json::to_string(&delivery.task).unwrap()
     )
 }
 
 fn from_redis_key(key: &str) -> TaskQueueDelivery {
     // Get the first delimiter -> it has to have the |
-    let pos = key.find('|').expect("Error finding '|' delimiter");
+    let pos = key.find('|').unwrap();
     let id = (&key[..pos]).to_string();
-    let task = serde_json::from_str(&key[pos + 1..]).expect("Error deserializing task");
+    let task = serde_json::from_str(&key[pos + 1..]).unwrap();
     TaskQueueDelivery { id, task }
 }
 
 #[async_trait]
 impl TaskQueueSend for RedisQueueProducer {
     async fn send(&self, task: QueueTask, delay: Option<Duration>) -> Result<()> {
-        let mut pool = self
-            .pool
-            .get()
-            .await
-            .expect("Error getting Redis connection");
-        let timestamp = delay.map(|delay| {
-            Utc::now() + chrono::Duration::from_std(delay).expect("Error parsing delay")
-        });
+        let mut pool = self.pool.get().await.unwrap();
+        let timestamp = delay.map(|delay| Utc::now() + chrono::Duration::from_std(delay).unwrap());
         let delivery = TaskQueueDelivery::new(task, timestamp);
         let key = to_redis_key(&delivery);
         if let Some(timestamp) = timestamp {
             let _: () = pool
                 .zadd(DELAYED, key, timestamp.timestamp())
                 .await
-                .expect("Error adding key to Redis");
+                .unwrap();
         } else {
-            let _: () = pool
-                .rpush(MAIN, key)
-                .await
-                .expect("Error pushing key to Redis");
+            let _: () = pool.rpush(MAIN, key).await.unwrap();
         }
         tracing::trace!("RedisQueue: event sent > (delay: {:?})", delay);
         Ok(())
@@ -182,15 +156,8 @@ impl TaskQueueSend for RedisQueueProducer {
 
     async fn ack(&self, delivery: TaskQueueDelivery) -> Result<()> {
         let key = to_redis_key(&delivery);
-        let mut pool = self
-            .pool
-            .get()
-            .await
-            .expect("Error getting Redis connection");
-        let processed: u8 = pool
-            .lrem(PROCESSING, 1, &key)
-            .await
-            .expect("Error removing key from Redis");
+        let mut pool = self.pool.get().await.unwrap();
+        let processed: u8 = pool.lrem(PROCESSING, 1, &key).await.unwrap();
         if processed != 1 {
             tracing::warn!(
                 "Expected to remove 1 from the list, removed {} for {}",
@@ -204,15 +171,8 @@ impl TaskQueueSend for RedisQueueProducer {
     async fn nack(&self, delivery: TaskQueueDelivery) -> Result<()> {
         // FIXME: do something else here?
         let key = to_redis_key(&delivery);
-        let mut pool = self
-            .pool
-            .get()
-            .await
-            .expect("Error getting Redis connection");
-        let _: () = pool
-            .lrem(PROCESSING, 1, &key)
-            .await
-            .expect("Error removing key from Redis");
+        let mut pool = self.pool.get().await.unwrap();
+        let _: () = pool.lrem(PROCESSING, 1, &key).await.unwrap();
         tracing::error!("Failed processing msg: {}", key);
         Ok(())
     }
@@ -229,11 +189,7 @@ pub struct RedisQueueConsumer {
 #[async_trait]
 impl TaskQueueReceive for RedisQueueConsumer {
     async fn receive(&mut self) -> Result<TaskQueueDelivery> {
-        let mut pool = self
-            .pool
-            .get()
-            .await
-            .expect("Error getting Redis connection");
+        let mut pool = self.pool.get().await.unwrap();
         let key: String = redis::cmd("BLMOVE")
             .arg(MAIN)
             .arg(PROCESSING)

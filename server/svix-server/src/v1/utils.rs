@@ -332,7 +332,7 @@ pub async fn api_not_implemented() -> Result<()> {
 }
 
 pub fn validate_no_control_characters(str: &str) -> std::result::Result<(), ValidationError> {
-    let re = Regex::new(r"[\x00-\x08]").expect("Error compiling Regex");
+    let re = Regex::new(r"[\x00-\x08]").unwrap();
     if re.is_match(str) {
         return Err(ValidationError::new(
             "Control characters 0x00-0x08 not allowed.",

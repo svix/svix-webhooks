@@ -116,7 +116,7 @@ async fn dispatch(
         ))
     })?;
 
-    let body = serde_json::to_string(&msg.payload).expect("Error parsing messages body");
+    let body = serde_json::to_string(&msg.payload).expect("Error parsing message body");
     let headers = {
         let keys: Vec<&EndpointSecret> = if let Some(ref old_keys) = endp.old_signing_keys {
             iter::once(&endp.key)
@@ -135,13 +135,7 @@ async fn dispatch(
             &keys,
             &endp.url,
         );
-        headers.insert(
-            "user-agent",
-            USER_AGENT
-                .to_string()
-                .parse()
-                .expect("Error parsing user-agent"),
-        );
+        headers.insert("user-agent", USER_AGENT.to_string().parse().unwrap());
         headers
     };
 
@@ -311,10 +305,10 @@ pub async fn worker_loop(
                         tokio::spawn(async move {
                             if let Err(err) = dispatch(cfg, &pool, cache, &queue_tx, msg).await {
                                 tracing::error!("Error executing task: {}", err);
-                                queue_tx.nack(delivery).await.expect("Error executing task");
+                                queue_tx.nack(delivery).await.expect("Error sending 'nack' to Redis after task execution error");
                             } else {
                                 // No unwrap
-                                queue_tx.ack(delivery).await.expect("Error executing task");
+                                queue_tx.ack(delivery).await.expect("Error sending 'ack' to Redis after successful task execution");
                             }
                         });
                     }
