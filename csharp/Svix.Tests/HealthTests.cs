@@ -15,7 +15,7 @@ namespace Svix.Tests
         private readonly Mock<IHealthApi> _mockHealthApi;
 
         private readonly Mock<ISvixOptions> _mockOptions;
-        
+
         private readonly SvixClient _svixClient;
 
         public HealthTests()
@@ -39,7 +39,7 @@ namespace Svix.Tests
             // Arrange
             _mockHealthApi.Setup(x => x.HealthApiV1HealthGetWithHttpInfo(It.IsAny<string>()))
                 .Returns(new ApiResponse<object>(HttpStatusCode.UnprocessableEntity, null));
-            
+
             // Act
             var lResult = _svixClient.Health
                 .IsHealthy();
@@ -54,22 +54,22 @@ namespace Svix.Tests
             // Arrange
             _mockHealthApi.Setup(x => x.HealthApiV1HealthGetWithHttpInfo(It.IsAny<string>()))
                 .Returns(new ApiResponse<object>(HttpStatusCode.NoContent, null));
-            
+
             // Act
             var lResult = _svixClient.Health
                 .IsHealthy();
-            
+
             // Assert
             Assert.True(lResult);
         }
-        
+
         [Fact]
         public async void IsHealthyAsync_WhenNotHealthy_ReturnsFalse()
         {
             // Arrange
             _mockHealthApi.Setup(x => x.HealthApiV1HealthGetWithHttpInfoAsync(It.IsAny<string>(), default))
                 .ReturnsAsync(new ApiResponse<object>(HttpStatusCode.UnprocessableEntity, null));
-            
+
             // Act
             var lResult = await _svixClient.Health
                 .IsHealthyAsync();
@@ -84,11 +84,11 @@ namespace Svix.Tests
             // Arrange
             _mockHealthApi.Setup(x => x.HealthApiV1HealthGetWithHttpInfoAsync(It.IsAny<string>(), default))
                 .ReturnsAsync(new ApiResponse<object>(HttpStatusCode.NoContent, null));
-            
+
             // Act
             var lResult = await _svixClient.Health
                 .IsHealthyAsync();
-            
+
             // Assert
             Assert.True(lResult);
         }

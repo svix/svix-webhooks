@@ -15,13 +15,13 @@ namespace Svix
     public sealed class EventType : SvixResourceBase, IEventType
     {
         private readonly IEventTypeApi _eventTypeApi;
-        
-        public EventType(ISvixClient svixClient, IEventTypeApi eventTypeApi) 
+
+        public EventType(ISvixClient svixClient, IEventTypeApi eventTypeApi)
             : base(svixClient)
         {
             _eventTypeApi = eventTypeApi ?? throw new ArgumentNullException(nameof(eventTypeApi));
         }
-        
+
         public bool Archive(string eventType, string idempotencyKey = default)
         {
             try

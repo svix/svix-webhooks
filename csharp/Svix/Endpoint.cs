@@ -15,13 +15,13 @@ namespace Svix
     public sealed class Endpoint : SvixResourceBase, IEndpoint
     {
         private readonly IEndpointApi _endpointApi;
-        
-        public Endpoint(ISvixClient svixClient, IEndpointApi endpoingApi) 
+
+        public Endpoint(ISvixClient svixClient, IEndpointApi endpoingApi)
             : base(svixClient)
         {
             _endpointApi = endpoingApi ?? throw new ArgumentNullException(nameof(_endpointApi));
         }
-        
+
         public EndpointOut Create(string appId, EndpointIn endpoint, string idempotencyKey = default)
         {
             try

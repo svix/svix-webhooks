@@ -16,7 +16,7 @@ namespace Svix
     {
         private readonly IMessageApi _messageApi;
 
-        public Message(ISvixClient svixClient, IMessageApi messageApi) 
+        public Message(ISvixClient svixClient, IMessageApi messageApi)
             : base(svixClient)
         {
             _messageApi = messageApi ?? throw new ArgumentException(nameof(messageApi));
@@ -27,7 +27,7 @@ namespace Svix
             try
             {
                 message = message ?? throw new ArgumentNullException(nameof(message));
-                
+
                 var lApplication = _messageApi.CreateMessageApiV1AppAppIdMsgPost(
                     appId,
                     message,
@@ -52,7 +52,7 @@ namespace Svix
             try
             {
                 message = message ?? throw new ArgumentNullException(nameof(message));
-                
+
                 var lApplication = await _messageApi.CreateMessageApiV1AppAppIdMsgPostAsync(
                     appId,
                     message,
@@ -122,7 +122,7 @@ namespace Svix
             try
             {
                 var lResponse = _messageApi.ListMessagesApiV1AppAppIdMsgGet(
-                    appId, 
+                    appId,
                     options?.Iterator,
                     options?.Limit,
                     options?.EventTypes,
@@ -139,7 +139,7 @@ namespace Svix
 
                 if (Throw)
                     throw;
-                
+
                 return new List<MessageOut>();
             }
         }
@@ -149,7 +149,7 @@ namespace Svix
             try
             {
                 var lResponse = await _messageApi.ListMessagesApiV1AppAppIdMsgGetAsync(
-                    appId, 
+                    appId,
                     options?.Iterator,
                     options?.Limit,
                     options?.EventTypes,
@@ -167,7 +167,7 @@ namespace Svix
 
                 if (Throw)
                     throw;
-                
+
                 return new List<MessageOut>();
             }
         }

@@ -15,8 +15,8 @@ namespace Svix
     public sealed class Application : SvixResourceBase, IApplication
     {
         private readonly IApplicationApi _applicationApi;
-        
-        public Application(ISvixClient svixClient, IApplicationApi applicationApi) 
+
+        public Application(ISvixClient svixClient, IApplicationApi applicationApi)
             : base(svixClient)
         {
             _applicationApi = applicationApi ?? throw new ArgumentNullException(nameof(applicationApi));
@@ -27,7 +27,7 @@ namespace Svix
             try
             {
                 application = application ?? throw new ArgumentNullException(nameof(application));
-                
+
                 var lApplication = _applicationApi.CreateApplicationApiV1AppPost(
                     application,
                     options?.GetIfExists ?? false,
@@ -45,13 +45,13 @@ namespace Svix
                 return null;
             }
         }
-        
+
         public async Task<ApplicationOut> CreateAsync(ApplicationIn application, ApplicationCreateOptions options, string idempotencyKey = default, CancellationToken cancellationToken = default)
         {
             try
             {
                 application = application ?? throw new ArgumentNullException(nameof(application));
-                
+
                 var lApplication = await _applicationApi.CreateApplicationApiV1AppPostAsync(
                     application,
                     options?.GetIfExists ?? false,
@@ -91,7 +91,7 @@ namespace Svix
                 return false;
             }
         }
-        
+
         public async Task<bool> DeleteAsync(string appId, string idempotencyKey = default, CancellationToken cancellationToken = default)
         {
             try
@@ -113,7 +113,7 @@ namespace Svix
                 return false;
             }
         }
-        
+
         public ApplicationOut Get(string appId, string idempotencyKey = default)
         {
             try
@@ -134,7 +134,7 @@ namespace Svix
                 return null;
             }
         }
-        
+
         public async Task<ApplicationOut> GetAsync(string appId, string idempotencyKey = default, CancellationToken cancellationToken = default)
         {
             try
@@ -155,7 +155,7 @@ namespace Svix
                 return null;
             }
         }
-        
+
         public List<ApplicationOut> List(ListOptions options = null, string idempotencyKey = default)
         {
             try
@@ -173,7 +173,7 @@ namespace Svix
 
                 if (Throw)
                     throw;
-                
+
                 return new List<ApplicationOut>();
             }
         }
@@ -196,11 +196,11 @@ namespace Svix
 
                 if (Throw)
                     throw;
-                
+
                 return new List<ApplicationOut>();
             }
         }
-        
+
         public ApplicationOut Update(string appId, ApplicationIn application, string idempotencyKey = default)
         {
             try
@@ -222,7 +222,7 @@ namespace Svix
                 return null;
             }
         }
-        
+
         public async Task<ApplicationOut> UpdateAsync(string appId, ApplicationIn application, string idempotencyKey = default, CancellationToken cancellationToken = default)
         {
             try

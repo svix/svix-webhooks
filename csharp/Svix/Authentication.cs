@@ -13,8 +13,8 @@ namespace Svix
     public sealed class Authentication : SvixResourceBase, IAuthentication
     {
         private readonly IAuthenticationApi _authenticationApi;
-        
-        public Authentication(ISvixClient svixClient, IAuthenticationApi authenticationApi) 
+
+        public Authentication(ISvixClient svixClient, IAuthenticationApi authenticationApi)
             : base(svixClient)
         {
             _authenticationApi = authenticationApi ?? throw new ArgumentNullException(nameof(authenticationApi));

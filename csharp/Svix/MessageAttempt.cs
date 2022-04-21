@@ -17,7 +17,7 @@ namespace Svix
     {
         private readonly IMessageAttemptApi _messageAttemptApi;
 
-        public MessageAttempt(ISvixClient svixClient, IMessageAttemptApi messageAttemptApi) 
+        public MessageAttempt(ISvixClient svixClient, IMessageAttemptApi messageAttemptApi)
             : base(svixClient)
         {
             _messageAttemptApi = messageAttemptApi ?? throw new ArgumentNullException(nameof(messageAttemptApi));
@@ -259,7 +259,7 @@ namespace Svix
         }
 
         // Deprecated
-        public List<MessageAttemptEndpointOut> ListAttemptsForEndpoint(string appId, string messageId, 
+        public List<MessageAttemptEndpointOut> ListAttemptsForEndpoint(string appId, string messageId,
             string endpointId, AttemptsByEndpointListOptions options, string idempotencyKey = default)
         {
             try
@@ -291,8 +291,8 @@ namespace Svix
         }
 
         // Deprecated
-        public async Task<List<MessageAttemptEndpointOut>> ListAttemptsForEndpointAsync(string appId, 
-            string messageId,  string endpointId, AttemptsByEndpointListOptions options, string idempotencyKey = default, 
+        public async Task<List<MessageAttemptEndpointOut>> ListAttemptsForEndpointAsync(string appId,
+            string messageId, string endpointId, AttemptsByEndpointListOptions options, string idempotencyKey = default,
             CancellationToken cancellationToken = default)
         {
             try

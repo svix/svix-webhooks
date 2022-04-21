@@ -6,9 +6,9 @@ namespace Svix.Models
     public sealed class AttemptsByMessageListOptions : ListOptions
     {
         public string? EndpointId { get; set; }
-        
+
         public int? Status { get; set; }
-        
+
         public int? Code { get; set; }
 
         public List<string> EventTypes { get; set; }
@@ -16,7 +16,7 @@ namespace Svix.Models
         public string? Channel { get; set; }
 
         public DateTime? Before { get; set; }
-        
+
         public DateTime? After { get; set; }
     }
 }

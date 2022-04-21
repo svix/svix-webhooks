@@ -15,7 +15,7 @@ namespace Svix
     public sealed class Integration : SvixResourceBase, IIntegration
     {
         private readonly IIntegrationApi _integrationApi;
-        
+
         public Integration(ISvixClient svixClient, IIntegrationApi integrationApi) : base(svixClient)
         {
             _integrationApi = integrationApi ?? throw new ArgumentNullException(nameof(integrationApi));

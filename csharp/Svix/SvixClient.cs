@@ -14,21 +14,21 @@ namespace Svix
             BasePath = ServerUrl,
             AccessToken = Token
         };
-        
+
         public IApplication Application { get; }
-        
+
         public IAuthentication Authentication { get; }
-        
+
         public IEndpoint Endpoint { get; }
-        
+
         public IEventType EventType { get; }
-        
+
         public IHealth Health { get; }
-        
-        public IIntegration Integration { get; } 
-        
+
+        public IIntegration Integration { get; }
+
         public IMessage Message { get; }
-        
+
         public IMessageAttempt MessageAttempt { get; }
 
         public ILogger Logger { get; }
@@ -36,7 +36,7 @@ namespace Svix
         public string ServerUrl => _options?.ServerUrl;
 
         public bool Throw => _options?.Throw ?? false;
-        
+
         public string Token { get; }
 
         private readonly ISvixOptions _options;
@@ -49,7 +49,7 @@ namespace Svix
             Logger = logger;
             _options = options ?? throw new ArgumentNullException(nameof(options));
             Token = token ?? throw new ArgumentNullException(nameof(token));
-            
+
             Application = new Application(this, applicationApi ?? new ApplicationApi(Config));
             Authentication = new Authentication(this, authenticationApi ?? new AuthenticationApi(Config));
             Endpoint = new Endpoint(this, endpointApi ?? new EndpointApi(Config));
@@ -59,7 +59,7 @@ namespace Svix
             Message = new Message(this, messageApi ?? new MessageApi(Config));
             MessageAttempt = new MessageAttempt(this, messageAttemptApi ?? new MessageAttemptApi(Config));
         }
-        
+
         public SvixClient(string token, ISvixOptions options, ILogger<SvixClient> logger = null)
             : this(token, options, logger, healthApi: null, applicationApi: null)
         {

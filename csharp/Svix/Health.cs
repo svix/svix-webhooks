@@ -12,7 +12,7 @@ namespace Svix
     public sealed class Health : SvixResourceBase, IHealth
     {
         private readonly IHealthApi _healthApi;
-        
+
         public Health(ISvixClient svixClient, IHealthApi healthApi)
             : base(svixClient)
         {
@@ -33,7 +33,7 @@ namespace Svix
 
                 if (Throw)
                     throw;
-                
+
                 return false;
             }
         }
@@ -50,10 +50,10 @@ namespace Svix
             catch (ApiException e)
             {
                 Logger?.LogError(e, $"{nameof(IsHealthyAsync)} failed");
-                
+
                 if (Throw)
                     throw;
-                
+
                 return false;
             }
         }

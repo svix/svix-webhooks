@@ -8,13 +8,13 @@ namespace Svix.Models
         public int? Status { get; set; }
 
         public string EndpointId { get; set; }
-        
+
         public List<string> EventTypes { get; set; }
 
         public string Channel { get; set; }
-        
+
         public DateTime? Before { get; set; }
-        
+
         public DateTime? After { get; set; }
     }
 }
