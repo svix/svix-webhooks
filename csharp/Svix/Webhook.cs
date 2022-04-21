@@ -4,9 +4,10 @@ using System.Net;
 using System.Security.Cryptography;
 
 using Svix.Exceptions;
+
 namespace Svix
 {
-    public class Webhook
+    public sealed class Webhook
     {
 
         internal static readonly UTF8Encoding SafeUTF8Encoding = new UTF8Encoding(false, true);
@@ -27,7 +28,7 @@ namespace Svix
                 key = key.Substring(prefix.Length);
             }
 
-            this.key = Convert.FromBase64String(key); ;
+            this.key = Convert.FromBase64String(key);
         }
 
         public void Verify(string payload, WebHeaderCollection headers)
