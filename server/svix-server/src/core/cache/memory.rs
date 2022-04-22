@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 use tokio::{
+    sync::RwLock,
     task,
     time::{sleep, Duration, Instant},
 };
@@ -9,7 +10,7 @@ use tokio::{
 use axum::async_trait;
 use serde_json;
 use std::collections::HashMap;
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
 
 use super::{Cache, CacheBehavior, CacheKey, CacheValue, Result};
 
@@ -42,7 +43,7 @@ pub fn new() -> Cache {
             sleep(Duration::from_secs(60 * 5)).await;
             shared_state_clone
                 .write()
-                .expect("Could not get write lock on memory cache")
+                .await
                 .retain(|_, v| check_is_expired(v))
         }
     });
@@ -61,7 +62,7 @@ impl CacheBehavior for MemoryCache {
         Ok(self
             .map
             .read()
-            .expect("Could not get read lock on memory cache")
+            .await
             .get(key.as_ref())
             .filter(|wrapper| check_is_expired(wrapper))
             .map(|wrapper| serde_json::from_str(&wrapper.value))
@@ -69,22 +70,16 @@ impl CacheBehavior for MemoryCache {
     }
 
     async fn set<T: CacheValue>(&self, key: &T::Key, value: &T, ttl: Duration) -> Result<()> {
-        self.map
-            .write()
-            .expect("Could not get write lock on memory cache")
-            .insert(
-                String::from(key.as_ref()),
-                ValueWrapper::new(serde_json::to_string(value)?, ttl),
-            );
+        self.map.write().await.insert(
+            String::from(key.as_ref()),
+            ValueWrapper::new(serde_json::to_string(value)?, ttl),
+        );
 
         Ok(())
     }
 
     async fn delete<T: CacheKey>(&self, key: &T) -> Result<()> {
-        self.map
-            .write()
-            .expect("Could not get write lock on memory cache")
-            .remove(key.as_ref());
+        self.map.write().await.remove(key.as_ref());
 
         Ok(())
     }
@@ -95,10 +90,7 @@ impl CacheBehavior for MemoryCache {
         value: &T,
         ttl: Duration,
     ) -> Result<bool> {
-        let mut lock = self
-            .map
-            .write()
-            .expect("Could not get write lock on memory cache");
+        let mut lock = self.map.write().await;
 
         // TODO: use HashMap::try_insert when stable
         // https://github.com/rust-lang/rust/issues/82766
