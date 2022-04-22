@@ -100,6 +100,8 @@ impl CacheBehavior for MemoryCache {
             .write()
             .expect("Could not get write lock on memory cache");
 
+        // TODO: use HashMap::try_insert when stable
+        // https://github.com/rust-lang/rust/issues/82766
         if !lock.contains_key(key.as_ref()) {
             lock.insert(
                 String::from(key.as_ref()),
