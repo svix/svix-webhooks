@@ -99,6 +99,9 @@ pub struct ConfigurationInner {
     /// What kind of message queue to use. Supported: memory, redis (must have redis_dsn configured).
     pub queue_type: QueueType,
 
+    /// What kind of cache to use. Supported: memory, redis (must have redis_dsn configured), none.
+    pub cache_type: CacheType,
+
     /// If true, headers are prefixed with `Webhook-`, otherwise with `Svix-` (default).
     pub whitelabel_headers: bool,
 
@@ -126,6 +129,14 @@ pub enum LogLevel {
 pub enum QueueType {
     Memory,
     Redis,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum CacheType {
+    Memory,
+    Redis,
+    None,
 }
 
 impl ToString for LogLevel {

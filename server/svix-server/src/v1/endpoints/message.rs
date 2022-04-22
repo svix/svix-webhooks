@@ -5,7 +5,7 @@ use std::{collections::HashSet, time::Duration};
 
 use crate::{
     core::{
-        cache::RedisCache,
+        cache::Cache,
         message_app::CreateMessageApp,
         security::AuthenticatedApplication,
         types::{
@@ -191,7 +191,7 @@ pub struct CreateMessageQueryParams {
 async fn create_message(
     Extension(ref db): Extension<DatabaseConnection>,
     Extension(queue_tx): Extension<TaskQueueProducer>,
-    Extension(redis_cache): Extension<Option<RedisCache>>,
+    Extension(cache): Extension<Cache>,
     ValidatedQuery(CreateMessageQueryParams { with_content }): ValidatedQuery<
         CreateMessageQueryParams,
     >,
@@ -199,7 +199,7 @@ async fn create_message(
     AuthenticatedApplication { permissions, app }: AuthenticatedApplication,
 ) -> Result<(StatusCode, Json<MessageOut>)> {
     let create_message_app = CreateMessageApp::layered_fetch(
-        redis_cache.as_ref(),
+        cache,
         db,
         Some(app.clone()),
         app.id.clone(),

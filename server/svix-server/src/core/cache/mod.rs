@@ -1,0 +1,84 @@
+// SPDX-FileCopyrightText: © 2022 Svix Authors
+// SPDX-License-Identifier: MIT
+
+use std::time::Duration;
+
+use ::redis::RedisError;
+use axum::async_trait;
+use enum_dispatch::enum_dispatch;
+use serde::{de::DeserializeOwned, Serialize};
+
+pub mod memory;
+pub mod none;
+pub mod redis;
+
+/// Errors internal to the cache
+#[derive(thiserror::Error, Debug)]
+pub enum Error {
+    #[error("error deserializing Redis value")]
+    Deserialization(#[from] serde_json::error::Error),
+
+    #[error("Redis pool error")]
+    Pool(#[from] bb8::RunError<RedisError>),
+
+    #[error("Redis databse error")]
+    Database(#[from] RedisError),
+
+    #[error("input error: {0}")]
+    Input(String),
+}
+type Result<T> = std::result::Result<T, Error>;
+
+/// A valid key value for the cache -- usually just a wrapper around a [`String`]
+pub trait CacheKey: AsRef<str> + Send + Sync + Clone + AsRef<str> {
+    const PREFIX_CACHE: &'static str = "SVIX_CACHE";
+}
+/// Any (de)serializable structure usuable as a value in the cache -- it is associated with a
+/// given key type to ensure type checking on creation or reading of values from the cache
+pub trait CacheValue: DeserializeOwned + Serialize + Send + Sync {
+    type Key: CacheKey;
+}
+
+/// A macro that creates a [`CacheKey`] and ties it to any value that implements
+/// [`DeserializeOwned`] and [`Serialize`]
+macro_rules! kv_def {
+    ($key_id:ident, $val_struct:ident) => {
+        #[derive(Clone, Debug)]
+        pub struct $key_id(String);
+
+        impl AsRef<str> for $key_id {
+            fn as_ref(&self) -> &str {
+                &self.0
+            }
+        }
+
+        impl CacheKey for $key_id {}
+
+        impl CacheValue for $val_struct {
+            type Key = $key_id;
+        }
+    };
+}
+pub(crate) use kv_def;
+
+#[derive(Clone)]
+#[enum_dispatch]
+pub enum Cache {
+    MemoryCache(memory::MemoryCache),
+    RedisCache(redis::RedisCache),
+    None(none::NoCache),
+}
+
+#[async_trait]
+#[enum_dispatch(Cache)]
+pub trait CacheBehavior: Sync + Send {
+    async fn get<T: CacheValue>(&self, key: &T::Key) -> Result<Option<T>>;
+    async fn set<T: CacheValue>(&self, key: &T::Key, value: &T, ttl: Duration) -> Result<()>;
+    async fn delete<T: CacheKey>(&self, key: &T) -> Result<()>;
+    async fn set_if_not_exists<T: CacheValue>(
+        &self,
+        key: &T::Key,
+        value: &T,
+        ttl: Duration,
+    ) -> Result<bool>;
+}

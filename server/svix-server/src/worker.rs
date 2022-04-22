@@ -3,7 +3,7 @@
 
 use crate::cfg::Configuration;
 use crate::core::{
-    cache::RedisCache,
+    cache::Cache,
     message_app::{CreateMessageApp, CreateMessageEndpoint},
     types::{EndpointHeaders, EndpointSecret, MessageAttemptTriggerType, MessageId, MessageStatus},
 };
@@ -70,7 +70,7 @@ fn generate_msg_headers(
 async fn dispatch(
     cfg: Configuration,
     db: &DatabaseConnection,
-    redis_cache: Option<RedisCache>,
+    cache: Cache,
     queue_tx: &TaskQueueProducer,
     msg_task: MessageTask,
 ) -> Result<()> {
@@ -92,7 +92,7 @@ async fn dispatch(
     let org_id = msg.org_id;
 
     let endp: CreateMessageEndpoint = CreateMessageApp::layered_fetch(
-        redis_cache.as_ref(),
+        cache,
         db,
         None,
         app_id.clone(),
@@ -281,7 +281,7 @@ async fn dispatch(
 pub async fn worker_loop(
     cfg: Configuration,
     pool: DatabaseConnection,
-    redis_cache: Option<RedisCache>,
+    cache: Cache,
     queue_tx: TaskQueueProducer,
     mut queue_rx: TaskQueueConsumer,
 ) -> Result<()> {
@@ -294,7 +294,7 @@ pub async fn worker_loop(
                 let cfg = cfg.clone();
                 match queue_task {
                     QueueTask::MessageV1(msg) => {
-                        let cache = redis_cache.clone();
+                        let cache = cache.clone();
                         tokio::spawn(async move {
                             if let Err(err) = dispatch(cfg, &pool, cache, &queue_tx, msg).await {
                                 tracing::error!("Error executing task: {}", err);
