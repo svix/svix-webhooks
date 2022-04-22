@@ -9,7 +9,7 @@ use tokio::{
 use axum::async_trait;
 use serde_json;
 use std::collections::HashMap;
-use std::sync::{Arc, Mutex, MutexGuard};
+use std::sync::{Arc, RwLock};
 
 use super::{Cache, CacheBehavior, CacheKey, CacheValue, Result};
 
@@ -31,16 +31,19 @@ impl ValueWrapper {
 }
 
 type State = HashMap<String, ValueWrapper>;
-type SharedState = Arc<Mutex<State>>;
+type SharedState = Arc<RwLock<State>>;
 
 pub fn new() -> Cache {
-    let shared_state = Arc::new(Mutex::new(State::new()));
+    let shared_state = Arc::new(RwLock::new(State::new()));
 
     let shared_state_clone = shared_state.clone();
     task::spawn(async move {
         loop {
-            sleep(Duration::from_secs(30)).await;
-            remove_expired_keys(&shared_state_clone);
+            sleep(Duration::from_secs(60 * 5)).await;
+            shared_state_clone
+                .write()
+                .expect("Could not get write lock on memory cache")
+                .retain(|_, v| check_is_expired(v))
         }
     });
 
@@ -55,26 +58,33 @@ pub struct MemoryCache {
 #[async_trait]
 impl CacheBehavior for MemoryCache {
     async fn get<T: CacheValue>(&self, key: &T::Key) -> Result<Option<T>> {
-        let value = get_mutex_lock(&self.map)
+        Ok(self
+            .map
+            .read()
+            .expect("Could not get read lock on memory cache")
             .get(key.as_ref())
-            .filter(|wrapper| check_is_expired(&wrapper))
+            .filter(|wrapper| check_is_expired(wrapper))
             .map(|wrapper| serde_json::from_str(&wrapper.value))
-            .transpose()?;
-
-        Ok(value)
+            .transpose()?)
     }
 
     async fn set<T: CacheValue>(&self, key: &T::Key, value: &T, ttl: Duration) -> Result<()> {
-        get_mutex_lock(&self.map).insert(
-            String::from(key.as_ref()),
-            ValueWrapper::new(serde_json::to_string(value)?, ttl),
-        );
+        self.map
+            .write()
+            .expect("Could not get write lock on memory cache")
+            .insert(
+                String::from(key.as_ref()),
+                ValueWrapper::new(serde_json::to_string(value)?, ttl),
+            );
 
         Ok(())
     }
 
     async fn delete<T: CacheKey>(&self, key: &T) -> Result<()> {
-        get_mutex_lock(&self.map).remove(key.as_ref());
+        self.map
+            .write()
+            .expect("Could not get write lock on memory cache")
+            .remove(key.as_ref());
 
         Ok(())
     }
@@ -85,7 +95,10 @@ impl CacheBehavior for MemoryCache {
         value: &T,
         ttl: Duration,
     ) -> Result<bool> {
-        let mut lock = get_mutex_lock(&self.map);
+        let mut lock = self
+            .map
+            .write()
+            .expect("Could not get write lock on memory cache");
 
         if !lock.contains_key(key.as_ref()) {
             lock.insert(
@@ -97,15 +110,6 @@ impl CacheBehavior for MemoryCache {
 
         Ok(false)
     }
-}
-
-fn get_mutex_lock(map: &SharedState) -> MutexGuard<State> {
-    map.lock().expect("Could not lock on memory cache")
-}
-
-fn remove_expired_keys(map: &SharedState) {
-    let mut map = get_mutex_lock(&map);
-    map.retain(|_, v| check_is_expired(&v))
 }
 
 fn check_is_expired(vw: &ValueWrapper) -> bool {
