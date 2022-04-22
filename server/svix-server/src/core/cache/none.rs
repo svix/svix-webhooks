@@ -8,6 +8,7 @@ use axum::async_trait;
 use super::{Cache, CacheBehavior, CacheKey, CacheValue, Result};
 
 pub fn new() -> Cache {
+    tracing::warn!("Running with caching disabled will negatively affect performance. Idempotency is not supported without a cache.");
     NoCache {}.into()
 }
 
