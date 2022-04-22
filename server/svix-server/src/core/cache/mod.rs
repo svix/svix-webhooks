@@ -30,7 +30,7 @@ pub enum Error {
 type Result<T> = std::result::Result<T, Error>;
 
 /// A valid key value for the cache -- usually just a wrapper around a [`String`]
-pub trait CacheKey: AsRef<str> + Send + Sync + Clone + AsRef<str> {
+pub trait CacheKey: AsRef<str> + Send + Sync {
     const PREFIX_CACHE: &'static str = "SVIX_CACHE";
 }
 /// Any (de)serializable structure usuable as a value in the cache -- it is associated with a
