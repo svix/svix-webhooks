@@ -75,6 +75,7 @@ jobs:
         DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
         SVIX_REDIS_DSN: "redis://localhost:6379"
         SVIX_JWT_SECRET: "test value"
+        SVIX_CACHE_TYPE: "memory"
       with:
         command: test
         args: --manifest-path server/Cargo.toml  --all --all-features --all-targets
