@@ -389,7 +389,7 @@ mod tests {
             .await
             .unwrap();
 
-        let cache = cache::memory::new();
+        let cache = cache::redis::new(redis_pool);
 
         let count = Arc::new(Mutex::new(0));
 
@@ -598,7 +598,7 @@ mod tests {
             .await
             .unwrap();
 
-        let cache = cache::memory::new();
+        let cache = cache::redis::new(redis_pool);
 
         let count = Arc::new(Mutex::new(199));
 
