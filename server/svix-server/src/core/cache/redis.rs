@@ -81,3 +81,133 @@ impl CacheBehavior for RedisCache {
         Ok(res.is_some())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{super::kv_def, *};
+    use serde::{Deserialize, Serialize};
+
+    // Test structures
+
+    #[derive(Deserialize, Serialize, Debug, PartialEq)]
+    struct TestValA(usize);
+    kv_def!(TestKeyA, TestValA);
+    impl TestKeyA {
+        fn new(id: String) -> TestKeyA {
+            TestKeyA(format!("SVIX_TEST_KEY_A_{}", id))
+        }
+    }
+
+    #[derive(Deserialize, Serialize, Debug, PartialEq)]
+    struct TestValB(String);
+    kv_def!(TestKeyB, TestValB);
+    impl TestKeyB {
+        fn new(id: String) -> TestKeyB {
+            TestKeyB(format!("SVIX_TEST_KEY_B_{}", id))
+        }
+    }
+
+    #[tokio::test]
+    async fn test_cache_crud_no_ttl() {
+        dotenv::dotenv().ok();
+        let cfg = crate::cfg::load().unwrap();
+
+        let redis_pool = bb8::Pool::builder()
+            .build(RedisConnectionManager::new(cfg.redis_dsn.as_deref().unwrap()).unwrap())
+            .await
+            .unwrap();
+
+        let cache = new(redis_pool.clone());
+
+        let (first_key, first_val_a, first_val_b) =
+            (TestKeyA::new("1".to_owned()), TestValA(1), TestValA(2));
+        let (second_key, second_val_a, second_val_b) = (
+            TestKeyB::new("1".to_owned()),
+            TestValB("1".to_owned()),
+            TestValB("2".to_owned()),
+        );
+
+        // Create
+        assert!(cache
+            .set(&first_key, &first_val_a, Duration::from_secs(30),)
+            .await
+            .is_ok());
+        assert!(cache
+            .set(&second_key, &second_val_a, Duration::from_secs(30),)
+            .await
+            .is_ok());
+
+        // Read
+        assert_eq!(cache.get(&first_key).await.unwrap(), Some(first_val_a));
+        assert_eq!(cache.get(&second_key).await.unwrap(), Some(second_val_a));
+
+        // Update (overwrite)
+        assert!(cache
+            .set(&first_key, &first_val_b, Duration::from_secs(30),)
+            .await
+            .is_ok());
+        assert!(cache
+            .set(&second_key, &second_val_b, Duration::from_secs(30),)
+            .await
+            .is_ok());
+
+        // Confirm update
+        assert_eq!(cache.get(&first_key).await.unwrap(), Some(first_val_b));
+        assert_eq!(cache.get(&second_key).await.unwrap(), Some(second_val_b));
+
+        // Delete
+        assert!(cache.delete(&first_key).await.is_ok());
+        assert!(cache.delete(&second_key).await.is_ok());
+
+        // Confirm deletion
+        assert_eq!(cache.get::<TestValA>(&first_key).await.unwrap(), None);
+        assert_eq!(cache.get::<TestValB>(&second_key).await.unwrap(), None);
+    }
+
+    #[tokio::test]
+    async fn test_cache_ttl() {
+        dotenv::dotenv().ok();
+        let cfg = crate::cfg::load().unwrap();
+
+        let redis_pool = bb8::Pool::builder()
+            .build(RedisConnectionManager::new(cfg.redis_dsn.as_deref().unwrap()).unwrap())
+            .await
+            .unwrap();
+        let cache = new(redis_pool.clone());
+        let key = TestKeyA::new("key".to_owned());
+
+        assert!(cache
+            .set(&key, &TestValA(1), Duration::from_secs(1),)
+            .await
+            .is_ok());
+        tokio::time::sleep(std::time::Duration::from_millis(1200)).await;
+        assert_eq!(cache.get::<TestValA>(&key).await.unwrap(), None);
+    }
+
+    #[tokio::test]
+    async fn test_cache_nx_status() {
+        dotenv::dotenv().ok();
+        let cfg = crate::cfg::load().unwrap();
+
+        let redis_pool = bb8::Pool::builder()
+            .build(RedisConnectionManager::new(cfg.redis_dsn.as_deref().unwrap()).unwrap())
+            .await
+            .unwrap();
+        let cache = new(redis_pool.clone());
+        let key = TestKeyA::new("nx_status_test_key".to_owned());
+
+        assert!(cache
+            .set_if_not_exists(&key, &TestValA(1), Duration::from_secs(30),)
+            .await
+            .unwrap());
+        assert_eq!(cache.get(&key).await.unwrap(), Some(TestValA(1)));
+
+        assert!(!cache
+            .set_if_not_exists(&key, &TestValA(2), Duration::from_secs(30),)
+            .await
+            .unwrap());
+        assert_eq!(cache.get(&key).await.unwrap(), Some(TestValA(1)));
+
+        assert!(cache.delete(&key).await.is_ok());
+    }
+}
