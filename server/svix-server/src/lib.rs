@@ -6,7 +6,7 @@
 
 use axum::{extract::Extension, Router};
 use bb8_redis::RedisConnectionManager;
-use cfg::QueueType;
+use cfg::{CacheType, QueueType};
 use std::{
     net::{SocketAddr, TcpListener},
     str::FromStr,
@@ -16,7 +16,7 @@ use tower_http::trace::TraceLayer;
 
 use crate::{
     cfg::Configuration,
-    core::{cache::RedisCache, idempotency::IdempotencyService},
+    core::{cache, idempotency::IdempotencyService},
     db::init_db,
     worker::worker_loop,
 };
@@ -57,9 +57,15 @@ pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
         }
     };
 
-    let redis_cache = redis_pool
-        .as_ref()
-        .map(|pool| RedisCache::new(pool.clone()));
+    tracing::debug!("Cache type: {:?}", cfg.cache_type);
+    let cache = match cfg.cache_type {
+        CacheType::Memory => cache::memory::new(),
+        CacheType::Redis => redis_pool
+            .as_ref()
+            .map(|pool| cache::redis::new(pool.clone()))
+            .unwrap(),
+        CacheType::None => cache::none::new(),
+    };
 
     // build our application with a route
     let mut app = Router::new()
@@ -67,14 +73,14 @@ pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
         .layer(TraceLayer::new_for_http().on_request(()))
         .layer(
             ServiceBuilder::new().layer_fn(|service| IdempotencyService {
-                redis: redis_cache.clone(),
+                cache: cache.clone(),
                 service,
             }),
         )
         .layer(Extension(pool.clone()))
         .layer(Extension(queue_tx.clone()))
         .layer(Extension(cfg.clone()))
-        .layer(Extension(redis_cache.clone()));
+        .layer(Extension(cache.clone()));
 
     if let Some(redis_pool) = &redis_pool {
         app = app.layer(Extension(redis_pool.clone()));
@@ -108,7 +114,7 @@ pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
         async {
             if with_worker {
                 tracing::debug!("Worker: Initializing");
-                worker_loop(cfg, pool, redis_cache, queue_tx, queue_rx).await
+                worker_loop(cfg, pool, cache, queue_tx, queue_rx).await
             } else {
                 tracing::debug!("Worker: off");
                 Ok(())

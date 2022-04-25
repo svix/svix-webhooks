@@ -1,82 +1,37 @@
+// SPDX-FileCopyrightText: © 2022 Svix Authors
+// SPDX-License-Identifier: MIT
+
 use std::time::Duration;
 
+use axum::async_trait;
 use bb8::Pool;
 use bb8_redis::RedisConnectionManager;
-use redis::{AsyncCommands, RedisError};
-use serde::{de::DeserializeOwned, Serialize};
+use redis::AsyncCommands;
+use serde_json;
 
-/// Errors internal to the cache
-#[derive(thiserror::Error, Debug)]
-pub enum Error {
-    #[error("error deserializing Redis value")]
-    Deserialization(#[from] serde_json::error::Error),
+use super::{Cache, CacheBehavior, CacheKey, CacheValue, Error, Result};
 
-    #[error("Redis pool error")]
-    Pool(#[from] bb8::RunError<RedisError>),
-
-    #[error("Redis databse error")]
-    Database(#[from] RedisError),
-
-    #[error("input error: {0}")]
-    Input(String),
-}
-type Result<T> = std::result::Result<T, Error>;
-
-/// A valid key value for the cache -- usually just a wrapper around a [`String`]
-pub trait CacheKey: AsRef<str> {
-    const PREFIX_CACHE: &'static str = "SVIX_CACHE";
-}
-/// Any (de)serializable structure usuable as a value in the cache -- it is associated with a
-/// given key type to ensure type checking on creation or reading of values from the cache
-pub trait CacheValue: DeserializeOwned + Serialize {
-    type Key: CacheKey;
+pub fn new(redis: Pool<RedisConnectionManager>) -> Cache {
+    RedisCache { redis }.into()
 }
 
-/// A macro that creates a [`CacheKey`] and ties it to any value that implements
-/// [`DeserializeOwned`] and [`Serialize`]
-macro_rules! kv_def {
-    ($key_id:ident, $val_struct:ident) => {
-        #[derive(Clone, Debug)]
-        pub struct $key_id(String);
-
-        impl AsRef<str> for $key_id {
-            fn as_ref(&self) -> &str {
-                &self.0
-            }
-        }
-
-        impl CacheKey for $key_id {}
-
-        impl CacheValue for $val_struct {
-            type Key = $key_id;
-        }
-    };
-}
-pub(crate) use kv_def;
-
-/// A Redis-based cache of data to avoid expensive fetches from PostgreSQL. Simply a wrapper over
-/// Redis.
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct RedisCache {
     redis: Pool<RedisConnectionManager>,
 }
 
-impl RedisCache {
-    pub fn new(redis: Pool<RedisConnectionManager>) -> RedisCache {
-        RedisCache { redis }
-    }
-
-    pub async fn get<T: CacheValue>(&self, key: &T::Key) -> Result<Option<T>> {
-        let mut pool = self.redis.get().await?;
+#[async_trait]
+impl CacheBehavior for RedisCache {
+    async fn get<T: CacheValue>(&self, key: &T::Key) -> Result<Option<T>> {
+        let mut pool = self.redis.get().await.unwrap();
         let fetched = pool.get::<&str, Option<String>>(key.as_ref()).await?;
+
         Ok(fetched
             .map(|json| serde_json::from_str(&json))
             .transpose()?)
     }
 
-    /// Sets a CacheKey to its associated CacheValue.
-    /// Note that the [`Duration`] used is down to millisecond precision.
-    pub async fn set<T: CacheValue>(&self, key: &T::Key, value: &T, ttl: Duration) -> Result<()> {
+    async fn set<T: CacheValue>(&self, key: &T::Key, value: &T, ttl: Duration) -> Result<()> {
         let mut pool = self.redis.get().await?;
 
         pool.pset_ex(
@@ -93,10 +48,14 @@ impl RedisCache {
         .map_err(Into::into)
     }
 
-    /// Sets a CacheKey to its associated CacheValue.
-    /// Note that the [`Duration`] used is down to millisecond precision.
-    /// Returns whether the key was set
-    pub async fn set_if_not_exists<T: CacheValue>(
+    async fn delete<T: CacheKey>(&self, key: &T) -> Result<()> {
+        let mut pool = self.redis.get().await?;
+        pool.del(key.as_ref()).await?;
+
+        Ok(())
+    }
+
+    async fn set_if_not_exists<T: CacheValue>(
         &self,
         key: &T::Key,
         value: &T,
@@ -121,19 +80,12 @@ impl RedisCache {
 
         Ok(res.is_some())
     }
-
-    pub async fn delete<T: CacheKey>(&self, key: &T) -> Result<()> {
-        let mut pool = self.redis.get().await?;
-        pool.del(key.as_ref()).await?;
-
-        Ok(())
-    }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use serde::Deserialize;
+    use super::{super::kv_def, *};
+    use serde::{Deserialize, Serialize};
 
     // Test structures
 
@@ -165,7 +117,7 @@ mod tests {
             .await
             .unwrap();
 
-        let cache = RedisCache::new(redis_pool.clone());
+        let cache = new(redis_pool.clone());
 
         let (first_key, first_val_a, first_val_b) =
             (TestKeyA::new("1".to_owned()), TestValA(1), TestValA(2));
@@ -221,7 +173,7 @@ mod tests {
             .build(RedisConnectionManager::new(cfg.redis_dsn.as_deref().unwrap()).unwrap())
             .await
             .unwrap();
-        let cache = RedisCache::new(redis_pool.clone());
+        let cache = new(redis_pool.clone());
         let key = TestKeyA::new("key".to_owned());
 
         assert!(cache
@@ -241,7 +193,7 @@ mod tests {
             .build(RedisConnectionManager::new(cfg.redis_dsn.as_deref().unwrap()).unwrap())
             .await
             .unwrap();
-        let cache = RedisCache::new(redis_pool.clone());
+        let cache = new(redis_pool.clone());
         let key = TestKeyA::new("nx_status_test_key".to_owned());
 
         assert!(cache

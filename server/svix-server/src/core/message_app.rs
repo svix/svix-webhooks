@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     core::{
-        cache::{kv_def, CacheKey, CacheValue, RedisCache},
+        cache::{kv_def, Cache, CacheBehavior, CacheKey, CacheValue},
         types::{
             ApplicationId, ApplicationUid, EndpointHeaders, EndpointId, EndpointSecret,
             EventChannelSet, EventTypeNameSet, ExpiringSigningKeys, OrganizationId,
@@ -65,7 +65,7 @@ impl CreateMessageApp {
     /// exists or from PostgreSQL otherwise. If the RedisCache is Some, but does not contain the
     /// requisite information, fetch it from PostgreSQL and insert the data into the cache.
     pub async fn layered_fetch(
-        redis: Option<&RedisCache>,
+        cache: Cache,
         pg: &DatabaseConnection,
         app: Option<application::Model>,
         app_id: ApplicationId,
@@ -75,10 +75,8 @@ impl CreateMessageApp {
         let cache_key = AppEndpointKey::new(org_id.clone(), app_id.clone());
 
         // First check Redis
-        if let Some(redis) = redis {
-            if let Ok(Some(cma)) = redis.get(&cache_key).await {
-                return Ok(Some(cma));
-            }
+        if let Ok(Some(cma)) = cache.get(&cache_key).await {
+            return Ok(Some(cma));
         }
 
         // Then check PostgreSQL
@@ -99,9 +97,7 @@ impl CreateMessageApp {
         let out = Self::fetch_from_pg_by_model(&db, app).await?;
 
         // Insert it into Redis
-        if let Some(redis) = redis {
-            let _ = redis.set(&cache_key, &out, ttl).await;
-        }
+        let _ = cache.set(&cache_key, &out, ttl).await;
 
         Ok(Some(out))
     }

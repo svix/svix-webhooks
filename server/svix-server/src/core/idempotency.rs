@@ -19,7 +19,7 @@ use http::request::Parts;
 use serde::{Deserialize, Serialize};
 use tower::Service;
 
-use super::cache::{CacheKey, CacheValue, RedisCache};
+use super::cache::{Cache, CacheBehavior, CacheKey, CacheValue};
 use crate::error::Error;
 
 /// Returns the default exipry period for cached responses
@@ -87,6 +87,7 @@ fn finished_serialized_response_to_reponse(
     Ok(out)
 }
 
+#[derive(Clone)]
 struct IdempotencyKey(String);
 
 impl IdempotencyKey {
@@ -129,7 +130,7 @@ where
 /// The idempotency middleware itself -- used via the [`Router::layer`] method
 #[derive(Clone)]
 pub struct IdempotencyService<S: Clone> {
-    pub redis: Option<RedisCache>,
+    pub cache: Cache,
     pub service: S,
 }
 
@@ -152,9 +153,9 @@ where
 
     fn call(&mut self, req: Request<Body>) -> Self::Future {
         let mut service = self.service.clone();
-        let redis = self.redis.clone();
+        let cache = self.cache.clone();
 
-        if let Some(redis) = redis {
+        if !cache.is_none() {
             Box::pin(async move {
                 let (parts, body) = req.into_parts();
 
@@ -173,7 +174,7 @@ where
 
                 // Set the [`SerializedResponse::Start`] lock if the key does not exist in the cache
                 // returning whether the value was set
-                let lock_acquired = if let Ok(lock_acquired) = redis
+                let lock_acquired = if let Ok(lock_acquired) = cache
                     .set_if_not_exists(&key, &SerializedResponse::Start, expiry_starting())
                     .await
                 {
@@ -190,7 +191,7 @@ where
                 //
                 // If at any point the cache returns an `Err`, then return 500 response
                 if !lock_acquired {
-                    match redis.get::<SerializedResponse>(&key).await {
+                    match cache.get::<SerializedResponse>(&key).await {
                         Ok(Some(SerializedResponse::Finished {
                             code,
                             headers,
@@ -207,7 +208,7 @@ where
                                 code,
                                 headers,
                                 body,
-                            })) = lock_loop(&redis, &key).await
+                            })) = lock_loop(&cache, &key).await
                             {
                                 return Ok(finished_serialized_response_to_reponse(
                                     code, headers, body,
@@ -219,7 +220,7 @@ where
                                 // Set the lock if it returns `Ok(None)` and continue to resolve
                                 // as normal, but return 500 if the lock cannot be set
                                 if !matches!(
-                                    redis
+                                    cache
                                         .set_if_not_exists(
                                             &key,
                                             &SerializedResponse::Start,
@@ -240,7 +241,7 @@ where
                 // If it's set or the lock or the `lock_loop` returns Ok(None), then the key has no
                 // value, so continue resolving the service while caching the response for 2xx
                 // responses
-                resolve_and_cache_response(&redis, &key, service, Request::from_parts(parts, body))
+                resolve_and_cache_response(&cache, &key, service, Request::from_parts(parts, body))
                     .await
             })
         } else {
@@ -274,7 +275,7 @@ fn get_key(parts: &Parts) -> Option<IdempotencyKey> {
 /// If the lock could not be set, then another request with that key has been completed or is being
 /// completed, so loop until it has been completed or times out
 async fn lock_loop(
-    redis: &RedisCache,
+    cache: &Cache,
     key: &IdempotencyKey,
 ) -> Result<Option<SerializedResponse>, Error> {
     let mut total_delay_duration = std::time::Duration::from_millis(0);
@@ -283,7 +284,7 @@ async fn lock_loop(
         total_delay_duration += wait_duration();
         tokio::time::sleep(wait_duration()).await;
 
-        match redis.get::<SerializedResponse>(key).await {
+        match cache.get::<SerializedResponse>(key).await {
             // Value has been retreived from cache, so return it
             Ok(Some(resp @ SerializedResponse::Finished { .. })) => return Ok(Some(resp)),
 
@@ -304,7 +305,7 @@ async fn lock_loop(
 
 /// Resolves the service and chaches the result assuming the response is successful
 async fn resolve_and_cache_response<S>(
-    redis: &RedisCache,
+    cache: &Cache,
     key: &IdempotencyKey,
     service: S,
     request: Request<Body>,
@@ -337,7 +338,7 @@ where
             body: bytes.clone().map(|b| b.to_vec()),
         };
 
-        if redis.set(key, &resp, expiry_default()).await.is_err() {
+        if cache.set(key, &resp, expiry_default()).await.is_err() {
             return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
         }
 
@@ -347,7 +348,7 @@ where
     }
     // If any other status, unset the start lock and return the response
     else {
-        if redis.delete(key).await.is_err() {
+        if cache.delete(key).await.is_err() {
             return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
         }
 
@@ -367,7 +368,7 @@ mod tests {
 
     use super::IdempotencyService;
     use crate::core::{
-        cache::RedisCache,
+        cache,
         security::generate_token,
         types::{BaseId, OrganizationId},
     };
@@ -394,7 +395,7 @@ mod tests {
             .await
             .unwrap();
 
-        let cache = RedisCache::new(redis_pool);
+        let cache = cache::redis::new(redis_pool);
 
         let count = Arc::new(Mutex::new(0));
 
@@ -411,7 +412,7 @@ mod tests {
                             .route("/", post(service_endpoint).get(service_endpoint))
                             .layer(
                                 ServiceBuilder::new().layer_fn(|service| IdempotencyService {
-                                    redis: Some(cache.clone()),
+                                    cache: cache.clone(),
                                     service,
                                 }),
                             )
@@ -603,7 +604,7 @@ mod tests {
             .await
             .unwrap();
 
-        let cache = RedisCache::new(redis_pool);
+        let cache = cache::redis::new(redis_pool);
 
         let count = Arc::new(Mutex::new(199));
 
@@ -620,7 +621,7 @@ mod tests {
                             .route("/", post(empty_service_endpoint))
                             .layer(
                                 ServiceBuilder::new().layer_fn(|service| IdempotencyService {
-                                    redis: Some(cache.clone()),
+                                    cache: cache.clone(),
                                     service,
                                 }),
                             )
