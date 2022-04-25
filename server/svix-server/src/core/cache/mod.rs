@@ -69,6 +69,12 @@ pub enum Cache {
     None(none::NoCache),
 }
 
+impl Cache {
+    pub fn is_none(&self) -> bool {
+        matches!(*self, Cache::None(none::NoCache))
+    }
+}
+
 #[async_trait]
 #[enum_dispatch(Cache)]
 pub trait CacheBehavior: Sync + Send {

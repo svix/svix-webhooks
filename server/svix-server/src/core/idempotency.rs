@@ -152,95 +152,101 @@ where
     }
 
     fn call(&mut self, req: Request<Body>) -> Self::Future {
-        let service = self.service.clone();
+        let mut service = self.service.clone();
         let cache = self.cache.clone();
 
-        Box::pin(async move {
-            let (parts, body) = req.into_parts();
+        if !cache.is_none() {
+            Box::pin(async move {
+                let (parts, body) = req.into_parts();
 
-            // If not a POST request, simply resolve the service as usual
-            if parts.method != http::Method::POST {
-                return resolve_service(service, Request::from_parts(parts, body)).await;
-            }
+                // If not a POST request, simply resolve the service as usual
+                if parts.method != http::Method::POST {
+                    return resolve_service(service, Request::from_parts(parts, body)).await;
+                }
 
-            // Retreive `IdempotencyKey` from header and URL parts, but returning the service
-            // normally in the event a key could not be created.
-            let key = if let Some(key) = get_key(&parts) {
-                key
-            } else {
-                return resolve_service(service, Request::from_parts(parts, body)).await;
-            };
+                // Retreive `IdempotencyKey` from header and URL parts, but returning the service
+                // normally in the event a key could not be created.
+                let key = if let Some(key) = get_key(&parts) {
+                    key
+                } else {
+                    return resolve_service(service, Request::from_parts(parts, body)).await;
+                };
 
-            // Set the [`SerializedResponse::Start`] lock if the key does not exist in the cache
-            // returning whether the value was set
-            let lock_acquired = if let Ok(lock_acquired) = cache
-                .set_if_not_exists(&key, &SerializedResponse::Start, expiry_starting())
-                .await
-            {
-                lock_acquired
-            } else {
-                return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
-            };
+                // Set the [`SerializedResponse::Start`] lock if the key does not exist in the cache
+                // returning whether the value was set
+                let lock_acquired = if let Ok(lock_acquired) = cache
+                    .set_if_not_exists(&key, &SerializedResponse::Start, expiry_starting())
+                    .await
+                {
+                    lock_acquired
+                } else {
+                    return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
+                };
 
-            // If the lock was not set, first check the cache for a `Finished` cache value. If
-            // it is instead `None` or the value is a `Start` lock, then enter a loop checking
-            // it every 200ms.
-            //
-            // If the loop times out, then reset the lock and proceed to resolve the service.
-            //
-            // If at any point the cache returns an `Err`, then return 500 response
-            if !lock_acquired {
-                match cache.get::<SerializedResponse>(&key).await {
-                    Ok(Some(SerializedResponse::Finished {
-                        code,
-                        headers,
-                        body,
-                    })) => {
-                        return Ok(finished_serialized_response_to_reponse(code, headers, body)
-                            .unwrap_or_else(|_| StatusCode::INTERNAL_SERVER_ERROR.into_response()))
-                    }
-
-                    Ok(Some(SerializedResponse::Start)) | Ok(None) => {
-                        if let Ok(Some(SerializedResponse::Finished {
+                // If the lock was not set, first check the cache for a `Finished` cache value. If
+                // it is instead `None` or the value is a `Start` lock, then enter a loop checking
+                // it every 200ms.
+                //
+                // If the loop times out, then reset the lock and proceed to resolve the service.
+                //
+                // If at any point the cache returns an `Err`, then return 500 response
+                if !lock_acquired {
+                    match cache.get::<SerializedResponse>(&key).await {
+                        Ok(Some(SerializedResponse::Finished {
                             code,
                             headers,
                             body,
-                        })) = lock_loop(&cache, &key).await
-                        {
-                            return Ok(finished_serialized_response_to_reponse(
-                                code, headers, body,
-                            )
-                            .unwrap_or_else(|_| {
-                                StatusCode::INTERNAL_SERVER_ERROR.into_response()
-                            }));
-                        } else {
-                            // Set the lock if it returns `Ok(None)` and continue to resolve
-                            // as normal, but return 500 if the lock cannot be set
-                            if !matches!(
-                                cache
-                                    .set_if_not_exists(
-                                        &key,
-                                        &SerializedResponse::Start,
-                                        expiry_starting(),
-                                    )
-                                    .await,
-                                Ok(true)
-                            ) {
-                                return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
+                        })) => {
+                            return Ok(finished_serialized_response_to_reponse(code, headers, body)
+                                .unwrap_or_else(|_| {
+                                    StatusCode::INTERNAL_SERVER_ERROR.into_response()
+                                }))
+                        }
+
+                        Ok(Some(SerializedResponse::Start)) | Ok(None) => {
+                            if let Ok(Some(SerializedResponse::Finished {
+                                code,
+                                headers,
+                                body,
+                            })) = lock_loop(&cache, &key).await
+                            {
+                                return Ok(finished_serialized_response_to_reponse(
+                                    code, headers, body,
+                                )
+                                .unwrap_or_else(|_| {
+                                    StatusCode::INTERNAL_SERVER_ERROR.into_response()
+                                }));
+                            } else {
+                                // Set the lock if it returns `Ok(None)` and continue to resolve
+                                // as normal, but return 500 if the lock cannot be set
+                                if !matches!(
+                                    cache
+                                        .set_if_not_exists(
+                                            &key,
+                                            &SerializedResponse::Start,
+                                            expiry_starting(),
+                                        )
+                                        .await,
+                                    Ok(true)
+                                ) {
+                                    return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response());
+                                }
                             }
                         }
+
+                        Err(_) => return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response()),
                     }
+                };
 
-                    Err(_) => return Ok(StatusCode::INTERNAL_SERVER_ERROR.into_response()),
-                }
-            };
-
-            // If it's set or the lock or the `lock_loop` returns Ok(None), then the key has no
-            // value, so continue resolving the service while caching the response for 2xx
-            // responses
-            resolve_and_cache_response(&cache, &key, service, Request::from_parts(parts, body))
-                .await
-        })
+                // If it's set or the lock or the `lock_loop` returns Ok(None), then the key has no
+                // value, so continue resolving the service while caching the response for 2xx
+                // responses
+                resolve_and_cache_response(&cache, &key, service, Request::from_parts(parts, body))
+                    .await
+            })
+        } else {
+            Box::pin(async move { Ok(service.call(req).await.into_response()) })
+        }
     }
 }
 
