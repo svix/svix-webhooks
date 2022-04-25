@@ -26,10 +26,8 @@ use axum::{
     routing::{get, post},
     Json, Router,
 };
-
 use chrono::{DateTime, Utc};
 use hyper::StatusCode;
-
 use sea_orm::entity::prelude::*;
 use sea_orm::{sea_query::Expr, ActiveValue::Set};
 use sea_orm::{ActiveModelTrait, DatabaseConnection, TransactionTrait};
@@ -313,8 +311,7 @@ pub fn router() -> Router {
     Router::new().nest(
         "/app/:app_id",
         Router::new()
-            .route("/msg/", get(list_messages))
-            .route("/msg/", post(create_message))
+            .route("/msg/", post(create_message).get(list_messages))
             .route("/msg/:msg_id/", get(get_message)),
     )
 }

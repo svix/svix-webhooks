@@ -10,9 +10,7 @@ use crate::core::{
 use crate::db::models::{message, messageattempt, messagedestination};
 use crate::error::{Error, Result};
 use crate::queue::{MessageTask, QueueTask, TaskQueueConsumer, TaskQueueProducer};
-
 use chrono::Utc;
-
 use reqwest::header::{HeaderMap, HeaderName};
 use sea_orm::entity::prelude::*;
 use sea_orm::ActiveValue::Set;
