@@ -18,14 +18,16 @@
 use std::time::Duration;
 
 use axum::async_trait;
-use bb8::Pool;
-use bb8_redis::RedisConnectionManager;
+
 use chrono::Utc;
-use redis::{AsyncCommands, RedisWrite, ToRedisArgs};
+use redis::{RedisWrite, ToRedisArgs};
 use svix_ksuid::*;
 use tokio::time::sleep;
 
-use crate::error::{Error, Result};
+use crate::{
+    error::{Error, Result},
+    redis::{PoolLike, SvixRedisPool},
+};
 
 use super::{
     QueueTask, TaskQueueConsumer, TaskQueueDelivery, TaskQueueProducer, TaskQueueReceive,
@@ -34,16 +36,15 @@ use super::{
 
 // FIXME: Change unwraps to have our own error type for the queue module entirely
 
-const MAIN: &str = "svix_queue_main";
-const PROCESSING: &str = "svix_queue_processing";
-const DELAYED: &str = "svix_queue_delayed";
+// FIXME: hash-tags here enable clustering but prevent proper sharding of lists
+const MAIN: &str = "{svix_queue}_main";
+const PROCESSING: &str = "{svix_queue}_processing";
+const DELAYED: &str = "{svix_queue}_delayed";
 
 /// After this limit a task should be taken out of the processing queue and rescheduled
 const TASK_VALIDITY_DURATION: Duration = Duration::from_secs(45);
 
-pub async fn new_pair(
-    pool: Pool<RedisConnectionManager>,
-) -> (TaskQueueProducer, TaskQueueConsumer) {
+pub async fn new_pair(pool: SvixRedisPool) -> (TaskQueueProducer, TaskQueueConsumer) {
     let worker_pool = pool.clone();
     tokio::spawn(async move {
         // FIXME: enforce we only have one such worker (locking)
@@ -53,17 +54,25 @@ pub async fn new_pair(
         let pool = worker_pool;
         loop {
             let mut pool = pool.get().await.unwrap();
+
             let timestamp = Utc::now().timestamp();
             let keys: Vec<String> = pool
-                .zrangebyscore_limit(DELAYED, 0isize, timestamp, 0isize, batch_size)
+                .query_async(redis::Cmd::zrangebyscore_limit(
+                    DELAYED, 0isize, timestamp, 0isize, batch_size,
+                ))
                 .await
                 .unwrap();
             if !keys.is_empty() {
                 // FIXME: needs to be a transaction
-                let keys: Vec<(String, String)> =
-                    pool.zpopmin(DELAYED, keys.len() as isize).await.unwrap();
+                let keys: Vec<(String, String)> = pool
+                    .query_async(redis::Cmd::zpopmin(DELAYED, keys.len() as isize))
+                    .await
+                    .unwrap();
                 let keys: Vec<String> = keys.into_iter().map(|x| x.0).collect();
-                let _: () = pool.rpush(MAIN, keys).await.unwrap();
+                let _: () = pool
+                    .query_async(redis::Cmd::rpush(MAIN, keys))
+                    .await
+                    .unwrap();
             } else {
                 // Wait for half a second before attempting to fetch again if nothing was found
                 sleep(Duration::from_millis(500)).await;
@@ -71,19 +80,31 @@ pub async fn new_pair(
 
             // Every iteration here also check whether the processing queue has items that should
             // be picked back up
-            let keys: Vec<String> = pool.lrange(PROCESSING, 0isize, 1isize).await.unwrap();
+            let keys: Vec<String> = pool
+                .query_async(redis::Cmd::lrange(PROCESSING, 0isize, 1isize))
+                .await
+                .unwrap();
 
             // If the key is older than now, it means we should be processing keys
             let validity_limit =
                 KsuidMs::new(Some(Utc::now() - task_validity_duration), None).to_string();
             if !keys.is_empty() && keys[0] <= validity_limit {
-                let keys: Vec<String> = pool.lrange(PROCESSING, 0isize, batch_size).await.unwrap();
+                let keys: Vec<String> = pool
+                    .query_async(redis::Cmd::lrange(PROCESSING, 0isize, batch_size))
+                    .await
+                    .unwrap();
                 for key in keys {
                     if key <= validity_limit {
                         // We use LREM to be sure we only delete the keys we should be deleting
                         tracing::trace!("Pushing back overdue task to queue {}", key);
-                        let _: () = pool.rpush(MAIN, &key).await.unwrap();
-                        let _: () = pool.lrem(PROCESSING, 1, &key).await.unwrap();
+                        let _: () = pool
+                            .query_async(redis::Cmd::rpush(MAIN, &key))
+                            .await
+                            .unwrap();
+                        let _: () = pool
+                            .query_async(redis::Cmd::lrem(PROCESSING, 1, &key))
+                            .await
+                            .unwrap();
                     }
                 }
             }
@@ -116,7 +137,7 @@ impl ToRedisArgs for Direction {
 
 #[derive(Clone)]
 pub struct RedisQueueProducer {
-    pool: Pool<RedisConnectionManager>,
+    pool: SvixRedisPool,
 }
 
 fn to_redis_key(delivery: &TaskQueueDelivery) -> String {
@@ -144,11 +165,14 @@ impl TaskQueueSend for RedisQueueProducer {
         let key = to_redis_key(&delivery);
         if let Some(timestamp) = timestamp {
             let _: () = pool
-                .zadd(DELAYED, key, timestamp.timestamp())
+                .query_async(redis::Cmd::zadd(DELAYED, key, timestamp.timestamp()))
                 .await
                 .unwrap();
         } else {
-            let _: () = pool.rpush(MAIN, key).await.unwrap();
+            let _: () = pool
+                .query_async(redis::Cmd::rpush(MAIN, key))
+                .await
+                .unwrap();
         }
         tracing::trace!("RedisQueue: event sent > (delay: {:?})", delay);
         Ok(())
@@ -157,7 +181,10 @@ impl TaskQueueSend for RedisQueueProducer {
     async fn ack(&self, delivery: TaskQueueDelivery) -> Result<()> {
         let key = to_redis_key(&delivery);
         let mut pool = self.pool.get().await.unwrap();
-        let processed: u8 = pool.lrem(PROCESSING, 1, &key).await.unwrap();
+        let processed: u8 = pool
+            .query_async(redis::Cmd::lrem(PROCESSING, 1, &key))
+            .await
+            .unwrap();
         if processed != 1 {
             tracing::warn!(
                 "Expected to remove 1 from the list, removed {} for {}",
@@ -172,7 +199,10 @@ impl TaskQueueSend for RedisQueueProducer {
         // FIXME: do something else here?
         let key = to_redis_key(&delivery);
         let mut pool = self.pool.get().await.unwrap();
-        let _: () = pool.lrem(PROCESSING, 1, &key).await.unwrap();
+        let _: () = pool
+            .query_async(redis::Cmd::lrem(PROCESSING, 1, &key))
+            .await
+            .unwrap();
         tracing::error!("Failed processing msg: {}", key);
         Ok(())
     }
@@ -183,20 +213,21 @@ impl TaskQueueSend for RedisQueueProducer {
 }
 
 pub struct RedisQueueConsumer {
-    pool: Pool<RedisConnectionManager>,
+    pool: SvixRedisPool,
 }
 
 #[async_trait]
 impl TaskQueueReceive for RedisQueueConsumer {
     async fn receive(&mut self) -> Result<TaskQueueDelivery> {
         let mut pool = self.pool.get().await.unwrap();
-        let key: String = redis::cmd("BLMOVE")
-            .arg(MAIN)
+        let mut cmd = redis::cmd("BLMOVE");
+        cmd.arg(MAIN)
             .arg(PROCESSING)
             .arg(Direction::Left)
             .arg(Direction::Right)
-            .arg(0u8)
-            .query_async(&mut *pool)
+            .arg(0u8);
+        let key: String = pool
+            .query_async(cmd)
             .await
             .map_err(|x| Error::Queue(x.to_string()))?;
         tracing::trace!("RedisQueue: event recv <");

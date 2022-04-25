@@ -4,7 +4,7 @@
 use reqwest::StatusCode;
 
 use svix_server::{
-    core::types::ApplicationUid, v1::endpoints::application::ApplicationIn,
+    cfg::CacheType, core::types::ApplicationUid, v1::endpoints::application::ApplicationIn,
     v1::endpoints::application::ApplicationOut,
 };
 
@@ -366,6 +366,8 @@ async fn test_uid_across_users() {
 async fn test_idempotency() {
     let (client, _jh) = start_svix_server();
 
+    let cfg = svix_server::cfg::load().unwrap();
+
     let app1: ApplicationOut = client
         .post_with_idempotency(
             "api/v1/app/",
@@ -392,5 +394,8 @@ async fn test_idempotency() {
         .await
         .unwrap();
 
-    assert_eq!(app1, app2);
+    match cfg.cache_type {
+        CacheType::None => assert_ne!(app1, app2),
+        _ => assert_eq!(app1, app2),
+    };
 }

@@ -63,6 +63,9 @@ retry_schedule = "5,300,1800,7200,18000,36000,36000"
 # What kind of message queue to use. Supported: memory, redis (must have redis_dsn configured).
 queue_type = "redis"
 
+# What kind of cache to use. Supported: memory, redis (must have redis_dsn configured), none.
+cache_type = "redis"
+
 # If true, headers are prefixed with `Webhook-`, otherwise with `Svix-` (default).
 whitelabel_headers = false
 
@@ -129,6 +132,7 @@ pub enum LogLevel {
 pub enum QueueType {
     Memory,
     Redis,
+    RedisCluster,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -136,6 +140,7 @@ pub enum QueueType {
 pub enum CacheType {
     Memory,
     Redis,
+    RedisCluster,
     None,
 }
 

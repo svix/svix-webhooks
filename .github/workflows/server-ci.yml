@@ -70,19 +70,11 @@ jobs:
         args: --manifest-path server/Cargo.toml -- migrate
 
     - name: Run tests
-      uses: actions-rs/cargo@v1
-      env:
-        DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
-        SVIX_REDIS_DSN: "redis://localhost:6379"
-        SVIX_JWT_SECRET: "test value"
-        SVIX_CACHE_TYPE: "memory"
-      with:
-        command: test
-        args: --manifest-path server/Cargo.toml  --all --all-features --all-targets
+      working-directory: ./server
+      run: ./run-tests.sh
 
     - name: Stop dependencies
-      run: docker-compose -f "server/docker-compose.yml" down
-
+      run: docker-compose -f "server/testing-docker-compose.yml" down
 #  deny-check:
 #    name: cargo-deny check
 #    runs-on: ubuntu-latest

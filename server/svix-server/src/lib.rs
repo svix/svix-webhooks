@@ -5,7 +5,7 @@
 #![forbid(unsafe_code)]
 
 use axum::{extract::Extension, Router};
-use bb8_redis::RedisConnectionManager;
+
 use cfg::{CacheType, QueueType};
 use std::{
     net::{SocketAddr, TcpListener},
@@ -26,49 +26,52 @@ pub mod core;
 pub mod db;
 pub mod error;
 pub mod queue;
+pub mod redis;
 pub mod v1;
 pub mod webhook;
 pub mod worker;
 
 pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
     let pool = init_db(&cfg).await;
-    let redis_pool = if let Some(redis_dsn) = &cfg.redis_dsn {
-        tracing::debug!("Redis: Initializing pool");
-        let manager =
-            RedisConnectionManager::new(redis_dsn.to_string()).expect("Error initializing Redis");
-        Some(
-            bb8::Pool::builder()
-                .build(manager)
-                .await
-                .expect("Error initializing Redis"),
-        )
-    } else {
-        None
-    };
 
-    tracing::debug!("Queue type: {:?}", cfg.queue_type);
-    let (queue_tx, queue_rx) = match cfg.queue_type {
-        QueueType::Memory => queue::memory::new_pair().await,
-        QueueType::Redis => {
-            queue::redis::new_pair(redis_pool.clone().unwrap_or_else(|| {
-                panic!("Choosing queue_type=Redis requires setting a redis DSN.")
-            }))
-            .await
-        }
+    let redis_dsn = || {
+        cfg.redis_dsn
+            .as_ref()
+            .expect("Redis DSN not found")
+            .as_str()
     };
 
     tracing::debug!("Cache type: {:?}", cfg.cache_type);
     let cache = match cfg.cache_type {
+        CacheType::Redis => {
+            let mgr = crate::redis::create_redis_pool(redis_dsn(), false).await;
+            cache::redis::new(mgr)
+        }
+        CacheType::RedisCluster => {
+            let mgr = crate::redis::create_redis_pool(redis_dsn(), true).await;
+            cache::redis::new(mgr)
+        }
         CacheType::Memory => cache::memory::new(),
-        CacheType::Redis => redis_pool
-            .as_ref()
-            .map(|pool| cache::redis::new(pool.clone()))
-            .unwrap(),
         CacheType::None => cache::none::new(),
     };
 
+    tracing::debug!("Queue type: {:?}", cfg.queue_type);
+    let (queue_tx, queue_rx) = {
+        match cfg.queue_type {
+            QueueType::Redis => {
+                let pool = crate::redis::create_redis_pool(redis_dsn(), false).await;
+                queue::redis::new_pair(pool).await
+            }
+            QueueType::RedisCluster => {
+                let pool = crate::redis::create_redis_pool(redis_dsn(), true).await;
+                queue::redis::new_pair(pool).await
+            }
+            QueueType::Memory => queue::memory::new_pair().await,
+        }
+    };
+
     // build our application with a route
-    let mut app = Router::new()
+    let app = Router::new()
         .nest("/api/v1", v1::router())
         .layer(TraceLayer::new_for_http().on_request(()))
         .layer(
@@ -81,10 +84,6 @@ pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
         .layer(Extension(queue_tx.clone()))
         .layer(Extension(cfg.clone()))
         .layer(Extension(cache.clone()));
-
-    if let Some(redis_pool) = &redis_pool {
-        app = app.layer(Extension(redis_pool.clone()));
-    };
 
     let with_api = cfg.api_enabled;
     let with_worker = cfg.worker_enabled;

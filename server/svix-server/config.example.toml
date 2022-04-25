@@ -20,8 +20,11 @@ db_dsn = "postgresql://postgres:postgres@pgbouncer/postgres"
 # The DSN for redis (can be left empty if not using redis)
 redis_dsn = "redis://redis:6379"
 
-# What kind of message queue to use. Supported: memory, redis (must have redis_dsn configured).
+# What kind of message queue to use. Supported: memory, redis (must have redis_dsn configured), rediscluster (add multiple hosts to redis_dsn separated by commas).
 queue_type = "redis"
+
+# What kind of cache to use. Supported: memory, redis (must have redis_dsn configured), none.
+cache_type = "redis"
 
 # If true, headers are prefixed with `Webhook-`, otherwise with `Svix-` (default).
 whitelabel_headers = false
