@@ -37,9 +37,9 @@ use super::{
 // FIXME: Change unwraps to have our own error type for the queue module entirely
 
 // FIXME: hash-tags here enable clustering but prevent proper sharding of lists
-const MAIN: &str = "{svix_queue}_main";
-const PROCESSING: &str = "{svix_queue}_processing";
-const DELAYED: &str = "{svix_queue}_delayed";
+const MAIN: &str = "{queue}_svix_main";
+const PROCESSING: &str = "{queue}_svix_processing";
+const DELAYED: &str = "{queue}_svix_delayed";
 
 /// After this limit a task should be taken out of the processing queue and rescheduled
 const TASK_VALIDITY_DURATION: Duration = Duration::from_secs(45);
