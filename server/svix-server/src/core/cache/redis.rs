@@ -7,17 +7,17 @@ use axum::async_trait;
 
 use serde_json;
 
-use crate::redis::{PoolLike, SvixRedisPool};
+use crate::redis::{PoolLike, RedisPool};
 
 use super::{Cache, CacheBehavior, CacheKey, CacheValue, Error, Result};
 
-pub fn new(redis: SvixRedisPool) -> Cache {
+pub fn new(redis: RedisPool) -> Cache {
     RedisCache { redis }.into()
 }
 
 #[derive(Clone)]
 pub struct RedisCache {
-    redis: SvixRedisPool,
+    redis: RedisPool,
 }
 
 #[async_trait]
@@ -111,7 +111,7 @@ mod tests {
         }
     }
 
-    async fn get_pool(redis_dsn: &str, cache_type: &crate::cfg::CacheType) -> SvixRedisPool {
+    async fn get_pool(redis_dsn: &str, cache_type: &crate::cfg::CacheType) -> RedisPool {
         match cache_type {
             CacheType::RedisCluster => {
                 let mgr = crate::redis::create_redis_pool(redis_dsn, true).await;

@@ -26,7 +26,7 @@ use tokio::time::sleep;
 
 use crate::{
     error::{Error, Result},
-    redis::{PoolLike, SvixRedisPool},
+    redis::{PoolLike, RedisPool, PooledConnection},
 };
 
 use super::{
@@ -44,7 +44,7 @@ const DELAYED: &str = "{svix_queue}_delayed";
 /// After this limit a task should be taken out of the processing queue and rescheduled
 const TASK_VALIDITY_DURATION: Duration = Duration::from_secs(45);
 
-pub async fn new_pair(pool: SvixRedisPool) -> (TaskQueueProducer, TaskQueueConsumer) {
+pub async fn new_pair(pool: RedisPool) -> (TaskQueueProducer, TaskQueueConsumer) {
     let worker_pool = pool.clone();
     tokio::spawn(async move {
         // FIXME: enforce we only have one such worker (locking)
@@ -137,7 +137,7 @@ impl ToRedisArgs for Direction {
 
 #[derive(Clone)]
 pub struct RedisQueueProducer {
-    pool: SvixRedisPool,
+    pool: RedisPool,
 }
 
 fn to_redis_key(delivery: &TaskQueueDelivery) -> String {
@@ -213,7 +213,7 @@ impl TaskQueueSend for RedisQueueProducer {
 }
 
 pub struct RedisQueueConsumer {
-    pool: SvixRedisPool,
+    pool: RedisPool,
 }
 
 #[async_trait]

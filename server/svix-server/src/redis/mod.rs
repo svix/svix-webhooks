@@ -1,6 +1,6 @@
 mod cluster;
 
-use bb8::{Pool, PooledConnection, RunError};
+use bb8::{Pool, RunError};
 use bb8_redis::RedisConnectionManager;
 pub use cluster::RedisClusterConnectionManager;
 
@@ -8,27 +8,27 @@ use axum::async_trait;
 use redis::{FromRedisValue, RedisError, RedisResult};
 
 #[derive(Clone, Debug)]
-pub enum SvixRedisPool {
-    Clustered(SvixClusteredRedisPool),
-    NonClustered(SvixNonClusteredRedisPool),
+pub enum RedisPool {
+    Clustered(ClusteredRedisPool),
+    NonClustered(NonClusteredRedisPool),
 }
 
 #[derive(Clone, Debug)]
-pub struct SvixClusteredRedisPool {
+pub struct ClusteredRedisPool {
     pool: Pool<RedisClusterConnectionManager>,
 }
 
 #[derive(Clone, Debug)]
-pub struct SvixNonClusteredRedisPool {
+pub struct NonClusteredRedisPool {
     pool: Pool<RedisConnectionManager>,
 }
 
-pub enum SvixPooledConnection<'a> {
-    Clustered(SvixClusteredPooledConnection<'a>),
-    NonClustered(SvixNonClusteredPooledConnection<'a>),
+pub enum PooledConnection<'a> {
+    Clustered(ClusteredPooledConnection<'a>),
+    NonClustered(NonClusteredPooledConnection<'a>),
 }
 
-impl<'a> SvixPooledConnection<'a> {
+impl<'a> PooledConnection<'a> {
     pub async fn query_async<T: FromRedisValue>(&mut self, cmd: redis::Cmd) -> RedisResult<T> {
         match self {
             Self::Clustered(pooled_con) => pooled_con.query_async(cmd).await,
@@ -37,21 +37,21 @@ impl<'a> SvixPooledConnection<'a> {
     }
 }
 
-pub struct SvixNonClusteredPooledConnection<'a> {
-    con: PooledConnection<'a, RedisConnectionManager>,
+pub struct NonClusteredPooledConnection<'a> {
+    con: bb8::PooledConnection<'a, RedisConnectionManager>,
 }
 
-impl<'a> SvixNonClusteredPooledConnection<'a> {
+impl<'a> NonClusteredPooledConnection<'a> {
     pub async fn query_async<T: FromRedisValue>(&mut self, cmd: redis::Cmd) -> RedisResult<T> {
         cmd.query_async(&mut *self.con).await
     }
 }
 
-pub struct SvixClusteredPooledConnection<'a> {
-    con: PooledConnection<'a, RedisClusterConnectionManager>,
+pub struct ClusteredPooledConnection<'a> {
+    con: bb8::PooledConnection<'a, RedisClusterConnectionManager>,
 }
 
-impl<'a> SvixClusteredPooledConnection<'a> {
+impl<'a> ClusteredPooledConnection<'a> {
     pub async fn query_async<T: FromRedisValue>(&mut self, cmd: redis::Cmd) -> RedisResult<T> {
         cmd.query_async(&mut *self.con).await
     }
@@ -59,12 +59,12 @@ impl<'a> SvixClusteredPooledConnection<'a> {
 
 #[async_trait]
 pub trait PoolLike {
-    async fn get(&self) -> Result<SvixPooledConnection, RunError<RedisError>>;
+    async fn get(&self) -> Result<PooledConnection, RunError<RedisError>>;
 }
 
 #[async_trait]
-impl PoolLike for SvixRedisPool {
-    async fn get(&self) -> Result<SvixPooledConnection, RunError<RedisError>> {
+impl PoolLike for RedisPool {
+    async fn get(&self) -> Result<PooledConnection, RunError<RedisError>> {
         match self {
             Self::Clustered(pool) => pool.get().await,
             Self::NonClustered(pool) => pool.get().await,
@@ -73,25 +73,25 @@ impl PoolLike for SvixRedisPool {
 }
 
 #[async_trait]
-impl PoolLike for SvixNonClusteredRedisPool {
-    async fn get(&self) -> Result<SvixPooledConnection, RunError<RedisError>> {
+impl PoolLike for NonClusteredRedisPool {
+    async fn get(&self) -> Result<PooledConnection, RunError<RedisError>> {
         let con = self.pool.get().await?;
-        let con = SvixNonClusteredPooledConnection { con };
-        Ok(SvixPooledConnection::NonClustered(con))
+        let con = NonClusteredPooledConnection { con };
+        Ok(PooledConnection::NonClustered(con))
     }
 }
 
 #[async_trait]
-impl PoolLike for SvixClusteredRedisPool {
-    async fn get(&self) -> Result<SvixPooledConnection, RunError<RedisError>> {
-        let con = SvixClusteredPooledConnection {
+impl PoolLike for ClusteredRedisPool {
+    async fn get(&self) -> Result<PooledConnection, RunError<RedisError>> {
+        let con = ClusteredPooledConnection {
             con: self.pool.get().await?,
         };
-        Ok(SvixPooledConnection::Clustered(con))
+        Ok(PooledConnection::Clustered(con))
     }
 }
 
-pub async fn create_redis_pool(redis_dsn: &str, clustered: bool) -> SvixRedisPool {
+pub async fn create_redis_pool(redis_dsn: &str, clustered: bool) -> RedisPool {
     if clustered {
         let mgr = RedisClusterConnectionManager::new(redis_dsn)
             .expect("Error initializing redis cluster client");
@@ -99,16 +99,16 @@ pub async fn create_redis_pool(redis_dsn: &str, clustered: bool) -> SvixRedisPoo
             .build(mgr)
             .await
             .expect("Error initializing redis cluster connection pool");
-        let pool = SvixClusteredRedisPool { pool };
-        SvixRedisPool::Clustered(pool)
+        let pool = ClusteredRedisPool { pool };
+        RedisPool::Clustered(pool)
     } else {
         let mgr = RedisConnectionManager::new(redis_dsn).expect("Error intializing redis client");
         let pool = bb8::Pool::builder()
             .build(mgr)
             .await
             .expect("Error initializing redis connection pool");
-        let pool = SvixNonClusteredRedisPool { pool };
-        SvixRedisPool::NonClustered(pool)
+        let pool = NonClusteredRedisPool { pool };
+        RedisPool::NonClustered(pool)
     }
 }
 
@@ -118,7 +118,7 @@ mod tests {
     use super::*;
     use crate::cfg::CacheType;
 
-    async fn get_pool(redis_dsn: &str, cache_type: &crate::cfg::CacheType) -> SvixRedisPool {
+    async fn get_pool(redis_dsn: &str, cache_type: &crate::cfg::CacheType) -> RedisPool {
         match cache_type {
             CacheType::RedisCluster => {
                 let mgr = crate::redis::create_redis_pool(redis_dsn, true).await;
