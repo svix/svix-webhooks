@@ -1,35 +1,168 @@
 mod cluster;
 
-use bb8::{Pool, PooledConnection, RunError};
+use bb8::{Pool, RunError};
 use bb8_redis::RedisConnectionManager;
 pub use cluster::RedisClusterConnectionManager;
 
 use axum::async_trait;
-use redis::{FromRedisValue, RedisError, RedisResult};
+use redis::{FromRedisValue, RedisError, RedisResult, ToRedisArgs};
 
 #[derive(Clone, Debug)]
-pub enum SvixRedisPool {
-    Clustered(SvixClusteredRedisPool),
-    NonClustered(SvixNonClusteredRedisPool),
+pub enum RedisPool {
+    Clustered(ClusteredRedisPool),
+    NonClustered(NonClusteredRedisPool),
 }
 
 #[derive(Clone, Debug)]
-pub struct SvixClusteredRedisPool {
+pub struct ClusteredRedisPool {
     pool: Pool<RedisClusterConnectionManager>,
 }
 
 #[derive(Clone, Debug)]
-pub struct SvixNonClusteredRedisPool {
+pub struct NonClusteredRedisPool {
     pool: Pool<RedisConnectionManager>,
 }
 
-pub enum SvixPooledConnection<'a> {
-    Clustered(SvixClusteredPooledConnection<'a>),
-    NonClustered(SvixNonClusteredPooledConnection<'a>),
+pub enum PooledConnection<'a> {
+    Clustered(ClusteredPooledConnection<'a>),
+    NonClustered(NonClusteredPooledConnection<'a>),
 }
 
-impl<'a> SvixPooledConnection<'a> {
-    pub async fn query_async<T: FromRedisValue>(&mut self, cmd: redis::Cmd) -> RedisResult<T> {
+#[async_trait]
+pub trait PooledConnectionLike {
+    async fn query_async<T: FromRedisValue>(&mut self, cmd: redis::Cmd) -> RedisResult<T>;
+
+    async fn del<K: ToRedisArgs + Send, T: FromRedisValue>(&mut self, key: K) -> RedisResult<T> {
+        self.query_async(redis::Cmd::del(key)).await
+    }
+
+    async fn get<K: ToRedisArgs + Send, T: FromRedisValue>(&mut self, key: K) -> RedisResult<T> {
+        let mut cmd = redis::cmd(if key.is_single_arg() { "GET" } else { "MGET" });
+        cmd.arg(key);
+        self.query_async(cmd).await
+    }
+
+    async fn lpop<K: ToRedisArgs + Send, T: FromRedisValue>(
+        &mut self,
+        key: K,
+        count: Option<core::num::NonZeroUsize>,
+    ) -> RedisResult<T> {
+        self.query_async(redis::Cmd::lpop(key, count)).await
+    }
+
+    async fn lrange<K: ToRedisArgs + Send, T: FromRedisValue>(
+        &mut self,
+        key: K,
+        start: isize,
+        stop: isize,
+    ) -> RedisResult<T> {
+        self.query_async(redis::Cmd::lrange(key, start, stop)).await
+    }
+
+    async fn lrem<K: ToRedisArgs + Send, V: ToRedisArgs + Send, T: FromRedisValue>(
+        &mut self,
+        key: K,
+        count: isize,
+        value: V,
+    ) -> RedisResult<T> {
+        self.query_async(redis::Cmd::lrem(key, count, value)).await
+    }
+
+    async fn pset_ex<K: ToRedisArgs + Send, V: ToRedisArgs + Send, T: FromRedisValue>(
+        &mut self,
+        key: K,
+        value: V,
+        milliseconds: usize,
+    ) -> RedisResult<T> {
+        self.query_async(redis::Cmd::pset_ex(key, value, milliseconds))
+            .await
+    }
+
+    async fn rpush<K: ToRedisArgs + Send, V: ToRedisArgs + Send, T: FromRedisValue>(
+        &mut self,
+        key: K,
+        value: V,
+    ) -> RedisResult<T> {
+        self.query_async(redis::Cmd::rpush(key, value)).await
+    }
+
+    async fn set<K: ToRedisArgs + Send, V: ToRedisArgs + Send, T: FromRedisValue>(
+        &mut self,
+        key: K,
+        value: V,
+    ) -> RedisResult<T> {
+        self.query_async(redis::Cmd::set(key, value)).await
+    }
+
+    async fn zadd<
+        K: ToRedisArgs + Send,
+        S: ToRedisArgs + Send,
+        M: ToRedisArgs + Send,
+        T: FromRedisValue,
+    >(
+        &mut self,
+        key: K,
+        member: M,
+        score: S,
+    ) -> RedisResult<T> {
+        self.query_async(redis::Cmd::zadd(key, member, score)).await
+    }
+
+    async fn zadd_multiple<
+        K: ToRedisArgs + Send,
+        S: ToRedisArgs + Send + Sync,
+        M: ToRedisArgs + Send + Sync,
+        T: FromRedisValue,
+    >(
+        &mut self,
+        key: K,
+        items: &'_ [(S, M)],
+    ) -> RedisResult<T> {
+        self.query_async(redis::Cmd::zadd_multiple(key, items))
+            .await
+    }
+
+    async fn zpopmin<K: ToRedisArgs + Send, T: FromRedisValue>(
+        &mut self,
+        key: K,
+        count: isize,
+    ) -> RedisResult<T> {
+        self.query_async(redis::Cmd::zpopmin(key, count)).await
+    }
+
+    async fn zrange_withscores<K: ToRedisArgs + Send, T: FromRedisValue>(
+        &mut self,
+        key: K,
+        start: isize,
+        stop: isize,
+    ) -> RedisResult<T> {
+        self.query_async(redis::Cmd::zrange_withscores(key, start, stop))
+            .await
+    }
+
+    async fn zrangebyscore_limit<
+        K: ToRedisArgs + Send,
+        M: ToRedisArgs + Send,
+        MM: ToRedisArgs + Send,
+        T: FromRedisValue,
+    >(
+        &mut self,
+        key: K,
+        min: M,
+        max: MM,
+        offset: isize,
+        count: isize,
+    ) -> RedisResult<T> {
+        self.query_async(redis::Cmd::zrangebyscore_limit(
+            key, min, max, offset, count,
+        ))
+        .await
+    }
+}
+
+#[async_trait]
+impl<'a> PooledConnectionLike for PooledConnection<'a> {
+    async fn query_async<T: FromRedisValue>(&mut self, cmd: redis::Cmd) -> RedisResult<T> {
         match self {
             Self::Clustered(pooled_con) => pooled_con.query_async(cmd).await,
             Self::NonClustered(pooled_con) => pooled_con.query_async(cmd).await,
@@ -37,21 +170,21 @@ impl<'a> SvixPooledConnection<'a> {
     }
 }
 
-pub struct SvixNonClusteredPooledConnection<'a> {
-    con: PooledConnection<'a, RedisConnectionManager>,
+pub struct NonClusteredPooledConnection<'a> {
+    con: bb8::PooledConnection<'a, RedisConnectionManager>,
 }
 
-impl<'a> SvixNonClusteredPooledConnection<'a> {
+impl<'a> NonClusteredPooledConnection<'a> {
     pub async fn query_async<T: FromRedisValue>(&mut self, cmd: redis::Cmd) -> RedisResult<T> {
         cmd.query_async(&mut *self.con).await
     }
 }
 
-pub struct SvixClusteredPooledConnection<'a> {
-    con: PooledConnection<'a, RedisClusterConnectionManager>,
+pub struct ClusteredPooledConnection<'a> {
+    con: bb8::PooledConnection<'a, RedisClusterConnectionManager>,
 }
 
-impl<'a> SvixClusteredPooledConnection<'a> {
+impl<'a> ClusteredPooledConnection<'a> {
     pub async fn query_async<T: FromRedisValue>(&mut self, cmd: redis::Cmd) -> RedisResult<T> {
         cmd.query_async(&mut *self.con).await
     }
@@ -59,12 +192,12 @@ impl<'a> SvixClusteredPooledConnection<'a> {
 
 #[async_trait]
 pub trait PoolLike {
-    async fn get(&self) -> Result<SvixPooledConnection, RunError<RedisError>>;
+    async fn get(&self) -> Result<PooledConnection, RunError<RedisError>>;
 }
 
 #[async_trait]
-impl PoolLike for SvixRedisPool {
-    async fn get(&self) -> Result<SvixPooledConnection, RunError<RedisError>> {
+impl PoolLike for RedisPool {
+    async fn get(&self) -> Result<PooledConnection, RunError<RedisError>> {
         match self {
             Self::Clustered(pool) => pool.get().await,
             Self::NonClustered(pool) => pool.get().await,
@@ -73,25 +206,25 @@ impl PoolLike for SvixRedisPool {
 }
 
 #[async_trait]
-impl PoolLike for SvixNonClusteredRedisPool {
-    async fn get(&self) -> Result<SvixPooledConnection, RunError<RedisError>> {
+impl PoolLike for NonClusteredRedisPool {
+    async fn get(&self) -> Result<PooledConnection, RunError<RedisError>> {
         let con = self.pool.get().await?;
-        let con = SvixNonClusteredPooledConnection { con };
-        Ok(SvixPooledConnection::NonClustered(con))
+        let con = NonClusteredPooledConnection { con };
+        Ok(PooledConnection::NonClustered(con))
     }
 }
 
 #[async_trait]
-impl PoolLike for SvixClusteredRedisPool {
-    async fn get(&self) -> Result<SvixPooledConnection, RunError<RedisError>> {
-        let con = SvixClusteredPooledConnection {
+impl PoolLike for ClusteredRedisPool {
+    async fn get(&self) -> Result<PooledConnection, RunError<RedisError>> {
+        let con = ClusteredPooledConnection {
             con: self.pool.get().await?,
         };
-        Ok(SvixPooledConnection::Clustered(con))
+        Ok(PooledConnection::Clustered(con))
     }
 }
 
-pub async fn create_redis_pool(redis_dsn: &str, clustered: bool) -> SvixRedisPool {
+async fn new_redis_pool_helper(redis_dsn: &str, clustered: bool) -> RedisPool {
     if clustered {
         let mgr = RedisClusterConnectionManager::new(redis_dsn)
             .expect("Error initializing redis cluster client");
@@ -99,17 +232,25 @@ pub async fn create_redis_pool(redis_dsn: &str, clustered: bool) -> SvixRedisPoo
             .build(mgr)
             .await
             .expect("Error initializing redis cluster connection pool");
-        let pool = SvixClusteredRedisPool { pool };
-        SvixRedisPool::Clustered(pool)
+        let pool = ClusteredRedisPool { pool };
+        RedisPool::Clustered(pool)
     } else {
         let mgr = RedisConnectionManager::new(redis_dsn).expect("Error intializing redis client");
         let pool = bb8::Pool::builder()
             .build(mgr)
             .await
             .expect("Error initializing redis connection pool");
-        let pool = SvixNonClusteredRedisPool { pool };
-        SvixRedisPool::NonClustered(pool)
+        let pool = NonClusteredRedisPool { pool };
+        RedisPool::NonClustered(pool)
     }
+}
+
+pub async fn new_redis_pool_clustered(redis_dsn: &str) -> RedisPool {
+    new_redis_pool_helper(redis_dsn, true).await
+}
+
+pub async fn new_redis_pool(redis_dsn: &str) -> RedisPool {
+    new_redis_pool_helper(redis_dsn, false).await
 }
 
 #[cfg(test)]
@@ -118,30 +259,26 @@ mod tests {
     use super::*;
     use crate::cfg::CacheType;
 
+    async fn get_pool(redis_dsn: &str, cache_type: &crate::cfg::CacheType) -> RedisPool {
+        match cache_type {
+            CacheType::RedisCluster => {
+                let mgr = crate::redis::new_redis_pool_clustered(redis_dsn).await;
+                mgr
+            }
+            _ => {
+                let mgr = crate::redis::new_redis_pool(redis_dsn).await;
+                mgr
+            }
+        }
+    }
+
     // Ensure basic set/get works -- should test sharding as well:
     #[tokio::test]
     async fn test_set_read_random_keys() {
         dotenv::dotenv().ok();
         let cfg = crate::cfg::load().unwrap();
 
-        // FIXME -- move this to a helper method
-        let pool = match cfg.cache_type {
-            CacheType::RedisCluster => {
-                let mgr =
-                    crate::redis::create_redis_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), true)
-                        .await;
-                mgr
-            }
-            _ => {
-                let mgr = crate::redis::create_redis_pool(
-                    cfg.redis_dsn.as_ref().unwrap().as_str(),
-                    false,
-                )
-                .await;
-                mgr
-            }
-        };
-
+        let pool = get_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg.cache_type).await;
         let mut pool = pool.get().await.unwrap();
 
         for (val, key) in "abcdefghijklmnopqrstuvwxyz".chars().enumerate() {
