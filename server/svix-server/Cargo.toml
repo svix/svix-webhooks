@@ -52,6 +52,8 @@ sqlx = { version = "0.5", features = [ "runtime-tokio-rustls", "postgres", "migr
 http = "0.2"
 time = { version = "0.3.9", features = [ "std" ]}
 redis_cluster_async = "0.7.0"
+aws-config = "0.10.1"
+aws-sdk-sqs = "0.10.1"
 
 [dev-dependencies]
 anyhow = "1.0.56"

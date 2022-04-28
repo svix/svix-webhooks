@@ -93,6 +93,7 @@ pub enum QueueType {
     Memory,
     Redis,
     RedisCluster,
+    SQS,
 }
 
 #[derive(Clone, Debug, Deserialize)]

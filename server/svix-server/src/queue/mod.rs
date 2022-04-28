@@ -12,6 +12,7 @@ use crate::{
 
 pub mod memory;
 pub mod redis;
+pub mod sqs;
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
