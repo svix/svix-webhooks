@@ -118,30 +118,26 @@ mod tests {
     use super::*;
     use crate::cfg::CacheType;
 
+    async fn get_pool(redis_dsn: &str, cache_type: &crate::cfg::CacheType) -> SvixRedisPool {
+        match cache_type {
+            CacheType::RedisCluster => {
+                let mgr = crate::redis::create_redis_pool(redis_dsn, true).await;
+                mgr
+            }
+            _ => {
+                let mgr = crate::redis::create_redis_pool(redis_dsn, false).await;
+                mgr
+            }
+        }
+    }
+
     // Ensure basic set/get works -- should test sharding as well:
     #[tokio::test]
     async fn test_set_read_random_keys() {
         dotenv::dotenv().ok();
         let cfg = crate::cfg::load().unwrap();
 
-        // FIXME -- move this to a helper method
-        let pool = match cfg.cache_type {
-            CacheType::RedisCluster => {
-                let mgr =
-                    crate::redis::create_redis_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), true)
-                        .await;
-                mgr
-            }
-            _ => {
-                let mgr = crate::redis::create_redis_pool(
-                    cfg.redis_dsn.as_ref().unwrap().as_str(),
-                    false,
-                )
-                .await;
-                mgr
-            }
-        };
-
+        let pool = get_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg.cache_type).await;
         let mut pool = pool.get().await.unwrap();
 
         for (val, key) in "abcdefghijklmnopqrstuvwxyz".chars().enumerate() {
@@ -156,5 +152,6 @@ mod tests {
                 val
             );
         }
+
     }
 }

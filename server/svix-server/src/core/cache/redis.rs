@@ -111,28 +111,26 @@ mod tests {
         }
     }
 
+    async fn get_pool(redis_dsn: &str, cache_type: &crate::cfg::CacheType) -> SvixRedisPool {
+        match cache_type {
+            CacheType::RedisCluster => {
+                let mgr = crate::redis::create_redis_pool(redis_dsn, true).await;
+                mgr
+            }
+            _ => {
+                let mgr = crate::redis::create_redis_pool(redis_dsn, false).await;
+                mgr
+            }
+        }
+    }
+
     #[tokio::test]
     async fn test_cache_crud_no_ttl() {
         dotenv::dotenv().ok();
         let cfg = crate::cfg::load().unwrap();
 
-        let redis_cache = match cfg.cache_type {
-            CacheType::RedisCluster => {
-                let mgr =
-                    crate::redis::create_redis_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), true)
-                        .await;
-                Some(mgr)
-            }
-            _ => {
-                let mgr = crate::redis::create_redis_pool(
-                    cfg.redis_dsn.as_ref().unwrap().as_str(),
-                    false,
-                )
-                .await;
-                Some(mgr)
-            }
-        };
-        let cache = super::new(redis_cache.unwrap());
+        let redis_pool = get_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg.cache_type).await;
+        let cache = super::new(redis_pool);
 
         let (first_key, first_val_a, first_val_b) =
             (TestKeyA::new("1".to_owned()), TestValA(1), TestValA(2));
@@ -184,23 +182,8 @@ mod tests {
         dotenv::dotenv().ok();
         let cfg = crate::cfg::load().unwrap();
 
-        let redis_cache = match cfg.cache_type {
-            CacheType::RedisCluster => {
-                let mgr =
-                    crate::redis::create_redis_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), true)
-                        .await;
-                Some(mgr)
-            }
-            _ => {
-                let mgr = crate::redis::create_redis_pool(
-                    cfg.redis_dsn.as_ref().unwrap().as_str(),
-                    false,
-                )
-                .await;
-                Some(mgr)
-            }
-        };
-        let cache = crate::cache::redis::new(redis_cache.unwrap());
+        let redis_pool = get_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg.cache_type).await;
+        let cache = super::new(redis_pool);
 
         let key = TestKeyA::new("key".to_owned());
 
@@ -217,23 +200,8 @@ mod tests {
         dotenv::dotenv().ok();
         let cfg = crate::cfg::load().unwrap();
 
-        let redis_cache = match cfg.cache_type {
-            CacheType::RedisCluster => {
-                let mgr =
-                    crate::redis::create_redis_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), true)
-                        .await;
-                Some(mgr)
-            }
-            _ => {
-                let mgr = crate::redis::create_redis_pool(
-                    cfg.redis_dsn.as_ref().unwrap().as_str(),
-                    false,
-                )
-                .await;
-                Some(mgr)
-            }
-        };
-        let cache = super::new(redis_cache.unwrap());
+        let redis_pool = get_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg.cache_type).await;
+        let cache = super::new(redis_pool);
 
         let key = TestKeyA::new("nx_status_test_key".to_owned());
 
