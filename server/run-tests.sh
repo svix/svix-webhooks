@@ -2,7 +2,7 @@
 
 # Run tests with various configurations:
 
-TEST_COMMAND="cargo test --all --all-features --all-targets -- --test-threads 1"
+TEST_COMMAND="cargo test --all --all-features --all-targets"
 
 # Common variables:
 export DATABASE_URL="postgresql://postgres:postgres@localhost:5432/postgres"
