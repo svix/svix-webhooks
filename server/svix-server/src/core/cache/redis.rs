@@ -7,7 +7,7 @@ use axum::async_trait;
 
 use serde_json;
 
-use crate::redis::{PoolLike, RedisPool};
+use crate::redis::{PoolLike, PooledConnectionLike, RedisPool};
 
 use super::{Cache, CacheBehavior, CacheKey, CacheValue, Error, Result};
 
@@ -25,7 +25,7 @@ impl CacheBehavior for RedisCache {
     async fn get<T: CacheValue>(&self, key: &T::Key) -> Result<Option<T>> {
         let mut pool = self.redis.get().await.unwrap();
 
-        let fetched: Option<String> = pool.query_async(redis::Cmd::get(key.as_ref())).await?;
+        let fetched: Option<String> = pool.get(key.as_ref()).await?;
 
         Ok(fetched
             .map(|json| serde_json::from_str(&json))
@@ -35,7 +35,7 @@ impl CacheBehavior for RedisCache {
     async fn set<T: CacheValue>(&self, key: &T::Key, value: &T, ttl: Duration) -> Result<()> {
         let mut pool = self.redis.get().await?;
 
-        pool.query_async(redis::Cmd::pset_ex(
+        pool.pset_ex(
             key.as_ref(),
             serde_json::to_string(value)?,
             ttl.as_millis().try_into().map_err(|e| {
@@ -44,7 +44,7 @@ impl CacheBehavior for RedisCache {
                     e
                 ))
             })?,
-        ))
+        )
         .await
         .map_err(Into::into)
     }
@@ -52,7 +52,7 @@ impl CacheBehavior for RedisCache {
     async fn delete<T: CacheKey>(&self, key: &T) -> Result<()> {
         let mut pool = self.redis.get().await?;
 
-        pool.query_async(redis::Cmd::del(key.as_ref())).await?;
+        pool.del(key.as_ref()).await?;
 
         Ok(())
     }
@@ -114,11 +114,11 @@ mod tests {
     async fn get_pool(redis_dsn: &str, cache_type: &crate::cfg::CacheType) -> RedisPool {
         match cache_type {
             CacheType::RedisCluster => {
-                let mgr = crate::redis::create_redis_pool(redis_dsn, true).await;
+                let mgr = crate::redis::new_redis_pool_clustered(redis_dsn).await;
                 mgr
             }
             _ => {
-                let mgr = crate::redis::create_redis_pool(redis_dsn, false).await;
+                let mgr = crate::redis::new_redis_pool(redis_dsn).await;
                 mgr
             }
         }

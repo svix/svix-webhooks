@@ -44,11 +44,11 @@ pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
     tracing::debug!("Cache type: {:?}", cfg.cache_type);
     let cache = match cfg.cache_type {
         CacheType::Redis => {
-            let mgr = crate::redis::create_redis_pool(redis_dsn(), false).await;
+            let mgr = crate::redis::new_redis_pool(redis_dsn()).await;
             cache::redis::new(mgr)
         }
         CacheType::RedisCluster => {
-            let mgr = crate::redis::create_redis_pool(redis_dsn(), true).await;
+            let mgr = crate::redis::new_redis_pool_clustered(redis_dsn()).await;
             cache::redis::new(mgr)
         }
         CacheType::Memory => cache::memory::new(),
@@ -59,11 +59,11 @@ pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
     let (queue_tx, queue_rx) = {
         match cfg.queue_type {
             QueueType::Redis => {
-                let pool = crate::redis::create_redis_pool(redis_dsn(), false).await;
+                let pool = crate::redis::new_redis_pool(redis_dsn()).await;
                 queue::redis::new_pair(pool).await
             }
             QueueType::RedisCluster => {
-                let pool = crate::redis::create_redis_pool(redis_dsn(), true).await;
+                let pool = crate::redis::new_redis_pool_clustered(redis_dsn()).await;
                 queue::redis::new_pair(pool).await
             }
             QueueType::Memory => queue::memory::new_pair().await,

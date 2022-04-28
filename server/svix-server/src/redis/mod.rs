@@ -5,7 +5,7 @@ use bb8_redis::RedisConnectionManager;
 pub use cluster::RedisClusterConnectionManager;
 
 use axum::async_trait;
-use redis::{FromRedisValue, RedisError, RedisResult};
+use redis::{FromRedisValue, RedisError, RedisResult, ToRedisArgs};
 
 #[derive(Clone, Debug)]
 pub enum RedisPool {
@@ -28,8 +28,141 @@ pub enum PooledConnection<'a> {
     NonClustered(NonClusteredPooledConnection<'a>),
 }
 
-impl<'a> PooledConnection<'a> {
-    pub async fn query_async<T: FromRedisValue>(&mut self, cmd: redis::Cmd) -> RedisResult<T> {
+#[async_trait]
+pub trait PooledConnectionLike {
+    async fn query_async<T: FromRedisValue>(&mut self, cmd: redis::Cmd) -> RedisResult<T>;
+
+    async fn del<K: ToRedisArgs + Send, T: FromRedisValue>(&mut self, key: K) -> RedisResult<T> {
+        self.query_async(redis::Cmd::del(key)).await
+    }
+
+    async fn get<K: ToRedisArgs + Send, T: FromRedisValue>(&mut self, key: K) -> RedisResult<T> {
+        let mut cmd = redis::cmd(if key.is_single_arg() { "GET" } else { "MGET" });
+        cmd.arg(key);
+        self.query_async(cmd).await
+    }
+
+    async fn lpop<K: ToRedisArgs + Send, T: FromRedisValue>(
+        &mut self,
+        key: K,
+        count: Option<core::num::NonZeroUsize>,
+    ) -> RedisResult<T> {
+        self.query_async(redis::Cmd::lpop(key, count)).await
+    }
+
+    async fn lrange<K: ToRedisArgs + Send, T: FromRedisValue>(
+        &mut self,
+        key: K,
+        start: isize,
+        stop: isize,
+    ) -> RedisResult<T> {
+        self.query_async(redis::Cmd::lrange(key, start, stop)).await
+    }
+
+    async fn lrem<K: ToRedisArgs + Send, V: ToRedisArgs + Send, T: FromRedisValue>(
+        &mut self,
+        key: K,
+        count: isize,
+        value: V,
+    ) -> RedisResult<T> {
+        self.query_async(redis::Cmd::lrem(key, count, value)).await
+    }
+
+    async fn pset_ex<K: ToRedisArgs + Send, V: ToRedisArgs + Send, T: FromRedisValue>(
+        &mut self,
+        key: K,
+        value: V,
+        milliseconds: usize,
+    ) -> RedisResult<T> {
+        self.query_async(redis::Cmd::pset_ex(key, value, milliseconds))
+            .await
+    }
+
+    async fn rpush<K: ToRedisArgs + Send, V: ToRedisArgs + Send, T: FromRedisValue>(
+        &mut self,
+        key: K,
+        value: V,
+    ) -> RedisResult<T> {
+        self.query_async(redis::Cmd::rpush(key, value)).await
+    }
+
+    async fn set<K: ToRedisArgs + Send, V: ToRedisArgs + Send, T: FromRedisValue>(
+        &mut self,
+        key: K,
+        value: V,
+    ) -> RedisResult<T> {
+        self.query_async(redis::Cmd::set(key, value)).await
+    }
+
+    async fn zadd<
+        K: ToRedisArgs + Send,
+        S: ToRedisArgs + Send,
+        M: ToRedisArgs + Send,
+        T: FromRedisValue,
+    >(
+        &mut self,
+        key: K,
+        member: M,
+        score: S,
+    ) -> RedisResult<T> {
+        self.query_async(redis::Cmd::zadd(key, member, score)).await
+    }
+
+    async fn zadd_multiple<
+        K: ToRedisArgs + Send,
+        S: ToRedisArgs + Send + Sync,
+        M: ToRedisArgs + Send + Sync,
+        T: FromRedisValue,
+    >(
+        &mut self,
+        key: K,
+        items: &'_ [(S, M)],
+    ) -> RedisResult<T> {
+        self.query_async(redis::Cmd::zadd_multiple(key, items))
+            .await
+    }
+
+    async fn zpopmin<K: ToRedisArgs + Send, T: FromRedisValue>(
+        &mut self,
+        key: K,
+        count: isize,
+    ) -> RedisResult<T> {
+        self.query_async(redis::Cmd::zpopmin(key, count)).await
+    }
+
+    async fn zrange_withscores<K: ToRedisArgs + Send, T: FromRedisValue>(
+        &mut self,
+        key: K,
+        start: isize,
+        stop: isize,
+    ) -> RedisResult<T> {
+        self.query_async(redis::Cmd::zrange_withscores(key, start, stop))
+            .await
+    }
+
+    async fn zrangebyscore_limit<
+        K: ToRedisArgs + Send,
+        M: ToRedisArgs + Send,
+        MM: ToRedisArgs + Send,
+        T: FromRedisValue,
+    >(
+        &mut self,
+        key: K,
+        min: M,
+        max: MM,
+        offset: isize,
+        count: isize,
+    ) -> RedisResult<T> {
+        self.query_async(redis::Cmd::zrangebyscore_limit(
+            key, min, max, offset, count,
+        ))
+        .await
+    }
+}
+
+#[async_trait]
+impl<'a> PooledConnectionLike for PooledConnection<'a> {
+    async fn query_async<T: FromRedisValue>(&mut self, cmd: redis::Cmd) -> RedisResult<T> {
         match self {
             Self::Clustered(pooled_con) => pooled_con.query_async(cmd).await,
             Self::NonClustered(pooled_con) => pooled_con.query_async(cmd).await,
@@ -91,7 +224,7 @@ impl PoolLike for ClusteredRedisPool {
     }
 }
 
-pub async fn create_redis_pool(redis_dsn: &str, clustered: bool) -> RedisPool {
+async fn new_redis_pool_helper(redis_dsn: &str, clustered: bool) -> RedisPool {
     if clustered {
         let mgr = RedisClusterConnectionManager::new(redis_dsn)
             .expect("Error initializing redis cluster client");
@@ -112,6 +245,14 @@ pub async fn create_redis_pool(redis_dsn: &str, clustered: bool) -> RedisPool {
     }
 }
 
+pub async fn new_redis_pool_clustered(redis_dsn: &str) -> RedisPool {
+    new_redis_pool_helper(redis_dsn, true).await
+}
+
+pub async fn new_redis_pool(redis_dsn: &str) -> RedisPool {
+    new_redis_pool_helper(redis_dsn, false).await
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -121,11 +262,11 @@ mod tests {
     async fn get_pool(redis_dsn: &str, cache_type: &crate::cfg::CacheType) -> RedisPool {
         match cache_type {
             CacheType::RedisCluster => {
-                let mgr = crate::redis::create_redis_pool(redis_dsn, true).await;
+                let mgr = crate::redis::new_redis_pool_clustered(redis_dsn).await;
                 mgr
             }
             _ => {
-                let mgr = crate::redis::create_redis_pool(redis_dsn, false).await;
+                let mgr = crate::redis::new_redis_pool(redis_dsn).await;
                 mgr
             }
         }
@@ -152,6 +293,5 @@ mod tests {
                 val
             );
         }
-
     }
 }
