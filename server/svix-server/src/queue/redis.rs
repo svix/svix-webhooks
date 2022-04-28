@@ -15,7 +15,7 @@
 /// the tasks currently processing. It monitors the zset task set for tasks that should be
 /// processed now, and the currently processing queue for tasks that have timed out and should be
 /// put back on the main queue.
-use std::time::Duration;
+use std::{num::NonZeroUsize, time::Duration};
 
 use axum::async_trait;
 
@@ -55,10 +55,13 @@ pub async fn new_pair(pool: RedisPool) -> (TaskQueueProducer, TaskQueueConsumer)
         let batch_size: isize = 50;
         let task_validity_duration = chrono::Duration::from_std(TASK_VALIDITY_DURATION).unwrap();
 
-        let mut pool = worker_pool.get().await.unwrap();
+        {
+            let pool = worker_pool.clone();
+            let mut pool = pool.get().await.unwrap();
 
-        // drain legacy queues:
-        migrate_legacy_queues(&mut pool).await;
+            // drain legacy queues:
+            migrate_legacy_queues(&mut pool).await;
+        }
 
         loop {
             let mut pool = worker_pool.get().await.unwrap();
@@ -224,53 +227,42 @@ async fn migrate_legacy_queues(pool: &mut PooledConnection<'_>) {
 
 async fn migrate_list(pool: &mut PooledConnection<'_>, legacy_queue: &str, queue: &str) {
     let batch_size = 1000;
-    let mut x = 0;
     loop {
         // Checking for old messages from queue
         let legacy_keys: Vec<String> = pool
-            .lrange(legacy_queue, x, x + batch_size - 1)
+            .lpop(legacy_queue, NonZeroUsize::new(batch_size))
             .await
             .unwrap();
-        x += batch_size;
-        if !legacy_keys.is_empty() {
-            tracing::info!(
-                "Migrating {} keys from queue {}",
-                legacy_keys.len(),
-                legacy_queue
-            );
-            let _: () = pool.rpush(queue, legacy_keys).await.unwrap();
-        } else {
-            let _: () = pool.del(legacy_queue).await.unwrap();
+        if legacy_keys.is_empty() {
             break;
         }
+        tracing::info!(
+            "Migrating {} keys from queue {}",
+            legacy_keys.len(),
+            legacy_queue
+        );
+        let _: () = pool.rpush(queue, legacy_keys).await.unwrap();
     }
 }
 
 async fn migrate_sset(pool: &mut PooledConnection<'_>, legacy_queue: &str, queue: &str) {
     let batch_size = 1000;
-    let mut x = 0;
     loop {
         // Checking for old messages from LEGACY_DELAYED
-        let legacy_keys: Vec<(String, f64)> = pool
-            .zrange_withscores(legacy_queue, x, x + batch_size - 1)
-            .await
-            .unwrap();
+        let legacy_keys: Vec<(String, f64)> = pool.zpopmin(legacy_queue, batch_size).await.unwrap();
 
-        x += batch_size;
-        if !legacy_keys.is_empty() {
-            tracing::info!(
-                "Migrating {} keys from queue {}",
-                legacy_keys.len(),
-                legacy_queue
-            );
-            let legacy_keys: Vec<(f64, String)> =
-                legacy_keys.into_iter().map(|(x, y)| (y, x)).collect();
-
-            let _: () = pool.zadd_multiple(queue, &legacy_keys).await.unwrap();
-        } else {
-            let _: () = pool.del(legacy_queue).await.unwrap();
+        if legacy_keys.is_empty() {
             break;
         }
+        tracing::info!(
+            "Migrating {} keys from queue {}",
+            legacy_keys.len(),
+            legacy_queue
+        );
+        let legacy_keys: Vec<(f64, String)> =
+            legacy_keys.into_iter().map(|(x, y)| (y, x)).collect();
+
+        let _: () = pool.zadd_multiple(queue, &legacy_keys).await.unwrap();
     }
 }
 
