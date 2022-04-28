@@ -1,11 +1,10 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use axum::{http::StatusCode, routing::get, Json, Router};
-use serde_json::{json, Value};
+use axum::{http::StatusCode, routing::get, Router};
 
-async fn health() -> (StatusCode, Json<Value>) {
-    (StatusCode::NO_CONTENT, Json(json!({})))
+async fn health() -> StatusCode {
+    StatusCode::NO_CONTENT
 }
 
 pub fn router() -> Router {
