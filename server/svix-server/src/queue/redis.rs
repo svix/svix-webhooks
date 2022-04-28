@@ -26,7 +26,7 @@ use tokio::time::sleep;
 
 use crate::{
     error::{Error, Result},
-    redis::{PoolLike, PooledConnectionLike, RedisPool},
+    redis::{PoolLike, PooledConnection, PooledConnectionLike, RedisPool},
 };
 
 use super::{
@@ -41,6 +41,10 @@ const MAIN: &str = "{queue}_svix_main";
 const PROCESSING: &str = "{queue}_svix_processing";
 const DELAYED: &str = "{queue}_svix_delayed";
 
+const LEGACY_MAIN: &str = "svix_queue_main";
+const LEGACY_PROCESSING: &str = "svix_queue_processing";
+const LEGACY_DELAYED: &str = "svix_queue_delayed";
+
 /// After this limit a task should be taken out of the processing queue and rescheduled
 const TASK_VALIDITY_DURATION: Duration = Duration::from_secs(45);
 
@@ -51,9 +55,13 @@ pub async fn new_pair(pool: RedisPool) -> (TaskQueueProducer, TaskQueueConsumer)
         let batch_size: isize = 50;
         let task_validity_duration = chrono::Duration::from_std(TASK_VALIDITY_DURATION).unwrap();
 
-        let pool = worker_pool;
+        let mut pool = worker_pool.get().await.unwrap();
+
+        // drain legacy queues:
+        migrate_legacy_queues(&mut pool).await;
+
         loop {
-            let mut pool = pool.get().await.unwrap();
+            let mut pool = worker_pool.get().await.unwrap();
 
             let timestamp = Utc::now().timestamp();
             let keys: Vec<String> = pool
@@ -78,6 +86,7 @@ pub async fn new_pair(pool: RedisPool) -> (TaskQueueProducer, TaskQueueConsumer)
             // If the key is older than now, it means we should be processing keys
             let validity_limit =
                 KsuidMs::new(Some(Utc::now() - task_validity_duration), None).to_string();
+
             if !keys.is_empty() && keys[0] <= validity_limit {
                 let keys: Vec<String> = pool.lrange(PROCESSING, 0isize, batch_size).await.unwrap();
                 for key in keys {
@@ -204,5 +213,125 @@ impl TaskQueueReceive for RedisQueueConsumer {
             .map_err(|x| Error::Queue(x.to_string()))?;
         tracing::trace!("RedisQueue: event recv <");
         Ok(from_redis_key(&key))
+    }
+}
+
+async fn migrate_legacy_queues(pool: &mut PooledConnection<'_>) {
+    migrate_list(pool, LEGACY_MAIN, MAIN).await;
+    migrate_list(pool, LEGACY_PROCESSING, PROCESSING).await;
+    migrate_sset(pool, LEGACY_DELAYED, DELAYED).await;
+}
+
+async fn migrate_list(pool: &mut PooledConnection<'_>, legacy_queue: &str, queue: &str) {
+    let batch_size = 1000;
+    let mut x = 0;
+    loop {
+        // Checking for old messages from queue
+        let legacy_keys: Vec<String> = pool
+            .lrange(legacy_queue, x, x + batch_size - 1)
+            .await
+            .unwrap();
+        x += batch_size;
+        if !legacy_keys.is_empty() {
+            tracing::info!(
+                "Migrating {} keys from queue {}",
+                legacy_keys.len(),
+                legacy_queue
+            );
+            let _: () = pool.rpush(queue, legacy_keys).await.unwrap();
+        } else {
+            let _: () = pool.del(legacy_queue).await.unwrap();
+            break;
+        }
+    }
+}
+
+async fn migrate_sset(pool: &mut PooledConnection<'_>, legacy_queue: &str, queue: &str) {
+    let batch_size = 1000;
+    let mut x = 0;
+    loop {
+        // Checking for old messages from LEGACY_DELAYED
+        let legacy_keys: Vec<(String, f64)> = pool
+            .zrange_withscores(legacy_queue, x, x + batch_size - 1)
+            .await
+            .unwrap();
+
+        x += batch_size;
+        if !legacy_keys.is_empty() {
+            tracing::info!(
+                "Migrating {} keys from queue {}",
+                legacy_keys.len(),
+                legacy_queue
+            );
+            let legacy_keys: Vec<(f64, String)> =
+                legacy_keys.into_iter().map(|(x, y)| (y, x)).collect();
+
+            let _: () = pool.zadd_multiple(queue, &legacy_keys).await.unwrap();
+        } else {
+            let _: () = pool.del(legacy_queue).await.unwrap();
+            break;
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+    use crate::{cfg::CacheType, redis::PoolLike};
+
+    #[tokio::test]
+    async fn test_migrate_legacy_queues() {
+        dotenv::dotenv().ok();
+        let cfg = crate::cfg::load().unwrap();
+
+        let pool = match cfg.cache_type {
+            CacheType::RedisCluster => {
+                let mgr = crate::redis::new_redis_pool_clustered(
+                    cfg.redis_dsn.as_ref().unwrap().as_str(),
+                )
+                .await;
+                mgr
+            }
+            _ => {
+                let mgr =
+                    crate::redis::new_redis_pool(cfg.redis_dsn.as_ref().unwrap().as_str()).await;
+                mgr
+            }
+        };
+
+        let mut pool = pool.get().await.unwrap();
+
+        let v = "test-value";
+
+        // clean-up:
+        let _: () = pool.del(LEGACY_MAIN).await.unwrap();
+        let _: () = pool.del(LEGACY_PROCESSING).await.unwrap();
+        let _: () = pool.del(LEGACY_DELAYED).await.unwrap();
+        let _: () = pool.del(MAIN).await.unwrap();
+        let _: () = pool.del(PROCESSING).await.unwrap();
+        let _: () = pool.del(DELAYED).await.unwrap();
+
+        let _: () = pool.rpush(super::LEGACY_MAIN, &v).await.unwrap();
+        let _: () = pool.rpush(super::LEGACY_PROCESSING, &v).await.unwrap();
+        let _: () = pool.zadd(super::LEGACY_DELAYED, &v, 1isize).await.unwrap();
+
+        let main: Option<String> = pool.lpop(super::MAIN, None).await.unwrap();
+        let processing: Option<String> = pool.lpop(super::PROCESSING, None).await.unwrap();
+        let delayed: Vec<(String, i32)> = pool.zpopmin(super::DELAYED, 1).await.unwrap();
+
+        assert!(main.is_none());
+        assert!(processing.is_none());
+        assert!(delayed.is_empty());
+
+        super::migrate_legacy_queues(&mut pool).await;
+
+        let main: Option<String> = pool.lpop(super::MAIN, None).await.unwrap();
+        let processing: Option<String> = pool.lpop(super::PROCESSING, None).await.unwrap();
+        let delayed: Vec<(String, i32)> = pool.zpopmin(super::DELAYED, 1).await.unwrap();
+
+        assert_eq!(main.unwrap(), v);
+        assert_eq!(processing.unwrap(), v);
+        assert_eq!(delayed.get(0).unwrap().0, v);
     }
 }
