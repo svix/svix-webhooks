@@ -1878,6 +1878,22 @@
                 "title": "MessageAttemptFailingEventData",
                 "type": "object"
             },
+            "MessageAttemptHeadersOut": {
+                "properties": {
+                    "sentHeaders": {
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "title": "Sentheaders",
+                        "type": "object"
+                    }
+                },
+                "required": [
+                    "sentHeaders"
+                ],
+                "title": "MessageAttemptHeadersOut",
+                "type": "object"
+            },
             "MessageAttemptOut": {
                 "properties": {
                     "endpointId": {
@@ -2543,6 +2559,11 @@
                         "source": "list_response_application_out = svix.application.list()"
                     },
                     {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "list_response_application_out = await svix.application.list()"
+                    },
+                    {
                         "label": "Go",
                         "lang": "Go",
                         "source": "listResponseApplicationOut, err := svixClient.Application.List(nil)"
@@ -2579,11 +2600,13 @@
                 "operationId": "create_application_api_v1_app__post",
                 "parameters": [
                     {
+                        "description": "Get an existing application, or create a new one if doesn't exist. It's two separate functions in the libs.",
                         "in": "query",
                         "name": "get_if_exists",
                         "required": false,
                         "schema": {
                             "default": false,
+                            "description": "Get an existing application, or create a new one if doesn't exist. It's two separate functions in the libs.",
                             "title": "Get If Exists",
                             "type": "boolean"
                         }
@@ -2695,12 +2718,12 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const applicationOut = await svix.application.create({\n    uid: \"unique-app-identifier\",\n    name: \"My first application\",\n    rateLimit: 1000\n});"
+                        "source": "const applicationOut = await svix.application.create({\n    uid: \"unique-app-identifier\",\n    name: \"My first application\",\n    rateLimit: 1000\n})\n// Or \nconst applicationOut = await svix.application.getOrCreate({\n    uid: \"unique-app-identifier\",\n    name: \"My first application\",\n    rateLimit: 1000\n})"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const applicationOut = await svix.application.create({\n    uid: \"unique-app-identifier\",\n    name: \"My first application\",\n    rateLimit: 1000\n});"
+                        "source": "const applicationOut = await svix.application.create({\n    uid: \"unique-app-identifier\",\n    name: \"My first application\",\n    rateLimit: 1000\n})\n// Or \nconst applicationOut = await svix.application.getOrCreate({\n    uid: \"unique-app-identifier\",\n    name: \"My first application\",\n    rateLimit: 1000\n})"
                     },
                     {
                         "label": "Python",
@@ -2708,24 +2731,29 @@
                         "source": "application_out = svix.application.create(ApplicationIn(\n    uid=\"unique-app-identifier\",\n    name=\"My first application\",\n    rate_limit=1000\n))\n# Or \napplication_out = svix.application.get_or_create(ApplicationIn(\n    uid=\"unique-app-identifier\",\n    name=\"My first application\",\n    rate_limit=1000\n))"
                     },
                     {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "application_out = await svix.application.create(ApplicationIn(\n    uid=\"unique-app-identifier\",\n    name=\"My first application\",\n    rate_limit=1000\n))\n# Or \napplication_out = await svix.application.get_or_create(ApplicationIn(\n    uid=\"unique-app-identifier\",\n    name=\"My first application\",\n    rate_limit=1000\n))"
+                    },
+                    {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "applicationOut, err := svixClient.Application.Create(&svix.ApplicationIn{\n    Uid: \"unique-app-identifier\",\n    Name: \"My first application\",\n    RateLimit: 1000\n})"
+                        "source": "applicationOut, err := svixClient.Application.Create(&svix.ApplicationIn{\n    Uid: \"unique-app-identifier\",\n    Name: \"My first application\",\n    RateLimit: 1000\n})\n// Or \napplicationOut, err := svixClient.Application.GetOrCreate(&svix.ApplicationIn{\n    Uid: \"unique-app-identifier\",\n    Name: \"My first application\",\n    RateLimit: 1000\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val applicationOut = svix.application.create(ApplicationIn()\n    .uid(\"unique-app-identifier\"),\n    .name(\"My first application\"),\n    .rateLimit(1000)\n)"
+                        "source": "val applicationOut = svix.application.create(ApplicationIn()\n    .uid(\"unique-app-identifier\"),\n    .name(\"My first application\"),\n    .rateLimit(1000)\n)\n// Or \nval applicationOut = svix.application.getOrCreate(ApplicationIn()\n    .uid(\"unique-app-identifier\"),\n    .name(\"My first application\"),\n    .rateLimit(1000)\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "ApplicationOut applicationOut = svix.getApplication().create(new ApplicationIn()\n    .uid(\"unique-app-identifier\"),\n    .name(\"My first application\"),\n    .rateLimit(1000)\n)"
+                        "source": "ApplicationOut applicationOut = svix.getApplication().create(new ApplicationIn()\n    .uid(\"unique-app-identifier\"),\n    .name(\"My first application\"),\n    .rateLimit(1000)\n)\n// Or \nApplicationOut applicationOut = svix.getApplication().getOrCreate(new ApplicationIn()\n    .uid(\"unique-app-identifier\"),\n    .name(\"My first application\"),\n    .rateLimit(1000)\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "application_out = svix.application.create(Svix::ApplicationIn.new({\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\",\n    \"rate_limit\": 1000\n}))"
+                        "source": "application_out = svix.application.create(Svix::ApplicationIn.new({\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\",\n    \"rate_limit\": 1000\n}))\n# Or \napplication_out = svix.application.get_or_create(Svix::ApplicationIn.new({\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\",\n    \"rate_limit\": 1000\n}))"
                     },
                     {
                         "label": "CLI",
@@ -2850,6 +2878,11 @@
                         "label": "Python",
                         "lang": "Python",
                         "source": "svix.application.delete('app_id')"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "await svix.application.delete('app_id')"
                     },
                     {
                         "label": "Go",
@@ -2999,6 +3032,11 @@
                         "label": "Python",
                         "lang": "Python",
                         "source": "application_out = svix.application.get('app_id')"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "application_out = await svix.application.get('app_id')"
                     },
                     {
                         "label": "Go",
@@ -3158,6 +3196,11 @@
                         "label": "Python",
                         "lang": "Python",
                         "source": "application_out = svix.application.update('app_id', ApplicationIn(\n    uid=\"unique-app-identifier\",\n    name=\"My first application\",\n    rate_limit=1000\n))"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "application_out = await svix.application.update('app_id', ApplicationIn(\n    uid=\"unique-app-identifier\",\n    name=\"My first application\",\n    rate_limit=1000\n))"
                     },
                     {
                         "label": "Go",
@@ -3407,6 +3450,11 @@
                         "label": "Python",
                         "lang": "Python",
                         "source": "list_response_message_attempt_out = svix.message_attempt.list_by_endpoint('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "list_response_message_attempt_out = await svix.message_attempt.list_by_endpoint('app_id', 'endpoint_id')"
                     },
                     {
                         "label": "Go",
@@ -3672,6 +3720,11 @@
                         "source": "list_response_message_attempt_out = svix.message_attempt.list_by_msg('app_id', 'msg_id')"
                     },
                     {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "list_response_message_attempt_out = await svix.message_attempt.list_by_msg('app_id', 'msg_id')"
+                    },
+                    {
                         "label": "Go",
                         "lang": "Go",
                         "source": "listResponseMessageAttemptOut, err := svixClient.MessageAttempt.ListByMsg(\"app_id\", \"msg_id\")"
@@ -3844,6 +3897,11 @@
                         "source": "list_response_endpoint_out = svix.endpoint.list('app_id')"
                     },
                     {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "list_response_endpoint_out = await svix.endpoint.list('app_id')"
+                    },
+                    {
                         "label": "Go",
                         "lang": "Go",
                         "source": "listResponseEndpointOut, err := svixClient.Endpoint.List(\"app_id\", nil)"
@@ -4003,6 +4061,11 @@
                         "source": "endpoint_out = svix.endpoint.create('app_id', EndpointIn(\n    uid=\"unique-endpoint-identifier\",\n    url=\"https://example.com/webhook/\",\n    version=1,\n    description=\"An example endpoint name\",\n    filter_types=['user.signup', 'user.deleted'],\n    channels=['project_123', 'group_2'],\n    disabled=False,\n    rate_limit=1000,\n    secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n))"
                     },
                     {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "endpoint_out = await svix.endpoint.create('app_id', EndpointIn(\n    uid=\"unique-endpoint-identifier\",\n    url=\"https://example.com/webhook/\",\n    version=1,\n    description=\"An example endpoint name\",\n    filter_types=['user.signup', 'user.deleted'],\n    channels=['project_123', 'group_2'],\n    disabled=False,\n    rate_limit=1000,\n    secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n))"
+                    },
+                    {
                         "label": "Go",
                         "lang": "Go",
                         "source": "endpointOut, err := svixClient.Endpoint.Create(\"app_id\", &svix.EndpointIn{\n    Uid: \"unique-endpoint-identifier\",\n    Url: \"https://example.com/webhook/\",\n    Version: 1,\n    Description: \"An example endpoint name\",\n    FilterTypes: [...]string{\"user.signup\", \"user.deleted\"},\n    Channels: [...]string{\"project_123\", \"group_2\"},\n    Disabled: False,\n    RateLimit: 1000,\n    Secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n})"
@@ -4159,6 +4222,11 @@
                         "label": "Python",
                         "lang": "Python",
                         "source": "svix.endpoint.delete('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "await svix.endpoint.delete('app_id', 'endpoint_id')"
                     },
                     {
                         "label": "Go",
@@ -4322,6 +4390,11 @@
                         "label": "Python",
                         "lang": "Python",
                         "source": "endpoint_out = svix.endpoint.get('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "endpoint_out = await svix.endpoint.get('app_id', 'endpoint_id')"
                     },
                     {
                         "label": "Go",
@@ -4497,6 +4570,11 @@
                         "source": "endpoint_out = svix.endpoint.update('app_id', 'endpoint_id', EndpointUpdate(\n    uid=\"unique-endpoint-identifier\",\n    url=\"https://example.com/webhook/\",\n    version=1,\n    description=\"An example endpoint name\",\n    filter_types=['user.signup', 'user.deleted'],\n    channels=['project_123', 'group_2'],\n    disabled=False,\n    rate_limit=1000\n))"
                     },
                     {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "endpoint_out = await svix.endpoint.update('app_id', 'endpoint_id', EndpointUpdate(\n    uid=\"unique-endpoint-identifier\",\n    url=\"https://example.com/webhook/\",\n    version=1,\n    description=\"An example endpoint name\",\n    filter_types=['user.signup', 'user.deleted'],\n    channels=['project_123', 'group_2'],\n    disabled=False,\n    rate_limit=1000\n))"
+                    },
+                    {
                         "label": "Go",
                         "lang": "Go",
                         "source": "endpointOut, err := svixClient.Endpoint.Update(\"app_id\", \"endpoint_id\", &svix.EndpointUpdate{\n    Uid: \"unique-endpoint-identifier\",\n    Url: \"https://example.com/webhook/\",\n    Version: 1,\n    Description: \"An example endpoint name\",\n    FilterTypes: [...]string{\"user.signup\", \"user.deleted\"},\n    Channels: [...]string{\"project_123\", \"group_2\"},\n    Disabled: False,\n    RateLimit: 1000\n})"
@@ -4660,6 +4738,11 @@
                         "label": "Python",
                         "lang": "Python",
                         "source": "endpoint_headers_out = svix.endpoint.get_headers('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "endpoint_headers_out = await svix.endpoint.get_headers('app_id', 'endpoint_id')"
                     },
                     {
                         "label": "Go",
@@ -4828,6 +4911,11 @@
                         "source": "svix.endpoint.patch_headers('app_id', 'endpoint_id', EndpointHeadersIn(\n    headers={'X-Foobar': 'Bar', 'X-Example': '123'}\n))"
                     },
                     {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "await svix.endpoint.patch_headers('app_id', 'endpoint_id', EndpointHeadersIn(\n    headers={'X-Foobar': 'Bar', 'X-Example': '123'}\n))"
+                    },
+                    {
                         "label": "Go",
                         "lang": "Go",
                         "source": "err := svixClient.Endpoint.PatchHeaders(\"app_id\", \"endpoint_id\", &svix.EndpointHeadersIn{\n    Headers: map[string]string{\n        \"X-Foobar\": \"Bar\",\n        \"X-Example\": \"123\"\n    }\n})"
@@ -4992,6 +5080,11 @@
                         "label": "Python",
                         "lang": "Python",
                         "source": "svix.endpoint.update_headers('app_id', 'endpoint_id', EndpointHeadersIn(\n    headers={'X-Foobar': 'Bar', 'X-Example': '123'}\n))"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "await svix.endpoint.update_headers('app_id', 'endpoint_id', EndpointHeadersIn(\n    headers={'X-Foobar': 'Bar', 'X-Example': '123'}\n))"
                     },
                     {
                         "label": "Go",
@@ -5355,6 +5448,11 @@
                         "source": "recover_out = svix.endpoint.recover('app_id', 'endpoint_id', RecoverIn(\n    since=datetime.datetime(2019, 8, 24, 14, 15, 22, timezone.utc)\n))"
                     },
                     {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "recover_out = await svix.endpoint.recover('app_id', 'endpoint_id', RecoverIn(\n    since=datetime.datetime(2019, 8, 24, 14, 15, 22, timezone.utc)\n))"
+                    },
+                    {
                         "label": "Go",
                         "lang": "Go",
                         "source": "recoverOut, err := svixClient.Endpoint.Recover(\"app_id\", \"endpoint_id\", &svix.RecoverIn{\n    Since: \"2019-08-24T14:15:22Z\"\n})"
@@ -5507,42 +5605,47 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const endpointSecretOut = await svix.endpoint.secret('app_id', 'endpoint_id');"
+                        "source": "const endpointSecretOut = await svix.endpoint.getSecret('app_id', 'endpoint_id');"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const endpointSecretOut = await svix.endpoint.secret('app_id', 'endpoint_id');"
+                        "source": "const endpointSecretOut = await svix.endpoint.getSecret('app_id', 'endpoint_id');"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "endpoint_secret_out = svix.endpoint.secret('app_id', 'endpoint_id')"
+                        "source": "endpoint_secret_out = svix.endpoint.get_secret('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "endpoint_secret_out = await svix.endpoint.get_secret('app_id', 'endpoint_id')"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "endpointSecretOut, err := svixClient.Endpoint.Secret(\"app_id\", \"endpoint_id\")"
+                        "source": "endpointSecretOut, err := svixClient.Endpoint.GetSecret(\"app_id\", \"endpoint_id\")"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val endpointSecretOut = svix.endpoint.secret('app_id', 'endpoint_id')"
+                        "source": "val endpointSecretOut = svix.endpoint.getSecret('app_id', 'endpoint_id')"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "EndpointSecretOut endpointSecretOut = svix.getEndpoint().secret('app_id', 'endpoint_id')"
+                        "source": "EndpointSecretOut endpointSecretOut = svix.getEndpoint().getSecret('app_id', 'endpoint_id')"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "endpoint_secret_out = svix.endpoint.secret('app_id', 'endpoint_id')"
+                        "source": "endpoint_secret_out = svix.endpoint.get_secret('app_id', 'endpoint_id')"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix endpoint secret 'app_id' 'endpoint_id'"
+                        "source": "svix endpoint get-secret 'app_id' 'endpoint_id'"
                     },
                     {
                         "label": "cURL",
@@ -5685,42 +5788,47 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "await svix.endpoint.rotate('app_id', 'endpoint_id', {\n    key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
+                        "source": "await svix.endpoint.rotateSecret('app_id', 'endpoint_id', {\n    key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "await svix.endpoint.rotate('app_id', 'endpoint_id', {\n    key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
+                        "source": "await svix.endpoint.rotateSecret('app_id', 'endpoint_id', {\n    key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "svix.endpoint.rotate('app_id', 'endpoint_id', EndpointSecretRotateIn(\n    key=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n))"
+                        "source": "svix.endpoint.rotate_secret('app_id', 'endpoint_id', EndpointSecretRotateIn(\n    key=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n))"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "await svix.endpoint.rotate_secret('app_id', 'endpoint_id', EndpointSecretRotateIn(\n    key=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "err := svixClient.Endpoint.Rotate(\"app_id\", \"endpoint_id\", &svix.EndpointSecretRotateIn{\n    Key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n})"
+                        "source": "err := svixClient.Endpoint.RotateSecret(\"app_id\", \"endpoint_id\", &svix.EndpointSecretRotateIn{\n    Key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "svix.endpoint.rotate('app_id', 'endpoint_id', EndpointSecretRotateIn()\n    .key(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n)"
+                        "source": "svix.endpoint.rotateSecret('app_id', 'endpoint_id', EndpointSecretRotateIn()\n    .key(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "svix.getEndpoint().rotate('app_id', 'endpoint_id', new EndpointSecretRotateIn()\n    .key(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n)"
+                        "source": "svix.getEndpoint().rotateSecret('app_id', 'endpoint_id', new EndpointSecretRotateIn()\n    .key(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "svix.endpoint.rotate('app_id', 'endpoint_id', Svix::EndpointSecretRotateIn.new({\n    \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}))"
+                        "source": "svix.endpoint.rotate_secret('app_id', 'endpoint_id', Svix::EndpointSecretRotateIn.new({\n    \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}))"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix endpoint rotate 'app_id' 'endpoint_id' '{\n    \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}'"
+                        "source": "svix endpoint rotate-secret 'app_id' 'endpoint_id' '{\n    \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}'"
                     },
                     {
                         "label": "cURL",
@@ -5881,6 +5989,11 @@
                         "label": "Python",
                         "lang": "Python",
                         "source": "message_out = svix.endpoint.send('app_id', 'endpoint_id', EventExampleIn(\n    event_type=\"user.signup\"\n))"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "message_out = await svix.endpoint.send('app_id', 'endpoint_id', EventExampleIn(\n    event_type=\"user.signup\"\n))"
                     },
                     {
                         "label": "Go",
@@ -6179,6 +6292,11 @@
                         "source": "list_response_integration_out = svix.integration.list('app_id')"
                     },
                     {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "list_response_integration_out = await svix.integration.list('app_id')"
+                    },
+                    {
                         "label": "Go",
                         "lang": "Go",
                         "source": "listResponseIntegrationOut, err := svixClient.Integration.List(\"app_id\", nil)"
@@ -6338,6 +6456,11 @@
                         "source": "integration_out = svix.integration.create('app_id', IntegrationIn(\n    name=\"Example Integration\"\n))"
                     },
                     {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "integration_out = await svix.integration.create('app_id', IntegrationIn(\n    name=\"Example Integration\"\n))"
+                    },
+                    {
                         "label": "Go",
                         "lang": "Go",
                         "source": "integrationOut, err := svixClient.Integration.Create(\"app_id\", &svix.IntegrationIn{\n    Name: \"Example Integration\"\n})"
@@ -6490,6 +6613,11 @@
                         "label": "Python",
                         "lang": "Python",
                         "source": "svix.integration.delete('app_id', 'integ_id')"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "await svix.integration.delete('app_id', 'integ_id')"
                     },
                     {
                         "label": "Go",
@@ -6649,6 +6777,11 @@
                         "label": "Python",
                         "lang": "Python",
                         "source": "integration_out = svix.integration.get('app_id', 'integ_id')"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "integration_out = await svix.integration.get('app_id', 'integ_id')"
                     },
                     {
                         "label": "Go",
@@ -6820,6 +6953,11 @@
                         "source": "integration_out = svix.integration.update('app_id', 'integ_id', IntegrationUpdate(\n    name=\"Example Integration\"\n))"
                     },
                     {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "integration_out = await svix.integration.update('app_id', 'integ_id', IntegrationUpdate(\n    name=\"Example Integration\"\n))"
+                    },
+                    {
                         "label": "Go",
                         "lang": "Go",
                         "source": "integrationOut, err := svixClient.Integration.Update(\"app_id\", \"integ_id\", &svix.IntegrationUpdate{\n    Name: \"Example Integration\"\n})"
@@ -6981,6 +7119,11 @@
                         "source": "integration_key_out = svix.integration.get_key('app_id', 'integ_id')"
                     },
                     {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "integration_key_out = await svix.integration.get_key('app_id', 'integ_id')"
+                    },
+                    {
                         "label": "Go",
                         "lang": "Go",
                         "source": "integrationKeyOut, err := svixClient.Integration.GetKey(\"app_id\", \"integ_id\")"
@@ -7140,6 +7283,11 @@
                         "label": "Python",
                         "lang": "Python",
                         "source": "integration_key_out = svix.integration.rotate_key('app_id', 'integ_id')"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "integration_key_out = await svix.integration.rotate_key('app_id', 'integ_id')"
                     },
                     {
                         "label": "Go",
@@ -7361,6 +7509,11 @@
                         "source": "list_response_message_out = svix.message.list('app_id')"
                     },
                     {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "list_response_message_out = await svix.message.list('app_id')"
+                    },
+                    {
                         "label": "Go",
                         "lang": "Go",
                         "source": "listResponseMessageOut, err := svixClient.Message.List(\"app_id\", nil)"
@@ -7393,7 +7546,7 @@
                 ]
             },
             "post": {
-                "description": "Creates a new message and dispatches it to all of the application's endpoints.\n\nThe `eventId` is an optional custom unique ID. It's verified to be unique only up to a day, after that no verification will be made.\nIf a message with the same `eventId` already exists for any application in your environment, a 409 conflict error will be returned.\n\nThe `eventType` indicates the type and schema of the event. All messages of a certain `eventType` are expected to have the same schema. Endpoints can choose to only listen to specific event types.\nMessages can also have `channels`, which similar to event types let endpoints filter by them. Unlike event types, messages can have multiple channels, and channels don't imply a specific message content or schema.",
+                "description": "Creates a new message and dispatches it to all of the application's endpoints.\n\nThe `eventId` is an optional custom unique ID. It's verified to be unique only up to a day, after that no verification will be made.\nIf a message with the same `eventId` already exists for any application in your environment, a 409 conflict error will be returned.\n\nThe `eventType` indicates the type and schema of the event. All messages of a certain `eventType` are expected to have the same schema. Endpoints can choose to only listen to specific event types.\nMessages can also have `channels`, which similar to event types let endpoints filter by them. Unlike event types, messages can have multiple channels, and channels don't imply a specific message content or schema.\n\nThe `payload' property is the webhook's body (the actual webhook message).",
                 "operationId": "create_message_api_v1_app__app_id__msg__post",
                 "parameters": [
                     {
@@ -7538,6 +7691,11 @@
                         "label": "Python",
                         "lang": "Python",
                         "source": "message_out = svix.message.create('app_id', MessageIn(\n    event_type=\"user.signup\",\n    event_id=\"evt_pNZKtWg8Azow\",\n    channels=['project_123', 'group_2'],\n    payload={'username': 'test_user', 'email': 'test@example.com'},\n    payload_retention_period=90\n))"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "message_out = await svix.message.create('app_id', MessageIn(\n    event_type=\"user.signup\",\n    event_id=\"evt_pNZKtWg8Azow\",\n    channels=['project_123', 'group_2'],\n    payload={'username': 'test_user', 'email': 'test@example.com'},\n    payload_retention_period=90\n))"
                     },
                     {
                         "label": "Go",
@@ -7703,6 +7861,11 @@
                         "label": "Python",
                         "lang": "Python",
                         "source": "message_out = svix.message.get('app_id', 'msg_id')"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "message_out = await svix.message.get('app_id', 'msg_id')"
                     },
                     {
                         "label": "Go",
@@ -7961,6 +8124,11 @@
                         "source": "list_response_message_attempt_out = svix.message_attempt.list('app_id', 'msg_id')"
                     },
                     {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "list_response_message_attempt_out = await svix.message_attempt.list('app_id', 'msg_id')"
+                    },
+                    {
                         "label": "Go",
                         "lang": "Go",
                         "source": "listResponseMessageAttemptOut, err := svixClient.MessageAttempt.List(\"app_id\", \"msg_id\", nil)"
@@ -8136,6 +8304,11 @@
                         "source": "message_attempt_out = svix.message_attempt.get('app_id', 'msg_id', 'attempt_id')"
                     },
                     {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "message_attempt_out = await svix.message_attempt.get('app_id', 'msg_id', 'attempt_id')"
+                    },
+                    {
                         "label": "Go",
                         "lang": "Go",
                         "source": "messageAttemptOut, err := svixClient.MessageAttempt.Get(\"app_id\", \"msg_id\", \"attempt_id\")"
@@ -8164,6 +8337,186 @@
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/headers/": {
+            "get": {
+                "description": "Calculate and return headers used on a given message attempt",
+                "operationId": "get_attempt_headers_api_v1_app__app_id__msg__msg_id__attempt__attempt_id__headers__get",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "App Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "name": "msg_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The message's ID or eventID",
+                            "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "Msg Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "name": "attempt_id",
+                        "required": true,
+                        "schema": {
+                            "example": "atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "title": "Attempt Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MessageAttemptHeadersOut"
+                                }
+                            }
+                        },
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Get Attempt Headers",
+                "tags": [
+                    "Message Attempt"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const messageAttemptHeadersOut = await svix.messageAttempt.get('app_id', 'msg_id', 'attempt_id');"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const messageAttemptHeadersOut = await svix.messageAttempt.get('app_id', 'msg_id', 'attempt_id');"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "message_attempt_headers_out = svix.message_attempt.get('app_id', 'msg_id', 'attempt_id')"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "message_attempt_headers_out = await svix.message_attempt.get('app_id', 'msg_id', 'attempt_id')"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "messageAttemptHeadersOut, err := svixClient.MessageAttempt.Get(\"app_id\", \"msg_id\", \"attempt_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val messageAttemptHeadersOut = svix.messageAttempt.get('app_id', 'msg_id', 'attempt_id')"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "MessageAttemptHeadersOut messageAttemptHeadersOut = svix.getMessageAttempt().get('app_id', 'msg_id', 'attempt_id')"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "message_attempt_headers_out = svix.message_attempt.get('app_id', 'msg_id', 'attempt_id')"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix message-attempt get 'app_id' 'msg_id' 'attempt_id'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/headers/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -8670,6 +9023,11 @@
                         "source": "svix.message_attempt.resend('app_id', 'msg_id', 'endpoint_id')"
                     },
                     {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "await svix.message_attempt.resend('app_id', 'msg_id', 'endpoint_id')"
+                    },
+                    {
                         "label": "Go",
                         "lang": "Go",
                         "source": "err := svixClient.MessageAttempt.Resend(\"app_id\", \"msg_id\", \"endpoint_id\")"
@@ -8704,7 +9062,7 @@
         },
         "/api/v1/auth/dashboard-access/{app_id}/": {
             "post": {
-                "description": "Use this function to get magic links (and authentication codes) for connecting your users to the management UIs.",
+                "description": "Use this function to get magic links (and authentication codes) for connecting your users to the Application Portal.",
                 "operationId": "get_dashboard_access_api_v1_auth_dashboard_access__app_id___post",
                 "parameters": [
                     {
@@ -8800,7 +9158,7 @@
                         "HTTPBearer": []
                     }
                 ],
-                "summary": "Get Dashboard Access",
+                "summary": "Get App Portal Access",
                 "tags": [
                     "Authentication"
                 ],
@@ -8819,6 +9177,11 @@
                         "label": "Python",
                         "lang": "Python",
                         "source": "dashboard_access_out = svix.authentication.dashboard_access('app_id')"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "dashboard_access_out = await svix.authentication.dashboard_access('app_id')"
                     },
                     {
                         "label": "Go",
@@ -8949,6 +9312,11 @@
                         "label": "Python",
                         "lang": "Python",
                         "source": "svix.authentication.logout()"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "await svix.authentication.logout()"
                     },
                     {
                         "label": "Go",
@@ -9435,6 +9803,11 @@
                         "source": "list_response_event_type_out = svix.event_type.list()"
                     },
                     {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "list_response_event_type_out = await svix.event_type.list()"
+                    },
+                    {
                         "label": "Go",
                         "lang": "Go",
                         "source": "listResponseEventTypeOut, err := svixClient.EventType.List(nil)"
@@ -9580,6 +9953,11 @@
                         "source": "event_type_out = svix.event_type.create(EventTypeIn(\n    description=\"A user has signed up\",\n    schemas={'1': {'title': 'Invoice Paid Event', 'description': 'An invoice was paid by a user', 'type': 'object', 'properties': {'invoiceId': {'description': 'The invoice id', 'type': 'string'}, 'userId': {'description': 'The user id', 'type': 'string'}}, 'required': ['invoiceId', 'userId']}},\n    archived=False,\n    name=\"user.signup\"\n))"
                     },
                     {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "event_type_out = await svix.event_type.create(EventTypeIn(\n    description=\"A user has signed up\",\n    schemas={'1': {'title': 'Invoice Paid Event', 'description': 'An invoice was paid by a user', 'type': 'object', 'properties': {'invoiceId': {'description': 'The invoice id', 'type': 'string'}, 'userId': {'description': 'The user id', 'type': 'string'}}, 'required': ['invoiceId', 'userId']}},\n    archived=False,\n    name=\"user.signup\"\n))"
+                    },
+                    {
                         "label": "Go",
                         "lang": "Go",
                         "source": "eventTypeOut, err := svixClient.EventType.Create(&svix.EventTypeIn{\n    Description: \"A user has signed up\",\n    Schemas: map[string]interface{}{\n        \"1\": {\n                \"title\": \"Invoice Paid Event\",\n                \"description\": \"An invoice was paid by a user\",\n                \"type\": \"object\",\n                \"properties\": {\n                        \"invoiceId\": {\n                                \"description\": \"The invoice id\",\n                                \"type\": \"string\"\n                        },\n                        \"userId\": {\n                                \"description\": \"The user id\",\n                                \"type\": \"string\"\n                        }\n                },\n                \"required\": [\n                        \"invoiceId\",\n                        \"userId\"\n                ]\n        }\n    },\n    Archived: False,\n    Name: \"user.signup\"\n})"
@@ -9722,6 +10100,11 @@
                         "source": "event_type_example_out = svix.event_type.generate(EventTypeSchemaIn(\n    schema={'title': 'Invoice Paid Event', 'description': 'An invoice was paid by a user', 'type': 'object', 'properties': {'invoiceId': {'description': 'The invoice id', 'type': 'string'}, 'userId': {'description': 'The user id', 'type': 'string'}}, 'required': ['invoiceId', 'userId']}\n))"
                     },
                     {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "event_type_example_out = await svix.event_type.generate(EventTypeSchemaIn(\n    schema={'title': 'Invoice Paid Event', 'description': 'An invoice was paid by a user', 'type': 'object', 'properties': {'invoiceId': {'description': 'The invoice id', 'type': 'string'}, 'userId': {'description': 'The user id', 'type': 'string'}}, 'required': ['invoiceId', 'userId']}\n))"
+                    },
+                    {
                         "label": "Go",
                         "lang": "Go",
                         "source": "eventTypeExampleOut, err := svixClient.EventType.Generate(&svix.EventTypeSchemaIn{\n    Schema: map[string]interface{}{\n        \"title\": \"Invoice Paid Event\",\n        \"description\": \"An invoice was paid by a user\",\n        \"type\": \"object\",\n        \"properties\": {\n                \"invoiceId\": {\n                        \"description\": \"The invoice id\",\n                        \"type\": \"string\"\n                },\n                \"userId\": {\n                        \"description\": \"The user id\",\n                        \"type\": \"string\"\n                }\n        },\n        \"required\": [\n                \"invoiceId\",\n                \"userId\"\n        ]\n    }\n})"
@@ -9862,6 +10245,11 @@
                         "label": "Python",
                         "lang": "Python",
                         "source": "svix.event_type.delete('event_type_name')"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "await svix.event_type.delete('event_type_name')"
                     },
                     {
                         "label": "Go",
@@ -10009,6 +10397,11 @@
                         "label": "Python",
                         "lang": "Python",
                         "source": "event_type_out = svix.event_type.get('event_type_name')"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "event_type_out = await svix.event_type.get('event_type_name')"
                     },
                     {
                         "label": "Go",
@@ -10166,6 +10559,11 @@
                         "label": "Python",
                         "lang": "Python",
                         "source": "event_type_out = svix.event_type.update('event_type_name', EventTypeUpdate(\n    description=\"A user has signed up\",\n    schemas={'1': {'title': 'Invoice Paid Event', 'description': 'An invoice was paid by a user', 'type': 'object', 'properties': {'invoiceId': {'description': 'The invoice id', 'type': 'string'}, 'userId': {'description': 'The user id', 'type': 'string'}}, 'required': ['invoiceId', 'userId']}},\n    archived=False\n))"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "event_type_out = await svix.event_type.update('event_type_name', EventTypeUpdate(\n    description=\"A user has signed up\",\n    schemas={'1': {'title': 'Invoice Paid Event', 'description': 'An invoice was paid by a user', 'type': 'object', 'properties': {'invoiceId': {'description': 'The invoice id', 'type': 'string'}, 'userId': {'description': 'The user id', 'type': 'string'}}, 'required': ['invoiceId', 'userId']}},\n    archived=False\n))"
                     },
                     {
                         "label": "Go",

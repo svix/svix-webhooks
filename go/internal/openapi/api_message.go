@@ -64,6 +64,8 @@ If a message with the same `eventId` already exists for any application in your 
 
 The `eventType` indicates the type and schema of the event. All messages of a certain `eventType` are expected to have the same schema. Endpoints can choose to only listen to specific event types.
 Messages can also have `channels`, which similar to event types let endpoints filter by them. Unlike event types, messages can have multiple channels, and channels don't imply a specific message content or schema.
+
+The `payload' property is the webhook's body (the actual webhook message).
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param appId
  * @return ApiCreateMessageApiV1AppAppIdMsgPostRequest
