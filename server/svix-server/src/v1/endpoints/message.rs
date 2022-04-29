@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use std::{collections::HashSet, time::Duration};
+use std::collections::HashSet;
 
 use crate::{
     core::{
@@ -26,7 +26,7 @@ use axum::{
     routing::{get, post},
     Json, Router,
 };
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, Duration, Utc};
 use hyper::StatusCode;
 use sea_orm::entity::prelude::*;
 use sea_orm::{sea_query::Expr, ActiveValue::Set};
@@ -60,12 +60,15 @@ pub struct MessageIn {
     pub uid: Option<MessageUid>,
     #[validate]
     pub event_type: EventTypeName,
-    pub payload: serde_json::Value,
+    pub payload: Option<serde_json::Value>,
 
     #[validate(custom = "validate_channels_msg")]
     #[validate]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub channels: Option<EventChannelSet>,
+    #[validate(range(min = 5, max = 90))]
+    #[serde(rename = "payloadRetentionPeriod", default = "default_90")]
+    pub payload_retention_period: i64,
 }
 
 // FIXME: This can and should be a derive macro
@@ -73,10 +76,12 @@ impl ModelIn for MessageIn {
     type ActiveModel = message::ActiveModel;
 
     fn update_model(self, model: &mut message::ActiveModel) {
+        let expiration = Utc::now() + Duration::days(self.payload_retention_period);
+
         model.uid = Set(self.uid);
         model.payload = Set(self.payload);
         model.event_type = Set(self.event_type);
-
+        model.expiration = Set(expiration.with_timezone(&Utc).into());
         model.channels = Set(self.channels);
     }
 }
@@ -87,8 +92,7 @@ pub struct MessageOut {
     #[serde(rename = "eventId")]
     pub uid: Option<MessageUid>,
     pub event_type: EventTypeName,
-    pub payload: serde_json::Value,
-
+    pub payload: Option<serde_json::Value>,
     pub channels: Option<EventChannelSet>,
 
     pub id: MessageId,
@@ -99,7 +103,7 @@ pub struct MessageOut {
 impl MessageOut {
     fn without_payload(model: message::Model) -> Self {
         Self {
-            payload: serde_json::json!({}),
+            payload: Some(serde_json::json!({})),
             ..model.into()
         }
     }
@@ -123,6 +127,10 @@ impl From<message::Model> for MessageOut {
 
 fn default_true() -> bool {
     true
+}
+
+fn default_90() -> i64 {
+    90
 }
 
 #[derive(Clone, Debug, Deserialize, Validate)]
@@ -204,7 +212,7 @@ async fn create_message(
         Some(app.clone()),
         app.id.clone(),
         app.org_id,
-        Duration::from_secs(30),
+        Duration::seconds(30).to_std().unwrap(),
     )
     .await?
     // Should never happen since you're giving it an existing Application, but just in case
