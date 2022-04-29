@@ -101,10 +101,9 @@ async fn list_applications(
         query = query.filter(application::Column::Id.gt(iterator))
     }
 
-    Ok(Json(ApplicationOut::list_response(
+    Ok(Json(ApplicationOut::list_response_no_prev(
         query.all(db).await?.into_iter().map(|x| x.into()).collect(),
         limit as usize,
-        false,
     )))
 }
 

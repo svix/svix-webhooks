@@ -495,7 +495,7 @@ async fn list_attempted_destinations(
         query = query.filter(messagedestination::Column::EndpId.lt(iterator));
     }
 
-    Ok(Json(MessageEndpointOut::list_response(
+    Ok(Json(MessageEndpointOut::list_response_no_prev(
         query
             .all(db)
             .await?
@@ -510,7 +510,6 @@ async fn list_attempted_destinations(
             )
             .collect::<Result<_>>()?,
         limit as usize,
-        false,
     )))
 }
 

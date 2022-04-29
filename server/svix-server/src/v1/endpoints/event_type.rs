@@ -136,7 +136,7 @@ async fn list_event_types(
         query = query.filter(eventtype::Column::Name.gt(iterator));
     }
 
-    Ok(Json(EventTypeOut::list_response(
+    Ok(Json(EventTypeOut::list_response_no_prev(
         query
             .all(db)
             .await?
@@ -150,7 +150,6 @@ async fn list_event_types(
             })
             .collect(),
         limit as usize,
-        false,
     )))
 }
 
