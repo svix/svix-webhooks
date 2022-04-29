@@ -4,9 +4,12 @@
 use reqwest::StatusCode;
 
 use svix_server::{
-    core::types::MessageStatus,
+    core::types::{EndpointUid, MessageStatus},
     v1::{
-        endpoints::attempt::{AttemptedMessageOut, MessageAttemptOut},
+        endpoints::{
+            attempt::{AttemptedMessageOut, MessageAttemptOut},
+            endpoint::{EndpointIn, EndpointOut},
+        },
         utils::ListResponse,
     },
 };
@@ -15,7 +18,7 @@ mod utils;
 
 use utils::{
     common_calls::{
-        create_test_app, create_test_endpoint, create_test_message,
+        create_test_app, create_test_endpoint, create_test_message, endpoint_in,
         get_msg_attempt_list_and_assert_count,
     },
     get_default_test_config, run_with_retries, start_svix_server, start_svix_server_with_cfg,
@@ -37,7 +40,16 @@ async fn test_list_attempted_messages() {
         .await
         .unwrap()
         .id;
-    let endp_id_2 = create_test_endpoint(&client, &app_id, &receiver_2.endpoint)
+
+    // Let's have an endponit with a UID too
+    let mut endp2 = endpoint_in(&receiver_2.endpoint);
+    endp2.uid = Some(EndpointUid("test".to_owned()));
+    let endp_id_2 = client
+        .post::<EndpointIn, EndpointOut>(
+            &format!("api/v1/app/{}/endpoint/", app_id),
+            endp2,
+            StatusCode::CREATED,
+        )
         .await
         .unwrap()
         .id;
@@ -67,7 +79,15 @@ async fn test_list_attempted_messages() {
         .await
         .unwrap();
 
-    for list in [list_1, list_2] {
+    let list_2_uid: ListResponse<AttemptedMessageOut> = client
+        .get(
+            &format!("api/v1/app/{}/endpoint/{}/msg/", app_id, "test"),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    for list in [list_1, list_2, list_2_uid] {
         assert_eq!(list.data.len(), 3);
 
         // Assert order
