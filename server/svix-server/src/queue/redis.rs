@@ -269,15 +269,15 @@ async fn migrate_sset(pool: &mut PooledConnection<'_>, legacy_queue: &str, queue
 #[cfg(test)]
 mod tests {
 
-    use super::*;
-    use crate::{cfg::CacheType, redis::PoolLike};
+    use super::{migrate_list, migrate_sset};
 
-    #[tokio::test]
-    async fn test_migrate_legacy_queues() {
-        dotenv::dotenv().ok();
-        let cfg = crate::cfg::load().unwrap();
+    use crate::{
+        cfg::{CacheType, Configuration},
+        redis::{PoolLike, PooledConnectionLike, RedisPool},
+    };
 
-        let pool = match cfg.cache_type {
+    async fn get_pool(cfg: Configuration) -> RedisPool {
+        match cfg.cache_type {
             CacheType::RedisCluster => {
                 let mgr = crate::redis::new_redis_pool_clustered(
                     cfg.redis_dsn.as_ref().unwrap().as_str(),
@@ -290,40 +290,66 @@ mod tests {
                     crate::redis::new_redis_pool(cfg.redis_dsn.as_ref().unwrap().as_str()).await;
                 mgr
             }
-        };
+        }
+    }
 
+    #[tokio::test]
+    async fn test_migrate_list() {
+        let cfg = crate::cfg::load().unwrap();
+        let pool = get_pool(cfg).await;
         let mut pool = pool.get().await.unwrap();
+
+        const TEST_QUEUE: &str = "{queue}_svix_test_queue_list";
+        const TEST_LEGACY: &str = "svix_queue_test_list";
 
         let v = "test-value";
 
-        // clean-up:
-        let _: () = pool.del(LEGACY_MAIN).await.unwrap();
-        let _: () = pool.del(LEGACY_PROCESSING).await.unwrap();
-        let _: () = pool.del(LEGACY_DELAYED).await.unwrap();
-        let _: () = pool.del(MAIN).await.unwrap();
-        let _: () = pool.del(PROCESSING).await.unwrap();
-        let _: () = pool.del(DELAYED).await.unwrap();
+        // delete test queues first, just in case:
+        let _: () = pool.del(TEST_QUEUE).await.unwrap();
+        let _: () = pool.del(TEST_LEGACY).await.unwrap();
 
-        let _: () = pool.rpush(super::LEGACY_MAIN, &v).await.unwrap();
-        let _: () = pool.rpush(super::LEGACY_PROCESSING, &v).await.unwrap();
-        let _: () = pool.zadd(super::LEGACY_DELAYED, &v, 1isize).await.unwrap();
+        let _: () = pool.rpush(TEST_LEGACY, &v).await.unwrap();
 
-        let main: Option<String> = pool.lpop(super::MAIN, None).await.unwrap();
-        let processing: Option<String> = pool.lpop(super::PROCESSING, None).await.unwrap();
-        let delayed: Vec<(String, i32)> = pool.zpopmin(super::DELAYED, 1).await.unwrap();
+        let should_be_none: Option<String> = pool.lpop(TEST_QUEUE, None).await.unwrap();
+        assert!(should_be_none.is_none());
 
-        assert!(main.is_none());
-        assert!(processing.is_none());
-        assert!(delayed.is_empty());
+        migrate_list(&mut pool, TEST_LEGACY, TEST_QUEUE).await;
 
-        super::migrate_legacy_queues(&mut pool).await;
+        let test_key: Option<String> = pool.lpop(TEST_QUEUE, None).await.unwrap();
 
-        let main: Option<String> = pool.lpop(super::MAIN, None).await.unwrap();
-        let processing: Option<String> = pool.lpop(super::PROCESSING, None).await.unwrap();
-        let delayed: Vec<(String, i32)> = pool.zpopmin(super::DELAYED, 1).await.unwrap();
+        assert_eq!(test_key.unwrap(), v);
 
-        assert_eq!(main.unwrap(), v);
-        assert_eq!(processing.unwrap(), v);
-        assert_eq!(delayed.get(0).unwrap().0, v);
+        let should_be_none: Option<String> = pool.lpop(TEST_LEGACY, None).await.unwrap();
+        assert!(should_be_none.is_none());
+    }
+
+    #[tokio::test]
+    async fn test_migrate_sset() {
+        let cfg = crate::cfg::load().unwrap();
+        let pool = get_pool(cfg).await;
+        let mut pool = pool.get().await.unwrap();
+
+        const TEST_QUEUE: &str = "{queue}_svix_test_queue_sset";
+        const TEST_LEGACY: &str = "svix_queue_test_sset";
+
+        let v = "test-value";
+
+        // delete test queues first, just in case:
+        let _: () = pool.del(TEST_QUEUE).await.unwrap();
+        let _: () = pool.del(TEST_LEGACY).await.unwrap();
+
+        let _: () = pool.zadd(TEST_LEGACY, &v, 1isize).await.unwrap();
+
+        let should_be_none: Vec<(String, i32)> = pool.zpopmin(TEST_QUEUE, 1).await.unwrap();
+        assert!(should_be_none.is_empty());
+
+        migrate_sset(&mut pool, TEST_LEGACY, TEST_QUEUE).await;
+
+        let test_key: Vec<(String, i32)> = pool.zpopmin(TEST_QUEUE, 1).await.unwrap();
+
+        assert_eq!(test_key.get(0).unwrap().0, v);
+
+        let should_be_none: Vec<(String, i32)> = pool.zpopmin(TEST_LEGACY, 1).await.unwrap();
+        assert!(should_be_none.is_empty());
     }
 }
