@@ -48,6 +48,14 @@ const LEGACY_DELAYED: &str = "svix_queue_delayed";
 /// After this limit a task should be taken out of the processing queue and rescheduled
 const TASK_VALIDITY_DURATION: Duration = Duration::from_secs(45);
 
+/// Resets the message delivery time, which is used to determine whether a delayed or in-process
+/// message should be put back onto the main queue
+fn regenerate_key(msg: &str) -> String {
+    let task = from_redis_key(msg).task;
+    let delivery = TaskQueueDelivery::new(task, None);
+    to_redis_key(&delivery)
+}
+
 pub async fn new_pair(pool: RedisPool) -> (TaskQueueProducer, TaskQueueConsumer) {
     let worker_pool = pool.clone();
     tokio::spawn(async move {
@@ -75,7 +83,11 @@ pub async fn new_pair(pool: RedisPool) -> (TaskQueueProducer, TaskQueueConsumer)
                 // FIXME: needs to be a transaction
                 let keys: Vec<(String, String)> =
                     pool.zpopmin(DELAYED, keys.len() as isize).await.unwrap();
-                let keys: Vec<String> = keys.into_iter().map(|x| x.0).collect();
+                let keys: Vec<String> = keys
+                    .into_iter()
+                    .map(|x| x.0)
+                    .map(|x| regenerate_key(&x))
+                    .collect();
                 let _: () = pool.rpush(MAIN, keys).await.unwrap();
             } else {
                 // Wait for half a second before attempting to fetch again if nothing was found
@@ -96,7 +108,8 @@ pub async fn new_pair(pool: RedisPool) -> (TaskQueueProducer, TaskQueueConsumer)
                     if key <= validity_limit {
                         // We use LREM to be sure we only delete the keys we should be deleting
                         tracing::trace!("Pushing back overdue task to queue {}", key);
-                        let _: () = pool.rpush(MAIN, &key).await.unwrap();
+                        let refreshed_key = regenerate_key(&key);
+                        let _: () = pool.rpush(MAIN, &refreshed_key).await.unwrap();
                         let _: () = pool.lrem(PROCESSING, 1, &key).await.unwrap();
                     }
                 }
