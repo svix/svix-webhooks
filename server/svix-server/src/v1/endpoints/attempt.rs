@@ -146,7 +146,27 @@ async fn list_attempted_messages(
         dests_and_msgs = dests_and_msgs.filter(messagedestination::Column::Status.eq(status));
     }
 
-    let iterator = iterator_from_before_or_after(pagination.iterator, before, after);
+    async fn _get_msg_dest_id(
+        db: &DatabaseConnection,
+        msg_id: MessageId,
+    ) -> Result<MessageEndpointId> {
+        Ok(messagedestination::Entity::secure_find_by_msg(msg_id)
+            .one(db)
+            .await?
+            .ok_or_else(|| HttpError::bad_request(None, Some("Invalid iterator".to_owned())))?
+            .id)
+    }
+
+    let msg_dest_iterator = match pagination.iterator {
+        Some(ReversibleIterator::Normal(msg_id)) => Some(ReversibleIterator::Normal(
+            _get_msg_dest_id(db, msg_id).await?,
+        )),
+        Some(ReversibleIterator::Prev(msg_id)) => Some(ReversibleIterator::Prev(
+            _get_msg_dest_id(db, msg_id).await?,
+        )),
+        None => None,
+    };
+    let iterator = iterator_from_before_or_after(msg_dest_iterator, before, after);
     let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
 
     let dests_and_msgs = apply_pagination(
