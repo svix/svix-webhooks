@@ -1,5 +1,5 @@
 # Base build
-FROM rust:1.59-slim-bullseye AS build
+FROM rust:1.60-slim-bullseye AS build
 
 RUN set -ex ; \
         mkdir -p /app ;\
