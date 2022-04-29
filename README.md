@@ -251,8 +251,8 @@ This is why this code has been adjusted before being released, and some of the f
 
 Checkout our project specific development guides to get started hacking on Svix!
 
-- [Svix libs README](./DEVELOPMENT_LIBS.md)
-- [Svix server README](./server/)
+- [Svix libs README](./README_LIBS.md)
+- [Svix server README](./server/#readme)
 
 # Contributing
 
