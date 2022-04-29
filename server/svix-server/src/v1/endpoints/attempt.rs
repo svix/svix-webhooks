@@ -463,7 +463,7 @@ impl MessageEndpointOut {
 
 async fn list_attempted_destinations(
     Extension(ref db): Extension<DatabaseConnection>,
-    ValidatedQuery(mut pagination): ValidatedQuery<Pagination<MessageEndpointId>>,
+    ValidatedQuery(mut pagination): ValidatedQuery<Pagination<EndpointId>>,
     Path((_app_id, msg_id)): Path<(ApplicationIdOrUid, MessageIdOrUid)>,
     AuthenticatedApplication {
         permissions: _,
@@ -488,14 +488,14 @@ async fn list_attempted_destinations(
     // Fetch the [`messagedestination::Model`] and associated [`endpoint::Model`]
     let mut query = messagedestination::Entity::secure_find_by_msg(msg_id)
         .find_also_related(endpoint::Entity)
-        .order_by_desc(messagedestination::Column::Id)
+        .order_by_desc(messagedestination::Column::EndpId)
         .limit(limit + 1);
 
     if let Some(iterator) = iterator {
-        query = query.filter(messagedestination::Column::Id.lt(iterator));
+        query = query.filter(messagedestination::Column::EndpId.lt(iterator));
     }
 
-    Ok(Json(AttemptedMessageOut::list_response(
+    Ok(Json(MessageEndpointOut::list_response(
         query
             .all(db)
             .await?
