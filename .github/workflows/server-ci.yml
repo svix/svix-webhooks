@@ -26,13 +26,15 @@ jobs:
         profile: minimal
         components: clippy, rustfmt
     - uses: Swatinem/rust-cache@v1
+      with:
+        working-directory: server
 
     - name: Clippy
       uses: actions-rs/cargo@v1
       with:
         command: clippy
         args: --manifest-path server/Cargo.toml --all --all-targets --all-features
-        
+
     - name: rustfmt
       uses: actions-rs/cargo@v1
       with:
@@ -53,6 +55,8 @@ jobs:
         override: true
         profile: minimal
     - uses: Swatinem/rust-cache@v1
+      with:
+        working-directory: server
 
     - name: Start dependencies
       run: docker-compose -f "server/testing-docker-compose.yml" up -d
