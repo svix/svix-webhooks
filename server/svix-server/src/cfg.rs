@@ -37,50 +37,7 @@ where
         .collect())
 }
 
-const DEFAULTS: &str = r#"
-# Default configuration file
-# Values here can also be set by setting the appropriate env var, e.g. SVIX_DB_DSN for db_dsn
-# The values shown below are the default values. Values commented out are not set but recommended.
-
-# The address to listen on
-listen_address = "0.0.0.0:8071"
-
-# The JWT secret for authentication - should be secret and securely generated
-# jwt_secret = "8KjzRXrKkd9YFcNyqLSIY8JwiaCeRc6WK4UkMnSW"
-
-# The log level to run the service with. Supported: info, debug, trace
-log_level = "info"
-
-# The wanted retry schedule in seconds. Each value is the time to wait between retries.
-retry_schedule = "5,300,1800,7200,18000,36000,36000"
-
-# The DSN for the database. Only postgres is currently supported.
-# db_dsn = "postgresql://postgres:postgres@pgbouncer/postgres"
-
-# The DSN for redis (can be left empty if not using redis)
-# redis_dsn = "redis://redis:6379"
-
-# What kind of message queue to use. Supported: memory, redis (must have redis_dsn configured).
-queue_type = "redis"
-
-# What kind of cache to use. Supported: memory, redis (must have redis_dsn configured), none.
-# The memory backend is recommended if you only have one instance running (not including workers). If you have
-# multiple API servers running, please use the redis backend or some functionality, (e.g. Idempotency)
-# may fail to work correctly.
-cache_type = "memory"
-
-# If true, headers are prefixed with `Webhook-`, otherwise with `Svix-` (default).
-whitelabel_headers = false
-
-# How long to wait when making a request (in seconds)
-worker_request_timeout = 30
-
-# Should this instance run the API
-api_enabled = true
-
-# Should this instance run the message worker
-worker_enabled = true
-"#;
+const DEFAULTS: &str = include_str!("../config.default.toml");
 
 pub type Configuration = Arc<ConfigurationInner>;
 

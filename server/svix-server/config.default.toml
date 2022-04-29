@@ -1,6 +1,6 @@
-# Example configuration file
+# Default configuration file
 # Values here can also be set by setting the appropriate env var, e.g. SVIX_DB_DSN for db_dsn
-# The values shown below are the default values
+# The values shown below are the default values. Values commented out are not set but recommended.
 
 # The address to listen on
 listen_address = "0.0.0.0:8071"
@@ -20,10 +20,13 @@ db_dsn = "postgresql://postgres:postgres@pgbouncer/postgres"
 # The DSN for redis (can be left empty if not using redis)
 redis_dsn = "redis://redis:6379"
 
-# What kind of message queue to use. Supported: memory, redis (must have redis_dsn configured), rediscluster (add multiple hosts to redis_dsn separated by commas).
+# What kind of message queue to use. Supported: memory, redis, rediscluster
+# Redis backends must have a redis_dsn configured, and it's highly recommended to enable persistence in redis so that
+# a server restart doesn't wipe the queue.
 queue_type = "redis"
 
-# What kind of cache to use. Supported: memory, redis (must have redis_dsn configured), none.
+# What kind of cache to use. Supported: memory, redis, rediscluster, none.
+# Redis backends must have a redis_dsn configured.
 # The memory backend is recommended if you only have one instance running (not including workers). If you have
 # multiple API servers running, please use the redis backend or some functionality, (e.g. Idempotency)
 # may fail to work correctly.
