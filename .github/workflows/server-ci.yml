@@ -13,15 +13,17 @@ on:
       - '.github/workflows/server-ci.yml'
 
 jobs:
-  check:
+  test-versions:
     name: Server CI
-    # Run `cargo check` first to ensure that the pushed code at least compiles.
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust: [stable, beta]
     steps:
     - uses: actions/checkout@master
     - uses: actions-rs/toolchain@v1
       with:
-        toolchain: stable
+        toolchain: ${{ matrix.rust }}
         override: true
         profile: minimal
         components: clippy, rustfmt
@@ -40,23 +42,6 @@ jobs:
       with:
         command: fmt
         args: --manifest-path server/Cargo.toml --all -- --check
-
-  test-versions:
-    needs: check
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        rust: [stable, beta]
-    steps:
-    - uses: actions/checkout@master
-    - uses: actions-rs/toolchain@v1
-      with:
-        toolchain: ${{ matrix.rust }}
-        override: true
-        profile: minimal
-    - uses: Swatinem/rust-cache@v1
-      with:
-        working-directory: server
 
     - name: Start dependencies
       run: docker-compose -f "server/testing-docker-compose.yml" up -d
