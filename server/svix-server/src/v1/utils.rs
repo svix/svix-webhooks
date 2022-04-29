@@ -122,14 +122,14 @@ pub trait ModelIn {
     fn update_model(self, model: &mut Self::ActiveModel);
 }
 
-pub trait ModelOut {
+pub trait ModelOut: Clone {
     fn id_copy(&self) -> String;
 
-    fn list_response<T: ModelOut + Clone>(
-        mut data: Vec<T>,
+    fn list_response(
+        mut data: Vec<Self>,
         limit: usize,
         is_prev_iter: bool,
-    ) -> ListResponse<T> {
+    ) -> ListResponse<Self> {
         let done = data.len() <= limit;
 
         if data.len() > limit {
