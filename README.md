@@ -183,7 +183,7 @@ There are three ways to configure `svix-server`: environment vars, `.env` file, 
 ### Configuration file
 
 You can put a file called `config.toml` in the current working directory of `svix-server` and it will automatically pick it up.
-You can take a look at the example file for more information and a full list of supported settings: [config.toml](./server/svix-server/config.example.toml).
+You can take a look at the example file for more information and a full list of supported settings: [config.toml](./server/svix-server/config.default.toml).
 
 Here's a quick example of the most important configurations:
 
