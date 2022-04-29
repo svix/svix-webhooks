@@ -64,7 +64,10 @@ retry_schedule = "5,300,1800,7200,18000,36000,36000"
 queue_type = "redis"
 
 # What kind of cache to use. Supported: memory, redis (must have redis_dsn configured), none.
-cache_type = "redis"
+# The memory backend is recommended if you only have one instance running (not including workers). If you have
+# multiple API servers running, please use the redis backend or some functionality, (e.g. Idempotency)
+# may fail to work correctly.
+cache_type = "memory"
 
 # If true, headers are prefixed with `Webhook-`, otherwise with `Svix-` (default).
 whitelabel_headers = false
