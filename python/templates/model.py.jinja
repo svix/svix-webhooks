@@ -145,7 +145,7 @@ return field_dict
     {% import "property_templates/" + property.template as prop_template %}
     {% if prop_template.construct %}
         {% if property.class_info and property.required_properties == [] and property.optional_properties == [] %}
-        {{ property.name }} = dict_copy.pop("{{ property.name }}")
+        {{ property.python_name }} = dict_copy.pop("{{ property.name }}")
         {% else %}
         {{ prop_template.construct(property, property_source) | indent(8) }}
         {% endif %}
