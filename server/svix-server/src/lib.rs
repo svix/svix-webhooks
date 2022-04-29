@@ -73,13 +73,13 @@ pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
     // build our application with a route
     let app = Router::new()
         .nest("/api/v1", v1::router())
-        .layer(TraceLayer::new_for_http().on_request(()))
         .layer(
             ServiceBuilder::new().layer_fn(|service| IdempotencyService {
                 cache: cache.clone(),
                 service,
             }),
         )
+        .layer(TraceLayer::new_for_http().on_request(()))
         .layer(Extension(pool.clone()))
         .layer(Extension(queue_tx.clone()))
         .layer(Extension(cfg.clone()))
