@@ -122,33 +122,46 @@ pub trait ModelIn {
     fn update_model(self, model: &mut Self::ActiveModel);
 }
 
+fn list_response_inner<T: ModelOut>(
+    mut data: Vec<T>,
+    limit: usize,
+    is_prev_iter: bool,
+    supports_prev_iterator: bool,
+) -> ListResponse<T> {
+    let done = data.len() <= limit;
+
+    if data.len() > limit {
+        if is_prev_iter {
+            data = data.drain(data.len() - limit..).collect();
+        } else {
+            data.truncate(limit);
+        }
+    }
+
+    let prev_iterator = if supports_prev_iterator {
+        data.first().map(|x| format!("-{}", x.id_copy()))
+    } else {
+        None
+    };
+    let iterator = data.last().map(|x| x.id_copy());
+
+    ListResponse {
+        data,
+        iterator,
+        prev_iterator,
+        done,
+    }
+}
+
 pub trait ModelOut: Clone {
     fn id_copy(&self) -> String;
 
-    fn list_response(
-        mut data: Vec<Self>,
-        limit: usize,
-        is_prev_iter: bool,
-    ) -> ListResponse<Self> {
-        let done = data.len() <= limit;
+    fn list_response(data: Vec<Self>, limit: usize, is_prev_iter: bool) -> ListResponse<Self> {
+        list_response_inner(data, limit, is_prev_iter, true)
+    }
 
-        if data.len() > limit {
-            if is_prev_iter {
-                data = data.drain(data.len() - limit..).collect();
-            } else {
-                data.truncate(limit);
-            }
-        }
-
-        let prev_iterator = data.first().map(|x| format!("-{}", x.id_copy()));
-        let iterator = data.last().map(|x| x.id_copy());
-
-        ListResponse {
-            data,
-            iterator,
-            prev_iterator,
-            done,
-        }
+    fn list_response_no_prev(data: Vec<Self>, limit: usize) -> ListResponse<Self> {
+        list_response_inner(data, limit, false, false)
     }
 }
 

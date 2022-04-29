@@ -44,10 +44,9 @@ pub(super) async fn list_endpoints(
         query = query.filter(endpoint::Column::Id.gt(iterator))
     }
 
-    Ok(Json(EndpointOut::list_response(
+    Ok(Json(EndpointOut::list_response_no_prev(
         query.all(db).await?.into_iter().map(|x| x.into()).collect(),
         limit as usize,
-        false,
     )))
 }
 
