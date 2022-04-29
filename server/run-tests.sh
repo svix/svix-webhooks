@@ -32,4 +32,10 @@ SVIX_CACHE_TYPE="rediscluster"  \
 SVIX_REDIS_DSN="redis://localhost:6380" \
 ${TEST_COMMAND}
 
+echo "*********** RUN 5 ***********"
+SVIX_QUEUE_TYPE="memory" \
+SVIX_CACHE_TYPE="none"  \
+SVIX_REDIS_DSN="redis://localhost:6379" \
+${TEST_COMMAND}
+
 
