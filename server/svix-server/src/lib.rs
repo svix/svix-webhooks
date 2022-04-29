@@ -18,7 +18,7 @@ use crate::{
     cfg::Configuration,
     core::{cache, idempotency::IdempotencyService},
     db::init_db,
-    worker::{clean_expired_payloads_worker_loop, worker_loop},
+    worker::{expired_message_cleaner_loop, worker_loop},
 };
 
 pub mod cfg;
@@ -90,7 +90,7 @@ pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
 
     let listen_address =
         SocketAddr::from_str(&cfg.listen_address).expect("Error parsing server listen address");
-    let (server, worker_loop, clean_expired_payloads_worker_loop) = tokio::join!(
+    let (server, worker_loop, expired_message_cleaner_loop) = tokio::join!(
         async {
             if with_api {
                 if let Some(l) = listener {
@@ -121,15 +121,15 @@ pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
         },
         async {
             if with_worker {
-                tracing::debug!("Payload Purger: Initializing");
-                clean_expired_payloads_worker_loop(&pool).await
+                tracing::debug!("Expired message cleaner: Initializing");
+                expired_message_cleaner_loop(&pool).await
             } else {
-                tracing::debug!("Payload Purger: off");
+                tracing::debug!("Expired message cleaner: off");
                 Ok(())
             }
         }
     );
     server.expect("Error initializing server");
     worker_loop.expect("Error initializing worker");
-    clean_expired_payloads_worker_loop.expect("Error initializing payload purger")
+    expired_message_cleaner_loop.expect("Error initializing expired message cleaner")
 }
