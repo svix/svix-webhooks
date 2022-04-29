@@ -88,7 +88,7 @@ async fn test_message_create_read_list_with_content() {
         .unwrap()
         .id;
 
-    let msg_payload = serde_json::json!({"test": "value"});
+    let msg_payload = Some(serde_json::json!({"test": "value"}));
 
     let msg_1_w_payload: MessageOut = client
         .post(
@@ -110,10 +110,10 @@ async fn test_message_create_read_list_with_content() {
         .await
         .unwrap();
 
-    assert_eq!(msg_2_wo_payload.payload, serde_json::json!({}));
+    assert_eq!(msg_2_wo_payload.payload, Some(serde_json::json!({})));
 
     let msg_1_wo_payload = MessageOut {
-        payload: serde_json::json!({}),
+        payload: Some(serde_json::json!({})),
         ..msg_1_w_payload.clone()
     };
     let msg_2_w_payload = MessageOut {
