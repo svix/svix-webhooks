@@ -3,6 +3,18 @@
 ## Next
 * 
 
+## Version 0.57.0
+* Server: add support for idempotency.
+* Server: add prev_iterator support to endpoints that should support it.
+* Server: make parameter validation stricter in various places.
+* Server: improve error messages for bad configurations.
+* Server: support for Redis clusters.
+* Server: add a memory cache backend.
+* Server: fix health endpoint to return an empty response to match its status code (204).
+* Server: fix issue that can cause messages to be sent more than once when clients timeout.
+* Server: fix support for endpoint id in the list attempted messages and list attempted destinations APIs.
+* C#: add C# API client library.
+
 ## Version 0.56.0
 * Libs/Python: fix user agent to actually work.
 * Libs/Python: increase read timeout.
