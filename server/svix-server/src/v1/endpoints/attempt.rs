@@ -5,9 +5,9 @@ use crate::{
     core::{
         security::AuthenticatedApplication,
         types::{
-            ApplicationId, ApplicationIdOrUid, EndpointId, EndpointIdOrUid, EventChannel,
-            EventTypeNameSet, MessageAttemptId, MessageAttemptTriggerType, MessageEndpointId,
-            MessageId, MessageIdOrUid, MessageStatus, StatusCodeClass,
+            ApplicationIdOrUid, EndpointId, EndpointIdOrUid, EventChannel, EventTypeNameSet,
+            MessageAttemptId, MessageAttemptTriggerType, MessageEndpointId, MessageId,
+            MessageIdOrUid, MessageStatus, StatusCodeClass,
         },
     },
     db::models::{endpoint, message, messagedestination},
@@ -123,13 +123,18 @@ async fn list_attempted_messages(
         before,
         after,
     }): ValidatedQuery<ListAttemptedMessagesQueryParameters>,
-    Path((_app_id, endp_id)): Path<(ApplicationId, EndpointId)>,
+    Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
     AuthenticatedApplication {
         permissions: _,
-        app: _,
+        app,
     }: AuthenticatedApplication,
 ) -> Result<Json<ListResponse<AttemptedMessageOut>>> {
-    let mut dests_and_msgs = messagedestination::Entity::secure_find_by_endpoint(endp_id)
+    let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
+        .one(db)
+        .await?
+        .ok_or_else(|| HttpError::not_found(None, None))?;
+
+    let mut dests_and_msgs = messagedestination::Entity::secure_find_by_endpoint(endp.id)
         .find_also_related(message::Entity);
 
     if let Some(channel) = channel {
@@ -270,23 +275,20 @@ async fn list_attempts_by_endpoint(
         before,
         after,
     }): ValidatedQuery<ListAttemptsByEndpointQueryParameters>,
-    Path((_app_id, endp_id)): Path<(ApplicationId, EndpointId)>,
+    Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
     AuthenticatedApplication {
         permissions: _,
         app,
     }: AuthenticatedApplication,
 ) -> Result<Json<ListResponse<MessageAttemptOut>>> {
     // Confirm endpoint ID belongs to the given application
-    if endpoint::Entity::secure_find_by_id(app.id, endp_id.clone())
+    let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
         .one(db)
         .await?
-        .is_none()
-    {
-        return Err(Error::Http(HttpError::not_found(None, None)));
-    }
+        .ok_or_else(|| HttpError::not_found(None, None))?;
 
     let query = list_attempts_by_endpoint_or_message_filters(
-        messageattempt::Entity::secure_find_by_endpoint(endp_id),
+        messageattempt::Entity::secure_find_by_endpoint(endp.id),
         status,
         status_code_class,
         event_types,
@@ -349,7 +351,7 @@ async fn list_attempts_by_msg(
         before,
         after,
     }): ValidatedQuery<ListAttemptsByMsgQueryParameters>,
-    Path((_app_id, msg_id)): Path<(ApplicationId, MessageId)>,
+    Path((_app_id, msg_id)): Path<(ApplicationIdOrUid, MessageId)>,
     AuthenticatedApplication {
         permissions: _,
         app,
@@ -442,7 +444,7 @@ impl MessageEndpointOut {
 async fn list_attempted_destinations(
     Extension(ref db): Extension<DatabaseConnection>,
     ValidatedQuery(mut pagination): ValidatedQuery<Pagination<MessageEndpointId>>,
-    Path((_app_id, msg_id)): Path<(ApplicationId, MessageIdOrUid)>,
+    Path((_app_id, msg_id)): Path<(ApplicationIdOrUid, MessageIdOrUid)>,
     AuthenticatedApplication {
         permissions: _,
         app,
