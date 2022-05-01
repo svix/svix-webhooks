@@ -60,8 +60,7 @@ pub struct MessageIn {
     pub uid: Option<MessageUid>,
     #[validate]
     pub event_type: EventTypeName,
-    pub payload: Option<serde_json::Value>,
-
+    pub payload: serde_json::Value,
     #[validate(custom = "validate_channels_msg")]
     #[validate]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -79,7 +78,7 @@ impl ModelIn for MessageIn {
         let expiration = Utc::now() + Duration::days(self.payload_retention_period);
 
         model.uid = Set(self.uid);
-        model.payload = Set(self.payload);
+        model.payload = Set(Some(self.payload));
         model.event_type = Set(self.event_type);
         model.expiration = Set(expiration.with_timezone(&Utc).into());
         model.channels = Set(self.channels);
@@ -92,9 +91,8 @@ pub struct MessageOut {
     #[serde(rename = "eventId")]
     pub uid: Option<MessageUid>,
     pub event_type: EventTypeName,
-    pub payload: Option<serde_json::Value>,
+    pub payload: serde_json::Value,
     pub channels: Option<EventChannelSet>,
-
     pub id: MessageId,
     #[serde(rename = "timestamp")]
     pub created_at: DateTime<Utc>,
@@ -103,7 +101,7 @@ pub struct MessageOut {
 impl MessageOut {
     fn without_payload(model: message::Model) -> Self {
         Self {
-            payload: Some(serde_json::json!({})),
+            payload: serde_json::json!({}),
             ..model.into()
         }
     }
@@ -115,10 +113,11 @@ impl From<message::Model> for MessageOut {
         Self {
             uid: model.uid,
             event_type: model.event_type,
-            payload: model.payload,
-
+            payload: match model.payload {
+                Some(payload) => payload,
+                None => serde_json::json!("{}"),
+            },
             channels: model.channels,
-
             id: model.id,
             created_at: model.created_at.into(),
         }

@@ -937,7 +937,7 @@ async fn test_msg_event_types_filter() {
                 MessageIn {
                     channels: None,
                     event_type: event_name,
-                    payload: Some(serde_json::json!({})),
+                    payload: serde_json::json!({}),
                     uid: None,
                     payload_retention_period: 5,
                 },
@@ -987,7 +987,7 @@ async fn test_msg_channels_filter() {
                 MessageIn {
                     channels: channels.clone(),
                     event_type: EventTypeName("et1".to_owned()),
-                    payload: Some(serde_json::json!({})),
+                    payload: serde_json::json!({}),
                     uid: None,
                     payload_retention_period: 5,
                 },
