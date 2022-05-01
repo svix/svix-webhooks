@@ -24,7 +24,7 @@ async fn clean_expired_messages(
 /// Runs every 5 minutes
 pub async fn expired_message_cleaner_loop(pool: &DatabaseConnection) -> Result<()> {
     loop {
-        sleep(Duration::from_secs(5)).await;
+        sleep(Duration::from_secs(5 * 60)).await;
         let pool = pool.clone();
         if let Err(err) = clean_expired_messages(&pool).await {
             tracing::error!("{}", err)
