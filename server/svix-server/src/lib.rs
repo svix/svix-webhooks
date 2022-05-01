@@ -18,13 +18,15 @@ use crate::{
     cfg::Configuration,
     core::{cache, idempotency::IdempotencyService},
     db::init_db,
-    worker::{expired_message_cleaner_loop, worker_loop},
+    expired_message_cleaner::expired_message_cleaner_loop,
+    worker::worker_loop,
 };
 
 pub mod cfg;
 pub mod core;
 pub mod db;
 pub mod error;
+pub mod expired_message_cleaner;
 pub mod queue;
 pub mod redis;
 pub mod v1;

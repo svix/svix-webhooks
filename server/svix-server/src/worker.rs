@@ -12,14 +12,8 @@ use crate::error::{Error, Result};
 use crate::queue::{MessageTask, QueueTask, TaskQueueConsumer, TaskQueueProducer};
 use chrono::Utc;
 use reqwest::header::{HeaderMap, HeaderName};
-use sea_orm::{
-    entity::prelude::*, sea_query::Expr, ActiveValue::Set, DatabaseConnection, DbErr, EntityTrait,
-    UpdateResult,
-};
-use tokio::{
-    task,
-    time::{sleep, Duration},
-};
+use sea_orm::{entity::prelude::*, ActiveValue::Set, DatabaseConnection, EntityTrait};
+use tokio::time::{sleep, Duration};
 
 use std::{iter, str::FromStr};
 
@@ -328,33 +322,6 @@ pub async fn worker_loop(
             }
         }
     }
-}
-
-/// Nullifies the payload column for expired messages
-async fn clean_expired_messages(
-    pool: &DatabaseConnection,
-) -> std::result::Result<UpdateResult, DbErr> {
-    message::Entity::update_many()
-        .col_expr(message::Column::Payload, Expr::value(Value::Json(None)))
-        .filter(message::Column::Expiration.lte(Utc::now()))
-        .filter(Expr::col(message::Column::Payload).is_not_null())
-        .exec(pool)
-        .await
-}
-
-/// Runs every 5 minutes
-pub async fn expired_message_cleaner_loop(pool: &DatabaseConnection) -> Result<()> {
-    let pool = pool.clone();
-    task::spawn(async move {
-        loop {
-            sleep(Duration::from_secs(60 * 5)).await;
-            if let Err(err) = clean_expired_messages(&pool).await {
-                tracing::error!("{}", err)
-            }
-        }
-    });
-
-    Ok(())
 }
 
 #[cfg(test)]
