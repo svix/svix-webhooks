@@ -1,1 +1,0 @@
-ALTER TABLE message ALTER COLUMN payload SET NOT NULL;
