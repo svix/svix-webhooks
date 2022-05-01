@@ -211,7 +211,7 @@ async fn create_message(
         Some(app.clone()),
         app.id.clone(),
         app.org_id,
-        Duration::seconds(30).to_std().unwrap(),
+        std::time::Duration::from_secs(30),
     )
     .await?
     // Should never happen since you're giving it an existing Application, but just in case
