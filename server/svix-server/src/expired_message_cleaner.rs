@@ -16,7 +16,7 @@ async fn clean_expired_messages(
     message::Entity::update_many()
         .col_expr(message::Column::Payload, Expr::value(Value::Json(None)))
         .filter(message::Column::Expiration.lte(Utc::now()))
-        .filter(Expr::col(message::Column::Payload).is_not_null())
+        .filter(message::Column::Payload.is_not_null())
         .exec(pool)
         .await
 }
