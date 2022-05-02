@@ -190,15 +190,17 @@ async fn dispatch(
                 MessageStatus::Fail
             };
             let http_error = res.error_for_status_ref().err();
-            let body = res
-                .text()
-                .await
-                .unwrap_or_else(|_| "BODY_NOT_TEXT".to_string());
+
+            let bytes = res.bytes().await.unwrap().to_vec();
+            let body = match std::str::from_utf8(&bytes) {
+                Ok(v) => v.to_owned(),
+                Err(_) => base64::encode(&bytes),
+            };
+
             let attempt = messageattempt::ActiveModel {
                 response_status_code: Set(status_code),
                 response: Set(body),
                 status: Set(status),
-
                 ..attempt
             };
             match http_error {
