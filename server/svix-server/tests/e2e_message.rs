@@ -1,9 +1,15 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
+use chrono::{Duration, Utc};
 use reqwest::StatusCode;
+use sea_orm::{sea_query::Expr, ColumnTrait, EntityTrait, QueryFilter};
 
-use svix_server::v1::{endpoints::message::MessageOut, utils::ListResponse};
+use svix_server::{
+    db::models::message,
+    expired_message_cleaner,
+    v1::{endpoints::message::MessageOut, utils::ListResponse},
+};
 
 mod utils;
 
@@ -165,4 +171,48 @@ async fn test_message_create_read_list_with_content() {
     assert_eq!(list.data.len(), 2);
     assert!(list.data.contains(&msg_1_wo_payload));
     assert!(list.data.contains(&msg_2_wo_payload));
+}
+
+#[tokio::test]
+async fn test_payload_retention_period() {
+    let (client, _jh) = start_svix_server();
+    dotenv::dotenv().ok();
+    let cfg = svix_server::cfg::load().expect("Error loading configuration");
+    let pool = svix_server::db::init_db(&cfg).await;
+
+    let app_id = create_test_app(&client, "v1MessageCRTestApp")
+        .await
+        .unwrap()
+        .id;
+
+    let msg_row: MessageOut = client
+        .post(
+            &format!("api/v1/app/{}/msg/", &app_id),
+            message_in(&app_id, serde_json::json!({"test": "value"})).unwrap(),
+            StatusCode::ACCEPTED,
+        )
+        .await
+        .unwrap();
+    let msg_row_2 = msg_row.clone();
+
+    message::Entity::update_many()
+        .col_expr(
+            message::Column::Expiration,
+            Expr::value(Utc::now() - Duration::days(1)),
+        )
+        .filter(message::Column::Id.eq(msg_row.id))
+        .exec(&pool)
+        .await
+        .unwrap();
+
+    expired_message_cleaner::clean_expired_messages(&pool)
+        .await
+        .unwrap();
+
+    let message: Option<message::Model> = message::Entity::find_by_id(msg_row_2.id)
+        .one(&pool)
+        .await
+        .unwrap();
+
+    assert_eq!(message.unwrap().payload, None);
 }
