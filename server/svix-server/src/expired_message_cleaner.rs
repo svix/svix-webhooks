@@ -20,6 +20,7 @@ async fn clean_expired_messages(
             Expr::value(Utc::now() + Duration::days(90)),
         )
         .filter(message::Column::Expiration.is_null())
+        .filter(message::Column::Payload.is_not_null())
         .exec(pool)
         .await
         .expect("Update of existing messageattempt NULL timestamps failed");
