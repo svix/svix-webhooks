@@ -20,7 +20,13 @@ use std::{num::NonZeroUsize, time::Duration};
 use axum::async_trait;
 
 use chrono::Utc;
-use redis::{RedisWrite, ToRedisArgs};
+use redis::{
+    streams::{
+        StreamClaimReply, StreamId, StreamPendingCountReply, StreamPendingReply, StreamRangeReply,
+        StreamReadOptions, StreamReadReply,
+    },
+    Cmd, RedisResult, RedisWrite, ToRedisArgs,
+};
 use svix_ksuid::*;
 use tokio::time::sleep;
 
@@ -38,15 +44,23 @@ use super::{
 
 // FIXME: hash-tags here enable clustering but prevent proper sharding of lists
 const MAIN: &str = "{queue}_svix_main";
-const PROCESSING: &str = "{queue}_svix_processing";
 const DELAYED: &str = "{queue}_svix_delayed";
 
 const LEGACY_MAIN: &str = "svix_queue_main";
-const LEGACY_PROCESSING: &str = "svix_queue_processing";
 const LEGACY_DELAYED: &str = "svix_queue_delayed";
 
 /// After this limit a task should be taken out of the processing queue and rescheduled
 const TASK_VALIDITY_DURATION: Duration = Duration::from_secs(45);
+
+/// Consumer group name constant
+const WORKERS_GROUP: &str = "svix_workers";
+/// Consumer group consumer name constant
+const WORKER_CONSUMER: &str = "svix_worker";
+
+/// Special key for XADD command's which generates a real key automatically
+const GENERATE_STREAM_ID: &str = "*";
+/// Special key for XREADGROUP commands which reads any new messages
+const LISTEN_STREAM_ID: &str = ">";
 
 /// Resets the message delivery time, which is used to determine whether a delayed or in-process
 /// message should be put back onto the main queue
@@ -57,60 +71,128 @@ fn regenerate_key(msg: &str) -> String {
 }
 
 pub async fn new_pair(pool: RedisPool) -> (TaskQueueProducer, TaskQueueConsumer) {
-    let worker_pool = pool.clone();
-    tokio::spawn(async move {
-        // FIXME: enforce we only have one such worker (locking)
-        let batch_size: isize = 50;
-        let task_validity_duration = chrono::Duration::from_std(TASK_VALIDITY_DURATION).unwrap();
+    // Create the stream and consumer group for the MAIN queue should it not already exist
+    {
+        let mut conn = pool
+            .get()
+            .await
+            .expect("Error retreiving connection from Redis pool");
 
-        {
-            let pool = worker_pool.clone();
-            let mut pool = pool.get().await.unwrap();
+        let consumer_group_resp: RedisResult<()> = conn
+            .query_async(Cmd::xgroup_create_mkstream(MAIN, WORKERS_GROUP, 0i8))
+            .await;
+    }
 
-            // drain legacy queues:
-            migrate_legacy_queues(&mut pool).await;
-        }
+    tokio::spawn({
+        let pool = pool.clone();
+        async move {
+            // FIXME: enforce we only have one such worker (locking)
+            let batch_size: isize = 50;
+            let task_validity_duration =
+                chrono::Duration::from_std(TASK_VALIDITY_DURATION).unwrap();
 
-        loop {
-            let mut pool = worker_pool.get().await.unwrap();
+            {
+                let mut pool = pool.get().await.unwrap();
 
-            let timestamp = Utc::now().timestamp();
-            let keys: Vec<String> = pool
-                .zrangebyscore_limit(DELAYED, 0isize, timestamp, 0isize, batch_size)
-                .await
-                .unwrap();
-            if !keys.is_empty() {
-                // FIXME: needs to be a transaction
-                let keys: Vec<(String, String)> =
-                    pool.zpopmin(DELAYED, keys.len() as isize).await.unwrap();
-                let keys: Vec<String> = keys
-                    .into_iter()
-                    .map(|x| x.0)
-                    .map(|x| regenerate_key(&x))
-                    .collect();
-                let _: () = pool.rpush(MAIN, keys).await.unwrap();
-            } else {
-                // Wait for half a second before attempting to fetch again if nothing was found
-                sleep(Duration::from_millis(500)).await;
+                // drain legacy queues:
+                migrate_legacy_queues(&mut pool).await;
             }
 
-            // Every iteration here also check whether the processing queue has items that should
-            // be picked back up
-            let keys: Vec<String> = pool.lrange(PROCESSING, 0isize, 1isize).await.unwrap();
+            loop {
+                let mut pool = pool.get().await.unwrap();
 
-            // If the key is older than now, it means we should be processing keys
-            let validity_limit =
-                KsuidMs::new(Some(Utc::now() - task_validity_duration), None).to_string();
+                // First look for delayed keys whose time is up and add them to the main qunue
+                let timestamp = Utc::now().timestamp();
+                let keys: Vec<String> = pool
+                    .zrangebyscore_limit(DELAYED, 0isize, timestamp, 0isize, batch_size)
+                    .await
+                    .unwrap();
+                if !keys.is_empty() {
+                    // FIXME: needs to be a transaction
+                    let keys: Vec<(String, String)> =
+                        pool.zpopmin(DELAYED, keys.len() as isize).await.unwrap();
+                    let keys: Vec<&str> = keys
+                        .iter()
+                        .map(|x| &x.0)
+                        .map(|x| x.split('|').nth(1).expect("Improper key format"))
+                        .collect();
 
-            if !keys.is_empty() && keys[0] <= validity_limit {
-                let keys: Vec<String> = pool.lrange(PROCESSING, 0isize, batch_size).await.unwrap();
-                for key in keys {
-                    if key <= validity_limit {
-                        // We use LREM to be sure we only delete the keys we should be deleting
-                        tracing::trace!("Pushing back overdue task to queue {}", key);
-                        let refreshed_key = regenerate_key(&key);
-                        let _: () = pool.rpush(MAIN, &refreshed_key).await.unwrap();
-                        let _: () = pool.lrem(PROCESSING, 1, &key).await.unwrap();
+                    for key in keys {
+                        let _: () = pool
+                            .query_async(Cmd::xadd(
+                                MAIN,
+                                GENERATE_STREAM_ID,
+                                &[(
+                                    "data",
+                                    serde_json::to_string(key).expect("Serializaion error"),
+                                )],
+                            ))
+                            .await
+                            .unwrap();
+                    }
+                } else {
+                    // Wait for half a second before attempting to fetch again if nothing was found
+                    sleep(Duration::from_millis(500)).await;
+                }
+
+                // Every iteration here also check whether the processing queue has items that
+                // should be picked back up
+                let mut cmd = Cmd::xpending(MAIN, WORKERS_GROUP);
+                // [`Cmd::arg`] returns a mutable reference to the command, and the pool's
+                // [`query_async`] takes ownership of the command, so this ugly dropping of the
+                // reference is needed for now.
+                let _ = cmd.arg("IDLE").arg(45000i32);
+
+                // The `XPENDING` command contains metdata on the start and end IDs plus the count
+                // of keys that excepeed the above idle time
+                let key_metdata: StreamPendingReply = pool.query_async(cmd).await.unwrap();
+
+                if let StreamPendingReply::Data(data) = key_metdata {
+                    let min = data.start_id;
+                    let max = data.end_id;
+                    let count = data.count;
+
+                    // So use the expanded version of `XPENDING` with a minimum, maximum, and count
+                    // to return the exact set of IDs that exceed the given time
+                    let mut cmd = Cmd::xpending_count(MAIN, WORKERS_GROUP, min, max, count);
+                    let _ = cmd.arg("IDLE").arg(45000i32);
+
+                    let keys: StreamPendingCountReply = pool.query_async(cmd).await.unwrap();
+                    let ids: Vec<String> = keys.ids.into_iter().map(|id| id.id).collect();
+
+                    // You can then claim all these IDs to receive the KV pairs associated with each
+                    let claimed: StreamClaimReply = pool
+                        .query_async(Cmd::xclaim(
+                            MAIN,
+                            WORKERS_GROUP,
+                            WORKER_CONSUMER,
+                            450000i32,
+                            &ids,
+                        ))
+                        .await
+                        .unwrap();
+
+                    // Acknowledge all the stale ones so the pending queue is cleared
+                    let _: RedisResult<()> =
+                        pool.query_async(Cmd::xack(MAIN, WORKERS_GROUP, &ids)).await;
+
+                    // And reinsert the map of KV pairs into the MAIN qunue with a new stream ID
+                    for StreamId { map, .. } in claimed.ids {
+                        let _: RedisResult<()> = pool
+                            .query_async(Cmd::xadd(
+                                MAIN,
+                                GENERATE_STREAM_ID,
+                                &map.iter()
+                                    .filter_map(|(k, v)| {
+                                        if let redis::Value::Data(data) = v {
+                                            Some((k.as_str(), data.as_slice()))
+                                        } else {
+                                            None
+                                        }
+                                    })
+                                    .collect::<Vec<(&str, &[u8])>>(),
+                            ))
+                            .await;
                     }
                 }
             }
@@ -167,29 +249,39 @@ impl TaskQueueSend for RedisQueueProducer {
     async fn send(&self, task: QueueTask, delay: Option<Duration>) -> Result<()> {
         let mut pool = self.pool.get().await.unwrap();
         let timestamp = delay.map(|delay| Utc::now() + chrono::Duration::from_std(delay).unwrap());
-        let delivery = TaskQueueDelivery::new(task, timestamp);
-        let key = to_redis_key(&delivery);
         if let Some(timestamp) = timestamp {
+            let delivery = TaskQueueDelivery::new(task, Some(timestamp));
+            let key = to_redis_key(&delivery);
             let _: () = pool
                 .zadd(DELAYED, key, timestamp.timestamp())
                 .await
                 .unwrap();
         } else {
-            let _: () = pool.rpush(MAIN, key).await.unwrap();
+            let _: () = pool
+                .query_async(Cmd::xadd(
+                    MAIN,
+                    GENERATE_STREAM_ID,
+                    &[("data", serde_json::to_string(&task).unwrap())],
+                ))
+                .await
+                .unwrap();
         }
         tracing::trace!("RedisQueue: event sent > (delay: {:?})", delay);
         Ok(())
     }
 
     async fn ack(&self, delivery: TaskQueueDelivery) -> Result<()> {
-        let key = to_redis_key(&delivery);
         let mut pool = self.pool.get().await.unwrap();
-        let processed: u8 = pool.lrem(PROCESSING, 1, &key).await.unwrap();
+        let processed: u8 = pool
+            .query_async(Cmd::xack(MAIN, WORKERS_GROUP, &[delivery.id.as_str()]))
+            .await
+            .unwrap();
         if processed != 1 {
             tracing::warn!(
-                "Expected to remove 1 from the list, removed {} for {}",
+                "Expected to remove 1 from the list, removed {} for {}|{}",
                 processed,
-                key
+                delivery.id,
+                serde_json::to_string(&delivery.task).unwrap()
             );
         }
         Ok(())
@@ -197,10 +289,16 @@ impl TaskQueueSend for RedisQueueProducer {
 
     async fn nack(&self, delivery: TaskQueueDelivery) -> Result<()> {
         // FIXME: do something else here?
-        let key = to_redis_key(&delivery);
         let mut pool = self.pool.get().await.unwrap();
-        let _: () = pool.lrem(PROCESSING, 1, &key).await.unwrap();
-        tracing::error!("Failed processing msg: {}", key);
+        let _: () = pool
+            .query_async(Cmd::xack(MAIN, WORKERS_GROUP, &[delivery.id.as_str()]))
+            .await
+            .unwrap();
+        tracing::error!(
+            "Failed processing msg: {}|{}",
+            delivery.id,
+            serde_json::to_string(&delivery.task).unwrap()
+        );
         Ok(())
     }
 
@@ -217,24 +315,35 @@ pub struct RedisQueueConsumer {
 impl TaskQueueReceive for RedisQueueConsumer {
     async fn receive_all(&mut self) -> Result<Vec<TaskQueueDelivery>> {
         let mut pool = self.pool.get().await.unwrap();
-        let mut cmd = redis::cmd("BLMOVE");
-        cmd.arg(MAIN)
-            .arg(PROCESSING)
-            .arg(Direction::Left)
-            .arg(Direction::Right)
-            .arg(0u8);
-        let key: String = pool
-            .query_async(cmd)
+
+        let mut resp: StreamReadReply = pool
+            .query_async(Cmd::xread_options(
+                &[MAIN],
+                &[LISTEN_STREAM_ID],
+                &StreamReadOptions::default()
+                    .group(WORKERS_GROUP, WORKER_CONSUMER)
+                    .count(1),
+            ))
             .await
-            .map_err(|x| Error::Queue(x.to_string()))?;
+            .unwrap();
+
+        let id = std::mem::take(&mut resp.keys[0].ids[0].id);
+        let map = std::mem::take(&mut resp.keys[0].ids[0].map);
+
+        let task: QueueTask = if let Some(redis::Value::Data(data)) = map.get("data") {
+            serde_json::from_slice(data).expect("Invalid QueueTask")
+        } else {
+            panic!("No QueueTask associated with key");
+        };
+
         tracing::trace!("RedisQueue: event recv <");
-        Ok(vec![from_redis_key(&key)])
+
+        Ok(vec![TaskQueueDelivery { id, task }])
     }
 }
 
 async fn migrate_legacy_queues(pool: &mut PooledConnection<'_>) {
     migrate_list(pool, LEGACY_MAIN, MAIN).await;
-    migrate_list(pool, LEGACY_PROCESSING, PROCESSING).await;
     migrate_sset(pool, LEGACY_DELAYED, DELAYED).await;
 }
 
