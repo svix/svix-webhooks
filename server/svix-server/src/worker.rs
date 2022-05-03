@@ -191,11 +191,8 @@ async fn dispatch(
             };
             let http_error = res.error_for_status_ref().err();
 
-            let bytes = res.bytes().await.unwrap().to_vec();
-            let body = match std::str::from_utf8(&bytes) {
-                Ok(v) => v.to_owned(),
-                Err(_) => base64::encode(&bytes),
-            };
+            let bytes = res.bytes().await.unwrap();
+            let body = bytes_to_string(bytes);
 
             let attempt = messageattempt::ActiveModel {
                 response_status_code: Set(status_code),
@@ -286,6 +283,13 @@ async fn dispatch(
     Ok(())
 }
 
+fn bytes_to_string(bytes: bytes::Bytes) -> String {
+    match std::str::from_utf8(&bytes.to_vec()) {
+        Ok(v) => v.to_owned(),
+        Err(_) => base64::encode(&bytes),
+    }
+}
+
 /// Listens on the message queue for new tasks
 pub async fn worker_loop(
     cfg: Configuration,
@@ -333,6 +337,7 @@ mod tests {
     use super::*;
     use crate::core::types::BaseId;
 
+    use bytes::Bytes;
     use std::collections::HashMap;
 
     // [`generate_msg_headers`] tests
@@ -412,5 +417,11 @@ mod tests {
             actual.get("svix-signature").unwrap(),
             expected_signature_str
         );
+    }
+
+    #[test]
+    fn test_bytes_to_string() {
+        let b = Bytes::from_static(b"Hello, world.");
+        assert_eq!(bytes_to_string(b), "Hello, world.");
     }
 }
