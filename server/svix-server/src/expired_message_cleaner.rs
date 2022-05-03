@@ -3,7 +3,7 @@
 
 use crate::db::models::message;
 use crate::error::Result;
-use chrono::{Duration, Utc};
+use chrono::Utc;
 use sea_orm::{
     entity::prelude::*, sea_query::Expr, DatabaseConnection, DbErr, EntityTrait, UpdateResult,
 };
@@ -13,18 +13,6 @@ use tokio::time::sleep;
 pub async fn clean_expired_messages(
     pool: &DatabaseConnection,
 ) -> std::result::Result<UpdateResult, DbErr> {
-    // this logic exists to gracefully migrate existing message attempt responses
-    message::Entity::update_many()
-        .col_expr(
-            message::Column::Expiration,
-            Expr::value(Utc::now() + Duration::days(90)),
-        )
-        .filter(message::Column::Expiration.is_null())
-        .filter(message::Column::Payload.is_not_null())
-        .exec(pool)
-        .await
-        .expect("Update of existing messageattempt NULL timestamps failed");
-
     message::Entity::update_many()
         .col_expr(message::Column::Payload, Expr::value(Value::Json(None)))
         .filter(message::Column::Expiration.lte(Utc::now()))
