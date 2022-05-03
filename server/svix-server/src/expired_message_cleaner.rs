@@ -10,7 +10,7 @@ use sea_orm::{
 use tokio::time::sleep;
 
 /// Nullifies the payload column for expired messages
-async fn clean_expired_messages(
+pub async fn clean_expired_messages(
     pool: &DatabaseConnection,
 ) -> std::result::Result<UpdateResult, DbErr> {
     // this logic exists to gracefully migrate existing message attempt responses
