@@ -191,7 +191,10 @@ async fn dispatch(
             };
             let http_error = res.error_for_status_ref().err();
 
-            let bytes = res.bytes().await.unwrap();
+            let bytes = res
+                .bytes()
+                .await
+                .expect("Could not read endpoint response body");
             let body = bytes_to_string(bytes);
 
             let attempt = messageattempt::ActiveModel {
