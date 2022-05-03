@@ -66,7 +66,7 @@ pub struct MessageIn {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub channels: Option<EventChannelSet>,
     #[validate(range(min = 5, max = 90))]
-    #[serde(rename = "payloadRetentionPeriod", default = "default_90")]
+    #[serde(default = "default_90")]
     pub payload_retention_period: i64,
 }
 
