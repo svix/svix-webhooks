@@ -25,6 +25,9 @@ redis_dsn = "redis://redis:6379"
 # a server restart doesn't wipe the queue.
 queue_type = "redis"
 
+# SQS DSN (fully qualified queue DSN). Can be left empty if not using SQS
+# sqs_dsn = https://sqs.us-east-1.amazonaws.com/123456789012/queue-name
+
 # What kind of cache to use. Supported: memory, redis, rediscluster, none.
 # Redis backends must have a redis_dsn configured.
 # The memory backend is recommended if you only have one instance running (not including workers). If you have
