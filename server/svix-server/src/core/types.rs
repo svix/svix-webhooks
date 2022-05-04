@@ -579,14 +579,14 @@ impl Validate for EndpointHeaders {
             if let Err(_e) = http::header::HeaderValue::try_from(v) {
                 errors.add(ALL_ERROR, ValidationError::new("Invalid Header Value."));
             }
-            if Self::FORBIDDEN_KEYS.contains(&k.as_str()) {
+            if Self::FORBIDDEN_KEYS.contains(&k.to_lowercase().as_str()) {
                 errors.add(
                     ALL_ERROR,
                     ValidationError::new("Header uses a forbidden key."),
                 );
             }
             Self::FORBIDDEN_PREFIXES.iter().for_each(|p| {
-                if k.starts_with(p) {
+                if k.to_lowercase().starts_with(p) {
                     errors.add(
                         ALL_ERROR,
                         ValidationError::new("Header starts with a forbidden prefix."),
@@ -726,17 +726,11 @@ mod tests {
         let endpoint_headers = EndpointHeaders(hdr_map);
         assert!(endpoint_headers.validate().is_err());
 
-        let hdr_map = HashMap::from([(
-            EndpointHeaders::FORBIDDEN_KEYS[0].to_owned(),
-            "true".to_owned(),
-        )]);
+        let hdr_map = HashMap::from([("User-Agent".to_string(), "true".to_owned())]);
         let endpoint_headers = EndpointHeaders(hdr_map);
         assert!(endpoint_headers.validate().is_err());
 
-        let hdr_map = HashMap::from([(
-            EndpointHeaders::FORBIDDEN_PREFIXES[0].to_owned(),
-            "true".to_owned(),
-        )]);
+        let hdr_map = HashMap::from([("User-Agent".to_string(), "true".to_owned())]);
         let endpoint_headers = EndpointHeaders(hdr_map);
         assert!(endpoint_headers.validate().is_err());
     }
