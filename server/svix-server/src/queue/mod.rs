@@ -217,7 +217,7 @@ mod tests {
             .await
             .unwrap()
             .into_iter()
-            .nth(0)
+            .next()
             .unwrap();
 
         assert_eq!(recv.task, mock_message("1".to_owned()));
@@ -249,7 +249,7 @@ mod tests {
             .await
             .unwrap()
             .into_iter()
-            .nth(0)
+            .next()
             .unwrap();
         assert_eq!(&recv.task, &mock_message("1".to_owned()));
 

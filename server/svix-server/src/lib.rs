@@ -70,7 +70,7 @@ pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
             }
             QueueType::Memory => queue::memory::new_pair().await,
             QueueType::SQS => {
-                let sqs_dsn = cfg.sqs_dsn.as_ref().expect("SQS DSN not found");
+                let sqs_dsn = cfg.queue_sqs_dsn.as_ref().expect("SQS DSN not found");
                 queue::sqs::new_pair(sqs_dsn).await
             }
         }

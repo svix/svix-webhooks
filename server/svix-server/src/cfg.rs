@@ -63,7 +63,7 @@ pub struct ConfigurationInner {
     pub queue_type: QueueType,
 
     /// SQS DSN (fully qualified queue DSN). Can be left empty if not using SQS
-    pub sqs_dsn: Option<String>,
+    pub queue_sqs_dsn: Option<String>,
 
     /// What kind of cache to use. Supported: memory, redis (must have redis_dsn configured), none.
     pub cache_type: CacheType,
