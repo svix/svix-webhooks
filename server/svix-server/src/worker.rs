@@ -190,15 +190,17 @@ async fn dispatch(
                 MessageStatus::Fail
             };
             let http_error = res.error_for_status_ref().err();
-            let body = res
-                .text()
+
+            let bytes = res
+                .bytes()
                 .await
-                .unwrap_or_else(|_| "BODY_NOT_TEXT".to_string());
+                .expect("Could not read endpoint response body");
+            let body = bytes_to_string(bytes);
+
             let attempt = messageattempt::ActiveModel {
                 response_status_code: Set(status_code),
                 response: Set(body),
                 status: Set(status),
-
                 ..attempt
             };
             match http_error {
@@ -284,6 +286,13 @@ async fn dispatch(
     Ok(())
 }
 
+fn bytes_to_string(bytes: bytes::Bytes) -> String {
+    match std::str::from_utf8(&bytes.to_vec()) {
+        Ok(v) => v.to_owned(),
+        Err(_) => base64::encode(&bytes),
+    }
+}
+
 /// Listens on the message queue for new tasks
 pub async fn worker_loop(
     cfg: Configuration,
@@ -331,6 +340,7 @@ mod tests {
     use super::*;
     use crate::core::types::BaseId;
 
+    use bytes::Bytes;
     use std::collections::HashMap;
 
     // [`generate_msg_headers`] tests
@@ -410,5 +420,11 @@ mod tests {
             actual.get("svix-signature").unwrap(),
             expected_signature_str
         );
+    }
+
+    #[test]
+    fn test_bytes_to_string() {
+        let b = Bytes::from_static(b"Hello, world.");
+        assert_eq!(bytes_to_string(b), "Hello, world.");
     }
 }
