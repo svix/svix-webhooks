@@ -18,6 +18,7 @@ use crate::{
     cfg::Configuration,
     core::{cache, idempotency::IdempotencyService},
     db::init_db,
+    expired_message_cleaner::expired_message_cleaner_loop,
     worker::worker_loop,
 };
 
@@ -25,6 +26,7 @@ pub mod cfg;
 pub mod core;
 pub mod db;
 pub mod error;
+pub mod expired_message_cleaner;
 pub mod queue;
 pub mod redis;
 pub mod v1;
@@ -90,7 +92,7 @@ pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
 
     let listen_address =
         SocketAddr::from_str(&cfg.listen_address).expect("Error parsing server listen address");
-    let (server, worker_loop) = tokio::join!(
+    let (server, worker_loop, expired_message_cleaner_loop) = tokio::join!(
         async {
             if with_api {
                 if let Some(l) = listener {
@@ -113,13 +115,23 @@ pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
         async {
             if with_worker {
                 tracing::debug!("Worker: Initializing");
-                worker_loop(cfg, pool, cache, queue_tx, queue_rx).await
+                worker_loop(&cfg, &pool, cache, queue_tx, queue_rx).await
             } else {
                 tracing::debug!("Worker: off");
                 Ok(())
             }
         },
+        async {
+            if with_worker {
+                tracing::debug!("Expired message cleaner: Initializing");
+                expired_message_cleaner_loop(&pool).await
+            } else {
+                tracing::debug!("Expired message cleaner: off");
+                Ok(())
+            }
+        }
     );
     server.expect("Error initializing server");
     worker_loop.expect("Error initializing worker");
+    expired_message_cleaner_loop.expect("Error initializing expired message cleaner")
 }

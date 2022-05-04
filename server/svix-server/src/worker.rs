@@ -12,9 +12,7 @@ use crate::error::{Error, Result};
 use crate::queue::{MessageTask, QueueTask, TaskQueueConsumer, TaskQueueProducer};
 use chrono::Utc;
 use reqwest::header::{HeaderMap, HeaderName};
-use sea_orm::entity::prelude::*;
-use sea_orm::ActiveValue::Set;
-use sea_orm::{DatabaseConnection, EntityTrait};
+use sea_orm::{entity::prelude::*, ActiveValue::Set, DatabaseConnection, EntityTrait};
 use tokio::time::{sleep, Duration};
 
 use std::{iter, str::FromStr};
@@ -295,8 +293,8 @@ fn bytes_to_string(bytes: bytes::Bytes) -> String {
 
 /// Listens on the message queue for new tasks
 pub async fn worker_loop(
-    cfg: Configuration,
-    pool: DatabaseConnection,
+    cfg: &Configuration,
+    pool: &DatabaseConnection,
     cache: Cache,
     queue_tx: TaskQueueProducer,
     mut queue_rx: TaskQueueConsumer,

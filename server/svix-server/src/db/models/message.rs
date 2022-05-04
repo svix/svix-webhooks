@@ -20,9 +20,10 @@ pub struct Model {
     pub app_id: ApplicationId,
     pub event_type: EventTypeName,
     pub uid: Option<MessageUid>,
-    #[sea_orm(column_type = "JsonBinary")]
-    pub payload: Json,
+    #[sea_orm(column_type = "JsonBinary", nullable)]
+    pub payload: Option<Json>,
     pub channels: Option<EventChannelSet>,
+    pub expiration: DateTimeWithTimeZone,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
