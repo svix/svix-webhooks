@@ -1181,3 +1181,45 @@ async fn test_endpoint_headers_sending() {
         assert_eq!(v, last_headers.get(k).unwrap().to_str().unwrap());
     }
 }
+
+#[tokio::test]
+async fn test_endpoint_header_key_capitalization() {
+    let (client, _jk) = start_svix_server();
+
+    let app_id = create_test_app(&client, "app1").await.unwrap().id;
+
+    let receiver = TestReceiver::start(StatusCode::OK);
+
+    let endp = create_test_endpoint(&client, &app_id, &receiver.endpoint)
+        .await
+        .unwrap();
+
+    let headers = EndpointHeadersIn {
+        headers: EndpointHeaders(HashMap::from([(
+            "X-Api-Test".to_owned(),
+            "test-value".to_owned(),
+        )])),
+    };
+
+    let _: IgnoredResponse = client
+        .put(
+            &format!("api/v1/app/{}/endpoint/{}/headers", app_id, endp.id),
+            &headers,
+            StatusCode::NO_CONTENT,
+        )
+        .await
+        .unwrap();
+
+    let retrieved_headers: EndpointHeadersOut = client
+        .get(
+            &format!("api/v1/app/{}/endpoint/{}/headers", app_id, endp.id),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    for k in headers.headers.0.keys() {
+        println!("{}, {:?}", k, retrieved_headers.headers);
+        assert!(retrieved_headers.headers.contains_key(k));
+    }
+}

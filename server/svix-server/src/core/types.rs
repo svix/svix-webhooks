@@ -564,9 +564,7 @@ impl<'de> Deserialize<'de> for EndpointHeaders {
         D: serde::Deserializer<'de>,
     {
         HashMap::deserialize(deserializer)
-            .map(|x: HashMap<String, String>| {
-                x.into_iter().map(|(k, v)| (k.to_lowercase(), v)).collect()
-            })
+            .map(|x: HashMap<String, String>| x.into_iter().map(|(k, v)| (k, v)).collect())
             .map(EndpointHeaders)
     }
 }
@@ -741,23 +739,6 @@ mod tests {
         )]);
         let endpoint_headers = EndpointHeaders(hdr_map);
         assert!(endpoint_headers.validate().is_err());
-    }
-
-    #[test]
-    fn test_endpoint_headers_deserialization() {
-        let js = serde_json::json!(
-        {
-            "NOT_UPPER_CASE": "TRUE",
-            "is_lower_case": "true"
-        });
-        let eph: EndpointHeaders = serde_json::from_value(js).unwrap();
-        assert_eq!(
-            HashMap::from([
-                ("not_upper_case".to_owned(), "TRUE".to_owned()),
-                ("is_lower_case".to_owned(), "true".to_owned()),
-            ]),
-            eph.0
-        );
     }
 
     #[test]
