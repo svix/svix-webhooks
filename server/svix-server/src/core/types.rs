@@ -564,9 +564,7 @@ impl<'de> Deserialize<'de> for EndpointHeaders {
         D: serde::Deserializer<'de>,
     {
         HashMap::deserialize(deserializer)
-            .map(|x: HashMap<String, String>| {
-                x.into_iter().map(|(k, v)| (k.to_lowercase(), v)).collect()
-            })
+            .map(|x: HashMap<String, String>| x.into_iter().map(|(k, v)| (k, v)).collect())
             .map(EndpointHeaders)
     }
 }
@@ -575,6 +573,7 @@ impl Validate for EndpointHeaders {
     fn validate(&self) -> std::result::Result<(), ValidationErrors> {
         let mut errors = ValidationErrors::new();
         self.0.iter().for_each(|(k, v)| {
+            let k = &k.to_lowercase();
             if let Err(_e) = http::header::HeaderName::try_from(k) {
                 errors.add(ALL_ERROR, ValidationError::new("Invalid Header Name."));
             }
@@ -728,36 +727,13 @@ mod tests {
         let endpoint_headers = EndpointHeaders(hdr_map);
         assert!(endpoint_headers.validate().is_err());
 
-        let hdr_map = HashMap::from([(
-            EndpointHeaders::FORBIDDEN_KEYS[0].to_owned(),
-            "true".to_owned(),
-        )]);
+        let hdr_map = HashMap::from([("User-Agent".to_string(), "true".to_owned())]);
         let endpoint_headers = EndpointHeaders(hdr_map);
         assert!(endpoint_headers.validate().is_err());
 
-        let hdr_map = HashMap::from([(
-            EndpointHeaders::FORBIDDEN_PREFIXES[0].to_owned(),
-            "true".to_owned(),
-        )]);
+        let hdr_map = HashMap::from([("X-Amz-".to_string(), "true".to_owned())]);
         let endpoint_headers = EndpointHeaders(hdr_map);
         assert!(endpoint_headers.validate().is_err());
-    }
-
-    #[test]
-    fn test_endpoint_headers_deserialization() {
-        let js = serde_json::json!(
-        {
-            "NOT_UPPER_CASE": "TRUE",
-            "is_lower_case": "true"
-        });
-        let eph: EndpointHeaders = serde_json::from_value(js).unwrap();
-        assert_eq!(
-            HashMap::from([
-                ("not_upper_case".to_owned(), "TRUE".to_owned()),
-                ("is_lower_case".to_owned(), "true".to_owned()),
-            ]),
-            eph.0
-        );
     }
 
     #[test]
