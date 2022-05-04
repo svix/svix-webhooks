@@ -42,12 +42,19 @@ use super::{
 
 // FIXME: Change unwraps to have our own error type for the queue module entirely
 
-// FIXME: hash-tags here enable clustering but prevent proper sharding of lists
-const MAIN: &str = "{queue}_svix_main";
-const DELAYED: &str = "{queue}_svix_delayed";
+const MAIN: &str = "svix_{queue}_v3_main";
 
-const LEGACY_MAIN: &str = "svix_queue_main";
-const LEGACY_DELAYED: &str = "svix_queue_delayed";
+// TODO: Stream based delayed queue
+// const DELAYED: &str = "svix_queue_v3_delayed";
+
+// FIXME: hash-tags here enable clustering but prevent proper sharding of lists
+const LEGACY_MAIN: &str = "{queue}_svix_main";
+const LEGACY_PROCESSING: &str = "{queue}_svix_processing";
+const LEGACY_DELAYED: &str = "{queue}_svix_delayed";
+
+const LEGACY_LEGACY_MAIN: &str = "svix_queue_main";
+const LEGACY_LEGACY_PROCESSING: &str = "svix_queue_processing";
+const LEGACY_LEGACY_DELAYED: &str = "svix_queue_delayed";
 
 /// Consumer group name constant
 const WORKERS_GROUP: &str = "svix_workers";
@@ -78,6 +85,7 @@ pub async fn new_pair(
             .await
             .expect("Error retreiving connection from Redis pool");
 
+        // TODO: Check error type
         let consumer_group_resp: RedisResult<()> = conn
             .query_async(Cmd::xgroup_create_mkstream(MAIN, WORKERS_GROUP, 0i8))
             .await;
@@ -98,7 +106,8 @@ pub async fn new_pair(
                 let mut pool = pool.get().await.unwrap();
 
                 // drain legacy queues:
-                // migrate_legacy_queues(&mut pool).await;
+                migrate_v1_to_v2_queues(&mut pool).await;
+                migrate_v2_to_v3_queues(&mut pool).await;
             }
 
             loop {
@@ -107,13 +116,15 @@ pub async fn new_pair(
                 // First look for delayed keys whose time is up and add them to the main qunue
                 let timestamp = Utc::now().timestamp();
                 let keys: Vec<String> = pool
-                    .zrangebyscore_limit(DELAYED, 0isize, timestamp, 0isize, batch_size)
+                    .zrangebyscore_limit(LEGACY_DELAYED, 0isize, timestamp, 0isize, batch_size)
                     .await
                     .unwrap();
                 if !keys.is_empty() {
                     // FIXME: needs to be a transaction
-                    let keys: Vec<(String, String)> =
-                        pool.zpopmin(DELAYED, keys.len() as isize).await.unwrap();
+                    let keys: Vec<(String, String)> = pool
+                        .zpopmin(LEGACY_DELAYED, keys.len() as isize)
+                        .await
+                        .unwrap();
                     let keys: Vec<&str> = keys
                         .iter()
                         .map(|x| &x.0)
@@ -248,7 +259,7 @@ impl TaskQueueSend for RedisQueueProducer {
             let delivery = TaskQueueDelivery::new(task, Some(timestamp));
             let key = to_redis_key(&delivery);
             let _: () = pool
-                .zadd(DELAYED, key, timestamp.timestamp())
+                .zadd(LEGACY_DELAYED, key, timestamp.timestamp())
                 .await
                 .unwrap();
         } else {
@@ -344,9 +355,44 @@ impl TaskQueueReceive for RedisQueueConsumer {
     }
 }
 
-async fn migrate_legacy_queues(pool: &mut PooledConnection<'_>) {
-    migrate_list(pool, LEGACY_MAIN, MAIN).await;
-    migrate_sset(pool, LEGACY_DELAYED, DELAYED).await;
+async fn migrate_v2_to_v3_queues(pool: &mut PooledConnection<'_>) {
+    migrate_list_to_stream(pool, LEGACY_MAIN, MAIN).await;
+}
+
+async fn migrate_list_to_stream(pool: &mut PooledConnection<'_>, legacy_queue: &str, queue: &str) {
+    let batch_size = 1000;
+    loop {
+        let legacy_keys: Vec<String> = pool
+            .lpop(legacy_queue, NonZeroUsize::new(batch_size))
+            .await
+            .unwrap();
+        if legacy_keys.is_empty() {
+            break;
+        }
+        tracing::info!(
+            "Migrating {} keys from queue {}",
+            legacy_keys.len(),
+            legacy_queue
+        );
+
+        for key in legacy_keys {
+            let delivery = from_redis_key(&key);
+            let _: () = pool
+                .query_async(Cmd::xadd(
+                    queue,
+                    GENERATE_STREAM_ID,
+                    &[("data", serde_json::to_string(&delivery.task).unwrap())],
+                ))
+                .await
+                .unwrap();
+        }
+    }
+}
+
+async fn migrate_v1_to_v2_queues(pool: &mut PooledConnection<'_>) {
+    migrate_list(pool, LEGACY_LEGACY_MAIN, LEGACY_MAIN).await;
+    migrate_list(pool, LEGACY_LEGACY_PROCESSING, LEGACY_LEGACY_PROCESSING).await;
+    migrate_sset(pool, LEGACY_LEGACY_DELAYED, LEGACY_DELAYED).await;
 }
 
 async fn migrate_list(pool: &mut PooledConnection<'_>, legacy_queue: &str, queue: &str) {
