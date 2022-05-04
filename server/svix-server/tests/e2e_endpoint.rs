@@ -1219,7 +1219,6 @@ async fn test_endpoint_header_key_capitalization() {
         .unwrap();
 
     for k in headers.headers.0.keys() {
-        println!("{}, {:?}", k, retrieved_headers.headers);
         assert!(retrieved_headers.headers.contains_key(k));
     }
 }
