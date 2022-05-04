@@ -115,7 +115,7 @@ impl From<message::Model> for MessageOut {
             event_type: model.event_type,
             payload: match model.payload {
                 Some(payload) => payload,
-                None => serde_json::json!({ "removed": true }),
+                None => serde_json::json!({ "expired": true }),
             },
             channels: model.channels,
             id: model.id,
