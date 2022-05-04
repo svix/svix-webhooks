@@ -49,9 +49,6 @@ const DELAYED: &str = "{queue}_svix_delayed";
 const LEGACY_MAIN: &str = "svix_queue_main";
 const LEGACY_DELAYED: &str = "svix_queue_delayed";
 
-/// After this limit a task should be taken out of the processing queue and rescheduled
-const TASK_VALIDITY_DURATION: Duration = Duration::from_secs(45);
-
 /// Consumer group name constant
 const WORKERS_GROUP: &str = "svix_workers";
 /// Consumer group consumer name constant
@@ -70,7 +67,10 @@ fn regenerate_key(msg: &str) -> String {
     to_redis_key(&delivery)
 }
 
-pub async fn new_pair(pool: RedisPool) -> (TaskQueueProducer, TaskQueueConsumer) {
+pub async fn new_pair(
+    pool: RedisPool,
+    pending_duration: Duration,
+) -> (TaskQueueProducer, TaskQueueConsumer) {
     // Create the stream and consumer group for the MAIN queue should it not already exist
     {
         let mut conn = pool
@@ -83,19 +83,22 @@ pub async fn new_pair(pool: RedisPool) -> (TaskQueueProducer, TaskQueueConsumer)
             .await;
     }
 
+    let pending_duration: i64 = pending_duration
+        .as_millis()
+        .try_into()
+        .expect("Pending duration out of bounds");
+
     tokio::spawn({
         let pool = pool.clone();
         async move {
             // FIXME: enforce we only have one such worker (locking)
             let batch_size: isize = 50;
-            let task_validity_duration =
-                chrono::Duration::from_std(TASK_VALIDITY_DURATION).unwrap();
 
             {
                 let mut pool = pool.get().await.unwrap();
 
                 // drain legacy queues:
-                migrate_legacy_queues(&mut pool).await;
+                // migrate_legacy_queues(&mut pool).await;
             }
 
             loop {
@@ -137,36 +140,28 @@ pub async fn new_pair(pool: RedisPool) -> (TaskQueueProducer, TaskQueueConsumer)
 
                 // Every iteration here also check whether the processing queue has items that
                 // should be picked back up
-                let mut cmd = Cmd::xpending(MAIN, WORKERS_GROUP);
-                // [`Cmd::arg`] returns a mutable reference to the command, and the pool's
-                // [`query_async`] takes ownership of the command, so this ugly dropping of the
-                // reference is needed for now.
-                let _ = cmd.arg("IDLE").arg(45000i32);
+                let mut cmd = redis::cmd("XPENDING");
+                let _ = cmd
+                    .arg(MAIN)
+                    .arg(WORKERS_GROUP)
+                    .arg("IDLE")
+                    .arg(pending_duration)
+                    .arg("-")
+                    .arg("+")
+                    .arg(1000);
 
-                // The `XPENDING` command contains metdata on the start and end IDs plus the count
-                // of keys that excepeed the above idle time
-                let key_metdata: StreamPendingReply = pool.query_async(cmd).await.unwrap();
+                let keys: StreamPendingCountReply = pool.query_async(cmd).await.unwrap();
 
-                if let StreamPendingReply::Data(data) = key_metdata {
-                    let min = data.start_id;
-                    let max = data.end_id;
-                    let count = data.count;
+                let ids: Vec<String> = keys.ids.into_iter().map(|id| id.id).collect();
 
-                    // So use the expanded version of `XPENDING` with a minimum, maximum, and count
-                    // to return the exact set of IDs that exceed the given time
-                    let mut cmd = Cmd::xpending_count(MAIN, WORKERS_GROUP, min, max, count);
-                    let _ = cmd.arg("IDLE").arg(45000i32);
-
-                    let keys: StreamPendingCountReply = pool.query_async(cmd).await.unwrap();
-                    let ids: Vec<String> = keys.ids.into_iter().map(|id| id.id).collect();
-
+                if !ids.is_empty() {
                     // You can then claim all these IDs to receive the KV pairs associated with each
                     let claimed: StreamClaimReply = pool
                         .query_async(Cmd::xclaim(
                             MAIN,
                             WORKERS_GROUP,
                             WORKER_CONSUMER,
-                            450000i32,
+                            pending_duration,
                             &ids,
                         ))
                         .await
@@ -316,16 +311,23 @@ impl TaskQueueReceive for RedisQueueConsumer {
     async fn receive_all(&mut self) -> Result<Vec<TaskQueueDelivery>> {
         let mut pool = self.pool.get().await.unwrap();
 
-        let mut resp: StreamReadReply = pool
-            .query_async(Cmd::xread_options(
-                &[MAIN],
-                &[LISTEN_STREAM_ID],
-                &StreamReadOptions::default()
-                    .group(WORKERS_GROUP, WORKER_CONSUMER)
-                    .count(1),
-            ))
-            .await
-            .unwrap();
+        let mut resp = loop {
+            let resp: StreamReadReply = pool
+                .query_async(Cmd::xread_options(
+                    &[MAIN],
+                    &[LISTEN_STREAM_ID],
+                    &StreamReadOptions::default()
+                        .group(WORKERS_GROUP, WORKER_CONSUMER)
+                        .count(1)
+                        .block(500_000_000),
+                ))
+                .await
+                .unwrap();
+
+            if resp.keys[0].ids.len() > 0 {
+                break resp;
+            }
+        };
 
         let id = std::mem::take(&mut resp.keys[0].ids[0].id);
         let map = std::mem::take(&mut resp.keys[0].ids[0].map);
@@ -391,10 +393,14 @@ async fn migrate_sset(pool: &mut PooledConnection<'_>, legacy_queue: &str, queue
 #[cfg(test)]
 mod tests {
 
-    use super::{migrate_list, migrate_sset};
+    use std::time::Duration;
+
+    use super::{migrate_list, migrate_sset, new_pair};
 
     use crate::{
         cfg::{CacheType, Configuration},
+        core::types::{ApplicationId, EndpointId, MessageAttemptTriggerType, MessageId},
+        queue::{MessageTask, QueueTask},
         redis::{PoolLike, PooledConnectionLike, RedisPool},
     };
 
@@ -473,5 +479,44 @@ mod tests {
 
         let should_be_none: Vec<(String, i32)> = pool.zpopmin(TEST_LEGACY, 1).await.unwrap();
         assert!(should_be_none.is_empty());
+    }
+
+    #[tokio::test]
+    async fn test_idle_period() {
+        let cfg = crate::cfg::load().unwrap();
+        let pool = get_pool(cfg).await;
+
+        let (p, mut c) = new_pair(pool, Duration::from_millis(100)).await;
+
+        let mt = QueueTask::MessageV1(MessageTask {
+            msg_id: MessageId("test".to_owned()),
+            app_id: ApplicationId("test".to_owned()),
+            endpoint_id: EndpointId("test".to_owned()),
+            trigger_type: MessageAttemptTriggerType::Manual,
+            attempt_count: 0,
+        });
+        p.send(mt.clone(), None).await.unwrap();
+
+        tokio::select! {
+            recv = c.receive() => {
+                assert_eq!(recv.unwrap().task, mt);
+            }
+
+            _ = tokio::time::sleep(Duration::from_secs(5)) => {
+                panic!("`c.receive()` has timed out")
+            }
+        }
+
+        tokio::time::sleep(Duration::from_millis(100)).await;
+
+        tokio::select! {
+            recv = c.receive() => {
+                assert_eq!(recv.unwrap().task, mt);
+            }
+
+            _ = tokio::time::sleep(Duration::from_secs(5)) => {
+                panic!("`c.receive()` has timed out")
+            }
+        }
     }
 }
