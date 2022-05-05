@@ -55,9 +55,9 @@ const LEGACY_LEGACY_PROCESSING: &str = "svix_queue_processing";
 const LEGACY_LEGACY_DELAYED: &str = "svix_queue_delayed";
 
 /// Consumer group name constant
-const WORKERS_GROUP: &str = "svix_workers";
+const WORKERS_GROUP: &str = "svix_workers_group";
 /// Consumer group consumer name constant
-const WORKER_CONSUMER: &str = "svix_worker";
+const WORKER_CONSUMER: &str = "svix_workers_consumer";
 
 /// Special key for XADD command's which generates a real key automatically
 const GENERATE_STREAM_ID: &str = "*";
@@ -327,6 +327,7 @@ impl TaskQueueSend for RedisQueueProducer {
     }
 }
 
+#[derive(Debug, Clone)]
 pub struct RedisQueueConsumer {
     pool: RedisPool,
     main_queue_name: &'static str,
@@ -345,13 +346,15 @@ impl TaskQueueReceive for RedisQueueConsumer {
                     &StreamReadOptions::default()
                         .group(WORKERS_GROUP, WORKER_CONSUMER)
                         .count(1)
-                        .block(500_000_000),
+                        .block(500),
                 ))
                 .await
                 .unwrap();
 
-            if resp.keys[0].ids.len() > 0 {
-                break resp;
+            if !resp.keys.is_empty() {
+                if !resp.keys[0].ids.is_empty() {
+                    break resp;
+                }
             }
         };
 
@@ -461,7 +464,7 @@ mod tests {
     use crate::{
         cfg::{CacheType, Configuration},
         core::types::{ApplicationId, EndpointId, MessageAttemptTriggerType, MessageId},
-        queue::{MessageTask, QueueTask},
+        queue::{MessageTask, QueueTask, TaskQueueConsumer, TaskQueueProducer},
         redis::{PoolLike, PooledConnectionLike, RedisPool},
     };
 
@@ -542,6 +545,25 @@ mod tests {
         assert!(should_be_none.is_empty());
     }
 
+    /// Reads and acknowledges all items in the queue with the given name for clearing out entries
+    /// from previous test runs
+    async fn flush_stale_queue_items(p: TaskQueueProducer, c: &mut TaskQueueConsumer) {
+        'outer: loop {
+            tokio::select! {
+                recv = c.receive() => {
+                    println!("HERE");
+                    let recv = recv.unwrap();
+                    p.ack(recv).await.unwrap();
+                }
+
+                _ = tokio::time::sleep(Duration::from_millis(100)) => {
+                    println!("BREAK");
+                    break 'outer;
+                }
+            }
+        }
+    }
+
     #[tokio::test]
     async fn test_idle_period() {
         let cfg = crate::cfg::load().unwrap();
@@ -549,6 +571,9 @@ mod tests {
 
         let (p, mut c) =
             new_pair_inner(pool, Duration::from_millis(100), "{test}_idle_period").await;
+
+		tokio::time::sleep(Duration::from_millis(150)).await;
+        flush_stale_queue_items(p.clone(), &mut c).await;
 
         let mt = QueueTask::MessageV1(MessageTask {
             msg_id: MessageId("test".to_owned()),
@@ -591,6 +616,10 @@ mod tests {
         let pool = get_pool(cfg).await;
 
         let (p, mut c) = new_pair_inner(pool, Duration::from_millis(500), "{test}_ack").await;
+
+		tokio::time::sleep(Duration::from_millis(550)).await;
+
+        flush_stale_queue_items(p.clone(), &mut c).await;
 
         let mt = QueueTask::MessageV1(MessageTask {
             msg_id: MessageId("test2".to_owned()),
