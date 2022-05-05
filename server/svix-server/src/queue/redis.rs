@@ -22,16 +22,14 @@ use axum::async_trait;
 use chrono::Utc;
 use redis::{
     streams::{
-        StreamClaimReply, StreamId, StreamPendingCountReply, StreamPendingReply, StreamRangeReply,
-        StreamReadOptions, StreamReadReply,
+        StreamClaimReply, StreamId, StreamPendingCountReply, StreamReadOptions, StreamReadReply,
     },
     Cmd, RedisResult, RedisWrite, ToRedisArgs,
 };
-use svix_ksuid::*;
 use tokio::time::sleep;
 
 use crate::{
-    error::{Error, Result},
+    error::Result,
     redis::{PoolLike, PooledConnection, PooledConnectionLike, RedisPool},
 };
 
@@ -42,7 +40,7 @@ use super::{
 
 // FIXME: Change unwraps to have our own error type for the queue module entirely
 
-pub const MAIN: &str = "svix_{queue}_v3_main";
+const MAIN: &str = "svix_{queue}_v3_main";
 
 // TODO: Stream based delayed queue
 // const DELAYED: &str = "svix_queue_v3_delayed";
@@ -66,7 +64,11 @@ const GENERATE_STREAM_ID: &str = "*";
 /// Special key for XREADGROUP commands which reads any new messages
 const LISTEN_STREAM_ID: &str = ">";
 
-pub async fn new_pair(
+pub async fn new_pair(pool: RedisPool) -> (TaskQueueProducer, TaskQueueConsumer) {
+    new_pair_inner(pool, Duration::from_secs(45), MAIN).await
+}
+
+async fn new_pair_inner(
     pool: RedisPool,
     pending_duration: Duration,
     main_queue_name: &'static str,
@@ -454,7 +456,7 @@ mod tests {
 
     use std::time::Duration;
 
-    use super::{migrate_list, migrate_sset, new_pair};
+    use super::{migrate_list, migrate_sset, new_pair_inner};
 
     use crate::{
         cfg::{CacheType, Configuration},
@@ -545,7 +547,8 @@ mod tests {
         let cfg = crate::cfg::load().unwrap();
         let pool = get_pool(cfg).await;
 
-        let (p, mut c) = new_pair(pool, Duration::from_millis(100), "{test}_idle_period").await;
+        let (p, mut c) =
+            new_pair_inner(pool, Duration::from_millis(100), "{test}_idle_period").await;
 
         let mt = QueueTask::MessageV1(MessageTask {
             msg_id: MessageId("test".to_owned()),
@@ -587,7 +590,7 @@ mod tests {
         let cfg = crate::cfg::load().unwrap();
         let pool = get_pool(cfg).await;
 
-        let (p, mut c) = new_pair(pool, Duration::from_millis(500), "{test}_ack").await;
+        let (p, mut c) = new_pair_inner(pool, Duration::from_millis(500), "{test}_ack").await;
 
         let mt = QueueTask::MessageV1(MessageTask {
             msg_id: MessageId("test2".to_owned()),
