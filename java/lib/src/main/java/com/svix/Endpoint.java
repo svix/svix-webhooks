@@ -4,6 +4,7 @@ import com.svix.exceptions.ApiException;
 import com.svix.internal.api.EndpointApi;
 import com.svix.models.EndpointHeadersIn;
 import com.svix.models.EndpointHeadersOut;
+import com.svix.models.EndpointHeadersPatchIn;
 import com.svix.models.EndpointIn;
 import com.svix.models.EndpointOut;
 import com.svix.models.EndpointUpdate;
@@ -111,7 +112,7 @@ public final class Endpoint {
 		}
 	}
 
-	public void patchHeaders(final String appId, final String endpointId, final EndpointHeadersIn endpointHeadersIn) throws ApiException {
+	public void patchHeaders(final String appId, final String endpointId, final EndpointHeadersPatchIn endpointHeadersIn) throws ApiException {
 		try {
 			api.patchEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPatch(appId, endpointId, endpointHeadersIn, null);
 		} catch (com.svix.internal.ApiException e) {

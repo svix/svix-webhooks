@@ -64,6 +64,7 @@ from .internal.openapi_client.models.application_out import ApplicationOut
 from .internal.openapi_client.models.dashboard_access_out import DashboardAccessOut
 from .internal.openapi_client.models.endpoint_headers_in import EndpointHeadersIn
 from .internal.openapi_client.models.endpoint_headers_out import EndpointHeadersOut
+from .internal.openapi_client.models.endpoint_headers_patch_in import EndpointHeadersPatchIn
 from .internal.openapi_client.models.endpoint_in import EndpointIn
 from .internal.openapi_client.models.endpoint_message_out_payload import EndpointMessageOutPayload
 from .internal.openapi_client.models.endpoint_out import EndpointOut
@@ -328,7 +329,7 @@ class EndpointAsync(ApiBase):
             json_body=endpoint_headers_in,
         )
 
-    async def patch_headers(self, app_id: str, endpoint_id: str, endpoint_headers_in: EndpointHeadersIn) -> None:
+    async def patch_headers(self, app_id: str, endpoint_id: str, endpoint_headers_in: EndpointHeadersPatchIn) -> None:
         return await patch_endpoint_headers_api_v1_app_app_id_endpoint_endpoint_id_headers_patch.asyncio(
             client=self._client,
             app_id=app_id,
@@ -421,7 +422,7 @@ class Endpoint(ApiBase):
             json_body=endpoint_headers_in,
         )
 
-    def patch_headers(self, app_id: str, endpoint_id: str, endpoint_headers_in: EndpointHeadersIn) -> None:
+    def patch_headers(self, app_id: str, endpoint_id: str, endpoint_headers_in: EndpointHeadersPatchIn) -> None:
         return patch_endpoint_headers_api_v1_app_app_id_endpoint_endpoint_id_headers_patch.sync(
             client=self._client,
             app_id=app_id,
@@ -891,6 +892,7 @@ __all__ = [
     "ListResponseApplicationOut",
     "DashboardAccessOut",
     "EndpointHeadersIn",
+    "EndpointHeadersPatchIn",
     "EndpointHeadersOut",
     "EndpointIn",
     "EndpointOut",

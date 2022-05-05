@@ -4,6 +4,7 @@ import com.svix.kotlin.exceptions.ApiException
 import com.svix.kotlin.internal.apis.EndpointApi
 import com.svix.kotlin.models.EndpointHeadersIn
 import com.svix.kotlin.models.EndpointHeadersOut
+import com.svix.kotlin.models.EndpointHeadersPatchIn
 import com.svix.kotlin.models.EndpointIn
 import com.svix.kotlin.models.EndpointOut
 import com.svix.kotlin.models.EndpointSecretOut
@@ -115,7 +116,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun patchHeaders(appId: String, endpointId: String, endpointHeadersIn: EndpointHeadersIn) {
+    suspend fun patchHeaders(appId: String, endpointId: String, endpointHeadersIn: EndpointHeadersPatchIn) {
         try {
             api.patchEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPatch(appId, endpointId, endpointHeadersIn, null)
         } catch (e: Exception) {

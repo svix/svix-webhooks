@@ -15,6 +15,7 @@ type (
 	EndpointSecretRotateIn  openapi.EndpointSecretRotateIn
 	RecoverIn               openapi.RecoverIn
 	EndpointHeadersIn       openapi.EndpointHeadersIn
+	EndpointHeadersPatchIn  openapi.EndpointHeadersPatchIn
 	EndpointHeadersOut      openapi.EndpointHeadersOut
 )
 
@@ -160,9 +161,9 @@ func (e *Endpoint) UpdateHeaders(appId string, endpointId string, endpointHeader
 	return nil
 }
 
-func (e *Endpoint) PatchHeaders(appId string, endpointId string, endpointHeadersIn *EndpointHeadersIn) error {
+func (e *Endpoint) PatchHeaders(appId string, endpointId string, endpointHeadersIn *EndpointHeadersPatchIn) error {
 	req := e.api.EndpointApi.PatchEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPatch(context.Background(), appId, endpointId)
-	req = req.EndpointHeadersIn(openapi.EndpointHeadersIn(*endpointHeadersIn))
+	req = req.EndpointHeadersPatchIn(openapi.EndpointHeadersPatchIn(*endpointHeadersIn))
 	res, err := req.Execute()
 	if err != nil {
 		return wrapError(err, res)

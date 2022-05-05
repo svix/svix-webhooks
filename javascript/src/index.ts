@@ -15,6 +15,7 @@ import {
   EndpointSecretOut,
   EndpointSecretRotateIn,
   EndpointHeadersIn,
+  EndpointHeadersPatchIn,
   EndpointHeadersOut,
   RecoverIn,
   IntegrationApi,
@@ -316,12 +317,12 @@ class Endpoint {
   public patchHeaders(
     appId: string,
     endpointId: string,
-    endpointHeadersIn: EndpointHeadersIn
+    endpointHeadersPatchIn: EndpointHeadersPatchIn
   ): Promise<void> {
     return this.api.patchEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPatch({
       appId,
       endpointId,
-      endpointHeadersIn,
+      endpointHeadersPatchIn,
     });
   }
 }
