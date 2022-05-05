@@ -93,111 +93,110 @@ pub async fn new_pair(
         .try_into()
         .expect("Pending duration out of bounds");
 
-    tokio::spawn({
-        let pool = pool.clone();
-        async move {
-            // FIXME: enforce we only have one such worker (locking)
-            let batch_size: isize = 50;
+    let worker_pool = pool.clone();
+    tokio::spawn(async move {
+        // FIXME: enforce we only have one such worker (locking)
+        let batch_size: isize = 50;
+        let pool = worker_pool;
 
-            {
-                let mut pool = pool.get().await.unwrap();
+        {
+            let mut pool = pool.get().await.unwrap();
 
-                // drain legacy queues:
-                migrate_v1_to_v2_queues(&mut pool).await;
-                migrate_v2_to_v3_queues(&mut pool).await;
-            }
+            // drain legacy queues:
+            migrate_v1_to_v2_queues(&mut pool).await;
+            migrate_v2_to_v3_queues(&mut pool).await;
+        }
 
-            loop {
-                let mut pool = pool.get().await.unwrap();
+        loop {
+            let mut pool = pool.get().await.unwrap();
 
-                // First look for delayed keys whose time is up and add them to the main qunue
-                let timestamp = Utc::now().timestamp();
-                let keys: Vec<String> = pool
-                    .zrangebyscore_limit(LEGACY_DELAYED, 0isize, timestamp, 0isize, batch_size)
+            // First look for delayed keys whose time is up and add them to the main qunue
+            let timestamp = Utc::now().timestamp();
+            let keys: Vec<String> = pool
+                .zrangebyscore_limit(LEGACY_DELAYED, 0isize, timestamp, 0isize, batch_size)
+                .await
+                .unwrap();
+            if !keys.is_empty() {
+                // FIXME: needs to be a transaction
+                let keys: Vec<(String, String)> = pool
+                    .zpopmin(LEGACY_DELAYED, keys.len() as isize)
                     .await
                     .unwrap();
-                if !keys.is_empty() {
-                    // FIXME: needs to be a transaction
-                    let keys: Vec<(String, String)> = pool
-                        .zpopmin(LEGACY_DELAYED, keys.len() as isize)
-                        .await
-                        .unwrap();
-                    let keys: Vec<&str> = keys
-                        .iter()
-                        .map(|x| &x.0)
-                        .map(|x| x.split('|').nth(1).expect("Improper key format"))
-                        .collect();
+                let keys: Vec<&str> = keys
+                    .iter()
+                    .map(|x| &x.0)
+                    .map(|x| x.split('|').nth(1).expect("Improper key format"))
+                    .collect();
 
-                    for key in keys {
-                        let _: () = pool
-                            .query_async(Cmd::xadd(
-                                &main_queue_name,
-                                GENERATE_STREAM_ID,
-                                &[(
-                                    "data",
-                                    serde_json::to_string(key).expect("Serializaion error"),
-                                )],
-                            ))
-                            .await
-                            .unwrap();
-                    }
-                } else {
-                    // Wait for half a second before attempting to fetch again if nothing was found
-                    sleep(Duration::from_millis(500)).await;
-                }
-
-                // Every iteration here also check whether the processing queue has items that
-                // should be picked back up
-                let mut cmd = redis::cmd("XPENDING");
-                let _ = cmd
-                    .arg(&main_queue_name)
-                    .arg(WORKERS_GROUP)
-                    .arg("IDLE")
-                    .arg(pending_duration)
-                    .arg("-")
-                    .arg("+")
-                    .arg(1000);
-
-                let keys: StreamPendingCountReply = pool.query_async(cmd).await.unwrap();
-
-                let ids: Vec<String> = keys.ids.into_iter().map(|id| id.id).collect();
-
-                if !ids.is_empty() {
-                    // You can then claim all these IDs to receive the KV pairs associated with each
-                    let claimed: StreamClaimReply = pool
-                        .query_async(Cmd::xclaim(
+                for key in keys {
+                    let _: () = pool
+                        .query_async(Cmd::xadd(
                             &main_queue_name,
-                            WORKERS_GROUP,
-                            WORKER_CONSUMER,
-                            pending_duration,
-                            &ids,
+                            GENERATE_STREAM_ID,
+                            &[(
+                                "data",
+                                serde_json::to_string(key).expect("Serializaion error"),
+                            )],
                         ))
                         .await
                         .unwrap();
+                }
+            } else {
+                // Wait for half a second before attempting to fetch again if nothing was found
+                sleep(Duration::from_millis(500)).await;
+            }
 
-                    // Acknowledge all the stale ones so the pending queue is cleared
+            // Every iteration here also check whether the processing queue has items that
+            // should be picked back up
+            let mut cmd = redis::cmd("XPENDING");
+            let _ = cmd
+                .arg(&main_queue_name)
+                .arg(WORKERS_GROUP)
+                .arg("IDLE")
+                .arg(pending_duration)
+                .arg("-")
+                .arg("+")
+                .arg(1000);
+
+            let keys: StreamPendingCountReply = pool.query_async(cmd).await.unwrap();
+
+            let ids: Vec<String> = keys.ids.into_iter().map(|id| id.id).collect();
+
+            if !ids.is_empty() {
+                // You can then claim all these IDs to receive the KV pairs associated with each
+                let claimed: StreamClaimReply = pool
+                    .query_async(Cmd::xclaim(
+                        &main_queue_name,
+                        WORKERS_GROUP,
+                        WORKER_CONSUMER,
+                        pending_duration,
+                        &ids,
+                    ))
+                    .await
+                    .unwrap();
+
+                // Acknowledge all the stale ones so the pending queue is cleared
+                let _: RedisResult<()> = pool
+                    .query_async(Cmd::xack(&main_queue_name, WORKERS_GROUP, &ids))
+                    .await;
+
+                // And reinsert the map of KV pairs into the MAIN qunue with a new stream ID
+                for StreamId { map, .. } in claimed.ids {
                     let _: RedisResult<()> = pool
-                        .query_async(Cmd::xack(&main_queue_name, WORKERS_GROUP, &ids))
+                        .query_async(Cmd::xadd(
+                            &main_queue_name,
+                            GENERATE_STREAM_ID,
+                            &map.iter()
+                                .filter_map(|(k, v)| {
+                                    if let redis::Value::Data(data) = v {
+                                        Some((k.as_str(), data.as_slice()))
+                                    } else {
+                                        None
+                                    }
+                                })
+                                .collect::<Vec<(&str, &[u8])>>(),
+                        ))
                         .await;
-
-                    // And reinsert the map of KV pairs into the MAIN qunue with a new stream ID
-                    for StreamId { map, .. } in claimed.ids {
-                        let _: RedisResult<()> = pool
-                            .query_async(Cmd::xadd(
-                                &main_queue_name,
-                                GENERATE_STREAM_ID,
-                                &map.iter()
-                                    .filter_map(|(k, v)| {
-                                        if let redis::Value::Data(data) = v {
-                                            Some((k.as_str(), data.as_slice()))
-                                        } else {
-                                            None
-                                        }
-                                    })
-                                    .collect::<Vec<(&str, &[u8])>>(),
-                            ))
-                            .await;
-                    }
                 }
             }
         }
