@@ -52,7 +52,7 @@ sqlx = { version = "0.5", features = [ "runtime-tokio-rustls", "postgres", "migr
 http = "0.2"
 time = { version = "0.3.9", features = [ "std" ]}
 futures = "0.3"
-redis_cluster_async = { git = "https://github.com/svix/redis-cluster-async" }
+redis_cluster_async = { git = "https://github.com/svix/redis-cluster-async", rev = "3d18fc2"}
 
 [dev-dependencies]
 anyhow = "1.0.56"
