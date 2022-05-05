@@ -192,6 +192,16 @@ func (a *EndpointApiService) CreateEndpointApiV1AppAppIdEndpointPostExecute(r Ap
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
 			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -369,6 +379,16 @@ func (a *EndpointApiService) DeleteEndpointApiV1AppAppIdEndpointEndpointIdDelete
 				return localVarHTTPResponse, newErr
 			}
 			newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.model = v
 		}
 		return localVarHTTPResponse, newErr
 	}
@@ -533,6 +553,16 @@ func (a *EndpointApiService) GetEndpointApiV1AppAppIdEndpointEndpointIdGetExecut
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
 			var v HTTPValidationError
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v HttpErrorOut
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -712,6 +742,16 @@ func (a *EndpointApiService) GetEndpointHeadersApiV1AppAppIdEndpointEndpointIdHe
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
 			var v HTTPValidationError
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v HttpErrorOut
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -900,6 +940,16 @@ func (a *EndpointApiService) GetEndpointSecretApiV1AppAppIdEndpointEndpointIdSec
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
 			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -1073,6 +1123,16 @@ func (a *EndpointApiService) GetEndpointStatsApiV1AppAppIdEndpointEndpointIdStat
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
 			var v HTTPValidationError
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v HttpErrorOut
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1264,6 +1324,16 @@ func (a *EndpointApiService) ListEndpointsApiV1AppAppIdEndpointGetExecute(r ApiL
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
 			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -1285,12 +1355,12 @@ type ApiPatchEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPatchRequest s
 	ApiService *EndpointApiService
 	appId string
 	endpointId string
-	endpointHeadersIn *EndpointHeadersIn
+	endpointHeadersPatchIn *EndpointHeadersPatchIn
 	idempotencyKey *string
 }
 
-func (r ApiPatchEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPatchRequest) EndpointHeadersIn(endpointHeadersIn EndpointHeadersIn) ApiPatchEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPatchRequest {
-	r.endpointHeadersIn = &endpointHeadersIn
+func (r ApiPatchEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPatchRequest) EndpointHeadersPatchIn(endpointHeadersPatchIn EndpointHeadersPatchIn) ApiPatchEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPatchRequest {
+	r.endpointHeadersPatchIn = &endpointHeadersPatchIn
 	return r
 }
 func (r ApiPatchEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPatchRequest) IdempotencyKey(idempotencyKey string) ApiPatchEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPatchRequest {
@@ -1355,8 +1425,8 @@ func (a *EndpointApiService) PatchEndpointHeadersApiV1AppAppIdEndpointEndpointId
 	if strlen(r.endpointId) > 256 {
 		return nil, reportError("endpointId must have less than 256 elements")
 	}
-	if r.endpointHeadersIn == nil {
-		return nil, reportError("endpointHeadersIn is required and must be specified")
+	if r.endpointHeadersPatchIn == nil {
+		return nil, reportError("endpointHeadersPatchIn is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -1380,7 +1450,7 @@ func (a *EndpointApiService) PatchEndpointHeadersApiV1AppAppIdEndpointEndpointId
 		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	// body params
-	localVarPostBody = r.endpointHeadersIn
+	localVarPostBody = r.endpointHeadersPatchIn
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return nil, err
@@ -1445,6 +1515,16 @@ func (a *EndpointApiService) PatchEndpointHeadersApiV1AppAppIdEndpointEndpointId
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
 			var v HTTPValidationError
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v HttpErrorOut
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1625,6 +1705,16 @@ func (a *EndpointApiService) RecoverFailedWebhooksApiV1AppAppIdEndpointEndpointI
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
 			var v HTTPValidationError
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v HttpErrorOut
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1828,6 +1918,16 @@ func (a *EndpointApiService) RotateEndpointSecretApiV1AppAppIdEndpointEndpointId
 				return localVarHTTPResponse, newErr
 			}
 			newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.model = v
 		}
 		return localVarHTTPResponse, newErr
 	}
@@ -2012,6 +2112,16 @@ func (a *EndpointApiService) SendEventTypeExampleMessageApiV1AppAppIdEndpointEnd
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
 			var v HTTPValidationError
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v HttpErrorOut
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -2207,6 +2317,16 @@ func (a *EndpointApiService) UpdateEndpointApiV1AppAppIdEndpointEndpointIdPutExe
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
 			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -2388,6 +2508,16 @@ func (a *EndpointApiService) UpdateEndpointHeadersApiV1AppAppIdEndpointEndpointI
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
 			var v HTTPValidationError
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v HttpErrorOut
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
