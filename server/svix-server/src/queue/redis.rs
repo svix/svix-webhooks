@@ -1,4 +1,4 @@
-/// Redis queue implementation
+// Redis queue implementation
 ///
 /// This implementation uses the following data structures:
 /// - A "tasks to be processed" queue - which is what the consumer listens to for tasks.
@@ -42,7 +42,7 @@ use super::{
 
 // FIXME: Change unwraps to have our own error type for the queue module entirely
 
-const MAIN: &str = "svix_{queue}_v3_main";
+pub const MAIN: &str = "svix_{queue}_v3_main";
 
 // TODO: Stream based delayed queue
 // const DELAYED: &str = "svix_queue_v3_delayed";
@@ -66,17 +66,10 @@ const GENERATE_STREAM_ID: &str = "*";
 /// Special key for XREADGROUP commands which reads any new messages
 const LISTEN_STREAM_ID: &str = ">";
 
-/// Resets the message delivery time, which is used to determine whether a delayed or in-process
-/// message should be put back onto the main queue
-fn regenerate_key(msg: &str) -> String {
-    let task = from_redis_key(msg).task;
-    let delivery = TaskQueueDelivery::new(task, None);
-    to_redis_key(&delivery)
-}
-
 pub async fn new_pair(
     pool: RedisPool,
     pending_duration: Duration,
+    main_queue_name: &'static str,
 ) -> (TaskQueueProducer, TaskQueueConsumer) {
     // Create the stream and consumer group for the MAIN queue should it not already exist
     {
@@ -87,7 +80,11 @@ pub async fn new_pair(
 
         // TODO: Check error type
         let consumer_group_resp: RedisResult<()> = conn
-            .query_async(Cmd::xgroup_create_mkstream(MAIN, WORKERS_GROUP, 0i8))
+            .query_async(Cmd::xgroup_create_mkstream(
+                &main_queue_name,
+                WORKERS_GROUP,
+                0i8,
+            ))
             .await;
     }
 
@@ -134,7 +131,7 @@ pub async fn new_pair(
                     for key in keys {
                         let _: () = pool
                             .query_async(Cmd::xadd(
-                                MAIN,
+                                &main_queue_name,
                                 GENERATE_STREAM_ID,
                                 &[(
                                     "data",
@@ -153,7 +150,7 @@ pub async fn new_pair(
                 // should be picked back up
                 let mut cmd = redis::cmd("XPENDING");
                 let _ = cmd
-                    .arg(MAIN)
+                    .arg(&main_queue_name)
                     .arg(WORKERS_GROUP)
                     .arg("IDLE")
                     .arg(pending_duration)
@@ -169,7 +166,7 @@ pub async fn new_pair(
                     // You can then claim all these IDs to receive the KV pairs associated with each
                     let claimed: StreamClaimReply = pool
                         .query_async(Cmd::xclaim(
-                            MAIN,
+                            &main_queue_name,
                             WORKERS_GROUP,
                             WORKER_CONSUMER,
                             pending_duration,
@@ -179,14 +176,15 @@ pub async fn new_pair(
                         .unwrap();
 
                     // Acknowledge all the stale ones so the pending queue is cleared
-                    let _: RedisResult<()> =
-                        pool.query_async(Cmd::xack(MAIN, WORKERS_GROUP, &ids)).await;
+                    let _: RedisResult<()> = pool
+                        .query_async(Cmd::xack(&main_queue_name, WORKERS_GROUP, &ids))
+                        .await;
 
                     // And reinsert the map of KV pairs into the MAIN qunue with a new stream ID
                     for StreamId { map, .. } in claimed.ids {
                         let _: RedisResult<()> = pool
                             .query_async(Cmd::xadd(
-                                MAIN,
+                                &main_queue_name,
                                 GENERATE_STREAM_ID,
                                 &map.iter()
                                     .filter_map(|(k, v)| {
@@ -205,8 +203,14 @@ pub async fn new_pair(
         }
     });
     (
-        TaskQueueProducer(Box::new(RedisQueueProducer { pool: pool.clone() })),
-        TaskQueueConsumer(Box::new(RedisQueueConsumer { pool })),
+        TaskQueueProducer(Box::new(RedisQueueProducer {
+            pool: pool.clone(),
+            main_queue_name,
+        })),
+        TaskQueueConsumer(Box::new(RedisQueueConsumer {
+            pool,
+            main_queue_name,
+        })),
     )
 }
 
@@ -232,6 +236,7 @@ impl ToRedisArgs for Direction {
 #[derive(Clone)]
 pub struct RedisQueueProducer {
     pool: RedisPool,
+    main_queue_name: &'static str,
 }
 
 fn to_redis_key(delivery: &TaskQueueDelivery) -> String {
@@ -265,7 +270,7 @@ impl TaskQueueSend for RedisQueueProducer {
         } else {
             let _: () = pool
                 .query_async(Cmd::xadd(
-                    MAIN,
+                    &self.main_queue_name,
                     GENERATE_STREAM_ID,
                     &[("data", serde_json::to_string(&task).unwrap())],
                 ))
@@ -279,7 +284,11 @@ impl TaskQueueSend for RedisQueueProducer {
     async fn ack(&self, delivery: TaskQueueDelivery) -> Result<()> {
         let mut pool = self.pool.get().await.unwrap();
         let processed: u8 = pool
-            .query_async(Cmd::xack(MAIN, WORKERS_GROUP, &[delivery.id.as_str()]))
+            .query_async(Cmd::xack(
+                self.main_queue_name,
+                WORKERS_GROUP,
+                &[delivery.id.as_str()],
+            ))
             .await
             .unwrap();
         if processed != 1 {
@@ -297,7 +306,11 @@ impl TaskQueueSend for RedisQueueProducer {
         // FIXME: do something else here?
         let mut pool = self.pool.get().await.unwrap();
         let _: () = pool
-            .query_async(Cmd::xack(MAIN, WORKERS_GROUP, &[delivery.id.as_str()]))
+            .query_async(Cmd::xack(
+                self.main_queue_name,
+                WORKERS_GROUP,
+                &[delivery.id.as_str()],
+            ))
             .await
             .unwrap();
         tracing::error!(
@@ -315,6 +328,7 @@ impl TaskQueueSend for RedisQueueProducer {
 
 pub struct RedisQueueConsumer {
     pool: RedisPool,
+    main_queue_name: &'static str,
 }
 
 #[async_trait]
@@ -325,7 +339,7 @@ impl TaskQueueReceive for RedisQueueConsumer {
         let mut resp = loop {
             let resp: StreamReadReply = pool
                 .query_async(Cmd::xread_options(
-                    &[MAIN],
+                    &[self.main_queue_name],
                     &[LISTEN_STREAM_ID],
                     &StreamReadOptions::default()
                         .group(WORKERS_GROUP, WORKER_CONSUMER)
@@ -532,7 +546,7 @@ mod tests {
         let cfg = crate::cfg::load().unwrap();
         let pool = get_pool(cfg).await;
 
-        let (p, mut c) = new_pair(pool, Duration::from_millis(100)).await;
+        let (p, mut c) = new_pair(pool, Duration::from_millis(100), "{test}_idle_period").await;
 
         let mt = QueueTask::MessageV1(MessageTask {
             msg_id: MessageId("test".to_owned()),
@@ -557,12 +571,44 @@ mod tests {
 
         tokio::select! {
             recv = c.receive() => {
-                assert_eq!(recv.unwrap().task, mt);
+                let recv = recv.unwrap();
+                assert_eq!(recv.task, mt);
+                // Acknowledge so the queue isn't further polluted
+                p.ack(recv).await.unwrap();
             }
 
             _ = tokio::time::sleep(Duration::from_secs(5)) => {
                 panic!("`c.receive()` has timed out")
             }
+        }
+    }
+
+    #[tokio::test]
+    async fn test_ack() {
+        let cfg = crate::cfg::load().unwrap();
+        let pool = get_pool(cfg).await;
+
+        let (p, mut c) = new_pair(pool, Duration::from_millis(500), "{test}_ack").await;
+
+        let mt = QueueTask::MessageV1(MessageTask {
+            msg_id: MessageId("test2".to_owned()),
+            app_id: ApplicationId("test2".to_owned()),
+            endpoint_id: EndpointId("test2".to_owned()),
+            trigger_type: MessageAttemptTriggerType::Manual,
+            attempt_count: 0,
+        });
+        p.send(mt.clone(), None).await.unwrap();
+
+        let recv = c.receive().await.unwrap();
+        assert_eq!(recv.task, mt);
+        p.ack(recv).await.unwrap();
+
+        tokio::select! {
+            recv = c.receive() => {
+                panic!("Received unexpected QueueTask {:?}", recv.unwrap().task);
+            }
+
+            _ = tokio::time::sleep(Duration::from_secs(1)) => {}
         }
     }
 }

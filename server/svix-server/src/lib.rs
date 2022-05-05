@@ -9,7 +9,8 @@ use axum::{extract::Extension, Router};
 use cfg::{CacheType, QueueType};
 use std::{
     net::{SocketAddr, TcpListener},
-    str::FromStr, time::Duration,
+    str::FromStr,
+    time::Duration,
 };
 use tower::ServiceBuilder;
 use tower_http::trace::TraceLayer;
@@ -62,11 +63,11 @@ pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
         match cfg.queue_type {
             QueueType::Redis => {
                 let pool = crate::redis::new_redis_pool(redis_dsn()).await;
-                queue::redis::new_pair(pool, Duration::from_secs(45)).await
+                queue::redis::new_pair(pool, Duration::from_secs(45), queue::redis::MAIN).await
             }
             QueueType::RedisCluster => {
                 let pool = crate::redis::new_redis_pool_clustered(redis_dsn()).await;
-                queue::redis::new_pair(pool, Duration::from_secs(45)).await
+                queue::redis::new_pair(pool, Duration::from_secs(45), queue::redis::MAIN).await
             }
             QueueType::Memory => queue::memory::new_pair().await,
         }
