@@ -42,9 +42,65 @@ impl MessageTask {
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct MessageTaskBatch {
+    pub msg_id: MessageId,
+    pub app_id: ApplicationId,
+    pub endpoint_ids: Vec<EndpointId>,
+    pub trigger_type: MessageAttemptTriggerType,
+    pub attempt_count: u16,
+}
+
+impl MessageTaskBatch {
+    pub fn new_task(
+        msg_id: MessageId,
+        app_id: ApplicationId,
+        endpoint_ids: Vec<EndpointId>,
+        trigger_type: MessageAttemptTriggerType,
+    ) -> QueueTask {
+        QueueTask::MessageBatchV1(Self {
+            msg_id,
+            app_id,
+            endpoint_ids,
+            attempt_count: 0,
+            trigger_type,
+        })
+    }
+    pub fn to_message_task(self, endpoint_id: &EndpointId) -> MessageTask {
+        MessageTask {
+            msg_id: self.msg_id,
+            app_id: self.app_id,
+            endpoint_id: endpoint_id.clone(),
+            trigger_type: self.trigger_type,
+            attempt_count: self.attempt_count,
+        }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 #[serde(tag = "type")]
 pub enum QueueTask {
     MessageV1(MessageTask),
+    MessageBatchV1(MessageTaskBatch),
+}
+
+impl QueueTask {
+    pub fn get_message_id(self) -> MessageId {
+        match self {
+            QueueTask::MessageV1(task) => task.msg_id,
+            QueueTask::MessageBatchV1(batch) => batch.msg_id,
+        }
+    }
+    pub fn get_message_tasks(self) -> Vec<MessageTask> {
+        match self {
+            QueueTask::MessageV1(task) => vec![task],
+            QueueTask::MessageBatchV1(batch) => batch
+                .endpoint_ids
+                .iter()
+                .map(|endp_id| batch.clone().to_message_task(endp_id))
+                .collect(),
+        }
+    }
 }
 
 pub struct TaskQueueProducer(Box<dyn TaskQueueSend>);
@@ -79,6 +135,7 @@ impl TaskQueueConsumer {
     }
 }
 
+#[derive(Clone)]
 pub struct TaskQueueDelivery {
     pub id: String,
     pub task: QueueTask,

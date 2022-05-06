@@ -15,7 +15,7 @@ use crate::{
     },
     db::models::messagedestination,
     error::{Error, HttpError, Result},
-    queue::{MessageTask, TaskQueueProducer},
+    queue::{MessageTaskBatch, TaskQueueProducer},
     v1::utils::{
         apply_pagination, iterator_from_before_or_after, ListResponse, MessageListFetchOptions,
         ModelIn, ModelOut, ReversibleIterator, ValidatedJson, ValidatedQuery,
@@ -230,7 +230,7 @@ async fn create_message(
     let trigger_type = MessageAttemptTriggerType::Scheduled; // Just laying the groundwork for when we support passing it
     let empty_channel_set = HashSet::new();
     let mut msg_dests = vec![];
-    let mut tasks = vec![];
+    let mut endpoint_ids = vec![];
     for endp in create_message_app.endpoints
         .into_iter()
         .filter(|endp| {
@@ -265,11 +265,7 @@ async fn create_message(
             ..Default::default()
         };
         msg_dests.push(msg_dest);
-        tasks.push(
-            MessageTask::new_task(
-                msg.id.clone(),
-                app.id.clone(),
-                endp.id, MessageAttemptTriggerType::Scheduled));
+        endpoint_ids.push(endp.id.clone());
     }
     if !msg_dests.is_empty() {
         messagedestination::Entity::insert_many(msg_dests)
@@ -277,9 +273,19 @@ async fn create_message(
             .await?;
     }
     txn.commit().await?;
-    for task in tasks {
-        queue_tx.send(task, None).await?;
-    }
+
+    queue_tx
+        .send(
+            MessageTaskBatch::new_task(
+                msg.id.clone(),
+                app.id.clone(),
+                endpoint_ids,
+                MessageAttemptTriggerType::Scheduled,
+            ),
+            None,
+        )
+        .await?;
+
     let msg_out = if with_content {
         msg.into()
     } else {

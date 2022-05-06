@@ -11,6 +11,7 @@ use crate::db::models::{message, messageattempt, messagedestination};
 use crate::error::{Error, Result};
 use crate::queue::{MessageTask, QueueTask, TaskQueueConsumer, TaskQueueProducer};
 use chrono::Utc;
+use futures::future;
 use reqwest::header::{HeaderMap, HeaderName};
 use sea_orm::{entity::prelude::*, ActiveValue::Set, DatabaseConnection, EntityTrait};
 use tokio::time::{sleep, Duration};
@@ -76,23 +77,11 @@ async fn dispatch(
     cache: Cache,
     queue_tx: &TaskQueueProducer,
     msg_task: MessageTask,
+    msg: &message::Model,
 ) -> Result<()> {
-    tracing::trace!("Dispatch: {} {}", &msg_task.msg_id, &msg_task.endpoint_id);
-
     let app_id = &msg_task.app_id;
+    let org_id = &msg.org_id;
     let endp_id = &msg_task.endpoint_id;
-
-    let msg = if let Some(msg) = message::Entity::find_by_id(msg_task.msg_id.clone())
-        .one(db)
-        .await?
-    {
-        msg
-    } else {
-        tracing::warn!("Unexpected: message doesn't exist {}", msg_task.msg_id);
-        return Ok(());
-    };
-
-    let org_id = msg.org_id;
 
     let endp: CreateMessageEndpoint = CreateMessageApp::layered_fetch(
         cache,
@@ -291,6 +280,32 @@ fn bytes_to_string(bytes: bytes::Bytes) -> String {
     }
 }
 
+/// Manages preparation and execution of a QueueTask type
+async fn process_task(
+    cfg: Configuration,
+    db: &DatabaseConnection,
+    cache: Cache,
+    queue_tx: &TaskQueueProducer,
+    queue_task: QueueTask,
+) -> Result<Vec<()>> {
+    // get the message row
+    let msg = message::Entity::find_by_id(queue_task.clone().get_message_id())
+        .one(db)
+        .await
+        .unwrap()
+        .unwrap();
+
+    // get individual MessageTasks per endpoint and collect their executions as futures
+    let futures: Vec<_> = queue_task
+        .get_message_tasks()
+        .into_iter()
+        .map(|msg_task| dispatch(cfg.clone(), db, cache.clone(), queue_tx, msg_task, &msg))
+        .collect();
+
+    // execute the MessageTasks concurrently; any single failure will bubble up to the invoking function
+    future::try_join_all(futures).await
+}
+
 /// Listens on the message queue for new tasks
 pub async fn worker_loop(
     cfg: &Configuration,
@@ -306,24 +321,24 @@ pub async fn worker_loop(
                 let queue_task = delivery.task.clone();
                 let queue_tx = queue_tx.clone();
                 let cfg = cfg.clone();
-                match queue_task {
-                    QueueTask::MessageV1(msg) => {
-                        let cache = cache.clone();
-                        tokio::spawn(async move {
-                            if let Err(err) = dispatch(cfg, &pool, cache, &queue_tx, msg).await {
-                                tracing::error!("Error executing task: {}", err);
-                                queue_tx.nack(delivery).await.expect(
-                                    "Error sending 'nack' to Redis after task execution error",
-                                );
-                            } else {
-                                // No unwrap
-                                queue_tx.ack(delivery).await.expect(
-                                    "Error sending 'ack' to Redis after successful task execution",
-                                );
-                            }
-                        });
+                let cache = cache.clone();
+
+                tokio::spawn(async move {
+                    if let Err(err) =
+                        process_task(cfg.clone(), &pool, cache.clone(), &queue_tx, queue_task).await
+                    {
+                        tracing::error!("Error executing task: {}", err);
+                        queue_tx
+                            .nack(delivery)
+                            .await
+                            .expect("Error sending 'nack' to Redis after task execution error");
+                    } else {
+                        queue_tx
+                            .ack(delivery)
+                            .await
+                            .expect("Error sending 'ack' to Redis after successful task execution");
                     }
-                };
+                });
             }
             Err(err) => {
                 tracing::error!("Error receiving task: {}", err);
