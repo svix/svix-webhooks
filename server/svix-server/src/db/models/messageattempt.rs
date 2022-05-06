@@ -16,7 +16,6 @@ pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: MessageAttemptId,
     pub created_at: DateTimeWithTimeZone,
-    pub updated_at: DateTimeWithTimeZone,
     pub msg_id: MessageId,
     pub msg_dest_id: MessageEndpointId,
     pub endp_id: EndpointId,
@@ -53,14 +52,8 @@ impl ActiveModelBehavior for ActiveModel {
         Self {
             id: Set(MessageAttemptId::new(timestamp.into(), None)),
             created_at: Set(timestamp.into()),
-            updated_at: Set(timestamp.into()),
             ..ActiveModelTrait::default()
         }
-    }
-
-    fn before_save(mut self, _insert: bool) -> Result<Self, DbErr> {
-        self.updated_at = Set(Utc::now().into());
-        Ok(self)
     }
 }
 
