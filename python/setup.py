@@ -19,14 +19,16 @@ from setuptools import setup, find_packages  # noqa: H301
 # prerequisite: setuptools
 # http://pypi.python.org/pypi/setuptools
 
+
 def read_file(filepath):
     """Read content from a UTF-8 encoded text file."""
-    with codecs.open(filepath, 'rb', 'utf-8') as file_handle:
+    with codecs.open(filepath, "rb", "utf-8") as file_handle:
         return file_handle.read()
 
-PKG_NAME = 'svix'
+
+PKG_NAME = "svix"
 PKG_DIR = os.path.abspath(os.path.dirname(__file__))
-META_PATH = os.path.join(PKG_DIR, PKG_NAME, '__init__.py')
+META_PATH = os.path.join(PKG_DIR, PKG_NAME, "__init__.py")
 META_CONTENTS = read_file(META_PATH)
 PKG_REQUIRES = [
     "httpx >=0.15.4,<0.23.0",
@@ -34,44 +36,43 @@ PKG_REQUIRES = [
     "python-dateutil",
     "Deprecated",
     "types-python-dateutil",
-    "types-Deprecated"
+    "types-Deprecated",
 ]
+
 
 def find_meta(meta):
     """Extract __*meta*__ from META_CONTENTS."""
-    meta_match = re.search(
-        r"^__{meta}__\s+=\s+['\"]([^'\"]*)['\"]".format(meta=meta),
-        META_CONTENTS,
-        re.M
-    )
+    meta_match = re.search(r"^__{meta}__\s+=\s+['\"]([^'\"]*)['\"]".format(meta=meta), META_CONTENTS, re.M)
 
     if meta_match:
         return meta_match.group(1)
-    raise RuntimeError(
-        f'Unable to find __{meta}__ string in package meta file'
-    )
+    raise RuntimeError(f"Unable to find __{meta}__ string in package meta file")
+
 
 def is_canonical_version(version):
     """Check if a version string is in the canonical format of PEP 440."""
     pattern = (
-        r'^([1-9][0-9]*!)?(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))'
-        r'*((a|b|rc)(0|[1-9][0-9]*))?(\.post(0|[1-9][0-9]*))'
-        r'?(\.dev(0|[1-9][0-9]*))?$')
+        r"^([1-9][0-9]*!)?(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))"
+        r"*((a|b|rc)(0|[1-9][0-9]*))?(\.post(0|[1-9][0-9]*))"
+        r"?(\.dev(0|[1-9][0-9]*))?$"
+    )
     return re.match(pattern, version) is not None
+
 
 def get_version_string():
     """Return package version as listed in `__version__` in meta file."""
     # Parse version string
-    version_string = find_meta('version')
+    version_string = find_meta("version")
 
     # Check validity
     if not is_canonical_version(version_string):
-        message = (
-            'The detected version string "{}" is not in canonical '
-            'format as defined in PEP 440.'.format(version_string))
+        message = 'The detected version string "{}" is not in canonical ' "format as defined in PEP 440.".format(
+            version_string
+        )
         raise ValueError(message)
 
     return version_string
+
 
 with open(os.path.join(os.path.dirname(__file__), "README.md")) as readme:
     PKG_README = readme.read()
@@ -119,3 +120,4 @@ setup(
     long_description=PKG_README,
     long_description_content_type="text/markdown",
 )
+
