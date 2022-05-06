@@ -74,8 +74,7 @@ def get_version_string():
     return version_string
 
 
-with open(os.path.join(os.path.dirname(__file__), "README.md")) as readme:
-    PKG_README = readme.read()
+PKG_README = read_file(os.path.join(os.path.dirname(__file__), "README.md"))
 
 # allow setup.py to be run from any path
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
