@@ -79,6 +79,8 @@ async fn dispatch(
     msg_task: MessageTask,
     msg: &message::Model,
 ) -> Result<()> {
+    tracing::trace!("Dispatch: {} {}", &msg_task.msg_id, &msg_task.endpoint_id);
+
     let app_id = &msg_task.app_id;
     let org_id = &msg.org_id;
     let endp_id = &msg_task.endpoint_id;
