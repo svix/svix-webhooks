@@ -212,12 +212,7 @@ pub fn get_default_test_config() -> ConfigurationInner {
     let _ = dotenv::dotenv();
     let cfg = svix_server::cfg::load().unwrap();
 
-    // Change the queue type to in-memory. This is necessary so test workers don't pick up messages
-    // from other tests whose threads then abort at the end of a test before associated database
-    // transactions are complete.
-    let mut cfg = cfg.as_ref().clone();
-    cfg.queue_type = svix_server::cfg::QueueType::Memory;
-    cfg
+    cfg.as_ref().clone()
 }
 
 pub fn start_svix_server() -> (TestClient, tokio::task::JoinHandle<()>) {
