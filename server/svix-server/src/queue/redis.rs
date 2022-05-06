@@ -353,7 +353,7 @@ impl TaskQueueReceive for RedisQueueConsumer {
     async fn receive_all(&mut self) -> Result<Vec<TaskQueueDelivery>> {
         let mut pool = self.pool.get().await.unwrap();
 
-        let mut resp = loop {
+        let resp = loop {
             let resp: StreamReadReply = pool
                 .query_async(Cmd::xread_options(
                     &[self.main_queue_name],
@@ -366,15 +366,13 @@ impl TaskQueueReceive for RedisQueueConsumer {
                 .await
                 .unwrap();
 
-            if !resp.keys.is_empty() {
-                if !resp.keys[0].ids.is_empty() {
-                    break resp;
-                }
+            if !resp.keys.is_empty() && !resp.keys[0].ids.is_empty() {
+                break resp;
             }
         };
 
-        let id = std::mem::take(&mut resp.keys[0].ids[0].id);
-        let map = std::mem::take(&mut resp.keys[0].ids[0].map);
+        let id = resp.keys[0].ids[0].id.clone();
+        let map = &resp.keys[0].ids[0].map;
 
         let task: QueueTask = if let Some(redis::Value::Data(data)) = map.get("data") {
             serde_json::from_slice(data).expect("Invalid QueueTask")
