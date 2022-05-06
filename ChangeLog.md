@@ -3,6 +3,10 @@
 ## Next
 * 
 
+## Version 0.57.2
+* Server: add support for get-or-create when creating applications.
+* C#: fix library compilation (broke in the previous release.
+
 ## Version 0.57.1
 * Libs: fix all libraries to handle 429 (rate limiting).
 * Server: update docker image to use Rust 1.60
