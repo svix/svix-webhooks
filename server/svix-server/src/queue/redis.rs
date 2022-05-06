@@ -48,7 +48,8 @@ const MAIN: &str = "svix_{queue}_v3_main";
 // FIXME: hash-tags here enable clustering but prevent proper sharding of lists
 const LEGACY_MAIN: &str = "{queue}_svix_main";
 const LEGACY_PROCESSING: &str = "{queue}_svix_processing";
-const LEGACY_DELAYED: &str = "{queue}_svix_delayed";
+// TODO: Rename LEGACY_DELAYED
+const DELAYED: &str = "{queue}_svix_delayed";
 
 const LEGACY_LEGACY_MAIN: &str = "svix_queue_main";
 const LEGACY_LEGACY_PROCESSING: &str = "svix_queue_processing";
@@ -63,6 +64,10 @@ const WORKER_CONSUMER: &str = "svix_workers_consumer";
 const GENERATE_STREAM_ID: &str = "*";
 /// Special key for XREADGROUP commands which reads any new messages
 const LISTEN_STREAM_ID: &str = ">";
+
+/// Each queue item has a set of KV pairs associated with it, for simplicity a sing key, "data" is
+/// used with the entire [`QueueTask`] as the value in serialized JSON
+const QUEUE_KV_KEY: &str = "data";
 
 pub async fn new_pair(pool: RedisPool) -> (TaskQueueProducer, TaskQueueConsumer) {
     new_pair_inner(pool, Duration::from_secs(45), MAIN).await
@@ -127,15 +132,13 @@ async fn new_pair_inner(
             // First look for delayed keys whose time is up and add them to the main qunue
             let timestamp = Utc::now().timestamp();
             let keys: Vec<String> = pool
-                .zrangebyscore_limit(LEGACY_DELAYED, 0isize, timestamp, 0isize, batch_size)
+                .zrangebyscore_limit(DELAYED, 0isize, timestamp, 0isize, batch_size)
                 .await
                 .unwrap();
             if !keys.is_empty() {
                 // FIXME: needs to be a transaction
-                let keys: Vec<(String, String)> = pool
-                    .zpopmin(LEGACY_DELAYED, keys.len() as isize)
-                    .await
-                    .unwrap();
+                let keys: Vec<(String, String)> =
+                    pool.zpopmin(DELAYED, keys.len() as isize).await.unwrap();
                 let keys: Vec<&str> = keys
                     .iter()
                     .map(|x| &x.0)
@@ -148,7 +151,7 @@ async fn new_pair_inner(
                             &main_queue_name,
                             GENERATE_STREAM_ID,
                             &[(
-                                "data",
+                                QUEUE_KV_KEY,
                                 serde_json::to_string(key).expect("Serializaion error"),
                             )],
                         ))
@@ -277,7 +280,7 @@ impl TaskQueueSend for RedisQueueProducer {
             let delivery = TaskQueueDelivery::new(task, Some(timestamp));
             let key = to_redis_key(&delivery);
             let _: () = pool
-                .zadd(LEGACY_DELAYED, key, timestamp.timestamp())
+                .zadd(DELAYED, key, timestamp.timestamp())
                 .await
                 .unwrap();
         } else {
@@ -285,7 +288,7 @@ impl TaskQueueSend for RedisQueueProducer {
                 .query_async(Cmd::xadd(
                     &self.main_queue_name,
                     GENERATE_STREAM_ID,
-                    &[("data", serde_json::to_string(&task).unwrap())],
+                    &[(QUEUE_KV_KEY, serde_json::to_string(&task).unwrap())],
                 ))
                 .await
                 .unwrap();
@@ -411,7 +414,7 @@ async fn migrate_list_to_stream(pool: &mut PooledConnection<'_>, legacy_queue: &
                 .query_async(Cmd::xadd(
                     queue,
                     GENERATE_STREAM_ID,
-                    &[("data", serde_json::to_string(&delivery.task).unwrap())],
+                    &[(QUEUE_KV_KEY, serde_json::to_string(&delivery.task).unwrap())],
                 ))
                 .await
                 .unwrap();
@@ -421,8 +424,8 @@ async fn migrate_list_to_stream(pool: &mut PooledConnection<'_>, legacy_queue: &
 
 async fn migrate_v1_to_v2_queues(pool: &mut PooledConnection<'_>) {
     migrate_list(pool, LEGACY_LEGACY_MAIN, LEGACY_MAIN).await;
-    migrate_list(pool, LEGACY_LEGACY_PROCESSING, LEGACY_LEGACY_PROCESSING).await;
-    migrate_sset(pool, LEGACY_LEGACY_DELAYED, LEGACY_DELAYED).await;
+    migrate_list(pool, LEGACY_LEGACY_PROCESSING, LEGACY_PROCESSING).await;
+    migrate_sset(pool, LEGACY_LEGACY_DELAYED, DELAYED).await;
 }
 
 async fn migrate_list(pool: &mut PooledConnection<'_>, legacy_queue: &str, queue: &str) {
