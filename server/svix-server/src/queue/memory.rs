@@ -62,10 +62,10 @@ pub struct MemoryQueueConsumer {
 
 #[async_trait]
 impl TaskQueueReceive for MemoryQueueConsumer {
-    async fn receive(&mut self) -> Result<TaskQueueDelivery> {
+    async fn receive_all(&mut self) -> Result<Vec<TaskQueueDelivery>> {
         if let Some(delivery) = self.rx.recv().await {
             tracing::trace!("MemoryQueue: event recv <");
-            Ok(delivery)
+            Ok(vec![delivery])
         } else {
             Err(Error::Queue("Failed to fetch from queue".to_owned()))
         }

@@ -215,7 +215,7 @@ pub struct RedisQueueConsumer {
 
 #[async_trait]
 impl TaskQueueReceive for RedisQueueConsumer {
-    async fn receive(&mut self) -> Result<TaskQueueDelivery> {
+    async fn receive_all(&mut self) -> Result<Vec<TaskQueueDelivery>> {
         let mut pool = self.pool.get().await.unwrap();
         let mut cmd = redis::cmd("BLMOVE");
         cmd.arg(MAIN)
@@ -228,7 +228,7 @@ impl TaskQueueReceive for RedisQueueConsumer {
             .await
             .map_err(|x| Error::Queue(x.to_string()))?;
         tracing::trace!("RedisQueue: event recv <");
-        Ok(from_redis_key(&key))
+        Ok(vec![from_redis_key(&key)])
     }
 }
 
