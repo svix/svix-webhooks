@@ -1,5 +1,5 @@
 # Base build
-FROM rust:1.59-slim-bullseye AS build
+FROM rust:1.60-slim-bullseye AS build
 
 RUN set -ex ; \
         mkdir -p /app ;\
@@ -25,6 +25,11 @@ RUN set -ex ; \
         chown -R appuser: /app ;\
         mkdir -p /home/appuser ;\
         chown -R appuser: /home/appuser
+
+RUN apt-get update ;\
+    apt-get install --no-install-recommends -y netcat=1.10-46 ;\
+    apt-get clean ;\
+    rm -rf /var/lib/apt/lists/*
 
 USER appuser
 EXPOSE 8080

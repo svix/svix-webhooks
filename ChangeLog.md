@@ -3,6 +3,13 @@
 ## Next
 * 
 
+## Version 0.57.1
+* Libs: fix all libraries to handle 429 (rate limiting).
+* Server: update docker image to use Rust 1.60
+* Server: preserve header name capitalization for custom endpoint headers.
+* Server: gracefully handle non-textual webhook responses (so endpoints returning non strings).
+* Server: delete message content after the specified retention period.
+
 ## Version 0.57.0
 * Server: add support for idempotency.
 * Server: add prev_iterator support to endpoints that should support it.

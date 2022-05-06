@@ -15,6 +15,7 @@ import {
   EndpointSecretOut,
   EndpointSecretRotateIn,
   EndpointHeadersIn,
+  EndpointHeadersPatchIn,
   EndpointHeadersOut,
   RecoverIn,
   IntegrationApi,
@@ -53,7 +54,7 @@ import * as base64 from "@stablelib/base64";
 import * as sha256 from "fast-sha256";
 
 const WEBHOOK_TOLERANCE_IN_SECONDS = 5 * 60; // 5 minutes
-const VERSION = "0.57.0";
+const VERSION = "0.57.1";
 
 class UserAgentMiddleware implements Middleware {
   public pre(context: RequestContext): Promise<RequestContext> {
@@ -316,12 +317,12 @@ class Endpoint {
   public patchHeaders(
     appId: string,
     endpointId: string,
-    endpointHeadersIn: EndpointHeadersIn
+    endpointHeadersPatchIn: EndpointHeadersPatchIn
   ): Promise<void> {
     return this.api.patchEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPatch({
       appId,
       endpointId,
-      endpointHeadersIn,
+      endpointHeadersPatchIn,
     });
   }
 }

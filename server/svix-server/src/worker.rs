@@ -317,30 +317,32 @@ pub async fn worker_loop(
     mut queue_rx: TaskQueueConsumer,
 ) -> Result<()> {
     loop {
-        let pool = pool.clone();
-        match queue_rx.receive().await {
-            Ok(delivery) => {
-                let queue_task = delivery.task.clone();
-                let queue_tx = queue_tx.clone();
-                let cfg = cfg.clone();
-                let cache = cache.clone();
-
-                tokio::spawn(async move {
-                    if let Err(err) =
-                        process_task(cfg.clone(), &pool, cache.clone(), &queue_tx, queue_task).await
-                    {
-                        tracing::error!("Error executing task: {}", err);
-                        queue_tx
-                            .nack(delivery)
-                            .await
-                            .expect("Error sending 'nack' to Redis after task execution error");
-                    } else {
-                        queue_tx
-                            .ack(delivery)
-                            .await
-                            .expect("Error sending 'ack' to Redis after successful task execution");
-                    }
-                });
+        match queue_rx.receive_all().await {
+            Ok(batch) => {
+                for delivery in batch {
+                    let cfg = cfg.clone();
+                    let pool = pool.clone();
+                    let cache = cache.clone();
+                    let queue_tx = queue_tx.clone();
+                    let queue_task = delivery.task.clone();                  
+                    
+                    tokio::spawn(async move {
+                        if let Err(err) =
+                            process_task(cfg.clone(), &pool, cache.clone(), &queue_tx, queue_task).await
+                        {
+                            tracing::error!("Error executing task: {}", err);
+                            queue_tx
+                                .nack(delivery)
+                                .await
+                                .expect("Error sending 'nack' to Redis after task execution error");
+                        } else {
+                            queue_tx
+                                .ack(delivery)
+                                .await
+                                .expect("Error sending 'ack' to Redis after successful task execution");
+                        }
+                    });
+                }
             }
             Err(err) => {
                 tracing::error!("Error receiving task: {}", err);

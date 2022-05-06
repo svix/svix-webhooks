@@ -300,7 +300,7 @@ namespace Svix
             }
         }
 
-        public bool PatchHeaders(string appId, string endpointId, EndpointHeadersIn headers, string idempotencyKey = default)
+        public bool PatchHeaders(string appId, string endpointId, EndpointHeadersPatchIn headers, string idempotencyKey = default)
         {
             try
             {
@@ -323,7 +323,7 @@ namespace Svix
             }
         }
 
-        public async Task<bool> PatchHeadersAsync(string appId, string endpointId, EndpointHeadersIn headers, string idempotencyKey = default,
+        public async Task<bool> PatchHeadersAsync(string appId, string endpointId, EndpointHeadersPatchIn headers, string idempotencyKey = default,
             CancellationToken cancellationToken = default)
         {
             try

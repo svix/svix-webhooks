@@ -130,8 +130,8 @@ impl TaskQueueProducer {
 pub struct TaskQueueConsumer(Box<dyn TaskQueueReceive + Send + Sync>);
 
 impl TaskQueueConsumer {
-    pub async fn receive(&mut self) -> Result<TaskQueueDelivery> {
-        self.0.receive().await
+    pub async fn receive_all(&mut self) -> Result<Vec<TaskQueueDelivery>> {
+        self.0.receive_all().await
     }
 }
 
@@ -169,7 +169,7 @@ impl Clone for Box<dyn TaskQueueSend> {
 
 #[async_trait]
 trait TaskQueueReceive {
-    async fn receive(&mut self) -> Result<TaskQueueDelivery>;
+    async fn receive_all(&mut self) -> Result<Vec<TaskQueueDelivery>>;
 }
 
 #[cfg(test)]
@@ -200,7 +200,7 @@ mod tests {
     /// equal to the mock message with the given message_id.
     async fn assert_recv(rx: &mut TaskQueueConsumer, message_id: &str) {
         assert_eq!(
-            rx.receive().await.unwrap().task,
+            rx.receive_all().await.unwrap().get(0).unwrap().task,
             mock_message(message_id.to_owned())
         )
     }
@@ -264,17 +264,24 @@ mod tests {
     async fn test_ack() {
         let (tx_mem, mut rx_mem) = memory::new_pair().await;
         assert!(tx_mem
-            .send(mock_message("1".to_owned()), None)
+            .send(mock_message("test".to_owned()), None)
             .await
             .is_ok());
 
-        let recv = rx_mem.receive().await.unwrap();
-        assert_eq!(&recv.task, &mock_message("1".to_owned()));
+        let recv = rx_mem
+            .receive_all()
+            .await
+            .unwrap()
+            .into_iter()
+            .nth(0)
+            .unwrap();
+
+        assert_eq!(recv.task, mock_message("test".to_owned()));
 
         assert!(tx_mem.ack(recv).await.is_ok());
 
         tokio::select! {
-            _ = rx_mem.receive() => {
+            _ = rx_mem.receive_all() => {
                 panic!("`rx_mem` received second message");
             }
 
@@ -289,17 +296,23 @@ mod tests {
     async fn test_nack() {
         let (tx_mem, mut rx_mem) = memory::new_pair().await;
         assert!(tx_mem
-            .send(mock_message("1".to_owned()), None)
+            .send(mock_message("test".to_owned()), None)
             .await
             .is_ok());
 
-        let recv = rx_mem.receive().await.unwrap();
-        assert_eq!(&recv.task, &mock_message("1".to_owned()));
+        let recv = rx_mem
+            .receive_all()
+            .await
+            .unwrap()
+            .into_iter()
+            .nth(0)
+            .unwrap();
+        assert_eq!(&recv.task, &mock_message("test".to_owned()));
 
         assert!(tx_mem.nack(recv).await.is_ok());
 
         tokio::select! {
-            _ = rx_mem.receive() => {}
+            _ = rx_mem.receive_all() => {}
 
             // FIXME: Find out correct timeout duration
             _ = tokio::time::sleep(Duration::from_millis(500)) => {

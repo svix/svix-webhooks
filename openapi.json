@@ -422,6 +422,26 @@
                 "title": "EndpointHeadersOut",
                 "type": "object"
             },
+            "EndpointHeadersPatchIn": {
+                "properties": {
+                    "headers": {
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "example": {
+                            "X-Example": "123",
+                            "X-Foobar": "Bar"
+                        },
+                        "title": "Headers",
+                        "type": "object"
+                    }
+                },
+                "required": [
+                    "headers"
+                ],
+                "title": "EndpointHeadersPatchIn",
+                "type": "object"
+            },
             "EndpointIn": {
                 "properties": {
                     "channels": {
@@ -2531,6 +2551,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -2703,6 +2733,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -2852,6 +2892,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -3006,6 +3056,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -3170,6 +3230,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -3424,6 +3494,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -3692,6 +3772,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -3869,6 +3959,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -4033,6 +4133,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -4196,6 +4306,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -4364,6 +4484,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -4542,6 +4672,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -4712,6 +4852,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -4824,7 +4974,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/EndpointHeadersIn"
+                                "$ref": "#/components/schemas/EndpointHeadersPatchIn"
                             }
                         }
                     },
@@ -4883,6 +5033,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -4908,32 +5068,32 @@
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "svix.endpoint.patch_headers('app_id', 'endpoint_id', EndpointHeadersIn(\n    headers={'X-Foobar': 'Bar', 'X-Example': '123'}\n))"
+                        "source": "svix.endpoint.patch_headers('app_id', 'endpoint_id', EndpointHeadersPatchIn(\n    headers={'X-Foobar': 'Bar', 'X-Example': '123'}\n))"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "await svix.endpoint.patch_headers('app_id', 'endpoint_id', EndpointHeadersIn(\n    headers={'X-Foobar': 'Bar', 'X-Example': '123'}\n))"
+                        "source": "await svix.endpoint.patch_headers('app_id', 'endpoint_id', EndpointHeadersPatchIn(\n    headers={'X-Foobar': 'Bar', 'X-Example': '123'}\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "err := svixClient.Endpoint.PatchHeaders(\"app_id\", \"endpoint_id\", &svix.EndpointHeadersIn{\n    Headers: map[string]string{\n        \"X-Foobar\": \"Bar\",\n        \"X-Example\": \"123\"\n    }\n})"
+                        "source": "err := svixClient.Endpoint.PatchHeaders(\"app_id\", \"endpoint_id\", &svix.EndpointHeadersPatchIn{\n    Headers: map[string]string{\n        \"X-Foobar\": \"Bar\",\n        \"X-Example\": \"123\"\n    }\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "svix.endpoint.patchHeaders('app_id', 'endpoint_id', EndpointHeadersIn()\n    .headers(\"\"\"{\n        \"X-Foobar\": \"Bar\",\n        \"X-Example\": \"123\"\n    }\"\"\")\n)"
+                        "source": "svix.endpoint.patchHeaders('app_id', 'endpoint_id', EndpointHeadersPatchIn()\n    .headers(\"\"\"{\n        \"X-Foobar\": \"Bar\",\n        \"X-Example\": \"123\"\n    }\"\"\")\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "svix.getEndpoint().patchHeaders('app_id', 'endpoint_id', new EndpointHeadersIn()\n    .headers(\"{\" +\n        \"\\\"X-Foobar\\\": \\\"Bar\\\",\" +\n        \"\\\"X-Example\\\": \\\"123\\\"\" +\n    \"}\")\n)"
+                        "source": "svix.getEndpoint().patchHeaders('app_id', 'endpoint_id', new EndpointHeadersPatchIn()\n    .headers(\"{\" +\n        \"\\\"X-Foobar\\\": \\\"Bar\\\",\" +\n        \"\\\"X-Example\\\": \\\"123\\\"\" +\n    \"}\")\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "svix.endpoint.patch_headers('app_id', 'endpoint_id', Svix::EndpointHeadersIn.new({\n    \"headers\": {\n        \"X-Foobar\": \"Bar\",\n        \"X-Example\": \"123\"\n    }\n}))"
+                        "source": "svix.endpoint.patch_headers('app_id', 'endpoint_id', Svix::EndpointHeadersPatchIn.new({\n    \"headers\": {\n        \"X-Foobar\": \"Bar\",\n        \"X-Example\": \"123\"\n    }\n}))"
                     },
                     {
                         "label": "CLI",
@@ -5054,6 +5214,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -5285,6 +5455,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -5420,6 +5600,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -5590,6 +5780,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -5773,6 +5973,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -5963,6 +6173,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -6133,6 +6353,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -6264,6 +6494,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -6428,6 +6668,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -6587,6 +6837,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -6751,6 +7011,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -6925,6 +7195,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -7091,6 +7371,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -7257,6 +7547,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -7481,6 +7781,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -7665,6 +7975,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -7835,6 +8155,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -8096,6 +8426,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -8276,6 +8616,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -8456,6 +8806,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -8647,6 +9007,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -8863,6 +9233,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -8995,6 +9375,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -9151,6 +9541,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -9286,6 +9686,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -9438,6 +9848,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -9538,6 +9958,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -9635,6 +10065,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -9775,6 +10215,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -9925,6 +10375,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -10077,6 +10537,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "summary": "Generate Schema Example",
@@ -10219,6 +10689,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -10371,6 +10851,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -10533,6 +11023,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -10754,6 +11254,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
@@ -10899,6 +11409,16 @@
                             }
                         },
                         "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
                     }
                 },
                 "security": [
