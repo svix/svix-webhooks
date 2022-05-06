@@ -324,11 +324,12 @@ pub async fn worker_loop(
                     let pool = pool.clone();
                     let cache = cache.clone();
                     let queue_tx = queue_tx.clone();
-                    let queue_task = delivery.task.clone();                  
-                    
+                    let queue_task = delivery.task.clone();
+
                     tokio::spawn(async move {
                         if let Err(err) =
-                            process_task(cfg.clone(), &pool, cache.clone(), &queue_tx, queue_task).await
+                            process_task(cfg.clone(), &pool, cache.clone(), &queue_tx, queue_task)
+                                .await
                         {
                             tracing::error!("Error executing task: {}", err);
                             queue_tx
@@ -336,10 +337,9 @@ pub async fn worker_loop(
                                 .await
                                 .expect("Error sending 'nack' to Redis after task execution error");
                         } else {
-                            queue_tx
-                                .ack(delivery)
-                                .await
-                                .expect("Error sending 'ack' to Redis after successful task execution");
+                            queue_tx.ack(delivery).await.expect(
+                                "Error sending 'ack' to Redis after successful task execution",
+                            );
                         }
                     });
                 }
