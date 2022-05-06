@@ -38,9 +38,9 @@ namespace Svix.Abstractions
         Task<List<EndpointOut>> ListAsync(string appId, ListOptions options, string idempotencyKey = default,
             CancellationToken cancellationToken = default);
 
-        bool PatchHeaders(string appId, string endpointId, EndpointHeadersIn headers, string idempotencyKey = default);
+        bool PatchHeaders(string appId, string endpointId, EndpointHeadersPatchIn headers, string idempotencyKey = default);
 
-        Task<bool> PatchHeadersAsync(string appId, string endpointId, EndpointHeadersIn headers,
+        Task<bool> PatchHeadersAsync(string appId, string endpointId, EndpointHeadersPatchIn headers,
             string idempotencyKey = default, CancellationToken cancellationToken = default);
 
         bool Recover(string appId, string endpointId, RecoverIn recover, string idempotencyKey = default);
