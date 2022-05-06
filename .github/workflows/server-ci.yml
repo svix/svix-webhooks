@@ -35,7 +35,7 @@ jobs:
       uses: actions-rs/cargo@v1
       with:
         command: clippy
-        args: --manifest-path server/Cargo.toml --all --all-targets --all-features
+        args: --manifest-path server/Cargo.toml --all --all-targets --all-features -- -D warnings
 
     - name: rustfmt
       uses: actions-rs/cargo@v1
