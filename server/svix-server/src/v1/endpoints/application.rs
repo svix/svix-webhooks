@@ -107,11 +107,34 @@ async fn list_applications(
     )))
 }
 
+fn default_as_false() -> bool {
+    false
+}
+
+#[derive(Debug, Deserialize, Validate)]
+pub struct CreateApplicationQuery {
+    #[serde(default = "default_as_false")]
+    get_if_exists: bool,
+}
+
 async fn create_application(
     Extension(ref db): Extension<DatabaseConnection>,
     ValidatedJson(data): ValidatedJson<ApplicationIn>,
+    query: ValidatedQuery<CreateApplicationQuery>,
     permissions: Permissions,
 ) -> Result<(StatusCode, Json<ApplicationOut>)> {
+    if query.get_if_exists {
+        if let Some(ref uid) = data.uid {
+            let app = application::Entity::secure_find(permissions.org_id.clone())
+                .filter(application::Column::Uid.eq(uid.to_owned()))
+                .one(db)
+                .await?;
+            if let Some(ret) = app {
+                return Ok((StatusCode::OK, Json(ret.into())));
+            }
+        }
+    }
+
     let app = application::ActiveModel {
         org_id: Set(permissions.org_id.clone()),
         ..data.into()

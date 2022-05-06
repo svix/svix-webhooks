@@ -363,6 +363,52 @@ async fn test_uid_across_users() {
 }
 
 #[tokio::test]
+async fn test_get_or_create() {
+    let (client, _jh) = start_svix_server();
+
+    let app: ApplicationOut = client
+        .post(
+            "api/v1/app/",
+            ApplicationIn {
+                name: "App 1".to_owned(),
+                uid: Some(ApplicationUid("app1".to_owned())),
+                ..Default::default()
+            },
+            StatusCode::CREATED,
+        )
+        .await
+        .unwrap();
+
+    let _: IgnoredResponse = client
+        .post(
+            "api/v1/app/",
+            ApplicationIn {
+                name: "App 1".to_owned(),
+                uid: Some(ApplicationUid("app1".to_owned())),
+                ..Default::default()
+            },
+            StatusCode::CONFLICT,
+        )
+        .await
+        .unwrap();
+
+    let app2: ApplicationOut = client
+        .post(
+            "api/v1/app/?get_if_exists=true",
+            ApplicationIn {
+                name: "App 1 - SLIGHTLY DIFFERENT, BUT WON'T BE PERSISTED".to_owned(),
+                uid: Some(ApplicationUid("app1".to_owned())),
+                ..Default::default()
+            },
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(app, app2);
+}
+
+#[tokio::test]
 async fn test_idempotency() {
     let (client, _jh) = start_svix_server();
 
