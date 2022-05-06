@@ -207,7 +207,7 @@ mod tests {
     async fn test_ack() {
         let (tx_mem, mut rx_mem) = memory::new_pair().await;
         assert!(tx_mem
-            .send(mock_message("1".to_owned()), None)
+            .send(mock_message("test".to_owned()), None)
             .await
             .is_ok());
 
@@ -219,7 +219,7 @@ mod tests {
             .nth(0)
             .unwrap();
 
-        assert_eq!(recv.task, mock_message("1".to_owned()));
+        assert_eq!(recv.task, mock_message("test".to_owned()));
 
         assert!(tx_mem.ack(recv).await.is_ok());
 
@@ -239,7 +239,7 @@ mod tests {
     async fn test_nack() {
         let (tx_mem, mut rx_mem) = memory::new_pair().await;
         assert!(tx_mem
-            .send(mock_message("1".to_owned()), None)
+            .send(mock_message("test".to_owned()), None)
             .await
             .is_ok());
 
@@ -250,7 +250,7 @@ mod tests {
             .into_iter()
             .nth(0)
             .unwrap();
-        assert_eq!(&recv.task, &mock_message("1".to_owned()));
+        assert_eq!(&recv.task, &mock_message("test".to_owned()));
 
         assert!(tx_mem.nack(recv).await.is_ok());
 
