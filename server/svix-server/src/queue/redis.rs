@@ -80,7 +80,6 @@ async fn new_pair_inner(
             .await
             .expect("Error retreiving connection from Redis pool");
 
-        // TODO: Check error type
         let consumer_group_resp: RedisResult<()> = conn
             .query_async(Cmd::xgroup_create_mkstream(
                 &main_queue_name,
@@ -88,6 +87,19 @@ async fn new_pair_inner(
                 0i8,
             ))
             .await;
+
+        if let Err(e) = consumer_group_resp {
+            if !e.to_string().contains("BUSYGROUP") {
+                panic!(
+                    "error creating consumer group or stream: {:?}, {:?}, {:?}, {:?}, {:?}",
+                    e.kind(),
+                    e.detail(),
+                    e.code(),
+                    e.category(),
+                    e
+                )
+            };
+        }
     }
 
     let pending_duration: i64 = pending_duration
@@ -572,7 +584,7 @@ mod tests {
         let (p, mut c) =
             new_pair_inner(pool, Duration::from_millis(100), "{test}_idle_period").await;
 
-		tokio::time::sleep(Duration::from_millis(150)).await;
+        tokio::time::sleep(Duration::from_millis(150)).await;
         flush_stale_queue_items(p.clone(), &mut c).await;
 
         let mt = QueueTask::MessageV1(MessageTask {
@@ -617,7 +629,7 @@ mod tests {
 
         let (p, mut c) = new_pair_inner(pool, Duration::from_millis(500), "{test}_ack").await;
 
-		tokio::time::sleep(Duration::from_millis(550)).await;
+        tokio::time::sleep(Duration::from_millis(550)).await;
 
         flush_stale_queue_items(p.clone(), &mut c).await;
 
