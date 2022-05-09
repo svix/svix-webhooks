@@ -1,20 +1,28 @@
-/// Redis queue implementation
-///
-/// This implementation uses the following data structures:
-/// - A "tasks to be processed" queue - which is what the consumer listens to for tasks.
-///     AKA: Main
-/// - A "tasks currently processing" queue - which are for tasks that are currently being handled.
-///     AKA: Processing
-/// - A ZSET for delayed tasks with the sort order being the time-to-be-delivered
-///     AKA: Delayed
-///
-/// - Tasks in the queues are prefixed with a ksuid so that we can know the timestamp of when they
-/// should be executed.
-///
-/// The implementation spawns an additional worker that monitors both the zset delayed tasks and
-/// the tasks currently processing. It monitors the zset task set for tasks that should be
-/// processed now, and the currently processing queue for tasks that have timed out and should be
-/// put back on the main queue.
+//! Redis stream-based queue implementation
+//!
+//! # Redis Streams in Brief
+//! Redis has a built-in queue called streams. With consumer groups and consumers, messages in this
+//! queue will automatically be put into a pending queue when read and deleted when acknowledged.
+//!
+//! # The Implementation
+//! This implementation uses this to allow worker instances to race for messages to dispatch which
+//! are then, ideally, acknowledged. If a message is processing for more than 45 seconds, it is
+//! reinserted at the back of the queue to be tried again.
+//!
+//! This implementation uses the following data structures:
+//! - A "tasks to be processed" stream - which is what the consumer listens to for tasks.
+//!     AKA: Main
+//! - A ZSET for delayed tasks with the sort order being the time-to-be-delivered
+//!     AKA: Delayed
+//!
+//! - Tasks in the delayed queue are prefixed with a ksuid so that we can know the timestamp of when
+//!   they should be executed.
+//!
+//! The implementation spawns an additional worker that monitors both the zset delayed tasks and
+//! the tasks currently processing. It monitors the zset task set for tasks that should be
+//! processed now, and the currently processing queue for tasks that have timed out and should be
+//! put back on the main queue.
+
 use std::{num::NonZeroUsize, time::Duration};
 
 use axum::async_trait;
@@ -40,46 +48,56 @@ use super::{
 
 // FIXME: Change unwraps to have our own error type for the queue module entirely
 
+/// This is the key of the main queue. As a KV store, redis places the entire stream under this key.
+/// Confusingly, each message in the queue may have any number of KV pairs.
 const MAIN: &str = "svix_{queue}_v3_main";
 
-// TODO: Stream based delayed queue
-// const DELAYED: &str = "svix_queue_v3_delayed";
+// TODO: Migrate DELAYED queue to use streams too
 
-// FIXME: hash-tags here enable clustering but prevent proper sharding of lists
-const LEGACY_MAIN: &str = "{queue}_svix_main";
-const LEGACY_PROCESSING: &str = "{queue}_svix_processing";
-// TODO: Rename LEGACY_DELAYED
+/// The key for the DELAYED queue in which scheduled messages are placed. This is the same DELAYED
+/// queue as v2 of the queue implementation.
 const DELAYED: &str = "{queue}_svix_delayed";
 
+// v2 KEY CONSTANTS
+const LEGACY_MAIN: &str = "{queue}_svix_main";
+const LEGACY_PROCESSING: &str = "{queue}_svix_processing";
+
+// v1 KEY CONSTANTS
 const LEGACY_LEGACY_MAIN: &str = "svix_queue_main";
 const LEGACY_LEGACY_PROCESSING: &str = "svix_queue_processing";
 const LEGACY_LEGACY_DELAYED: &str = "svix_queue_delayed";
 
-/// Consumer group name constant
+/// Consumer group name constant -- each consumer group is able to read and acknowledge messages
+/// from the queue, and messages are read by all consumer groups.
 const WORKERS_GROUP: &str = "svix_workers_group";
-/// Consumer group consumer name constant
+/// Consumer group consumer name constant -- consumer groups contain consumers which receive
+/// messages in a round-robin manner. Every worker uses the same consumer name such that they race
+/// for messages instead of having them evenly distributed.
 const WORKER_CONSUMER: &str = "svix_workers_consumer";
 
-/// Special key for XADD command's which generates a real key automatically
+/// Special ID for XADD command's which generates a stream ID automatically
 const GENERATE_STREAM_ID: &str = "*";
-/// Special key for XREADGROUP commands which reads any new messages
+/// Special ID for XREADGROUP commands which reads any new messages
 const LISTEN_STREAM_ID: &str = ">";
 
 /// Each queue item has a set of KV pairs associated with it, for simplicity a sing key, "data" is
 /// used with the entire [`QueueTask`] as the value in serialized JSON
 const QUEUE_KV_KEY: &str = "data";
 
+/// Generates a [`TaskQueueProducer`] and a [`TaskQueueConsumer`] backed by Redis.
 pub async fn new_pair(pool: RedisPool) -> (TaskQueueProducer, TaskQueueConsumer) {
     new_pair_inner(pool, Duration::from_secs(45), MAIN, DELAYED).await
 }
 
+/// An inner function allowing key constants to be variable for testing purposes
 async fn new_pair_inner(
     pool: RedisPool,
     pending_duration: Duration,
     main_queue_name: &'static str,
     delayed_queue_name: &'static str,
 ) -> (TaskQueueProducer, TaskQueueConsumer) {
-    // Create the stream and consumer group for the MAIN queue should it not already exist
+    // Create the stream and consumer group for the MAIN queue should it not already exist. The
+    // consumer is created automatically upon use so it does not have to be created here.
     {
         let mut conn = pool
             .get()
@@ -94,6 +112,8 @@ async fn new_pair_inner(
             ))
             .await;
 
+        // If the error is a BUSYGROUP error, then the stream or consumer group already exists. This does
+        // not impact functionality, so continue as usual.
         if let Err(e) = consumer_group_resp {
             if !e.to_string().contains("BUSYGROUP") {
                 panic!(
@@ -108,17 +128,25 @@ async fn new_pair_inner(
         }
     }
 
+    // Redis durationns are given in integer numbers of milliseconds, so the pending_duration (the
+    // time in which a task is allowed to be processing before being restarted) must be converted to
+    // one.
     let pending_duration: i64 = pending_duration
         .as_millis()
         .try_into()
         .expect("Pending duration out of bounds");
 
     let worker_pool = pool.clone();
+
+    // This is the background thread that monitors the DELAYED queue for messages ready to be
+    // inserted into the MAIN queue and that monitors the pending tasks of the MAIN queue for
+    // messages that must be reinserted.
     tokio::spawn(async move {
-        // FIXME: enforce we only have one such worker (locking)
+        // FIXME: enforce we only have one such worker via locking
         let batch_size: isize = 50;
         let pool = worker_pool;
 
+        // Before entering the loop, migrate v1 queues to v2 and v2 queues to v3.
         {
             let mut pool = pool.get().await.unwrap();
 
@@ -144,10 +172,13 @@ async fn new_pair_inner(
                     .unwrap();
                 let tasks: Vec<&str> = keys
                     .iter()
+                    // All information is stored in the key in which the ID and JSON formated task
+                    // are separated by a `|`. So, take the key, then take the part after the `|`
                     .map(|x| &x.0)
                     .map(|x| x.split('|').nth(1).expect("Improper key format"))
                     .collect();
 
+                // Then for each task, XADD them to ghe MAIN queue
                 for task in tasks {
                     let _: () = pool
                         .query_async(Cmd::xadd(
@@ -169,8 +200,10 @@ async fn new_pair_inner(
             let _ = cmd
                 .arg(&main_queue_name)
                 .arg(WORKERS_GROUP)
+                // Search only for IDs that have been idle for at least the pending_duration
                 .arg("IDLE")
                 .arg(pending_duration)
+                // And search for at most 1000 IDs from the minimum ID value to the maximum ID value
                 .arg("-")
                 .arg("+")
                 .arg(1000i16);
@@ -218,6 +251,9 @@ async fn new_pair_inner(
             }
         }
     });
+
+    // Once the background thread has been started, simply return the [`TaskQueueProducer`] and
+    // [`TaskQueueConsumer`]
     (
         TaskQueueProducer(Box::new(RedisQueueProducer {
             pool: pool.clone(),
@@ -277,8 +313,13 @@ fn from_redis_key(key: &str) -> TaskQueueDelivery {
 impl TaskQueueSend for RedisQueueProducer {
     async fn send(&self, task: QueueTask, delay: Option<Duration>) -> Result<()> {
         let mut pool = self.pool.get().await.unwrap();
+
+        // If there's a delay, compute the timestamp at which the delay is up
         let timestamp = delay.map(|delay| Utc::now() + chrono::Duration::from_std(delay).unwrap());
+
         if let Some(timestamp) = timestamp {
+            // If there's a delay, add it to the DELAYED queue by ZADDING the Redis-key-ified
+            // delivery
             let delivery = TaskQueueDelivery::new(task, Some(timestamp));
             let key = to_redis_key(&delivery);
             let _: () = pool
@@ -286,6 +327,7 @@ impl TaskQueueSend for RedisQueueProducer {
                 .await
                 .unwrap();
         } else {
+            // If there is no delay simply XADD the task to the MAIN queue
             let _: () = pool
                 .query_async(Cmd::xadd(
                     &self.main_queue_name,
@@ -300,6 +342,7 @@ impl TaskQueueSend for RedisQueueProducer {
     }
 
     async fn ack(&self, delivery: TaskQueueDelivery) -> Result<()> {
+        // ACKing the delivery, XACKs the message in the queue so it will no longer be retried
         let mut pool = self.pool.get().await.unwrap();
         let processed: u8 = pool
             .query_async(Cmd::xack(
@@ -321,7 +364,7 @@ impl TaskQueueSend for RedisQueueProducer {
     }
 
     async fn nack(&self, delivery: TaskQueueDelivery) -> Result<()> {
-        // FIXME: do something else here?
+        // FIXME: NACKing will also XACK the message, but something else should be done here
         let mut pool = self.pool.get().await.unwrap();
         let _: () = pool
             .query_async(Cmd::xack(
@@ -353,8 +396,11 @@ pub struct RedisQueueConsumer {
 #[async_trait]
 impl TaskQueueReceive for RedisQueueConsumer {
     async fn receive_all(&mut self) -> Result<Vec<TaskQueueDelivery>> {
+        // TODO: Receive messages in batches so it's not always a Vec with one member
         let mut pool = self.pool.get().await.unwrap();
 
+        // There is no way to make it await a message for unbounded times, so simply block for a short
+        // amount of time (to avoid locking) and loop if no messages were retreived
         let resp = loop {
             let resp: StreamReadReply = pool
                 .query_async(Cmd::xread_options(
