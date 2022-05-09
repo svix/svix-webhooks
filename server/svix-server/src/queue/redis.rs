@@ -666,4 +666,50 @@ mod tests {
             _ = tokio::time::sleep(Duration::from_secs(1)) => {}
         }
     }
+
+    #[tokio::test]
+    async fn test_delay() {
+        let cfg = crate::cfg::load().unwrap();
+        let pool = get_pool(cfg).await;
+
+        let (p, mut c) = new_pair_inner(
+            pool,
+            Duration::from_millis(500),
+            "{test}_delay",
+            "{test}_delay_delayed",
+        )
+        .await;
+
+        tokio::time::sleep(Duration::from_millis(550)).await;
+
+        flush_stale_queue_items(p.clone(), &mut c).await;
+
+        let mt1 = QueueTask::MessageV1(MessageTask {
+            msg_id: MessageId("test1".to_owned()),
+            app_id: ApplicationId("test1".to_owned()),
+            endpoint_id: EndpointId("test1".to_owned()),
+            trigger_type: MessageAttemptTriggerType::Scheduled,
+            attempt_count: 0,
+        });
+        let mt2 = QueueTask::MessageV1(MessageTask {
+            msg_id: MessageId("test2".to_owned()),
+            app_id: ApplicationId("test2".to_owned()),
+            endpoint_id: EndpointId("test2".to_owned()),
+            trigger_type: MessageAttemptTriggerType::Manual,
+            attempt_count: 0,
+        });
+
+        p.send(mt1.clone(), Some(Duration::from_millis(500)))
+            .await
+            .unwrap();
+        p.send(mt2.clone(), None).await.unwrap();
+
+        let recv2 = c.receive_all().await.unwrap().pop().unwrap();
+        assert_eq!(recv2.task, mt2);
+        p.ack(recv2).await.unwrap();
+
+        let recv1 = c.receive_all().await.unwrap().pop().unwrap();
+        assert_eq!(recv1.task, mt1);
+        p.ack(recv1).await.unwrap();
+    }
 }
