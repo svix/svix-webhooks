@@ -70,13 +70,14 @@ const LISTEN_STREAM_ID: &str = ">";
 const QUEUE_KV_KEY: &str = "data";
 
 pub async fn new_pair(pool: RedisPool) -> (TaskQueueProducer, TaskQueueConsumer) {
-    new_pair_inner(pool, Duration::from_secs(45), MAIN).await
+    new_pair_inner(pool, Duration::from_secs(45), MAIN, DELAYED).await
 }
 
 async fn new_pair_inner(
     pool: RedisPool,
     pending_duration: Duration,
     main_queue_name: &'static str,
+    delayed_queue_name: &'static str,
 ) -> (TaskQueueProducer, TaskQueueConsumer) {
     // Create the stream and consumer group for the MAIN queue should it not already exist
     {
@@ -132,28 +133,27 @@ async fn new_pair_inner(
             // First look for delayed keys whose time is up and add them to the main qunue
             let timestamp = Utc::now().timestamp();
             let keys: Vec<String> = pool
-                .zrangebyscore_limit(DELAYED, 0isize, timestamp, 0isize, batch_size)
+                .zrangebyscore_limit(delayed_queue_name, 0isize, timestamp, 0isize, batch_size)
                 .await
                 .unwrap();
             if !keys.is_empty() {
                 // FIXME: needs to be a transaction
-                let keys: Vec<(String, String)> =
-                    pool.zpopmin(DELAYED, keys.len() as isize).await.unwrap();
-                let keys: Vec<&str> = keys
+                let keys: Vec<(String, String)> = pool
+                    .zpopmin(delayed_queue_name, keys.len() as isize)
+                    .await
+                    .unwrap();
+                let tasks: Vec<&str> = keys
                     .iter()
                     .map(|x| &x.0)
                     .map(|x| x.split('|').nth(1).expect("Improper key format"))
                     .collect();
 
-                for key in keys {
+                for task in tasks {
                     let _: () = pool
                         .query_async(Cmd::xadd(
                             &main_queue_name,
                             GENERATE_STREAM_ID,
-                            &[(
-                                QUEUE_KV_KEY,
-                                serde_json::to_string(key).expect("Serializaion error"),
-                            )],
+                            &[(QUEUE_KV_KEY, task)],
                         ))
                         .await
                         .unwrap();
@@ -173,7 +173,7 @@ async fn new_pair_inner(
                 .arg(pending_duration)
                 .arg("-")
                 .arg("+")
-                .arg(1000);
+                .arg(1000i16);
 
             let keys: StreamPendingCountReply = pool.query_async(cmd).await.unwrap();
 
@@ -222,6 +222,7 @@ async fn new_pair_inner(
         TaskQueueProducer(Box::new(RedisQueueProducer {
             pool: pool.clone(),
             main_queue_name,
+            delayed_queue_name,
         })),
         TaskQueueConsumer(Box::new(RedisQueueConsumer {
             pool,
@@ -253,6 +254,7 @@ impl ToRedisArgs for Direction {
 pub struct RedisQueueProducer {
     pool: RedisPool,
     main_queue_name: &'static str,
+    delayed_queue_name: &'static str,
 }
 
 fn to_redis_key(delivery: &TaskQueueDelivery) -> String {
@@ -280,7 +282,7 @@ impl TaskQueueSend for RedisQueueProducer {
             let delivery = TaskQueueDelivery::new(task, Some(timestamp));
             let key = to_redis_key(&delivery);
             let _: () = pool
-                .zadd(DELAYED, key, timestamp.timestamp())
+                .zadd(self.delayed_queue_name, key, timestamp.timestamp())
                 .await
                 .unwrap();
         } else {
@@ -564,13 +566,11 @@ mod tests {
         'outer: loop {
             tokio::select! {
                 recv = c.receive_all() => {
-                    println!("HERE");
                     let recv = recv.unwrap().pop().unwrap();
                     p.ack(recv).await.unwrap();
                 }
 
                 _ = tokio::time::sleep(Duration::from_millis(100)) => {
-                    println!("BREAK");
                     break 'outer;
                 }
             }
@@ -582,8 +582,13 @@ mod tests {
         let cfg = crate::cfg::load().unwrap();
         let pool = get_pool(cfg).await;
 
-        let (p, mut c) =
-            new_pair_inner(pool, Duration::from_millis(100), "{test}_idle_period").await;
+        let (p, mut c) = new_pair_inner(
+            pool,
+            Duration::from_millis(100),
+            "{test}_idle_period",
+            "{test}_idle_period_delayed",
+        )
+        .await;
 
         tokio::time::sleep(Duration::from_millis(150)).await;
         flush_stale_queue_items(p.clone(), &mut c).await;
@@ -628,7 +633,13 @@ mod tests {
         let cfg = crate::cfg::load().unwrap();
         let pool = get_pool(cfg).await;
 
-        let (p, mut c) = new_pair_inner(pool, Duration::from_millis(500), "{test}_ack").await;
+        let (p, mut c) = new_pair_inner(
+            pool,
+            Duration::from_millis(500),
+            "{test}_ack",
+            "{test}_ack_delayed",
+        )
+        .await;
 
         tokio::time::sleep(Duration::from_millis(550)).await;
 
