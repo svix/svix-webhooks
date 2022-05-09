@@ -1,4 +1,4 @@
-// Redis queue implementation
+/// Redis queue implementation
 ///
 /// This implementation uses the following data structures:
 /// - A "tasks to be processed" queue - which is what the consumer listens to for tasks.
