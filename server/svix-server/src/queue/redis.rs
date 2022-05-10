@@ -419,8 +419,9 @@ impl TaskQueueReceive for RedisQueueConsumer {
             }
         };
 
-        let id = resp.keys[0].ids[0].id.clone();
-        let map = &resp.keys[0].ids[0].map;
+        let element = &resp.keys[0].ids[0];
+        let id = element.id.clone();
+        let map = &element.map;
 
         let task: QueueTask = if let Some(redis::Value::Data(data)) = map.get("data") {
             serde_json::from_slice(data).expect("Invalid QueueTask")
