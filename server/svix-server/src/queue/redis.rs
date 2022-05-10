@@ -179,16 +179,15 @@ async fn new_pair_inner(
                     .collect();
 
                 // Then for each task, XADD them to ghe MAIN queue
+                let mut pipe = redis::pipe();
                 for task in tasks {
-                    let _: () = pool
-                        .query_async(Cmd::xadd(
-                            &main_queue_name,
-                            GENERATE_STREAM_ID,
-                            &[(QUEUE_KV_KEY, task)],
-                        ))
-                        .await
-                        .unwrap();
+                    let _ = pipe.xadd(
+                        &main_queue_name,
+                        GENERATE_STREAM_ID,
+                        &[(QUEUE_KV_KEY, task)],
+                    );
                 }
+                let _: () = pool.query_async_pipeline(pipe).await.unwrap();
             } else {
                 // Wait for half a second before attempting to fetch again if nothing was found
                 sleep(Duration::from_millis(500)).await;
