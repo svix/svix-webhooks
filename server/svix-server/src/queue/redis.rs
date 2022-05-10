@@ -609,7 +609,7 @@ mod tests {
     /// Reads and acknowledges all items in the queue with the given name for clearing out entries
     /// from previous test runs
     async fn flush_stale_queue_items(p: TaskQueueProducer, c: &mut TaskQueueConsumer) {
-        'outer: loop {
+        loop {
             tokio::select! {
                 recv = c.receive_all() => {
                     let recv = recv.unwrap().pop().unwrap();
@@ -617,7 +617,7 @@ mod tests {
                 }
 
                 _ = tokio::time::sleep(Duration::from_millis(100)) => {
-                    break 'outer;
+                    break;
                 }
             }
         }
