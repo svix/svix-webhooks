@@ -10,7 +10,7 @@ db-path = "~/.cargo/advisory-db"
 db-urls = ["https://github.com/rustsec/advisory-db"]
 vulnerability = "deny"
 unmaintained = "warn"
-yanked = "warn"
+yanked = "deny"
 notice = "warn"
 ignore = [
     # TODO: Update `time` crate when possible. Old versions are currently required for `sqlx` and
