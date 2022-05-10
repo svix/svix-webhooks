@@ -365,22 +365,8 @@ impl TaskQueueSend for RedisQueueProducer {
         Ok(())
     }
 
-    async fn nack(&self, delivery: TaskQueueDelivery) -> Result<()> {
-        // FIXME: NACKing will also XACK the message, but something else should be done here
-        let mut pool = self.pool.get().await.unwrap();
-        let _: () = pool
-            .query_async(Cmd::xack(
-                self.main_queue_name,
-                WORKERS_GROUP,
-                &[delivery.id.as_str()],
-            ))
-            .await
-            .unwrap();
-        tracing::error!(
-            "Failed processing msg: {}|{}",
-            delivery.id,
-            serde_json::to_string(&delivery.task).unwrap()
-        );
+    async fn nack(&self, _delivery: TaskQueueDelivery) -> Result<()> {
+        tracing::error!("NACKing is not yet supported");
         Ok(())
     }
 
