@@ -7,6 +7,7 @@
 
 ![GitHub tag](https://img.shields.io/github/tag/svix/svix-webhooks.svg)
 [![Build Status](https://github.com/svix/svix-webhooks/workflows/Server%20CI/badge.svg)](https://github.com/svix/svix-webhooks/actions)
+[![Server Security](https://github.com/svix/svix-webhooks/actions/workflows/server-security.yml/badge.svg)](https://github.com/svix/svix-webhooks/actions/workflows/server-security.yml)
 [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
 [![Join our slack](https://img.shields.io/badge/Slack-join%20the%20community-blue?logo=slack&style=social)](https://www.svix.com/slack/)
 
