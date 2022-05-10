@@ -291,6 +291,11 @@ async fn process_task(
         .endpoints
         .iter()
         .filter(|endpoint| {
+            let endpoint_match = match &queue_task {
+                QueueTask::MessageV1(task) => task.endpoint_id == endpoint.id,
+                QueueTask::MessageBatchV1(_) => true
+            };
+            return endpoint_match &&
             // No disabled or deleted endpoints ever
                !endpoint.disabled && !endpoint.deleted &&
             (
