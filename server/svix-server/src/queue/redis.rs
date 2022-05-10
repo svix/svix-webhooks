@@ -84,6 +84,9 @@ const LISTEN_STREAM_ID: &str = ">";
 /// used with the entire [`QueueTask`] as the value in serialized JSON
 const QUEUE_KV_KEY: &str = "data";
 
+/// The maximum number of pending messages to reinsert into the queue after becoming stale per loop
+const PENDING_BATCH_SIZE: i16 = 1000;
+
 /// Generates a [`TaskQueueProducer`] and a [`TaskQueueConsumer`] backed by Redis.
 pub async fn new_pair(pool: RedisPool) -> (TaskQueueProducer, TaskQueueConsumer) {
     new_pair_inner(pool, Duration::from_secs(45), MAIN, DELAYED).await
@@ -205,7 +208,7 @@ async fn new_pair_inner(
                 // And search for at most 1000 IDs from the minimum ID value to the maximum ID value
                 .arg("-")
                 .arg("+")
-                .arg(1000i16);
+                .arg(PENDING_BATCH_SIZE);
 
             let keys: StreamPendingCountReply = pool.query_async(cmd).await.unwrap();
 
