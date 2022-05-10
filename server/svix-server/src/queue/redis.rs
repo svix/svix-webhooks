@@ -384,42 +384,48 @@ pub struct RedisQueueConsumer {
 #[async_trait]
 impl TaskQueueReceive for RedisQueueConsumer {
     async fn receive_all(&mut self) -> Result<Vec<TaskQueueDelivery>> {
-        // TODO: Receive messages in batches so it's not always a Vec with one member
-        let mut pool = self.pool.get().await.unwrap();
+        let pool = self.pool.clone();
+        let main_queue_name = self.main_queue_name;
+        tokio::spawn(async move {
+            // TODO: Receive messages in batches so it's not always a Vec with one member
+            let mut pool = pool.get().await.unwrap();
 
-        // There is no way to make it await a message for unbounded times, so simply block for a short
-        // amount of time (to avoid locking) and loop if no messages were retreived
-        let resp = loop {
-            let resp: StreamReadReply = pool
-                .query_async(Cmd::xread_options(
-                    &[self.main_queue_name],
-                    &[LISTEN_STREAM_ID],
-                    &StreamReadOptions::default()
-                        .group(WORKERS_GROUP, WORKER_CONSUMER)
-                        .count(1)
-                        .block(500),
-                ))
-                .await
-                .unwrap();
+            // There is no way to make it await a message for unbounded times, so simply block for a short
+            // amount of time (to avoid locking) and loop if no messages were retreived
+            let resp = loop {
+                let resp: StreamReadReply = pool
+                    .query_async(Cmd::xread_options(
+                        &[main_queue_name],
+                        &[LISTEN_STREAM_ID],
+                        &StreamReadOptions::default()
+                            .group(WORKERS_GROUP, WORKER_CONSUMER)
+                            .count(1)
+                            .block(30_000),
+                    ))
+                    .await
+                    .unwrap();
 
-            if !resp.keys.is_empty() && !resp.keys[0].ids.is_empty() {
-                break resp;
-            }
-        };
+                if !resp.keys.is_empty() && !resp.keys[0].ids.is_empty() {
+                    break resp;
+                }
+            };
 
-        let element = &resp.keys[0].ids[0];
-        let id = element.id.clone();
-        let map = &element.map;
+            let element = &resp.keys[0].ids[0];
+            let id = element.id.clone();
+            let map = &element.map;
 
-        let task: QueueTask = if let Some(redis::Value::Data(data)) = map.get("data") {
-            serde_json::from_slice(data).expect("Invalid QueueTask")
-        } else {
-            panic!("No QueueTask associated with key");
-        };
+            let task: QueueTask = if let Some(redis::Value::Data(data)) = map.get("data") {
+                serde_json::from_slice(data).expect("Invalid QueueTask")
+            } else {
+                panic!("No QueueTask associated with key");
+            };
 
-        tracing::trace!("RedisQueue: event recv <");
+            tracing::trace!("RedisQueue: event recv <");
 
-        Ok(vec![TaskQueueDelivery { id, task }])
+            Ok(vec![TaskQueueDelivery { id, task }])
+        })
+        .await
+        .unwrap()
     }
 }
 
@@ -734,7 +740,7 @@ mod tests {
             attempt_count: 0,
         });
 
-        p.send(mt1.clone(), Some(Duration::from_millis(500)))
+        p.send(mt1.clone(), Some(Duration::from_millis(2000)))
             .await
             .unwrap();
         p.send(mt2.clone(), None).await.unwrap();
