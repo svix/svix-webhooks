@@ -45,34 +45,20 @@ impl MessageTask {
 pub struct MessageTaskBatch {
     pub msg_id: MessageId,
     pub app_id: ApplicationId,
-    pub endpoint_ids: Vec<EndpointId>,
     pub trigger_type: MessageAttemptTriggerType,
-    pub attempt_count: u16,
 }
 
 impl MessageTaskBatch {
     pub fn new_task(
         msg_id: MessageId,
         app_id: ApplicationId,
-        endpoint_ids: Vec<EndpointId>,
         trigger_type: MessageAttemptTriggerType,
     ) -> QueueTask {
         QueueTask::MessageBatchV1(Self {
             msg_id,
             app_id,
-            endpoint_ids,
-            attempt_count: 0,
             trigger_type,
         })
-    }
-    pub fn to_message_task(self, endpoint_id: &EndpointId) -> MessageTask {
-        MessageTask {
-            msg_id: self.msg_id,
-            app_id: self.app_id,
-            endpoint_id: endpoint_id.clone(),
-            trigger_type: self.trigger_type,
-            attempt_count: self.attempt_count,
-        }
     }
 }
 
@@ -85,20 +71,28 @@ pub enum QueueTask {
 }
 
 impl QueueTask {
-    pub fn get_message_id(self) -> MessageId {
+    pub fn msg_id(self) -> MessageId {
         match self {
             QueueTask::MessageV1(task) => task.msg_id,
             QueueTask::MessageBatchV1(batch) => batch.msg_id,
         }
     }
-    pub fn get_message_tasks(self) -> Vec<MessageTask> {
+    pub fn to_msg_task(self, endpoint_id: EndpointId) -> MessageTask {
         match self {
-            QueueTask::MessageV1(task) => vec![task],
-            QueueTask::MessageBatchV1(batch) => batch
-                .endpoint_ids
-                .iter()
-                .map(|endp_id| batch.clone().to_message_task(endp_id))
-                .collect(),
+            QueueTask::MessageV1(task) => task,
+            QueueTask::MessageBatchV1(batch) => MessageTask {
+                msg_id: batch.msg_id,
+                app_id: batch.app_id,
+                endpoint_id,
+                attempt_count: 0,
+                trigger_type: batch.trigger_type,
+            },
+        }
+    }
+    pub fn trigger_type(self) -> MessageAttemptTriggerType {
+        match self {
+            QueueTask::MessageV1(task) => task.trigger_type,
+            QueueTask::MessageBatchV1(batch) => batch.trigger_type,
         }
     }
 }
@@ -135,7 +129,6 @@ impl TaskQueueConsumer {
     }
 }
 
-#[derive(Clone)]
 pub struct TaskQueueDelivery {
     pub id: String,
     pub task: QueueTask,

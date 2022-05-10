@@ -16,7 +16,7 @@ use reqwest::header::{HeaderMap, HeaderName};
 use sea_orm::{entity::prelude::*, ActiveValue::Set, DatabaseConnection, EntityTrait};
 use tokio::time::{sleep, Duration};
 
-use std::{iter, str::FromStr};
+use std::{collections::HashSet, iter, str::FromStr};
 
 const USER_AGENT: &str = concat!("Svix-Webhooks/", env!("CARGO_PKG_VERSION"));
 
@@ -74,45 +74,21 @@ fn generate_msg_headers(
 async fn dispatch(
     cfg: Configuration,
     db: &DatabaseConnection,
-    cache: Cache,
     queue_tx: &TaskQueueProducer,
+    payload: Option<Json>,
     msg_task: MessageTask,
-    msg: &message::Model,
+    endpoint: CreateMessageEndpoint,
 ) -> Result<()> {
-    tracing::trace!("Dispatch: {} {}", &msg_task.msg_id, &msg_task.endpoint_id);
+    tracing::trace!("Dispatch: {} {}", &msg_task.msg_id, &endpoint.id);
 
-    let app_id = &msg_task.app_id;
-    let org_id = &msg.org_id;
-    let endp_id = &msg_task.endpoint_id;
-
-    let endp: CreateMessageEndpoint = CreateMessageApp::layered_fetch(
-        cache,
-        db,
-        None,
-        app_id.clone(),
-        org_id.clone(),
-        Duration::from_secs(30),
-    )
-    .await?
-    .ok_or_else(|| Error::Generic(format!("Unexpected: app does not exist {}", app_id)))?
-    .endpoints
-    .into_iter()
-    .find(|endp| endp.id == *endp_id)
-    .ok_or_else(|| {
-        Error::Generic(format!(
-            "Unexpected: endpoint does not exist {} {}",
-            app_id, endp_id
-        ))
-    })?;
-
-    let body = serde_json::to_string(&msg.payload).expect("Error parsing message body");
+    let body = serde_json::to_string(&payload).expect("Error parsing message body");
     let headers = {
-        let keys: Vec<&EndpointSecret> = if let Some(ref old_keys) = endp.old_signing_keys {
-            iter::once(&endp.key)
+        let keys: Vec<&EndpointSecret> = if let Some(ref old_keys) = endpoint.old_signing_keys {
+            iter::once(&endpoint.key)
                 .chain(old_keys.0.iter().map(|x| &x.key))
                 .collect()
         } else {
-            vec![&endp.key]
+            vec![&endpoint.key]
         };
 
         let mut headers = generate_msg_headers(
@@ -120,9 +96,9 @@ async fn dispatch(
             cfg.whitelabel_headers,
             &body,
             &msg_task.msg_id,
-            endp.headers.as_ref(),
+            endpoint.headers.as_ref(),
             &keys,
-            &endp.url,
+            &endpoint.url,
         );
         headers.insert("user-agent", USER_AGENT.to_string().parse().unwrap());
         headers
@@ -130,21 +106,21 @@ async fn dispatch(
 
     let client = reqwest::Client::new();
     let res = client
-        .post(&endp.url)
+        .post(&endpoint.url)
         .headers(headers)
         .timeout(Duration::from_secs(cfg.worker_request_timeout as u64))
-        .json(&msg.payload)
+        .json(&payload)
         .send()
         .await;
 
-    let msg_dest = messagedestination::Entity::secure_find_by_msg(msg.id.clone())
-        .filter(messagedestination::Column::EndpId.eq(msg_task.endpoint_id.clone()))
+    let msg_dest = messagedestination::Entity::secure_find_by_msg(msg_task.msg_id.clone())
+        .filter(messagedestination::Column::EndpId.eq(endpoint.id.clone()))
         .one(db)
         .await?
         .ok_or_else(|| {
             Error::Generic(format!(
                 "Msg dest not found {} {}",
-                msg.id, msg_task.endpoint_id
+                msg_task.msg_id, endpoint.id
             ))
         })?;
 
@@ -161,11 +137,10 @@ async fn dispatch(
     }
 
     let attempt = messageattempt::ActiveModel {
-        msg_id: Set(msg.id.clone()),
-        endp_id: Set(endp.id.clone()),
+        msg_id: Set(msg_task.msg_id.clone()),
+        endp_id: Set(endpoint.id.clone()),
         msg_dest_id: Set(msg_dest.id.clone()),
-        url: Set(endp.url.clone()),
-
+        url: Set(endpoint.url.clone()),
         ended_at: Set(Some(Utc::now().into())),
         trigger_type: Set(msg_task.trigger_type),
         ..Default::default()
@@ -219,7 +194,7 @@ async fn dispatch(
                 ..msg_dest.into()
             };
             let msg_dest = msg_dest.update(db).await?;
-            tracing::trace!("Worker success: {} {}", &msg_dest.id, &endp.id,);
+            tracing::trace!("Worker success: {} {}", &msg_dest.id, &endpoint.id,);
         }
         Err((attempt, err)) => {
             let _attempt = attempt.insert(db).await?;
@@ -233,7 +208,7 @@ async fn dispatch(
                     attempt_count,
                     err,
                     &msg_dest.id,
-                    &endp.id
+                    &endpoint.id
                 );
                 let duration = cfg.retry_schedule[attempt_count];
                 let msg_dest = messagedestination::ActiveModel {
@@ -251,7 +226,7 @@ async fn dispatch(
                     .send(
                         QueueTask::MessageV1(MessageTask {
                             attempt_count: msg_task.attempt_count + 1,
-                            ..msg_task
+                            ..msg_task.clone()
                         }),
                         Some(duration),
                     )
@@ -261,7 +236,7 @@ async fn dispatch(
                     "Worker failure attempts exhausted: {} {} {}",
                     err,
                     &msg_dest.id,
-                    &endp.id
+                    &endpoint.id
                 );
                 let msg_dest = messagedestination::ActiveModel {
                     status: Set(MessageStatus::Fail),
@@ -289,23 +264,102 @@ async fn process_task(
     cache: Cache,
     queue_tx: &TaskQueueProducer,
     queue_task: QueueTask,
-) -> Result<Vec<()>> {
-    // get the message row
-    let msg = message::Entity::find_by_id(queue_task.clone().get_message_id())
+) -> Result<()> {
+    let msg = message::Entity::find_by_id(queue_task.clone().msg_id())
         .one(db)
-        .await
-        .unwrap()
-        .unwrap();
+        .await?
+        .ok_or_else(|| {
+            Error::Generic(format!(
+                "Unexpected: message doesn't exist {}",
+                queue_task.clone().msg_id()
+            ))
+        })?;
 
-    // get individual MessageTasks per endpoint and collect their executions as futures
-    let futures: Vec<_> = queue_task
-        .get_message_tasks()
-        .into_iter()
-        .map(|msg_task| dispatch(cfg.clone(), db, cache.clone(), queue_tx, msg_task, &msg))
+    let msg_clone = msg.clone();
+    let create_message_app = CreateMessageApp::layered_fetch(
+        cache.clone(),
+        db,
+        None,
+        msg_clone.app_id,
+        msg_clone.org_id,
+        Duration::from_secs(30),
+    )
+    .await?
+    .ok_or_else(|| Error::Generic(format!("Application doesn't exist: {}", &msg.app_id)))?;
+
+    let endpoints: Vec<CreateMessageEndpoint> = create_message_app
+        .endpoints
+        .iter()
+        .filter(|endpoint| {
+            // No disabled or deleted endpoints ever
+               !endpoint.disabled && !endpoint.deleted &&
+            (
+                // Manual attempt types go through regardless
+                queue_task.clone().trigger_type() == MessageAttemptTriggerType::Manual
+                || (
+                        // If an endpoint has event types and it matches ours, or has no event types
+                        endpoint
+                        .event_types_ids
+                        .as_ref()
+                        .map(|x| x.0.contains(&msg.event_type))
+                        .unwrap_or(true)
+                    &&
+                        // If an endpoint has no channels accept all messages, otherwise only if their channels overlap.
+                        // A message with no channels doesn't match an endpoint with channels.
+                        endpoint
+                        .channels
+                        .as_ref()
+                        .map(|x| !x.0.is_disjoint(msg.channels.as_ref().map(|x| &x.0).unwrap_or(&HashSet::new())))
+                        .unwrap_or(true)
+            ))})
+        .cloned()
         .collect();
 
-    // execute the MessageTasks concurrently; any single failure will bubble up to the invoking function
-    future::try_join_all(futures).await
+    // TODO: remove this section once destinations are obsolete
+    let destinations = messagedestination::Entity::secure_find_by_msg(queue_task.clone().msg_id())
+        .all(db)
+        .await
+        .unwrap();
+    if destinations.is_empty() {
+        let destinations = endpoints
+            .iter()
+            .map(|endpoint| messagedestination::ActiveModel {
+                msg_id: Set(msg.id.clone()),
+                endp_id: Set(endpoint.id.clone()),
+                next_attempt: Set(Some(Utc::now().into())),
+                status: Set(MessageStatus::Sending),
+                ..Default::default()
+            });
+        messagedestination::Entity::insert_many(destinations)
+            .exec(db)
+            .await?;
+    }
+
+    let futures: Vec<_> = endpoints
+        .iter()
+        .map(|endpoint| {
+            dispatch(
+                cfg.clone(),
+                db,
+                queue_tx,
+                msg.payload.clone(),
+                queue_task.clone().to_msg_task(endpoint.clone().id),
+                endpoint.to_owned(),
+            )
+        })
+        .collect();
+
+    let join = future::join_all(futures).await;
+
+    let errs: Vec<_> = join.iter().filter(|x| x.is_err()).collect();
+    if !errs.is_empty() {
+        return Err(Error::Generic(format!(
+            "Some dispatches failed unexpectedly: {:?}",
+            errs
+        )));
+    }
+
+    Ok(())
 }
 
 /// Listens on the message queue for new tasks
