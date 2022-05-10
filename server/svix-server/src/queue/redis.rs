@@ -59,13 +59,13 @@ const MAIN: &str = "svix_{queue}_v3_main";
 const DELAYED: &str = "{queue}_svix_delayed";
 
 // v2 KEY CONSTANTS
-const LEGACY_MAIN: &str = "{queue}_svix_main";
-const LEGACY_PROCESSING: &str = "{queue}_svix_processing";
+const LEGACY_V2_MAIN: &str = "{queue}_svix_main";
+const LEGACY_V2_PROCESSING: &str = "{queue}_svix_processing";
 
 // v1 KEY CONSTANTS
-const LEGACY_LEGACY_MAIN: &str = "svix_queue_main";
-const LEGACY_LEGACY_PROCESSING: &str = "svix_queue_processing";
-const LEGACY_LEGACY_DELAYED: &str = "svix_queue_delayed";
+const LEGACY_V1_MAIN: &str = "svix_queue_main";
+const LEGACY_V1_PROCESSING: &str = "svix_queue_processing";
+const LEGACY_V1_DELAYED: &str = "svix_queue_delayed";
 
 /// Consumer group name constant -- each consumer group is able to read and acknowledge messages
 /// from the queue, and messages are read by all consumer groups.
@@ -435,7 +435,7 @@ impl TaskQueueReceive for RedisQueueConsumer {
 }
 
 async fn migrate_v2_to_v3_queues(pool: &mut PooledConnection<'_>) {
-    migrate_list_to_stream(pool, LEGACY_MAIN, MAIN).await;
+    migrate_list_to_stream(pool, LEGACY_V2_MAIN, MAIN).await;
 }
 
 async fn migrate_list_to_stream(pool: &mut PooledConnection<'_>, legacy_queue: &str, queue: &str) {
@@ -469,9 +469,9 @@ async fn migrate_list_to_stream(pool: &mut PooledConnection<'_>, legacy_queue: &
 }
 
 async fn migrate_v1_to_v2_queues(pool: &mut PooledConnection<'_>) {
-    migrate_list(pool, LEGACY_LEGACY_MAIN, LEGACY_MAIN).await;
-    migrate_list(pool, LEGACY_LEGACY_PROCESSING, LEGACY_PROCESSING).await;
-    migrate_sset(pool, LEGACY_LEGACY_DELAYED, DELAYED).await;
+    migrate_list(pool, LEGACY_V1_MAIN, LEGACY_V2_MAIN).await;
+    migrate_list(pool, LEGACY_V1_PROCESSING, LEGACY_V2_PROCESSING).await;
+    migrate_sset(pool, LEGACY_V1_DELAYED, DELAYED).await;
 }
 
 async fn migrate_list(pool: &mut PooledConnection<'_>, legacy_queue: &str, queue: &str) {
