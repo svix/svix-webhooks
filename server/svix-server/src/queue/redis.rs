@@ -50,7 +50,7 @@ use super::{
 
 /// This is the key of the main queue. As a KV store, redis places the entire stream under this key.
 /// Confusingly, each message in the queue may have any number of KV pairs.
-const MAIN: &str = "svix_{queue}_v3_main";
+const MAIN: &str = "{queue}_svix_v3_main";
 
 // TODO: Migrate DELAYED queue to use streams too
 
