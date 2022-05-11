@@ -224,10 +224,10 @@ async fn create_message(
     let msg = msg.insert(db).await?;
 
     let trigger_type = MessageAttemptTriggerType::Scheduled;
-    let endpoints: Vec<_> = create_message_app
+    if create_message_app
     .endpoints
     .iter()
-    .filter(|endpoint| {
+    .any(|endpoint| {
         // No disabled or deleted endpoints ever
            !endpoint.disabled && !endpoint.deleted &&
         (
@@ -248,11 +248,7 @@ async fn create_message(
                     .as_ref()
                     .map(|x| !x.0.is_disjoint(msg.channels.as_ref().map(|x| &x.0).unwrap_or(&HashSet::new())))
                     .unwrap_or(true)
-        ))})
-    .cloned()
-    .collect();
-
-    if !endpoints.is_empty() {
+        ))}) {
         queue_tx
             .send(
                 MessageTaskBatch::new_task(
