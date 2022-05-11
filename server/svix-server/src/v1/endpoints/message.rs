@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use std::collections::HashSet;
-
 use crate::{
     cache::Cache,
     core::{
@@ -224,31 +222,10 @@ async fn create_message(
     let msg = msg.insert(db).await?;
 
     let trigger_type = MessageAttemptTriggerType::Scheduled;
-    if create_message_app
-    .endpoints
-    .iter()
-    .any(|endpoint| {
-        // No disabled or deleted endpoints ever
-           !endpoint.disabled && !endpoint.deleted &&
-        (
-            // Manual attempt types go through regardless
-            trigger_type == MessageAttemptTriggerType::Manual
-            || (
-                    // If an endpoint has event types and it matches ours, or has no event types
-                    endpoint
-                    .event_types_ids
-                    .as_ref()
-                    .map(|x| x.0.contains(&msg.event_type))
-                    .unwrap_or(true)
-                &&
-                    // If an endpoint has no channels accept all messages, otherwise only if their channels overlap.
-                    // A message with no channels doesn't match an endpoint with channels.
-                    endpoint
-                    .channels
-                    .as_ref()
-                    .map(|x| !x.0.is_disjoint(msg.channels.as_ref().map(|x| &x.0).unwrap_or(&HashSet::new())))
-                    .unwrap_or(true)
-        ))}) {
+    if !create_message_app
+        .filtered_endpoints(trigger_type, &msg)
+        .is_empty()
+    {
         queue_tx
             .send(
                 MessageTaskBatch::new_task(

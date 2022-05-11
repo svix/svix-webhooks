@@ -16,7 +16,7 @@ use reqwest::header::{HeaderMap, HeaderName};
 use sea_orm::{entity::prelude::*, ActiveValue::Set, DatabaseConnection, EntityTrait};
 use tokio::time::{sleep, Duration};
 
-use std::{collections::HashSet, iter, str::FromStr};
+use std::{iter, str::FromStr};
 
 const USER_AGENT: &str = concat!("Svix-Webhooks/", env!("CARGO_PKG_VERSION"));
 
@@ -289,35 +289,12 @@ async fn process_task(
     .ok_or_else(|| Error::Generic(format!("Application doesn't exist: {}", &msg.app_id)))?;
 
     let endpoints: Vec<CreateMessageEndpoint> = create_message_app
-        .endpoints
+        .filtered_endpoints(queue_task.clone().trigger_type(), &msg)
         .iter()
         .filter(|endpoint| match &queue_task {
             QueueTask::MessageV1(task) => task.endpoint_id == endpoint.id,
-            QueueTask::MessageBatch(_) => true
+            QueueTask::MessageBatch(_) => true,
         })
-        .filter(|endpoint| {
-            return
-            // No disabled or deleted endpoints ever
-               !endpoint.disabled && !endpoint.deleted &&
-            (
-                // Manual attempt types go through regardless
-                queue_task.clone().trigger_type() == MessageAttemptTriggerType::Manual
-                || (
-                        // If an endpoint has event types and it matches ours, or has no event types
-                        endpoint
-                        .event_types_ids
-                        .as_ref()
-                        .map(|x| x.0.contains(&msg.event_type))
-                        .unwrap_or(true)
-                    &&
-                        // If an endpoint has no channels accept all messages, otherwise only if their channels overlap.
-                        // A message with no channels doesn't match an endpoint with channels.
-                        endpoint
-                        .channels
-                        .as_ref()
-                        .map(|x| !x.0.is_disjoint(msg.channels.as_ref().map(|x| &x.0).unwrap_or(&HashSet::new())))
-                        .unwrap_or(true)
-            ))})
         .cloned()
         .collect();
 
