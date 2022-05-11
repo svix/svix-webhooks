@@ -147,7 +147,7 @@ mod docs {
     pub fn router() -> Router {
         Router::new()
             .route("/docs", get(get_docs))
-            .route("/openapi.json", get(get_openapi_json))
+            .route("/api/v1/openapi.json", get(get_openapi_json))
     }
 
     async fn get_docs() -> Html<&'static str> {
