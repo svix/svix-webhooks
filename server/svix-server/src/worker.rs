@@ -77,18 +77,18 @@ async fn dispatch(
     queue_tx: &TaskQueueProducer,
     payload: Json,
     msg_task: MessageTask,
-    endpoint: CreateMessageEndpoint,
+    endp: CreateMessageEndpoint,
 ) -> Result<()> {
-    tracing::trace!("Dispatch: {} {}", &msg_task.msg_id, &endpoint.id);
+    tracing::trace!("Dispatch: {} {}", &msg_task.msg_id, &endp.id);
 
     let body = serde_json::to_string(&payload).expect("Error parsing message body");
     let headers = {
-        let keys: Vec<&EndpointSecret> = if let Some(ref old_keys) = endpoint.old_signing_keys {
-            iter::once(&endpoint.key)
+        let keys: Vec<&EndpointSecret> = if let Some(ref old_keys) = endp.old_signing_keys {
+            iter::once(&endp.key)
                 .chain(old_keys.0.iter().map(|x| &x.key))
                 .collect()
         } else {
-            vec![&endpoint.key]
+            vec![&endp.key]
         };
 
         let mut headers = generate_msg_headers(
@@ -96,9 +96,9 @@ async fn dispatch(
             cfg.whitelabel_headers,
             &body,
             &msg_task.msg_id,
-            endpoint.headers.as_ref(),
+            endp.headers.as_ref(),
             &keys,
-            &endpoint.url,
+            &endp.url,
         );
         headers.insert("user-agent", USER_AGENT.to_string().parse().unwrap());
         headers
@@ -106,7 +106,7 @@ async fn dispatch(
 
     let client = reqwest::Client::new();
     let res = client
-        .post(&endpoint.url)
+        .post(&endp.url)
         .headers(headers)
         .timeout(Duration::from_secs(cfg.worker_request_timeout as u64))
         .json(&payload)
@@ -114,13 +114,13 @@ async fn dispatch(
         .await;
 
     let msg_dest = messagedestination::Entity::secure_find_by_msg(msg_task.msg_id.clone())
-        .filter(messagedestination::Column::EndpId.eq(endpoint.id.clone()))
+        .filter(messagedestination::Column::EndpId.eq(endp.id.clone()))
         .one(db)
         .await?
         .ok_or_else(|| {
             Error::Generic(format!(
                 "Msg dest not found {} {}",
-                msg_task.msg_id, endpoint.id
+                msg_task.msg_id, endp.id
             ))
         })?;
 
@@ -138,9 +138,9 @@ async fn dispatch(
 
     let attempt = messageattempt::ActiveModel {
         msg_id: Set(msg_task.msg_id.clone()),
-        endp_id: Set(endpoint.id.clone()),
+        endp_id: Set(endp.id.clone()),
         msg_dest_id: Set(msg_dest.id.clone()),
-        url: Set(endpoint.url.clone()),
+        url: Set(endp.url.clone()),
         ended_at: Set(Some(Utc::now().into())),
         trigger_type: Set(msg_task.trigger_type),
         ..Default::default()
@@ -194,7 +194,7 @@ async fn dispatch(
                 ..msg_dest.into()
             };
             let msg_dest = msg_dest.update(db).await?;
-            tracing::trace!("Worker success: {} {}", &msg_dest.id, &endpoint.id,);
+            tracing::trace!("Worker success: {} {}", &msg_dest.id, &endp.id,);
         }
         Err((attempt, err)) => {
             let _attempt = attempt.insert(db).await?;
@@ -208,7 +208,7 @@ async fn dispatch(
                     attempt_count,
                     err,
                     &msg_dest.id,
-                    &endpoint.id
+                    &endp.id
                 );
                 let duration = cfg.retry_schedule[attempt_count];
                 let msg_dest = messagedestination::ActiveModel {
@@ -236,7 +236,7 @@ async fn dispatch(
                     "Worker failure attempts exhausted: {} {} {}",
                     err,
                     &msg_dest.id,
-                    &endpoint.id
+                    &endp.id
                 );
                 let msg_dest = messagedestination::ActiveModel {
                     status: Set(MessageStatus::Fail),
