@@ -226,7 +226,7 @@ async fn dispatch(
                     .send(
                         QueueTask::MessageV1(MessageTask {
                             attempt_count: msg_task.attempt_count + 1,
-                            ..msg_task.clone()
+                            ..msg_task
                         }),
                         Some(duration),
                     )
