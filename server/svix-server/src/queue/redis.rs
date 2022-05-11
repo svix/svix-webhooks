@@ -449,17 +449,17 @@ async fn migrate_list_to_stream(pool: &mut PooledConnection<'_>, legacy_queue: &
             legacy_queue
         );
 
+        let mut pipe = redis::pipe();
         for key in legacy_keys {
             let delivery = from_redis_key(&key);
-            let _: () = pool
-                .query_async(Cmd::xadd(
-                    queue,
-                    GENERATE_STREAM_ID,
-                    &[(QUEUE_KV_KEY, serde_json::to_string(&delivery.task).unwrap())],
-                ))
-                .await
-                .unwrap();
+            let _ = pipe.xadd(
+                queue,
+                GENERATE_STREAM_ID,
+                &[(QUEUE_KV_KEY, serde_json::to_string(&delivery.task).unwrap())],
+            );
         }
+
+        let _: () = pool.query_async_pipeline(pipe).await.unwrap();
     }
 }
 
