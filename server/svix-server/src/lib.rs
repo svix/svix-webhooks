@@ -146,7 +146,7 @@ mod docs {
 
     pub fn router() -> Router {
         Router::new()
-            .route("/", get(|| async { Redirect::permanent("/docs") }))
+            .route("/", get(|| async { Redirect::temporary("/docs") }))
             .route("/docs", get(get_docs))
             .route("/api/v1/openapi.json", get(get_openapi_json))
     }
