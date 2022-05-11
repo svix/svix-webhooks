@@ -75,7 +75,7 @@ async fn dispatch(
     cfg: Configuration,
     db: &DatabaseConnection,
     queue_tx: &TaskQueueProducer,
-    payload: Option<Json>,
+    payload: Json,
     msg_task: MessageTask,
     endpoint: CreateMessageEndpoint,
 ) -> Result<()> {
@@ -274,6 +274,7 @@ async fn process_task(
                 queue_task.clone().msg_id()
             ))
         })?;
+    let payload = msg.payload.as_ref().expect("Message payload is NULL");
 
     let msg_clone = msg.clone();
     let create_message_app = CreateMessageApp::layered_fetch(
@@ -347,7 +348,7 @@ async fn process_task(
                 cfg.clone(),
                 db,
                 queue_tx,
-                msg.payload.clone(),
+                payload.clone(),
                 queue_task.clone().to_msg_task(endpoint.clone().id),
                 endpoint.to_owned(),
             )
