@@ -64,6 +64,8 @@ async fn test_list_attempted_messages() {
         .await
         .unwrap();
 
+    tokio::time::sleep(Duration::from_secs(2)).await;
+
     let list_1: ListResponse<AttemptedMessageOut> = client
         .get(
             &format!("api/v1/app/{}/endpoint/{}/msg/", app_id, endp_id_1),
