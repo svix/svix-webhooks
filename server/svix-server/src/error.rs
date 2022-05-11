@@ -60,6 +60,17 @@ impl From<String> for Error {
     }
 }
 
+impl<T: error::Error + 'static> From<bb8::RunError<T>> for Error {
+    fn from(err: bb8::RunError<T>) -> Self {
+        Error::Queue(err.to_string())
+    }
+}
+impl From<redis::RedisError> for Error {
+    fn from(err: redis::RedisError) -> Self {
+        Error::Queue(err.to_string())
+    }
+}
+
 impl From<getrandom::Error> for Error {
     fn from(err: getrandom::Error) -> Error {
         Error::Generic(err.to_string())

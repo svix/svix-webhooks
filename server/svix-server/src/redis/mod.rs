@@ -31,6 +31,10 @@ pub enum PooledConnection<'a> {
 #[async_trait]
 pub trait PooledConnectionLike {
     async fn query_async<T: FromRedisValue>(&mut self, cmd: redis::Cmd) -> RedisResult<T>;
+    async fn query_async_pipeline<T: FromRedisValue>(
+        &mut self,
+        pipe: redis::Pipeline,
+    ) -> RedisResult<T>;
 
     async fn del<K: ToRedisArgs + Send, T: FromRedisValue>(&mut self, key: K) -> RedisResult<T> {
         self.query_async(redis::Cmd::del(key)).await
@@ -168,6 +172,16 @@ impl<'a> PooledConnectionLike for PooledConnection<'a> {
             Self::NonClustered(pooled_con) => pooled_con.query_async(cmd).await,
         }
     }
+
+    async fn query_async_pipeline<T: FromRedisValue>(
+        &mut self,
+        pipe: redis::Pipeline,
+    ) -> RedisResult<T> {
+        match self {
+            Self::Clustered(pooled_con) => pooled_con.query_async_pipeline(pipe).await,
+            Self::NonClustered(pooled_con) => pooled_con.query_async_pipeline(pipe).await,
+        }
+    }
 }
 
 pub struct NonClusteredPooledConnection<'a> {
@@ -178,6 +192,13 @@ impl<'a> NonClusteredPooledConnection<'a> {
     pub async fn query_async<T: FromRedisValue>(&mut self, cmd: redis::Cmd) -> RedisResult<T> {
         cmd.query_async(&mut *self.con).await
     }
+
+    pub async fn query_async_pipeline<T: FromRedisValue>(
+        &mut self,
+        pipe: redis::Pipeline,
+    ) -> RedisResult<T> {
+        pipe.query_async(&mut *self.con).await
+    }
 }
 
 pub struct ClusteredPooledConnection<'a> {
@@ -187,6 +208,13 @@ pub struct ClusteredPooledConnection<'a> {
 impl<'a> ClusteredPooledConnection<'a> {
     pub async fn query_async<T: FromRedisValue>(&mut self, cmd: redis::Cmd) -> RedisResult<T> {
         cmd.query_async(&mut *self.con).await
+    }
+
+    pub async fn query_async_pipeline<T: FromRedisValue>(
+        &mut self,
+        pipe: redis::Pipeline,
+    ) -> RedisResult<T> {
+        pipe.query_async(&mut *self.con).await
     }
 }
 
