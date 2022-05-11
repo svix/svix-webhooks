@@ -54,7 +54,7 @@ impl MessageTaskBatch {
         app_id: ApplicationId,
         trigger_type: MessageAttemptTriggerType,
     ) -> QueueTask {
-        QueueTask::MessageBatchV1(Self {
+        QueueTask::MessageBatch(Self {
             msg_id,
             app_id,
             trigger_type,
@@ -67,20 +67,20 @@ impl MessageTaskBatch {
 #[serde(tag = "type")]
 pub enum QueueTask {
     MessageV1(MessageTask),
-    MessageBatchV1(MessageTaskBatch),
+    MessageBatch(MessageTaskBatch),
 }
 
 impl QueueTask {
     pub fn msg_id(self) -> MessageId {
         match self {
             QueueTask::MessageV1(task) => task.msg_id,
-            QueueTask::MessageBatchV1(batch) => batch.msg_id,
+            QueueTask::MessageBatch(batch) => batch.msg_id,
         }
     }
     pub fn to_msg_task(self, endpoint_id: EndpointId) -> MessageTask {
         match self {
             QueueTask::MessageV1(task) => task,
-            QueueTask::MessageBatchV1(batch) => MessageTask {
+            QueueTask::MessageBatch(batch) => MessageTask {
                 msg_id: batch.msg_id,
                 app_id: batch.app_id,
                 endpoint_id,
@@ -92,7 +92,7 @@ impl QueueTask {
     pub fn trigger_type(self) -> MessageAttemptTriggerType {
         match self {
             QueueTask::MessageV1(task) => task.trigger_type,
-            QueueTask::MessageBatchV1(batch) => batch.trigger_type,
+            QueueTask::MessageBatch(batch) => batch.trigger_type,
         }
     }
 }
