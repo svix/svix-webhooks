@@ -365,8 +365,11 @@ impl TaskQueueSend for RedisQueueProducer {
         Ok(())
     }
 
-    async fn nack(&self, _delivery: TaskQueueDelivery) -> Result<()> {
-        tracing::error!("NACKing is not yet supported");
+    async fn nack(&self, delivery: TaskQueueDelivery) -> Result<()> {
+        tracing::error!(
+            "NACKing is not yet supported | Delivery ID: {}",
+            delivery.id
+        );
         Ok(())
     }
 
