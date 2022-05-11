@@ -37,7 +37,7 @@ use redis::{
 use tokio::time::sleep;
 
 use crate::{
-    error::Result,
+    error::{Error, Result},
     redis::{PoolLike, PooledConnection, PooledConnectionLike, RedisPool},
 };
 
@@ -314,30 +314,37 @@ fn from_redis_key(key: &str) -> TaskQueueDelivery {
 #[async_trait]
 impl TaskQueueSend for RedisQueueProducer {
     async fn send(&self, task: QueueTask, delay: Option<Duration>) -> Result<()> {
-        let mut pool = self.pool.get().await.unwrap();
+        let mut pool = self.pool.get().await?;
 
         // If there's a delay, compute the timestamp at which the delay is up
-        let timestamp = delay.map(|delay| Utc::now() + chrono::Duration::from_std(delay).unwrap());
+        let timestamp = delay.map(|delay| -> Result<_> {
+            Ok(Utc::now()
+                + chrono::Duration::from_std(delay)
+                    .map_err(|_| Error::Generic("Duration out of bounds".to_owned()))?)
+        });
 
         if let Some(timestamp) = timestamp {
+            let timestamp = timestamp?;
             // If there's a delay, add it to the DELAYED queue by ZADDING the Redis-key-ified
             // delivery
             let delivery = TaskQueueDelivery::new(task, Some(timestamp));
             let key = to_redis_key(&delivery);
             let _: () = pool
                 .zadd(self.delayed_queue_name, key, timestamp.timestamp())
-                .await
-                .unwrap();
+                .await?;
         } else {
             // If there is no delay simply XADD the task to the MAIN queue
             let _: () = pool
                 .query_async(Cmd::xadd(
                     &self.main_queue_name,
                     GENERATE_STREAM_ID,
-                    &[(QUEUE_KV_KEY, serde_json::to_string(&task).unwrap())],
+                    &[(
+                        QUEUE_KV_KEY,
+                        serde_json::to_string(&task)
+                            .map_err(|e| Error::Generic(format!("serialization error: {}", e)))?,
+                    )],
                 ))
-                .await
-                .unwrap();
+                .await?;
         }
         tracing::trace!("RedisQueue: event sent > (delay: {:?})", delay);
         Ok(())
@@ -345,21 +352,21 @@ impl TaskQueueSend for RedisQueueProducer {
 
     /// ACKing the delivery, XACKs the message in the queue so it will no longer be retried
     async fn ack(&self, delivery: TaskQueueDelivery) -> Result<()> {
-        let mut pool = self.pool.get().await.unwrap();
+        let mut pool = self.pool.get().await?;
         let processed: u8 = pool
             .query_async(Cmd::xack(
                 self.main_queue_name,
                 WORKERS_GROUP,
                 &[delivery.id.as_str()],
             ))
-            .await
-            .unwrap();
+            .await?;
         if processed != 1 {
             tracing::warn!(
                 "Expected to remove 1 from the list, removed {} for {}|{}",
                 processed,
                 delivery.id,
-                serde_json::to_string(&delivery.task).unwrap()
+                serde_json::to_string(&delivery.task)
+                    .map_err(|e| Error::Generic(format!("serialization error: {}", e)))?
             );
         }
         Ok(())
@@ -391,7 +398,7 @@ impl TaskQueueReceive for RedisQueueConsumer {
         let main_queue_name = self.main_queue_name;
         tokio::spawn(async move {
             // TODO: Receive messages in batches so it's not always a Vec with one member
-            let mut pool = pool.get().await.unwrap();
+            let mut pool = pool.get().await?;
 
             // There is no way to make it await a message for unbounded times, so simply block for a short
             // amount of time (to avoid locking) and loop if no messages were retreived
@@ -405,8 +412,7 @@ impl TaskQueueReceive for RedisQueueConsumer {
                             .count(1)
                             .block(30_000),
                     ))
-                    .await
-                    .unwrap();
+                    .await?;
 
                 if !resp.keys.is_empty() && !resp.keys[0].ids.is_empty() {
                     break resp;
@@ -428,7 +434,7 @@ impl TaskQueueReceive for RedisQueueConsumer {
             Ok(vec![TaskQueueDelivery { id, task }])
         })
         .await
-        .unwrap()
+        .map_err(|e| Error::Generic(format!("task join error {}", e)))?
     }
 }
 
