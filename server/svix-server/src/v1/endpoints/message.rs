@@ -1,15 +1,19 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
+use std::collections::HashSet;
+
 use crate::{
+    cache::Cache,
     core::{
+        message_app::CreateMessageApp,
         security::AuthenticatedApplication,
         types::{
             ApplicationIdOrUid, EventChannel, EventChannelSet, EventTypeName, EventTypeNameSet,
             MessageAttemptTriggerType, MessageId, MessageIdOrUid, MessageUid,
         },
     },
-    error::{HttpError, Result},
+    error::{Error, HttpError, Result},
     queue::{MessageTaskBatch, TaskQueueProducer},
     v1::utils::{
         apply_pagination, iterator_from_before_or_after, ListResponse, MessageListFetchOptions,
@@ -193,12 +197,25 @@ pub struct CreateMessageQueryParams {
 async fn create_message(
     Extension(ref db): Extension<DatabaseConnection>,
     Extension(queue_tx): Extension<TaskQueueProducer>,
+    Extension(cache): Extension<Cache>,
     ValidatedQuery(CreateMessageQueryParams { with_content }): ValidatedQuery<
         CreateMessageQueryParams,
     >,
     ValidatedJson(data): ValidatedJson<MessageIn>,
     AuthenticatedApplication { permissions, app }: AuthenticatedApplication,
 ) -> Result<(StatusCode, Json<MessageOut>)> {
+    let create_message_app = CreateMessageApp::layered_fetch(
+        cache,
+        db,
+        Some(app.clone()),
+        app.id.clone(),
+        app.org_id,
+        std::time::Duration::from_secs(30),
+    )
+    .await?
+    // Should never happen since you're giving it an existing Application, but just in case
+    .ok_or_else(|| Error::Generic(format!("Application doesn't exist: {}", app.id)))?;
+
     let msg = message::ActiveModel {
         app_id: Set(app.id.clone()),
         org_id: Set(permissions.org_id),
@@ -206,16 +223,47 @@ async fn create_message(
     };
     let msg = msg.insert(db).await?;
 
-    queue_tx
-        .send(
-            MessageTaskBatch::new_task(
-                msg.id.clone(),
-                app.id.clone(),
-                MessageAttemptTriggerType::Scheduled,
-            ),
-            None,
-        )
-        .await?;
+    let trigger_type = MessageAttemptTriggerType::Scheduled;
+    let endpoints: Vec<_> = create_message_app
+    .endpoints
+    .iter()
+    .filter(|endpoint| {
+        // No disabled or deleted endpoints ever
+           !endpoint.disabled && !endpoint.deleted &&
+        (
+            // Manual attempt types go through regardless
+            trigger_type == MessageAttemptTriggerType::Manual
+            || (
+                    // If an endpoint has event types and it matches ours, or has no event types
+                    endpoint
+                    .event_types_ids
+                    .as_ref()
+                    .map(|x| x.0.contains(&msg.event_type))
+                    .unwrap_or(true)
+                &&
+                    // If an endpoint has no channels accept all messages, otherwise only if their channels overlap.
+                    // A message with no channels doesn't match an endpoint with channels.
+                    endpoint
+                    .channels
+                    .as_ref()
+                    .map(|x| !x.0.is_disjoint(msg.channels.as_ref().map(|x| &x.0).unwrap_or(&HashSet::new())))
+                    .unwrap_or(true)
+        ))})
+    .cloned()
+    .collect();
+
+    if !endpoints.is_empty() {
+        queue_tx
+            .send(
+                MessageTaskBatch::new_task(
+                    msg.id.clone(),
+                    app.id.clone(),
+                    MessageAttemptTriggerType::Scheduled,
+                ),
+                None,
+            )
+            .await?;
+    }
 
     let msg_out = if with_content {
         msg.into()
