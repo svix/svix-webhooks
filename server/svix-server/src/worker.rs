@@ -299,25 +299,18 @@ async fn process_task(
 
     // TODO: remove this section once destinations are obsolete
     if matches!(queue_task, QueueTask::MessageBatch(_)) {
-        let destinations =
-            messagedestination::Entity::secure_find_by_msg(queue_task.clone().msg_id())
-                .all(db)
-                .await
-                .unwrap();
-        if destinations.is_empty() {
-            let destinations = endpoints
-                .iter()
-                .map(|endpoint| messagedestination::ActiveModel {
-                    msg_id: Set(msg.id.clone()),
-                    endp_id: Set(endpoint.id.clone()),
-                    next_attempt: Set(Some(Utc::now().into())),
-                    status: Set(MessageStatus::Sending),
-                    ..Default::default()
-                });
-            messagedestination::Entity::insert_many(destinations)
-                .exec(db)
-                .await?;
-        }
+        let destinations = endpoints
+            .iter()
+            .map(|endpoint| messagedestination::ActiveModel {
+                msg_id: Set(msg.id.clone()),
+                endp_id: Set(endpoint.id.clone()),
+                next_attempt: Set(Some(Utc::now().into())),
+                status: Set(MessageStatus::Sending),
+                ..Default::default()
+            });
+        messagedestination::Entity::insert_many(destinations)
+            .exec(db)
+            .await?;
     }
 
     let futures: Vec<_> = endpoints
