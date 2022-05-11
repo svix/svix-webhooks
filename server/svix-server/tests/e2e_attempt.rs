@@ -64,7 +64,6 @@ async fn test_list_attempted_messages() {
         .await
         .unwrap();
 
-    // And wait at most one second for all attempts to be processed
     run_with_retries(|| async {
         let list_1: ListResponse<AttemptedMessageOut> = client
             .get(
