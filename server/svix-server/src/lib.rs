@@ -139,13 +139,14 @@ pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
 
 mod docs {
     use axum::{
-        response::{Html, IntoResponse},
+        response::{Html, IntoResponse, Redirect},
         routing::get,
         Json, Router,
     };
 
     pub fn router() -> Router {
         Router::new()
+            .route("/", get(|| async { Redirect::permanent("/docs") }))
             .route("/docs", get(get_docs))
             .route("/api/v1/openapi.json", get(get_openapi_json))
     }
