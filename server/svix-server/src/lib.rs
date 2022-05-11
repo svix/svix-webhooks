@@ -75,6 +75,7 @@ pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
     // build our application with a route
     let app = Router::new()
         .nest("/api/v1", v1::router())
+        .merge(docs::router())
         .layer(
             ServiceBuilder::new().layer_fn(|service| IdempotencyService {
                 cache: cache.clone(),
@@ -134,4 +135,29 @@ pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
     server.expect("Error initializing server");
     worker_loop.expect("Error initializing worker");
     expired_message_cleaner_loop.expect("Error initializing expired message cleaner")
+}
+
+mod docs {
+    use axum::{
+        response::{Html, IntoResponse, Redirect},
+        routing::get,
+        Json, Router,
+    };
+
+    pub fn router() -> Router {
+        Router::new()
+            .route("/", get(|| async { Redirect::temporary("/docs") }))
+            .route("/docs", get(get_docs))
+            .route("/api/v1/openapi.json", get(get_openapi_json))
+    }
+
+    async fn get_docs() -> Html<&'static str> {
+        Html(include_str!("static/docs.html"))
+    }
+
+    async fn get_openapi_json() -> impl IntoResponse {
+        let json: serde_json::Value = serde_json::from_str(include_str!("static/openapi.json"))
+            .expect("Error: openapi.json does not exist");
+        Json(json)
+    }
 }
