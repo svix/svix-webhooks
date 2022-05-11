@@ -343,8 +343,8 @@ impl TaskQueueSend for RedisQueueProducer {
         Ok(())
     }
 
+    /// ACKing the delivery, XACKs the message in the queue so it will no longer be retried
     async fn ack(&self, delivery: TaskQueueDelivery) -> Result<()> {
-        // ACKing the delivery, XACKs the message in the queue so it will no longer be retried
         let mut pool = self.pool.get().await.unwrap();
         let processed: u8 = pool
             .query_async(Cmd::xack(
