@@ -291,12 +291,12 @@ async fn process_task(
     let endpoints: Vec<CreateMessageEndpoint> = create_message_app
         .endpoints
         .iter()
+        .filter(|endpoint| match &queue_task {
+            QueueTask::MessageV1(task) => task.endpoint_id == endpoint.id,
+            QueueTask::MessageBatch(_) => true
+        })
         .filter(|endpoint| {
-            let endpoint_match = match &queue_task {
-                QueueTask::MessageV1(task) => task.endpoint_id == endpoint.id,
-                QueueTask::MessageBatch(_) => true
-            };
-            return endpoint_match &&
+            return
             // No disabled or deleted endpoints ever
                !endpoint.disabled && !endpoint.deleted &&
             (
