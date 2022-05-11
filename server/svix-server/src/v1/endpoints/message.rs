@@ -1,21 +1,18 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use std::collections::HashSet;
-
 use crate::{
+    cache::Cache,
     core::{
-        cache::Cache,
         message_app::CreateMessageApp,
         security::AuthenticatedApplication,
         types::{
             ApplicationIdOrUid, EventChannel, EventChannelSet, EventTypeName, EventTypeNameSet,
-            MessageAttemptTriggerType, MessageId, MessageIdOrUid, MessageStatus, MessageUid,
+            MessageAttemptTriggerType, MessageId, MessageIdOrUid, MessageUid,
         },
     },
-    db::models::messagedestination,
     error::{Error, HttpError, Result},
-    queue::{MessageTask, TaskQueueProducer},
+    queue::{MessageTaskBatch, TaskQueueProducer},
     v1::utils::{
         apply_pagination, iterator_from_before_or_after, ListResponse, MessageListFetchOptions,
         ModelIn, ModelOut, ReversibleIterator, ValidatedJson, ValidatedQuery,
@@ -30,7 +27,7 @@ use chrono::{DateTime, Duration, Utc};
 use hyper::StatusCode;
 use sea_orm::entity::prelude::*;
 use sea_orm::{sea_query::Expr, ActiveValue::Set};
-use sea_orm::{ActiveModelTrait, DatabaseConnection, TransactionTrait};
+use sea_orm::{ActiveModelTrait, DatabaseConnection};
 use serde::{Deserialize, Serialize};
 
 use svix_server_derive::{ModelIn, ModelOut};
@@ -217,9 +214,6 @@ async fn create_message(
     // Should never happen since you're giving it an existing Application, but just in case
     .ok_or_else(|| Error::Generic(format!("Application doesn't exist: {}", app.id)))?;
 
-    let txn = db.begin().await?;
-    let db = &txn;
-
     let msg = message::ActiveModel {
         app_id: Set(app.id.clone()),
         org_id: Set(permissions.org_id),
@@ -227,64 +221,29 @@ async fn create_message(
     };
     let msg = msg.insert(db).await?;
 
-    let trigger_type = MessageAttemptTriggerType::Scheduled; // Just laying the groundwork for when we support passing it
-    let empty_channel_set = HashSet::new();
-    let mut msg_dests = vec![];
-    let mut tasks = vec![];
-    for endp in create_message_app.endpoints
-        .into_iter()
-        .filter(|endp| {
-            // No disabled or deleted enpoints ever
-          	!endp.disabled && !endp.deleted &&
-            (
-                // Manual attempt types go throguh regardless
-                trigger_type == MessageAttemptTriggerType::Manual
-                || (
-                        // If an endpoint has event types and it matches ours, or has no event types
-                        endp
-                        .event_types_ids
-                        .as_ref()
-                        .map(|x| x.0.contains(&msg.event_type))
-                        .unwrap_or(true)
-                    &&
-                        // If an endpoint has no channels accept all messages, otherwise only if their channels overlap.
-                        // A message with no channels doesn't match an endpoint with channels.
-                        endp
-                        .channels
-                        .as_ref()
-                        .map(|x| !x.0.is_disjoint(msg.channels.as_ref().map(|x| &x.0).unwrap_or(&empty_channel_set)))
-                        .unwrap_or(true)
-                ))
-        })
+    let trigger_type = MessageAttemptTriggerType::Scheduled;
+    if !create_message_app
+        .filtered_endpoints(trigger_type, &msg)
+        .is_empty()
     {
-        let msg_dest = messagedestination::ActiveModel {
-            msg_id: Set(msg.id.clone()),
-            endp_id: Set(endp.id.clone()),
-            next_attempt: Set(Some(Utc::now().into())),
-            status: Set(MessageStatus::Sending),
-            ..Default::default()
-        };
-        msg_dests.push(msg_dest);
-        tasks.push(
-            MessageTask::new_task(
-                msg.id.clone(),
-                app.id.clone(),
-                endp.id, MessageAttemptTriggerType::Scheduled));
-    }
-    if !msg_dests.is_empty() {
-        messagedestination::Entity::insert_many(msg_dests)
-            .exec(db)
+        queue_tx
+            .send(
+                MessageTaskBatch::new_task(
+                    msg.id.clone(),
+                    app.id.clone(),
+                    MessageAttemptTriggerType::Scheduled,
+                ),
+                None,
+            )
             .await?;
     }
-    txn.commit().await?;
-    for task in tasks {
-        queue_tx.send(task, None).await?;
-    }
+
     let msg_out = if with_content {
         msg.into()
     } else {
         MessageOut::without_payload(msg)
     };
+
     Ok((StatusCode::ACCEPTED, Json(msg_out)))
 }
 

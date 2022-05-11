@@ -11,6 +11,7 @@ use crate::db::models::{message, messageattempt, messagedestination};
 use crate::error::{Error, Result};
 use crate::queue::{MessageTask, QueueTask, TaskQueueConsumer, TaskQueueProducer};
 use chrono::Utc;
+use futures::future;
 use reqwest::header::{HeaderMap, HeaderName};
 use sea_orm::{entity::prelude::*, ActiveValue::Set, DatabaseConnection, EntityTrait};
 use tokio::time::{sleep, Duration};
@@ -73,48 +74,14 @@ fn generate_msg_headers(
 async fn dispatch(
     cfg: Configuration,
     db: &DatabaseConnection,
-    cache: Cache,
     queue_tx: &TaskQueueProducer,
+    payload: &Json,
     msg_task: MessageTask,
+    endp: CreateMessageEndpoint,
 ) -> Result<()> {
-    tracing::trace!("Dispatch: {} {}", &msg_task.msg_id, &msg_task.endpoint_id);
+    tracing::trace!("Dispatch: {} {}", &msg_task.msg_id, &endp.id);
 
-    let app_id = &msg_task.app_id;
-    let endp_id = &msg_task.endpoint_id;
-
-    let msg = if let Some(msg) = message::Entity::find_by_id(msg_task.msg_id.clone())
-        .one(db)
-        .await?
-    {
-        msg
-    } else {
-        tracing::warn!("Unexpected: message doesn't exist {}", msg_task.msg_id);
-        return Ok(());
-    };
-
-    let org_id = msg.org_id;
-
-    let endp: CreateMessageEndpoint = CreateMessageApp::layered_fetch(
-        cache,
-        db,
-        None,
-        app_id.clone(),
-        org_id.clone(),
-        Duration::from_secs(30),
-    )
-    .await?
-    .ok_or_else(|| Error::Generic(format!("Unexpected: app does not exist {}", app_id)))?
-    .endpoints
-    .into_iter()
-    .find(|endp| endp.id == *endp_id)
-    .ok_or_else(|| {
-        Error::Generic(format!(
-            "Unexpected: endpoint does not exist {} {}",
-            app_id, endp_id
-        ))
-    })?;
-
-    let body = serde_json::to_string(&msg.payload).expect("Error parsing message body");
+    let body = serde_json::to_string(&payload).expect("Error parsing message body");
     let headers = {
         let keys: Vec<&EndpointSecret> = if let Some(ref old_keys) = endp.old_signing_keys {
             iter::once(&endp.key)
@@ -142,18 +109,18 @@ async fn dispatch(
         .post(&endp.url)
         .headers(headers)
         .timeout(Duration::from_secs(cfg.worker_request_timeout as u64))
-        .json(&msg.payload)
+        .json(&payload)
         .send()
         .await;
 
-    let msg_dest = messagedestination::Entity::secure_find_by_msg(msg.id.clone())
-        .filter(messagedestination::Column::EndpId.eq(msg_task.endpoint_id.clone()))
+    let msg_dest = messagedestination::Entity::secure_find_by_msg(msg_task.msg_id.clone())
+        .filter(messagedestination::Column::EndpId.eq(endp.id.clone()))
         .one(db)
         .await?
         .ok_or_else(|| {
             Error::Generic(format!(
                 "Msg dest not found {} {}",
-                msg.id, msg_task.endpoint_id
+                msg_task.msg_id, endp.id
             ))
         })?;
 
@@ -170,11 +137,10 @@ async fn dispatch(
     }
 
     let attempt = messageattempt::ActiveModel {
-        msg_id: Set(msg.id.clone()),
+        msg_id: Set(msg_task.msg_id.clone()),
         endp_id: Set(endp.id.clone()),
         msg_dest_id: Set(msg_dest.id.clone()),
         url: Set(endp.url.clone()),
-
         ended_at: Set(Some(Utc::now().into())),
         trigger_type: Set(msg_task.trigger_type),
         ..Default::default()
@@ -291,6 +257,89 @@ fn bytes_to_string(bytes: bytes::Bytes) -> String {
     }
 }
 
+/// Manages preparation and execution of a QueueTask type
+async fn process_task(
+    cfg: Configuration,
+    db: &DatabaseConnection,
+    cache: Cache,
+    queue_tx: &TaskQueueProducer,
+    queue_task: QueueTask,
+) -> Result<()> {
+    let msg = message::Entity::find_by_id(queue_task.clone().msg_id())
+        .one(db)
+        .await?
+        .ok_or_else(|| {
+            Error::Generic(format!(
+                "Unexpected: message doesn't exist {}",
+                queue_task.clone().msg_id()
+            ))
+        })?;
+    let payload = msg.payload.as_ref().expect("Message payload is NULL");
+
+    let create_message_app = CreateMessageApp::layered_fetch(
+        cache.clone(),
+        db,
+        None,
+        msg.app_id.clone(),
+        msg.org_id.clone(),
+        Duration::from_secs(30),
+    )
+    .await?
+    .ok_or_else(|| Error::Generic(format!("Application doesn't exist: {}", &msg.app_id)))?;
+
+    let endpoints: Vec<CreateMessageEndpoint> = create_message_app
+        .filtered_endpoints(queue_task.clone().trigger_type(), &msg)
+        .iter()
+        .filter(|endpoint| match &queue_task {
+            QueueTask::MessageV1(task) => task.endpoint_id == endpoint.id,
+            QueueTask::MessageBatch(_) => true,
+        })
+        .cloned()
+        .collect();
+
+    // TODO: remove this section once destinations are obsolete
+    if matches!(queue_task, QueueTask::MessageBatch(_)) {
+        let destinations = endpoints
+            .iter()
+            .map(|endpoint| messagedestination::ActiveModel {
+                msg_id: Set(msg.id.clone()),
+                endp_id: Set(endpoint.id.clone()),
+                next_attempt: Set(Some(Utc::now().into())),
+                status: Set(MessageStatus::Sending),
+                ..Default::default()
+            });
+        messagedestination::Entity::insert_many(destinations)
+            .exec(db)
+            .await?;
+    }
+
+    let futures: Vec<_> = endpoints
+        .iter()
+        .map(|endpoint| {
+            dispatch(
+                cfg.clone(),
+                db,
+                queue_tx,
+                payload,
+                queue_task.clone().to_msg_task(endpoint.id.clone()),
+                endpoint.to_owned(),
+            )
+        })
+        .collect();
+
+    let join = future::join_all(futures).await;
+
+    let errs: Vec<_> = join.iter().filter(|x| x.is_err()).collect();
+    if !errs.is_empty() {
+        return Err(Error::Generic(format!(
+            "Some dispatches failed unexpectedly: {:?}",
+            errs
+        )));
+    }
+
+    Ok(())
+}
+
 /// Listens on the message queue for new tasks
 pub async fn worker_loop(
     cfg: &Configuration,
@@ -303,29 +352,28 @@ pub async fn worker_loop(
         match queue_rx.receive_all().await {
             Ok(batch) => {
                 for delivery in batch {
-                    let pool = pool.clone();
-                    let queue_task = delivery.task.clone();
-                    let queue_tx = queue_tx.clone();
                     let cfg = cfg.clone();
-                    match queue_task {
-                        QueueTask::MessageV1(msg) => {
-                            let cache = cache.clone();
-                            tokio::spawn(async move {
-                                if let Err(err) = dispatch(cfg, &pool, cache, &queue_tx, msg).await
-                                {
-                                    tracing::error!("Error executing task: {}", err);
-                                    queue_tx.nack(delivery).await.expect(
-                                        "Error sending 'nack' to Redis after task execution error",
-                                    );
-                                } else {
-                                    // No unwrap
-                                    queue_tx.ack(delivery).await.expect(
-                                    "Error sending 'ack' to Redis after successful task execution",
-                                );
-                                }
-                            });
+                    let pool = pool.clone();
+                    let cache = cache.clone();
+                    let queue_tx = queue_tx.clone();
+                    let queue_task = delivery.task.clone();
+
+                    tokio::spawn(async move {
+                        if let Err(err) =
+                            process_task(cfg.clone(), &pool, cache.clone(), &queue_tx, queue_task)
+                                .await
+                        {
+                            tracing::error!("Error executing task: {}", err);
+                            queue_tx
+                                .nack(delivery)
+                                .await
+                                .expect("Error sending 'nack' to Redis after task execution error");
+                        } else {
+                            queue_tx.ack(delivery).await.expect(
+                                "Error sending 'ack' to Redis after successful task execution",
+                            );
                         }
-                    };
+                    });
                 }
             }
             Err(err) => {

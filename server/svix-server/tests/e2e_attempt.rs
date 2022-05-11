@@ -64,37 +64,45 @@ async fn test_list_attempted_messages() {
         .await
         .unwrap();
 
-    let list_1: ListResponse<AttemptedMessageOut> = client
-        .get(
-            &format!("api/v1/app/{}/endpoint/{}/msg/", app_id, endp_id_1),
-            StatusCode::OK,
-        )
-        .await
-        .unwrap();
-    let list_2: ListResponse<AttemptedMessageOut> = client
-        .get(
-            &format!("api/v1/app/{}/endpoint/{}/msg/", app_id, endp_id_2),
-            StatusCode::OK,
-        )
-        .await
-        .unwrap();
+    run_with_retries(|| async {
+        let list_1: ListResponse<AttemptedMessageOut> = client
+            .get(
+                &format!("api/v1/app/{}/endpoint/{}/msg/", app_id, endp_id_1),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
+        let list_2: ListResponse<AttemptedMessageOut> = client
+            .get(
+                &format!("api/v1/app/{}/endpoint/{}/msg/", app_id, endp_id_2),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
 
-    let list_2_uid: ListResponse<AttemptedMessageOut> = client
-        .get(
-            &format!("api/v1/app/{}/endpoint/{}/msg/", app_id, "test"),
-            StatusCode::OK,
-        )
-        .await
-        .unwrap();
+        let list_2_uid: ListResponse<AttemptedMessageOut> = client
+            .get(
+                &format!("api/v1/app/{}/endpoint/{}/msg/", app_id, "test"),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
 
-    for list in [list_1, list_2, list_2_uid] {
-        assert_eq!(list.data.len(), 3);
+        for list in [list_1, list_2, list_2_uid] {
+            if list.data.len() != 3 {
+                anyhow::bail!("list len {}, not 3", list.data.len());
+            }
 
-        // Assert order
-        assert_eq!(list.data[0].msg, msg_3);
-        assert_eq!(list.data[1].msg, msg_2);
-        assert_eq!(list.data[2].msg, msg_1);
-    }
+            // Assert order
+            assert_eq!(list.data[0].msg, msg_3);
+            assert_eq!(list.data[1].msg, msg_2);
+            assert_eq!(list.data[2].msg, msg_1);
+        }
+
+        Ok(())
+    })
+    .await
+    .unwrap();
 }
 
 #[tokio::test]

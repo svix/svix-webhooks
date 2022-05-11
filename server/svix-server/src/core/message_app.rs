@@ -1,4 +1,5 @@
 use std::{
+    collections::HashSet,
     convert::{TryFrom, TryInto},
     time::Duration,
 };
@@ -12,10 +13,11 @@ use crate::{
         cache::{kv_def, Cache, CacheBehavior, CacheKey, CacheValue},
         types::{
             ApplicationId, ApplicationUid, EndpointHeaders, EndpointId, EndpointSecret,
-            EventChannelSet, EventTypeNameSet, ExpiringSigningKeys, OrganizationId,
+            EventChannelSet, EventTypeNameSet, ExpiringSigningKeys, MessageAttemptTriggerType,
+            OrganizationId,
         },
     },
-    db::models::{application, endpoint},
+    db::models::{application, endpoint, message},
     error::{Error, Result},
 };
 
@@ -100,6 +102,41 @@ impl CreateMessageApp {
         let _ = cache.set(&cache_key, &out, ttl).await;
 
         Ok(Some(out))
+    }
+
+    pub fn filtered_endpoints(
+        self,
+        trigger_type: MessageAttemptTriggerType,
+        msg: &message::Model,
+    ) -> Vec<CreateMessageEndpoint> {
+        self
+        .endpoints
+        .iter()
+        .filter(|endpoint| {
+            return
+            // No disabled or deleted endpoints ever
+               !endpoint.disabled && !endpoint.deleted &&
+            (
+                // Manual attempt types go through regardless
+                trigger_type == MessageAttemptTriggerType::Manual
+                || (
+                        // If an endpoint has event types and it matches ours, or has no event types
+                        endpoint
+                        .event_types_ids
+                        .as_ref()
+                        .map(|x| x.0.contains(&msg.event_type))
+                        .unwrap_or(true)
+                    &&
+                        // If an endpoint has no channels accept all messages, otherwise only if their channels overlap.
+                        // A message with no channels doesn't match an endpoint with channels.
+                        endpoint
+                        .channels
+                        .as_ref()
+                        .map(|x| !x.0.is_disjoint(msg.channels.as_ref().map(|x| &x.0).unwrap_or(&HashSet::new())))
+                        .unwrap_or(true)
+            ))})
+        .cloned()
+        .collect()
     }
 }
 

@@ -42,9 +42,59 @@ impl MessageTask {
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct MessageTaskBatch {
+    pub msg_id: MessageId,
+    pub app_id: ApplicationId,
+    pub trigger_type: MessageAttemptTriggerType,
+}
+
+impl MessageTaskBatch {
+    pub fn new_task(
+        msg_id: MessageId,
+        app_id: ApplicationId,
+        trigger_type: MessageAttemptTriggerType,
+    ) -> QueueTask {
+        QueueTask::MessageBatch(Self {
+            msg_id,
+            app_id,
+            trigger_type,
+        })
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 #[serde(tag = "type")]
 pub enum QueueTask {
     MessageV1(MessageTask),
+    MessageBatch(MessageTaskBatch),
+}
+
+impl QueueTask {
+    pub fn msg_id(self) -> MessageId {
+        match self {
+            QueueTask::MessageV1(task) => task.msg_id,
+            QueueTask::MessageBatch(batch) => batch.msg_id,
+        }
+    }
+    pub fn to_msg_task(self, endpoint_id: EndpointId) -> MessageTask {
+        match self {
+            QueueTask::MessageV1(task) => task,
+            QueueTask::MessageBatch(batch) => MessageTask {
+                msg_id: batch.msg_id,
+                app_id: batch.app_id,
+                endpoint_id,
+                attempt_count: 0,
+                trigger_type: batch.trigger_type,
+            },
+        }
+    }
+    pub fn trigger_type(self) -> MessageAttemptTriggerType {
+        match self {
+            QueueTask::MessageV1(task) => task.trigger_type,
+            QueueTask::MessageBatch(batch) => batch.trigger_type,
+        }
+    }
 }
 
 pub struct TaskQueueProducer(Box<dyn TaskQueueSend>);
