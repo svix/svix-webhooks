@@ -63,6 +63,8 @@ jobs:
     name: release docker
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@master
+
       - name: Login Docker
         uses: docker/login-action@v1
         with:
