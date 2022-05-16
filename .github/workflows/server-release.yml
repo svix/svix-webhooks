@@ -76,6 +76,6 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./server/
-          file: ./server/Dockerfile
+          file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/svix-server:latest
