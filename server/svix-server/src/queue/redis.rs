@@ -23,6 +23,10 @@
 //! processed now, and the currently processing queue for tasks that have timed out and should be
 //! put back on the main queue.
 
+// This lint warns on `let _: () = ...` which is used throughout this file for Redis commands which
+// have generic return types. This is cleaner than the turbofish operator in my opinion.
+#![allow(clippy::let_unit_value)]
+
 use std::{num::NonZeroUsize, time::Duration};
 
 use axum::async_trait;
@@ -440,6 +444,7 @@ impl TaskQueueReceive for RedisQueueConsumer {
 
 async fn migrate_v2_to_v3_queues(pool: &mut PooledConnection<'_>) {
     migrate_list_to_stream(pool, LEGACY_V2_MAIN, MAIN).await;
+    migrate_list_to_stream(pool, LEGACY_V2_PROCESSING, MAIN).await;
 }
 
 async fn migrate_list_to_stream(pool: &mut PooledConnection<'_>, legacy_queue: &str, queue: &str) {
@@ -524,12 +529,16 @@ mod tests {
 
     use std::time::Duration;
 
-    use super::{migrate_list, migrate_sset, new_pair_inner};
+    use chrono::Utc;
+
+    use super::{
+        migrate_list, migrate_list_to_stream, migrate_sset, new_pair_inner, to_redis_key, Direction,
+    };
 
     use crate::{
         cfg::{CacheType, Configuration},
         core::types::{ApplicationId, EndpointId, MessageAttemptTriggerType, MessageId},
-        queue::{MessageTask, QueueTask, TaskQueueConsumer, TaskQueueProducer},
+        queue::{MessageTask, QueueTask, TaskQueueConsumer, TaskQueueDelivery, TaskQueueProducer},
         redis::{PoolLike, PooledConnectionLike, RedisPool},
     };
 
@@ -761,5 +770,156 @@ mod tests {
         let recv1 = c.receive_all().await.unwrap().pop().unwrap();
         assert_eq!(recv1.task, mt1);
         p.ack(recv1).await.unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_migrations() {
+        let cfg = crate::cfg::load().unwrap();
+        let pool = get_pool(cfg).await;
+
+        // Test queue name constants
+        let v1_main = "{test}_migrations_main_v1";
+        let v2_main = "{test}_migrations_main_v2";
+        let v3_main = "{test}_migrations_main_v3";
+
+        let v1_processing = "{test}_migrations_processing_v1";
+        let v2_processing = "{test}_migrations_processing_v2";
+        // v3_processing is the stream pending queue for v3_main
+
+        let v1_delayed = "{test}_migrations_delayed_v1";
+        let v2_delayed = "{test}_migrations_delayed_v2";
+        // v3_delayed doesn not yet exist
+
+        {
+            let mut conn = pool.get().await.unwrap();
+
+            // Clear test keys
+            let _: () = conn
+                .query_async(redis::Cmd::del(&[
+                    v1_main,
+                    v2_main,
+                    v3_main,
+                    v1_processing,
+                    v2_processing,
+                    v1_delayed,
+                    v2_delayed,
+                ]))
+                .await
+                .unwrap();
+
+            // Add v3 consumer group
+            let _: () = conn
+                .query_async(redis::Cmd::xgroup_create_mkstream(
+                    &v3_main,
+                    super::WORKERS_GROUP,
+                    0i8,
+                ))
+                .await
+                .unwrap();
+
+            // Add v1 data
+            for num in 1..=10 {
+                let _: () = conn
+                    .query_async(redis::Cmd::rpush(
+                        v1_main,
+                        to_redis_key(&TaskQueueDelivery {
+                            id: num.to_string(),
+                            task: QueueTask::MessageV1(MessageTask {
+                                msg_id: MessageId(format!("TestMessageID{}", num)),
+                                app_id: ApplicationId("TestApplicationID".to_owned()),
+                                endpoint_id: EndpointId("TestEndpointID".to_owned()),
+                                trigger_type: MessageAttemptTriggerType::Manual,
+                                attempt_count: 0,
+                            }),
+                        }),
+                    ))
+                    .await
+                    .unwrap();
+            }
+
+            for num in 11..=15 {
+                let _: () = conn
+                    .query_async(redis::Cmd::zadd(
+                        v1_delayed,
+                        to_redis_key(&TaskQueueDelivery {
+                            id: num.to_string(),
+                            task: QueueTask::MessageV1(MessageTask {
+                                msg_id: MessageId(format!("TestMessageID{}", num)),
+                                app_id: ApplicationId("TestApplicationID".to_owned()),
+                                endpoint_id: EndpointId("TestEndpointID".to_owned()),
+                                trigger_type: MessageAttemptTriggerType::Manual,
+                                attempt_count: 0,
+                            }),
+                        }),
+                        Utc::now().timestamp() + 2,
+                    ))
+                    .await
+                    .unwrap();
+            }
+
+            // Move the first five of v1_main to v1_processing
+            for _ in 0..5 {
+                let mut cmd = redis::cmd("BLMOVE");
+                cmd.arg(v1_main)
+                    .arg(v1_processing)
+                    .arg(Direction::Left)
+                    .arg(Direction::Right)
+                    .arg(0u8);
+
+                let _: () = conn.query_async(cmd).await.unwrap();
+            }
+
+            // v1 to v2
+            migrate_list(&mut conn, v1_main, v2_main).await;
+            migrate_list(&mut conn, v1_processing, v2_processing).await;
+            migrate_sset(&mut conn, v1_delayed, v2_delayed).await;
+
+            // v2 to v3
+            migrate_list_to_stream(&mut conn, v2_main, v3_main).await;
+            migrate_list_to_stream(&mut conn, v2_processing, v3_main).await;
+        }
+
+        // Read
+        let (_p, mut c) = new_pair_inner(pool, Duration::from_secs(5), v3_main, v2_delayed).await;
+
+        // 2 second delay on the delayed and pending queue is inserted after main queue, so first
+        // the 6-10 should appear, then 1-5, then 11-15
+
+        for num in 6..=10 {
+            assert_eq!(
+                c.receive_all().await.unwrap().pop().unwrap().task,
+                QueueTask::MessageV1(MessageTask {
+                    msg_id: MessageId(format!("TestMessageID{}", num)),
+                    app_id: ApplicationId("TestApplicationID".to_owned()),
+                    endpoint_id: EndpointId("TestEndpointID".to_owned()),
+                    trigger_type: MessageAttemptTriggerType::Manual,
+                    attempt_count: 0,
+                })
+            );
+        }
+        for num in 1..=5 {
+            assert_eq!(
+                c.receive_all().await.unwrap().pop().unwrap().task,
+                QueueTask::MessageV1(MessageTask {
+                    msg_id: MessageId(format!("TestMessageID{}", num)),
+                    app_id: ApplicationId("TestApplicationID".to_owned()),
+                    endpoint_id: EndpointId("TestEndpointID".to_owned()),
+                    trigger_type: MessageAttemptTriggerType::Manual,
+                    attempt_count: 0,
+                })
+            );
+        }
+        for num in 11..=15 {
+            assert_eq!(
+                c.receive_all().await.unwrap().pop().unwrap().task,
+                QueueTask::MessageV1(MessageTask {
+                    msg_id: MessageId(format!("TestMessageID{}", num)),
+                    app_id: ApplicationId("TestApplicationID".to_owned()),
+                    endpoint_id: EndpointId("TestEndpointID".to_owned()),
+                    trigger_type: MessageAttemptTriggerType::Manual,
+                    attempt_count: 0,
+                })
+            );
+        }
     }
 }
