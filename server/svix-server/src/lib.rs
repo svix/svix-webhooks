@@ -58,7 +58,7 @@ pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
     };
 
     tracing::debug!("Queue type: {:?}", cfg.queue_type);
-    let (queue_tx, queue_rx) = queue::new_pair(cfg.clone(), None).await;
+    let (queue_tx, queue_rx) = queue::new_pair(&cfg, None).await;
 
     // build our application with a route
     let app = Router::new()

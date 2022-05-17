@@ -15,7 +15,7 @@ pub mod memory;
 pub mod redis;
 
 pub async fn new_pair(
-    cfg: Configuration,
+    cfg: &Configuration,
     prefix: Option<&str>,
 ) -> (TaskQueueProducer, TaskQueueConsumer) {
     let redis_dsn = || {
