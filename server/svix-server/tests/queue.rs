@@ -9,7 +9,9 @@ use std::{str::FromStr, time::Duration};
 use svix_server::{
     cfg::{CacheType, Configuration},
     core::types::{ApplicationId, EndpointId, MessageAttemptTriggerType, MessageId},
-    queue::{new_pair, MessageTask, QueueTask, TaskQueueConsumer, TaskQueueProducer},
+    queue::{
+        new_pair, MessageTask, QueueTask, TaskQueueConsumer, TaskQueueDelivery, TaskQueueProducer,
+    },
     redis::{new_redis_pool, new_redis_pool_clustered, PoolLike, PooledConnectionLike, RedisPool},
 };
 
@@ -85,11 +87,14 @@ async fn test_many_queue_consumers() {
         join_handles.push(std::thread::spawn(move || {
             handle.block_on(async move {
                 let mut out = Vec::new();
+                let mut read = 0;
 
                 loop {
                     tokio::select! {
                         recv = c.receive_all() => {
-                            out.append(&mut recv.unwrap());
+                            let mut recv = recv.unwrap();
+                            read += recv.len();
+                            out.append(&mut recv);
                         }
                         _ = tokio::time::sleep(Duration::from_millis(1000)) => {
                             break;
@@ -97,7 +102,7 @@ async fn test_many_queue_consumers() {
                     }
                 }
 
-                out
+                (out, read)
             })
         }));
     }
@@ -105,11 +110,16 @@ async fn test_many_queue_consumers() {
     // Create a Vec with all the threads' outputs
     let mut out = Vec::new();
     for jh in join_handles {
-        out.append(&mut jh.join().unwrap());
+        let (mut jh_out, read): (Vec<TaskQueueDelivery>, usize) = jh.join().unwrap();
+        out.append(&mut jh_out);
+
+        if read < 5 {
+            panic!("Consumer starved, only read {} messages", read);
+        }
     }
 
     // Sort it by the message ID
-    out.sort_by(|a, b| {
+    out.sort_by(|a: &TaskQueueDelivery, b: &TaskQueueDelivery| {
         let a = u16::from_str(a.task.clone().msg_id().as_str()).unwrap();
         let b = u16::from_str(b.task.clone().msg_id().as_str()).unwrap();
 
