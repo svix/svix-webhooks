@@ -223,15 +223,21 @@ impl ModelIn for EndpointHeadersPatchIn {
     type ActiveModel = endpoint::ActiveModel;
 
     fn update_model(self, model: &mut Self::ActiveModel) {
-        let mut headers = EndpointHeaders::new();
-        for (k, v) in self.headers.0.iter() {
-            if v.is_some() {
-                headers.0.insert(k.clone(), v.clone().unwrap());
-            }
-        }
+        let headers: EndpointHeaders = self
+            .headers
+            .0
+            .iter()
+            .filter(|(_, v)| v.is_some())
+            .map(|(k, v)| (k.clone(), v.clone().unwrap()))
+            .collect();
 
         model.headers = if let Some(Some(mut hdrs)) = model.headers.take() {
             hdrs.0.extend(headers.0);
+            for (k, v) in self.headers.0.iter() {
+                if v.is_none() {
+                    hdrs.0.remove(k);
+                }
+            }
             Set(Some(hdrs))
         } else {
             Set(Some(headers))
