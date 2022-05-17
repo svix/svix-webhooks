@@ -92,17 +92,31 @@ const QUEUE_KV_KEY: &str = "data";
 const PENDING_BATCH_SIZE: i16 = 1000;
 
 /// Generates a [`TaskQueueProducer`] and a [`TaskQueueConsumer`] backed by Redis.
-pub async fn new_pair(pool: RedisPool) -> (TaskQueueProducer, TaskQueueConsumer) {
-    new_pair_inner(pool, Duration::from_secs(45), MAIN, DELAYED).await
+pub async fn new_pair(
+    pool: RedisPool,
+    prefix: Option<&str>,
+) -> (TaskQueueProducer, TaskQueueConsumer) {
+    new_pair_inner(
+        pool,
+        Duration::from_secs(45),
+        prefix.unwrap_or_default(),
+        MAIN,
+        DELAYED,
+    )
+    .await
 }
 
 /// An inner function allowing key constants to be variable for testing purposes
 async fn new_pair_inner(
     pool: RedisPool,
     pending_duration: Duration,
+    queue_prefix: &str,
     main_queue_name: &'static str,
     delayed_queue_name: &'static str,
 ) -> (TaskQueueProducer, TaskQueueConsumer) {
+    let main_queue_name = format!("{}{}", queue_prefix, main_queue_name);
+    let delayed_queue_name = format!("{}{}", queue_prefix, delayed_queue_name);
+
     // Create the stream and consumer group for the MAIN queue should it not already exist. The
     // consumer is created automatically upon use so it does not have to be created here.
     {
@@ -144,6 +158,8 @@ async fn new_pair_inner(
         .expect("Pending duration out of bounds");
 
     let worker_pool = pool.clone();
+    let mqn = main_queue_name.clone();
+    let dqn = delayed_queue_name.clone();
 
     // This is the background thread that monitors the DELAYED queue for messages ready to be
     // inserted into the MAIN queue and that monitors the pending tasks of the MAIN queue for
@@ -152,6 +168,8 @@ async fn new_pair_inner(
         // FIXME: enforce we only have one such worker via locking
         let batch_size: isize = 50;
         let pool = worker_pool;
+        let main_queue_name = mqn;
+        let delayed_queue_name = dqn;
 
         // Before entering the loop, migrate v1 queues to v2 and v2 queues to v3.
         {
@@ -168,13 +186,13 @@ async fn new_pair_inner(
             // First look for delayed keys whose time is up and add them to the main qunue
             let timestamp = Utc::now().timestamp();
             let keys: Vec<String> = pool
-                .zrangebyscore_limit(delayed_queue_name, 0isize, timestamp, 0isize, batch_size)
+                .zrangebyscore_limit(&delayed_queue_name, 0isize, timestamp, 0isize, batch_size)
                 .await
                 .unwrap();
             if !keys.is_empty() {
                 // FIXME: needs to be a transaction
                 let keys: Vec<(String, String)> = pool
-                    .zpopmin(delayed_queue_name, keys.len() as isize)
+                    .zpopmin(&delayed_queue_name, keys.len() as isize)
                     .await
                     .unwrap();
                 let tasks: Vec<&str> = keys
@@ -263,7 +281,7 @@ async fn new_pair_inner(
     (
         TaskQueueProducer(Box::new(RedisQueueProducer {
             pool: pool.clone(),
-            main_queue_name,
+            main_queue_name: main_queue_name.clone(),
             delayed_queue_name,
         })),
         TaskQueueConsumer(Box::new(RedisQueueConsumer {
@@ -295,8 +313,8 @@ impl ToRedisArgs for Direction {
 #[derive(Clone)]
 pub struct RedisQueueProducer {
     pool: RedisPool,
-    main_queue_name: &'static str,
-    delayed_queue_name: &'static str,
+    main_queue_name: String,
+    delayed_queue_name: String,
 }
 
 fn to_redis_key(delivery: &TaskQueueDelivery) -> String {
@@ -334,7 +352,7 @@ impl TaskQueueSend for RedisQueueProducer {
             let delivery = TaskQueueDelivery::new(task, Some(timestamp));
             let key = to_redis_key(&delivery);
             let _: () = pool
-                .zadd(self.delayed_queue_name, key, timestamp.timestamp())
+                .zadd(&self.delayed_queue_name, key, timestamp.timestamp())
                 .await?;
         } else {
             // If there is no delay simply XADD the task to the MAIN queue
@@ -359,7 +377,7 @@ impl TaskQueueSend for RedisQueueProducer {
         let mut pool = self.pool.get().await?;
         let processed: u8 = pool
             .query_async(Cmd::xack(
-                self.main_queue_name,
+                &self.main_queue_name,
                 WORKERS_GROUP,
                 &[delivery.id.as_str()],
             ))
@@ -392,14 +410,14 @@ impl TaskQueueSend for RedisQueueProducer {
 #[derive(Debug, Clone)]
 pub struct RedisQueueConsumer {
     pool: RedisPool,
-    main_queue_name: &'static str,
+    main_queue_name: String,
 }
 
 #[async_trait]
 impl TaskQueueReceive for RedisQueueConsumer {
     async fn receive_all(&mut self) -> Result<Vec<TaskQueueDelivery>> {
         let pool = self.pool.clone();
-        let main_queue_name = self.main_queue_name;
+        let main_queue_name = self.main_queue_name.clone();
         tokio::spawn(async move {
             // TODO: Receive messages in batches so it's not always a Vec with one member
             let mut pool = pool.get().await?;
@@ -409,7 +427,7 @@ impl TaskQueueReceive for RedisQueueConsumer {
             let resp = loop {
                 let resp: StreamReadReply = pool
                     .query_async(Cmd::xread_options(
-                        &[main_queue_name],
+                        &[&main_queue_name],
                         &[LISTEN_STREAM_ID],
                         &StreamReadOptions::default()
                             .group(WORKERS_GROUP, WORKER_CONSUMER)
@@ -525,7 +543,7 @@ async fn migrate_sset(pool: &mut PooledConnection<'_>, legacy_queue: &str, queue
 }
 
 #[cfg(test)]
-mod tests {
+pub mod tests {
 
     use std::time::Duration;
 
@@ -542,7 +560,7 @@ mod tests {
         redis::{PoolLike, PooledConnectionLike, RedisPool},
     };
 
-    async fn get_pool(cfg: Configuration) -> RedisPool {
+    pub async fn get_pool(cfg: Configuration) -> RedisPool {
         match cfg.cache_type {
             CacheType::RedisCluster => {
                 let mgr = crate::redis::new_redis_pool_clustered(
@@ -644,6 +662,7 @@ mod tests {
         let (p, mut c) = new_pair_inner(
             pool,
             Duration::from_millis(100),
+            "",
             "{test}_idle_period",
             "{test}_idle_period_delayed",
         )
@@ -695,6 +714,7 @@ mod tests {
         let (p, mut c) = new_pair_inner(
             pool,
             Duration::from_millis(500),
+            "",
             "{test}_ack",
             "{test}_ack_delayed",
         )
@@ -734,6 +754,7 @@ mod tests {
         let (p, mut c) = new_pair_inner(
             pool,
             Duration::from_millis(500),
+            "",
             "{test}_delay",
             "{test}_delay_delayed",
         )
@@ -880,7 +901,8 @@ mod tests {
         }
 
         // Read
-        let (_p, mut c) = new_pair_inner(pool, Duration::from_secs(5), v3_main, v2_delayed).await;
+        let (_p, mut c) =
+            new_pair_inner(pool, Duration::from_secs(5), "", v3_main, v2_delayed).await;
 
         // 2 second delay on the delayed and pending queue is inserted after main queue, so first
         // the 6-10 should appear, then 1-5, then 11-15
