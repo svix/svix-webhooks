@@ -584,31 +584,35 @@ impl<'de> Deserialize<'de> for EndpointHeaders {
     }
 }
 
+fn validate_header_key(k: &str, errors: &mut ValidationErrors) {
+    let k = &k.to_lowercase();
+    if let Err(_e) = http::header::HeaderName::try_from(k) {
+        errors.add(ALL_ERROR, ValidationError::new("Invalid Header Name."));
+    }
+    if FORBIDDEN_KEYS.contains(&k.as_str()) {
+        errors.add(
+            ALL_ERROR,
+            ValidationError::new("Header uses a forbidden key."),
+        );
+    }
+    FORBIDDEN_PREFIXES.iter().for_each(|p| {
+        if k.starts_with(p) {
+            errors.add(
+                ALL_ERROR,
+                ValidationError::new("Header starts with a forbidden prefix."),
+            )
+        }
+    })
+}
+
 impl Validate for EndpointHeaders {
     fn validate(&self) -> std::result::Result<(), ValidationErrors> {
         let mut errors = ValidationErrors::new();
         self.0.iter().for_each(|(k, v)| {
-            let k = &k.to_lowercase();
-            if let Err(_e) = http::header::HeaderName::try_from(k) {
-                errors.add(ALL_ERROR, ValidationError::new("Invalid Header Name."));
-            }
+            validate_header_key(k, &mut errors);
             if let Err(_e) = http::header::HeaderValue::try_from(v) {
                 errors.add(ALL_ERROR, ValidationError::new("Invalid Header Value."));
             }
-            if FORBIDDEN_KEYS.contains(&k.as_str()) {
-                errors.add(
-                    ALL_ERROR,
-                    ValidationError::new("Header uses a forbidden key."),
-                );
-            }
-            FORBIDDEN_PREFIXES.iter().for_each(|p| {
-                if k.starts_with(p) {
-                    errors.add(
-                        ALL_ERROR,
-                        ValidationError::new("Header starts with a forbidden prefix."),
-                    )
-                }
-            })
         });
         if errors.is_empty() {
             Ok(())
@@ -636,26 +640,9 @@ impl<'de> Deserialize<'de> for EndpointHeadersPatch {
 impl Validate for EndpointHeadersPatch {
     fn validate(&self) -> std::result::Result<(), ValidationErrors> {
         let mut errors = ValidationErrors::new();
-        self.0.iter().for_each(|(k, _)| {
-            let k = &k.to_lowercase();
-            if let Err(_e) = http::header::HeaderName::try_from(k) {
-                errors.add(ALL_ERROR, ValidationError::new("Invalid Header Name."));
-            }
-            if FORBIDDEN_KEYS.contains(&k.as_str()) {
-                errors.add(
-                    ALL_ERROR,
-                    ValidationError::new("Header uses a forbidden key."),
-                );
-            }
-            FORBIDDEN_PREFIXES.iter().for_each(|p| {
-                if k.starts_with(p) {
-                    errors.add(
-                        ALL_ERROR,
-                        ValidationError::new("Header starts with a forbidden prefix."),
-                    )
-                }
-            })
-        });
+        self.0
+            .iter()
+            .for_each(|(k, _)| validate_header_key(k, &mut errors));
         if errors.is_empty() {
             Ok(())
         } else {
