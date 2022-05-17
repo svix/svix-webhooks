@@ -12,8 +12,8 @@ use reqwest::StatusCode;
 
 use svix_server::{
     core::types::{
-        ApplicationId, EndpointHeaders, EndpointSecret, EndpointUid, EventChannel, EventChannelSet,
-        EventTypeName, EventTypeNameSet, ExpiringSigningKeys,
+        ApplicationId, EndpointHeaders, EndpointHeadersPatch, EndpointSecret, EndpointUid,
+        EventChannel, EventChannelSet, EventTypeName, EventTypeNameSet, ExpiringSigningKeys,
     },
     v1::{
         endpoints::{
@@ -1079,7 +1079,10 @@ async fn test_endpoint_headers_manipulation() {
     }
 
     let patched_headers_in = EndpointHeadersPatchIn {
-        headers: EndpointHeaders(HashMap::from([("x-test-3".to_owned(), "4".to_owned())])),
+        headers: EndpointHeadersPatch(HashMap::from([
+            ("x-test-3".to_owned(), Some("4".to_owned())),
+            ("x-test-2".to_owned(), None),
+        ])),
     };
 
     let _: IgnoredResponse = client
@@ -1102,7 +1105,6 @@ async fn test_endpoint_headers_manipulation() {
     assert_eq!(
         HashMap::from([
             ("x-test-1".to_owned(), "3".to_owned()),
-            ("x-test-2".to_owned(), "2".to_owned()),
             ("x-test-3".to_owned(), "4".to_owned()),
         ]),
         recvd_headers.headers

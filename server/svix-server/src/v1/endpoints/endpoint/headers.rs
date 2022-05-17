@@ -85,7 +85,7 @@ mod tests {
     use sea_orm::ActiveValue::Set;
 
     use crate::{
-        core::types::EndpointHeaders,
+        core::types::{EndpointHeaders, EndpointHeadersPatch},
         db::models::endpoint,
         v1::{
             endpoints::endpoint::{EndpointHeadersOut, EndpointHeadersPatchIn},
@@ -115,9 +115,9 @@ mod tests {
             ("x-2".to_owned(), "456".to_owned()),
         ]));
         let patched_hdrs = EndpointHeadersPatchIn {
-            headers: EndpointHeaders(HashMap::from([
-                ("x-1".to_owned(), "789".to_owned()),
-                ("x-3".to_owned(), "123".to_owned()),
+            headers: EndpointHeadersPatch(HashMap::from([
+                ("x-1".to_owned(), Some("789".to_owned())),
+                ("x-3".to_owned(), Some("123".to_owned())),
             ])),
         };
         let updated_hdrs = EndpointHeaders(HashMap::from([

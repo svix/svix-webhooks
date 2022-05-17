@@ -526,36 +526,41 @@ pub struct ExpiringSigningKey {
     pub expiration: DateTime<Utc>,
 }
 
+const FORBIDDEN_KEYS: [&str; 19] = [
+    "user-agent",
+    "keep-alive",
+    "proxy-authenticate",
+    "proxy-authorization",
+    "te",
+    "trailers",
+    "transfer-encoding",
+    "upgrade",
+    "age",
+    "cache-control",
+    "clear-site-data",
+    "expires",
+    "pragma",
+    "warning",
+    "content-length",
+    "content-type",
+    "content-encoding",
+    "content-language",
+    "content-location",
+];
+
+const FORBIDDEN_PREFIXES: [&str; 10] = [
+    "x-amz-", "x-amzn-", "x-google", "x-goog-", "x-gfe", "x-amz-", "x-azure-", "x-fd-", "x-svix-",
+    "svix-",
+];
+
 #[derive(Clone, Debug, PartialEq, Serialize, Default)]
 pub struct EndpointHeaders(pub HashMap<String, String>);
 json_wrapper!(EndpointHeaders);
 
 impl EndpointHeaders {
-    const FORBIDDEN_KEYS: &'static [&'static str] = &[
-        "user-agent",
-        "keep-alive",
-        "proxy-authenticate",
-        "proxy-authorization",
-        "te",
-        "trailers",
-        "transfer-encoding",
-        "upgrade",
-        "age",
-        "cache-control",
-        "clear-site-data",
-        "expires",
-        "pragma",
-        "warning",
-        "content-length",
-        "content-type",
-        "content-encoding",
-        "content-language",
-        "content-location",
-    ];
-    const FORBIDDEN_PREFIXES: &'static [&'static str] = &[
-        "x-amz-", "x-amzn-", "x-google", "x-goog-", "x-gfe", "x-amz-", "x-azure-", "x-fd-",
-        "x-svix-", "svix-",
-    ];
+    pub fn new() -> Self {
+        EndpointHeaders(HashMap::new())
+    }
 }
 
 impl<'de> Deserialize<'de> for EndpointHeaders {
@@ -580,13 +585,59 @@ impl Validate for EndpointHeaders {
             if let Err(_e) = http::header::HeaderValue::try_from(v) {
                 errors.add(ALL_ERROR, ValidationError::new("Invalid Header Value."));
             }
-            if Self::FORBIDDEN_KEYS.contains(&k.as_str()) {
+            if FORBIDDEN_KEYS.contains(&k.as_str()) {
                 errors.add(
                     ALL_ERROR,
                     ValidationError::new("Header uses a forbidden key."),
                 );
             }
-            Self::FORBIDDEN_PREFIXES.iter().for_each(|p| {
+            FORBIDDEN_PREFIXES.iter().for_each(|p| {
+                if k.starts_with(p) {
+                    errors.add(
+                        ALL_ERROR,
+                        ValidationError::new("Header starts with a forbidden prefix."),
+                    )
+                }
+            })
+        });
+        if errors.is_empty() {
+            Ok(())
+        } else {
+            Err(errors)
+        }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Default)]
+pub struct EndpointHeadersPatch(pub HashMap<String, Option<String>>);
+json_wrapper!(EndpointHeadersPatch);
+
+impl<'de> Deserialize<'de> for EndpointHeadersPatch {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        HashMap::deserialize(deserializer)
+            .map(|x: HashMap<String, Option<String>>| x.into_iter().map(|(k, v)| (k, v)).collect())
+            .map(EndpointHeadersPatch)
+    }
+}
+
+impl Validate for EndpointHeadersPatch {
+    fn validate(&self) -> std::result::Result<(), ValidationErrors> {
+        let mut errors = ValidationErrors::new();
+        self.0.iter().for_each(|(k, _)| {
+            let k = &k.to_lowercase();
+            if let Err(_e) = http::header::HeaderName::try_from(k) {
+                errors.add(ALL_ERROR, ValidationError::new("Invalid Header Name."));
+            }
+            if FORBIDDEN_KEYS.contains(&k.as_str()) {
+                errors.add(
+                    ALL_ERROR,
+                    ValidationError::new("Header uses a forbidden key."),
+                );
+            }
+            FORBIDDEN_PREFIXES.iter().for_each(|p| {
                 if k.starts_with(p) {
                     errors.add(
                         ALL_ERROR,
