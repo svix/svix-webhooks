@@ -227,8 +227,7 @@ impl ModelIn for EndpointHeadersPatchIn {
             .headers
             .0
             .iter()
-            .filter(|(_, v)| v.is_some())
-            .map(|(k, v)| (k.clone(), v.clone().unwrap()))
+            .filter_map(|(k, v)| v.as_ref().map(|v| (k.clone(), v.clone())))
             .collect();
 
         model.headers = if let Some(Some(mut hdrs)) = model.headers.take() {
