@@ -14,7 +14,10 @@ use crate::{
 pub mod memory;
 pub mod redis;
 
-pub async fn new_pair(cfg: Configuration) -> (TaskQueueProducer, TaskQueueConsumer) {
+pub async fn new_pair(
+    cfg: Configuration,
+    prefix: Option<&str>,
+) -> (TaskQueueProducer, TaskQueueConsumer) {
     let redis_dsn = || {
         cfg.redis_dsn
             .as_ref()
@@ -25,11 +28,11 @@ pub async fn new_pair(cfg: Configuration) -> (TaskQueueProducer, TaskQueueConsum
     match cfg.queue_type {
         QueueType::Redis => {
             let pool = crate::redis::new_redis_pool(redis_dsn()).await;
-            redis::new_pair(pool).await
+            redis::new_pair(pool, prefix).await
         }
         QueueType::RedisCluster => {
             let pool = crate::redis::new_redis_pool_clustered(redis_dsn()).await;
-            redis::new_pair(pool).await
+            redis::new_pair(pool, prefix).await
         }
         QueueType::Memory => memory::new_pair().await,
     }

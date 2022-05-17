@@ -7,9 +7,25 @@
 use std::{str::FromStr, time::Duration};
 
 use svix_server::{
+    cfg::{CacheType, Configuration},
     core::types::{ApplicationId, EndpointId, MessageAttemptTriggerType, MessageId},
     queue::{new_pair, MessageTask, QueueTask, TaskQueueConsumer, TaskQueueProducer},
+    redis::{new_redis_pool, new_redis_pool_clustered, PoolLike, PooledConnectionLike, RedisPool},
 };
+
+// TODO: Don't copy this from the Redis queue test directly, place the fn somewhere both can access
+pub async fn get_pool(cfg: Configuration) -> RedisPool {
+    match cfg.cache_type {
+        CacheType::RedisCluster => {
+            let mgr = new_redis_pool_clustered(cfg.redis_dsn.as_ref().unwrap().as_str()).await;
+            mgr
+        }
+        _ => {
+            let mgr = new_redis_pool(cfg.redis_dsn.as_ref().unwrap().as_str()).await;
+            mgr
+        }
+    }
+}
 
 // Without the `multi_thread` and `worker_threads` directive, the `block_on` call will never return
 // and the test will hang.
@@ -18,10 +34,23 @@ async fn test_many_queue_consumers() {
     dotenv::dotenv().ok();
     let cfg = svix_server::cfg::load().expect("Error loading configuration");
 
+    // This test assumes an empty queue, so load Redis and delete the test key
+    {
+        let pool = get_pool(cfg.clone()).await;
+        let mut conn = pool.get().await.unwrap();
+
+        conn.query_async::<()>(redis::Cmd::del(
+            "test_many_queue_consumers_{queue}_svix_v3_main",
+        ))
+        .await
+        .unwrap();
+    }
+
     // Make 20 producers and 20 consumers using the same configuration
     let mut producers_and_consumers: Vec<(TaskQueueProducer, TaskQueueConsumer)> = Vec::new();
     for _ in 0..20 {
-        producers_and_consumers.push(new_pair(cfg.clone()).await);
+        producers_and_consumers
+            .push(new_pair(cfg.clone(), Some("test_many_queue_consumers_")).await);
     }
 
     // Add 50 test messages with unique message IDs to each producer for a total of 1000 unique
