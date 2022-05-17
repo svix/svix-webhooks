@@ -60,7 +60,7 @@ async fn test_many_queue_consumers() {
             p.send(
                 QueueTask::MessageV1(MessageTask {
                     msg_id: MessageId(format!("{}", index * 50 + num)),
-                    app_id: ApplicationId("TeatApplicationId".to_owned()),
+                    app_id: ApplicationId("TestApplicationId".to_owned()),
                     endpoint_id: EndpointId("TestEndpointId".to_owned()),
                     trigger_type: MessageAttemptTriggerType::Manual,
                     attempt_count: 0,
