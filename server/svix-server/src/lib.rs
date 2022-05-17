@@ -6,7 +6,7 @@
 
 use axum::{extract::Extension, Router};
 
-use cfg::{CacheType, QueueType};
+use cfg::CacheType;
 use std::{
     net::{SocketAddr, TcpListener},
     str::FromStr,
@@ -58,19 +58,7 @@ pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
     };
 
     tracing::debug!("Queue type: {:?}", cfg.queue_type);
-    let (queue_tx, queue_rx) = {
-        match cfg.queue_type {
-            QueueType::Redis => {
-                let pool = crate::redis::new_redis_pool(redis_dsn()).await;
-                queue::redis::new_pair(pool).await
-            }
-            QueueType::RedisCluster => {
-                let pool = crate::redis::new_redis_pool_clustered(redis_dsn()).await;
-                queue::redis::new_pair(pool).await
-            }
-            QueueType::Memory => queue::memory::new_pair().await,
-        }
-    };
+    let (queue_tx, queue_rx) = queue::new_pair(cfg.clone()).await;
 
     // build our application with a route
     let app = Router::new()

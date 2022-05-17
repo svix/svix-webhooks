@@ -6,12 +6,34 @@ use serde::{Deserialize, Serialize};
 use svix_ksuid::*;
 
 use crate::{
+    cfg::{Configuration, QueueType},
     core::types::{ApplicationId, EndpointId, MessageAttemptTriggerType, MessageId},
     error::Result,
 };
 
 pub mod memory;
 pub mod redis;
+
+pub async fn new_pair(cfg: Configuration) -> (TaskQueueProducer, TaskQueueConsumer) {
+    let redis_dsn = || {
+        cfg.redis_dsn
+            .as_ref()
+            .expect("Redis DSN not found")
+            .as_str()
+    };
+
+    match cfg.queue_type {
+        QueueType::Redis => {
+            let pool = crate::redis::new_redis_pool(redis_dsn()).await;
+            redis::new_pair(pool).await
+        }
+        QueueType::RedisCluster => {
+            let pool = crate::redis::new_redis_pool_clustered(redis_dsn()).await;
+            redis::new_pair(pool).await
+        }
+        QueueType::Memory => memory::new_pair().await,
+    }
+}
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
