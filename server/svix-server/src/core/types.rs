@@ -553,6 +553,27 @@ const FORBIDDEN_PREFIXES: [&str; 10] = [
     "svix-",
 ];
 
+fn validate_header_key(k: &str, errors: &mut ValidationErrors) {
+    let k = &k.to_lowercase();
+    if let Err(_e) = http::header::HeaderName::try_from(k) {
+        errors.add(ALL_ERROR, ValidationError::new("Invalid Header Name."));
+    }
+    if FORBIDDEN_KEYS.contains(&k.as_str()) {
+        errors.add(
+            ALL_ERROR,
+            ValidationError::new("Header uses a forbidden key."),
+        );
+    }
+    FORBIDDEN_PREFIXES.iter().for_each(|p| {
+        if k.starts_with(p) {
+            errors.add(
+                ALL_ERROR,
+                ValidationError::new("Header starts with a forbidden prefix."),
+            )
+        }
+    })
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, Default)]
 pub struct EndpointHeaders(pub HashMap<String, String>);
 json_wrapper!(EndpointHeaders);
@@ -582,27 +603,6 @@ impl<'de> Deserialize<'de> for EndpointHeaders {
             .map(|x: HashMap<String, String>| x.into_iter().map(|(k, v)| (k, v)).collect())
             .map(EndpointHeaders)
     }
-}
-
-fn validate_header_key(k: &str, errors: &mut ValidationErrors) {
-    let k = &k.to_lowercase();
-    if let Err(_e) = http::header::HeaderName::try_from(k) {
-        errors.add(ALL_ERROR, ValidationError::new("Invalid Header Name."));
-    }
-    if FORBIDDEN_KEYS.contains(&k.as_str()) {
-        errors.add(
-            ALL_ERROR,
-            ValidationError::new("Header uses a forbidden key."),
-        );
-    }
-    FORBIDDEN_PREFIXES.iter().for_each(|p| {
-        if k.starts_with(p) {
-            errors.add(
-                ALL_ERROR,
-                ValidationError::new("Header starts with a forbidden prefix."),
-            )
-        }
-    })
 }
 
 impl Validate for EndpointHeaders {
