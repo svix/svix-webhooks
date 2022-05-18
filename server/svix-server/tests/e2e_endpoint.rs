@@ -1050,10 +1050,7 @@ async fn test_endpoint_headers_manipulation() {
         .unwrap();
 
     assert_eq!(
-        HashMap::from([
-            ("x-test-1".to_owned(), "3".to_owned()),
-            ("x-test-3".to_owned(), "4".to_owned()),
-        ]),
+        HashMap::from([("x-test-3".to_owned(), "4".to_owned()),]),
         recvd_headers.headers
     );
 
