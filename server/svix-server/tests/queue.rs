@@ -51,8 +51,7 @@ async fn test_many_queue_consumers() {
     // Make 20 producers and 20 consumers using the same configuration
     let mut producers_and_consumers: Vec<(TaskQueueProducer, TaskQueueConsumer)> = Vec::new();
     for _ in 0..20 {
-        producers_and_consumers
-            .push(new_pair(cfg.clone(), Some("test_many_queue_consumers_")).await);
+        producers_and_consumers.push(new_pair(&cfg, Some("test_many_queue_consumers_")).await);
     }
 
     // Add 50 test messages with unique message IDs to each producer for a total of 1000 unique
