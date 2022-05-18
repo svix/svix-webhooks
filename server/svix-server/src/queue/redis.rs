@@ -185,10 +185,16 @@ async fn new_pair_inner(
 
             // First look for delayed keys whose time is up and add them to the main qunue
             let timestamp = Utc::now().timestamp();
-            let keys: Vec<String> = pool
+            let keys: Vec<String> = match pool
                 .zrangebyscore_limit(&delayed_queue_name, 0isize, timestamp, 0isize, batch_size)
                 .await
-                .unwrap();
+            {
+                Ok(res) => res,
+                Err(e) => {
+                    tracing::error!("{}", e);
+                    continue;
+                }
+            };
             if !keys.is_empty() {
                 // FIXME: needs to be a transaction
                 let keys: Vec<(String, String)> = pool
@@ -232,7 +238,13 @@ async fn new_pair_inner(
                 .arg("+")
                 .arg(PENDING_BATCH_SIZE);
 
-            let keys: StreamPendingCountReply = pool.query_async(cmd).await.unwrap();
+            let keys: StreamPendingCountReply = match pool.query_async(cmd).await {
+                Ok(res) => res,
+                Err(e) => {
+                    tracing::error!("{}", e);
+                    continue;
+                }
+            };
 
             let ids: Vec<String> = keys.ids.into_iter().map(|id| id.id).collect();
 
