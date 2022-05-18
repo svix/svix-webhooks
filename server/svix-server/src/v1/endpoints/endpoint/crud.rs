@@ -33,7 +33,7 @@ pub(super) async fn list_endpoints(
         app,
     }: AuthenticatedApplication,
 ) -> Result<Json<ListResponse<EndpointOut>>> {
-    let limit = pagination.limit;
+    let limit = pagination.capped_limit();
     let iterator = pagination.iterator.clone();
 
     let mut query = endpoint::Entity::secure_find(app.id)

@@ -90,7 +90,7 @@ async fn list_applications(
     pagination: ValidatedQuery<Pagination<ApplicationId>>,
     permissions: Permissions,
 ) -> Result<Json<ListResponse<ApplicationOut>>> {
-    let limit = pagination.limit;
+    let limit = pagination.capped_limit();
     let iterator = pagination.iterator.clone();
 
     let mut query = application::Entity::secure_find(permissions.org_id)

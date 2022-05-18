@@ -24,12 +24,61 @@ const fn default_limit() -> u64 {
     50
 }
 
-#[derive(Debug, Deserialize, Validate)]
+const PAGINATION_LIMIT_CAP_TYPE: PaginationLimitCap = PaginationLimitCap::HardCap;
+const PAGINATION_LIMIT_CAP_LIMIT: u64 = 250;
+// TODO: Should probably use lazy_static and format! to make this instead of repeating the 250
+// figure at some point
+const PAGINATION_LIMIT_ERROR: &str = "Given limit must not exceed 250";
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+enum PaginationLimitCap {
+    HardCap,
+
+    // This is configured via constant, so SoftCap will only be used when PAGINATION_LIMIT_CAP_TYPE
+    // is set to it
+    #[allow(dead_code)]
+    SoftCap,
+}
+
+#[derive(Debug, Deserialize)]
 pub struct Pagination<T: Validate> {
     #[serde(default = "default_limit")]
     pub limit: u64,
-    #[validate]
     pub iterator: Option<T>,
+}
+
+impl<T: Validate> Pagination<T> {
+    pub fn capped_limit(&self) -> u64 {
+        if self.limit > PAGINATION_LIMIT_CAP_LIMIT {
+            PAGINATION_LIMIT_CAP_LIMIT
+        } else {
+            self.limit
+        }
+    }
+}
+
+impl<T: Validate> Validate for Pagination<T> {
+    fn validate(&self) -> std::result::Result<(), validator::ValidationErrors> {
+        let mut errs = validator::ValidationErrors::new();
+
+        if let Some(iterator) = &self.iterator {
+            if let Err(e) = iterator.validate() {
+                errs = e;
+            }
+        }
+
+        if PAGINATION_LIMIT_CAP_TYPE == PaginationLimitCap::HardCap
+            && self.limit > PAGINATION_LIMIT_CAP_LIMIT
+        {
+            errs.add("limit", ValidationError::new(PAGINATION_LIMIT_ERROR));
+        }
+
+        if errs.is_empty() {
+            Ok(())
+        } else {
+            Err(errs)
+        }
+    }
 }
 
 #[derive(Debug, PartialEq)]

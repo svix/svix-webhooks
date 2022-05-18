@@ -181,7 +181,7 @@ pub async fn common_test_list<
     assert!(!list.done);
 
     let list = client
-        .get::<ListResponse<ModelOut>>(&format!("{}?limit=500", path), StatusCode::OK)
+        .get::<ListResponse<ModelOut>>(&format!("{}?limit=50", path), StatusCode::OK)
         .await
         .unwrap();
 

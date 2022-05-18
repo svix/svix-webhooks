@@ -121,7 +121,7 @@ async fn list_event_types(
     fetch_options: ValidatedQuery<ListFetchOptions>,
     permissions: Permissions,
 ) -> Result<Json<ListResponse<EventTypeOut>>> {
-    let limit = pagination.limit;
+    let limit = pagination.capped_limit();
     let iterator = pagination.iterator.clone();
 
     let mut query = eventtype::Entity::secure_find(permissions.org_id)
