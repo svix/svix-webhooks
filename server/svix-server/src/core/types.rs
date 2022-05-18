@@ -680,7 +680,9 @@ enum_wrapper!(StatusCodeClass);
 mod tests {
     use crate::core::types::{EventChannel, EventTypeName};
 
-    use super::{ApplicationId, ApplicationUid, EndpointHeaders, EndpointSecret};
+    use super::{
+        ApplicationId, ApplicationUid, EndpointHeaders, EndpointHeadersPatch, EndpointSecret,
+    };
     use std::collections::HashMap;
     use validator::Validate;
 
@@ -775,6 +777,38 @@ mod tests {
 
         let hdr_map = HashMap::from([("X-Amz-".to_string(), "true".to_owned())]);
         let endpoint_headers = EndpointHeaders(hdr_map);
+        assert!(endpoint_headers.validate().is_err());
+    }
+
+    #[test]
+    fn test_endpoint_headers_patch_validation() {
+        let hdr_map = HashMap::from([
+            ("valid".to_owned(), Some("true".to_owned())),
+            ("also-valid".to_owned(), Some("true".to_owned())),
+        ]);
+        let endpoint_headers = EndpointHeadersPatch(hdr_map);
+        endpoint_headers.validate().unwrap();
+
+        let hdr_map = HashMap::from([
+            ("invalid?".to_owned(), Some("true".to_owned())),
+            ("valid".to_owned(), Some("true".to_owned())),
+        ]);
+        let endpoint_headers = EndpointHeadersPatch(hdr_map);
+        assert!(endpoint_headers.validate().is_err());
+
+        let hdr_map = HashMap::from([
+            ("invalid\0".to_owned(), Some("true".to_owned())),
+            ("valid".to_owned(), Some("true".to_owned())),
+        ]);
+        let endpoint_headers = EndpointHeadersPatch(hdr_map);
+        assert!(endpoint_headers.validate().is_err());
+
+        let hdr_map = HashMap::from([("User-Agent".to_string(), Some("true".to_owned()))]);
+        let endpoint_headers = EndpointHeadersPatch(hdr_map);
+        assert!(endpoint_headers.validate().is_err());
+
+        let hdr_map = HashMap::from([("X-Amz-".to_string(), Some("true".to_owned()))]);
+        let endpoint_headers = EndpointHeadersPatch(hdr_map);
         assert!(endpoint_headers.validate().is_err());
     }
 
