@@ -223,7 +223,34 @@ pub async fn common_test_list<
         .await
         .unwrap();
 
-    Ok(())
+    // Test Limits
+    for i in 10..300 {
+        let _: ModelOut = client
+            .post(path, create_model(i), StatusCode::CREATED)
+            .await
+            .unwrap();
+    }
+
+    // If limits are hard, it will be a 422 UNPROCESSABLE_ENTITY response, otherwise it'll be capped to 250
+    if client
+        .get::<IgnoredResponse>(
+            &format!("{}?limit=300", path),
+            StatusCode::UNPROCESSABLE_ENTITY,
+        )
+        .await
+        .is_ok()
+        || client
+            .get::<ListResponse<ModelOut>>(&format!("{}?limit=300", path), StatusCode::OK)
+            .await
+            .unwrap()
+            .data
+            .len()
+            == 250
+    {
+        Ok(())
+    } else {
+        panic!("Error with soft/hard caps to pagination limits")
+    }
 }
 
 pub async fn recover_webhooks(client: &TestClient, since: DateTime<Utc>, url: &str) {
