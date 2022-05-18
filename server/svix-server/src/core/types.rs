@@ -526,37 +526,57 @@ pub struct ExpiringSigningKey {
     pub expiration: DateTime<Utc>,
 }
 
+const FORBIDDEN_KEYS: [&str; 19] = [
+    "user-agent",
+    "keep-alive",
+    "proxy-authenticate",
+    "proxy-authorization",
+    "te",
+    "trailers",
+    "transfer-encoding",
+    "upgrade",
+    "age",
+    "cache-control",
+    "clear-site-data",
+    "expires",
+    "pragma",
+    "warning",
+    "content-length",
+    "content-type",
+    "content-encoding",
+    "content-language",
+    "content-location",
+];
+
+const FORBIDDEN_PREFIXES: [&str; 10] = [
+    "x-amz-", "x-amzn-", "x-google", "x-goog-", "x-gfe", "x-amz-", "x-azure-", "x-fd-", "x-svix-",
+    "svix-",
+];
+
+fn validate_header_key(k: &str, errors: &mut ValidationErrors) {
+    let k = &k.to_lowercase();
+    if let Err(_e) = http::header::HeaderName::try_from(k) {
+        errors.add(ALL_ERROR, ValidationError::new("Invalid Header Name."));
+    }
+    if FORBIDDEN_KEYS.contains(&k.as_str()) {
+        errors.add(
+            ALL_ERROR,
+            ValidationError::new("Header uses a forbidden key."),
+        );
+    }
+    FORBIDDEN_PREFIXES.iter().for_each(|p| {
+        if k.starts_with(p) {
+            errors.add(
+                ALL_ERROR,
+                ValidationError::new("Header starts with a forbidden prefix."),
+            )
+        }
+    })
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, Default)]
 pub struct EndpointHeaders(pub HashMap<String, String>);
 json_wrapper!(EndpointHeaders);
-
-impl EndpointHeaders {
-    const FORBIDDEN_KEYS: &'static [&'static str] = &[
-        "user-agent",
-        "keep-alive",
-        "proxy-authenticate",
-        "proxy-authorization",
-        "te",
-        "trailers",
-        "transfer-encoding",
-        "upgrade",
-        "age",
-        "cache-control",
-        "clear-site-data",
-        "expires",
-        "pragma",
-        "warning",
-        "content-length",
-        "content-type",
-        "content-encoding",
-        "content-language",
-        "content-location",
-    ];
-    const FORBIDDEN_PREFIXES: &'static [&'static str] = &[
-        "x-amz-", "x-amzn-", "x-google", "x-goog-", "x-gfe", "x-amz-", "x-azure-", "x-fd-",
-        "x-svix-", "svix-",
-    ];
-}
 
 impl<'de> Deserialize<'de> for EndpointHeaders {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
@@ -564,7 +584,7 @@ impl<'de> Deserialize<'de> for EndpointHeaders {
         D: serde::Deserializer<'de>,
     {
         HashMap::deserialize(deserializer)
-            .map(|x: HashMap<String, String>| x.into_iter().map(|(k, v)| (k, v)).collect())
+            .map(|x: HashMap<String, String>| x.into_iter().collect())
             .map(EndpointHeaders)
     }
 }
@@ -573,28 +593,40 @@ impl Validate for EndpointHeaders {
     fn validate(&self) -> std::result::Result<(), ValidationErrors> {
         let mut errors = ValidationErrors::new();
         self.0.iter().for_each(|(k, v)| {
-            let k = &k.to_lowercase();
-            if let Err(_e) = http::header::HeaderName::try_from(k) {
-                errors.add(ALL_ERROR, ValidationError::new("Invalid Header Name."));
-            }
+            validate_header_key(k, &mut errors);
             if let Err(_e) = http::header::HeaderValue::try_from(v) {
                 errors.add(ALL_ERROR, ValidationError::new("Invalid Header Value."));
             }
-            if Self::FORBIDDEN_KEYS.contains(&k.as_str()) {
-                errors.add(
-                    ALL_ERROR,
-                    ValidationError::new("Header uses a forbidden key."),
-                );
-            }
-            Self::FORBIDDEN_PREFIXES.iter().for_each(|p| {
-                if k.starts_with(p) {
-                    errors.add(
-                        ALL_ERROR,
-                        ValidationError::new("Header starts with a forbidden prefix."),
-                    )
-                }
-            })
         });
+        if errors.is_empty() {
+            Ok(())
+        } else {
+            Err(errors)
+        }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Default)]
+pub struct EndpointHeadersPatch(pub HashMap<String, Option<String>>);
+json_wrapper!(EndpointHeadersPatch);
+
+impl<'de> Deserialize<'de> for EndpointHeadersPatch {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        HashMap::deserialize(deserializer)
+            .map(|x: HashMap<String, Option<String>>| x.into_iter().collect())
+            .map(EndpointHeadersPatch)
+    }
+}
+
+impl Validate for EndpointHeadersPatch {
+    fn validate(&self) -> std::result::Result<(), ValidationErrors> {
+        let mut errors = ValidationErrors::new();
+        self.0
+            .iter()
+            .for_each(|(k, _)| validate_header_key(k, &mut errors));
         if errors.is_empty() {
             Ok(())
         } else {
@@ -638,7 +670,9 @@ enum_wrapper!(StatusCodeClass);
 mod tests {
     use crate::core::types::{EventChannel, EventTypeName};
 
-    use super::{ApplicationId, ApplicationUid, EndpointHeaders, EndpointSecret};
+    use super::{
+        ApplicationId, ApplicationUid, EndpointHeaders, EndpointHeadersPatch, EndpointSecret,
+    };
     use std::collections::HashMap;
     use validator::Validate;
 
@@ -733,6 +767,38 @@ mod tests {
 
         let hdr_map = HashMap::from([("X-Amz-".to_string(), "true".to_owned())]);
         let endpoint_headers = EndpointHeaders(hdr_map);
+        assert!(endpoint_headers.validate().is_err());
+    }
+
+    #[test]
+    fn test_endpoint_headers_patch_validation() {
+        let hdr_map = HashMap::from([
+            ("valid".to_owned(), Some("true".to_owned())),
+            ("also-valid".to_owned(), Some("true".to_owned())),
+        ]);
+        let endpoint_headers = EndpointHeadersPatch(hdr_map);
+        endpoint_headers.validate().unwrap();
+
+        let hdr_map = HashMap::from([
+            ("invalid?".to_owned(), Some("true".to_owned())),
+            ("valid".to_owned(), Some("true".to_owned())),
+        ]);
+        let endpoint_headers = EndpointHeadersPatch(hdr_map);
+        assert!(endpoint_headers.validate().is_err());
+
+        let hdr_map = HashMap::from([
+            ("invalid\0".to_owned(), Some("true".to_owned())),
+            ("valid".to_owned(), Some("true".to_owned())),
+        ]);
+        let endpoint_headers = EndpointHeadersPatch(hdr_map);
+        assert!(endpoint_headers.validate().is_err());
+
+        let hdr_map = HashMap::from([("User-Agent".to_string(), Some("true".to_owned()))]);
+        let endpoint_headers = EndpointHeadersPatch(hdr_map);
+        assert!(endpoint_headers.validate().is_err());
+
+        let hdr_map = HashMap::from([("X-Amz-".to_string(), Some("true".to_owned()))]);
+        let endpoint_headers = EndpointHeadersPatch(hdr_map);
         assert!(endpoint_headers.validate().is_err());
     }
 

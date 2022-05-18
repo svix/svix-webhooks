@@ -21,7 +21,7 @@ use std::{collections::HashMap, collections::HashSet};
 use svix_server_derive::{ModelIn, ModelOut};
 use validator::{Validate, ValidationError};
 
-use crate::core::types::{EndpointHeaders, EndpointSecret};
+use crate::core::types::{EndpointHeaders, EndpointHeadersPatch, EndpointSecret};
 use crate::db::models::endpoint;
 
 pub fn validate_event_types_ids(
@@ -216,7 +216,7 @@ impl From<EndpointHeaders> for EndpointHeadersOut {
 #[serde(rename_all = "camelCase")]
 pub struct EndpointHeadersPatchIn {
     #[validate]
-    pub headers: EndpointHeaders,
+    pub headers: EndpointHeadersPatch,
 }
 
 impl ModelIn for EndpointHeadersPatchIn {
@@ -224,10 +224,22 @@ impl ModelIn for EndpointHeadersPatchIn {
 
     fn update_model(self, model: &mut Self::ActiveModel) {
         model.headers = if let Some(Some(mut hdrs)) = model.headers.take() {
-            hdrs.0.extend(self.headers.0);
+            for (k, v) in self.headers.0 {
+                if let Some(v) = v {
+                    hdrs.0.insert(k, v);
+                } else {
+                    hdrs.0.remove(&k);
+                }
+            }
             Set(Some(hdrs))
         } else {
-            Set(Some(self.headers))
+            let headers: HashMap<String, String> = self
+                .headers
+                .0
+                .into_iter()
+                .filter_map(|(k, v)| v.map(|v| (k, v)))
+                .collect();
+            Set(Some(EndpointHeaders(headers)))
         };
     }
 }

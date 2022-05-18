@@ -12,8 +12,8 @@ use reqwest::StatusCode;
 
 use svix_server::{
     core::types::{
-        ApplicationId, EndpointHeaders, EndpointSecret, EndpointUid, EventChannel, EventChannelSet,
-        EventTypeName, EventTypeNameSet, ExpiringSigningKeys,
+        ApplicationId, EndpointHeaders, EndpointHeadersPatch, EndpointSecret, EndpointUid,
+        EventChannel, EventChannelSet, EventTypeName, EventTypeNameSet, ExpiringSigningKeys,
     },
     v1::{
         endpoints::{
@@ -1025,6 +1025,39 @@ async fn test_endpoint_headers_manipulation() {
         .await
         .unwrap();
 
+    let patched_headers_in = EndpointHeadersPatchIn {
+        headers: EndpointHeadersPatch(HashMap::from([
+            ("x-test-3".to_owned(), Some("4".to_owned())),
+            ("x-test-2".to_owned(), None),
+        ])),
+    };
+
+    let _: IgnoredResponse = client
+        .patch(
+            &format!("api/v1/app/{}/endpoint/{}/headers", app_id, endp.id),
+            patched_headers_in,
+            StatusCode::NO_CONTENT,
+        )
+        .await
+        .unwrap();
+
+    let recvd_headers: EndpointHeadersOut = client
+        .get(
+            &format!("api/v1/app/{}/endpoint/{}/headers", app_id, endp.id),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(
+        HashMap::from([("x-test-3".to_owned(), "4".to_owned()),]),
+        recvd_headers.headers
+    );
+
+    let endp = create_test_endpoint(&client, &app_id, "http://www.example.com")
+        .await
+        .unwrap();
+
     for bad_hdr in [
         "content-length",
         "some:thing",
@@ -1079,7 +1112,10 @@ async fn test_endpoint_headers_manipulation() {
     }
 
     let patched_headers_in = EndpointHeadersPatchIn {
-        headers: EndpointHeaders(HashMap::from([("x-test-3".to_owned(), "4".to_owned())])),
+        headers: EndpointHeadersPatch(HashMap::from([
+            ("x-test-3".to_owned(), Some("4".to_owned())),
+            ("x-test-2".to_owned(), None),
+        ])),
     };
 
     let _: IgnoredResponse = client
@@ -1102,7 +1138,6 @@ async fn test_endpoint_headers_manipulation() {
     assert_eq!(
         HashMap::from([
             ("x-test-1".to_owned(), "3".to_owned()),
-            ("x-test-2".to_owned(), "2".to_owned()),
             ("x-test-3".to_owned(), "4".to_owned()),
         ]),
         recvd_headers.headers
