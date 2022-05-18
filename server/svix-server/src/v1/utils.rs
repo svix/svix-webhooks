@@ -20,56 +20,48 @@ use crate::{
     error::{Error, HttpError, Result, ValidationErrorItem},
 };
 
-const fn default_limit() -> u64 {
-    50
+const fn default_limit() -> ListLimit {
+    ListLimit(50)
 }
 
-const PAGINATION_LIMIT_CAP_TYPE: PaginationLimitCap = PaginationLimitCap::HardCap;
+const PAGINATION_LIMIT_CAP_HARD: bool = true;
 const PAGINATION_LIMIT_CAP_LIMIT: u64 = 250;
 // TODO: Should probably use lazy_static and format! to make this instead of repeating the 250
 // figure at some point
 const PAGINATION_LIMIT_ERROR: &str = "Given limit must not exceed 250";
 
-#[derive(Debug, Clone, Copy, PartialEq)]
-enum PaginationLimitCap {
-    HardCap,
-
-    // This is configured via constant, so SoftCap will only be used when PAGINATION_LIMIT_CAP_TYPE
-    // is set to it
-    #[allow(dead_code)]
-    SoftCap,
-}
-
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Validate)]
 pub struct Pagination<T: Validate> {
+    #[validate]
     #[serde(default = "default_limit")]
-    pub limit: u64,
+    pub limit: ListLimit,
+    #[validate]
     pub iterator: Option<T>,
 }
 
-impl<T: Validate> Pagination<T> {
-    pub fn capped_limit(&self) -> u64 {
-        if self.limit > PAGINATION_LIMIT_CAP_LIMIT {
-            PAGINATION_LIMIT_CAP_LIMIT
+#[derive(Debug)]
+pub struct ListLimit(pub u64);
+
+impl<'de> Deserialize<'de> for ListLimit {
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let lim = u64::deserialize(deserializer)?;
+        // Want hard limits to stay the same so they can be validated
+        if !PAGINATION_LIMIT_CAP_HARD && lim > PAGINATION_LIMIT_CAP_LIMIT {
+            Ok(ListLimit(PAGINATION_LIMIT_CAP_LIMIT))
         } else {
-            self.limit
+            Ok(ListLimit(lim))
         }
     }
 }
 
-impl<T: Validate> Validate for Pagination<T> {
+impl Validate for ListLimit {
     fn validate(&self) -> std::result::Result<(), validator::ValidationErrors> {
         let mut errs = validator::ValidationErrors::new();
 
-        if let Some(iterator) = &self.iterator {
-            if let Err(e) = iterator.validate() {
-                errs = e;
-            }
-        }
-
-        if PAGINATION_LIMIT_CAP_TYPE == PaginationLimitCap::HardCap
-            && self.limit > PAGINATION_LIMIT_CAP_LIMIT
-        {
+        if PAGINATION_LIMIT_CAP_HARD && self.0 > PAGINATION_LIMIT_CAP_LIMIT {
             errs.add("limit", ValidationError::new(PAGINATION_LIMIT_ERROR));
         }
 
@@ -483,7 +475,7 @@ mod tests {
     #[test]
     fn test_pagination_defaults() {
         let p: Pagination<ApplicationUid> = serde_json::from_value(json!({})).unwrap();
-        assert_eq!(p.limit, default_limit());
+        assert_eq!(p.limit.0, default_limit().0);
     }
 
     #[test]
