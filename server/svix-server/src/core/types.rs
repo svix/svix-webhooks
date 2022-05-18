@@ -594,7 +594,7 @@ impl<'de> Deserialize<'de> for EndpointHeaders {
         D: serde::Deserializer<'de>,
     {
         HashMap::deserialize(deserializer)
-            .map(|x: HashMap<String, String>| x.into_iter().map(|(k, v)| (k, v)).collect())
+            .map(|x: HashMap<String, String>| x.into_iter().collect())
             .map(EndpointHeaders)
     }
 }
@@ -626,7 +626,7 @@ impl<'de> Deserialize<'de> for EndpointHeadersPatch {
         D: serde::Deserializer<'de>,
     {
         HashMap::deserialize(deserializer)
-            .map(|x: HashMap<String, Option<String>>| x.into_iter().map(|(k, v)| (k, v)).collect())
+            .map(|x: HashMap<String, Option<String>>| x.into_iter().collect())
             .map(EndpointHeadersPatch)
     }
 }
