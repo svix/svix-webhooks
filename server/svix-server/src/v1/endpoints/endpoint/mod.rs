@@ -236,8 +236,8 @@ impl ModelIn for EndpointHeadersPatchIn {
             Set(Some(
                 self.headers
                     .0
-                    .iter()
-                    .filter_map(|(k, v)| v.as_ref().map(|v| (k.clone(), v.clone())))
+                    .into_iter()
+                    .filter_map(|(k, v)| v.map(|v| (k, v)))
                     .collect(),
             ))
         };
