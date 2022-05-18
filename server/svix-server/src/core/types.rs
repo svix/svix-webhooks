@@ -578,15 +578,9 @@ fn validate_header_key(k: &str, errors: &mut ValidationErrors) {
 pub struct EndpointHeaders(pub HashMap<String, String>);
 json_wrapper!(EndpointHeaders);
 
-impl EndpointHeaders {
-    pub fn new() -> Self {
-        EndpointHeaders(HashMap::new())
-    }
-}
-
 impl FromIterator<(String, String)> for EndpointHeaders {
     fn from_iter<I: IntoIterator<Item = (String, String)>>(iter: I) -> Self {
-        let mut eh = EndpointHeaders::new();
+        let mut eh = EndpointHeaders(HashMap::new());
         for (k, v) in iter {
             eh.0.insert(k, v);
         }
