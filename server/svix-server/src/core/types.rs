@@ -578,16 +578,6 @@ fn validate_header_key(k: &str, errors: &mut ValidationErrors) {
 pub struct EndpointHeaders(pub HashMap<String, String>);
 json_wrapper!(EndpointHeaders);
 
-impl FromIterator<(String, String)> for EndpointHeaders {
-    fn from_iter<I: IntoIterator<Item = (String, String)>>(iter: I) -> Self {
-        let mut eh = EndpointHeaders(HashMap::new());
-        for (k, v) in iter {
-            eh.0.insert(k, v);
-        }
-        eh
-    }
-}
-
 impl<'de> Deserialize<'de> for EndpointHeaders {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where

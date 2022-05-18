@@ -233,13 +233,13 @@ impl ModelIn for EndpointHeadersPatchIn {
             }
             Set(Some(hdrs))
         } else {
-            Set(Some(
-                self.headers
-                    .0
-                    .into_iter()
-                    .filter_map(|(k, v)| v.map(|v| (k, v)))
-                    .collect(),
-            ))
+            let headers: HashMap<String, String> = self
+                .headers
+                .0
+                .into_iter()
+                .filter_map(|(k, v)| v.map(|v| (k, v)))
+                .collect();
+            Set(Some(EndpointHeaders(headers)))
         };
     }
 }
