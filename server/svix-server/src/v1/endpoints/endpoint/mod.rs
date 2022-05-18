@@ -232,11 +232,11 @@ impl ModelIn for EndpointHeadersPatchIn {
 
         model.headers = if let Some(Some(mut hdrs)) = model.headers.take() {
             hdrs.0.extend(headers.0);
-            for (k, v) in self.headers.0.iter() {
+            self.headers.0.iter().for_each(|(k, v)| {
                 if v.is_none() {
                     hdrs.0.remove(k);
                 }
-            }
+            });
             Set(Some(hdrs))
         } else {
             Set(Some(headers))
