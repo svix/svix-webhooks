@@ -20,7 +20,7 @@ use crate::{
     db::models::{endpoint, eventtype},
     error::{HttpError, Result, ValidationErrorItem},
     v1::utils::{
-        EmptyResponse, ListLimit, ListResponse, ModelIn, ModelOut, Pagination, ValidatedJson,
+        EmptyResponse, ListResponse, ModelIn, ModelOut, Pagination, PaginationLimit, ValidatedJson,
         ValidatedQuery,
     },
 };
@@ -34,7 +34,7 @@ pub(super) async fn list_endpoints(
         app,
     }: AuthenticatedApplication,
 ) -> Result<Json<ListResponse<EndpointOut>>> {
-    let ListLimit(limit) = pagination.limit;
+    let PaginationLimit(limit) = pagination.limit;
     let iterator = pagination.iterator.clone();
 
     let mut query = endpoint::Entity::secure_find(app.id)

@@ -5,8 +5,8 @@ use crate::{
     core::types::EventTypeName,
     error::{HttpError, Result},
     v1::utils::{
-        api_not_implemented, validate_no_control_characters, EmptyResponse, ListLimit,
-        ListResponse, ModelIn, ModelOut, ValidatedJson, ValidatedQuery,
+        api_not_implemented, validate_no_control_characters, EmptyResponse, ListResponse, ModelIn,
+        ModelOut, PaginationLimit, ValidatedJson, ValidatedQuery,
     },
 };
 use axum::{
@@ -121,7 +121,7 @@ async fn list_event_types(
     fetch_options: ValidatedQuery<ListFetchOptions>,
     permissions: Permissions,
 ) -> Result<Json<ListResponse<EventTypeOut>>> {
-    let ListLimit(limit) = pagination.limit;
+    let PaginationLimit(limit) = pagination.limit;
     let iterator = pagination.iterator.clone();
 
     let mut query = eventtype::Entity::secure_find(permissions.org_id)

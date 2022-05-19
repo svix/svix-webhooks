@@ -20,8 +20,8 @@ use crate::{
     error::{Error, HttpError, Result, ValidationErrorItem},
 };
 
-const fn default_limit() -> ListLimit {
-    ListLimit(50)
+const fn default_limit() -> PaginationLimit {
+    PaginationLimit(50)
 }
 
 const PAGINATION_LIMIT_CAP_HARD: bool = true;
@@ -34,34 +34,35 @@ const PAGINATION_LIMIT_ERROR: &str = "Given limit must not exceed 250";
 pub struct Pagination<T: Validate> {
     #[validate]
     #[serde(default = "default_limit")]
-    pub limit: ListLimit,
+    pub limit: PaginationLimit,
     #[validate]
     pub iterator: Option<T>,
 }
 
 #[derive(Debug)]
-pub struct ListLimit(pub u64);
+pub struct PaginationLimit(pub u64);
 
-impl<'de> Deserialize<'de> for ListLimit {
+impl<'de> Deserialize<'de> for PaginationLimit {
     fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
     {
-        let lim = u64::deserialize(deserializer)?;
+        let limit = u64::deserialize(deserializer)?;
+
         // Want hard limits to stay the same so they can be validated
-        if !PAGINATION_LIMIT_CAP_HARD && lim > PAGINATION_LIMIT_CAP_LIMIT {
-            Ok(ListLimit(PAGINATION_LIMIT_CAP_LIMIT))
+        if !PAGINATION_LIMIT_CAP_HARD && limit > PAGINATION_LIMIT_CAP_LIMIT {
+            Ok(PaginationLimit(PAGINATION_LIMIT_CAP_LIMIT))
         } else {
-            Ok(ListLimit(lim))
+            Ok(PaginationLimit(limit))
         }
     }
 }
 
-impl Validate for ListLimit {
+impl Validate for PaginationLimit {
     fn validate(&self) -> std::result::Result<(), validator::ValidationErrors> {
         let mut errs = validator::ValidationErrors::new();
 
-        if PAGINATION_LIMIT_CAP_HARD && self.0 > PAGINATION_LIMIT_CAP_LIMIT {
+        if self.0 > PAGINATION_LIMIT_CAP_LIMIT {
             errs.add("limit", ValidationError::new(PAGINATION_LIMIT_ERROR));
         }
 

@@ -14,9 +14,8 @@ use crate::{
     error::{Error, HttpError, Result},
     queue::{MessageTaskBatch, TaskQueueProducer},
     v1::utils::{
-        apply_pagination, iterator_from_before_or_after, ListLimit, ListResponse,
-        MessageListFetchOptions, ModelIn, ModelOut, ReversibleIterator, ValidatedJson,
-        ValidatedQuery,
+        apply_pagination, iterator_from_before_or_after, ListResponse, MessageListFetchOptions,
+        ModelIn, ModelOut, PaginationLimit, ReversibleIterator, ValidatedJson, ValidatedQuery,
     },
 };
 use axum::{
@@ -154,7 +153,7 @@ async fn list_messages(
         app,
     }: AuthenticatedApplication,
 ) -> Result<Json<ListResponse<MessageOut>>> {
-    let ListLimit(limit) = pagination.limit;
+    let PaginationLimit(limit) = pagination.limit;
 
     let mut query = message::Entity::secure_find(app.id);
 

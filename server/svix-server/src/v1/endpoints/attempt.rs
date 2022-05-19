@@ -16,8 +16,8 @@ use crate::{
     v1::{
         endpoints::message::MessageOut,
         utils::{
-            apply_pagination, iterator_from_before_or_after, EmptyResponse, ListLimit,
-            ListResponse, MessageListFetchOptions, ModelOut, ReversibleIterator, ValidatedQuery,
+            apply_pagination, iterator_from_before_or_after, EmptyResponse, ListResponse,
+            MessageListFetchOptions, ModelOut, PaginationLimit, ReversibleIterator, ValidatedQuery,
         },
     },
 };
@@ -129,7 +129,7 @@ async fn list_attempted_messages(
         app,
     }: AuthenticatedApplication,
 ) -> Result<Json<ListResponse<AttemptedMessageOut>>> {
-    let ListLimit(limit) = pagination.limit;
+    let PaginationLimit(limit) = pagination.limit;
     let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
         .one(db)
         .await?
@@ -302,7 +302,7 @@ async fn list_attempts_by_endpoint(
         app,
     }: AuthenticatedApplication,
 ) -> Result<Json<ListResponse<MessageAttemptOut>>> {
-    let ListLimit(limit) = pagination.limit;
+    let PaginationLimit(limit) = pagination.limit;
     // Confirm endpoint ID belongs to the given application
     let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
         .one(db)
@@ -374,7 +374,7 @@ async fn list_attempts_by_msg(
         app,
     }: AuthenticatedApplication,
 ) -> Result<Json<ListResponse<MessageAttemptOut>>> {
-    let ListLimit(limit) = pagination.limit;
+    let PaginationLimit(limit) = pagination.limit;
     // Confirm message ID belongs to the given application
     if message::Entity::secure_find_by_id(app.id.clone(), msg_id.clone())
         .one(db)
@@ -463,7 +463,7 @@ async fn list_attempted_destinations(
         app,
     }: AuthenticatedApplication,
 ) -> Result<Json<ListResponse<MessageEndpointOut>>> {
-    let ListLimit(limit) = pagination.limit;
+    let PaginationLimit(limit) = pagination.limit;
     let iterator = pagination.iterator.take();
 
     // Confirm message ID belongs to the given application while fetching the ID in case a UID was
@@ -573,7 +573,7 @@ async fn list_messageattempts(
         app,
     }: AuthenticatedApplication,
 ) -> Result<Json<ListResponse<MessageAttemptOut>>> {
-    let ListLimit(limit) = pagination.limit;
+    let PaginationLimit(limit) = pagination.limit;
     let msg = message::Entity::secure_find_by_id_or_uid(app.id.clone(), msg_id)
         .one(db)
         .await?
