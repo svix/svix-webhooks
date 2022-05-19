@@ -136,3 +136,9 @@ The easiest way to get these tests to pass is to:
 Alternatively, if you're only interested in running unit tests, you can just run `cargo test --lib`. These tests don't make any assumptions about the surrounding environment.
 
 To run only a specific test (e.g. only the application tests), you can use the `--test` flag to `cargo test` which supports common Unix glob patterns. For example: `cargo test --test '*app*'`.
+
+# Code Coverage
+To get a code coverage report, first make sure you have the following installations:
+- `cargo install grcov`
+- `rustup component add llvm-tools-preview`
+Then, run `./run-tests-with-grcov.sh`, which is a wrapper around `./run-tests.sh` that includes code coverage evaluation and report generation using `grcov`. When it finishes, it will print the location of the report HTML file to your shell.
