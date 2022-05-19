@@ -3,9 +3,9 @@
 # cleanly run the following commands in their own session
 bash -c "
 # tell Rust to run with coverage instrumentation
-RUSTFLAGS="-Cinstrument-coverage"
+RUSTFLAGS=\"-Cinstrument-coverage\"
 # give grcov a profile name template for output files
-LLVM_PROFILE_FILE="svix-webhooks-%p-%m.profraw"
+LLVM_PROFILE_FILE=\"svix-webhooks-%p-%m.profraw\"
 # put the compiler in nightly mode
 RUSTC_BOOTSTRAP=1
 
