@@ -16,5 +16,4 @@ RUSTC_BOOTSTRAP=1
 # generate and open report output
 grcov . -s . --binary-path ./target/debug/ -t html --branch --ignore-not-existing -o ./target/debug/coverage/
 
-LOCATION="coverage HTML file at $(pwd)/target/debug/coverage/index.html"
-echo "$LOCATION"
+echo "coverage HTML file at $(pwd)/target/debug/coverage/index.html"
