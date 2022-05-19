@@ -17,7 +17,7 @@ use crate::{
         endpoints::message::MessageOut,
         utils::{
             apply_pagination, iterator_from_before_or_after, EmptyResponse, ListResponse,
-            MessageListFetchOptions, ModelOut, ReversibleIterator, ValidatedQuery,
+            MessageListFetchOptions, ModelOut, PaginationLimit, ReversibleIterator, ValidatedQuery,
         },
     },
 };
@@ -129,6 +129,7 @@ async fn list_attempted_messages(
         app,
     }: AuthenticatedApplication,
 ) -> Result<Json<ListResponse<AttemptedMessageOut>>> {
+    let PaginationLimit(limit) = pagination.limit;
     let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
         .one(db)
         .await?
@@ -172,7 +173,7 @@ async fn list_attempted_messages(
     let dests_and_msgs = apply_pagination(
         dests_and_msgs,
         messagedestination::Column::Id,
-        pagination.limit,
+        limit,
         iterator,
     );
 
@@ -202,7 +203,7 @@ async fn list_attempted_messages(
 
     Ok(Json(AttemptedMessageOut::list_response(
         out,
-        pagination.limit as usize,
+        limit as usize,
         is_prev,
     )))
 }
@@ -301,6 +302,7 @@ async fn list_attempts_by_endpoint(
         app,
     }: AuthenticatedApplication,
 ) -> Result<Json<ListResponse<MessageAttemptOut>>> {
+    let PaginationLimit(limit) = pagination.limit;
     // Confirm endpoint ID belongs to the given application
     let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
         .one(db)
@@ -317,12 +319,7 @@ async fn list_attempts_by_endpoint(
 
     let iterator = iterator_from_before_or_after(pagination.iterator, before, after);
     let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
-    let query = apply_pagination(
-        query,
-        messageattempt::Column::Id,
-        pagination.limit,
-        iterator,
-    );
+    let query = apply_pagination(query, messageattempt::Column::Id, limit, iterator);
 
     let out = if is_prev {
         query
@@ -338,7 +335,7 @@ async fn list_attempts_by_endpoint(
 
     Ok(Json(MessageAttemptOut::list_response(
         out,
-        pagination.limit as usize,
+        limit as usize,
         is_prev,
     )))
 }
@@ -377,6 +374,7 @@ async fn list_attempts_by_msg(
         app,
     }: AuthenticatedApplication,
 ) -> Result<Json<ListResponse<MessageAttemptOut>>> {
+    let PaginationLimit(limit) = pagination.limit;
     // Confirm message ID belongs to the given application
     if message::Entity::secure_find_by_id(app.id.clone(), msg_id.clone())
         .one(db)
@@ -409,12 +407,7 @@ async fn list_attempts_by_msg(
 
     let iterator = iterator_from_before_or_after(pagination.iterator, before, after);
     let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
-    let query = apply_pagination(
-        query,
-        messageattempt::Column::Id,
-        pagination.limit,
-        iterator,
-    );
+    let query = apply_pagination(query, messageattempt::Column::Id, limit, iterator);
     let out = if is_prev {
         query
             .all(db)
@@ -429,7 +422,7 @@ async fn list_attempts_by_msg(
 
     Ok(Json(MessageAttemptOut::list_response(
         out,
-        pagination.limit as usize,
+        limit as usize,
         is_prev,
     )))
 }
@@ -470,7 +463,7 @@ async fn list_attempted_destinations(
         app,
     }: AuthenticatedApplication,
 ) -> Result<Json<ListResponse<MessageEndpointOut>>> {
-    let limit = pagination.limit;
+    let PaginationLimit(limit) = pagination.limit;
     let iterator = pagination.iterator.take();
 
     // Confirm message ID belongs to the given application while fetching the ID in case a UID was
@@ -580,6 +573,7 @@ async fn list_messageattempts(
         app,
     }: AuthenticatedApplication,
 ) -> Result<Json<ListResponse<MessageAttemptOut>>> {
+    let PaginationLimit(limit) = pagination.limit;
     let msg = message::Entity::secure_find_by_id_or_uid(app.id.clone(), msg_id)
         .one(db)
         .await?
@@ -609,12 +603,7 @@ async fn list_messageattempts(
 
     let iterator = iterator_from_before_or_after(pagination.iterator, before, after);
     let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
-    let query = apply_pagination(
-        query,
-        messageattempt::Column::Id,
-        pagination.limit,
-        iterator,
-    );
+    let query = apply_pagination(query, messageattempt::Column::Id, limit, iterator);
     let out = if is_prev {
         query
             .all(db)
@@ -629,7 +618,7 @@ async fn list_messageattempts(
 
     Ok(Json(MessageAttemptOut::list_response(
         out,
-        pagination.limit as usize,
+        limit as usize,
         false,
     )))
 }

@@ -6,7 +6,7 @@ use crate::{
     error::{HttpError, Result},
     v1::utils::{
         validate_no_control_characters, EmptyResponse, ListResponse, ModelIn, ModelOut,
-        ValidatedJson, ValidatedQuery,
+        PaginationLimit, ValidatedJson, ValidatedQuery,
     },
 };
 use axum::{
@@ -90,7 +90,7 @@ async fn list_applications(
     pagination: ValidatedQuery<Pagination<ApplicationId>>,
     permissions: Permissions,
 ) -> Result<Json<ListResponse<ApplicationOut>>> {
-    let limit = pagination.limit;
+    let PaginationLimit(limit) = pagination.limit;
     let iterator = pagination.iterator.clone();
 
     let mut query = application::Entity::secure_find(permissions.org_id)

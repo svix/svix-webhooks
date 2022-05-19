@@ -15,7 +15,7 @@ use crate::{
     queue::{MessageTaskBatch, TaskQueueProducer},
     v1::utils::{
         apply_pagination, iterator_from_before_or_after, ListResponse, MessageListFetchOptions,
-        ModelIn, ModelOut, ReversibleIterator, ValidatedJson, ValidatedQuery,
+        ModelIn, ModelOut, PaginationLimit, ReversibleIterator, ValidatedJson, ValidatedQuery,
     },
 };
 use axum::{
@@ -153,7 +153,7 @@ async fn list_messages(
         app,
     }: AuthenticatedApplication,
 ) -> Result<Json<ListResponse<MessageOut>>> {
-    let limit = pagination.limit;
+    let PaginationLimit(limit) = pagination.limit;
 
     let mut query = message::Entity::secure_find(app.id);
 
@@ -168,7 +168,7 @@ async fn list_messages(
     let iterator = iterator_from_before_or_after(pagination.iterator, list_filter.before, after);
     let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
 
-    let query = apply_pagination(query, message::Column::Id, pagination.limit, iterator);
+    let query = apply_pagination(query, message::Column::Id, limit, iterator);
     let into = |x: message::Model| {
         if with_content {
             x.into()
