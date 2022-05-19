@@ -223,15 +223,17 @@ pub async fn common_test_list<
         .await
         .unwrap();
 
-    // Test Limits
-    for i in 10..300 {
+    // Test limits -- ten models were created previously and the default hard/soft cap is 250 so
+    // 10..251 is the sane range here.
+    for i in 10..251 {
         let _: ModelOut = client
             .post(path, create_model(i), StatusCode::CREATED)
             .await
             .unwrap();
     }
 
-    // If limits are hard, it will be a 422 UNPROCESSABLE_ENTITY response, otherwise it'll be capped to 250
+    // If limits are hard, it will be a 422 UNPROCESSABLE_ENTITY response, otherwise it'll be capped
+    // to 250
     if client
         .get::<IgnoredResponse>(
             &format!("{}?limit=300", path),
