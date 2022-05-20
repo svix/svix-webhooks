@@ -54,13 +54,13 @@ async fn test_list_attempted_messages() {
         .unwrap()
         .id;
 
-    let msg_1 = create_test_message(&client, &app_id, serde_json::json!({"test": "data1"}))
+    create_test_message(&client, &app_id, serde_json::json!({"test": "data1"}))
         .await
         .unwrap();
-    let msg_2 = create_test_message(&client, &app_id, serde_json::json!({"test": "data2"}))
+    create_test_message(&client, &app_id, serde_json::json!({"test": "data2"}))
         .await
         .unwrap();
-    let msg_3 = create_test_message(&client, &app_id, serde_json::json!({"test": "data3"}))
+    create_test_message(&client, &app_id, serde_json::json!({"test": "data3"}))
         .await
         .unwrap();
 
