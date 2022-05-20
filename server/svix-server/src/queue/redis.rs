@@ -286,6 +286,7 @@ async fn new_pair_inner(
                 background_task(pool.clone(), mqn.clone(), dqn.clone(), pending_duration).await
             {
                 tracing::error!("{}", err);
+                tokio::time::sleep(Duration::from_millis(500)).await;
                 continue;
             };
         }
