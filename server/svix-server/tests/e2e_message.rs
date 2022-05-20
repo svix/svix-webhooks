@@ -8,14 +8,16 @@ use sea_orm::{sea_query::Expr, ColumnTrait, EntityTrait, QueryFilter};
 use svix_server::{
     db::models::message,
     expired_message_cleaner,
-    v1::{endpoints::message::MessageOut, utils::ListResponse},
+    v1::{
+        endpoints::attempt::MessageAttemptOut, endpoints::message::MessageOut, utils::ListResponse,
+    },
 };
 
 mod utils;
 
 use utils::{
     common_calls::{create_test_app, create_test_endpoint, message_in},
-    start_svix_server, TestReceiver,
+    run_with_retries, start_svix_server, TestReceiver,
 };
 
 #[tokio::test]
@@ -171,6 +173,56 @@ async fn test_message_create_read_list_with_content() {
     assert_eq!(list.data.len(), 2);
     assert!(list.data.contains(&msg_1_wo_payload));
     assert!(list.data.contains(&msg_2_wo_payload));
+}
+
+#[tokio::test]
+async fn test_failed_message_gets_recorded() {
+    let (client, _jh) = start_svix_server();
+
+    let app_id = create_test_app(&client, "v1MessageCRTestApp")
+        .await
+        .unwrap()
+        .id;
+
+    let mut receiver = TestReceiver::start(axum::http::StatusCode::INTERNAL_SERVER_ERROR);
+
+    let _endp_id = create_test_endpoint(&client, &app_id, &receiver.endpoint)
+        .await
+        .unwrap()
+        .id;
+
+    let msg_payload = serde_json::json!({"test": "value"});
+
+    let msg_res: MessageOut = client
+        .post(
+            &format!("api/v1/app/{}/msg", &app_id),
+            message_in(&app_id, msg_payload.clone()).unwrap(),
+            StatusCode::ACCEPTED,
+        )
+        .await
+        .unwrap();
+
+    receiver.data_recv.recv().await;
+
+    let status_code = run_with_retries(|| async {
+        let attempts: ListResponse<MessageAttemptOut> = client
+            .get(
+                &format!("api/v1/app/{}/attempt/msg/{}/", app_id, msg_res.id),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
+
+        if attempts.data.is_empty() {
+            anyhow::bail!("no attempts made yet");
+        }
+
+        Ok(attempts.data.last().unwrap().response_status_code)
+    })
+    .await
+    .unwrap();
+
+    assert_eq!(status_code, 500);
 }
 
 #[tokio::test]
