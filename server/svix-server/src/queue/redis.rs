@@ -106,6 +106,109 @@ pub async fn new_pair(
     .await
 }
 
+async fn background_task(
+    pool: RedisPool,
+    main_queue_name: String,
+    delayed_queue_name: String,
+    pending_duration: i64,
+) -> Result<()> {
+    let batch_size: isize = 50;
+
+    let mut pool = pool.get().await?;
+
+    // First look for delayed keys whose time is up and add them to the main qunue
+    let timestamp = Utc::now().timestamp();
+    let keys: Vec<String> = pool
+        .zrangebyscore_limit(&delayed_queue_name, 0isize, timestamp, 0isize, batch_size)
+        .await?;
+
+    if !keys.is_empty() {
+        // FIXME: needs to be a transaction
+        let keys: Vec<(String, String)> = pool
+            .zpopmin(&delayed_queue_name, keys.len() as isize)
+            .await
+            .unwrap();
+        let tasks: Vec<&str> = keys
+            .iter()
+            // All information is stored in the key in which the ID and JSON formated task
+            // are separated by a `|`. So, take the key, then take the part after the `|`
+            .map(|x| &x.0)
+            .map(|x| x.split('|').nth(1).expect("Improper key format"))
+            .collect();
+
+        // Then for each task, XADD them to ghe MAIN queue
+        let mut pipe = redis::pipe();
+        for task in tasks {
+            let _ = pipe.xadd(
+                &main_queue_name,
+                GENERATE_STREAM_ID,
+                &[(QUEUE_KV_KEY, task)],
+            );
+        }
+        let _: () = pool.query_async_pipeline(pipe).await?;
+    } else {
+        // Wait for half a second before attempting to fetch again if nothing was found
+        sleep(Duration::from_millis(500)).await;
+    }
+
+    // Every iteration here also check whether the processing queue has items that
+    // should be picked back up
+    let mut cmd = redis::cmd("XPENDING");
+    let _ = cmd
+        .arg(&main_queue_name)
+        .arg(WORKERS_GROUP)
+        // Search only for IDs that have been idle for at least the pending_duration
+        .arg("IDLE")
+        .arg(pending_duration)
+        // And search for at most 1000 IDs from the minimum ID value to the maximum ID value
+        .arg("-")
+        .arg("+")
+        .arg(PENDING_BATCH_SIZE);
+
+    let keys: StreamPendingCountReply = pool.query_async(cmd).await?;
+
+    let ids: Vec<String> = keys.ids.into_iter().map(|id| id.id).collect();
+
+    if !ids.is_empty() {
+        // You can then claim all these IDs to receive the KV pairs associated with each
+        let claimed: StreamClaimReply = pool
+            .query_async(Cmd::xclaim(
+                &main_queue_name,
+                WORKERS_GROUP,
+                WORKER_CONSUMER,
+                pending_duration,
+                &ids,
+            ))
+            .await?;
+
+        // Acknowledge all the stale ones so the pending queue is cleared
+        let _: RedisResult<()> = pool
+            .query_async(Cmd::xack(&main_queue_name, WORKERS_GROUP, &ids))
+            .await;
+
+        // And reinsert the map of KV pairs into the MAIN qunue with a new stream ID
+        for StreamId { map, .. } in claimed.ids {
+            let _: RedisResult<()> = pool
+                .query_async(Cmd::xadd(
+                    &main_queue_name,
+                    GENERATE_STREAM_ID,
+                    &map.iter()
+                        .filter_map(|(k, v)| {
+                            if let redis::Value::Data(data) = v {
+                                Some((k.as_str(), data.as_slice()))
+                            } else {
+                                None
+                            }
+                        })
+                        .collect::<Vec<(&str, &[u8])>>(),
+                ))
+                .await;
+        }
+    }
+
+    Ok(())
+}
+
 /// An inner function allowing key constants to be variable for testing purposes
 async fn new_pair_inner(
     pool: RedisPool,
@@ -166,10 +269,7 @@ async fn new_pair_inner(
     // messages that must be reinserted.
     tokio::spawn(async move {
         // FIXME: enforce we only have one such worker via locking
-        let batch_size: isize = 50;
-        let pool = worker_pool;
-        let main_queue_name = mqn;
-        let delayed_queue_name = dqn;
+        let pool = pool.clone();
 
         // Before entering the loop, migrate v1 queues to v2 and v2 queues to v3.
         {
@@ -181,98 +281,13 @@ async fn new_pair_inner(
         }
 
         loop {
-            let mut pool = pool.get().await.unwrap();
-
-            // First look for delayed keys whose time is up and add them to the main qunue
-            let timestamp = Utc::now().timestamp();
-            let keys: Vec<String> = pool
-                .zrangebyscore_limit(&delayed_queue_name, 0isize, timestamp, 0isize, batch_size)
-                .await
-                .unwrap();
-            if !keys.is_empty() {
-                // FIXME: needs to be a transaction
-                let keys: Vec<(String, String)> = pool
-                    .zpopmin(&delayed_queue_name, keys.len() as isize)
-                    .await
-                    .unwrap();
-                let tasks: Vec<&str> = keys
-                    .iter()
-                    // All information is stored in the key in which the ID and JSON formated task
-                    // are separated by a `|`. So, take the key, then take the part after the `|`
-                    .map(|x| &x.0)
-                    .map(|x| x.split('|').nth(1).expect("Improper key format"))
-                    .collect();
-
-                // Then for each task, XADD them to ghe MAIN queue
-                let mut pipe = redis::pipe();
-                for task in tasks {
-                    let _ = pipe.xadd(
-                        &main_queue_name,
-                        GENERATE_STREAM_ID,
-                        &[(QUEUE_KV_KEY, task)],
-                    );
-                }
-                let _: () = pool.query_async_pipeline(pipe).await.unwrap();
-            } else {
-                // Wait for half a second before attempting to fetch again if nothing was found
-                sleep(Duration::from_millis(500)).await;
-            }
-
-            // Every iteration here also check whether the processing queue has items that
-            // should be picked back up
-            let mut cmd = redis::cmd("XPENDING");
-            let _ = cmd
-                .arg(&main_queue_name)
-                .arg(WORKERS_GROUP)
-                // Search only for IDs that have been idle for at least the pending_duration
-                .arg("IDLE")
-                .arg(pending_duration)
-                // And search for at most 1000 IDs from the minimum ID value to the maximum ID value
-                .arg("-")
-                .arg("+")
-                .arg(PENDING_BATCH_SIZE);
-
-            let keys: StreamPendingCountReply = pool.query_async(cmd).await.unwrap();
-
-            let ids: Vec<String> = keys.ids.into_iter().map(|id| id.id).collect();
-
-            if !ids.is_empty() {
-                // You can then claim all these IDs to receive the KV pairs associated with each
-                let claimed: StreamClaimReply = pool
-                    .query_async(Cmd::xclaim(
-                        &main_queue_name,
-                        WORKERS_GROUP,
-                        WORKER_CONSUMER,
-                        pending_duration,
-                        &ids,
-                    ))
-                    .await
-                    .unwrap();
-
-                // Acknowledge all the stale ones so the pending queue is cleared
-                let _: RedisResult<()> = pool
-                    .query_async(Cmd::xack(&main_queue_name, WORKERS_GROUP, &ids))
-                    .await;
-
-                // And reinsert the map of KV pairs into the MAIN qunue with a new stream ID
-                for StreamId { map, .. } in claimed.ids {
-                    let _: RedisResult<()> = pool
-                        .query_async(Cmd::xadd(
-                            &main_queue_name,
-                            GENERATE_STREAM_ID,
-                            &map.iter()
-                                .filter_map(|(k, v)| {
-                                    if let redis::Value::Data(data) = v {
-                                        Some((k.as_str(), data.as_slice()))
-                                    } else {
-                                        None
-                                    }
-                                })
-                                .collect::<Vec<(&str, &[u8])>>(),
-                        ))
-                        .await;
-                }
-            }
+            if let Err(err) =
+                background_task(pool.clone(), mqn.clone(), dqn.clone(), pending_duration).await
+            {
+                tracing::error!("{}", err);
+                tokio::time::sleep(Duration::from_millis(500)).await;
+                continue;
+            };
         }
     });
 
@@ -280,12 +295,12 @@ async fn new_pair_inner(
     // [`TaskQueueConsumer`]
     (
         TaskQueueProducer(Box::new(RedisQueueProducer {
-            pool: pool.clone(),
+            pool: worker_pool.clone(),
             main_queue_name: main_queue_name.clone(),
             delayed_queue_name,
         })),
         TaskQueueConsumer(Box::new(RedisQueueConsumer {
-            pool,
+            pool: worker_pool,
             main_queue_name,
         })),
     )
