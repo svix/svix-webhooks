@@ -94,9 +94,9 @@ async fn test_list_attempted_messages() {
             }
 
             // Assert order
-            assert_eq!(list.data[0].msg, msg_3);
-            assert_eq!(list.data[1].msg, msg_2);
-            assert_eq!(list.data[2].msg, msg_1);
+            if list.data[0].msg != msg_3 || list.data[1].msg != msg_2 || list.data[2].msg != msg_1 {
+                anyhow::bail!("test order failed");
+            }
         }
 
         Ok(())
