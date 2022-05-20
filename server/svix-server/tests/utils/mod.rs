@@ -242,36 +242,45 @@ pub struct TestReceiver {
 
 impl TestReceiver {
     pub fn start(resp_with: axum::http::StatusCode) -> Self {
-        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
-        let endpoint = format!("http://{}/", listener.local_addr().unwrap());
+        generate_axum_server(resp_with, None)
+    }
 
-        let (tx, data_recv) = mpsc::channel(32);
-        let (header_tx, header_recv) = mpsc::channel(32);
+    pub fn start_on_port(resp_with: axum::http::StatusCode, port: i32) -> Self {
+        generate_axum_server(resp_with, Some(port))
+    }
+}
 
-        let jh = tokio::spawn(async move {
-            axum::Server::from_tcp(listener)
-                .unwrap()
-                .serve(
-                    axum::Router::new()
-                        .route(
-                            "/",
-                            axum::routing::post(test_receiver_route).get(test_receiver_route),
-                        )
-                        .layer(axum::extract::Extension(tx))
-                        .layer(axum::extract::Extension(header_tx))
-                        .layer(axum::extract::Extension(resp_with))
-                        .into_make_service(),
-                )
-                .await
-                .unwrap();
-        });
+fn generate_axum_server(resp_with: axum::http::StatusCode, port: Option<i32>) -> TestReceiver {
+    let addr = format!("127.0.0.1:{}", port.unwrap_or(0));
+    let listener = TcpListener::bind(addr).unwrap();
+    let endpoint = format!("http://{}/", listener.local_addr().unwrap());
 
-        TestReceiver {
-            endpoint,
-            jh,
-            data_recv,
-            header_recv,
-        }
+    let (tx, data_recv) = mpsc::channel(32);
+    let (header_tx, header_recv) = mpsc::channel(32);
+
+    let jh = tokio::spawn(async move {
+        axum::Server::from_tcp(listener)
+            .unwrap()
+            .serve(
+                axum::Router::new()
+                    .route(
+                        "/",
+                        axum::routing::post(test_receiver_route).get(test_receiver_route),
+                    )
+                    .layer(axum::extract::Extension(tx))
+                    .layer(axum::extract::Extension(header_tx))
+                    .layer(axum::extract::Extension(resp_with))
+                    .into_make_service(),
+            )
+            .await
+            .unwrap();
+    });
+
+    TestReceiver {
+        endpoint,
+        jh,
+        data_recv,
+        header_recv,
     }
 }
 

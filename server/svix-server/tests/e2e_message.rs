@@ -15,7 +15,7 @@ mod utils;
 
 use utils::{
     common_calls::{create_test_app, create_test_endpoint, message_in},
-    start_svix_server,
+    start_svix_server, TestReceiver,
 };
 
 #[tokio::test]
@@ -171,6 +171,44 @@ async fn test_message_create_read_list_with_content() {
     assert_eq!(list.data.len(), 2);
     assert!(list.data.contains(&msg_1_wo_payload));
     assert!(list.data.contains(&msg_2_wo_payload));
+}
+
+#[tokio::test]
+async fn test_failed_message_gets_requeued() {
+    let (client, _jh) = start_svix_server();
+
+    let app_id = create_test_app(&client, "v1MessageCRTestApp")
+        .await
+        .unwrap()
+        .id;
+
+    let mut receiver_1 =
+        TestReceiver::start_on_port(axum::http::StatusCode::INTERNAL_SERVER_ERROR, 8034);
+    let _endp_id = create_test_endpoint(&client, &app_id, &receiver_1.endpoint)
+        .await
+        .unwrap()
+        .id;
+
+    let msg_payload = serde_json::json!({"test": "value"});
+
+    let _: MessageOut = client
+        .post(
+            &format!("api/v1/app/{}/msg", &app_id),
+            message_in(&app_id, msg_payload.clone()).unwrap(),
+            StatusCode::ACCEPTED,
+        )
+        .await
+        .unwrap();
+
+    receiver_1.data_recv.recv().await;
+
+    receiver_1.jh.abort();
+    tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+    let mut receiver_2 = TestReceiver::start_on_port(axum::http::StatusCode::ACCEPTED, 8034);
+
+    let last_body = receiver_2.data_recv.recv().await.unwrap();
+
+    assert_eq!(msg_payload.to_string(), last_body.to_string());
 }
 
 #[tokio::test]
