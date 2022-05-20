@@ -112,10 +112,9 @@ async fn background_task(
     delayed_queue_name: String,
     pending_duration: i64,
 ) -> Result<()> {
-    // FIXME: enforce we only have one such worker via locking
     let batch_size: isize = 50;
 
-    let mut pool = pool.get().await.unwrap();
+    let mut pool = pool.get().await?;
 
     // First look for delayed keys whose time is up and add them to the main qunue
     let timestamp = Utc::now().timestamp();
@@ -146,7 +145,7 @@ async fn background_task(
                 &[(QUEUE_KV_KEY, task)],
             );
         }
-        let _: () = pool.query_async_pipeline(pipe).await.unwrap();
+        let _: () = pool.query_async_pipeline(pipe).await?;
     } else {
         // Wait for half a second before attempting to fetch again if nothing was found
         sleep(Duration::from_millis(500)).await;
@@ -180,8 +179,7 @@ async fn background_task(
                 pending_duration,
                 &ids,
             ))
-            .await
-            .unwrap();
+            .await?;
 
         // Acknowledge all the stale ones so the pending queue is cleared
         let _: RedisResult<()> = pool
@@ -270,6 +268,7 @@ async fn new_pair_inner(
     // inserted into the MAIN queue and that monitors the pending tasks of the MAIN queue for
     // messages that must be reinserted.
     tokio::spawn(async move {
+        // FIXME: enforce we only have one such worker via locking
         let pool = pool.clone();
 
         // Before entering the loop, migrate v1 queues to v2 and v2 queues to v3.
