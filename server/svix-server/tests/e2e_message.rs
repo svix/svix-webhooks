@@ -226,6 +226,65 @@ async fn test_failed_message_gets_recorded() {
 }
 
 #[tokio::test]
+async fn test_mulitple_endpoints() {
+    let (client, _jh) = start_svix_server();
+
+    let app_id = create_test_app(&client, "v1MessageCRTestApp")
+        .await
+        .unwrap()
+        .id;
+
+    let mut receiver_1 = TestReceiver::start(axum::http::StatusCode::OK);
+    let mut receiver_2 =
+        TestReceiver::start_on_port(axum::http::StatusCode::INTERNAL_SERVER_ERROR, 8034);
+    let mut receiver_3 = TestReceiver::start(axum::http::StatusCode::OK);
+
+    let _endp_id_1 = create_test_endpoint(&client, &app_id, &receiver_1.endpoint)
+        .await
+        .unwrap()
+        .id;
+    let _endp_id_2 = create_test_endpoint(&client, &app_id, &receiver_2.endpoint)
+        .await
+        .unwrap()
+        .id;
+    let _endp_id_3 = create_test_endpoint(&client, &app_id, &receiver_3.endpoint)
+        .await
+        .unwrap()
+        .id;
+
+    let msg_payload = serde_json::json!({"test": "value1"});
+
+    let _: MessageOut = client
+        .post(
+            &format!("api/v1/app/{}/msg", &app_id),
+            message_in(&app_id, msg_payload.clone()).unwrap(),
+            StatusCode::ACCEPTED,
+        )
+        .await
+        .unwrap();
+
+    let (rec_body_1, rec_body_2, rec_body_3) = tokio::join!(
+        receiver_1.data_recv.recv(),
+        receiver_2.data_recv.recv(),
+        receiver_3.data_recv.recv()
+    );
+
+    assert_eq!(msg_payload.to_string(), rec_body_1.unwrap().to_string());
+    assert_eq!(msg_payload.to_string(), rec_body_2.unwrap().to_string());
+    assert_eq!(msg_payload.to_string(), rec_body_3.unwrap().to_string());
+
+    receiver_1.jh.abort();
+    receiver_2.jh.abort();
+    receiver_3.jh.abort();
+    tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+    let mut receiver_2 = TestReceiver::start_on_port(axum::http::StatusCode::ACCEPTED, 8034);
+
+    let rec_body_2 = receiver_2.data_recv.recv().await.unwrap();
+
+    assert_eq!(msg_payload.to_string(), rec_body_2.to_string());
+}
+
+#[tokio::test]
 async fn test_failed_message_gets_requeued() {
     let (client, _jh) = start_svix_server();
 
