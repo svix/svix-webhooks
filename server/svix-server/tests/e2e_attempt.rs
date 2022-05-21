@@ -54,13 +54,13 @@ async fn test_list_attempted_messages() {
         .unwrap()
         .id;
 
-    create_test_message(&client, &app_id, serde_json::json!({"test": "data1"}))
+    let msg_1 = create_test_message(&client, &app_id, serde_json::json!({"test": "data1"}))
         .await
         .unwrap();
-    create_test_message(&client, &app_id, serde_json::json!({"test": "data2"}))
+    let msg_2 = create_test_message(&client, &app_id, serde_json::json!({"test": "data2"}))
         .await
         .unwrap();
-    create_test_message(&client, &app_id, serde_json::json!({"test": "data3"}))
+    let msg_3 = create_test_message(&client, &app_id, serde_json::json!({"test": "data3"}))
         .await
         .unwrap();
 
@@ -92,6 +92,10 @@ async fn test_list_attempted_messages() {
             if list.data.len() != 3 {
                 anyhow::bail!("list len {}, not 3", list.data.len());
             }
+
+            assert!(list.data.iter().any(|x| x.msg == msg_1));
+            assert!(list.data.iter().any(|x| x.msg == msg_2));
+            assert!(list.data.iter().any(|x| x.msg == msg_3));
         }
 
         Ok(())
