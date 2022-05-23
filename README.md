@@ -100,7 +100,7 @@ To stay up-to-date with new features and improvements be sure to watch our repo!
   <tr>
     <th><a href="https://github.com/svix/svix-webhooks/tree/main/csharp/">C# (dotnet)</a></th>
     <th>✅</th>
-    <th>🔜</th>
+    <th>✅</th>
     <th>✅</th>
     <th colspan="4">
   </th>
