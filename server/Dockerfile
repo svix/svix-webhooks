@@ -45,4 +45,4 @@ CMD \
         wait-for -t 15 pgbouncer:5432 -- echo "Postgres ready" ; \
         wait-for -t 15 redis:6379 -- echo "Redis ready" ; \
     fi ; \
-    svix-server
+    svix-server --run-migrations
