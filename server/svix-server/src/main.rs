@@ -13,7 +13,6 @@ use svix_server::{cfg, db, run};
 
 const CRATE_NAME: &str = env!("CARGO_CRATE_NAME");
 
-use crate::cfg::Configuration;
 use clap::{Parser, Subcommand};
 
 #[derive(Parser)]
@@ -66,17 +65,14 @@ async fn main() {
 
     tracing_subscriber::fmt::init();
 
-    async fn run_migrations(cfg: &Configuration) {
-        db::init_db_and_run_migrations(cfg).await;
+    if args.run_migrations {
+        db::init_db_and_run_migrations(&cfg).await;
         println!("Migrations run");
     }
 
-    if args.run_migrations {
-        run_migrations(&cfg).await;
-    }
-
     if let Some(Commands::Migrate) = &args.command {
-        run_migrations(&cfg).await;
+        db::init_db_and_run_migrations(&cfg).await;
+        println!("Migrations run");
         exit(0);
     } else if let Some(Commands::Jwt {
         command: JwtCommands::Generate,
