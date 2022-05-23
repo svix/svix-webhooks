@@ -253,7 +253,7 @@ async fn test_mulitple_endpoints() {
 
     let msg_payload = serde_json::json!({"test": "value1"});
 
-    let _: MessageOut = client
+    let msg_res: MessageOut = client
         .post(
             &format!("api/v1/app/{}/msg", &app_id),
             message_in(&app_id, msg_payload.clone()).unwrap(),
@@ -272,11 +272,31 @@ async fn test_mulitple_endpoints() {
     assert_eq!(msg_payload.to_string(), rec_body_2.unwrap().to_string());
     assert_eq!(msg_payload.to_string(), rec_body_3.unwrap().to_string());
 
-    receiver_2.set_resp_with(axum::http::StatusCode::ACCEPTED);
+    receiver_2.set_resp_with(axum::http::StatusCode::OK);
 
     let rec_body_2 = receiver_2.data_recv.recv().await.unwrap();
 
     assert_eq!(msg_payload.to_string(), rec_body_2.to_string());
+
+    let status_code = run_with_retries(|| async {
+        let attempts: ListResponse<MessageAttemptOut> = client
+            .get(
+                &format!("api/v1/app/{}/attempt/msg/{}/", app_id, msg_res.id),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
+
+        if attempts.data.len() < 2 {
+            anyhow::bail!("no additional attempts made yet");
+        }
+
+        Ok(attempts.data.first().unwrap().response_status_code)
+    })
+    .await
+    .unwrap();
+
+    assert_eq!(status_code, 200);
 }
 
 #[tokio::test]
@@ -296,7 +316,7 @@ async fn test_failed_message_gets_requeued() {
 
     let msg_payload = serde_json::json!({"test": "value"});
 
-    let _: MessageOut = client
+    let msg_res: MessageOut = client
         .post(
             &format!("api/v1/app/{}/msg", &app_id),
             message_in(&app_id, msg_payload.clone()).unwrap(),
@@ -307,11 +327,31 @@ async fn test_failed_message_gets_requeued() {
 
     receiver_1.data_recv.recv().await;
 
-    receiver_1.set_resp_with(axum::http::StatusCode::ACCEPTED);
+    receiver_1.set_resp_with(axum::http::StatusCode::OK);
 
     let last_body = receiver_1.data_recv.recv().await.unwrap();
 
     assert_eq!(msg_payload.to_string(), last_body.to_string());
+
+    let status_code = run_with_retries(|| async {
+        let attempts: ListResponse<MessageAttemptOut> = client
+            .get(
+                &format!("api/v1/app/{}/attempt/msg/{}/", app_id, msg_res.id),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
+
+        if attempts.data.len() < 2 {
+            anyhow::bail!("no additional attempts made yet");
+        }
+
+        Ok(attempts.data.first().unwrap().response_status_code)
+    })
+    .await
+    .unwrap();
+
+    assert_eq!(status_code, 200);
 }
 
 #[tokio::test]
