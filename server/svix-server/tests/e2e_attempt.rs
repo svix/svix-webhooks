@@ -93,10 +93,9 @@ async fn test_list_attempted_messages() {
                 anyhow::bail!("list len {}, not 3", list.data.len());
             }
 
-            // Assert order
-            assert_eq!(list.data[0].msg, msg_3);
-            assert_eq!(list.data[1].msg, msg_2);
-            assert_eq!(list.data[2].msg, msg_1);
+            assert!(list.data.iter().any(|x| x.msg == msg_1));
+            assert!(list.data.iter().any(|x| x.msg == msg_2));
+            assert!(list.data.iter().any(|x| x.msg == msg_3));
         }
 
         Ok(())
