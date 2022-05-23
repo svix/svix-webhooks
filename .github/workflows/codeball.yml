@@ -1,0 +1,9 @@
+on: [pull_request]
+
+jobs:
+  codeball_job:
+    runs-on: ubuntu-latest
+    name: Run Codeball
+    steps:
+      - name: Codeball AI Actions
+        uses: sturdy-dev/codeball-action@v1
