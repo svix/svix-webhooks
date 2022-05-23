@@ -272,8 +272,6 @@ async fn test_mulitple_endpoints() {
     assert_eq!(msg_payload.to_string(), rec_body_2.unwrap().to_string());
     assert_eq!(msg_payload.to_string(), rec_body_3.unwrap().to_string());
 
-    receiver_1.jh.abort();
-    receiver_3.jh.abort();
     receiver_2.set_resp_with(axum::http::StatusCode::ACCEPTED);
 
     let rec_body_2 = receiver_2.data_recv.recv().await.unwrap();
