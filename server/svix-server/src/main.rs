@@ -71,7 +71,7 @@ async fn main() {
     }
 
     if let Some(Commands::Migrate) = &args.command {
-        db::init_db_and_run_migrations(&cfg).await;
+        let _ = db::init_db_and_run_migrations(&cfg).await;
         println!("Migrations run");
         exit(0);
     } else if let Some(Commands::Jwt {
