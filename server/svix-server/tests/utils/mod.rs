@@ -1,7 +1,11 @@
 // Dead code is allowed because not everything is used in all of the tests
 #![allow(dead_code)]
 
-use std::{future::Future, net::TcpListener, sync::Arc};
+use std::{
+    future::Future,
+    net::TcpListener,
+    sync::{Arc, Mutex},
+};
 
 use anyhow::{Context, Result};
 
@@ -238,49 +242,55 @@ pub struct TestReceiver {
     pub jh: tokio::task::JoinHandle<()>,
     pub data_recv: mpsc::Receiver<serde_json::Value>,
     pub header_recv: mpsc::Receiver<HeaderMap>,
+    pub resp_with: Arc<Mutex<RespWith>>,
+}
+
+#[derive(Clone)]
+pub struct RespWith {
+    status_code: axum::http::StatusCode,
 }
 
 impl TestReceiver {
     pub fn start(resp_with: axum::http::StatusCode) -> Self {
-        generate_axum_server(resp_with, None)
-    }
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let endpoint = format!("http://{}/", listener.local_addr().unwrap());
 
-    pub fn start_on_port(resp_with: axum::http::StatusCode, port: i32) -> Self {
-        generate_axum_server(resp_with, Some(port))
-    }
-}
+        let (tx, data_recv) = mpsc::channel(32);
+        let (header_tx, header_recv) = mpsc::channel(32);
 
-fn generate_axum_server(resp_with: axum::http::StatusCode, port: Option<i32>) -> TestReceiver {
-    let addr = format!("127.0.0.1:{}", port.unwrap_or(0));
-    let listener = TcpListener::bind(addr).unwrap();
-    let endpoint = format!("http://{}/", listener.local_addr().unwrap());
+        let resp_with = Arc::new(Mutex::new(RespWith {
+            status_code: resp_with,
+        }));
 
-    let (tx, data_recv) = mpsc::channel(32);
-    let (header_tx, header_recv) = mpsc::channel(32);
-
-    let jh = tokio::spawn(async move {
-        axum::Server::from_tcp(listener)
-            .unwrap()
-            .serve(
-                axum::Router::new()
-                    .route(
-                        "/",
-                        axum::routing::post(test_receiver_route).get(test_receiver_route),
-                    )
-                    .layer(axum::extract::Extension(tx))
-                    .layer(axum::extract::Extension(header_tx))
-                    .layer(axum::extract::Extension(resp_with))
-                    .into_make_service(),
+        let routes = axum::Router::new()
+            .route(
+                "/",
+                axum::routing::post(test_receiver_route).get(test_receiver_route),
             )
-            .await
-            .unwrap();
-    });
+            .layer(axum::extract::Extension(tx))
+            .layer(axum::extract::Extension(header_tx))
+            .layer(axum::extract::Extension(resp_with.clone()))
+            .into_make_service();
 
-    TestReceiver {
-        endpoint,
-        jh,
-        data_recv,
-        header_recv,
+        let jh = tokio::spawn(async move {
+            axum::Server::from_tcp(listener)
+                .unwrap()
+                .serve(routes)
+                .await
+                .unwrap();
+        });
+
+        TestReceiver {
+            endpoint,
+            jh,
+            data_recv,
+            header_recv,
+            resp_with,
+        }
+    }
+
+    pub fn set_resp_with(&self, resp_with: axum::http::StatusCode) {
+        self.resp_with.lock().unwrap().status_code = resp_with;
     }
 }
 
@@ -288,12 +298,12 @@ async fn test_receiver_route(
     axum::Json(json): axum::Json<serde_json::Value>,
     axum::extract::Extension(ref tx): axum::extract::Extension<mpsc::Sender<serde_json::Value>>,
     axum::extract::Extension(ref header_tx): axum::extract::Extension<mpsc::Sender<HeaderMap>>,
-    axum::extract::Extension(code): axum::extract::Extension<axum::http::StatusCode>,
+    axum::extract::Extension(resp_with): axum::extract::Extension<Arc<Mutex<RespWith>>>,
     headers: HeaderMap,
 ) -> axum::http::StatusCode {
     tx.send(json).await.unwrap();
     header_tx.send(headers).await.unwrap();
-    code
+    resp_with.lock().unwrap().status_code
 }
 
 pub async fn run_with_retries<O, F, C>(f: C) -> Result<O>

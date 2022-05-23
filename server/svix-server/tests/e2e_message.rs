@@ -235,8 +235,7 @@ async fn test_mulitple_endpoints() {
         .id;
 
     let mut receiver_1 = TestReceiver::start(axum::http::StatusCode::OK);
-    let mut receiver_2 =
-        TestReceiver::start_on_port(axum::http::StatusCode::INTERNAL_SERVER_ERROR, 8034);
+    let mut receiver_2 = TestReceiver::start(axum::http::StatusCode::INTERNAL_SERVER_ERROR);
     let mut receiver_3 = TestReceiver::start(axum::http::StatusCode::OK);
 
     let _endp_id_1 = create_test_endpoint(&client, &app_id, &receiver_1.endpoint)
@@ -274,10 +273,8 @@ async fn test_mulitple_endpoints() {
     assert_eq!(msg_payload.to_string(), rec_body_3.unwrap().to_string());
 
     receiver_1.jh.abort();
-    receiver_2.jh.abort();
     receiver_3.jh.abort();
-    tokio::time::sleep(std::time::Duration::from_millis(100)).await;
-    let mut receiver_2 = TestReceiver::start_on_port(axum::http::StatusCode::ACCEPTED, 8034);
+    receiver_2.set_resp_with(axum::http::StatusCode::ACCEPTED);
 
     let rec_body_2 = receiver_2.data_recv.recv().await.unwrap();
 
@@ -293,8 +290,7 @@ async fn test_failed_message_gets_requeued() {
         .unwrap()
         .id;
 
-    let mut receiver_1 =
-        TestReceiver::start_on_port(axum::http::StatusCode::INTERNAL_SERVER_ERROR, 8034);
+    let mut receiver_1 = TestReceiver::start(axum::http::StatusCode::INTERNAL_SERVER_ERROR);
     let _endp_id = create_test_endpoint(&client, &app_id, &receiver_1.endpoint)
         .await
         .unwrap()
@@ -313,11 +309,9 @@ async fn test_failed_message_gets_requeued() {
 
     receiver_1.data_recv.recv().await;
 
-    receiver_1.jh.abort();
-    tokio::time::sleep(std::time::Duration::from_millis(100)).await;
-    let mut receiver_2 = TestReceiver::start_on_port(axum::http::StatusCode::ACCEPTED, 8034);
+    receiver_1.set_resp_with(axum::http::StatusCode::ACCEPTED);
 
-    let last_body = receiver_2.data_recv.recv().await.unwrap();
+    let last_body = receiver_1.data_recv.recv().await.unwrap();
 
     assert_eq!(msg_payload.to_string(), last_body.to_string());
 }
