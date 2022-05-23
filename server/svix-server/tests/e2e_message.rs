@@ -204,7 +204,7 @@ async fn test_failed_message_gets_recorded() {
 
     receiver.data_recv.recv().await;
 
-    let status_code = run_with_retries(|| async {
+    run_with_retries(|| async {
         let attempts: ListResponse<MessageAttemptOut> = client
             .get(
                 &format!("api/v1/app/{}/attempt/msg/{}/", app_id, msg_res.id),
@@ -213,16 +213,14 @@ async fn test_failed_message_gets_recorded() {
             .await
             .unwrap();
 
-        if attempts.data.is_empty() {
-            anyhow::bail!("no attempts made yet");
+        if !attempts.data.iter().any(|x| x.response_status_code == 500) {
+            anyhow::bail!("could not find failed attempt");
         }
 
-        Ok(attempts.data.last().unwrap().response_status_code)
+        Ok(())
     })
     .await
     .unwrap();
-
-    assert_eq!(status_code, 500);
 }
 
 #[tokio::test]
@@ -278,7 +276,7 @@ async fn test_mulitple_endpoints() {
 
     assert_eq!(msg_payload.to_string(), rec_body_2.to_string());
 
-    let status_code = run_with_retries(|| async {
+    run_with_retries(|| async {
         let attempts: ListResponse<MessageAttemptOut> = client
             .get(
                 &format!("api/v1/app/{}/attempt/msg/{}/", app_id, msg_res.id),
@@ -287,16 +285,14 @@ async fn test_mulitple_endpoints() {
             .await
             .unwrap();
 
-        if attempts.data.len() < 2 {
-            anyhow::bail!("no additional attempts made yet");
+        if !attempts.data.iter().any(|x| x.response_status_code == 200) {
+            anyhow::bail!("could not find successful attempt");
         }
 
-        Ok(attempts.data.first().unwrap().response_status_code)
+        Ok(())
     })
     .await
     .unwrap();
-
-    assert_eq!(status_code, 200);
 }
 
 #[tokio::test]
@@ -333,7 +329,7 @@ async fn test_failed_message_gets_requeued() {
 
     assert_eq!(msg_payload.to_string(), last_body.to_string());
 
-    let status_code = run_with_retries(|| async {
+    run_with_retries(|| async {
         let attempts: ListResponse<MessageAttemptOut> = client
             .get(
                 &format!("api/v1/app/{}/attempt/msg/{}/", app_id, msg_res.id),
@@ -342,16 +338,14 @@ async fn test_failed_message_gets_requeued() {
             .await
             .unwrap();
 
-        if attempts.data.len() < 2 {
-            anyhow::bail!("no additional attempts made yet");
+        if !attempts.data.iter().any(|x| x.response_status_code == 200) {
+            anyhow::bail!("could not find successful attempt");
         }
 
-        Ok(attempts.data.first().unwrap().response_status_code)
+        Ok(())
     })
     .await
     .unwrap();
-
-    assert_eq!(status_code, 200);
 }
 
 #[tokio::test]
