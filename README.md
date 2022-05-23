@@ -88,36 +88,36 @@ To stay up-to-date with new features and improvements be sure to watch our repo!
     <th>✅</th>
     <th>✅</th>
     <th>✅</th>
-    <th colspan="4">
-  </th>
+    <th colspan="4"></th>
+  </tr>
   <tr>
     <th><a href="https://github.com/svix/svix-webhooks/tree/main/ruby/">Ruby</a></th>
     <th>✅</th>
     <th>✅</th>
     <th>✅</th>
-    <th colspan="4">
-  </th>
+    <th colspan="4"></th>
+  </tr>
   <tr>
     <th><a href="https://github.com/svix/svix-webhooks/tree/main/csharp/">C# (dotnet)</a></th>
     <th>✅</th>
     <th>✅</th>
     <th>✅</th>
-    <th colspan="4">
-  </th>
+    <th colspan="4"></th>
+  </tr>
   <tr>
     <th>Rust</th>
     <th>🔜</th>
     <th>🔜</th>
     <th>🔜</th>
-    <th colspan="4">
-  </th>
+    <th colspan="4"></th>
+  </tr>
   <tr>
     <th><a href="https://github.com/svix/svix-webhooks/tree/main/php/">PHP</a></th>
     <th>✅</th>
     <th>🔜</th>
     <th>✅</th>
-    <th colspan="4">
-  </th>
+    <th colspan="4"></th>
+  </tr>
 </table>
 
 # Running the server
