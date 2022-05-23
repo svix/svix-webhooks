@@ -242,11 +242,11 @@ pub struct TestReceiver {
     pub jh: tokio::task::JoinHandle<()>,
     pub data_recv: mpsc::Receiver<serde_json::Value>,
     pub header_recv: mpsc::Receiver<HeaderMap>,
-    pub resp_with: Arc<Mutex<RespWith>>,
+    pub response_status_code: Arc<Mutex<ResponseStatusCode>>,
 }
 
 #[derive(Clone)]
-pub struct RespWith {
+pub struct ResponseStatusCode {
     status_code: axum::http::StatusCode,
 }
 
@@ -258,7 +258,7 @@ impl TestReceiver {
         let (tx, data_recv) = mpsc::channel(32);
         let (header_tx, header_recv) = mpsc::channel(32);
 
-        let resp_with = Arc::new(Mutex::new(RespWith {
+        let response_status_code = Arc::new(Mutex::new(ResponseStatusCode {
             status_code: resp_with,
         }));
 
@@ -269,7 +269,7 @@ impl TestReceiver {
             )
             .layer(axum::extract::Extension(tx))
             .layer(axum::extract::Extension(header_tx))
-            .layer(axum::extract::Extension(resp_with.clone()))
+            .layer(axum::extract::Extension(response_status_code.clone()))
             .into_make_service();
 
         let jh = tokio::spawn(async move {
@@ -285,12 +285,12 @@ impl TestReceiver {
             jh,
             data_recv,
             header_recv,
-            resp_with,
+            response_status_code,
         }
     }
 
-    pub fn set_resp_with(&self, resp_with: axum::http::StatusCode) {
-        self.resp_with.lock().unwrap().status_code = resp_with;
+    pub fn set_response_status_code(&self, resp_with: axum::http::StatusCode) {
+        self.response_status_code.lock().unwrap().status_code = resp_with;
     }
 }
 
@@ -298,12 +298,14 @@ async fn test_receiver_route(
     axum::Json(json): axum::Json<serde_json::Value>,
     axum::extract::Extension(ref tx): axum::extract::Extension<mpsc::Sender<serde_json::Value>>,
     axum::extract::Extension(ref header_tx): axum::extract::Extension<mpsc::Sender<HeaderMap>>,
-    axum::extract::Extension(resp_with): axum::extract::Extension<Arc<Mutex<RespWith>>>,
+    axum::extract::Extension(response_status_code): axum::extract::Extension<
+        Arc<Mutex<ResponseStatusCode>>,
+    >,
     headers: HeaderMap,
 ) -> axum::http::StatusCode {
     tx.send(json).await.unwrap();
     header_tx.send(headers).await.unwrap();
-    resp_with.lock().unwrap().status_code
+    response_status_code.lock().unwrap().status_code
 }
 
 pub async fn run_with_retries<O, F, C>(f: C) -> Result<O>

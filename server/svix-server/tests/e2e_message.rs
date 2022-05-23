@@ -270,7 +270,7 @@ async fn test_mulitple_endpoints() {
     assert_eq!(msg_payload.to_string(), rec_body_2.unwrap().to_string());
     assert_eq!(msg_payload.to_string(), rec_body_3.unwrap().to_string());
 
-    receiver_2.set_resp_with(axum::http::StatusCode::OK);
+    receiver_2.set_response_status_code(axum::http::StatusCode::OK);
 
     let rec_body_2 = receiver_2.data_recv.recv().await.unwrap();
 
@@ -323,7 +323,7 @@ async fn test_failed_message_gets_requeued() {
 
     receiver_1.data_recv.recv().await;
 
-    receiver_1.set_resp_with(axum::http::StatusCode::OK);
+    receiver_1.set_response_status_code(axum::http::StatusCode::OK);
 
     let last_body = receiver_1.data_recv.recv().await.unwrap();
 
