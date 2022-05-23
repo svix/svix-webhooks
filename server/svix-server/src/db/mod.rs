@@ -22,19 +22,11 @@ async fn connect(cfg: &Configuration) -> sqlx::Pool<sqlx::Postgres> {
     }
 }
 
-#[cfg(not(debug_assertions))]
-pub async fn init_db(cfg: &Configuration) -> DatabaseConnection {
-    init_db_and_run_migrations(cfg).await
-}
-
-#[cfg(debug_assertions)]
 pub async fn init_db(cfg: &Configuration) -> DatabaseConnection {
     SqlxPostgresConnector::from_sqlx_postgres_pool(connect(cfg).await)
 }
 
-pub async fn init_db_and_run_migrations(cfg: &Configuration) -> DatabaseConnection {
+pub async fn run_migrations(cfg: &Configuration) {
     let db = connect(cfg).await;
     MIGRATIONS.run(&db).await.unwrap();
-
-    SqlxPostgresConnector::from_sqlx_postgres_pool(db)
 }

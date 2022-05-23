@@ -20,6 +20,9 @@ use clap::{Parser, Subcommand};
 struct Args {
     #[clap(subcommand)]
     command: Option<Commands>,
+    /// Run database migrations before starting
+    #[clap(long)]
+    run_migrations: bool,
 }
 
 #[derive(Subcommand)]
@@ -30,7 +33,7 @@ enum Commands {
         #[clap(subcommand)]
         command: JwtCommands,
     },
-
+    /// Run database migrations and exit
     #[clap()]
     Migrate,
 }
@@ -62,8 +65,13 @@ async fn main() {
 
     tracing_subscriber::fmt::init();
 
+    if args.run_migrations {
+        db::run_migrations(&cfg).await;
+        println!("Migrations run");
+    }
+
     if let Some(Commands::Migrate) = &args.command {
-        let _ = db::init_db_and_run_migrations(&cfg).await;
+        db::run_migrations(&cfg).await;
         println!("Migrations run");
         exit(0);
     } else if let Some(Commands::Jwt {
