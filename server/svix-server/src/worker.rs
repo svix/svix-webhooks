@@ -107,7 +107,7 @@ async fn dispatch(
     let client = reqwest::Client::builder()
         .redirect(reqwest::redirect::Policy::none())
         .build()
-        .unwrap();
+        .expect("Invalid reqwest Client configuration");
     let res = client
         .post(&endp.url)
         .headers(headers)
