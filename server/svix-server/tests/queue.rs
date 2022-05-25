@@ -29,10 +29,7 @@ pub async fn get_pool(cfg: Configuration) -> RedisPool {
     }
 }
 
-// Without the `multi_thread` and `worker_threads` directive, the `block_on` call will never return
-// and the test will hang.
-#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
-async fn test_many_queue_consumers() {
+async fn test_many_queue_consumers_inner(prefix: &str, delay: Option<Duration>) {
     dotenv::dotenv().ok();
     let cfg = svix_server::cfg::load().expect("Error loading configuration");
 
@@ -41,9 +38,10 @@ async fn test_many_queue_consumers() {
         let pool = get_pool(cfg.clone()).await;
         let mut conn = pool.get().await.unwrap();
 
-        conn.query_async::<()>(redis::Cmd::del(
-            "test_many_queue_consumers_{queue}_svix_v3_main",
-        ))
+        conn.query_async::<()>(redis::Cmd::del(&format!(
+            "{}{{queue}}_svix_v3_main",
+            prefix
+        )))
         .await
         .unwrap();
     }
@@ -51,7 +49,7 @@ async fn test_many_queue_consumers() {
     // Make 20 producers and 20 consumers using the same configuration
     let mut producers_and_consumers: Vec<(TaskQueueProducer, TaskQueueConsumer)> = Vec::new();
     for _ in 0..20 {
-        producers_and_consumers.push(new_pair(&cfg, Some("test_many_queue_consumers_")).await);
+        producers_and_consumers.push(new_pair(&cfg, Some(prefix)).await);
     }
 
     // Add 50 test messages with unique message IDs to each producer for a total of 1000 unique
@@ -66,7 +64,7 @@ async fn test_many_queue_consumers() {
                     trigger_type: MessageAttemptTriggerType::Manual,
                     attempt_count: 0,
                 }),
-                None,
+                delay,
             )
             .await
             .unwrap();
@@ -137,4 +135,22 @@ async fn test_many_queue_consumers() {
             index + 1
         );
     }
+}
+
+// Without the `multi_thread` and `worker_threads` directive, the `block_on` call will never return
+// and the test will hang.
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn test_many_queue_consumers() {
+    test_many_queue_consumers_inner("test_many_queue_consumers_", None).await;
+}
+
+// Without the `multi_thread` and `worker_threads` directive, the `block_on` call will never return
+// and the test will hang.
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn test_many_queue_consumers_delayed() {
+    test_many_queue_consumers_inner(
+        "test_many_queue_consumers_delayed_",
+        Some(Duration::from_millis(500)),
+    )
+    .await;
 }
