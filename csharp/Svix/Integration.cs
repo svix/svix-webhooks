@@ -204,7 +204,7 @@ namespace Svix
             }
         }
 
-        public List<IntegrationOut> List(string appId, ListOptions options, string idempotencyKey = default)
+        public List<IntegrationOut> List(string appId, ListOptions options = null, string idempotencyKey = default)
         {
             try
             {
@@ -227,7 +227,7 @@ namespace Svix
             }
         }
 
-        public async Task<List<IntegrationOut>> ListAsync(string appId, ListOptions options, string idempotencyKey = default,
+        public async Task<List<IntegrationOut>> ListAsync(string appId, ListOptions options = null, string idempotencyKey = default,
             CancellationToken cancellationToken = default)
         {
             try

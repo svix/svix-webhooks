@@ -252,7 +252,7 @@ namespace Svix
             }
         }
 
-        public List<EndpointOut> List(string appId, ListOptions options, string idempotencyKey = default)
+        public List<EndpointOut> List(string appId, ListOptions options = null, string idempotencyKey = default)
         {
             try
             {
@@ -275,7 +275,7 @@ namespace Svix
             }
         }
 
-        public async Task<List<EndpointOut>> ListAsync(string appId, ListOptions options, string idempotencyKey = default,
+        public async Task<List<EndpointOut>> ListAsync(string appId, ListOptions options = null, string idempotencyKey = default,
             CancellationToken cancellationToken = default)
         {
             try

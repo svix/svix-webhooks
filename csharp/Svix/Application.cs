@@ -22,7 +22,7 @@ namespace Svix
             _applicationApi = applicationApi ?? throw new ArgumentNullException(nameof(applicationApi));
         }
 
-        public ApplicationOut Create(ApplicationIn application, ApplicationCreateOptions options, string idempotencyKey = default)
+        public ApplicationOut Create(ApplicationIn application, ApplicationCreateOptions options = null, string idempotencyKey = default)
         {
             try
             {
@@ -46,7 +46,7 @@ namespace Svix
             }
         }
 
-        public async Task<ApplicationOut> CreateAsync(ApplicationIn application, ApplicationCreateOptions options, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        public async Task<ApplicationOut> CreateAsync(ApplicationIn application, ApplicationCreateOptions options = null, string idempotencyKey = default, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -178,7 +178,7 @@ namespace Svix
             }
         }
 
-        public async Task<List<ApplicationOut>> ListAsync(ListOptions options, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        public async Task<List<ApplicationOut>> ListAsync(ListOptions options = null, string idempotencyKey = default, CancellationToken cancellationToken = default)
         {
             try
             {

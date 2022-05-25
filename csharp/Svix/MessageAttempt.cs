@@ -71,7 +71,7 @@ namespace Svix
             }
         }
 
-        public List<EndpointMessageOut> ListAttemptedMessages(string appId, string endpointId, MessageAttemptListOptions options,
+        public List<EndpointMessageOut> ListAttemptedMessages(string appId, string endpointId, MessageAttemptListOptions options = null,
             string idempotencyKey = default)
         {
             try
@@ -100,7 +100,7 @@ namespace Svix
             }
         }
 
-        public async Task<List<EndpointMessageOut>> ListAttemptedMessagesAsync(string appId, string endpointId, MessageAttemptListOptions options,
+        public async Task<List<EndpointMessageOut>> ListAttemptedMessagesAsync(string appId, string endpointId, MessageAttemptListOptions options = null,
             string idempotencyKey = default, CancellationToken cancellationToken = default)
         {
             try
@@ -130,7 +130,7 @@ namespace Svix
             }
         }
 
-        public List<MessageAttemptOut> ListAttemptsByEndpoint(string appId, string endpointId, AttemptsByEndpointListOptions options,
+        public List<MessageAttemptOut> ListAttemptsByEndpoint(string appId, string endpointId, AttemptsByEndpointListOptions options = null,
             string idempotencyKey = default)
         {
             try
@@ -161,7 +161,7 @@ namespace Svix
             }
         }
 
-        public async Task<List<MessageAttemptOut>> ListAttemptsByEndpointAsync(string appId, string endpointId, AttemptsByEndpointListOptions options,
+        public async Task<List<MessageAttemptOut>> ListAttemptsByEndpointAsync(string appId, string endpointId, AttemptsByEndpointListOptions options = null,
             string idempotencyKey = default, CancellationToken cancellationToken = default)
         {
             try
@@ -193,7 +193,7 @@ namespace Svix
             }
         }
 
-        public List<MessageAttemptOut> ListAttemptsByMessage(string appId, string messageId, AttemptsByMessageListOptions options,
+        public List<MessageAttemptOut> ListAttemptsByMessage(string appId, string messageId, AttemptsByMessageListOptions options = null,
             string idempotencyKey = default)
         {
             try
@@ -225,7 +225,7 @@ namespace Svix
             }
         }
 
-        public async Task<List<MessageAttemptOut>> ListAttemptsByMessageAsync(string appId, string messageId, AttemptsByMessageListOptions options,
+        public async Task<List<MessageAttemptOut>> ListAttemptsByMessageAsync(string appId, string messageId, AttemptsByMessageListOptions options = null,
             string idempotencyKey = default, CancellationToken cancellationToken = default)
         {
             try
@@ -260,7 +260,7 @@ namespace Svix
 
         // Deprecated
         public List<MessageAttemptEndpointOut> ListAttemptsForEndpoint(string appId, string messageId,
-            string endpointId, AttemptsByEndpointListOptions options, string idempotencyKey = default)
+            string endpointId, AttemptsByEndpointListOptions options = null, string idempotencyKey = default)
         {
             try
             {
@@ -292,7 +292,7 @@ namespace Svix
 
         // Deprecated
         public async Task<List<MessageAttemptEndpointOut>> ListAttemptsForEndpointAsync(string appId,
-            string messageId, string endpointId, AttemptsByEndpointListOptions options, string idempotencyKey = default,
+            string messageId, string endpointId, AttemptsByEndpointListOptions options = null, string idempotencyKey = default,
             CancellationToken cancellationToken = default)
         {
             try
@@ -325,7 +325,7 @@ namespace Svix
         }
 
         // Deprecated
-        public List<MessageAttemptOut> ListAttempts(string appId, string messageId, MessageAttemptListOptions options,
+        public List<MessageAttemptOut> ListAttempts(string appId, string messageId, MessageAttemptListOptions options = null,
             string idempotencyKey = default)
         {
             try
@@ -357,7 +357,7 @@ namespace Svix
         }
 
         // Deprecated
-        public async Task<List<MessageAttemptOut>> ListAttemptsAsync(string appId, string messageId, MessageAttemptListOptions options,
+        public async Task<List<MessageAttemptOut>> ListAttemptsAsync(string appId, string messageId, MessageAttemptListOptions options = null,
             string idempotencyKey = default, CancellationToken cancellationToken = default)
         {
             try
@@ -389,7 +389,7 @@ namespace Svix
             }
         }
 
-        public List<MessageEndpointOut> ListAttemptedDestinations(string appId, string messageId, ListOptions options,
+        public List<MessageEndpointOut> ListAttemptedDestinations(string appId, string messageId, ListOptions options = null,
             string idempotencyKey = default)
         {
             try
@@ -415,7 +415,7 @@ namespace Svix
         }
 
         public async Task<List<MessageEndpointOut>> ListAttemptedDestinationsAsync(string appId, string messageId,
-            ListOptions options, string idempotencyKey = default,
+            ListOptions options = null, string idempotencyKey = default,
             CancellationToken cancellationToken = default)
         {
             try

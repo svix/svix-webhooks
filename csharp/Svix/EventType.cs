@@ -151,7 +151,7 @@ namespace Svix
             }
         }
 
-        public List<EventTypeOut> List(EventTypeListOptions options, string idempotencyKey = default)
+        public List<EventTypeOut> List(EventTypeListOptions options = null, string idempotencyKey = default)
         {
             try
             {
@@ -175,7 +175,7 @@ namespace Svix
             }
         }
 
-        public async Task<List<EventTypeOut>> ListAsync(EventTypeListOptions options, string idempotencyKey = default,
+        public async Task<List<EventTypeOut>> ListAsync(EventTypeListOptions options = null, string idempotencyKey = default,
             CancellationToken cancellationToken = default)
         {
             try
