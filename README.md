@@ -105,10 +105,10 @@ To stay up-to-date with new features and improvements be sure to watch our repo!
     <th colspan="4"></th>
   </tr>
   <tr>
-    <th>Rust</th>
-    <th>🔜</th>
-    <th>🔜</th>
-    <th>🔜</th>
+    <th><a href="https://github.com/svix/svix-webhooks/tree/main/rust/">Rust</a></th>
+    <th>✅</th>
+    <th>✅</th>
+    <th>✅</th>
     <th colspan="4"></th>
   </tr>
   <tr>

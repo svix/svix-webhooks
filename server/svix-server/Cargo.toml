@@ -56,3 +56,4 @@ redis_cluster_async = { git = "https://github.com/redis-rs/redis-cluster-async.g
 
 [dev-dependencies]
 anyhow = "1.0.56"
+svix = "0"

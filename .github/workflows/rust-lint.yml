@@ -1,0 +1,57 @@
+name: Rust Lint
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'rust/**'
+      - '.github/workflows/rust-lint.yml'
+  pull_request:
+    paths:
+      - 'rust/**'
+      - '.github/workflows/rust-lint.yml'
+
+jobs:
+  test-versions:
+    name: Rust Lint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust: [stable, beta]
+    steps:
+    - uses: actions/checkout@master
+
+    - name: Regen openapi libs
+      run: |
+        yarn
+        ./regen_openapi.sh
+
+    - uses: actions-rs/toolchain@v1
+      with:
+        toolchain: ${{ matrix.rust }}
+        override: true
+        profile: minimal
+        components: clippy, rustfmt
+
+    - uses: Swatinem/rust-cache@v1
+      with:
+        working-directory: rust
+
+    - name: Clippy
+      uses: actions-rs/cargo@v1
+      with:
+        command: clippy
+        args: --manifest-path rust/Cargo.toml --all --all-targets --all-features -- -D warnings
+
+    - name: rustfmt
+      uses: actions-rs/cargo@v1
+      with:
+        command: fmt
+        args: --manifest-path rust/Cargo.toml --all -- --check
+
+    - name: Run tests
+      uses: actions-rs/cargo@v1
+      with:
+        command: test
+        args: --manifest-path rust/Cargo.toml --all

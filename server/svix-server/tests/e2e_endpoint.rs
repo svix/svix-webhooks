@@ -10,6 +10,7 @@ use anyhow::Result;
 use chrono::Utc;
 use reqwest::StatusCode;
 
+use svix::webhooks::Webhook;
 use svix_server::{
     core::types::{
         ApplicationId, EndpointHeaders, EndpointHeadersPatch, EndpointSecret, EndpointUid,
@@ -26,7 +27,6 @@ use svix_server::{
         },
         utils::ListResponse,
     },
-    webhook::Webhook,
 };
 
 mod utils;

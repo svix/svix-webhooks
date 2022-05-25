@@ -1,0 +1,39 @@
+name: Rust Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Regen openapi libs
+        run: |
+          yarn
+          ./regen_openapi.sh
+
+      - name: Hack around cargo stuff
+        run: |
+          cd rust/
+          git add -f src/apis/ src/models/
+          git commit -a -m "Snap"
+
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          profile: minimal
+          components: clippy, rustfmt
+
+      - uses: Swatinem/rust-cache@v1
+
+      - name: Publish
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        uses: actions-rs/cargo@v1
+        with:
+          command: publish
