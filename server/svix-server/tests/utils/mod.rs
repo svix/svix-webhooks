@@ -247,7 +247,7 @@ pub struct TestReceiver {
 
 #[derive(Clone)]
 pub struct ResponseStatusCode {
-    status_code: axum::http::StatusCode,
+    pub status_code: axum::http::StatusCode,
 }
 
 impl TestReceiver {
