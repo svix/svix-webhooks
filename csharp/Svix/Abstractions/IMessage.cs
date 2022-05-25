@@ -8,10 +8,10 @@ namespace Svix.Abstractions
 {
     public interface IMessage
     {
-        MessageOut Create(string appId, MessageIn message, MessageCreateOptions options,
+        MessageOut Create(string appId, MessageIn message, MessageCreateOptions options = null,
             string idempotencyKey = default);
 
-        Task<MessageOut> CreateAsync(string appId, MessageIn message, MessageCreateOptions options,
+        Task<MessageOut> CreateAsync(string appId, MessageIn message, MessageCreateOptions options = null,
             string idempotencyKey = default, CancellationToken cancellationToken = default);
 
         MessageOut Get(string appId, string messageId, string idempotencyKey = default);
@@ -19,9 +19,9 @@ namespace Svix.Abstractions
         Task<MessageOut> GetAsync(string appId, string messageId, string idempotencyKey = default,
             CancellationToken cancellationToken = default);
 
-        List<MessageOut> List(string appId, MessageListOptions options, string idempotencyKey = default);
+        List<MessageOut> List(string appId, MessageListOptions options = null, string idempotencyKey = default);
 
-        Task<List<MessageOut>> ListAsync(string appId, MessageListOptions options, string idempotencyKey = default,
+        Task<List<MessageOut>> ListAsync(string appId, MessageListOptions options = null, string idempotencyKey = default,
             CancellationToken cancellationToken = default);
     }
 }

@@ -22,7 +22,7 @@ namespace Svix
             _messageApi = messageApi ?? throw new ArgumentException(nameof(messageApi));
         }
 
-        public MessageOut Create(string appId, MessageIn message, MessageCreateOptions options, string idempotencyKey = default)
+        public MessageOut Create(string appId, MessageIn message, MessageCreateOptions options = null, string idempotencyKey = default)
         {
             try
             {
@@ -47,7 +47,7 @@ namespace Svix
             }
         }
 
-        public async Task<MessageOut> CreateAsync(string appId, MessageIn message, MessageCreateOptions options, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        public async Task<MessageOut> CreateAsync(string appId, MessageIn message, MessageCreateOptions options = null, string idempotencyKey = default, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -117,7 +117,7 @@ namespace Svix
             }
         }
 
-        public List<MessageOut> List(string appId, MessageListOptions options, string idempotencyKey = default)
+        public List<MessageOut> List(string appId, MessageListOptions options = null, string idempotencyKey = default)
         {
             try
             {
@@ -144,7 +144,7 @@ namespace Svix
             }
         }
 
-        public async Task<List<MessageOut>> ListAsync(string appId, MessageListOptions options, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        public async Task<List<MessageOut>> ListAsync(string appId, MessageListOptions options = null, string idempotencyKey = default, CancellationToken cancellationToken = default)
         {
             try
             {

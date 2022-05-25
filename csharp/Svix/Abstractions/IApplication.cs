@@ -8,10 +8,10 @@ namespace Svix.Abstractions
 {
     public interface IApplication
     {
-        public ApplicationOut Create(ApplicationIn application, ApplicationCreateOptions options,
+        public ApplicationOut Create(ApplicationIn application, ApplicationCreateOptions options = null,
             string idempotencyKey = default);
 
-        public Task<ApplicationOut> CreateAsync(ApplicationIn application, ApplicationCreateOptions options,
+        public Task<ApplicationOut> CreateAsync(ApplicationIn application, ApplicationCreateOptions options = null,
             string idempotencyKey = default, CancellationToken cancellationToken = default);
 
         bool Delete(string appId, string idempotencyKey = default);
@@ -24,9 +24,9 @@ namespace Svix.Abstractions
         Task<ApplicationOut> GetAsync(string appId, string idempotencyKey = default,
             CancellationToken cancellationToken = default);
 
-        List<ApplicationOut> List(ListOptions options, string idempotencyKey = default);
+        List<ApplicationOut> List(ListOptions options = null, string idempotencyKey = default);
 
-        Task<List<ApplicationOut>> ListAsync(ListOptions options, string idempotencyKey = default, CancellationToken cancellationToken = default);
+        Task<List<ApplicationOut>> ListAsync(ListOptions options = null, string idempotencyKey = default, CancellationToken cancellationToken = default);
 
         ApplicationOut Update(string appId, ApplicationIn application, string idempotencyKey = default);
 
