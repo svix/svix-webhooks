@@ -27,9 +27,6 @@ impl RedirectionVisitReportingReceiver {
         let listener = TcpListener::bind("127.0.0.1:0").unwrap();
         let base_uri = format!("http://{}", listener.local_addr().unwrap());
 
-        let response_status_code = Arc::new(Mutex::new(ResponseStatusCode {
-            status_code: resp_with,
-        }));
         let has_been_visited = Arc::new(Mutex::new(false));
 
         let routes = axum::Router::new()
@@ -43,7 +40,7 @@ impl RedirectionVisitReportingReceiver {
                     .get(visit_reporting_receiver_route),
             )
             .layer(Extension(has_been_visited.clone()))
-            .layer(Extension(response_status_code.clone()))
+            .layer(Extension(resp_with))
             .into_make_service();
 
         let jh = tokio::spawn(async move {
