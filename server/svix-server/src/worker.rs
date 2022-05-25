@@ -104,7 +104,10 @@ async fn dispatch(
         headers
     };
 
-    let client = reqwest::Client::new();
+    let client = reqwest::Client::builder()
+        .redirect(reqwest::redirect::Policy::none())
+        .build()
+        .unwrap();
     let res = client
         .post(&endp.url)
         .headers(headers)
