@@ -19,6 +19,8 @@ jobs:
       - name: Hack around cargo stuff
         run: |
           cd rust/
+          git config user.email "work@around.com"
+          git config user.name "Work Around"
           git add -f src/apis/ src/models/
           git commit -a -m "Snap"
 
@@ -37,3 +39,4 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: publish
+          args: --manifest-path rust/Cargo.toml
