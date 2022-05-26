@@ -33,6 +33,16 @@ pub mod v1;
 pub mod worker;
 
 pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
+    run_with_prefix(None, cfg, listener).await
+}
+
+// Made public for the purpose of E2E testing in which a queue prefix is necessary to avoid tests
+// consuming from each others' queues
+pub async fn run_with_prefix(
+    prefix: Option<String>,
+    cfg: Configuration,
+    listener: Option<TcpListener>,
+) {
     let pool = init_db(&cfg).await;
 
     let redis_dsn = || {
@@ -57,7 +67,7 @@ pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
     };
 
     tracing::debug!("Queue type: {:?}", cfg.queue_type);
-    let (queue_tx, queue_rx) = queue::new_pair(&cfg, None).await;
+    let (queue_tx, queue_rx) = queue::new_pair(&cfg, prefix.as_deref()).await;
 
     // build our application with a route
     let app = Router::new()

@@ -8,11 +8,11 @@ use std::{
 };
 
 use anyhow::{Context, Result};
-
 use reqwest::{Client, RequestBuilder, StatusCode};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use tokio::sync::mpsc;
 
+use svix_ksuid::KsuidLike;
 use svix_server::{
     cfg::ConfigurationInner,
     core::{
@@ -232,7 +232,11 @@ pub fn start_svix_server_with_cfg(
     let listener = TcpListener::bind("127.0.0.1:0").unwrap();
     let base_uri = format!("http://{}", listener.local_addr().unwrap());
 
-    let jh = tokio::spawn(svix_server::run(cfg, Some(listener)));
+    let jh = tokio::spawn(svix_server::run_with_prefix(
+        Some(svix_ksuid::Ksuid::new(None, None).to_string()),
+        cfg,
+        Some(listener),
+    ));
 
     (TestClient::new(base_uri, &token), jh)
 }
