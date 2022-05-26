@@ -52,7 +52,7 @@ async fn main() {
     let args = Args::parse();
     let cfg = cfg::load().expect("Error loading configuration");
 
-    if cfg!(debug_assertions) && std::env::var_os("RUST_LOG").is_none() {
+    if std::env::var_os("RUST_LOG").is_none() {
         std::env::set_var(
             "RUST_LOG",
             format!(
