@@ -20,6 +20,7 @@ Svix makes it easy for developers to send webhooks. Developers make one API call
 
 
 [![PyPI](https://img.shields.io/pypi/v/svix.svg)](https://pypi.python.org/pypi/svix/)
+[![Crates.io](https://img.shields.io/crates/v/svix)](https://crates.io/crates/svix)
 [![NPM version](https://img.shields.io/npm/v/svix.svg)](https://www.npmjs.com/package/svix)
 [![Gem](https://img.shields.io/gem/v/svix)](https://rubygems.org/gems/svix)
 [![Maven Central (Java)](https://img.shields.io/maven-central/v/com.svix/svix?label=maven-central%20(java))](https://search.maven.org/artifact/com.svix/svix)
