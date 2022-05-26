@@ -3,6 +3,21 @@
 ## Next
 * 
 
+## Version 0.58.0
+* Lib/Rust: add a Rust API client + webhook verification library!
+* Lib/Python: fix package installation on Windows.
+* Lib/Csharp: make some parameters optional for better ergonomics.
+* Server: remove `updated_at` field from static entities.
+* Server: change to a more efficient first message dispatch.
+* Server: change the redis queue to use redis streams.
+* Server: serve nice API docs under `/docs`.
+* Server: start version tagging the Docker images. (`latest`, `x`, and `x.y`).
+* Server: allow PATCH to delete header values by passing null.
+* Server: make it possible to change the hard pagination limits to be soft.
+* Server: make the redis queue implementation automatically recover from redis crashes.
+* Server: add a `--run-migrations` flag to automatically run migrations (flag still passed in Docker).
+* Server: fix worker to not follow HTTP redirects when calling webhooks.
+
 ## Version 0.57.2
 * Server: add support for get-or-create when creating applications.
 * C#: fix library compilation (broke in the previous release.

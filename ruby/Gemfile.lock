@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    svix (0.57.2)
+    svix (0.58.0)
       typhoeus (~> 1.0, >= 1.0.1)
 
 GEM
