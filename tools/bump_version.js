@@ -9,7 +9,7 @@ const filesPaths = [
     // Rust Server
     "server/svix-server/Cargo.toml",
     // Rust Client
-    "rust/svix/Cargo.toml",
+    "rust/Cargo.toml",
     // CSharp
     "csharp/Svix/Svix.csproj",
     // Go

@@ -1,6 +1,6 @@
 [package]
 name = "svix-server"
-version = "0.57.2"
+version = "0.58.0"
 license = "MIT"
 description = "Svix webhooks server"
 
