@@ -5,12 +5,14 @@ on:
     branches:
     - main
     paths:
-      - '**/Cargo.toml'
-      - '**/Cargo.lock'
+      - 'server/**/Cargo.toml'
+      - 'server/**/Cargo.lock'
+      - '.github/workflows/server-security.yml'
   pull_request:
     paths:
-      - '**/Cargo.toml'
-      - '**/Cargo.lock'
+      - 'server/**/Cargo.toml'
+      - 'server/**/Cargo.lock'
+      - '.github/workflows/server-security.yml'
 
 jobs:
   security_audit:
