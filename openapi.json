@@ -152,6 +152,42 @@
                 "title": "BorderRadiusEnum",
                 "type": "string"
             },
+            "CustomColorPalette": {
+                "properties": {
+                    "backgroundHover": {
+                        "format": "color",
+                        "title": "Backgroundhover",
+                        "type": "string"
+                    },
+                    "backgroundPrimary": {
+                        "format": "color",
+                        "title": "Backgroundprimary",
+                        "type": "string"
+                    },
+                    "backgroundSecondary": {
+                        "format": "color",
+                        "title": "Backgroundsecondary",
+                        "type": "string"
+                    },
+                    "interactiveAccent": {
+                        "format": "color",
+                        "title": "Interactiveaccent",
+                        "type": "string"
+                    },
+                    "textDanger": {
+                        "format": "color",
+                        "title": "Textdanger",
+                        "type": "string"
+                    },
+                    "textPrimary": {
+                        "format": "color",
+                        "title": "Textprimary",
+                        "type": "string"
+                    }
+                },
+                "title": "CustomColorPalette",
+                "type": "object"
+            },
             "CustomThemeOverride": {
                 "properties": {
                     "borderRadius": {
@@ -962,6 +998,12 @@
             },
             "EnvironmentSettingsOut": {
                 "properties": {
+                    "colorPaletteDark": {
+                        "$ref": "#/components/schemas/CustomColorPalette"
+                    },
+                    "colorPaletteLight": {
+                        "$ref": "#/components/schemas/CustomColorPalette"
+                    },
                     "customColor": {
                         "format": "color",
                         "title": "Customcolor",
@@ -2245,6 +2287,12 @@
             },
             "SettingsIn": {
                 "properties": {
+                    "colorPaletteDark": {
+                        "$ref": "#/components/schemas/CustomColorPalette"
+                    },
+                    "colorPaletteLight": {
+                        "$ref": "#/components/schemas/CustomColorPalette"
+                    },
                     "customBaseFontSize": {
                         "title": "Custombasefontsize",
                         "type": "integer"
@@ -2275,6 +2323,10 @@
                         "title": "Disableendpointonfailure",
                         "type": "boolean"
                     },
+                    "displayName": {
+                        "title": "Displayname",
+                        "type": "string"
+                    },
                     "enableChannels": {
                         "default": false,
                         "title": "Enablechannels",
@@ -2288,6 +2340,11 @@
                     "enforceHttps": {
                         "default": true,
                         "title": "Enforcehttps",
+                        "type": "boolean"
+                    },
+                    "eventCatalogPublished": {
+                        "default": false,
+                        "title": "Eventcatalogpublished",
                         "type": "boolean"
                     }
                 },
@@ -2296,6 +2353,12 @@
             },
             "SettingsOut": {
                 "properties": {
+                    "colorPaletteDark": {
+                        "$ref": "#/components/schemas/CustomColorPalette"
+                    },
+                    "colorPaletteLight": {
+                        "$ref": "#/components/schemas/CustomColorPalette"
+                    },
                     "customBaseFontSize": {
                         "title": "Custombasefontsize",
                         "type": "integer"
@@ -2326,6 +2389,10 @@
                         "title": "Disableendpointonfailure",
                         "type": "boolean"
                     },
+                    "displayName": {
+                        "title": "Displayname",
+                        "type": "string"
+                    },
                     "enableChannels": {
                         "default": false,
                         "title": "Enablechannels",
@@ -2339,6 +2406,11 @@
                     "enforceHttps": {
                         "default": true,
                         "title": "Enforcehttps",
+                        "type": "boolean"
+                    },
+                    "eventCatalogPublished": {
+                        "default": false,
+                        "title": "Eventcatalogpublished",
                         "type": "boolean"
                     }
                 },
@@ -2614,6 +2686,16 @@
                         "source": "list_response_application_out = svix.application.list"
                     },
                     {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let list_response_application_out = svix.application().list(None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var listResponseApplicationOut = await svix.Application.ListAsync()"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix application list "
@@ -2796,6 +2878,16 @@
                         "source": "application_out = svix.application.create(Svix::ApplicationIn.new({\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\",\n    \"rate_limit\": 1000\n}))\n# Or \napplication_out = svix.application.get_or_create(Svix::ApplicationIn.new({\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\",\n    \"rate_limit\": 1000\n}))"
                     },
                     {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let application_out = svix.application().create(ApplicationIn {\n    uid: \"unique-app-identifier\".to_string(),\n    name: \"My first application\".to_string(),\n    rate_limit: 1000\n}).await?;\n// Or \nlet application_out = svix.application().get_or_create(ApplicationIn {\n    uid: \"unique-app-identifier\".to_string(),\n    name: \"My first application\".to_string(),\n    rate_limit: 1000\n}).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var applicationOut = await svix.Application.CreateAsync(new ApplicationIn{\n    uid: \"unique-app-identifier\",\n    name: \"My first application\",\n    rateLimit: 1000\n})"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix application create '{\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\",\n    \"rateLimit\": 1000\n}'"
@@ -2953,6 +3045,16 @@
                         "label": "Ruby",
                         "lang": "Ruby",
                         "source": "svix.application.delete('app_id')"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "svix.application().delete(\"app_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "await svix.Application.DeleteAsync(\"app_id\")"
                     },
                     {
                         "label": "CLI",
@@ -3117,6 +3219,16 @@
                         "label": "Ruby",
                         "lang": "Ruby",
                         "source": "application_out = svix.application.get('app_id')"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let application_out = svix.application().get(\"app_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var applicationOut = await svix.Application.GetAsync(\"app_id\")"
                     },
                     {
                         "label": "CLI",
@@ -3291,6 +3403,16 @@
                         "label": "Ruby",
                         "lang": "Ruby",
                         "source": "application_out = svix.application.update('app_id', Svix::ApplicationIn.new({\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\",\n    \"rate_limit\": 1000\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let application_out = svix.application().update(\"app_id\", ApplicationIn {\n    uid: \"unique-app-identifier\".to_string(),\n    name: \"My first application\".to_string(),\n    rate_limit: 1000\n}).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var applicationOut = await svix.Application.UpdateAsync(\"app_id\", new ApplicationIn{\n    uid: \"unique-app-identifier\",\n    name: \"My first application\",\n    rateLimit: 1000\n})"
                     },
                     {
                         "label": "CLI",
@@ -3555,6 +3677,16 @@
                         "label": "Ruby",
                         "lang": "Ruby",
                         "source": "list_response_message_attempt_out = svix.message_attempt.list_by_endpoint('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let list_response_message_attempt_out = svix.message_attempt().list_by_endpoint(\"app_id\", \"endpoint_id\", None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var listResponseMessageAttemptOut = await svix.MessageAttempt.ListByEndpointAsync(\"app_id\", \"endpoint_id\")"
                     },
                     {
                         "label": "CLI",
@@ -3835,6 +3967,16 @@
                         "source": "list_response_message_attempt_out = svix.message_attempt.list_by_msg('app_id', 'msg_id')"
                     },
                     {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let list_response_message_attempt_out = svix.message_attempt().list_by_msg(\"app_id\", \"msg_id\", None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var listResponseMessageAttemptOut = await svix.MessageAttempt.ListByMsgAsync(\"app_id\", \"msg_id\")"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix message-attempt list-by-msg 'app_id' 'msg_id'"
@@ -4022,6 +4164,16 @@
                         "source": "list_response_endpoint_out = svix.endpoint.list('app_id')"
                     },
                     {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let list_response_endpoint_out = svix.endpoint().list(\"app_id\", None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var listResponseEndpointOut = await svix.Endpoint.ListAsync(\"app_id\")"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix endpoint list 'app_id'"
@@ -4196,6 +4348,16 @@
                         "source": "endpoint_out = svix.endpoint.create('app_id', Svix::EndpointIn.new({\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filter_types\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"channels\": [\n        \"project_123\",\n        \"group_2\"\n    ],\n    \"disabled\": false,\n    \"rate_limit\": 1000,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}))"
                     },
                     {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let endpoint_out = svix.endpoint().create(\"app_id\", EndpointIn {\n    uid: \"unique-endpoint-identifier\".to_string(),\n    url: \"https://example.com/webhook/\".to_string(),\n    version: 1,\n    description: \"An example endpoint name\".to_string(),\n    filter_types: vec![\"user.signup\".to_string(), \"user.deleted\".to_string()],\n    channels: vec![\"project_123\".to_string(), \"group_2\".to_string()],\n    disabled: False,\n    rate_limit: 1000,\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\".to_string()\n}).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var endpointOut = await svix.Endpoint.CreateAsync(\"app_id\", new EndpointIn{\n    uid: \"unique-endpoint-identifier\",\n    url: \"https://example.com/webhook/\",\n    version: 1,\n    description: \"An example endpoint name\",\n    filterTypes: new string[] {\"user.signup\", \"user.deleted\"},\n    channels: new string[] {\"project_123\", \"group_2\"},\n    disabled: false,\n    rateLimit: 1000,\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n})"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix endpoint create 'app_id' '{\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"channels\": [\n        \"project_123\",\n        \"group_2\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}'"
@@ -4367,6 +4529,16 @@
                         "label": "Ruby",
                         "lang": "Ruby",
                         "source": "svix.endpoint.delete('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "svix.endpoint().delete(\"app_id\", \"endpoint_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "await svix.Endpoint.DeleteAsync(\"app_id\", \"endpoint_id\")"
                     },
                     {
                         "label": "CLI",
@@ -4545,6 +4717,16 @@
                         "label": "Ruby",
                         "lang": "Ruby",
                         "source": "endpoint_out = svix.endpoint.get('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let endpoint_out = svix.endpoint().get(\"app_id\", \"endpoint_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var endpointOut = await svix.Endpoint.GetAsync(\"app_id\", \"endpoint_id\")"
                     },
                     {
                         "label": "CLI",
@@ -4735,6 +4917,16 @@
                         "source": "endpoint_out = svix.endpoint.update('app_id', 'endpoint_id', Svix::EndpointUpdate.new({\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filter_types\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"channels\": [\n        \"project_123\",\n        \"group_2\"\n    ],\n    \"disabled\": false,\n    \"rate_limit\": 1000\n}))"
                     },
                     {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let endpoint_out = svix.endpoint().update(\"app_id\", \"endpoint_id\", EndpointUpdate {\n    uid: \"unique-endpoint-identifier\".to_string(),\n    url: \"https://example.com/webhook/\".to_string(),\n    version: 1,\n    description: \"An example endpoint name\".to_string(),\n    filter_types: vec![\"user.signup\".to_string(), \"user.deleted\".to_string()],\n    channels: vec![\"project_123\".to_string(), \"group_2\".to_string()],\n    disabled: False,\n    rate_limit: 1000\n}).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var endpointOut = await svix.Endpoint.UpdateAsync(\"app_id\", \"endpoint_id\", new EndpointUpdate{\n    uid: \"unique-endpoint-identifier\",\n    url: \"https://example.com/webhook/\",\n    version: 1,\n    description: \"An example endpoint name\",\n    filterTypes: new string[] {\"user.signup\", \"user.deleted\"},\n    channels: new string[] {\"project_123\", \"group_2\"},\n    disabled: false,\n    rateLimit: 1000\n})"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix endpoint update 'app_id' 'endpoint_id' '{\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"channels\": [\n        \"project_123\",\n        \"group_2\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000\n}'"
@@ -4913,6 +5105,16 @@
                         "label": "Ruby",
                         "lang": "Ruby",
                         "source": "endpoint_headers_out = svix.endpoint.get_headers('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let endpoint_headers_out = svix.endpoint().get_headers(\"app_id\", \"endpoint_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var endpointHeadersOut = await svix.Endpoint.GetHeadersAsync(\"app_id\", \"endpoint_id\")"
                     },
                     {
                         "label": "CLI",
@@ -5096,6 +5298,16 @@
                         "source": "svix.endpoint.patch_headers('app_id', 'endpoint_id', Svix::EndpointHeadersPatchIn.new({\n    \"headers\": {\n        \"X-Foobar\": \"Bar\",\n        \"X-Example\": \"123\"\n    }\n}))"
                     },
                     {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "svix.endpoint().patch_headers(\"app_id\", \"endpoint_id\", EndpointHeadersPatchIn {\n    headers: HashMap::from([\n        (\"X-Foobar.\"to_string(), \"Bar\".to_string()),\n        (\"X-Example.\"to_string(), \"123\".to_string())\n    ])\n}).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "await svix.Endpoint.PatchHeadersAsync(\"app_id\", \"endpoint_id\", new EndpointHeadersPatchIn{\n    headers: new {\n        \"X-Foobar\": \"Bar\",\n        \"X-Example\": \"123\"\n    }\n})"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix endpoint patch-headers 'app_id' 'endpoint_id' '{\n    \"headers\": {\n        \"X-Foobar\": \"Bar\",\n        \"X-Example\": \"123\"\n    }\n}'"
@@ -5275,6 +5487,16 @@
                         "label": "Ruby",
                         "lang": "Ruby",
                         "source": "svix.endpoint.update_headers('app_id', 'endpoint_id', Svix::EndpointHeadersIn.new({\n    \"headers\": {\n        \"X-Foobar\": \"Bar\",\n        \"X-Example\": \"123\"\n    }\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "svix.endpoint().update_headers(\"app_id\", \"endpoint_id\", EndpointHeadersIn {\n    headers: HashMap::from([\n        (\"X-Foobar.\"to_string(), \"Bar\".to_string()),\n        (\"X-Example.\"to_string(), \"123\".to_string())\n    ])\n}).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "await svix.Endpoint.UpdateHeadersAsync(\"app_id\", \"endpoint_id\", new EndpointHeadersIn{\n    headers: new {\n        \"X-Foobar\": \"Bar\",\n        \"X-Example\": \"123\"\n    }\n})"
                     },
                     {
                         "label": "CLI",
@@ -5663,6 +5885,16 @@
                         "source": "recover_out = svix.endpoint.recover('app_id', 'endpoint_id', Svix::RecoverIn.new({\n    \"since\": \"2019-08-24T14:15:22Z\"\n}))"
                     },
                     {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let recover_out = svix.endpoint().recover(\"app_id\", \"endpoint_id\", RecoverIn {\n    since: \"2019-08-24T14:15:22Z\".to_string()\n}).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var recoverOut = await svix.Endpoint.RecoverAsync(\"app_id\", \"endpoint_id\", new RecoverIn{\n    since: \"2019-08-24T14:15:22Z\"\n})"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix endpoint recover 'app_id' 'endpoint_id' '{\n    \"since\": \"2019-08-24T14:15:22Z\"\n}'"
@@ -5841,6 +6073,16 @@
                         "label": "Ruby",
                         "lang": "Ruby",
                         "source": "endpoint_secret_out = svix.endpoint.get_secret('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let endpoint_secret_out = svix.endpoint().get_secret(\"app_id\", \"endpoint_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var endpointSecretOut = await svix.Endpoint.GetSecretAsync(\"app_id\", \"endpoint_id\")"
                     },
                     {
                         "label": "CLI",
@@ -6034,6 +6276,16 @@
                         "label": "Ruby",
                         "lang": "Ruby",
                         "source": "svix.endpoint.rotate_secret('app_id', 'endpoint_id', Svix::EndpointSecretRotateIn.new({\n    \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "svix.endpoint().rotate_secret(\"app_id\", \"endpoint_id\", EndpointSecretRotateIn {\n    key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\".to_string()\n}).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "await svix.Endpoint.RotateSecretAsync(\"app_id\", \"endpoint_id\", new EndpointSecretRotateIn{\n    key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n})"
                     },
                     {
                         "label": "CLI",
@@ -6234,6 +6486,16 @@
                         "label": "Ruby",
                         "lang": "Ruby",
                         "source": "message_out = svix.endpoint.send('app_id', 'endpoint_id', Svix::EventExampleIn.new({\n    \"event_type\": \"user.signup\"\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let message_out = svix.endpoint().send(\"app_id\", \"endpoint_id\", EventExampleIn {\n    event_type: \"user.signup\".to_string()\n}).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var messageOut = await svix.Endpoint.SendAsync(\"app_id\", \"endpoint_id\", new EventExampleIn{\n    eventType: \"user.signup\"\n})"
                     },
                     {
                         "label": "CLI",
@@ -6557,6 +6819,16 @@
                         "source": "list_response_integration_out = svix.integration.list('app_id')"
                     },
                     {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let list_response_integration_out = svix.integration().list(\"app_id\", None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var listResponseIntegrationOut = await svix.Integration.ListAsync(\"app_id\")"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix integration list 'app_id'"
@@ -6731,6 +7003,16 @@
                         "source": "integration_out = svix.integration.create('app_id', Svix::IntegrationIn.new({\n    \"name\": \"Example Integration\"\n}))"
                     },
                     {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let integration_out = svix.integration().create(\"app_id\", IntegrationIn {\n    name: \"Example Integration\".to_string()\n}).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var integrationOut = await svix.Integration.CreateAsync(\"app_id\", new IntegrationIn{\n    name: \"Example Integration\"\n})"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix integration create 'app_id' '{\n    \"name\": \"Example Integration\"\n}'"
@@ -6898,6 +7180,16 @@
                         "label": "Ruby",
                         "lang": "Ruby",
                         "source": "svix.integration.delete('app_id', 'integ_id')"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "svix.integration().delete(\"app_id\", \"integ_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "await svix.Integration.DeleteAsync(\"app_id\", \"integ_id\")"
                     },
                     {
                         "label": "CLI",
@@ -7072,6 +7364,16 @@
                         "label": "Ruby",
                         "lang": "Ruby",
                         "source": "integration_out = svix.integration.get('app_id', 'integ_id')"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let integration_out = svix.integration().get(\"app_id\", \"integ_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var integrationOut = await svix.Integration.GetAsync(\"app_id\", \"integ_id\")"
                     },
                     {
                         "label": "CLI",
@@ -7258,6 +7560,16 @@
                         "source": "integration_out = svix.integration.update('app_id', 'integ_id', Svix::IntegrationUpdate.new({\n    \"name\": \"Example Integration\"\n}))"
                     },
                     {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let integration_out = svix.integration().update(\"app_id\", \"integ_id\", IntegrationUpdate {\n    name: \"Example Integration\".to_string()\n}).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var integrationOut = await svix.Integration.UpdateAsync(\"app_id\", \"integ_id\", new IntegrationUpdate{\n    name: \"Example Integration\"\n})"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix integration update 'app_id' 'integ_id' '{\n    \"name\": \"Example Integration\"\n}'"
@@ -7434,6 +7746,16 @@
                         "source": "integration_key_out = svix.integration.get_key('app_id', 'integ_id')"
                     },
                     {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let integration_key_out = svix.integration().get_key(\"app_id\", \"integ_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var integrationKeyOut = await svix.Integration.GetKeyAsync(\"app_id\", \"integ_id\")"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix integration get-key 'app_id' 'integ_id'"
@@ -7608,6 +7930,16 @@
                         "label": "Ruby",
                         "lang": "Ruby",
                         "source": "integration_key_out = svix.integration.rotate_key('app_id', 'integ_id')"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let integration_key_out = svix.integration().rotate_key(\"app_id\", \"integ_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var integrationKeyOut = await svix.Integration.RotateKeyAsync(\"app_id\", \"integ_id\")"
                     },
                     {
                         "label": "CLI",
@@ -7844,6 +8176,16 @@
                         "source": "list_response_message_out = svix.message.list('app_id')"
                     },
                     {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let list_response_message_out = svix.message().list(\"app_id\", None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var listResponseMessageOut = await svix.Message.ListAsync(\"app_id\")"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix message list 'app_id'"
@@ -8038,6 +8380,16 @@
                         "source": "message_out = svix.message.create('app_id', Svix::MessageIn.new({\n    \"event_type\": \"user.signup\",\n    \"event_id\": \"evt_pNZKtWg8Azow\",\n    \"channels\": [\n        \"project_123\",\n        \"group_2\"\n    ],\n    \"payload\": {\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    },\n    \"payload_retention_period\": 90\n}))"
                     },
                     {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let message_out = svix.message().create(\"app_id\", MessageIn {\n    event_type: \"user.signup\".to_string(),\n    event_id: \"evt_pNZKtWg8Azow\".to_string(),\n    channels: vec![\"project_123\".to_string(), \"group_2\".to_string()],\n    payload: json!({\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    }),\n    payload_retention_period: 90\n}).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var messageOut = await svix.Message.CreateAsync(\"app_id\", new MessageIn{\n    eventType: \"user.signup\",\n    eventId: \"evt_pNZKtWg8Azow\",\n    channels: new string[] {\"project_123\", \"group_2\"},\n    payload: new {\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    },\n    payloadRetentionPeriod: 90\n})"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix message create 'app_id' '{\n    \"eventType\": \"user.signup\",\n    \"eventId\": \"evt_pNZKtWg8Azow\",\n    \"channels\": [\n        \"project_123\",\n        \"group_2\"\n    ],\n    \"payload\": {\n        \"username\": \"test_user\",\n        \"email\": \"test@example.com\"\n    },\n    \"payloadRetentionPeriod\": 90\n}'"
@@ -8216,6 +8568,16 @@
                         "label": "Ruby",
                         "lang": "Ruby",
                         "source": "message_out = svix.message.get('app_id', 'msg_id')"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let message_out = svix.message().get(\"app_id\", \"msg_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var messageOut = await svix.Message.GetAsync(\"app_id\", \"msg_id\")"
                     },
                     {
                         "label": "CLI",
@@ -8489,6 +8851,16 @@
                         "source": "list_response_message_attempt_out = svix.message_attempt.list('app_id', 'msg_id')"
                     },
                     {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let list_response_message_attempt_out = svix.message_attempt().list(\"app_id\", \"msg_id\", None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var listResponseMessageAttemptOut = await svix.MessageAttempt.ListAsync(\"app_id\", \"msg_id\")"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix message-attempt list 'app_id' 'msg_id'"
@@ -8679,6 +9051,16 @@
                         "source": "message_attempt_out = svix.message_attempt.get('app_id', 'msg_id', 'attempt_id')"
                     },
                     {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let message_attempt_out = svix.message_attempt().get(\"app_id\", \"msg_id\", \"attempt_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var messageAttemptOut = await svix.MessageAttempt.GetAsync(\"app_id\", \"msg_id\", \"attempt_id\")"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix message-attempt get 'app_id' 'msg_id' 'attempt_id'"
@@ -8867,6 +9249,16 @@
                         "label": "Ruby",
                         "lang": "Ruby",
                         "source": "message_attempt_headers_out = svix.message_attempt.get('app_id', 'msg_id', 'attempt_id')"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let message_attempt_headers_out = svix.message_attempt().get(\"app_id\", \"msg_id\", \"attempt_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var messageAttemptHeadersOut = await svix.MessageAttempt.GetAsync(\"app_id\", \"msg_id\", \"attempt_id\")"
                     },
                     {
                         "label": "CLI",
@@ -9438,6 +9830,16 @@
                         "source": "svix.message_attempt.resend('app_id', 'msg_id', 'endpoint_id')"
                     },
                     {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "svix.message_attempt().resend(\"app_id\", \"msg_id\", \"endpoint_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "await svix.MessageAttempt.ResendAsync(\"app_id\", \"msg_id\", \"endpoint_id\")"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix message-attempt resend 'app_id' 'msg_id' 'endpoint_id'"
@@ -9604,6 +10006,16 @@
                         "source": "dashboard_access_out = svix.authentication.dashboard_access('app_id')"
                     },
                     {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let dashboard_access_out = svix.authentication().dashboard_access(\"app_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var dashboardAccessOut = await svix.Authentication.DashboardAccessAsync(\"app_id\")"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix authentication dashboard-access 'app_id'"
@@ -9747,6 +10159,16 @@
                         "label": "Ruby",
                         "lang": "Ruby",
                         "source": "svix.authentication.logout"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "svix.authentication().logout().await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "await svix.Authentication.LogoutAsync()"
                     },
                     {
                         "label": "CLI",
@@ -10278,6 +10700,16 @@
                         "source": "list_response_event_type_out = svix.event_type.list"
                     },
                     {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let list_response_event_type_out = svix.event_type().list(None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var listResponseEventTypeOut = await svix.EventType.ListAsync()"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix event-type list "
@@ -10438,6 +10870,16 @@
                         "source": "event_type_out = svix.event_type.create(Svix::EventTypeIn.new({\n    \"description\": \"A user has signed up\",\n    \"schemas\": {\n        \"1\": {\n            \"title\": \"Invoice Paid Event\",\n            \"description\": \"An invoice was paid by a user\",\n            \"type\": \"object\",\n            \"properties\": {\n                \"invoiceId\": {\n                    \"description\": \"The invoice id\",\n                    \"type\": \"string\"\n                },\n                \"userId\": {\n                    \"description\": \"The user id\",\n                    \"type\": \"string\"\n                }\n            },\n            \"required\": [\n                \"invoiceId\",\n                \"userId\"\n            ]\n        }\n    },\n    \"archived\": false,\n    \"name\": \"user.signup\"\n}))"
                     },
                     {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let event_type_out = svix.event_type().create(EventTypeIn {\n    description: \"A user has signed up\".to_string(),\n    schemas: json!({\n        \"1\": {\n                \"title\": \"Invoice Paid Event\",\n                \"description\": \"An invoice was paid by a user\",\n                \"type\": \"object\",\n                \"properties\": {\n                        \"invoiceId\": {\n                                \"description\": \"The invoice id\",\n                                \"type\": \"string\"\n                        },\n                        \"userId\": {\n                                \"description\": \"The user id\",\n                                \"type\": \"string\"\n                        }\n                },\n                \"required\": [\n                        \"invoiceId\",\n                        \"userId\"\n                ]\n        }\n    }),\n    archived: False,\n    name: \"user.signup\".to_string()\n}).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var eventTypeOut = await svix.EventType.CreateAsync(new EventTypeIn{\n    description: \"A user has signed up\",\n    schemas: new {\n        \"1\": {\n                \"title\": \"Invoice Paid Event\",\n                \"description\": \"An invoice was paid by a user\",\n                \"type\": \"object\",\n                \"properties\": {\n                        \"invoiceId\": {\n                                \"description\": \"The invoice id\",\n                                \"type\": \"string\"\n                        },\n                        \"userId\": {\n                                \"description\": \"The user id\",\n                                \"type\": \"string\"\n                        }\n                },\n                \"required\": [\n                        \"invoiceId\",\n                        \"userId\"\n                ]\n        }\n    },\n    archived: false,\n    name: \"user.signup\"\n})"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix event-type create '{\n    \"description\": \"A user has signed up\",\n    \"schemas\": {\n        \"1\": {\n            \"title\": \"Invoice Paid Event\",\n            \"description\": \"An invoice was paid by a user\",\n            \"type\": \"object\",\n            \"properties\": {\n                \"invoiceId\": {\n                    \"description\": \"The invoice id\",\n                    \"type\": \"string\"\n                },\n                \"userId\": {\n                    \"description\": \"The user id\",\n                    \"type\": \"string\"\n                }\n            },\n            \"required\": [\n                \"invoiceId\",\n                \"userId\"\n            ]\n        }\n    },\n    \"archived\": false,\n    \"name\": \"user.signup\"\n}'"
@@ -10595,6 +11037,16 @@
                         "source": "event_type_example_out = svix.event_type.generate(Svix::EventTypeSchemaIn.new({\n    \"schema\": {\n        \"title\": \"Invoice Paid Event\",\n        \"description\": \"An invoice was paid by a user\",\n        \"type\": \"object\",\n        \"properties\": {\n            \"invoiceId\": {\n                \"description\": \"The invoice id\",\n                \"type\": \"string\"\n            },\n            \"userId\": {\n                \"description\": \"The user id\",\n                \"type\": \"string\"\n            }\n        },\n        \"required\": [\n            \"invoiceId\",\n            \"userId\"\n        ]\n    }\n}))"
                     },
                     {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let event_type_example_out = svix.event_type().generate(EventTypeSchemaIn {\n    schema: json!({\n        \"title\": \"Invoice Paid Event\",\n        \"description\": \"An invoice was paid by a user\",\n        \"type\": \"object\",\n        \"properties\": {\n                \"invoiceId\": {\n                        \"description\": \"The invoice id\",\n                        \"type\": \"string\"\n                },\n                \"userId\": {\n                        \"description\": \"The user id\",\n                        \"type\": \"string\"\n                }\n        },\n        \"required\": [\n                \"invoiceId\",\n                \"userId\"\n        ]\n    })\n}).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var eventTypeExampleOut = await svix.EventType.GenerateAsync(new EventTypeSchemaIn{\n    schema: new {\n        \"title\": \"Invoice Paid Event\",\n        \"description\": \"An invoice was paid by a user\",\n        \"type\": \"object\",\n        \"properties\": {\n                \"invoiceId\": {\n                        \"description\": \"The invoice id\",\n                        \"type\": \"string\"\n                },\n                \"userId\": {\n                        \"description\": \"The user id\",\n                        \"type\": \"string\"\n                }\n        },\n        \"required\": [\n                \"invoiceId\",\n                \"userId\"\n        ]\n    }\n})"
+                    },
+                    {
                         "label": "CLI",
                         "lang": "Shell",
                         "source": "svix event-type generate '{\n    \"schema\": {\n        \"title\": \"Invoice Paid Event\",\n        \"description\": \"An invoice was paid by a user\",\n        \"type\": \"object\",\n        \"properties\": {\n            \"invoiceId\": {\n                \"description\": \"The invoice id\",\n                \"type\": \"string\"\n            },\n            \"userId\": {\n                \"description\": \"The user id\",\n                \"type\": \"string\"\n            }\n        },\n        \"required\": [\n            \"invoiceId\",\n            \"userId\"\n        ]\n    }\n}'"
@@ -10750,6 +11202,16 @@
                         "label": "Ruby",
                         "lang": "Ruby",
                         "source": "svix.event_type.delete('event_type_name')"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "svix.event_type().delete(\"event_type_name\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "await svix.EventType.DeleteAsync(\"event_type_name\")"
                     },
                     {
                         "label": "CLI",
@@ -10912,6 +11374,16 @@
                         "label": "Ruby",
                         "lang": "Ruby",
                         "source": "event_type_out = svix.event_type.get('event_type_name')"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let event_type_out = svix.event_type().get(\"event_type_name\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var eventTypeOut = await svix.EventType.GetAsync(\"event_type_name\")"
                     },
                     {
                         "label": "CLI",
@@ -11084,6 +11556,16 @@
                         "label": "Ruby",
                         "lang": "Ruby",
                         "source": "event_type_out = svix.event_type.update('event_type_name', Svix::EventTypeUpdate.new({\n    \"description\": \"A user has signed up\",\n    \"schemas\": {\n        \"1\": {\n            \"title\": \"Invoice Paid Event\",\n            \"description\": \"An invoice was paid by a user\",\n            \"type\": \"object\",\n            \"properties\": {\n                \"invoiceId\": {\n                    \"description\": \"The invoice id\",\n                    \"type\": \"string\"\n                },\n                \"userId\": {\n                    \"description\": \"The user id\",\n                    \"type\": \"string\"\n                }\n            },\n            \"required\": [\n                \"invoiceId\",\n                \"userId\"\n            ]\n        }\n    },\n    \"archived\": false\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let event_type_out = svix.event_type().update(\"event_type_name\", EventTypeUpdate {\n    description: \"A user has signed up\".to_string(),\n    schemas: json!({\n        \"1\": {\n                \"title\": \"Invoice Paid Event\",\n                \"description\": \"An invoice was paid by a user\",\n                \"type\": \"object\",\n                \"properties\": {\n                        \"invoiceId\": {\n                                \"description\": \"The invoice id\",\n                                \"type\": \"string\"\n                        },\n                        \"userId\": {\n                                \"description\": \"The user id\",\n                                \"type\": \"string\"\n                        }\n                },\n                \"required\": [\n                        \"invoiceId\",\n                        \"userId\"\n                ]\n        }\n    }),\n    archived: False\n}).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var eventTypeOut = await svix.EventType.UpdateAsync(\"event_type_name\", new EventTypeUpdate{\n    description: \"A user has signed up\",\n    schemas: new {\n        \"1\": {\n                \"title\": \"Invoice Paid Event\",\n                \"description\": \"An invoice was paid by a user\",\n                \"type\": \"object\",\n                \"properties\": {\n                        \"invoiceId\": {\n                                \"description\": \"The invoice id\",\n                                \"type\": \"string\"\n                        },\n                        \"userId\": {\n                                \"description\": \"The user id\",\n                                \"type\": \"string\"\n                        }\n                },\n                \"required\": [\n                        \"invoiceId\",\n                        \"userId\"\n                ]\n        }\n    },\n    archived: false\n})"
                     },
                     {
                         "label": "CLI",
