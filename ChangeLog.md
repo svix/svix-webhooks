@@ -3,6 +3,10 @@
 ## Next
 * 
 
+## Version 0.58.1
+* Server: Fix logging configuration in production builds to actually be respected.
+* Server: improve how we run Redis migrations.
+
 ## Version 0.58.0
 * Lib/Rust: add a Rust API client + webhook verification library!
 * Lib/Python: fix package installation on Windows.
