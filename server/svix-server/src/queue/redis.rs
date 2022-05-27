@@ -209,6 +209,21 @@ async fn background_task(
     Ok(())
 }
 
+/// Runs Redis queue migrations with the given delay schedule. Migrations are run on this schedule
+/// such that if an old instance of the server is online after the migrations are made, that no data
+/// will be lost assuming the old server is taken offline before the last scheduled delay.
+async fn run_migration_schedule(delays: &[Duration], pool: RedisPool) {
+    for delay in delays {
+        let mut pool = pool.get().await.unwrap();
+
+        // drain legacy queues:
+        migrate_v1_to_v2_queues(&mut pool).await;
+        migrate_v2_to_v3_queues(&mut pool).await;
+
+        tokio::time::sleep(*delay).await;
+    }
+}
+
 /// An inner function allowing key constants to be variable for testing purposes
 async fn new_pair_inner(
     pool: RedisPool,
@@ -268,18 +283,34 @@ async fn new_pair_inner(
     // inserted into the MAIN queue and that monitors the pending tasks of the MAIN queue for
     // messages that must be reinserted.
     tokio::spawn(async move {
+        // Migrate v1 queues to v2 and v2 queues to v3 on a loop with exponential backoff.
+        tokio::spawn({
+            let pool = pool.clone();
+            async move {
+                let delays = [
+                    // 11.25 min
+                    Duration::from_secs(60 * 11 + 15),
+                    // 22.5  min
+                    Duration::from_secs(60 * 22 + 30),
+                    // 45 min
+                    Duration::from_secs(60 * 45),
+                    // 1.5 hours
+                    Duration::from_secs(60 * 30 * 3),
+                    // 3  hours
+                    Duration::from_secs(60 * 60 * 3),
+                    // 6 hours
+                    Duration::from_secs(60 * 60 * 6),
+                    // 12 hours
+                    Duration::from_secs(60 * 60 * 12),
+                    // 24 hours
+                    Duration::from_secs(60 * 60 * 24),
+                ];
+
+                run_migration_schedule(&delays, pool).await;
+            }
+        });
+
         // FIXME: enforce we only have one such worker via locking
-        let pool = pool.clone();
-
-        // Before entering the loop, migrate v1 queues to v2 and v2 queues to v3.
-        {
-            let mut pool = pool.get().await.unwrap();
-
-            // drain legacy queues:
-            migrate_v1_to_v2_queues(&mut pool).await;
-            migrate_v2_to_v3_queues(&mut pool).await;
-        }
-
         loop {
             if let Err(err) =
                 background_task(pool.clone(), mqn.clone(), dqn.clone(), pending_duration).await
