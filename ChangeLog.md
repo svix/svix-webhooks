@@ -3,6 +3,9 @@
 ## Next
 * 
 
+## Version 0.58.2
+* Libs and server: update OpenAPI spec
+
 ## Version 0.58.1
 * Server: Fix logging configuration in production builds to actually be respected.
 * Server: improve how we run Redis migrations.
