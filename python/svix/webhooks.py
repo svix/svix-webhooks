@@ -21,6 +21,9 @@ class Webhook:
     _enc_key: t.Optional[bytes]
 
     def __init__(self, whsecret: str, *, enc_key: t.Optional[str] = None):
+        if not whsecret:
+            raise RuntimeError("Secret can't be empty.")
+
         if whsecret.startswith(self._SECRET_PREFIX):
             whsecret = whsecret[len(self._SECRET_PREFIX) :]
         self._whsecret = base64.b64decode(whsecret)

@@ -595,8 +595,11 @@ export class Webhook {
   private readonly key: Uint8Array;
 
   constructor(secret: string) {
+    if (!secret) {
+      throw new Error("Secret can't be empty.");
+    }
     if (secret.startsWith(Webhook.prefix)) {
-      secret = secret.substr(Webhook.prefix.length);
+      secret = secret.substring(Webhook.prefix.length);
     }
     this.key = base64.decode(secret);
   }
