@@ -36,6 +36,18 @@ class TestPayload {
   }
 }
 
+test("empty key raises error", () => {
+  expect(() => {
+    new Webhook("");
+  }).toThrowError(Error);
+  expect(() => {
+    new Webhook(undefined as any);
+  }).toThrowError(Error);
+  expect(() => {
+    new Webhook(null as any);
+  }).toThrowError(Error);
+});
+
 test("missing id raises error", () => {
   const wh = new Webhook("MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw");
 
