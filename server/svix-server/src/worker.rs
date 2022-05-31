@@ -268,13 +268,17 @@ async fn process_task(
     queue_tx: &TaskQueueProducer,
     queue_task: QueueTask,
 ) -> Result<()> {
-    let msg = message::Entity::find_by_id(queue_task.clone().msg_id())
+    if queue_task == QueueTask::HealthCheck {
+        return Ok(());
+    }
+
+    let msg = message::Entity::find_by_id(queue_task.clone().msg_id().unwrap())
         .one(db)
         .await?
         .ok_or_else(|| {
             Error::Generic(format!(
                 "Unexpected: message doesn't exist {}",
-                queue_task.clone().msg_id()
+                queue_task.clone().msg_id().unwrap()
             ))
         })?;
     let payload = msg.payload.as_ref().expect("Message payload is NULL");
@@ -291,9 +295,10 @@ async fn process_task(
     .ok_or_else(|| Error::Generic(format!("Application doesn't exist: {}", &msg.app_id)))?;
 
     let endpoints: Vec<CreateMessageEndpoint> = create_message_app
-        .filtered_endpoints(queue_task.clone().trigger_type(), &msg)
+        .filtered_endpoints(queue_task.clone().trigger_type().unwrap(), &msg)
         .iter()
         .filter(|endpoint| match &queue_task {
+            QueueTask::HealthCheck => unreachable!(),
             QueueTask::MessageV1(task) => task.endpoint_id == endpoint.id,
             QueueTask::MessageBatch(_) => true,
         })
@@ -324,7 +329,7 @@ async fn process_task(
                 db,
                 queue_tx,
                 payload,
-                queue_task.clone().to_msg_task(endpoint.id.clone()),
+                queue_task.clone().to_msg_task(endpoint.id.clone()).unwrap(),
                 endpoint.to_owned(),
             )
         })

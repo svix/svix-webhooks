@@ -91,33 +91,37 @@ impl MessageTaskBatch {
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "type")]
 pub enum QueueTask {
+    HealthCheck,
     MessageV1(MessageTask),
     MessageBatch(MessageTaskBatch),
 }
 
 impl QueueTask {
-    pub fn msg_id(self) -> MessageId {
+    pub fn msg_id(self) -> Option<MessageId> {
         match self {
-            QueueTask::MessageV1(task) => task.msg_id,
-            QueueTask::MessageBatch(batch) => batch.msg_id,
+            QueueTask::HealthCheck => None,
+            QueueTask::MessageV1(task) => Some(task.msg_id),
+            QueueTask::MessageBatch(batch) => Some(batch.msg_id),
         }
     }
-    pub fn to_msg_task(self, endpoint_id: EndpointId) -> MessageTask {
+    pub fn to_msg_task(self, endpoint_id: EndpointId) -> Option<MessageTask> {
         match self {
-            QueueTask::MessageV1(task) => task,
-            QueueTask::MessageBatch(batch) => MessageTask {
+            QueueTask::HealthCheck => None,
+            QueueTask::MessageV1(task) => Some(task),
+            QueueTask::MessageBatch(batch) => Some(MessageTask {
                 msg_id: batch.msg_id,
                 app_id: batch.app_id,
                 endpoint_id,
                 attempt_count: 0,
                 trigger_type: batch.trigger_type,
-            },
+            }),
         }
     }
-    pub fn trigger_type(self) -> MessageAttemptTriggerType {
+    pub fn trigger_type(self) -> Option<MessageAttemptTriggerType> {
         match self {
-            QueueTask::MessageV1(task) => task.trigger_type,
-            QueueTask::MessageBatch(batch) => batch.trigger_type,
+            QueueTask::HealthCheck => None,
+            QueueTask::MessageV1(task) => Some(task.trigger_type),
+            QueueTask::MessageBatch(batch) => Some(batch.trigger_type),
         }
     }
 }
