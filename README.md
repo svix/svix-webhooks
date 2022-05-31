@@ -133,7 +133,7 @@ Please refer to the [server configuration](#server-configuration) section below 
 
 ### Docker
 
-You can use the official Svix Docker image from [Docker Hub](https://hub.docker.com/r/svix/svix-server).
+You can use the official Svix Docker image from [Docker Hub](https://hub.docker.com/r/svix/svix-server). You can either use the `latest` tag, or one of [the versioned tags](https://hub.docker.com/r/svix/svix-server/tags) instead.
 
 You can either use the example [docker-compose.yml](./server/docker-compose.yml) file with `docker-compose` (easiest), `docker swarm` (advanced), or run the container standalone.
 
