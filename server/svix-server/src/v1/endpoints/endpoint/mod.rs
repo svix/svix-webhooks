@@ -17,6 +17,7 @@ use chrono::{DateTime, Utc};
 use sea_orm::ActiveValue::Set;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, collections::HashSet};
+use url::Url;
 
 use svix_server_derive::{ModelIn, ModelOut};
 use validator::{Validate, ValidationError};
@@ -49,6 +50,23 @@ pub fn validate_channels_endpoint(
     }
 }
 
+pub fn validate_url(val: &str) -> std::result::Result<(), ValidationError> {
+    match Url::parse(val) {
+        Ok(url) => {
+            let scheme = url.scheme();
+            if scheme == "https" || scheme == "http" {
+                Ok(())
+            } else {
+                Err(ValidationError::new(
+                    "Enpoint URL schemes must be http or https",
+                ))
+            }
+        }
+
+        Err(_) => Err(ValidationError::new("Endpoint URLs must be valid")),
+    }
+}
+
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize, Validate, ModelIn)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointIn {
@@ -64,7 +82,7 @@ pub struct EndpointIn {
     #[validate]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub uid: Option<EndpointUid>,
-    #[validate(url(message = "Endpoint URLs must be valid"))]
+    #[validate(custom = "validate_url")]
     pub url: String,
     #[validate(range(min = 1, message = "Endpoint versions must be at least one"))]
     pub version: u16,
@@ -287,7 +305,7 @@ pub fn router() -> Router {
 #[cfg(test)]
 mod tests {
 
-    use super::{EndpointHeadersIn, EndpointHeadersPatchIn, EndpointIn};
+    use super::{validate_url, EndpointHeadersIn, EndpointHeadersPatchIn, EndpointIn};
     use serde_json::json;
     use std::collections::HashMap;
     use validator::Validate;
@@ -391,5 +409,32 @@ mod tests {
         let valid: EndpointHeadersPatchIn =
             serde_json::from_value(json!({ "headers": headers_valid })).unwrap();
         valid.validate().unwrap();
+    }
+
+    #[test]
+    fn test_url_validation() {
+        let valid_https = "https://test.url";
+        let valid_http = "http://test.url";
+        let invalid_scheme = "anythingelse://test.url";
+        let invalid_format = "http://[:::1]";
+
+        assert!(validate_url(valid_https).is_ok());
+        assert!(validate_url(valid_http).is_ok());
+        assert!(validate_url(invalid_scheme).is_err());
+        assert!(validate_url(invalid_format).is_err());
+
+        let valid_https: EndpointIn =
+            serde_json::from_value(json!({"url": valid_https, "version": 1})).unwrap();
+        let valid_http: EndpointIn =
+            serde_json::from_value(json!({"url": valid_http, "version": 1})).unwrap();
+        let invalid_scheme: EndpointIn =
+            serde_json::from_value(json!({"url": invalid_scheme, "version": 1})).unwrap();
+        let invalid_format: EndpointIn =
+            serde_json::from_value(json!({"url": invalid_format, "version": 1})).unwrap();
+
+        assert!(valid_https.validate().is_ok());
+        assert!(valid_http.validate().is_ok());
+        assert!(invalid_scheme.validate().is_err());
+        assert!(invalid_format.validate().is_err());
     }
 }
