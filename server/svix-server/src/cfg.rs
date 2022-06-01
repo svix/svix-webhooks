@@ -23,18 +23,37 @@ where
     Ok(Keys::new(buf.as_bytes()))
 }
 
+#[derive(Deserialize)]
+#[serde(untagged)]
+enum RetryScheduleDeserializer {
+    Array(Vec<u64>),
+    Legacy(String),
+}
+
 fn deserialize_retry_schedule<'de, D>(
     deserializer: D,
 ) -> std::result::Result<Vec<Duration>, D::Error>
 where
     D: Deserializer<'de>,
 {
-    let buf = String::deserialize(deserializer)?;
-    Ok(buf
-        .split(',')
-        .into_iter()
-        .map(|x| Duration::new(x.parse().expect("Error parsing duration"), 0))
-        .collect())
+    let buf = RetryScheduleDeserializer::deserialize(deserializer)?;
+    match buf {
+        RetryScheduleDeserializer::Array(buf) => {
+            Ok(buf.into_iter().map(|x| Duration::new(x, 0)).collect())
+        }
+        RetryScheduleDeserializer::Legacy(buf) => Ok(buf
+            .split(',')
+            .into_iter()
+            .filter_map(|x| {
+                let x = x.trim();
+                if x.is_empty() {
+                    None
+                } else {
+                    Some(Duration::new(x.parse().expect("Error parsing duration"), 0))
+                }
+            })
+            .collect()),
+    }
 }
 
 const DEFAULTS: &str = include_str!("../config.default.toml");
@@ -132,4 +151,59 @@ pub fn load() -> Result<Arc<ConfigurationInner>> {
 
     config.validate().expect("Error validating configuration");
     Ok(Arc::from(config))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_retry_schedule_parsing() {
+        figment::Jail::expect_with(|jail| {
+            jail.set_env("SVIX_JWT_SECRET", "x");
+
+            // Multi item
+            jail.set_env("SVIX_RETRY_SCHEDULE", "[1,2]");
+
+            let cfg = load().unwrap();
+            assert_eq!(
+                cfg.retry_schedule,
+                vec![Duration::new(1, 0), Duration::new(2, 0)]
+            );
+
+            // Single item
+            jail.set_env("SVIX_RETRY_SCHEDULE", "[1]");
+
+            let cfg = load().unwrap();
+            assert_eq!(cfg.retry_schedule, vec![Duration::new(1, 0)]);
+
+            // Empty
+            jail.set_env("SVIX_RETRY_SCHEDULE", "[]");
+
+            let cfg = load().unwrap();
+            assert!(cfg.retry_schedule.is_empty());
+
+            Ok(())
+        });
+    }
+
+    #[test]
+    fn test_retry_schedule_parsing_legacy() {
+        figment::Jail::expect_with(|jail| {
+            jail.set_env("SVIX_JWT_SECRET", "x");
+
+            // Multi item
+            jail.set_env("SVIX_RETRY_SCHEDULE", "1,2");
+
+            let cfg = load().unwrap();
+            assert_eq!(
+                cfg.retry_schedule,
+                vec![Duration::new(1, 0), Duration::new(2, 0)]
+            );
+
+            // Single item and empty were failing before so not testing them
+
+            Ok(())
+        });
+    }
 }
