@@ -33,7 +33,7 @@ num_enum = "0.5.6"
 enum_dispatch = "0.3.8"
 regex = "1.5.5"
 lazy_static = "1.4.0"
-figment = { version = "0.10", features = ["toml", "env"] }
+figment = { version = "0.10", features = ["toml", "env", "test"] }
 tracing = "0.1.29"
 tracing-subscriber = { version="0.3", features = ["env-filter"] }
 validator = { version = "0.14.0", features = ["derive"] }

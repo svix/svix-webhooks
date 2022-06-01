@@ -268,6 +268,49 @@ async fn test_message_attempts() {
 }
 
 #[tokio::test]
+async fn test_message_attempts_empty_retry_schedule() {
+    let mut cfg = get_default_test_config();
+    cfg.retry_schedule = vec![];
+
+    let (client, _jh) = start_svix_server_with_cfg(&cfg);
+
+    let (status_code, msg_status, attempt_count) =
+        (StatusCode::INTERNAL_SERVER_ERROR, MessageStatus::Fail, None);
+    let app_id = create_test_app(&client, "app").await.unwrap().id;
+
+    let receiver = TestReceiver::start(status_code);
+
+    let endp_id = create_test_endpoint(&client, &app_id, &receiver.endpoint)
+        .await
+        .unwrap()
+        .id;
+
+    let msg = create_test_message(&client, &app_id, serde_json::json!({"test": "data"}))
+        .await
+        .unwrap();
+
+    let list = get_msg_attempt_list_and_assert_count(
+        &client,
+        &app_id,
+        &msg.id,
+        attempt_count.unwrap_or(&cfg.retry_schedule.len() + 1),
+    )
+    .await
+    .unwrap();
+
+    for i in list.data.iter() {
+        assert_eq!(i.status, msg_status);
+        println!("{} {}", i.response_status_code, status_code);
+        assert_eq!(
+            i.response_status_code,
+            TryInto::<i16>::try_into(status_code.as_u16()).unwrap()
+        );
+        assert_eq!(i.endpoint_id, endp_id);
+    }
+    receiver.jh.abort();
+}
+
+#[tokio::test]
 async fn test_pagination_by_endpoint() {
     let (client, _jh) = start_svix_server();
 
