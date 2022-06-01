@@ -96,36 +96,6 @@ pub enum QueueTask {
     MessageBatch(MessageTaskBatch),
 }
 
-impl QueueTask {
-    pub fn msg_id(self) -> Option<MessageId> {
-        match self {
-            QueueTask::HealthCheck => None,
-            QueueTask::MessageV1(task) => Some(task.msg_id),
-            QueueTask::MessageBatch(batch) => Some(batch.msg_id),
-        }
-    }
-    pub fn to_msg_task(self, endpoint_id: EndpointId) -> Option<MessageTask> {
-        match self {
-            QueueTask::HealthCheck => None,
-            QueueTask::MessageV1(task) => Some(task),
-            QueueTask::MessageBatch(batch) => Some(MessageTask {
-                msg_id: batch.msg_id,
-                app_id: batch.app_id,
-                endpoint_id,
-                attempt_count: 0,
-                trigger_type: batch.trigger_type,
-            }),
-        }
-    }
-    pub fn trigger_type(self) -> Option<MessageAttemptTriggerType> {
-        match self {
-            QueueTask::HealthCheck => None,
-            QueueTask::MessageV1(task) => Some(task.trigger_type),
-            QueueTask::MessageBatch(batch) => Some(batch.trigger_type),
-        }
-    }
-}
-
 pub struct TaskQueueProducer(Box<dyn TaskQueueSend>);
 
 impl Clone for TaskQueueProducer {

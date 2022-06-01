@@ -29,6 +29,14 @@ pub async fn get_pool(cfg: Configuration) -> RedisPool {
     }
 }
 
+fn task_queue_delivery_to_u16(tqd: &TaskQueueDelivery) -> u16 {
+    match &tqd.task {
+        QueueTask::HealthCheck => panic!("Health check in test"),
+        QueueTask::MessageBatch(batch) => u16::from_str(batch.msg_id.as_str()).unwrap(),
+        QueueTask::MessageV1(task) => u16::from_str(task.msg_id.as_str()).unwrap(),
+    }
+}
+
 async fn test_many_queue_consumers_inner(prefix: &str, delay: Option<Duration>) {
     dotenv::dotenv().ok();
     let cfg = svix_server::cfg::load().expect("Error loading configuration");
@@ -117,9 +125,8 @@ async fn test_many_queue_consumers_inner(prefix: &str, delay: Option<Duration>) 
 
     // Sort it by the message ID
     out.sort_by(|a: &TaskQueueDelivery, b: &TaskQueueDelivery| {
-        let a = u16::from_str(a.task.clone().msg_id().as_str()).unwrap();
-        let b = u16::from_str(b.task.clone().msg_id().as_str()).unwrap();
-
+        let a = task_queue_delivery_to_u16(a);
+        let b = task_queue_delivery_to_u16(b);
         a.cmp(&b)
     });
 
@@ -130,10 +137,7 @@ async fn test_many_queue_consumers_inner(prefix: &str, delay: Option<Duration>) 
     // Genreally, however, this lint is actually good practice.
     #[allow(clippy::needless_range_loop)]
     for index in 0..1000 {
-        assert_eq!(
-            usize::from_str(out[index].task.clone().msg_id().as_str()).unwrap(),
-            index + 1
-        );
+        assert_eq!(task_queue_delivery_to_u16(&out[index]) as usize, index + 1);
     }
 }
 
