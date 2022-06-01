@@ -12,22 +12,52 @@ use crate::{
     queue::{QueueTask, TaskQueueProducer},
 };
 
-async fn heartbeat() -> StatusCode {
+async fn ping() -> StatusCode {
     StatusCode::NO_CONTENT
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-pub enum HealthStatus {
-    Operational,
-    Error(String),
+pub enum HealthStatusVariant {
+    Ok,
+    Error,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct HealthStatus {
+    status: HealthStatusVariant,
+    information: String,
+}
+
+impl HealthStatus {
+    pub fn new_ok() -> HealthStatus {
+        HealthStatus {
+            status: HealthStatusVariant::Ok,
+            information: "OK".to_owned(),
+        }
+    }
+
+    pub fn new_error(information: String) -> HealthStatus {
+        HealthStatus {
+            status: HealthStatusVariant::Error,
+            information,
+        }
+    }
+}
+impl<O, E: std::error::Error> From<Result<O, E>> for HealthStatus {
+    fn from(res: Result<O, E>) -> Self {
+        match res {
+            Ok(_) => HealthStatus::new_ok(),
+            Err(e) => HealthStatus::new_error(e.to_string()),
+        }
+    }
 }
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct HealthReport {
-    pg_status: HealthStatus,
+    database: HealthStatus,
 
-    queue_status: HealthStatus,
-    cache_status: HealthStatus,
+    queue: HealthStatus,
+    cache: HealthStatus,
 }
 
 #[derive(Deserialize, Serialize, Debug, PartialEq)]
@@ -35,32 +65,24 @@ struct HealthCheckCacheValue(());
 kv_def!(HealthCheckCacheKey, HealthCheckCacheValue);
 
 async fn health(
-    Extension(pg): Extension<DatabaseConnection>,
+    Extension(ref db): Extension<DatabaseConnection>,
     Extension(queue_tx): Extension<TaskQueueProducer>,
     Extension(cache): Extension<Cache>,
 ) -> Json<HealthReport> {
     // SELECT 1 FROM any table
-    let pg_status = if let Err(e) = pg
+    let database = db
         .execute(Statement::from_string(
             DatabaseBackend::Postgres,
-            "SELECT 1 FROM endpoint".to_owned(),
+            "SELECT 1".to_owned(),
         ))
         .await
-    {
-        HealthStatus::Error(e.to_string())
-    } else {
-        HealthStatus::Operational
-    };
+        .into();
 
     // Send a [`HealthCheck`] through the queue
-    let queue_status = if let Err(e) = queue_tx.send(QueueTask::HealthCheck, None).await {
-        HealthStatus::Error(e.to_string())
-    } else {
-        HealthStatus::Operational
-    };
+    let queue = queue_tx.send(QueueTask::HealthCheck, None).await.into();
 
-    // Set a cache value
-    let cache_status = if let Err(e) = cache
+    // Set a cache value with an expiration to ensure it works
+    let cache = cache
         .set(
             &HealthCheckCacheKey("health_check_value".to_owned()),
             &HealthCheckCacheValue(()),
@@ -68,21 +90,17 @@ async fn health(
             Duration::from_millis(100),
         )
         .await
-    {
-        HealthStatus::Error(e.to_string())
-    } else {
-        HealthStatus::Operational
-    };
+        .into();
 
     Json(HealthReport {
-        pg_status,
-        queue_status,
-        cache_status,
+        database,
+        queue,
+        cache,
     })
 }
 
 pub fn router() -> Router {
     Router::new()
-        .route("/heartbeat/", get(heartbeat).head(heartbeat))
+        .route("/ping/", get(ping).head(ping))
         .route("/health/", get(health).head(health))
 }
