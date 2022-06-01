@@ -42,6 +42,16 @@ impl HealthStatus {
             information,
         }
     }
+
+    pub fn is_ok(&self) -> bool {
+        matches!(
+            self,
+            HealthStatus {
+                status: HealthStatusVariant::Ok,
+                ..
+            }
+        )
+    }
 }
 impl<O, E: std::error::Error> From<Result<O, E>> for HealthStatus {
     fn from(res: Result<O, E>) -> Self {
@@ -68,9 +78,9 @@ async fn health(
     Extension(ref db): Extension<DatabaseConnection>,
     Extension(queue_tx): Extension<TaskQueueProducer>,
     Extension(cache): Extension<Cache>,
-) -> Json<HealthReport> {
+) -> (StatusCode, Json<HealthReport>) {
     // SELECT 1 FROM any table
-    let database = db
+    let database: HealthStatus = db
         .execute(Statement::from_string(
             DatabaseBackend::Postgres,
             "SELECT 1".to_owned(),
@@ -79,10 +89,10 @@ async fn health(
         .into();
 
     // Send a [`HealthCheck`] through the queue
-    let queue = queue_tx.send(QueueTask::HealthCheck, None).await.into();
+    let queue: HealthStatus = queue_tx.send(QueueTask::HealthCheck, None).await.into();
 
     // Set a cache value with an expiration to ensure it works
-    let cache = cache
+    let cache: HealthStatus = cache
         .set(
             &HealthCheckCacheKey("health_check_value".to_owned()),
             &HealthCheckCacheValue(()),
@@ -92,15 +102,24 @@ async fn health(
         .await
         .into();
 
-    Json(HealthReport {
-        database,
-        queue,
-        cache,
-    })
+    let status = if database.is_ok() && queue.is_ok() && cache.is_ok() {
+        StatusCode::OK
+    } else {
+        StatusCode::INTERNAL_SERVER_ERROR
+    };
+
+    (
+        status,
+        Json(HealthReport {
+            database,
+            queue,
+            cache,
+        }),
+    )
 }
 
 pub fn router() -> Router {
     Router::new()
-        .route("/ping/", get(ping).head(ping))
+        .route("/health/ping/", get(ping).head(ping))
         .route("/health/", get(health).head(health))
 }
