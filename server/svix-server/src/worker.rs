@@ -9,7 +9,9 @@ use crate::core::{
 };
 use crate::db::models::{message, messageattempt, messagedestination};
 use crate::error::{Error, Result};
-use crate::queue::{MessageTask, QueueTask, TaskQueueConsumer, TaskQueueProducer};
+use crate::queue::{
+    MessageTask, MessageTaskBatch, QueueTask, TaskQueueConsumer, TaskQueueProducer,
+};
 use chrono::Utc;
 use futures::future;
 use reqwest::header::{HeaderMap, HeaderName};
@@ -268,15 +270,29 @@ async fn process_task(
     queue_tx: &TaskQueueProducer,
     queue_task: QueueTask,
 ) -> Result<()> {
-    let msg = message::Entity::find_by_id(queue_task.clone().msg_id())
+    if queue_task == QueueTask::HealthCheck {
+        return Ok(());
+    }
+
+    let (msg_id, trigger_type) = match queue_task.clone() {
+        QueueTask::MessageBatch(MessageTaskBatch {
+            msg_id,
+            trigger_type,
+            ..
+        }) => (msg_id, trigger_type),
+        QueueTask::MessageV1(MessageTask {
+            msg_id,
+            trigger_type,
+            ..
+        }) => (msg_id, trigger_type),
+
+        QueueTask::HealthCheck => unreachable!(),
+    };
+
+    let msg = message::Entity::find_by_id(msg_id.clone())
         .one(db)
         .await?
-        .ok_or_else(|| {
-            Error::Generic(format!(
-                "Unexpected: message doesn't exist {}",
-                queue_task.clone().msg_id()
-            ))
-        })?;
+        .ok_or_else(|| Error::Generic(format!("Unexpected: message doesn't exist {}", msg_id,)))?;
     let payload = msg.payload.as_ref().expect("Message payload is NULL");
 
     let create_message_app = CreateMessageApp::layered_fetch(
@@ -291,9 +307,10 @@ async fn process_task(
     .ok_or_else(|| Error::Generic(format!("Application doesn't exist: {}", &msg.app_id)))?;
 
     let endpoints: Vec<CreateMessageEndpoint> = create_message_app
-        .filtered_endpoints(queue_task.clone().trigger_type(), &msg)
+        .filtered_endpoints(trigger_type, &msg)
         .iter()
         .filter(|endpoint| match &queue_task {
+            QueueTask::HealthCheck => unreachable!(),
             QueueTask::MessageV1(task) => task.endpoint_id == endpoint.id,
             QueueTask::MessageBatch(_) => true,
         })
@@ -317,16 +334,27 @@ async fn process_task(
     }
 
     let futures: Vec<_> = endpoints
-        .iter()
+        .into_iter()
         .map(|endpoint| {
-            dispatch(
-                cfg.clone(),
-                db,
-                queue_tx,
-                payload,
-                queue_task.clone().to_msg_task(endpoint.id.clone()),
-                endpoint.to_owned(),
-            )
+            let task = match &queue_task {
+                QueueTask::MessageV1(task) => task.clone(),
+                QueueTask::MessageBatch(MessageTaskBatch {
+                    msg_id,
+                    app_id,
+                    trigger_type,
+                    ..
+                }) => MessageTask {
+                    msg_id: msg_id.clone(),
+                    app_id: app_id.clone(),
+                    endpoint_id: endpoint.id.clone(),
+                    attempt_count: 0,
+                    trigger_type: *trigger_type,
+                },
+
+                QueueTask::HealthCheck => unreachable!(),
+            };
+
+            dispatch(cfg.clone(), db, queue_tx, payload, task, endpoint)
         })
         .collect();
 
