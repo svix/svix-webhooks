@@ -25,21 +25,19 @@ pub enum HealthStatusVariant {
 #[derive(Debug, Deserialize, Serialize)]
 pub struct HealthStatus {
     status: HealthStatusVariant,
-    information: String,
+    // TODO: information field
 }
 
 impl HealthStatus {
     pub fn new_ok() -> HealthStatus {
         HealthStatus {
             status: HealthStatusVariant::Ok,
-            information: "OK".to_owned(),
         }
     }
 
-    pub fn new_error(information: String) -> HealthStatus {
+    pub fn new_error() -> HealthStatus {
         HealthStatus {
             status: HealthStatusVariant::Error,
-            information,
         }
     }
 
@@ -53,11 +51,11 @@ impl HealthStatus {
         )
     }
 }
-impl<O, E: std::error::Error> From<Result<O, E>> for HealthStatus {
+impl<O, E> From<Result<O, E>> for HealthStatus {
     fn from(res: Result<O, E>) -> Self {
         match res {
             Ok(_) => HealthStatus::new_ok(),
-            Err(e) => HealthStatus::new_error(e.to_string()),
+            Err(_) => HealthStatus::new_error(),
         }
     }
 }
