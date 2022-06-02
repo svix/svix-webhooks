@@ -3,6 +3,14 @@
 ## Next
 * 
 
+## Version 0.59.0
+* Server: make the `health` endpoint more useful by adding more status checks to it.
+* Server: parse `retry_schedule` as an array rather than string.
+  * People should use the next syntax: `[1, 2]`, though the old syntax is still supported for backwards compatibility.
+* Server: add validation to ensure endpoint URL scheme is either http or https.
+* Libs/Python: show a more useful error for obviously malformed secrets.
+* Libs/JavaScript: show a more useful error for obviously malformed secrets.
+
 ## Version 0.58.2
 * Libs and server: update OpenAPI spec
 
