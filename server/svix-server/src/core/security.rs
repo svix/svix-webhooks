@@ -128,18 +128,46 @@ where
     }
 }
 
+pub struct AuthenticatedOrganization {
+    pub permissions: Permissions,
+}
+
+#[async_trait]
+impl<B> FromRequest<B> for AuthenticatedOrganization
+where
+    B: Send,
+{
+    type Rejection = Error;
+
+    async fn from_request(req: &mut RequestParts<B>) -> Result<Self> {
+        let permissions = Permissions::from_request(req).await?;
+        if permissions.type_ == KeyType::Application {
+            return Err(HttpError::unauthorized(
+                None,
+                Some(
+                    "You are only permitted to perform operations under the Application type"
+                        .to_owned(),
+                ),
+            )
+            .into());
+        }
+
+        Ok(AuthenticatedOrganization { permissions })
+    }
+}
+
 #[derive(Deserialize)]
 struct ApplicationPathParams {
     app_id: ApplicationIdOrUid,
 }
 
-pub struct AuthenticatedOrganization {
+pub struct OrganizationAuthenticatedApplication {
     pub permissions: Permissions,
     pub app: application::Model,
 }
 
 #[async_trait]
-impl<B> FromRequest<B> for AuthenticatedOrganization
+impl<B> FromRequest<B> for OrganizationAuthenticatedApplication
 where
     B: Send,
 {
@@ -173,7 +201,7 @@ where
         .one(db)
         .await?
         .ok_or_else(|| HttpError::not_found(None, None))?;
-        Ok(AuthenticatedOrganization { permissions, app })
+        Ok(OrganizationAuthenticatedApplication { permissions, app })
     }
 }
 

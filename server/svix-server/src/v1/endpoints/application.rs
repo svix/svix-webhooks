@@ -3,7 +3,7 @@
 
 use crate::{
     core::{
-        security::KeyType,
+        security::AuthenticatedOrganization,
         types::{ApplicationId, ApplicationIdOrUid, ApplicationUid},
     },
     error::{HttpError, Result},
@@ -91,16 +91,8 @@ impl From<application::Model> for ApplicationOut {
 async fn list_applications(
     Extension(ref db): Extension<DatabaseConnection>,
     pagination: ValidatedQuery<Pagination<ApplicationId>>,
-    permissions: Permissions,
+    AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
 ) -> Result<Json<ListResponse<ApplicationOut>>> {
-    if permissions.type_ == KeyType::Application {
-        return Err(HttpError::unauthorized(
-            None,
-            Some("This require organizational level permissions".to_owned()),
-        )
-        .into());
-    }
-
     let PaginationLimit(limit) = pagination.limit;
     let iterator = pagination.iterator.clone();
 
@@ -132,16 +124,8 @@ async fn create_application(
     Extension(ref db): Extension<DatabaseConnection>,
     ValidatedJson(data): ValidatedJson<ApplicationIn>,
     query: ValidatedQuery<CreateApplicationQuery>,
-    permissions: Permissions,
+    AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
 ) -> Result<(StatusCode, Json<ApplicationOut>)> {
-    if permissions.type_ == KeyType::Application {
-        return Err(HttpError::unauthorized(
-            None,
-            Some("This require organizational level permissions".to_owned()),
-        )
-        .into());
-    }
-
     if query.get_if_exists {
         if let Some(ref uid) = data.uid {
             let app = application::Entity::secure_find(permissions.org_id.clone())
@@ -186,16 +170,8 @@ async fn update_application(
     Extension(ref db): Extension<DatabaseConnection>,
     Path(app_id): Path<ApplicationIdOrUid>,
     ValidatedJson(data): ValidatedJson<ApplicationIn>,
-    permissions: Permissions,
+    AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
 ) -> Result<Json<ApplicationOut>> {
-    if permissions.type_ == KeyType::Application {
-        return Err(HttpError::unauthorized(
-            None,
-            Some("This require organizational level permissions".to_owned()),
-        )
-        .into());
-    }
-
     let app = application::Entity::secure_find_by_id_or_uid(permissions.org_id.clone(), app_id)
         .one(db)
         .await?
@@ -211,16 +187,8 @@ async fn update_application(
 async fn delete_application(
     Extension(ref db): Extension<DatabaseConnection>,
     Path(app_id): Path<ApplicationIdOrUid>,
-    permissions: Permissions,
+    AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
-    if permissions.type_ == KeyType::Application {
-        return Err(HttpError::unauthorized(
-            None,
-            Some("This require organizational level permissions".to_owned()),
-        )
-        .into());
-    }
-
     let app = application::Entity::secure_find_by_id_or_uid(permissions.org_id, app_id)
         .one(db)
         .await?

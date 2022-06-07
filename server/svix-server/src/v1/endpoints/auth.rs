@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     cfg::Configuration,
     core::{
-        security::{generate_app_token, AuthenticatedOrganization},
+        security::{generate_app_token, OrganizationAuthenticatedApplication},
         types::ApplicationIdOrUid,
     },
     error::{HttpError, Result},
@@ -20,7 +20,7 @@ struct DashboardAccessOut {
 async fn dashboard_access(
     Extension(cfg): Extension<Configuration>,
     Path(_app_id): Path<ApplicationIdOrUid>,
-    AuthenticatedOrganization { permissions, app }: AuthenticatedOrganization,
+    OrganizationAuthenticatedApplication { permissions, app }: OrganizationAuthenticatedApplication,
 ) -> Result<Json<DashboardAccessOut>> {
     let token = generate_app_token(&cfg.jwt_secret, permissions.org_id, app.id.clone())?;
 

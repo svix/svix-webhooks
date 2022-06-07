@@ -3,7 +3,7 @@
 
 use crate::{
     core::{
-        security::{AuthenticatedApplication, AuthenticatedOrganization},
+        security::{AuthenticatedApplication, OrganizationAuthenticatedApplication},
         types::{
             ApplicationIdOrUid, EndpointId, EndpointIdOrUid, EventChannel, EventTypeNameSet,
             MessageAttemptId, MessageAttemptTriggerType, MessageEndpointId, MessageId,
@@ -652,10 +652,10 @@ async fn resend_webhook(
     Extension(ref db): Extension<DatabaseConnection>,
     Extension(queue_tx): Extension<TaskQueueProducer>,
     Path((_app_id, msg_id, endp_id)): Path<(ApplicationIdOrUid, MessageIdOrUid, EndpointIdOrUid)>,
-    AuthenticatedOrganization {
+    OrganizationAuthenticatedApplication {
         permissions: _,
         app,
-    }: AuthenticatedOrganization,
+    }: OrganizationAuthenticatedApplication,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
     let msg = message::Entity::secure_find_by_id_or_uid(app.id.clone(), msg_id)
         .one(db)
