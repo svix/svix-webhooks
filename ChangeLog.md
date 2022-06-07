@@ -3,6 +3,9 @@
 ## Next
 * 
 
+## Version 0.59.1
+* Libs/Csharp: expose missing getters which prevented a lot of the lib's functionality to be used.
+
 ## Version 0.59.0
 * Server: make the `health` endpoint more useful by adding more status checks to it.
 * Server: parse `retry_schedule` as an array rather than string.
