@@ -5,7 +5,7 @@ use crate::{
     cache::Cache,
     core::{
         message_app::CreateMessageApp,
-        security::AuthenticatedApplication,
+        security::{AuthenticatedApplication, AuthenticatedOrganization},
         types::{
             ApplicationIdOrUid, EventChannel, EventChannelSet, EventTypeName, EventTypeNameSet,
             MessageAttemptTriggerType, MessageId, MessageIdOrUid, MessageUid,
@@ -200,7 +200,7 @@ async fn create_message(
         CreateMessageQueryParams,
     >,
     ValidatedJson(data): ValidatedJson<MessageIn>,
-    AuthenticatedApplication { permissions, app }: AuthenticatedApplication,
+    AuthenticatedOrganization { permissions, app }: AuthenticatedOrganization,
 ) -> Result<(StatusCode, Json<MessageOut>)> {
     let create_message_app = CreateMessageApp::layered_fetch(
         cache,

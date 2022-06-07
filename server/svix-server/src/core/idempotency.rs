@@ -445,7 +445,7 @@ mod tests {
         // Generate a new token so that keys are unique
         dotenv::dotenv().ok();
         let cfg = crate::cfg::load().unwrap();
-        let token = generate_token(&cfg.jwt_secret, OrganizationId::new(None, None))
+        let token = generate_token(&cfg.jwt_secret, OrganizationId::new(None, None), None)
             .unwrap()
             .to_string();
 
@@ -548,7 +548,7 @@ mod tests {
         dotenv::dotenv().ok();
         let cfg = crate::cfg::load().unwrap();
 
-        let token = generate_token(&cfg.jwt_secret, OrganizationId::new(None, None))
+        let token = generate_token(&cfg.jwt_secret, OrganizationId::new(None, None), None)
             .unwrap()
             .to_string();
 
@@ -638,7 +638,7 @@ mod tests {
         // Generate a new token so that keys are unique
         dotenv::dotenv().ok();
         let cfg = crate::cfg::load().unwrap();
-        let token = generate_token(&cfg.jwt_secret, OrganizationId::new(None, None))
+        let token = generate_token(&cfg.jwt_secret, OrganizationId::new(None, None), None)
             .unwrap()
             .to_string();
 

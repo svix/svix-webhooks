@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 use crate::{
-    core::types::EventTypeName,
+    core::{security::KeyType, types::EventTypeName},
     error::{HttpError, Result},
     v1::utils::{
         api_not_implemented, validate_no_control_characters, EmptyResponse, ListResponse, ModelIn,
@@ -158,6 +158,14 @@ async fn create_event_type(
     ValidatedJson(data): ValidatedJson<EventTypeIn>,
     permissions: Permissions,
 ) -> Result<(StatusCode, Json<EventTypeOut>)> {
+    if permissions.type_ == KeyType::Application {
+        return Err(HttpError::unauthorized(
+            None,
+            Some("You require organization level authentication for this endpoint".to_owned()),
+        )
+        .into());
+    }
+
     let evtype =
         eventtype::Entity::secure_find_by_name(permissions.org_id.clone(), data.name.to_owned())
             .one(db)
@@ -193,6 +201,14 @@ async fn get_event_type(
     Path(evtype_name): Path<EventTypeName>,
     permissions: Permissions,
 ) -> Result<Json<EventTypeOut>> {
+    if permissions.type_ == KeyType::Application {
+        return Err(HttpError::unauthorized(
+            None,
+            Some("You require organization level authentication for this endpoint".to_owned()),
+        )
+        .into());
+    }
+
     let evtype = eventtype::Entity::secure_find_by_name(permissions.org_id, evtype_name)
         .one(db)
         .await?
@@ -206,6 +222,14 @@ async fn update_event_type(
     ValidatedJson(data): ValidatedJson<EventTypeUpdate>,
     permissions: Permissions,
 ) -> Result<Json<EventTypeOut>> {
+    if permissions.type_ == KeyType::Application {
+        return Err(HttpError::unauthorized(
+            None,
+            Some("You require organization level authentication for this endpoint".to_owned()),
+        )
+        .into());
+    }
+
     let evtype = eventtype::Entity::secure_find_by_name(permissions.org_id.clone(), evtype_name)
         .one(db)
         .await?
@@ -223,6 +247,14 @@ async fn delete_event_type(
     Path(evtype_name): Path<EventTypeName>,
     permissions: Permissions,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
+    if permissions.type_ == KeyType::Application {
+        return Err(HttpError::unauthorized(
+            None,
+            Some("You require organization level authentication for this endpoint".to_owned()),
+        )
+        .into());
+    }
+
     let evtype = eventtype::Entity::secure_find_by_name(permissions.org_id, evtype_name)
         .one(db)
         .await?

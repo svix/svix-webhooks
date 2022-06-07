@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: MIT
 
 use crate::{
-    core::types::{ApplicationId, ApplicationIdOrUid, ApplicationUid},
+    core::{
+        security::KeyType,
+        types::{ApplicationId, ApplicationIdOrUid, ApplicationUid},
+    },
     error::{HttpError, Result},
     v1::utils::{
         validate_no_control_characters, EmptyResponse, ListResponse, ModelIn, ModelOut,
@@ -90,6 +93,14 @@ async fn list_applications(
     pagination: ValidatedQuery<Pagination<ApplicationId>>,
     permissions: Permissions,
 ) -> Result<Json<ListResponse<ApplicationOut>>> {
+    if permissions.type_ == KeyType::Application {
+        return Err(HttpError::unauthorized(
+            None,
+            Some("This require organizational level permissions".to_owned()),
+        )
+        .into());
+    }
+
     let PaginationLimit(limit) = pagination.limit;
     let iterator = pagination.iterator.clone();
 
@@ -123,6 +134,14 @@ async fn create_application(
     query: ValidatedQuery<CreateApplicationQuery>,
     permissions: Permissions,
 ) -> Result<(StatusCode, Json<ApplicationOut>)> {
+    if permissions.type_ == KeyType::Application {
+        return Err(HttpError::unauthorized(
+            None,
+            Some("This require organizational level permissions".to_owned()),
+        )
+        .into());
+    }
+
     if query.get_if_exists {
         if let Some(ref uid) = data.uid {
             let app = application::Entity::secure_find(permissions.org_id.clone())
@@ -148,10 +167,18 @@ async fn get_application(
     Path(app_id): Path<ApplicationIdOrUid>,
     permissions: Permissions,
 ) -> Result<Json<ApplicationOut>> {
-    let app = application::Entity::secure_find_by_id_or_uid(permissions.org_id, app_id)
-        .one(db)
-        .await?
-        .ok_or_else(|| HttpError::not_found(None, None))?;
+    // If someone authorized for only applications calls this endpoint, it will only return their
+    // application regardless of input in the path
+    let app = application::Entity::secure_find_by_id_or_uid(
+        permissions.org_id,
+        permissions
+            .app_id
+            .map(|id| ApplicationIdOrUid(id.0))
+            .unwrap_or(app_id),
+    )
+    .one(db)
+    .await?
+    .ok_or_else(|| HttpError::not_found(None, None))?;
     Ok(Json(app.into()))
 }
 
@@ -161,6 +188,14 @@ async fn update_application(
     ValidatedJson(data): ValidatedJson<ApplicationIn>,
     permissions: Permissions,
 ) -> Result<Json<ApplicationOut>> {
+    if permissions.type_ == KeyType::Application {
+        return Err(HttpError::unauthorized(
+            None,
+            Some("This require organizational level permissions".to_owned()),
+        )
+        .into());
+    }
+
     let app = application::Entity::secure_find_by_id_or_uid(permissions.org_id.clone(), app_id)
         .one(db)
         .await?
@@ -178,6 +213,14 @@ async fn delete_application(
     Path(app_id): Path<ApplicationIdOrUid>,
     permissions: Permissions,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
+    if permissions.type_ == KeyType::Application {
+        return Err(HttpError::unauthorized(
+            None,
+            Some("This require organizational level permissions".to_owned()),
+        )
+        .into());
+    }
+
     let app = application::Entity::secure_find_by_id_or_uid(permissions.org_id, app_id)
         .one(db)
         .await?
