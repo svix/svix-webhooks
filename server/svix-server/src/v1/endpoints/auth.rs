@@ -17,6 +17,8 @@ struct DashboardAccessOut {
     token: String,
 }
 
+const SVIX_URL: &str = "https://app.svix.com";
+
 async fn dashboard_access(
     Extension(cfg): Extension<Configuration>,
     Path(_app_id): Path<ApplicationIdOrUid>,
@@ -33,7 +35,8 @@ async fn dashboard_access(
 
     let login_key = base64::encode(&login_key);
 
-    let url = format!("https://app.svix.com/login#key={}", login_key);
+    // Included for API compatibility, but this URL will not be useful
+    let url = format!("{}/login#key={}", SVIX_URL, login_key);
 
     Ok(Json(DashboardAccessOut { url, token }))
 }
