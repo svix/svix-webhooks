@@ -371,7 +371,7 @@ mod tests {
     use super::IdempotencyService;
     use crate::core::{
         cache,
-        security::generate_token,
+        security::generate_org_token,
         types::{BaseId, OrganizationId},
     };
 
@@ -445,7 +445,7 @@ mod tests {
         // Generate a new token so that keys are unique
         dotenv::dotenv().ok();
         let cfg = crate::cfg::load().unwrap();
-        let token = generate_token(&cfg.jwt_secret, OrganizationId::new(None, None), None)
+        let token = generate_org_token(&cfg.jwt_secret, OrganizationId::new(None, None))
             .unwrap()
             .to_string();
 
@@ -548,7 +548,7 @@ mod tests {
         dotenv::dotenv().ok();
         let cfg = crate::cfg::load().unwrap();
 
-        let token = generate_token(&cfg.jwt_secret, OrganizationId::new(None, None), None)
+        let token = generate_org_token(&cfg.jwt_secret, OrganizationId::new(None, None))
             .unwrap()
             .to_string();
 
@@ -638,7 +638,7 @@ mod tests {
         // Generate a new token so that keys are unique
         dotenv::dotenv().ok();
         let cfg = crate::cfg::load().unwrap();
-        let token = generate_token(&cfg.jwt_secret, OrganizationId::new(None, None), None)
+        let token = generate_org_token(&cfg.jwt_secret, OrganizationId::new(None, None))
             .unwrap()
             .to_string();
 

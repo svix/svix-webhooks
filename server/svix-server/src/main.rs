@@ -7,7 +7,7 @@
 use dotenv::dotenv;
 use std::process::exit;
 
-use svix_server::core::security::{default_org_id, generate_token};
+use svix_server::core::security::{default_org_id, generate_org_token};
 
 use svix_server::{cfg, db, run};
 
@@ -78,8 +78,8 @@ async fn main() {
         command: JwtCommands::Generate,
     }) = &args.command
     {
-        let token = generate_token(&cfg.jwt_secret, default_org_id(), None)
-            .expect("Error generating token");
+        let token =
+            generate_org_token(&cfg.jwt_secret, default_org_id()).expect("Error generating token");
         println!("Token (Bearer): {}", token);
         exit(0);
     }

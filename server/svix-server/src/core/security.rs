@@ -209,32 +209,29 @@ where
     }
 }
 
-pub fn generate_token(
+pub fn generate_org_token(keys: &Keys, org_id: OrganizationId) -> Result<String> {
+    let claims = Claims::with_custom_claims(
+        CustomClaim { organization: None },
+        Duration::from_hours(24 * 365 * 10),
+    )
+    .with_issuer(env!("CARGO_PKG_NAME"))
+    .with_subject(org_id.0);
+    Ok(keys.key.authenticate(claims).unwrap())
+}
+
+pub fn generate_app_token(
     keys: &Keys,
     org_id: OrganizationId,
-    app_id: Option<ApplicationId>,
+    app_id: ApplicationId,
 ) -> Result<String> {
-    // If there is an app ID to encode, the the org is under the organization custom claim and the
-    // application is the subject
-    let claims = if let Some(app_id) = app_id {
-        Claims::with_custom_claims(
-            CustomClaim {
-                organization: Some(org_id.0),
-            },
-            Duration::from_hours(24 * 28),
-        )
-        .with_issuer(env!("CARGO_PKG_NAME"))
-        .with_subject(app_id.0)
-    }
-    // With no app ID to encode, the org field is blank while the sub is the organization ID
-    else {
-        Claims::with_custom_claims(
-            CustomClaim { organization: None },
-            Duration::from_hours(24 * 365 * 10),
-        )
-        .with_issuer(env!("CARGO_PKG_NAME"))
-        .with_subject(org_id.0)
-    };
+    let claims = Claims::with_custom_claims(
+        CustomClaim {
+            organization: Some(org_id.0),
+        },
+        Duration::from_hours(24 * 28),
+    )
+    .with_issuer(env!("CARGO_PKG_NAME"))
+    .with_subject(app_id.0);
     Ok(keys.key.authenticate(claims).unwrap())
 }
 
