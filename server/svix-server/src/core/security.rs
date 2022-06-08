@@ -141,15 +141,18 @@ where
 
     async fn from_request(req: &mut RequestParts<B>) -> Result<Self> {
         let permissions = Permissions::from_request(req).await?;
-        if permissions.type_ == KeyType::Application {
-            return Err(HttpError::unauthorized(
-                None,
-                Some(
-                    "You are only permitted to perform operations under the Application type"
-                        .to_owned(),
-                ),
-            )
-            .into());
+        match permissions.type_ {
+            KeyType::Organization => {}
+            KeyType::Application => {
+                return Err(HttpError::unauthorized(
+                    None,
+                    Some(
+                        "You are only permitted to perform operations under the Application type"
+                            .to_owned(),
+                    ),
+                )
+                .into());
+            }
         }
 
         Ok(AuthenticatedOrganization { permissions })
@@ -176,15 +179,18 @@ where
     async fn from_request(req: &mut RequestParts<B>) -> Result<Self> {
         let permissions = Permissions::from_request(req).await?;
 
-        if permissions.type_ == KeyType::Application {
-            return Err(HttpError::unauthorized(
-                None,
-                Some(
-                    "You are only permitted to perform operations under the Application type"
-                        .to_owned(),
-                ),
-            )
-            .into());
+        match permissions.type_ {
+            KeyType::Organization => {}
+            KeyType::Application => {
+                return Err(HttpError::unauthorized(
+                    None,
+                    Some(
+                        "You are only permitted to perform operations under the Application type"
+                            .to_owned(),
+                    ),
+                )
+                .into());
+            }
         }
 
         let Path(ApplicationPathParams { app_id }) =
