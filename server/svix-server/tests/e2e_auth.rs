@@ -62,7 +62,7 @@ async fn test_restricted_application_access() {
         .post(
             "api/v1/app/",
             application_in("TEST_APP_NAME"),
-            StatusCode::UNAUTHORIZED,
+            StatusCode::FORBIDDEN,
         )
         .await
         .unwrap();
@@ -70,16 +70,16 @@ async fn test_restricted_application_access() {
         .put(
             &format!("api/v1/app/{}", app_id),
             application_in("TEST_APP_NAME"),
-            StatusCode::UNAUTHORIZED,
+            StatusCode::FORBIDDEN,
         )
         .await
         .unwrap();
     let _: IgnoredResponse = client
-        .delete(&format!("api/v1/app/{}", app_id), StatusCode::UNAUTHORIZED)
+        .delete(&format!("api/v1/app/{}", app_id), StatusCode::FORBIDDEN)
         .await
         .unwrap();
     let _: IgnoredResponse = client
-        .get("api/v1/app/", StatusCode::UNAUTHORIZED)
+        .get("api/v1/app/", StatusCode::FORBIDDEN)
         .await
         .unwrap();
 
@@ -87,7 +87,7 @@ async fn test_restricted_application_access() {
     let _: IgnoredResponse = client
         .get(
             &format!("api/v1/app/{}", app_id_2),
-            StatusCode::UNAUTHORIZED,
+            StatusCode::NOT_FOUND,
         )
         .await
         .unwrap();

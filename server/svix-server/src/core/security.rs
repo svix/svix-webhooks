@@ -175,7 +175,7 @@ where
         match permissions.type_ {
             KeyType::Organization => {}
             KeyType::Application => {
-                return Err(HttpError::unauthorized(None, None).into());
+                return Err(HttpError::permission_denied(None, None).into());
             }
         }
 
