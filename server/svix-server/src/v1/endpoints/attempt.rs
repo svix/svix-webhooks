@@ -3,7 +3,7 @@
 
 use crate::{
     core::{
-        security::{AuthenticatedApplication, AuthenticatedOrganizationWithApplication},
+        security::AuthenticatedApplication,
         types::{
             ApplicationIdOrUid, EndpointId, EndpointIdOrUid, EventChannel, EventTypeNameSet,
             MessageAttemptId, MessageAttemptTriggerType, MessageEndpointId, MessageId,

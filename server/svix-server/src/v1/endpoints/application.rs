@@ -7,7 +7,7 @@ use crate::{
             AuthenticatedApplication, AuthenticatedOrganization,
             AuthenticatedOrganizationWithApplication,
         },
-        types::{ApplicationId, ApplicationIdOrUid, ApplicationUid},
+        types::{ApplicationId, ApplicationUid},
     },
     db::models::application,
     error::{HttpError, Result},
@@ -17,7 +17,7 @@ use crate::{
     },
 };
 use axum::{
-    extract::{Extension, Path},
+    extract::Extension,
     routing::{get, post},
     Json, Router,
 };
