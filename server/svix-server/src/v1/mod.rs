@@ -9,7 +9,7 @@ pub mod utils;
 pub fn router() -> Router {
     let ret = Router::new()
         .merge(endpoints::health::router())
-        .merge(auth::router())
+        .merge(endpoints::auth::router())
         .merge(endpoints::application::router())
         .merge(endpoints::endpoint::router())
         .merge(endpoints::event_type::router())
@@ -21,18 +21,6 @@ pub fn router() -> Router {
         return ret.merge(development::router());
     }
     ret
-}
-
-mod auth {
-    use axum::{routing::post, Router};
-
-    use super::utils::api_not_implemented;
-
-    pub fn router() -> Router {
-        Router::new()
-            .route("/auth/dashboard-access/:app_id/", post(api_not_implemented))
-            .route("/auth/logout/", post(api_not_implemented))
-    }
 }
 
 #[cfg(debug_assertions)]

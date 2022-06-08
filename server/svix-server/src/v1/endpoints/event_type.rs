@@ -2,11 +2,15 @@
 // SPDX-License-Identifier: MIT
 
 use crate::{
-    core::types::EventTypeName,
+    core::{
+        security::{AuthenticatedOrganization, Permissions},
+        types::EventTypeName,
+    },
+    db::models::eventtype,
     error::{HttpError, Result},
     v1::utils::{
         api_not_implemented, validate_no_control_characters, EmptyResponse, ListResponse, ModelIn,
-        ModelOut, PaginationLimit, ValidatedJson, ValidatedQuery,
+        ModelOut, Pagination, PaginationLimit, ValidatedJson, ValidatedQuery,
     },
 };
 use axum::{
@@ -21,10 +25,6 @@ use sea_orm::{ActiveModelTrait, DatabaseConnection, QuerySelect};
 use serde::{Deserialize, Serialize};
 use svix_server_derive::{ModelIn, ModelOut};
 use validator::Validate;
-
-use crate::core::security::Permissions;
-use crate::db::models::eventtype;
-use crate::v1::utils::Pagination;
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Validate, ModelIn)]
 #[serde(rename_all = "camelCase")]
@@ -156,7 +156,7 @@ async fn list_event_types(
 async fn create_event_type(
     Extension(ref db): Extension<DatabaseConnection>,
     ValidatedJson(data): ValidatedJson<EventTypeIn>,
-    permissions: Permissions,
+    AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
 ) -> Result<(StatusCode, Json<EventTypeOut>)> {
     let evtype =
         eventtype::Entity::secure_find_by_name(permissions.org_id.clone(), data.name.to_owned())
@@ -191,7 +191,7 @@ async fn create_event_type(
 async fn get_event_type(
     Extension(ref db): Extension<DatabaseConnection>,
     Path(evtype_name): Path<EventTypeName>,
-    permissions: Permissions,
+    AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
 ) -> Result<Json<EventTypeOut>> {
     let evtype = eventtype::Entity::secure_find_by_name(permissions.org_id, evtype_name)
         .one(db)
@@ -204,7 +204,7 @@ async fn update_event_type(
     Extension(ref db): Extension<DatabaseConnection>,
     Path(evtype_name): Path<EventTypeName>,
     ValidatedJson(data): ValidatedJson<EventTypeUpdate>,
-    permissions: Permissions,
+    AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
 ) -> Result<Json<EventTypeOut>> {
     let evtype = eventtype::Entity::secure_find_by_name(permissions.org_id.clone(), evtype_name)
         .one(db)
@@ -221,7 +221,7 @@ async fn update_event_type(
 async fn delete_event_type(
     Extension(ref db): Extension<DatabaseConnection>,
     Path(evtype_name): Path<EventTypeName>,
-    permissions: Permissions,
+    AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
     let evtype = eventtype::Entity::secure_find_by_name(permissions.org_id, evtype_name)
         .one(db)

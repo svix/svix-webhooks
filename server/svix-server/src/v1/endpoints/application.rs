@@ -2,15 +2,22 @@
 // SPDX-License-Identifier: MIT
 
 use crate::{
-    core::types::{ApplicationId, ApplicationIdOrUid, ApplicationUid},
+    core::{
+        security::{
+            AuthenticatedApplication, AuthenticatedOrganization,
+            AuthenticatedOrganizationWithApplication,
+        },
+        types::{ApplicationId, ApplicationUid},
+    },
+    db::models::application,
     error::{HttpError, Result},
     v1::utils::{
-        validate_no_control_characters, EmptyResponse, ListResponse, ModelIn, ModelOut,
+        validate_no_control_characters, EmptyResponse, ListResponse, ModelIn, ModelOut, Pagination,
         PaginationLimit, ValidatedJson, ValidatedQuery,
     },
 };
 use axum::{
-    extract::{Extension, Path},
+    extract::Extension,
     routing::{get, post},
     Json, Router,
 };
@@ -21,10 +28,6 @@ use sea_orm::{ActiveModelTrait, DatabaseConnection, QuerySelect};
 use serde::{Deserialize, Serialize};
 use svix_server_derive::{ModelIn, ModelOut};
 use validator::Validate;
-
-use crate::core::security::Permissions;
-use crate::db::models::application;
-use crate::v1::utils::Pagination;
 
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize, Validate, ModelIn)]
 #[serde(rename_all = "camelCase")]
@@ -88,7 +91,7 @@ impl From<application::Model> for ApplicationOut {
 async fn list_applications(
     Extension(ref db): Extension<DatabaseConnection>,
     pagination: ValidatedQuery<Pagination<ApplicationId>>,
-    permissions: Permissions,
+    AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
 ) -> Result<Json<ListResponse<ApplicationOut>>> {
     let PaginationLimit(limit) = pagination.limit;
     let iterator = pagination.iterator.clone();
@@ -121,7 +124,7 @@ async fn create_application(
     Extension(ref db): Extension<DatabaseConnection>,
     ValidatedJson(data): ValidatedJson<ApplicationIn>,
     query: ValidatedQuery<CreateApplicationQuery>,
-    permissions: Permissions,
+    AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
 ) -> Result<(StatusCode, Json<ApplicationOut>)> {
     if query.get_if_exists {
         if let Some(ref uid) = data.uid {
@@ -145,10 +148,9 @@ async fn create_application(
 
 async fn get_application(
     Extension(ref db): Extension<DatabaseConnection>,
-    Path(app_id): Path<ApplicationIdOrUid>,
-    permissions: Permissions,
+    AuthenticatedApplication { app, permissions }: AuthenticatedApplication,
 ) -> Result<Json<ApplicationOut>> {
-    let app = application::Entity::secure_find_by_id_or_uid(permissions.org_id, app_id)
+    let app = application::Entity::secure_find_by_id(permissions.org_id, app.id)
         .one(db)
         .await?
         .ok_or_else(|| HttpError::not_found(None, None))?;
@@ -157,15 +159,12 @@ async fn get_application(
 
 async fn update_application(
     Extension(ref db): Extension<DatabaseConnection>,
-    Path(app_id): Path<ApplicationIdOrUid>,
     ValidatedJson(data): ValidatedJson<ApplicationIn>,
-    permissions: Permissions,
+    AuthenticatedOrganizationWithApplication {
+        permissions: _,
+        app,
+    }: AuthenticatedOrganizationWithApplication,
 ) -> Result<Json<ApplicationOut>> {
-    let app = application::Entity::secure_find_by_id_or_uid(permissions.org_id.clone(), app_id)
-        .one(db)
-        .await?
-        .ok_or_else(|| HttpError::not_found(None, None))?;
-
     let mut app: application::ActiveModel = app.into();
     data.update_model(&mut app);
 
@@ -175,14 +174,11 @@ async fn update_application(
 
 async fn delete_application(
     Extension(ref db): Extension<DatabaseConnection>,
-    Path(app_id): Path<ApplicationIdOrUid>,
-    permissions: Permissions,
+    AuthenticatedOrganizationWithApplication {
+        permissions: _,
+        app,
+    }: AuthenticatedOrganizationWithApplication,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
-    let app = application::Entity::secure_find_by_id_or_uid(permissions.org_id, app_id)
-        .one(db)
-        .await?
-        .ok_or_else(|| HttpError::not_found(None, None))?;
-
     let mut app: application::ActiveModel = app.into();
     app.deleted = Set(true);
     app.uid = Set(None); // We don't want deleted UIDs to clash

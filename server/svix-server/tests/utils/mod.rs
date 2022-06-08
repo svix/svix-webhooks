@@ -16,7 +16,7 @@ use svix_ksuid::KsuidLike;
 use svix_server::{
     cfg::ConfigurationInner,
     core::{
-        security::generate_token,
+        security::generate_org_token,
         types::{BaseId, OrganizationId},
     },
 };
@@ -25,10 +25,17 @@ use http::HeaderMap;
 
 pub mod common_calls;
 
+#[derive(Clone)]
 pub struct TestClient {
     base_uri: String,
     auth_header: String,
     client: Client,
+}
+
+impl TestClient {
+    pub fn set_auth_header(&mut self, auth_header: String) {
+        self.auth_header = format!("Bearer {}", auth_header);
+    }
 }
 
 /// This struct accepts any JSON response and just ignores it.
@@ -228,7 +235,7 @@ pub fn start_svix_server_with_cfg(
 ) -> (TestClient, tokio::task::JoinHandle<()>) {
     let cfg = Arc::new(cfg.clone());
 
-    let token = generate_token(&cfg.jwt_secret, OrganizationId::new(None, None)).unwrap();
+    let token = generate_org_token(&cfg.jwt_secret, OrganizationId::new(None, None)).unwrap();
     let listener = TcpListener::bind("127.0.0.1:0").unwrap();
     let base_uri = format!("http://{}", listener.local_addr().unwrap());
 
