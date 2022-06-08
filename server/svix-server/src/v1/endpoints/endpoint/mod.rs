@@ -6,15 +6,27 @@ mod recovery;
 mod secrets;
 
 use crate::{
-    core::types::{EndpointId, EndpointUid, EventChannelSet, EventTypeNameSet},
+    core::{
+        security::AuthenticatedApplication,
+        types::{
+            ApplicationIdOrUid, BaseId, EndpointId, EndpointIdOrUid, EndpointUid, EventChannelSet,
+            EventTypeNameSet, MessageEndpointId, MessageStatus,
+        },
+    },
+    db::models::messagedestination,
+    error::HttpError,
     v1::utils::{api_not_implemented, validate_no_control_characters, ModelIn},
 };
+
 use axum::{
+    extract::{Extension, Path},
     routing::{get, post},
-    Router,
+    Json, Router,
 };
 use chrono::{DateTime, Utc};
-use sea_orm::ActiveValue::Set;
+use sea_orm::{
+    ActiveValue::Set, ColumnTrait, DatabaseConnection, FromQueryResult, QueryFilter, QuerySelect,
+};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, collections::HashSet};
 use url::Url;
@@ -262,6 +274,61 @@ impl ModelIn for EndpointHeadersPatchIn {
     }
 }
 
+#[derive(Deserialize, Serialize)]
+pub struct EndpointStatsOut {
+    success: i64,
+    pending: i64,
+    sending: i64,
+    fail: i64,
+}
+
+#[derive(Debug, FromQueryResult)]
+pub struct EndpointStatsQueryOut {
+    status: MessageStatus,
+    count: i64,
+}
+
+async fn endpoint_stats(
+    Extension(ref db): Extension<DatabaseConnection>,
+    Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
+    AuthenticatedApplication {
+        permissions: _,
+        app,
+    }: AuthenticatedApplication,
+) -> crate::error::Result<Json<EndpointStatsOut>> {
+    let endpoint = crate::db::models::endpoint::Entity::secure_find_by_id_or_uid(app.id, endp_id)
+        .one(db)
+        .await?
+        .ok_or_else(|| HttpError::not_found(None, None))?
+        .id;
+
+    let query_out: Vec<EndpointStatsQueryOut> =
+        messagedestination::Entity::secure_find_by_endpoint(endpoint)
+            .select_only()
+            .column(messagedestination::Column::Status)
+            .column_as(messagedestination::Column::Status.count(), "count")
+            .group_by(messagedestination::Column::Status)
+            .filter(
+                messagedestination::Column::Id.gte(MessageEndpointId::start_id(
+                    chrono::Utc::now() - chrono::Duration::days(28),
+                )),
+            )
+            .into_model::<EndpointStatsQueryOut>()
+            .all(db)
+            .await?;
+    let mut query_out = query_out
+        .into_iter()
+        .map(|EndpointStatsQueryOut { status, count }| (status, count))
+        .collect::<HashMap<_, _>>();
+
+    Ok(Json(EndpointStatsOut {
+        success: query_out.remove(&MessageStatus::Success).unwrap_or(0),
+        pending: query_out.remove(&MessageStatus::Pending).unwrap_or(0),
+        fail: query_out.remove(&MessageStatus::Fail).unwrap_or(0),
+        sending: query_out.remove(&MessageStatus::Sending).unwrap_or(0),
+    }))
+}
+
 pub fn router() -> Router {
     Router::new().nest(
         "/app/:app_id",
@@ -284,7 +351,7 @@ pub fn router() -> Router {
                 "/endpoint/:endp_id/secret/rotate/",
                 post(secrets::rotate_endpoint_secret),
             )
-            .route("/endpoint/:endp_id/stats/", get(api_not_implemented))
+            .route("/endpoint/:endp_id/stats/", get(endpoint_stats))
             .route(
                 "/endpoint/:endp_id/send-example/",
                 post(api_not_implemented),

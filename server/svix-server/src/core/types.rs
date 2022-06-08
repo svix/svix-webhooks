@@ -643,7 +643,7 @@ pub enum MessageAttemptTriggerType {
 }
 
 #[repr(i16)]
-#[derive(Clone, Debug, Copy, PartialEq, IntoPrimitive, TryFromPrimitive)]
+#[derive(Clone, Debug, Copy, PartialEq, IntoPrimitive, TryFromPrimitive, Hash, Eq)]
 pub enum MessageStatus {
     Success = 0,
     Pending = 1,
