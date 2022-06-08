@@ -166,11 +166,11 @@ impl HttpError {
     }
 
     pub fn permission_denied(code: Option<String>, detail: Option<String>) -> Self {
-		Self::new_standard(
-    		StatusCode::FORBIDDEN,
-    		code.unwrap_or_else(|| "insufficient access".to_owned()),
-    		detail.unwrap_or_else(|| "Insufficient access for the given operation.".to_owned()),
-		)
+        Self::new_standard(
+            StatusCode::FORBIDDEN,
+            code.unwrap_or_else(|| "insufficient access".to_owned()),
+            detail.unwrap_or_else(|| "Insufficient access for the given operation.".to_owned()),
+        )
     }
 
     pub fn conflict(code: Option<String>, detail: Option<String>) -> Self {

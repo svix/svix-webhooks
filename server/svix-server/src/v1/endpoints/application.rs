@@ -148,7 +148,6 @@ async fn create_application(
 
 async fn get_application(
     Extension(ref db): Extension<DatabaseConnection>,
-    Path(_app_id): Path<ApplicationIdOrUid>,
     AuthenticatedApplication { app, permissions }: AuthenticatedApplication,
 ) -> Result<Json<ApplicationOut>> {
     let app = application::Entity::secure_find_by_id(permissions.org_id, app.id)
@@ -160,7 +159,6 @@ async fn get_application(
 
 async fn update_application(
     Extension(ref db): Extension<DatabaseConnection>,
-    Path(_app_id): Path<ApplicationIdOrUid>,
     ValidatedJson(data): ValidatedJson<ApplicationIn>,
     AuthenticatedOrganizationWithApplication {
         permissions: _,
@@ -176,14 +174,11 @@ async fn update_application(
 
 async fn delete_application(
     Extension(ref db): Extension<DatabaseConnection>,
-    Path(app_id): Path<ApplicationIdOrUid>,
-    AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
+    AuthenticatedOrganizationWithApplication {
+        permissions: _,
+        app,
+    }: AuthenticatedOrganizationWithApplication,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
-    let app = application::Entity::secure_find_by_id_or_uid(permissions.org_id, app_id)
-        .one(db)
-        .await?
-        .ok_or_else(|| HttpError::not_found(None, None))?;
-
     let mut app: application::ActiveModel = app.into();
     app.deleted = Set(true);
     app.uid = Set(None); // We don't want deleted UIDs to clash
