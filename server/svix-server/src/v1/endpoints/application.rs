@@ -3,12 +3,13 @@
 
 use crate::{
     core::{
-        security::{AuthenticatedOrganization, AuthenticatedApplication},
+        security::{AuthenticatedApplication, AuthenticatedOrganization},
         types::{ApplicationId, ApplicationIdOrUid, ApplicationUid},
     },
+    db::models::application,
     error::{HttpError, Result},
     v1::utils::{
-        validate_no_control_characters, EmptyResponse, ListResponse, ModelIn, ModelOut,
+        validate_no_control_characters, EmptyResponse, ListResponse, ModelIn, ModelOut, Pagination,
         PaginationLimit, ValidatedJson, ValidatedQuery,
     },
 };
@@ -24,10 +25,6 @@ use sea_orm::{ActiveModelTrait, DatabaseConnection, QuerySelect};
 use serde::{Deserialize, Serialize};
 use svix_server_derive::{ModelIn, ModelOut};
 use validator::Validate;
-
-use crate::core::security::Permissions;
-use crate::db::models::application;
-use crate::v1::utils::Pagination;
 
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize, Validate, ModelIn)]
 #[serde(rename_all = "camelCase")]
@@ -149,15 +146,12 @@ async fn create_application(
 async fn get_application(
     Extension(ref db): Extension<DatabaseConnection>,
     Path(_app_id): Path<ApplicationIdOrUid>,
-    AuthenticatedApplication {app, permissions}: AuthenticatedApplication,
+    AuthenticatedApplication { app, permissions }: AuthenticatedApplication,
 ) -> Result<Json<ApplicationOut>> {
-    let app = application::Entity::secure_find_by_id(
-        permissions.org_id,
-        app.id,
-    )
-    .one(db)
-    .await?
-    .ok_or_else(|| HttpError::not_found(None, None))?;
+    let app = application::Entity::secure_find_by_id(permissions.org_id, app.id)
+        .one(db)
+        .await?
+        .ok_or_else(|| HttpError::not_found(None, None))?;
     Ok(Json(app.into()))
 }
 

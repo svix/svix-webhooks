@@ -33,9 +33,9 @@ pub struct TestClient {
 }
 
 impl TestClient {
-	pub fn set_auth_header(&mut self, auth_header: String) {
-		self.auth_header = format!("Bearer {}", auth_header);
-	}
+    pub fn set_auth_header(&mut self, auth_header: String) {
+        self.auth_header = format!("Bearer {}", auth_header);
+    }
 }
 
 /// This struct accepts any JSON response and just ignores it.
