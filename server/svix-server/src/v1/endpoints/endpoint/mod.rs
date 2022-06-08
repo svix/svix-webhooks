@@ -9,8 +9,8 @@ use crate::{
     core::{
         security::AuthenticatedApplication,
         types::{
-            ApplicationIdOrUid, EndpointId, EndpointIdOrUid, EndpointUid, EventChannelSet,
-            EventTypeNameSet, MessageStatus,
+            ApplicationIdOrUid, BaseId, EndpointId, EndpointIdOrUid, EndpointUid, EventChannelSet,
+            EventTypeNameSet, MessageEndpointId, MessageStatus,
         },
     },
     db::models::messagedestination,
@@ -296,42 +296,41 @@ async fn endpoint_stats(
         app,
     }: AuthenticatedApplication,
 ) -> crate::error::Result<Json<EndpointStatsOut>> {
-    if let Some(endpoint) =
-        crate::db::models::endpoint::Entity::secure_find_by_id_or_uid(app.id, endp_id)
-            .one(db)
-            .await?
-    {
-        let query_out: Vec<EndpointStatsQueryOut> =
-            messagedestination::Entity::secure_find_by_endpoint(endpoint.id)
-                .select_only()
-                .column(messagedestination::Column::Status)
-                .column_as(messagedestination::Column::Status.count(), "count")
-                .group_by(messagedestination::Column::Status)
-                .filter(
-                    messagedestination::Column::CreatedAt
-                        .gte(chrono::Utc::now() - chrono::Duration::days(28)),
-                )
-                .into_model::<EndpointStatsQueryOut>()
-                .all(db)
-                .await
-                .map_err(|e| {
-                    tracing::error!("ERROR {}", e);
-                    e
-                })?;
-        let mut query_out = query_out
-            .into_iter()
-            .map(|EndpointStatsQueryOut { status, count }| (status, count))
-            .collect::<HashMap<_, _>>();
+    let endpoint = crate::db::models::endpoint::Entity::secure_find_by_id_or_uid(app.id, endp_id)
+        .one(db)
+        .await?
+        .ok_or_else(|| HttpError::not_found(None, None))?
+        .id;
 
-        Ok(Json(EndpointStatsOut {
-            success: query_out.remove(&MessageStatus::Success).unwrap_or(0),
-            pending: query_out.remove(&MessageStatus::Pending).unwrap_or(0),
-            fail: query_out.remove(&MessageStatus::Fail).unwrap_or(0),
-            sending: query_out.remove(&MessageStatus::Sending).unwrap_or(0),
-        }))
-    } else {
-        Err(HttpError::unauthorized(None, None).into())
-    }
+    let query_out: Vec<EndpointStatsQueryOut> =
+        messagedestination::Entity::secure_find_by_endpoint(endpoint)
+            .select_only()
+            .column(messagedestination::Column::Status)
+            .column_as(messagedestination::Column::Status.count(), "count")
+            .group_by(messagedestination::Column::Status)
+            .filter(
+                messagedestination::Column::Id.gte(MessageEndpointId::start_id(
+                    chrono::Utc::now() - chrono::Duration::days(28),
+                )),
+            )
+            .into_model::<EndpointStatsQueryOut>()
+            .all(db)
+            .await
+            .map_err(|e| {
+                tracing::error!("ERROR {}", e);
+                e
+            })?;
+    let mut query_out = query_out
+        .into_iter()
+        .map(|EndpointStatsQueryOut { status, count }| (status, count))
+        .collect::<HashMap<_, _>>();
+
+    Ok(Json(EndpointStatsOut {
+        success: query_out.remove(&MessageStatus::Success).unwrap_or(0),
+        pending: query_out.remove(&MessageStatus::Pending).unwrap_or(0),
+        fail: query_out.remove(&MessageStatus::Fail).unwrap_or(0),
+        sending: query_out.remove(&MessageStatus::Sending).unwrap_or(0),
+    }))
 }
 
 pub fn router() -> Router {
