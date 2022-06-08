@@ -3,9 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     cfg::Configuration,
-    core::{
-        security::{generate_app_token, AuthenticatedOrganizationWithApplication},
-    },
+    core::security::{generate_app_token, AuthenticatedOrganizationWithApplication},
     error::{HttpError, Result},
     v1::utils::api_not_implemented,
 };
