@@ -144,14 +144,7 @@ where
         match permissions.type_ {
             KeyType::Organization => {}
             KeyType::Application => {
-                return Err(HttpError::unauthorized(
-                    None,
-                    Some(
-                        "You are only permitted to perform operations under the Application type"
-                            .to_owned(),
-                    ),
-                )
-                .into());
+                return Err(HttpError::permission_denied(None, None).into());
             }
         }
 
@@ -182,14 +175,7 @@ where
         match permissions.type_ {
             KeyType::Organization => {}
             KeyType::Application => {
-                return Err(HttpError::unauthorized(
-                    None,
-                    Some(
-                        "You are only permitted to perform operations under the Application type"
-                            .to_owned(),
-                    ),
-                )
-                .into());
+                return Err(HttpError::unauthorized(None, None).into());
             }
         }
 
@@ -242,14 +228,7 @@ where
 
         if let Some(permitted_app_id) = &permissions.app_id {
             if permitted_app_id != &app.id {
-                return Err(HttpError::unauthorized(
-                    None,
-                    Some(
-                        "You are only permitted to perform operations under the Application type"
-                            .to_owned(),
-                    ),
-                )
-                .into());
+                return Err(HttpError::not_found(None, None).into());
             }
         }
 
@@ -257,12 +236,14 @@ where
     }
 }
 
+const JWT_ISSUER: &str = env!("CARGO_PKG_NAME");
+
 pub fn generate_org_token(keys: &Keys, org_id: OrganizationId) -> Result<String> {
     let claims = Claims::with_custom_claims(
         CustomClaim { organization: None },
         Duration::from_hours(24 * 365 * 10),
     )
-    .with_issuer(env!("CARGO_PKG_NAME"))
+    .with_issuer(JWT_ISSUER)
     .with_subject(org_id.0);
     Ok(keys.key.authenticate(claims).unwrap())
 }
@@ -278,7 +259,7 @@ pub fn generate_app_token(
         },
         Duration::from_hours(24 * 28),
     )
-    .with_issuer(env!("CARGO_PKG_NAME"))
+    .with_issuer(JWT_ISSUER)
     .with_subject(app_id.0);
     Ok(keys.key.authenticate(claims).unwrap())
 }
