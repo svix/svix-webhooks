@@ -17,6 +17,7 @@ async fn ping() -> StatusCode {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "lowercase")]
 pub enum HealthStatusVariant {
     Ok,
     Error,
