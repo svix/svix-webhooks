@@ -315,11 +315,7 @@ async fn endpoint_stats(
             )
             .into_model::<EndpointStatsQueryOut>()
             .all(db)
-            .await
-            .map_err(|e| {
-                tracing::error!("ERROR {}", e);
-                e
-            })?;
+            .await?;
     let mut query_out = query_out
         .into_iter()
         .map(|EndpointStatsQueryOut { status, count }| (status, count))
