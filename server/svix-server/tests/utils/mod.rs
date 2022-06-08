@@ -25,10 +25,17 @@ use http::HeaderMap;
 
 pub mod common_calls;
 
+#[derive(Clone)]
 pub struct TestClient {
     base_uri: String,
     auth_header: String,
     client: Client,
+}
+
+impl TestClient {
+	pub fn set_auth_header(&mut self, auth_header: String) {
+		self.auth_header = format!("Bearer {}", auth_header);
+	}
 }
 
 /// This struct accepts any JSON response and just ignores it.

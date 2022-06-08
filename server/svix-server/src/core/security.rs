@@ -233,6 +233,20 @@ where
         .one(db)
         .await?
         .ok_or_else(|| HttpError::not_found(None, None))?;
+
+        if let Some(permitted_app_id) = &permissions.app_id {
+            if permitted_app_id != &app.id {
+                return Err(HttpError::unauthorized(
+                    None,
+                    Some(
+                        "You are only permitted to perform operations under the Application type"
+                            .to_owned(),
+                    ),
+                )
+                .into());
+            }
+        }
+
         Ok(AuthenticatedApplication { permissions, app })
     }
 }

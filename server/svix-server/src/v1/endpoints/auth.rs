@@ -12,9 +12,9 @@ use crate::{
 };
 
 #[derive(Deserialize, Serialize)]
-struct DashboardAccessOut {
-    url: String,
-    token: String,
+pub struct DashboardAccessOut {
+    pub url: String,
+    pub token: String,
 }
 
 const SVIX_URL: &str = "https://app.svix.com";

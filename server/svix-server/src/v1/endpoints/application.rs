@@ -3,7 +3,7 @@
 
 use crate::{
     core::{
-        security::AuthenticatedOrganization,
+        security::{AuthenticatedOrganization, AuthenticatedApplication},
         types::{ApplicationId, ApplicationIdOrUid, ApplicationUid},
     },
     error::{HttpError, Result},
@@ -148,17 +148,12 @@ async fn create_application(
 
 async fn get_application(
     Extension(ref db): Extension<DatabaseConnection>,
-    Path(app_id): Path<ApplicationIdOrUid>,
-    permissions: Permissions,
+    Path(_app_id): Path<ApplicationIdOrUid>,
+    AuthenticatedApplication {app, permissions}: AuthenticatedApplication,
 ) -> Result<Json<ApplicationOut>> {
-    // If someone authorized for only applications calls this endpoint, it will only return their
-    // application regardless of input in the path
-    let app = application::Entity::secure_find_by_id_or_uid(
+    let app = application::Entity::secure_find_by_id(
         permissions.org_id,
-        permissions
-            .app_id
-            .map(|id| ApplicationIdOrUid(id.0))
-            .unwrap_or(app_id),
+        app.id,
     )
     .one(db)
     .await?
