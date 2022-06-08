@@ -21,7 +21,6 @@ const SVIX_URL: &str = "https://app.svix.com";
 
 async fn dashboard_access(
     Extension(cfg): Extension<Configuration>,
-    Path(_app_id): Path<ApplicationIdOrUid>,
     AuthenticatedOrganizationWithApplication { permissions, app }: AuthenticatedOrganizationWithApplication,
 ) -> Result<Json<DashboardAccessOut>> {
     let token = generate_app_token(&cfg.jwt_secret, permissions.org_id, app.id.clone())?;
