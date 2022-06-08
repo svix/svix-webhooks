@@ -5,7 +5,7 @@ use crate::{
     core::{
         security::{
             AuthenticatedApplication, AuthenticatedOrganization,
-            OrganizationAuthenticatedApplication,
+            AuthenticatedOrganizationWithApplication,
         },
         types::{ApplicationId, ApplicationIdOrUid, ApplicationUid},
     },
@@ -162,10 +162,10 @@ async fn update_application(
     Extension(ref db): Extension<DatabaseConnection>,
     Path(_app_id): Path<ApplicationIdOrUid>,
     ValidatedJson(data): ValidatedJson<ApplicationIn>,
-    OrganizationAuthenticatedApplication {
+    AuthenticatedOrganizationWithApplication {
         permissions: _,
         app,
-    }: OrganizationAuthenticatedApplication,
+    }: AuthenticatedOrganizationWithApplication,
 ) -> Result<Json<ApplicationOut>> {
     let mut app: application::ActiveModel = app.into();
     data.update_model(&mut app);

@@ -164,13 +164,13 @@ struct ApplicationPathParams {
     app_id: ApplicationIdOrUid,
 }
 
-pub struct OrganizationAuthenticatedApplication {
+pub struct AuthenticatedOrganizationWithApplication {
     pub permissions: Permissions,
     pub app: application::Model,
 }
 
 #[async_trait]
-impl<B> FromRequest<B> for OrganizationAuthenticatedApplication
+impl<B> FromRequest<B> for AuthenticatedOrganizationWithApplication
 where
     B: Send,
 {
@@ -207,7 +207,7 @@ where
         .one(db)
         .await?
         .ok_or_else(|| HttpError::not_found(None, None))?;
-        Ok(OrganizationAuthenticatedApplication { permissions, app })
+        Ok(AuthenticatedOrganizationWithApplication { permissions, app })
     }
 }
 
