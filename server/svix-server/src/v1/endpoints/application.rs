@@ -3,7 +3,10 @@
 
 use crate::{
     core::{
-        security::{AuthenticatedApplication, AuthenticatedOrganization},
+        security::{
+            AuthenticatedApplication, AuthenticatedOrganization,
+            OrganizationAuthenticatedApplication,
+        },
         types::{ApplicationId, ApplicationIdOrUid, ApplicationUid},
     },
     db::models::application,
@@ -157,15 +160,13 @@ async fn get_application(
 
 async fn update_application(
     Extension(ref db): Extension<DatabaseConnection>,
-    Path(app_id): Path<ApplicationIdOrUid>,
+    Path(_app_id): Path<ApplicationIdOrUid>,
     ValidatedJson(data): ValidatedJson<ApplicationIn>,
-    AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
+    OrganizationAuthenticatedApplication {
+        permissions: _,
+        app,
+    }: OrganizationAuthenticatedApplication,
 ) -> Result<Json<ApplicationOut>> {
-    let app = application::Entity::secure_find_by_id_or_uid(permissions.org_id.clone(), app_id)
-        .one(db)
-        .await?
-        .ok_or_else(|| HttpError::not_found(None, None))?;
-
     let mut app: application::ActiveModel = app.into();
     data.update_model(&mut app);
 
