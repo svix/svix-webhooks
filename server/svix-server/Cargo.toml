@@ -35,7 +35,7 @@ regex = "1.5.5"
 lazy_static = "1.4.0"
 figment = { version = "0.10", features = ["toml", "env", "test"] }
 tracing = "0.1.29"
-tracing-subscriber = { version="0.3", features = ["env-filter"] }
+tracing-subscriber = { version="0.3", features = ["env-filter", "json"] }
 validator = { version = "0.14.0", features = ["derive"] }
 jwt-simple = "0.10.8"
 chrono = { version="0.4.19", features = ["serde"] }

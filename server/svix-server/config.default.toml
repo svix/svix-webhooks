@@ -10,6 +10,8 @@ listen_address = "0.0.0.0:8071"
 
 # The log level to run the service with. Supported: info, debug, trace
 log_level = "info"
+# The log format that all output will follow. Supported: default, json
+log_format = "default"
 
 # The wanted retry schedule in seconds. Each value is the time to wait between retries.
 retry_schedule = [5,300,1800,7200,18000,36000,36000]

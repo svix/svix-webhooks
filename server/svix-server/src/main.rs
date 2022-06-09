@@ -63,7 +63,15 @@ async fn main() {
         );
     }
 
-    tracing_subscriber::fmt::init();
+    match cfg.log_format {
+        cfg::LogFormat::Default => {
+            tracing_subscriber::fmt::init();
+        }
+        cfg::LogFormat::Json => {
+            let fmt = tracing_subscriber::fmt::format().json();
+            tracing_subscriber::fmt().event_format(fmt).init();
+        }
+    };
 
     if args.run_migrations {
         db::run_migrations(&cfg).await;
