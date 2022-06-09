@@ -69,7 +69,12 @@ async fn main() {
         }
         cfg::LogFormat::Json => {
             let fmt = tracing_subscriber::fmt::format().json();
-            tracing_subscriber::fmt().event_format(fmt).init();
+            let filter = tracing_subscriber::EnvFilter::from_default_env();
+
+            tracing_subscriber::fmt()
+                .event_format(fmt)
+                .with_env_filter(filter)
+                .init();
         }
     };
 
