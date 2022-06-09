@@ -3,14 +3,7 @@
   "scripts": {
     "bump-version": "node tools/bump_version.js",
     "update-postman": "node tools/update_postman.js",
-    "generate": "yarn gen:python && yarn gen:javascript && yarn gen:go && yarn gen:java && yarn gen:kotlin && yarn gen:ruby && yarn gen:csharp",
-    "gen:python": "openapi-generator-cli generate -i openapi.json -g python -o python/ -c python/openapi-generator-config.json -t python/templates",
-    "gen:javascript": "openapi-generator-cli generate -i openapi.json -g typescript -o javascript/src/openapi -c javascript/openapi-generator-config.json",
-    "gen:go": "openapi-generator-cli generate -i openapi.json -g go -o go/internal/openapi -c go/openapi-generator-config.json -t go/templates",
-    "gen:java": "openapi-generator-cli generate -i openapi.json -g java -o java/lib/generated/openapi -c java/openapi-generator-config.json -t java/templates",
-    "gen:kotlin": "openapi-generator-cli generate -i openapi.json -g kotlin -o kotlin/lib/generated/openapi -c kotlin/openapi-generator-config.json -t kotlin/templates",
-    "gen:ruby": "openapi-generator-cli generate -i openapi.json -g ruby -o ruby -c ruby/openapi-generator-config.json -t ruby/templates",
-    "gen:csharp": "openapi-generator-cli generate -i openapi.json -g csharp-netcore -o csharp/ -c csharp/openapi-generator-config.json"
+    "generate": "bash ./regen_openapi.sh"
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.4.18",
