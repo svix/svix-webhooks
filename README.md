@@ -230,7 +230,7 @@ SVIX_QUEUE_TYPE = "redis"
 
 There are two configuration variables `db_pool_max_size` and `redis_pool_max_size` which control the maximum allowed size of the connection pool for PostgreSQL and Redis respectively.
 
-They default to a max size of 20, but increasing this value can significantly increase performance if your database can handle it.
+They default to a max size of 20, but higher values can significantly increase performance if your database can handle it.
 
 ## Authentication
 
