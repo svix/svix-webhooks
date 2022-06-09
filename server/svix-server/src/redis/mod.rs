@@ -282,11 +282,11 @@ async fn new_redis_pool_helper(
 }
 
 pub async fn new_redis_pool_clustered(redis_dsn: &str, cfg: &Configuration) -> RedisPool {
-    new_redis_pool_helper(redis_dsn, true, cfg.redis_pool_max_connections).await
+    new_redis_pool_helper(redis_dsn, true, cfg.redis_pool_max_size).await
 }
 
 pub async fn new_redis_pool(redis_dsn: &str, cfg: &Configuration) -> RedisPool {
-    new_redis_pool_helper(redis_dsn, false, cfg.redis_pool_max_connections).await
+    new_redis_pool_helper(redis_dsn, false, cfg.redis_pool_max_size).await
 }
 
 #[cfg(test)]

@@ -79,13 +79,13 @@ pub struct ConfigurationInner {
     pub db_dsn: String,
     // The maximum number of connections for the PostgreSQL pool
     #[validate(range(min = 10))]
-    pub db_pool_max_connections: u16,
+    pub db_pool_max_size: u16,
 
     /// The DSN for redis (can be left empty if not using redis)
     pub redis_dsn: Option<String>,
     /// The maximum number of connections for the Redis pool
     #[validate(range(min = 10))]
-    pub redis_pool_max_connections: u16,
+    pub redis_pool_max_size: u16,
 
     /// What kind of message queue to use. Supported: memory, redis (must have redis_dsn configured).
     pub queue_type: QueueType,
