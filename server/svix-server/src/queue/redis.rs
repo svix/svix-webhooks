@@ -611,14 +611,14 @@ pub mod tests {
             CacheType::RedisCluster => {
                 let mgr = crate::redis::new_redis_pool_clustered(
                     cfg.redis_dsn.as_ref().unwrap().as_str(),
-                    10,
+                    &cfg,
                 )
                 .await;
                 mgr
             }
             _ => {
                 let mgr =
-                    crate::redis::new_redis_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), 10)
+                    crate::redis::new_redis_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg)
                         .await;
                 mgr
             }

@@ -55,14 +55,11 @@ pub async fn run_with_prefix(
     tracing::debug!("Cache type: {:?}", cfg.cache_type);
     let cache = match cfg.cache_type {
         CacheType::Redis => {
-            let mgr =
-                crate::redis::new_redis_pool(redis_dsn(), cfg.redis_pool_max_connections).await;
+            let mgr = crate::redis::new_redis_pool(redis_dsn(), &cfg).await;
             cache::redis::new(mgr)
         }
         CacheType::RedisCluster => {
-            let mgr =
-                crate::redis::new_redis_pool_clustered(redis_dsn(), cfg.redis_pool_max_connections)
-                    .await;
+            let mgr = crate::redis::new_redis_pool_clustered(redis_dsn(), &cfg).await;
             cache::redis::new(mgr)
         }
         CacheType::Memory => cache::memory::new(),

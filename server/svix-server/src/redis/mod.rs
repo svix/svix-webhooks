@@ -7,6 +7,8 @@ pub use cluster::RedisClusterConnectionManager;
 use axum::async_trait;
 use redis::{FromRedisValue, RedisError, RedisResult, ToRedisArgs};
 
+use crate::cfg::Configuration;
+
 #[derive(Clone, Debug)]
 pub enum RedisPool {
     Clustered(ClusteredRedisPool),
@@ -279,12 +281,12 @@ async fn new_redis_pool_helper(
     }
 }
 
-pub async fn new_redis_pool_clustered(redis_dsn: &str, max_connections: u16) -> RedisPool {
-    new_redis_pool_helper(redis_dsn, true, max_connections).await
+pub async fn new_redis_pool_clustered(redis_dsn: &str, cfg: &Configuration) -> RedisPool {
+    new_redis_pool_helper(redis_dsn, true, cfg.redis_pool_max_connections).await
 }
 
-pub async fn new_redis_pool(redis_dsn: &str, max_connections: u16) -> RedisPool {
-    new_redis_pool_helper(redis_dsn, false, max_connections).await
+pub async fn new_redis_pool(redis_dsn: &str, cfg: &Configuration) -> RedisPool {
+    new_redis_pool_helper(redis_dsn, false, cfg.redis_pool_max_connections).await
 }
 
 #[cfg(test)]
@@ -293,14 +295,14 @@ mod tests {
     use super::*;
     use crate::cfg::CacheType;
 
-    async fn get_pool(redis_dsn: &str, cache_type: &crate::cfg::CacheType) -> RedisPool {
-        match cache_type {
+    async fn get_pool(redis_dsn: &str, cfg: &Configuration) -> RedisPool {
+        match cfg.cache_type {
             CacheType::RedisCluster => {
-                let mgr = crate::redis::new_redis_pool_clustered(redis_dsn, 10).await;
+                let mgr = crate::redis::new_redis_pool_clustered(redis_dsn, cfg).await;
                 mgr
             }
             _ => {
-                let mgr = crate::redis::new_redis_pool(redis_dsn, 10).await;
+                let mgr = crate::redis::new_redis_pool(redis_dsn, cfg).await;
                 mgr
             }
         }
@@ -312,7 +314,7 @@ mod tests {
         dotenv::dotenv().ok();
         let cfg = crate::cfg::load().unwrap();
 
-        let pool = get_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg.cache_type).await;
+        let pool = get_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg).await;
         let mut pool = pool.get().await.unwrap();
 
         for (val, key) in "abcdefghijklmnopqrstuvwxyz".chars().enumerate() {
