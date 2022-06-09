@@ -69,6 +69,8 @@ pub struct ConfigurationInner {
     pub jwt_secret: Keys,
     /// The log level to run the service with. Supported: info, debug, trace
     pub log_level: LogLevel,
+    /// The log format that all output will follow. Supported: default, json
+    pub log_format: LogFormat,
     /// The wanted retry schedule in seconds. Each value is the time to wait between retries.
     #[serde(deserialize_with = "deserialize_retry_schedule")]
     pub retry_schedule: Vec<Duration>,
@@ -104,6 +106,13 @@ pub enum LogLevel {
     Info,
     Debug,
     Trace,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum LogFormat {
+    Default,
+    Json,
 }
 
 #[derive(Clone, Debug, Deserialize)]
