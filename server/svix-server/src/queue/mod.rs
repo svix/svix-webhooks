@@ -27,11 +27,11 @@ pub async fn new_pair(
 
     match cfg.queue_type {
         QueueType::Redis => {
-            let pool = crate::redis::new_redis_pool(redis_dsn()).await;
+            let pool = crate::redis::new_redis_pool(redis_dsn(), cfg).await;
             redis::new_pair(pool, prefix).await
         }
         QueueType::RedisCluster => {
-            let pool = crate::redis::new_redis_pool_clustered(redis_dsn()).await;
+            let pool = crate::redis::new_redis_pool_clustered(redis_dsn(), cfg).await;
             redis::new_pair(pool, prefix).await
         }
         QueueType::Memory => memory::new_pair().await,

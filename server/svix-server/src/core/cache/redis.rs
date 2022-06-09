@@ -111,14 +111,14 @@ mod tests {
         }
     }
 
-    async fn get_pool(redis_dsn: &str, cache_type: &crate::cfg::CacheType) -> RedisPool {
-        match cache_type {
+    async fn get_pool(redis_dsn: &str, cfg: &crate::cfg::Configuration) -> RedisPool {
+        match cfg.cache_type {
             CacheType::RedisCluster => {
-                let mgr = crate::redis::new_redis_pool_clustered(redis_dsn).await;
+                let mgr = crate::redis::new_redis_pool_clustered(redis_dsn, cfg).await;
                 mgr
             }
             _ => {
-                let mgr = crate::redis::new_redis_pool(redis_dsn).await;
+                let mgr = crate::redis::new_redis_pool(redis_dsn, cfg).await;
                 mgr
             }
         }
@@ -129,7 +129,7 @@ mod tests {
         dotenv::dotenv().ok();
         let cfg = crate::cfg::load().unwrap();
 
-        let redis_pool = get_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg.cache_type).await;
+        let redis_pool = get_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg).await;
         let cache = super::new(redis_pool);
 
         let (first_key, first_val_a, first_val_b) =
@@ -182,7 +182,7 @@ mod tests {
         dotenv::dotenv().ok();
         let cfg = crate::cfg::load().unwrap();
 
-        let redis_pool = get_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg.cache_type).await;
+        let redis_pool = get_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg).await;
         let cache = super::new(redis_pool);
 
         let key = TestKeyA::new("key".to_owned());
@@ -200,7 +200,7 @@ mod tests {
         dotenv::dotenv().ok();
         let cfg = crate::cfg::load().unwrap();
 
-        let redis_pool = get_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg.cache_type).await;
+        let redis_pool = get_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg).await;
         let cache = super::new(redis_pool);
 
         let key = TestKeyA::new("nx_status_test_key".to_owned());
