@@ -14,6 +14,7 @@ async fn connect(cfg: &Configuration) -> sqlx::Pool<sqlx::Postgres> {
     tracing::debug!("DB: Initializing pool");
     if DbBackend::Postgres.is_prefix_of(&cfg.db_dsn) {
         PgPoolOptions::new()
+            .max_connections(cfg.db_pool_max_connections.into())
             .connect(&cfg.db_dsn)
             .await
             .expect("Error connectiong to Postgres")

@@ -252,11 +252,16 @@ impl PoolLike for ClusteredRedisPool {
     }
 }
 
-async fn new_redis_pool_helper(redis_dsn: &str, clustered: bool) -> RedisPool {
+async fn new_redis_pool_helper(
+    redis_dsn: &str,
+    clustered: bool,
+    max_connections: u16,
+) -> RedisPool {
     if clustered {
         let mgr = RedisClusterConnectionManager::new(redis_dsn)
             .expect("Error initializing redis cluster client");
         let pool = bb8::Pool::builder()
+            .max_size(max_connections.into())
             .build(mgr)
             .await
             .expect("Error initializing redis cluster connection pool");
@@ -265,6 +270,7 @@ async fn new_redis_pool_helper(redis_dsn: &str, clustered: bool) -> RedisPool {
     } else {
         let mgr = RedisConnectionManager::new(redis_dsn).expect("Error intializing redis client");
         let pool = bb8::Pool::builder()
+            .max_size(max_connections.into())
             .build(mgr)
             .await
             .expect("Error initializing redis connection pool");
@@ -273,12 +279,12 @@ async fn new_redis_pool_helper(redis_dsn: &str, clustered: bool) -> RedisPool {
     }
 }
 
-pub async fn new_redis_pool_clustered(redis_dsn: &str) -> RedisPool {
-    new_redis_pool_helper(redis_dsn, true).await
+pub async fn new_redis_pool_clustered(redis_dsn: &str, max_connections: u16) -> RedisPool {
+    new_redis_pool_helper(redis_dsn, true, max_connections).await
 }
 
-pub async fn new_redis_pool(redis_dsn: &str) -> RedisPool {
-    new_redis_pool_helper(redis_dsn, false).await
+pub async fn new_redis_pool(redis_dsn: &str, max_connections: u16) -> RedisPool {
+    new_redis_pool_helper(redis_dsn, false, max_connections).await
 }
 
 #[cfg(test)]
@@ -290,11 +296,11 @@ mod tests {
     async fn get_pool(redis_dsn: &str, cache_type: &crate::cfg::CacheType) -> RedisPool {
         match cache_type {
             CacheType::RedisCluster => {
-                let mgr = crate::redis::new_redis_pool_clustered(redis_dsn).await;
+                let mgr = crate::redis::new_redis_pool_clustered(redis_dsn, 10).await;
                 mgr
             }
             _ => {
-                let mgr = crate::redis::new_redis_pool(redis_dsn).await;
+                let mgr = crate::redis::new_redis_pool(redis_dsn, 10).await;
                 mgr
             }
         }

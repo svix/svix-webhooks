@@ -93,11 +93,24 @@ pub struct ConfigurationInner {
     #[validate(range(min = 1, max = 30))]
     pub worker_request_timeout: u16,
 
+    // The maximum number of connections for the PostgreSQL pool
+    #[validate(range(min = 10))]
+    #[serde(default = "default_max_connections")]
+    pub db_pool_max_connections: u16,
+    /// The maximum number of connections for the Redis pool
+    #[validate(range(min = 10))]
+    #[serde(default = "default_max_connections")]
+    pub redis_pool_max_connections: u16,
+
     // Execution mode
     /// Should this instance run the API
     pub api_enabled: bool,
     /// Should this instance run the message worker
     pub worker_enabled: bool,
+}
+
+const fn default_max_connections() -> u16 {
+    100
 }
 
 #[derive(Clone, Debug, Deserialize)]
