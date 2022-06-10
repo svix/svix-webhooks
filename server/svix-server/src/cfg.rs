@@ -106,7 +106,7 @@ pub struct ConfigurationInner {
     /// Should this instance run the message worker
     pub worker_enabled: bool,
 
-    #[serde(default = "Default::default")]
+    #[serde(default = "Default::default", flatten)]
     pub internal: InternalConfig,
 }
 
