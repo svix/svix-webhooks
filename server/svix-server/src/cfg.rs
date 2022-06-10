@@ -105,6 +105,28 @@ pub struct ConfigurationInner {
     pub api_enabled: bool,
     /// Should this instance run the message worker
     pub worker_enabled: bool,
+
+    #[serde(default = "Default::default")]
+    pub internal: InternalConfig,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct InternalConfig {
+    /// The region to use in the Svix URL given in th dashboard access endpoint
+    #[serde(default = "default_region")]
+    pub region: String,
+}
+
+impl Default for InternalConfig {
+    fn default() -> Self {
+        InternalConfig {
+            region: default_region(),
+        }
+    }
+}
+
+fn default_region() -> String {
+    "eu".to_owned()
 }
 
 #[derive(Clone, Debug, Deserialize)]

@@ -25,8 +25,7 @@ async fn dashboard_access(
     let login_key = serde_json::to_vec(&serde_json::json!({
         "appId": app.id,
         "token": token,
-        // Region is unused
-        "region": "eu"
+        "region": cfg.internal.region,
     }))
     .map_err(|_| HttpError::internal_server_errer(None, None))?;
 
