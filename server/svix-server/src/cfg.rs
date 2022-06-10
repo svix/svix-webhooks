@@ -106,7 +106,7 @@ pub struct ConfigurationInner {
     /// Should this instance run the message worker
     pub worker_enabled: bool,
 
-    #[serde(default = "Default::default", flatten)]
+    #[serde(flatten)]
     pub internal: InternalConfig,
 }
 
@@ -115,14 +115,6 @@ pub struct InternalConfig {
     /// The region to use in the Svix URL given in th dashboard access endpoint
     #[serde(default = "default_region")]
     pub region: String,
-}
-
-impl Default for InternalConfig {
-    fn default() -> Self {
-        InternalConfig {
-            region: default_region(),
-        }
-    }
 }
 
 fn default_region() -> String {
