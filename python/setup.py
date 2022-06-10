@@ -31,7 +31,7 @@ PKG_DIR = os.path.abspath(os.path.dirname(__file__))
 META_PATH = os.path.join(PKG_DIR, PKG_NAME, "__init__.py")
 META_CONTENTS = read_file(META_PATH)
 PKG_REQUIRES = [
-    "httpx >=0.15.4,<0.23.0",
+    "httpx >=0.23.0",
     "attrs >=21.3.0",
     "python-dateutil",
     "Deprecated",
@@ -119,4 +119,3 @@ setup(
     long_description=PKG_README,
     long_description_content_type="text/markdown",
 )
-
