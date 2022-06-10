@@ -7,4 +7,5 @@ pep8-naming
 mypy
 pip-tools
 pytest
-openapi-python-client
+httpx>=0.23.0
+openapi-python-client>=0.11.3
