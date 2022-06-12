@@ -1,5 +1,7 @@
 # will have compiled files and executables
 target/
+# We don't want it to bust our docker build cache
+Cargo.lock
 
 /tmp
 

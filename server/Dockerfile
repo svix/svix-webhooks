@@ -8,13 +8,20 @@ RUN set -ex ; \
         mkdir -p /home/appuser ;\
         chown -R appuser: /home/appuser
 
-USER appuser
-
 WORKDIR /app
-COPY . .
 
-WORKDIR /app/svix-server
-RUN cargo install --path .
+# Hack to enable docker caching
+COPY Cargo.toml .
+COPY svix-server_derive svix-server_derive
+COPY svix-server/Cargo.toml svix-server/
+RUN set -ex ;\
+        mkdir svix-server/src ;\
+        echo 'fn main() { println!("Dummy!"); }' > svix-server/src/main.rs ;\
+        cargo build --release ;\
+        rm -rf svix-server/src
+
+COPY . .
+RUN cargo build --release --frozen
 
 # Production
 FROM debian:11.2-slim AS prod
@@ -35,7 +42,7 @@ USER appuser
 EXPOSE 8080
 
 COPY ./wait-for /usr/local/bin/wait-for
-COPY --from=build /usr/local/cargo/bin/svix-server /usr/local/bin/svix-server
+COPY --from=build /app/target/release/svix-server /usr/local/bin/svix-server
 
 # Ignoring this lint, because it's an embedded shell script
 # hadolint ignore=DL3025
