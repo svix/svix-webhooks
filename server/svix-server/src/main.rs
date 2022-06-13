@@ -21,7 +21,7 @@ struct Args {
     #[clap(subcommand)]
     command: Option<Commands>,
     /// Run database migrations before starting
-    #[clap(long)]
+    #[clap(long, value_parser)]
     run_migrations: bool,
 }
 
