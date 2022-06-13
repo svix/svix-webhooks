@@ -86,6 +86,8 @@ Now generate an auth token, you can do it by running:
 cargo run jwt generate
 ```
 
+See [the main README](../README.md) for instructions on how to generate it in production.
+
 ### Run the SQL migrations
 
 One last missing piece to the puzzle is running the SQL migrations.

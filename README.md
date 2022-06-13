@@ -243,10 +243,24 @@ Authorization: Bearer <JWT_TOKEN_HERE>
 
 Either generate one using
 ```
-cargo run jwt generate
+svix-server jwt generate
 ```
 
-Or if you are generating your own, make sure to use `org_23rb8YdGqMT0qIzpgGwdXfHirMu` as the `sub` field.
+Or if you are generating your own, make sure to use `org_23rb8YdGqMT0qIzpgGwdXfHirMu` as the `sub` field, and `H256` as the algorithm.
+
+
+Example valid JWT for the secret `x` (so you can see the structure):
+```js
+// JWT: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NTUxNDA2MzksImV4cCI6MTk3MDUwMDYzOSwibmJmIjoxNjU1MTQwNjM5LCJpc3MiOiJzdml4LXNlcnZlciIsInN1YiI6Im9yZ18yM3JiOFlkR3FNVDBxSXpwZ0d3ZFhmSGlyTXUifQ.USMuIPrqsZTSj3kyWupCzJO9eyQioBzh5alGlvRbrbA
+// Structure (when decoded):
+{
+  "iat": 1655140639,
+  "exp": 1970500639,
+  "nbf": 1655140639,
+  "iss": "svix-server",
+  "sub": "org_23rb8YdGqMT0qIzpgGwdXfHirMu"
+}
+```
 
 
 # Differences to the Svix hosted service
