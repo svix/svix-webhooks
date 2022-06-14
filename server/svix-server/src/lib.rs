@@ -12,6 +12,7 @@ use std::{
     str::FromStr,
 };
 use tower::ServiceBuilder;
+use tower_http::cors::{Any, CorsLayer};
 use tower_http::trace::TraceLayer;
 
 use crate::{
@@ -78,6 +79,13 @@ pub async fn run_with_prefix(
                 cache: cache.clone(),
                 service,
             }),
+        )
+        .layer(
+            CorsLayer::new()
+                .allow_credentials(true)
+                .allow_origin(Any)
+                .allow_methods(Any)
+                .allow_headers(Any),
         )
         .layer(TraceLayer::new_for_http().on_request(()))
         .layer(Extension(pool.clone()))
