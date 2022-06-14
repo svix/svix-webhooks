@@ -118,10 +118,18 @@ pub struct InternalConfig {
     /// The region to use in the Svix URL given in th dashboard access endpoint
     #[serde(default = "default_region")]
     pub region: String,
+
+    /// The base url to use for the app portal
+    #[serde(default = "default_app_portal_url")]
+    pub app_portal_url: String,
 }
 
 fn default_region() -> String {
     "eu".to_owned()
+}
+
+fn default_app_portal_url() -> String {
+    "https://app.svix.com".to_owned()
 }
 
 #[derive(Clone, Debug, Deserialize)]
