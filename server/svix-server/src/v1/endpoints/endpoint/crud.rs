@@ -7,9 +7,11 @@ use axum::{
 use hyper::StatusCode;
 use sea_orm::{entity::prelude::*, ActiveValue::Set, QueryOrder};
 use sea_orm::{ActiveModelTrait, DatabaseConnection, QuerySelect};
+use url::Url;
 
 use super::{EndpointIn, EndpointOut};
 use crate::{
+    cfg::Configuration,
     core::{
         security::AuthenticatedApplication,
         types::{
@@ -53,12 +55,14 @@ pub(super) async fn list_endpoints(
 
 pub(super) async fn create_endpoint(
     Extension(ref db): Extension<DatabaseConnection>,
+    Extension(cfg): Extension<Configuration>,
     ValidatedJson(data): ValidatedJson<EndpointIn>,
     AuthenticatedApplication { permissions, app }: AuthenticatedApplication,
 ) -> Result<(StatusCode, Json<EndpointOut>)> {
     if let Some(ref event_types_ids) = data.event_types_ids {
         validate_event_types(db, event_types_ids, &permissions.org_id).await?;
     }
+    validate_endpoint_url(&data.url, cfg.endpoint_https_only)?;
 
     let endp = if data.key.is_some() {
         endpoint::ActiveModel {
@@ -93,6 +97,7 @@ pub(super) async fn get_endpoint(
 
 pub(super) async fn update_endpoint(
     Extension(ref db): Extension<DatabaseConnection>,
+    Extension(cfg): Extension<Configuration>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
     ValidatedJson(data): ValidatedJson<EndpointIn>,
     AuthenticatedApplication { permissions, app }: AuthenticatedApplication,
@@ -105,6 +110,7 @@ pub(super) async fn update_endpoint(
     if let Some(ref event_types_ids) = data.event_types_ids {
         validate_event_types(db, event_types_ids, &permissions.org_id).await?;
     }
+    validate_endpoint_url(&data.url, cfg.endpoint_https_only)?;
 
     let mut app: endpoint::ActiveModel = endp.into();
     data.update_model(&mut app);
@@ -174,5 +180,35 @@ async fn validate_event_types(
             ty: "value_error".to_owned(),
         }])
         .into())
+    }
+}
+
+fn validate_endpoint_url(url: &str, https_only: bool) -> Result<()> {
+    if !https_only {
+        return Ok(());
+    }
+
+    match Url::parse(url) {
+        Ok(url) => {
+            let scheme = url.scheme();
+            if scheme == "https" {
+                Ok(())
+            } else {
+                Err(HttpError::unprocessable_entity(vec![ValidationErrorItem {
+                    loc: vec!["body".to_owned(), "url".to_owned()],
+                    msg: "Enpoint URL schemes must be https when endpoint_https_only is set."
+                        .to_owned(),
+                    ty: "value_error".to_owned(),
+                }])
+                .into())
+            }
+        }
+
+        Err(_) => Err(HttpError::unprocessable_entity(vec![ValidationErrorItem {
+            loc: vec!["body".to_owned(), "url".to_owned()],
+            msg: "Endpoint URLs must be valid".to_owned(),
+            ty: "value_error".to_owned(),
+        }])
+        .into()),
     }
 }
