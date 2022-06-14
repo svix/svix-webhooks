@@ -96,6 +96,9 @@ pub struct ConfigurationInner {
     /// If true, headers are prefixed with `Webhook-`, otherwise with `Svix-` (default).
     pub whitelabel_headers: bool,
 
+    /// If true, only allow https endpoints, otherwise also allow http.
+    pub endpoint_https_only: bool,
+
     /// How long to wait when making a request (in seconds)
     #[validate(range(min = 1, max = 30))]
     pub worker_request_timeout: u16,

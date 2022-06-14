@@ -1257,3 +1257,63 @@ async fn test_endpoint_header_key_capitalization() {
         assert!(retrieved_headers.headers.contains_key(k));
     }
 }
+
+/// Tests the endpoint_https_only configuration
+#[tokio::test]
+async fn test_endpoint_https_only() {
+    let http_url = "http://www.example.com";
+    let https_url = "https://www.example.com";
+
+    // No https enforcement (default)
+    let cfg = get_default_test_config();
+    let (client, _jh) = start_svix_server_with_cfg(&cfg);
+
+    let app_id = create_test_app(&client, "App 1").await.unwrap().id;
+
+    assert!(!cfg.endpoint_https_only);
+
+    let _endpoint: EndpointOut = client
+        .post(
+            &format!("api/v1/app/{}/endpoint/", app_id),
+            endpoint_in(https_url),
+            StatusCode::CREATED,
+        )
+        .await
+        .unwrap();
+
+    let _endpoint: EndpointOut = client
+        .post(
+            &format!("api/v1/app/{}/endpoint/", app_id),
+            endpoint_in(http_url),
+            StatusCode::CREATED,
+        )
+        .await
+        .unwrap();
+
+    // Enforce https
+    let mut cfg = get_default_test_config();
+    cfg.endpoint_https_only = true;
+    let (client, _jh) = start_svix_server_with_cfg(&cfg);
+
+    let app_id = create_test_app(&client, "App 1").await.unwrap().id;
+
+    assert!(cfg.endpoint_https_only);
+
+    let _endpoint: EndpointOut = client
+        .post(
+            &format!("api/v1/app/{}/endpoint/", app_id),
+            endpoint_in(https_url),
+            StatusCode::CREATED,
+        )
+        .await
+        .unwrap();
+
+    let _: IgnoredResponse = client
+        .post(
+            &format!("api/v1/app/{}/endpoint/", app_id),
+            endpoint_in(http_url),
+            StatusCode::UNPROCESSABLE_ENTITY,
+        )
+        .await
+        .unwrap();
+}
