@@ -64,6 +64,11 @@ pub type Configuration = Arc<ConfigurationInner>;
 pub struct ConfigurationInner {
     /// The address to listen on
     pub listen_address: String,
+
+    /// The address to send operational webhooks to. When None, operational webhooks will not be
+    /// sent. When Some, the API server with the given URL will be used to send operational webhooks.
+    pub operational_webhook_address: Option<String>,
+
     /// The JWT secret for authentication - should be secret and securely generated
     #[serde(deserialize_with = "deserialize_jwt_secret")]
     pub jwt_secret: Keys,

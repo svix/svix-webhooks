@@ -262,6 +262,16 @@ Example valid JWT for the secret `x` (so you can see the structure):
 }
 ```
 
+## Operational (incoming) webhooks
+
+Operational webhooks are webhooks that you can subscribe to in order to get notified of important events occurring on the svix-server. The list of supported events is available in [the webhooks section of the API reference](https://api.svix.com/docs#tag/Webhooks).
+
+The operational webhooks utilize Svix, and are controlled by a special account with the following ID: `org_00000000000SvixManagement00`.
+To turn operational webhooks on, set the `operational_webhook_address` config to point to your Svix server, and create a JWT for the special account.
+Once those are set, create an `Application` with the `uid` set to the `org_id` you're interested in, and add `Endpoint`s for all of the events you'd like to subscribe to.
+
+For example, for the default account, just create an app with the `uid` set to `org_23rb8YdGqMT0qIzpgGwdXfHirMu`.
+
 
 # Differences to the Svix hosted service
 

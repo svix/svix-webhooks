@@ -5,6 +5,12 @@
 # The address to listen on
 listen_address = "0.0.0.0:8071"
 
+# The address of the Svix server to use for sending operational webhooks (disabled when omitted/null)
+# Operational webhooks (otherwise known as "incoming webhooks"), are webhooks
+# send from the Svix server to you, to let you know when some events happen.
+# For a list of supported events please refer to: https://api.svix.com/docs#tag/Webhooks
+# operational_webhook_address = "http://127.0.0.1:8071"
+
 # The JWT secret for authentication - should be secret and securely generated
 # jwt_secret = "8KjzRXrKkd9YFcNyqLSIY8JwiaCeRc6WK4UkMnSW"
 

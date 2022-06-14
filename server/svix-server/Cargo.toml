@@ -14,6 +14,7 @@ publish = false
 [dependencies]
 svix-server_derive = { path = "../svix-server_derive" }
 
+svix = "0.60"
 svix-ksuid = "^0.5.1"
 dotenv = "0.15.0"
 getrandom = "0.2.4"
@@ -57,4 +58,3 @@ url = "2.2.2"
 
 [dev-dependencies]
 anyhow = "1.0.56"
-svix = "0"

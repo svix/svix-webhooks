@@ -105,7 +105,7 @@ impl CreateMessageApp {
     }
 
     pub fn filtered_endpoints(
-        self,
+        &self,
         trigger_type: MessageAttemptTriggerType,
         msg: &message::Model,
     ) -> Vec<CreateMessageEndpoint> {

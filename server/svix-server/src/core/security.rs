@@ -26,6 +26,11 @@ pub fn default_org_id() -> OrganizationId {
     OrganizationId("org_23rb8YdGqMT0qIzpgGwdXfHirMu".to_owned())
 }
 
+/// The default org_id we use (useful for generating JWTs when testing).
+pub fn management_org_id() -> OrganizationId {
+    OrganizationId("org_00000000000SvixManagement00".to_owned())
+}
+
 fn to_internal_server_error(x: impl Display) -> HttpError {
     tracing::error!("Error: {}", x);
     HttpError::internal_server_errer(None, None)
@@ -245,6 +250,14 @@ pub fn generate_org_token(keys: &Keys, org_id: OrganizationId) -> Result<String>
     )
     .with_issuer(JWT_ISSUER)
     .with_subject(org_id.0);
+    Ok(keys.key.authenticate(claims).unwrap())
+}
+
+pub fn generate_management_token(keys: &Keys) -> Result<String> {
+    let claims =
+        Claims::with_custom_claims(CustomClaim { organization: None }, Duration::from_mins(10))
+            .with_issuer(JWT_ISSUER)
+            .with_subject(management_org_id());
     Ok(keys.key.authenticate(claims).unwrap())
 }
 
