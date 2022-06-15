@@ -52,12 +52,12 @@ impl<T> From<crate::apis::Error<T>> for Error {
         match err {
             crate::apis::Error::ResponseError(e) => {
                 if e.status == status::StatusCode::UNPROCESSABLE_ENTITY {
-                    Error::Http(HttpErrorContent {
+                    Error::Validation(HttpErrorContent {
                         status: e.status,
                         payload: serde_json::from_str(&e.content).ok(),
                     })
                 } else {
-                    Error::Validation(HttpErrorContent {
+                    Error::Http(HttpErrorContent {
                         status: e.status,
                         payload: serde_json::from_str(&e.content).ok(),
                     })
