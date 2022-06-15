@@ -3,6 +3,18 @@
 ## Next
 * 
 
+## Version 0.60.0
+* Server: normalize health status output to be in lowercase.
+* Server: implement application portal endpoint and limited access tokens for it.
+* Server: add endpoint stats endpoint for getting endpoint statistics.
+* Server: add support for JSON log format for use in cloud environments.
+* Server: add configuration options for the max pool size for DB and Redis connection pools.
+* Server: add CORS headers and support pre-flight requests for use from the browser.
+* Server: add a configuration option to only allow https endpoint URLs.
+* Server: support passing an org_id when generating JWTs (`svix-server jwt generate`).
+* Lib/Python: update httpx dependency to the latest version.
+* Lib/Rust: fix mixup with validation errors marked as HTTP errors and vice-versa.
+
 ## Version 0.59.1
 * Libs/Csharp: expose missing getters which prevented a lot of the lib's functionality to be used.
 
