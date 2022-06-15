@@ -6,6 +6,8 @@
 
 use dotenv::dotenv;
 use std::process::exit;
+use svix_server::core::types::OrganizationId;
+use validator::Validate;
 
 use svix_server::core::security::{default_org_id, generate_org_token};
 
@@ -42,7 +44,17 @@ enum Commands {
 enum JwtCommands {
     /// Generate a new JWT
     #[clap()]
-    Generate,
+    Generate {
+        #[clap(value_parser = org_id_parser)]
+        /// Optional org_id to use when generating token (otherwise, default is used).
+        org_id: Option<OrganizationId>,
+    },
+}
+
+fn org_id_parser(s: &str) -> Result<OrganizationId, String> {
+    let ret = OrganizationId(s.to_owned());
+    ret.validate().map_err(|x| x.to_string())?;
+    Ok(ret)
 }
 
 #[tokio::main]
@@ -85,19 +97,23 @@ async fn main() {
         println!("Migrations run");
     }
 
-    if let Some(Commands::Migrate) = &args.command {
-        db::run_migrations(&cfg).await;
-        println!("Migrations run");
-        exit(0);
-    } else if let Some(Commands::Jwt {
-        command: JwtCommands::Generate,
-    }) = &args.command
-    {
-        let token =
-            generate_org_token(&cfg.jwt_secret, default_org_id()).expect("Error generating token");
-        println!("Token (Bearer): {}", token);
-        exit(0);
-    }
+    match args.command {
+        Some(Commands::Migrate) => {
+            db::run_migrations(&cfg).await;
+            println!("Migrations run");
+            exit(0);
+        }
+        Some(Commands::Jwt {
+            command: JwtCommands::Generate { org_id },
+        }) => {
+            let org_id = org_id.unwrap_or_else(default_org_id);
+            let token =
+                generate_org_token(&cfg.jwt_secret, org_id).expect("Error generating token");
+            println!("Token (Bearer): {}", token);
+            exit(0);
+        }
+        None => {}
+    };
 
     run(cfg, None).await;
 }
