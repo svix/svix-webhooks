@@ -94,13 +94,13 @@ async fn main() {
 
     if args.run_migrations {
         db::run_migrations(&cfg).await;
-        println!("Migrations run");
+        tracing::debug!("Migrations: success");
     }
 
     match args.command {
         Some(Commands::Migrate) => {
             db::run_migrations(&cfg).await;
-            println!("Migrations run");
+            println!("Migrations: success");
             exit(0);
         }
         Some(Commands::Jwt {
