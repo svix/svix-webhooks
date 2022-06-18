@@ -5,7 +5,10 @@ use crate::cfg::Configuration;
 use crate::core::{
     cache::Cache,
     message_app::{CreateMessageApp, CreateMessageEndpoint},
-    types::{EndpointHeaders, EndpointSecret, MessageAttemptTriggerType, MessageId, MessageStatus},
+    types::{
+        BaseId, EndpointHeaders, EndpointSecret, MessageAttemptId, MessageAttemptTriggerType,
+        MessageId, MessageStatus,
+    },
 };
 use crate::db::models::{message, messageattempt, messagedestination};
 use crate::error::{Error, Result};
@@ -83,6 +86,7 @@ async fn dispatch(
 ) -> Result<()> {
     tracing::trace!("Dispatch: {} {}", &msg_task.msg_id, &endp.id);
 
+    let now = Utc::now();
     let body = serde_json::to_string(&payload).expect("Error parsing message body");
     let headers = {
         let keys: Vec<&EndpointSecret> = if let Some(ref old_keys) = endp.old_signing_keys {
@@ -94,7 +98,7 @@ async fn dispatch(
         };
 
         let mut headers = generate_msg_headers(
-            Utc::now().timestamp(),
+            now.timestamp(),
             cfg.whitelabel_headers,
             &body,
             &msg_task.msg_id,
@@ -142,6 +146,9 @@ async fn dispatch(
     }
 
     let attempt = messageattempt::ActiveModel {
+        // Set both ID and created_at to the same timestamp
+        id: Set(MessageAttemptId::new(now.into(), None)),
+        created_at: Set(now.into()),
         msg_id: Set(msg_task.msg_id.clone()),
         endp_id: Set(endp.id.clone()),
         msg_dest_id: Set(msg_dest.id.clone()),
