@@ -2,9 +2,11 @@
 // SPDX-License-Identifier: MIT
 
 use crate::cfg::Configuration;
+use crate::core::types::{ApplicationUid, MessageUid, OrganizationId};
 use crate::core::{
     cache::Cache,
     message_app::{CreateMessageApp, CreateMessageEndpoint},
+    operational_webhooks::{MessageAttemptEvent, OperationalWebhook, OperationalWebhookSender},
     types::{
         BaseId, EndpointHeaders, EndpointSecret, MessageAttemptId, MessageAttemptTriggerType,
         MessageId, MessageStatus,
@@ -24,6 +26,8 @@ use tokio::time::{sleep, Duration};
 use std::{iter, str::FromStr};
 
 const USER_AGENT: &str = concat!("Svix-Webhooks/", env!("CARGO_PKG_VERSION"));
+/// Send the MessageAttemptFailingEvent after exceeding this number of failed attempts
+const OP_WEBHOOKS_SEND_FAILING_EVENT_AFTER: usize = 4;
 
 /// Generates a set of headers for any one webhook event
 fn generate_msg_headers(
@@ -75,13 +79,37 @@ fn generate_msg_headers(
     headers
 }
 
+#[derive(Clone)]
+struct WorkerContext<'a> {
+    cfg: &'a Configuration,
+    db: &'a DatabaseConnection,
+    cache: &'a Cache,
+    queue_tx: &'a TaskQueueProducer,
+    op_webhook_sender: &'a OperationalWebhookSender,
+}
+
+struct DispatchExtraIds<'a> {
+    org_id: &'a OrganizationId,
+    app_uid: Option<&'a ApplicationUid>,
+    msg_uid: Option<&'a MessageUid>,
+}
+
 /// Dispatches one webhook
 async fn dispatch(
-    cfg: Configuration,
-    db: &DatabaseConnection,
-    queue_tx: &TaskQueueProducer,
-    payload: &Json,
+    WorkerContext {
+        cfg,
+        db,
+        queue_tx,
+        op_webhook_sender,
+        ..
+    }: WorkerContext<'_>,
     msg_task: MessageTask,
+    DispatchExtraIds {
+        org_id,
+        app_uid,
+        msg_uid,
+    }: DispatchExtraIds<'_>,
+    payload: &Json,
     endp: CreateMessageEndpoint,
 ) -> Result<()> {
     tracing::trace!("Dispatch: {} {}", &msg_task.msg_id, &endp.id);
@@ -209,7 +237,7 @@ async fn dispatch(
             tracing::trace!("Worker success: {} {}", &msg_dest.id, &endp.id,);
         }
         Err((attempt, err)) => {
-            let _attempt = attempt.insert(db).await?;
+            let attempt = attempt.insert(db).await?;
 
             let attempt_count = msg_task.attempt_count as usize;
             if msg_task.trigger_type == MessageAttemptTriggerType::Manual {
@@ -234,6 +262,22 @@ async fn dispatch(
                 };
                 let _msg_dest = msg_dest.update(db).await?;
 
+                if attempt_count == OP_WEBHOOKS_SEND_FAILING_EVENT_AFTER {
+                    op_webhook_sender
+                        .send_operational_webhook(
+                            org_id,
+                            OperationalWebhook::MessageAttemptFailing(MessageAttemptEvent {
+                                app_id: &msg_task.app_id,
+                                app_uid,
+                                endpoint_id: &msg_task.endpoint_id,
+                                msg_id: &msg_task.msg_id,
+                                msg_event_id: msg_uid,
+                                last_attempt: (&attempt).into(),
+                            }),
+                        )
+                        .await?;
+                }
+
                 queue_tx
                     .send(
                         QueueTask::MessageV1(MessageTask {
@@ -256,6 +300,23 @@ async fn dispatch(
                     ..msg_dest.into()
                 };
                 let _msg_dest = msg_dest.update(db).await?;
+
+                // TODO: EndpointDisabledEvents should be sent around here, but this functionality
+                // isn't implemented yet
+
+                op_webhook_sender
+                    .send_operational_webhook(
+                        org_id,
+                        OperationalWebhook::MessageAttemptExhausted(MessageAttemptEvent {
+                            app_id: &msg_task.app_id,
+                            app_uid,
+                            endpoint_id: &msg_task.endpoint_id,
+                            msg_id: &msg_task.msg_id,
+                            msg_event_id: msg_uid,
+                            last_attempt: (&attempt).into(),
+                        }),
+                    )
+                    .await?;
             }
         }
     }
@@ -270,13 +331,9 @@ fn bytes_to_string(bytes: bytes::Bytes) -> String {
 }
 
 /// Manages preparation and execution of a QueueTask type
-async fn process_task(
-    cfg: Configuration,
-    db: &DatabaseConnection,
-    cache: Cache,
-    queue_tx: &TaskQueueProducer,
-    queue_task: QueueTask,
-) -> Result<()> {
+async fn process_task(worker_context: WorkerContext<'_>, queue_task: QueueTask) -> Result<()> {
+    let WorkerContext { db, cache, .. }: WorkerContext<'_> = worker_context;
+
     if queue_task == QueueTask::HealthCheck {
         return Ok(());
     }
@@ -313,6 +370,8 @@ async fn process_task(
     .await?
     .ok_or_else(|| Error::Generic(format!("Application doesn't exist: {}", &msg.app_id)))?;
 
+    let app_uid = create_message_app.uid.clone();
+
     let endpoints: Vec<CreateMessageEndpoint> = create_message_app
         .filtered_endpoints(trigger_type, &msg)
         .iter()
@@ -340,6 +399,8 @@ async fn process_task(
             .await?;
     }
 
+    let org_id = &msg.org_id;
+    let msg_uid = &msg.uid;
     let futures: Vec<_> = endpoints
         .into_iter()
         .map(|endpoint| {
@@ -361,7 +422,17 @@ async fn process_task(
                 QueueTask::HealthCheck => unreachable!(),
             };
 
-            dispatch(cfg.clone(), db, queue_tx, payload, task, endpoint)
+            dispatch(
+                worker_context.clone(),
+                task,
+                DispatchExtraIds {
+                    org_id,
+                    app_uid: app_uid.as_ref(),
+                    msg_uid: msg_uid.as_ref(),
+                },
+                payload,
+                endpoint,
+            )
         })
         .collect();
 
@@ -385,6 +456,7 @@ pub async fn worker_loop(
     cache: Cache,
     queue_tx: TaskQueueProducer,
     mut queue_rx: TaskQueueConsumer,
+    op_webhook_sender: OperationalWebhookSender,
 ) -> Result<()> {
     loop {
         match queue_rx.receive_all().await {
@@ -395,12 +467,18 @@ pub async fn worker_loop(
                     let cache = cache.clone();
                     let queue_tx = queue_tx.clone();
                     let queue_task = delivery.task.clone();
+                    let op_webhook_sender = op_webhook_sender.clone();
 
                     tokio::spawn(async move {
-                        if let Err(err) =
-                            process_task(cfg.clone(), &pool, cache.clone(), &queue_tx, queue_task)
-                                .await
-                        {
+                        let worker_context = WorkerContext {
+                            cfg: &cfg,
+                            db: &pool,
+                            cache: &cache,
+                            queue_tx: &queue_tx,
+                            op_webhook_sender: &op_webhook_sender,
+                        };
+
+                        if let Err(err) = process_task(worker_context, queue_task).await {
                             tracing::error!("Error executing task: {}", err);
                             queue_tx
                                 .nack(delivery)

@@ -13,6 +13,7 @@ use super::{EndpointIn, EndpointOut};
 use crate::{
     cfg::Configuration,
     core::{
+        operational_webhooks::{EndpointEvent, OperationalWebhook, OperationalWebhookSender},
         security::AuthenticatedApplication,
         types::{
             ApplicationIdOrUid, EndpointId, EndpointIdOrUid, EndpointSecret, EventTypeName,
@@ -56,6 +57,7 @@ pub(super) async fn list_endpoints(
 pub(super) async fn create_endpoint(
     Extension(ref db): Extension<DatabaseConnection>,
     Extension(cfg): Extension<Configuration>,
+    Extension(op_webhooks): Extension<OperationalWebhookSender>,
     ValidatedJson(data): ValidatedJson<EndpointIn>,
     AuthenticatedApplication { permissions, app }: AuthenticatedApplication,
 ) -> Result<(StatusCode, Json<EndpointOut>)> {
@@ -77,6 +79,19 @@ pub(super) async fn create_endpoint(
         }
     };
     let ret = endp.insert(db).await?;
+
+    op_webhooks
+        .send_operational_webhook(
+            &permissions.org_id,
+            OperationalWebhook::EndpointCreated(EndpointEvent {
+                app_id: &ret.app_id,
+                app_uid: app.uid.as_ref(),
+                endpoint_id: &ret.id,
+                endpoint_uid: ret.uid.as_ref(),
+            }),
+        )
+        .await?;
+
     Ok((StatusCode::CREATED, Json(ret.into())))
 }
 
@@ -98,6 +113,7 @@ pub(super) async fn get_endpoint(
 pub(super) async fn update_endpoint(
     Extension(ref db): Extension<DatabaseConnection>,
     Extension(cfg): Extension<Configuration>,
+    Extension(op_webhooks): Extension<OperationalWebhookSender>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
     ValidatedJson(data): ValidatedJson<EndpointIn>,
     AuthenticatedApplication { permissions, app }: AuthenticatedApplication,
@@ -112,30 +128,59 @@ pub(super) async fn update_endpoint(
     }
     validate_endpoint_url(&data.url, cfg.endpoint_https_only)?;
 
-    let mut app: endpoint::ActiveModel = endp.into();
-    data.update_model(&mut app);
+    let mut endp: endpoint::ActiveModel = endp.into();
+    data.update_model(&mut endp);
 
-    let ret = app.update(db).await?;
+    let ret = endp.update(db).await?;
+
+    let app_uid = app.uid;
+    op_webhooks
+        .send_operational_webhook(
+            &permissions.org_id,
+            OperationalWebhook::EndpointUpdated(EndpointEvent {
+                app_id: &ret.app_id,
+                app_uid: app_uid.as_ref(),
+                endpoint_id: &ret.id,
+                endpoint_uid: ret.uid.as_ref(),
+            }),
+        )
+        .await?;
+
     Ok(Json(ret.into()))
 }
 
 pub(super) async fn delete_endpoint(
     Extension(ref db): Extension<DatabaseConnection>,
+    Extension(op_webhooks): Extension<OperationalWebhookSender>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
-    AuthenticatedApplication {
-        permissions: _,
-        app,
-    }: AuthenticatedApplication,
+    AuthenticatedApplication { permissions, app }: AuthenticatedApplication,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
     let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
         .one(db)
         .await?
         .ok_or_else(|| HttpError::not_found(None, None))?;
 
-    let mut app: endpoint::ActiveModel = endp.into();
-    app.deleted = Set(true);
-    app.uid = Set(None); // We don't want deleted UIDs to clash
-    app.update(db).await?;
+    // Cloning the ID/UID out of endp before it's consumed below
+    let endpoint_id = endp.id.clone();
+    let endpoint_uid = endp.uid.clone();
+
+    let mut endp: endpoint::ActiveModel = endp.into();
+    endp.deleted = Set(true);
+    endp.uid = Set(None); // We don't want deleted UIDs to clash
+    endp.update(db).await?;
+
+    op_webhooks
+        .send_operational_webhook(
+            &permissions.org_id,
+            OperationalWebhook::EndpointDeleted(EndpointEvent {
+                app_id: &app.id,
+                app_uid: app.uid.as_ref(),
+                endpoint_id: &endpoint_id,
+                endpoint_uid: endpoint_uid.as_ref(),
+            }),
+        )
+        .await?;
+
     Ok((StatusCode::NO_CONTENT, Json(EmptyResponse {})))
 }
 

@@ -17,7 +17,9 @@ use tower_http::trace::TraceLayer;
 
 use crate::{
     cfg::Configuration,
-    core::{cache, idempotency::IdempotencyService},
+    core::{
+        cache, idempotency::IdempotencyService, operational_webhooks::OperationalWebhookSenderInner,
+    },
     db::init_db,
     expired_message_cleaner::expired_message_cleaner_loop,
     worker::worker_loop,
@@ -70,6 +72,11 @@ pub async fn run_with_prefix(
     tracing::debug!("Queue type: {:?}", cfg.queue_type);
     let (queue_tx, queue_rx) = queue::new_pair(&cfg, prefix.as_deref()).await;
 
+    let op_webhook_sender = OperationalWebhookSenderInner::new(
+        cfg.jwt_secret.clone(),
+        cfg.operational_webhook_address.clone(),
+    );
+
     // build our application with a route
     let app = Router::new()
         .nest("/api/v1", v1::router())
@@ -91,7 +98,8 @@ pub async fn run_with_prefix(
         .layer(Extension(pool.clone()))
         .layer(Extension(queue_tx.clone()))
         .layer(Extension(cfg.clone()))
-        .layer(Extension(cache.clone()));
+        .layer(Extension(cache.clone()))
+        .layer(Extension(op_webhook_sender.clone()));
 
     let with_api = cfg.api_enabled;
     let with_worker = cfg.worker_enabled;
@@ -121,7 +129,7 @@ pub async fn run_with_prefix(
         async {
             if with_worker {
                 tracing::debug!("Worker: Initializing");
-                worker_loop(&cfg, &pool, cache, queue_tx, queue_rx).await
+                worker_loop(&cfg, &pool, cache, queue_tx, queue_rx, op_webhook_sender).await
             } else {
                 tracing::debug!("Worker: off");
                 Ok(())
