@@ -17,14 +17,29 @@ const CRATE_NAME: &str = env!("CARGO_CRATE_NAME");
 
 use clap::{Parser, Subcommand};
 
+mod wait_for;
+use wait_for::wait_for_dsn;
+
+// The names and default ports of services to wait-for
+const POSTGRES_NAME: &str = "PostgreSQL";
+const POSTGRES_PORT: u16 = 5432;
+
+const REDIS_NAME: &str = "Redis";
+const REDIS_PORT: u16 = 6379;
+
 #[derive(Parser)]
 #[clap(author, version, about = env!("CARGO_PKG_DESCRIPTION"), long_about = None)]
 struct Args {
     #[clap(subcommand)]
     command: Option<Commands>,
+
     /// Run database migrations before starting
     #[clap(long, value_parser)]
     run_migrations: bool,
+
+    /// The time to wait for a successful connection to the database before timing out in seconds.
+    #[clap(long, value_parser)]
+    wait_for: Option<u64>,
 }
 
 #[derive(Subcommand)]
@@ -114,6 +129,27 @@ async fn main() {
         }
         None => {}
     };
+
+    if let Some(wait_for_seconds) = args.wait_for {
+        let mut wait_for = Vec::with_capacity(2);
+        wait_for.push(wait_for_dsn(
+            &cfg.db_dsn,
+            POSTGRES_NAME,
+            POSTGRES_PORT,
+            wait_for_seconds,
+        ));
+
+        if let Some(redis_dsn) = &cfg.redis_dsn {
+            wait_for.push(wait_for_dsn(
+                redis_dsn,
+                REDIS_NAME,
+                REDIS_PORT,
+                wait_for_seconds,
+            ));
+        }
+
+        futures::future::join_all(wait_for).await;
+    }
 
     run(cfg, None).await;
 }
