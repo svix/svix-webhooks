@@ -109,7 +109,7 @@ async fn test_no_redirects_policy() {
     .await
     .unwrap();
 
-    // Assert that the second enpoint has not been visited
+    // Assert that the second endpoint has not been visited
     assert!(!*receiver.has_been_visited.lock().await);
 
     receiver.jh.abort();

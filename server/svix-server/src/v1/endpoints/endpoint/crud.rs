@@ -241,7 +241,7 @@ fn validate_endpoint_url(url: &str, https_only: bool) -> Result<()> {
             } else {
                 Err(HttpError::unprocessable_entity(vec![ValidationErrorItem {
                     loc: vec!["body".to_owned(), "url".to_owned()],
-                    msg: "Enpoint URL schemes must be https when endpoint_https_only is set."
+                    msg: "Endpoint URL schemes must be https when endpoint_https_only is set."
                         .to_owned(),
                     ty: "value_error".to_owned(),
                 }])

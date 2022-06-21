@@ -103,7 +103,7 @@ impl AttemptedMessageOut {
 }
 
 /// Additional parameters (besides pagination) in the query string for the "List Attempted Messages"
-/// enpoint.
+/// endpoint.
 #[derive(Debug, Deserialize, Validate)]
 pub struct ListAttemptedMessagesQueryParameters {
     #[validate]
@@ -209,7 +209,7 @@ async fn list_attempted_messages(
 }
 
 /// Additional parameters (besides pagination) in the query string for the "List Attempts by
-/// Endpoint" enpoint.
+/// Endpoint" endpoint.
 #[derive(Debug, Deserialize, Validate)]
 pub struct ListAttemptsByEndpointQueryParameters {
     status: Option<MessageStatus>,
