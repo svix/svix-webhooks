@@ -33,7 +33,6 @@ pub mod expired_message_cleaner;
 pub mod queue;
 pub mod redis;
 pub mod v1;
-pub mod wait_for;
 pub mod worker;
 
 pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
