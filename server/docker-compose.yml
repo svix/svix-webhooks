@@ -32,6 +32,11 @@ services:
       MAX_CLIENT_CONN: 500
   redis:
     image: "redis:6.2-alpine"
+    # Enable persistence
+    command: "--save 60 500 --appendonly yes --appendfsync everysec"
+    volumes:
+      - "redis-data:/data"
 
 volumes:
   postgres-data:
+  redis-data:
