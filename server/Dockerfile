@@ -41,7 +41,6 @@ RUN apt-get update ;\
 USER appuser
 EXPOSE 8080
 
-COPY ./wait-for /usr/local/bin/wait-for
 COPY --from=build /app/target/release/svix-server /usr/local/bin/svix-server
 
 # Ignoring this lint, because it's an embedded shell script
@@ -49,7 +48,6 @@ COPY --from=build /app/target/release/svix-server /usr/local/bin/svix-server
 CMD \
     set -ex ; \
     if [ ! -z "$WAIT_FOR" ]; then \
-        wait-for -t 15 pgbouncer:5432 -- echo "Postgres ready" ; \
-        wait-for -t 15 redis:6379 -- echo "Redis ready" ; \
+		WAIT_FOR_ARG="--wait-for 15"; \
     fi ; \
-    svix-server --run-migrations
+    svix-server --run-migrations $WAIT_FOR_ARG
