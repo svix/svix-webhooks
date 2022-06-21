@@ -70,7 +70,7 @@ pub fn validate_url(val: &str) -> std::result::Result<(), ValidationError> {
                 Ok(())
             } else {
                 Err(ValidationError::new(
-                    "Enpoint URL schemes must be http or https",
+                    "Endpoint URL schemes must be http or https",
                 ))
             }
         }
