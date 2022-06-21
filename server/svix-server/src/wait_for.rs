@@ -5,26 +5,7 @@ use trust_dns_resolver::{
     TokioAsyncResolver, TokioHandle,
 };
 
-use crate::cfg::Configuration;
-
-const POSTGRES_NAME: &str = "PostgreSQL";
-const POSTGRES_PORT: u16 = 5432;
-
-const REDIS_NAME: &str = "Redis";
-const REDIS_PORT: u16 = 6379;
-
-pub async fn wait_for(cfg: &Configuration, wait_for_seconds: u64) {
-    if let Some(redis_dsn) = &cfg.redis_dsn {
-        tokio::join!(
-            wait_for_inner(&cfg.db_dsn, POSTGRES_NAME, POSTGRES_PORT, wait_for_seconds),
-            wait_for_inner(redis_dsn, REDIS_NAME, REDIS_PORT, wait_for_seconds),
-        );
-    } else {
-        wait_for_inner(&cfg.db_dsn, POSTGRES_NAME, POSTGRES_PORT, wait_for_seconds).await
-    }
-}
-
-async fn wait_for_inner(
+pub async fn wait_for_dsn(
     dsn: &str,
     dependency_name: &str,
     default_port: u16,
@@ -37,7 +18,7 @@ async fn wait_for_inner(
         .unwrap_or_else(|| panic!("Expected {} host", dependency_name));
     let port = dsn.port().unwrap_or(default_port);
 
-    let host: IpAddr = match host {
+    let host_ip: IpAddr = match host {
         url::Host::Domain(s) => resolve_host(s).await,
         url::Host::Ipv4(ipv4_addr) => ipv4_addr.into(),
         url::Host::Ipv6(ipv6_addr) => ipv6_addr.into(),
@@ -48,7 +29,7 @@ async fn wait_for_inner(
 
     loop {
         tokio::select! {
-            res = tokio::net::TcpStream::connect((host, port)) => {
+            res = tokio::net::TcpStream::connect((host_ip, port)) => {
                 if res.is_err() {
                     continue;
                 } else {
@@ -57,7 +38,7 @@ async fn wait_for_inner(
             }
 
             _ = &mut sleep => {
-                panic!("Waiting for {} timed out", dependency_name);
+                panic!("Waiting for host={} ({}) port={} timed out", host, host_ip, port);
             }
         }
     }
