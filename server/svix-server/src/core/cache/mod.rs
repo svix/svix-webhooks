@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use std::time::Duration;
+use std::{string::FromUtf8Error, time::Duration};
 
 use ::redis::RedisError;
 use axum::async_trait;
@@ -17,6 +17,12 @@ pub mod redis;
 pub enum Error {
     #[error("error deserializing Redis value")]
     Deserialization(#[from] serde_json::error::Error),
+
+    #[error("error deserializing Redis value")]
+    DeserializationOther,
+
+    #[error("error deserializing byte array")]
+    DeserializationBytes(#[from] FromUtf8Error),
 
     #[error("Redis pool error")]
     Pool(#[from] bb8::RunError<RedisError>),
@@ -36,6 +42,10 @@ pub trait CacheKey: AsRef<str> + Send + Sync {
 /// Any (de)serializable structure usuable as a value in the cache -- it is associated with a
 /// given key type to ensure type checking on creation or reading of values from the cache
 pub trait CacheValue: DeserializeOwned + Serialize + Send + Sync {
+    type Key: CacheKey;
+}
+
+pub trait StringCacheValue: ToString + TryFrom<String> + Send + Sync {
     type Key: CacheKey;
 }
 
@@ -61,6 +71,29 @@ macro_rules! kv_def {
 }
 pub(crate) use kv_def;
 
+// Used downstream and for testing:
+#[allow(unused_macros)]
+macro_rules! string_kv_def {
+    ($key_id:ident, $val_struct:ident) => {
+        #[derive(Clone, Debug)]
+        pub struct $key_id(String);
+
+        impl AsRef<str> for $key_id {
+            fn as_ref(&self) -> &str {
+                &self.0
+            }
+        }
+
+        impl CacheKey for $key_id {}
+
+        impl StringCacheValue for $val_struct {
+            type Key = $key_id;
+        }
+    };
+}
+#[allow(unused_imports)]
+pub(crate) use string_kv_def;
+
 #[derive(Clone)]
 #[enum_dispatch]
 pub enum Cache {
@@ -79,9 +112,22 @@ impl Cache {
 #[enum_dispatch(Cache)]
 pub trait CacheBehavior: Sync + Send {
     async fn get<T: CacheValue>(&self, key: &T::Key) -> Result<Option<T>>;
+    async fn get_string<T: StringCacheValue>(&self, key: &T::Key) -> Result<Option<T>>;
     async fn set<T: CacheValue>(&self, key: &T::Key, value: &T, ttl: Duration) -> Result<()>;
+    async fn set_string<T: StringCacheValue>(
+        &self,
+        key: &T::Key,
+        value: &T,
+        ttl: Duration,
+    ) -> Result<()>;
     async fn delete<T: CacheKey>(&self, key: &T) -> Result<()>;
     async fn set_if_not_exists<T: CacheValue>(
+        &self,
+        key: &T::Key,
+        value: &T,
+        ttl: Duration,
+    ) -> Result<bool>;
+    async fn set_string_if_not_exists<T: StringCacheValue>(
         &self,
         key: &T::Key,
         value: &T,
