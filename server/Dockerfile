@@ -12,6 +12,7 @@ WORKDIR /app
 
 # Hack to enable docker caching
 COPY Cargo.toml .
+COPY Cargo.lock .
 COPY svix-server_derive svix-server_derive
 COPY svix-server/Cargo.toml svix-server/
 RUN set -ex ;\
