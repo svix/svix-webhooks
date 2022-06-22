@@ -111,26 +111,76 @@ impl Cache {
 #[async_trait]
 #[enum_dispatch(Cache)]
 pub trait CacheBehavior: Sync + Send {
-    async fn get<T: CacheValue>(&self, key: &T::Key) -> Result<Option<T>>;
-    async fn get_string<T: StringCacheValue>(&self, key: &T::Key) -> Result<Option<T>>;
-    async fn set<T: CacheValue>(&self, key: &T::Key, value: &T, ttl: Duration) -> Result<()>;
+    async fn get<T: CacheValue>(&self, key: &T::Key) -> Result<Option<T>> {
+        self.get_raw(key.as_ref().as_bytes())
+            .await?
+            .map(|x| {
+                String::from_utf8(x)
+                    .map_err(|e| e.into())
+                    .and_then(|json| serde_json::from_str(&json).map_err(|e| e.into()))
+            })
+            .transpose()
+    }
+
+    async fn get_raw(&self, key: &[u8]) -> Result<Option<Vec<u8>>>;
+
+    async fn get_string<T: StringCacheValue>(&self, key: &T::Key) -> Result<Option<T>> {
+        self.get_raw(key.as_ref().as_bytes())
+            .await?
+            .map(|x| {
+                String::from_utf8(x)
+                    .map_err(|e| e.into())
+                    .and_then(|x| x.try_into().map_err(|_| Error::DeserializationOther))
+            })
+            .transpose()
+    }
+
+    async fn set<T: CacheValue>(&self, key: &T::Key, value: &T, ttl: Duration) -> Result<()> {
+        self.set_raw(
+            key.as_ref().as_bytes(),
+            serde_json::to_string(value)?.as_bytes(),
+            ttl,
+        )
+        .await
+    }
+
+    async fn set_raw(&self, key: &[u8], value: &[u8], ttl: Duration) -> Result<()>;
+
     async fn set_string<T: StringCacheValue>(
         &self,
         key: &T::Key,
         value: &T,
         ttl: Duration,
-    ) -> Result<()>;
+    ) -> Result<()> {
+        self.set_raw(key.as_ref().as_bytes(), value.to_string().as_bytes(), ttl)
+            .await
+    }
+
     async fn delete<T: CacheKey>(&self, key: &T) -> Result<()>;
+
     async fn set_if_not_exists<T: CacheValue>(
         &self,
         key: &T::Key,
         value: &T,
         ttl: Duration,
-    ) -> Result<bool>;
+    ) -> Result<bool> {
+        self.set_raw_if_not_exists(
+            key.as_ref().as_bytes(),
+            serde_json::to_string(value)?.as_bytes(),
+            ttl,
+        )
+        .await
+    }
+
+    async fn set_raw_if_not_exists(&self, key: &[u8], value: &[u8], ttl: Duration) -> Result<bool>;
+
     async fn set_string_if_not_exists<T: StringCacheValue>(
         &self,
         key: &T::Key,
         value: &T,
         ttl: Duration,
-    ) -> Result<bool>;
+    ) -> Result<bool> {
+        self.set_raw_if_not_exists(key.as_ref().as_bytes(), value.to_string().as_bytes(), ttl)
+            .await
+    }
 }

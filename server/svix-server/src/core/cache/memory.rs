@@ -8,21 +8,24 @@ use tokio::{
 };
 
 use axum::async_trait;
-use serde_json;
 use std::collections::HashMap;
 use std::sync::Arc;
 
-use super::{Cache, CacheBehavior, CacheKey, CacheValue, Error, Result, StringCacheValue};
+use super::{Cache, CacheBehavior, CacheKey, Result};
+
+// Apparently traits needed by types in default implementation aren't recognized:
+#[allow(unused_imports)]
+use super::{CacheValue, StringCacheValue};
 
 #[derive(Debug)]
 struct ValueWrapper {
-    value: String,
+    value: Vec<u8>,
     ttl: Duration,
     timer: Instant,
 }
 
 impl ValueWrapper {
-    fn new(value: String, ttl: Duration) -> ValueWrapper {
+    fn new(value: Vec<u8>, ttl: Duration) -> ValueWrapper {
         ValueWrapper {
             value,
             ttl,
@@ -31,7 +34,7 @@ impl ValueWrapper {
     }
 }
 
-type State = HashMap<String, ValueWrapper>;
+type State = HashMap<Vec<u8>, ValueWrapper>;
 type SharedState = Arc<RwLock<State>>;
 
 pub fn new() -> Cache {
@@ -56,25 +59,27 @@ pub struct MemoryCache {
     map: SharedState,
 }
 
-impl MemoryCache {
-    async fn get_raw(&self, key: &str) -> Option<String> {
-        self.map
+#[async_trait]
+impl CacheBehavior for MemoryCache {
+    async fn get_raw(&self, key: &[u8]) -> Result<Option<Vec<u8>>> {
+        Ok(self
+            .map
             .read()
             .await
             .get(key)
             .filter(|wrapper| check_is_expired(wrapper))
-            .map(|wrapper| wrapper.value.clone())
+            .map(|wrapper| wrapper.value.clone()))
     }
 
-    async fn set_raw(&self, key: &str, value: &str, ttl: Duration) -> Result<()> {
+    async fn set_raw(&self, key: &[u8], value: &[u8], ttl: Duration) -> Result<()> {
         self.map
             .write()
             .await
-            .insert(String::from(key), ValueWrapper::new(value.to_string(), ttl));
+            .insert(key.to_owned(), ValueWrapper::new(value.to_owned(), ttl));
         Ok(())
     }
 
-    async fn set_raw_if_not_exists(&self, key: &str, value: &str, ttl: Duration) -> Result<bool> {
+    async fn set_raw_if_not_exists(&self, key: &[u8], value: &[u8], ttl: Duration) -> Result<bool> {
         let mut lock = self.map.write().await;
 
         // TODO: use HashMap::try_insert when stable
@@ -86,66 +91,11 @@ impl MemoryCache {
 
         Ok(false)
     }
-}
-
-#[async_trait]
-impl CacheBehavior for MemoryCache {
-    async fn get<T: CacheValue>(&self, key: &T::Key) -> Result<Option<T>> {
-        self.get_raw(key.as_ref())
-            .await
-            .map(|x| serde_json::from_str(&x).map_err(|e| e.into()))
-            .transpose()
-    }
-
-    async fn get_string<T: StringCacheValue>(&self, key: &T::Key) -> Result<Option<T>> {
-        self.get_raw(key.as_ref())
-            .await
-            .map(|x| x.try_into().map_err(|_| Error::DeserializationOther))
-            .transpose()
-    }
-
-    async fn set<T: CacheValue>(&self, key: &T::Key, value: &T, ttl: Duration) -> Result<()> {
-        self.map.write().await.insert(
-            String::from(key.as_ref()),
-            ValueWrapper::new(serde_json::to_string(value)?, ttl),
-        );
-
-        Ok(())
-    }
-
-    async fn set_string<T: StringCacheValue>(
-        &self,
-        key: &T::Key,
-        value: &T,
-        ttl: Duration,
-    ) -> Result<()> {
-        self.set_raw(key.as_ref(), &value.to_string(), ttl).await
-    }
 
     async fn delete<T: CacheKey>(&self, key: &T) -> Result<()> {
-        self.map.write().await.remove(key.as_ref());
+        self.map.write().await.remove(key.as_ref().as_bytes());
 
         Ok(())
-    }
-
-    async fn set_if_not_exists<T: CacheValue>(
-        &self,
-        key: &T::Key,
-        value: &T,
-        ttl: Duration,
-    ) -> Result<bool> {
-        self.set_raw_if_not_exists(key.as_ref(), &serde_json::to_string(value)?, ttl)
-            .await
-    }
-
-    async fn set_string_if_not_exists<T: StringCacheValue>(
-        &self,
-        key: &T::Key,
-        value: &T,
-        ttl: Duration,
-    ) -> Result<bool> {
-        self.set_raw_if_not_exists(key.as_ref(), &value.to_string(), ttl)
-            .await
     }
 }
 

@@ -5,11 +5,13 @@ use std::time::Duration;
 
 use axum::async_trait;
 
-use serde_json;
-
 use crate::redis::{PoolLike, PooledConnectionLike, RedisPool};
 
-use super::{Cache, CacheBehavior, CacheKey, CacheValue, Error, Result, StringCacheValue};
+use super::{Cache, CacheBehavior, CacheKey, Error, Result};
+
+// Apparently traits needed by types in default implementation aren't recognized:
+#[allow(unused_imports)]
+use super::{CacheValue, StringCacheValue};
 
 pub fn new(redis: RedisPool) -> Cache {
     RedisCache { redis }.into()
@@ -20,7 +22,8 @@ pub struct RedisCache {
     redis: RedisPool,
 }
 
-impl RedisCache {
+#[async_trait]
+impl CacheBehavior for RedisCache {
     async fn get_raw(&self, key: &[u8]) -> Result<Option<Vec<u8>>> {
         let mut pool = self.redis.get().await.unwrap();
 
@@ -66,50 +69,6 @@ impl RedisCache {
 
         Ok(res.is_some())
     }
-}
-
-#[async_trait]
-impl CacheBehavior for RedisCache {
-    async fn get<T: CacheValue>(&self, key: &T::Key) -> Result<Option<T>> {
-        self.get_raw(key.as_ref().as_bytes())
-            .await?
-            .map(|x| {
-                String::from_utf8(x)
-                    .map_err(|e| e.into())
-                    .and_then(|json| serde_json::from_str(&json).map_err(|e| e.into()))
-            })
-            .transpose()
-    }
-
-    async fn get_string<T: StringCacheValue>(&self, key: &T::Key) -> Result<Option<T>> {
-        self.get_raw(key.as_ref().as_bytes())
-            .await?
-            .map(|x| {
-                String::from_utf8(x)
-                    .map_err(|e| e.into())
-                    .and_then(|x| x.try_into().map_err(|_| Error::DeserializationOther))
-            })
-            .transpose()
-    }
-
-    async fn set<T: CacheValue>(&self, key: &T::Key, value: &T, ttl: Duration) -> Result<()> {
-        self.set_raw(
-            key.as_ref().as_bytes(),
-            serde_json::to_string(value)?.as_bytes(),
-            ttl,
-        )
-        .await
-    }
-
-    async fn set_string<T: StringCacheValue>(
-        &self,
-        key: &T::Key,
-        value: &T,
-        ttl: Duration,
-    ) -> Result<()> {
-        self.set_raw(key.as_ref().as_bytes(), value.to_string().as_bytes(), ttl)
-            .await
-    }
 
     async fn delete<T: CacheKey>(&self, key: &T) -> Result<()> {
         let mut pool = self.redis.get().await?;
@@ -117,30 +76,6 @@ impl CacheBehavior for RedisCache {
         pool.del(key.as_ref()).await?;
 
         Ok(())
-    }
-
-    async fn set_if_not_exists<T: CacheValue>(
-        &self,
-        key: &T::Key,
-        value: &T,
-        ttl: Duration,
-    ) -> Result<bool> {
-        self.set_raw_if_not_exists(
-            key.as_ref().as_bytes(),
-            serde_json::to_string(value)?.as_bytes(),
-            ttl,
-        )
-        .await
-    }
-
-    async fn set_string_if_not_exists<T: StringCacheValue>(
-        &self,
-        key: &T::Key,
-        value: &T,
-        ttl: Duration,
-    ) -> Result<bool> {
-        self.set_raw_if_not_exists(key.as_ref().as_bytes(), value.to_string().as_bytes(), ttl)
-            .await
     }
 }
 

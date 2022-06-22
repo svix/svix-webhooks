@@ -21,11 +21,19 @@ impl CacheBehavior for NoCache {
         Ok(None)
     }
 
+    async fn get_raw(&self, _key: &[u8]) -> Result<Option<Vec<u8>>> {
+        Ok(None)
+    }
+
     async fn get_string<T: StringCacheValue>(&self, _key: &T::Key) -> Result<Option<T>> {
         Ok(None)
     }
 
     async fn set<T: CacheValue>(&self, _key: &T::Key, _value: &T, _ttl: Duration) -> Result<()> {
+        Ok(())
+    }
+
+    async fn set_raw(&self, _key: &[u8], _value: &[u8], _ttl: Duration) -> Result<()> {
         Ok(())
     }
 
@@ -46,6 +54,15 @@ impl CacheBehavior for NoCache {
         &self,
         _key: &T::Key,
         _value: &T,
+        _ttl: Duration,
+    ) -> Result<bool> {
+        Ok(false)
+    }
+
+    async fn set_raw_if_not_exists(
+        &self,
+        _key: &[u8],
+        _value: &[u8],
         _ttl: Duration,
     ) -> Result<bool> {
         Ok(false)
