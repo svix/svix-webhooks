@@ -13,10 +13,6 @@ use std::sync::Arc;
 
 use super::{Cache, CacheBehavior, CacheKey, Result};
 
-// Apparently traits needed by types in default implementation aren't recognized:
-#[allow(unused_imports)]
-use super::{CacheValue, StringCacheValue};
-
 #[derive(Debug)]
 struct ValueWrapper {
     value: Vec<u8>,
@@ -105,9 +101,11 @@ fn check_is_expired(vw: &ValueWrapper) -> bool {
 
 #[cfg(test)]
 mod tests {
+    use super::{
+        super::{kv_def, CacheValue, StringCacheValue},
+        *,
+    };
     use crate::core::cache::string_kv_def;
-
-    use super::{super::kv_def, *};
     use serde::{Deserialize, Serialize};
 
     // Test structures

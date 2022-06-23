@@ -11,7 +11,6 @@ use super::{Cache, CacheBehavior, CacheKey, Error, Result};
 
 // Apparently traits needed by types in default implementation aren't recognized:
 #[allow(unused_imports)]
-use super::{CacheValue, StringCacheValue};
 
 pub fn new(redis: RedisPool) -> Cache {
     RedisCache { redis }.into()
@@ -82,7 +81,7 @@ impl CacheBehavior for RedisCache {
 #[cfg(test)]
 mod tests {
     use super::{
-        super::{kv_def, string_kv_def},
+        super::{kv_def, string_kv_def, CacheValue, StringCacheValue},
         *,
     };
     use serde::{Deserialize, Serialize};
