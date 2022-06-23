@@ -5,11 +5,9 @@ use std::time::Duration;
 
 use axum::async_trait;
 
-use serde_json;
-
 use crate::redis::{PoolLike, PooledConnectionLike, RedisPool};
 
-use super::{Cache, CacheBehavior, CacheKey, CacheValue, Error, Result};
+use super::{Cache, CacheBehavior, CacheKey, Error, Result};
 
 pub fn new(redis: RedisPool) -> Cache {
     RedisCache { redis }.into()
@@ -22,22 +20,20 @@ pub struct RedisCache {
 
 #[async_trait]
 impl CacheBehavior for RedisCache {
-    async fn get<T: CacheValue>(&self, key: &T::Key) -> Result<Option<T>> {
+    async fn get_raw(&self, key: &[u8]) -> Result<Option<Vec<u8>>> {
         let mut pool = self.redis.get().await.unwrap();
 
-        let fetched: Option<String> = pool.get(key.as_ref()).await?;
+        let fetched: Option<Vec<u8>> = pool.get(key).await?;
 
-        Ok(fetched
-            .map(|json| serde_json::from_str(&json))
-            .transpose()?)
+        Ok(fetched)
     }
 
-    async fn set<T: CacheValue>(&self, key: &T::Key, value: &T, ttl: Duration) -> Result<()> {
+    async fn set_raw(&self, key: &[u8], value: &[u8], ttl: Duration) -> Result<()> {
         let mut pool = self.redis.get().await?;
 
         pool.pset_ex(
-            key.as_ref(),
-            serde_json::to_string(value)?,
+            key,
+            value,
             ttl.as_millis().try_into().map_err(|e| {
                 Error::Input(format!(
                     "Duration given cannot be converted to usize: {}",
@@ -49,23 +45,10 @@ impl CacheBehavior for RedisCache {
         .map_err(Into::into)
     }
 
-    async fn delete<T: CacheKey>(&self, key: &T) -> Result<()> {
+    async fn set_raw_if_not_exists(&self, key: &[u8], value: &[u8], ttl: Duration) -> Result<bool> {
         let mut pool = self.redis.get().await?;
 
-        pool.del(key.as_ref()).await?;
-
-        Ok(())
-    }
-
-    async fn set_if_not_exists<T: CacheValue>(
-        &self,
-        key: &T::Key,
-        value: &T,
-        ttl: Duration,
-    ) -> Result<bool> {
-        let mut pool = self.redis.get().await?;
-
-        let mut cmd = redis::Cmd::set(key.as_ref(), serde_json::to_string(value)?);
+        let mut cmd = redis::Cmd::set(key, value);
 
         cmd.arg("PX");
         let ttl_as_millis: u64 = ttl.as_millis().try_into().map_err(|e| {
@@ -82,11 +65,22 @@ impl CacheBehavior for RedisCache {
 
         Ok(res.is_some())
     }
+
+    async fn delete<T: CacheKey>(&self, key: &T) -> Result<()> {
+        let mut pool = self.redis.get().await?;
+
+        pool.del(key.as_ref()).await?;
+
+        Ok(())
+    }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{super::kv_def, *};
+    use super::{
+        super::{kv_def, string_kv_def, CacheValue, StringCacheValue},
+        *,
+    };
     use serde::{Deserialize, Serialize};
 
     use crate::cfg::CacheType;
@@ -108,6 +102,28 @@ mod tests {
     impl TestKeyB {
         fn new(id: String) -> TestKeyB {
             TestKeyB(format!("SVIX_TEST_KEY_B_{}", id))
+        }
+    }
+
+    #[derive(Deserialize, Serialize, Debug, PartialEq)]
+    struct StringTestVal(String);
+    string_kv_def!(StringTestKey, StringTestVal);
+    impl StringTestKey {
+        fn new(id: String) -> StringTestKey {
+            StringTestKey(format!("SVIX_TEST_KEY_STRING_{}", id))
+        }
+    }
+
+    impl std::fmt::Display for StringTestVal {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            write!(f, "{}", self.0)
+        }
+    }
+
+    impl TryFrom<String> for StringTestVal {
+        type Error = crate::error::Error;
+        fn try_from(s: String) -> crate::error::Result<Self> {
+            Ok(StringTestVal(s))
         }
     }
 
@@ -139,6 +155,11 @@ mod tests {
             TestValB("1".to_owned()),
             TestValB("2".to_owned()),
         );
+        let (third_key, third_val_a, third_val_b) = (
+            StringTestKey::new("1".to_owned()),
+            StringTestVal("1".to_owned()),
+            StringTestVal("2".to_owned()),
+        );
 
         // Create
         assert!(cache
@@ -149,10 +170,18 @@ mod tests {
             .set(&second_key, &second_val_a, Duration::from_secs(30),)
             .await
             .is_ok());
+        assert!(cache
+            .set_string(&third_key, &third_val_a, Duration::from_secs(30),)
+            .await
+            .is_ok());
 
         // Read
         assert_eq!(cache.get(&first_key).await.unwrap(), Some(first_val_a));
         assert_eq!(cache.get(&second_key).await.unwrap(), Some(second_val_a));
+        assert_eq!(
+            cache.get_string(&third_key).await.unwrap(),
+            Some(third_val_a)
+        );
 
         // Update (overwrite)
         assert!(cache
@@ -163,18 +192,31 @@ mod tests {
             .set(&second_key, &second_val_b, Duration::from_secs(30),)
             .await
             .is_ok());
+        assert!(cache
+            .set_string(&third_key, &third_val_b, Duration::from_secs(30),)
+            .await
+            .is_ok());
 
         // Confirm update
         assert_eq!(cache.get(&first_key).await.unwrap(), Some(first_val_b));
         assert_eq!(cache.get(&second_key).await.unwrap(), Some(second_val_b));
+        assert_eq!(
+            cache.get_string(&third_key).await.unwrap(),
+            Some(third_val_b)
+        );
 
         // Delete
         assert!(cache.delete(&first_key).await.is_ok());
         assert!(cache.delete(&second_key).await.is_ok());
+        assert!(cache.delete(&third_key).await.is_ok());
 
         // Confirm deletion
         assert_eq!(cache.get::<TestValA>(&first_key).await.unwrap(), None);
         assert_eq!(cache.get::<TestValB>(&second_key).await.unwrap(), None);
+        assert_eq!(
+            cache.get_string::<StringTestVal>(&third_key).await.unwrap(),
+            None
+        );
     }
 
     #[tokio::test]
