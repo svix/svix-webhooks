@@ -9,7 +9,6 @@ use crate::redis::{PoolLike, PooledConnectionLike, RedisPool};
 
 use super::{Cache, CacheBehavior, CacheKey, Error, Result};
 
-
 pub fn new(redis: RedisPool) -> Cache {
     RedisCache { redis }.into()
 }
