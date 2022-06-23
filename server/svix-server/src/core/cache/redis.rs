@@ -9,8 +9,6 @@ use crate::redis::{PoolLike, PooledConnectionLike, RedisPool};
 
 use super::{Cache, CacheBehavior, CacheKey, Error, Result};
 
-// Apparently traits needed by types in default implementation aren't recognized:
-#[allow(unused_imports)]
 
 pub fn new(redis: RedisPool) -> Cache {
     RedisCache { redis }.into()
