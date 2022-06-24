@@ -29,31 +29,44 @@ const USER_AGENT: &str = concat!("Svix-Webhooks/", env!("CARGO_PKG_VERSION"));
 /// Send the MessageAttemptFailingEvent after exceeding this number of failed attempts
 const OP_WEBHOOKS_SEND_FAILING_EVENT_AFTER: usize = 4;
 
-/// Generates a set of headers for any one webhook event
-fn generate_msg_headers(
+fn to_sign(timestamp: i64, body: &str, msg_id: &MessageId) -> String {
+    format!("{}.{}.{}", msg_id, timestamp, body)
+}
+
+/// Sign a message
+fn sign_msg(
     timestamp: i64,
-    whitelabel_headers: bool,
     body: &str,
     msg_id: &MessageId,
-    configured_headers: Option<&EndpointHeaders>,
     endpoint_signing_keys: &[&EndpointSecret],
-    _endpoint_url: &str,
-) -> HeaderMap {
-    let to_sign = format!("{}.{}.{}", msg_id, timestamp, body);
+) -> String {
+    let to_sign = to_sign(timestamp, body, msg_id);
     let signatures = endpoint_signing_keys
         .iter()
         .map(|x| hmac_sha256::HMAC::mac(to_sign.as_bytes(), &x.0[..]));
-    let signatures_str = signatures
+
+    signatures
         .map(|x| format!("v1,{}", base64::encode(x)))
         .collect::<Vec<String>>()
-        .join(" ");
+        .join(" ")
+}
+
+/// Generates a set of headers for any one webhook event
+fn generate_msg_headers(
+    timestamp: i64,
+    msg_id: &MessageId,
+    signatures: String,
+    whitelabel_headers: bool,
+    configured_headers: Option<&EndpointHeaders>,
+    _endpoint_url: &str,
+) -> HeaderMap {
     let mut headers = HeaderMap::new();
     let id = msg_id.0.parse().expect("Error parsing message id");
     let timestamp = timestamp
         .to_string()
         .parse()
         .expect("Error parsing message timestamp");
-    let signatures_str = signatures_str
+    let signatures_str = signatures
         .parse()
         .expect("Error parsing message signatures");
     if whitelabel_headers {
@@ -125,13 +138,14 @@ async fn dispatch(
             vec![&endp.key]
         };
 
+        let signatures = sign_msg(now.timestamp(), &body, &msg_task.msg_id, &keys);
+
         let mut headers = generate_msg_headers(
             now.timestamp(),
-            cfg.whitelabel_headers,
-            &body,
             &msg_task.msg_id,
+            signatures,
+            cfg.whitelabel_headers,
             endp.headers.as_ref(),
-            &keys,
             &endp.url,
         );
         headers.insert("user-agent", USER_AGENT.to_string().parse().unwrap());
@@ -520,14 +534,15 @@ mod tests {
     fn mock_headers() -> (HeaderMap, MessageId) {
         let id = MessageId::new(None, None);
 
+        let signatures = sign_msg(TIMESTAMP, BODY, &id, ENDPOINT_SIGNING_KEYS);
+
         (
             generate_msg_headers(
                 TIMESTAMP,
-                WHITELABEL_HEADERS,
-                BODY,
                 &id,
+                signatures,
+                WHITELABEL_HEADERS,
                 None,
-                ENDPOINT_SIGNING_KEYS,
                 ENDPOINT_URL,
             ),
             id,
@@ -547,13 +562,14 @@ mod tests {
         let (mut expected, id) = mock_headers();
         let _ = expected.insert("test_key", "value".parse().unwrap());
 
+        let signatures = sign_msg(TIMESTAMP, BODY, &id, ENDPOINT_SIGNING_KEYS);
+
         let actual = generate_msg_headers(
             TIMESTAMP,
-            WHITELABEL_HEADERS,
-            BODY,
             &id,
+            signatures,
+            WHITELABEL_HEADERS,
             Some(&EndpointHeaders(headers)),
-            ENDPOINT_SIGNING_KEYS,
             ENDPOINT_URL,
         );
 
@@ -571,13 +587,14 @@ mod tests {
 
         let expected_signature_str = "v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE=";
 
+        let signatures = sign_msg(test_timestamp, test_body, &test_message_id, &[&test_key]);
+
         let actual = generate_msg_headers(
             test_timestamp,
-            WHITELABEL_HEADERS,
-            test_body,
             &test_message_id,
+            signatures,
+            WHITELABEL_HEADERS,
             None,
-            &[&test_key],
             ENDPOINT_URL,
         );
 
