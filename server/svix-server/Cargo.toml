@@ -25,7 +25,7 @@ base64 = "0.13.0"
 hyper = { version = "0.14.16", features = ["full"] }
 tokio = { version = "1.15.0", features = ["full"] }
 tower = "0.4.11"
-tower-http = { version = "0.2.0", features = ["trace", "cors"] }
+tower-http = { version = "0.2.0", features = ["trace", "cors", "request-id"] }
 serde = { version = "1.0.133", features = ["derive"] }
 serde_json = "1.0.74"
 serde_urlencoded = "0.7.1"
@@ -39,6 +39,7 @@ tracing = "0.1.35"
 tracing-subscriber = { version="0.3", features = ["env-filter", "json"] }
 tracing-opentelemetry = "0.17.3"
 opentelemetry = { version= "0.17", features = ["rt-tokio"] }
+opentelemetry-http = "0.6.0"
 opentelemetry-otlp = { version = "0.10" }
 validator = { version = "0.14.0", features = ["derive"] }
 jwt-simple = "0.10.8"

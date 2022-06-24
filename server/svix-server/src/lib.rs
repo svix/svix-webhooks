@@ -18,7 +18,10 @@ use tower_http::trace::TraceLayer;
 use crate::{
     cfg::Configuration,
     core::{
-        cache, idempotency::IdempotencyService, operational_webhooks::OperationalWebhookSenderInner,
+        cache,
+        idempotency::IdempotencyService,
+        operational_webhooks::OperationalWebhookSenderInner,
+        otel_spans::{AxumOtelOnFailure, AxumOtelOnResponse, AxumOtelSpanCreator},
     },
     db::init_db,
     expired_message_cleaner::expired_message_cleaner_loop,
@@ -96,7 +99,13 @@ pub async fn run_with_prefix(
                 .allow_methods(Any)
                 .allow_headers(Any),
         )
-        .layer(TraceLayer::new_for_http().on_request(()))
+        .layer(
+            TraceLayer::new_for_http()
+                .make_span_with(AxumOtelSpanCreator)
+                .on_request(())
+                .on_response(AxumOtelOnResponse)
+                .on_failure(AxumOtelOnFailure),
+        )
         .layer(Extension(pool.clone()))
         .layer(Extension(queue_tx.clone()))
         .layer(Extension(cfg.clone()))
@@ -105,8 +114,6 @@ pub async fn run_with_prefix(
 
     let with_api = cfg.api_enabled;
     let with_worker = cfg.worker_enabled;
-
-	tracing::info!("Service Starting");
 
     let listen_address =
         SocketAddr::from_str(&cfg.listen_address).expect("Error parsing server listen address");
