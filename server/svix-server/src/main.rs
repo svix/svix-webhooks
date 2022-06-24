@@ -114,7 +114,7 @@ async fn main() {
     match cfg.log_format {
         cfg::LogFormat::Default => {
             let stdout_layer = tracing_subscriber::fmt::layer();
-            let _ = tracing_subscriber::Registry::default()
+            tracing_subscriber::Registry::default()
                 .with(otel_layer)
                 .with(stdout_layer)
                 .with(tracing_subscriber::EnvFilter::from_default_env())
@@ -128,7 +128,7 @@ async fn main() {
                 .event_format(fmt)
                 .fmt_fields(json_fields);
 
-            let _ = tracing_subscriber::Registry::default()
+            tracing_subscriber::Registry::default()
                 .with(otel_layer)
                 .with(stdout_layer)
                 .with(tracing_subscriber::EnvFilter::from_default_env())
