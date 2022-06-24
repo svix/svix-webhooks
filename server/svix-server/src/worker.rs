@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 use crate::cfg::Configuration;
+use crate::core::security::AsymmetricKey;
 use crate::core::types::{ApplicationUid, MessageUid, OrganizationId};
 use crate::core::{
     cache::Cache,
@@ -18,10 +19,12 @@ use crate::queue::{
     MessageTask, MessageTaskBatch, QueueTask, TaskQueueConsumer, TaskQueueProducer,
 };
 use chrono::Utc;
+use ed25519_compact::Noise;
 use futures::future;
 use rand::Rng;
 use reqwest::header::{HeaderMap, HeaderName};
 use sea_orm::{entity::prelude::*, ActiveValue::Set, DatabaseConnection, EntityTrait};
+use sha2::{Digest, Sha512};
 use tokio::time::{sleep, Duration};
 
 use std::{iter, str::FromStr};
@@ -34,10 +37,6 @@ const USER_AGENT: &str = concat!("Svix-Webhooks/", env!("CARGO_PKG_VERSION"));
 /// Send the MessageAttemptFailingEvent after exceeding this number of failed attempts
 const OP_WEBHOOKS_SEND_FAILING_EVENT_AFTER: usize = 4;
 
-fn to_sign(timestamp: i64, body: &str, msg_id: &MessageId) -> String {
-    format!("{}.{}.{}", msg_id, timestamp, body)
-}
-
 /// Sign a message
 fn sign_msg(
     timestamp: i64,
@@ -45,13 +44,40 @@ fn sign_msg(
     msg_id: &MessageId,
     endpoint_signing_keys: &[&EndpointSecret],
 ) -> String {
-    let to_sign = to_sign(timestamp, body, msg_id);
+    let to_sign = format!("{}.{}.{}", msg_id, timestamp, body);
     let signatures = endpoint_signing_keys
         .iter()
         .map(|x| hmac_sha256::HMAC::mac(to_sign.as_bytes(), &x.0[..]));
 
     signatures
         .map(|x| format!("v1,{}", base64::encode(x)))
+        .collect::<Vec<String>>()
+        .join(" ")
+}
+
+/// Sign a message with the asymmetric key
+fn sign_msg_asymmetric(
+    timestamp: i64,
+    body: &str,
+    msg_id: &MessageId,
+    endp_url: &str,
+    keys: &[AsymmetricKey],
+) -> String {
+    let mut hasher = Sha512::new();
+    hasher.update(base64::encode(endp_url.as_bytes()));
+    hasher.update(".".as_bytes());
+    hasher.update(msg_id.as_bytes());
+    hasher.update(".".as_bytes());
+    hasher.update(timestamp.to_string().as_bytes());
+    hasher.update(".".as_bytes());
+    hasher.update(base64::encode(body.as_bytes()));
+    let to_sign = hasher.finalize();
+    let signatures = keys
+        .iter()
+        .map(|x| x.0.sk.sign(to_sign, Some(Noise::generate())));
+
+    signatures
+        .map(|x| format!("v1a,{}", base64::encode(x)))
         .collect::<Vec<String>>()
         .join(" ")
 }
@@ -151,7 +177,17 @@ async fn dispatch(
             vec![&endp.key]
         };
 
-        let signatures = sign_msg(now.timestamp(), &body, &msg_task.msg_id, &keys);
+        let signatures = if let Some(ref asymmetric_keys) = cfg.signature_asymmetric_keys {
+            sign_msg_asymmetric(
+                now.timestamp(),
+                &body,
+                &msg_task.msg_id,
+                &endp.url,
+                asymmetric_keys,
+            )
+        } else {
+            sign_msg(now.timestamp(), &body, &msg_task.msg_id, &keys)
+        };
 
         let mut headers = generate_msg_headers(
             now.timestamp(),
@@ -623,6 +659,37 @@ mod tests {
             actual.get("svix-signature").unwrap(),
             expected_signature_str
         );
+    }
+
+    // Tests asemmtric signing keys
+    #[test]
+    fn test_asymmetric_key_signing() {
+        let test_timestamp = 1614265330;
+        let test_body = "{\"test\": 2432232314}";
+        let test_key = AsymmetricKey::from_base64("6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg==").unwrap();
+        let test_message_id = MessageId("msg_p5jXN8AQM9LWM0D4loKWxJek".to_owned());
+        let test_endpoint_url = "https://www.example.com";
+
+        let signatures = sign_msg_asymmetric(
+            test_timestamp,
+            test_body,
+            &test_message_id,
+            test_endpoint_url,
+            &[test_key],
+        );
+
+        let _actual = generate_msg_headers(
+            test_timestamp,
+            &test_message_id,
+            signatures,
+            WHITELABEL_HEADERS,
+            None,
+            ENDPOINT_URL,
+        );
+
+        // Note: asymmetric signatures are not deterministic so we can't ensure the value is
+        // correct here without essentially reimplementing the scheme which is pointless.
+        // So we are just checking that the signature at least doesn't barf.
     }
 
     #[test]

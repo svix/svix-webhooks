@@ -13,7 +13,7 @@ use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::util::SubscriberInitExt;
 use validator::Validate;
 
-use svix_server::core::security::{default_org_id, generate_org_token};
+use svix_server::core::security::{default_org_id, generate_org_token, AsymmetricKey};
 
 use svix_server::{cfg, db, run};
 
@@ -54,6 +54,12 @@ enum Commands {
         #[clap(subcommand)]
         command: JwtCommands,
     },
+    /// Asymmetric Key utilities
+    #[clap()]
+    AsymmetricKey {
+        #[clap(subcommand)]
+        command: AsymmetricKeyCommands,
+    },
     /// Run database migrations and exit
     #[clap()]
     Migrate,
@@ -68,6 +74,17 @@ enum JwtCommands {
         /// Optional org_id to use when generating token (otherwise, default is used).
         org_id: Option<OrganizationId>,
     },
+}
+
+#[derive(Subcommand)]
+enum AsymmetricKeyCommands {
+    /// Generate a new asymmetric key
+    #[clap()]
+    Generate,
+
+    /// Print the public keys for the currently set keys
+    #[clap()]
+    PrintPublicKeys,
 }
 
 fn org_id_parser(s: &str) -> Result<OrganizationId, String> {
@@ -170,6 +187,27 @@ async fn main() {
             println!("Token (Bearer): {}", token);
             exit(0);
         }
+        Some(Commands::AsymmetricKey { command }) => match command {
+            AsymmetricKeyCommands::Generate => {
+                let key = AsymmetricKey::generate();
+                let sk = key.0.sk.as_slice();
+                let pk = key.0.pk.as_slice();
+                println!("Secret key: {}", base64::encode(sk));
+                println!("Public key: {}", base64::encode(pk));
+                exit(0);
+            }
+            AsymmetricKeyCommands::PrintPublicKeys => {
+                if let Some(ref keys) = cfg.signature_asymmetric_keys {
+                    for (i, key) in keys.iter().enumerate() {
+                        println!("[{}]: {}", i, base64::encode(key.0.pk.as_slice()));
+                    }
+                    exit(0);
+                } else {
+                    eprintln!("Missing signature_asymmetric_keys in config.");
+                    exit(1);
+                }
+            }
+        },
         None => {}
     };
 

@@ -238,6 +238,18 @@ There are two configuration variables `db_pool_max_size` and `redis_pool_max_siz
 
 They default to a max size of 20, but higher values can significantly increase performance if your database can handle it.
 
+
+### Webhook signature scheme (symmetric vs asymmetric)
+
+To ensure the security and integrity of messages, Svix signs all webhook messages prior to sending.
+Svix supports two types of signature schemes: symmetric (pre-shared key) and asymmetric (public key).
+
+Symmetric signatures are significantly faster (~50x for signing, and ~160x for verifying), and are much simpler (which makes verification easier for your customers), though they require the usage of a pre-shared key per endpoint (endpoint secret) in order to work. Asymmetric signatures on the other hand only require sharing a public key with your customers (not secret).
+
+Because of the above, using symmetric keys is both recommended and the Svix default. Using them is documented in the [verifying signatures section of the docs](https://docs.svix.com/receiving/verifying-payloads/how-manual).
+
+However, in some scenarios it may be beneficial to use asymmetric signatures, which is why they too are supported. For more information please refer to the [asymmetric signatures section](#asymmetric-signatures) below.
+
 ## Authentication
 
 Use valid JWTs generated with the correct secret as `Bearer`.
@@ -277,6 +289,59 @@ To turn operational webhooks on, set the `operational_webhook_address` config to
 Once those are set, create an `Application` with the `uid` set to the `org_id` you're interested in, and add `Endpoint`s for all of the events you'd like to subscribe to.
 
 For example, for the default account, just create an app with the `uid` set to `org_23rb8YdGqMT0qIzpgGwdXfHirMu`.
+
+## Asymmetric signatures
+
+As mentioned above, symmetric signatures are recommended. However, please read the following instructions on setting up asymmetric signatures if you have determined that asymmetric signatures are what you need.
+
+### Configuring the keys
+
+You can enable asymmetric signatures by setting `signature_asymmetric_keys` in the config (or through an environment variable) to the list of asymmetric keys you'd like to sign messages with. Once set, asymmetric signature mode is automatically enabled, and symmetric is disabled.
+
+Example configuration:
+```toml
+signature_asymmetric_keys = ["6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg=="]
+```
+
+The format of the private keys is: `base64(private_key + public_key)`.
+
+New asymmetric key pairs can be generated using:
+```bash
+$ svix-server asymmetric-key generate
+
+Secret key: 6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg==
+Public key: 1SiA4o9hyqTCpIqC5V9HUakiiaeACeqfZTInDBbOir4=
+```
+
+### Signature scheme
+
+Svix uses `ed25519(sha512(m))` for signing the webhook messages.
+Additionally, because asymmetric signatures require different security considerations to symmetric ones, the message construction is slightly different than to the one used with symmetric keys. Here it is:
+
+```javascript
+// The endpoint URL as set on the endpoint encoded in base64
+b64_endp_url = base64_encode(endpoint_url)
+
+// The body encoded in base64
+b64_body = base64_encode(body)
+
+// The svix-id header
+msg_id = headers["svix-id"]
+
+// The svix-timestamp
+timestamp = headers["svix-timestamp"]
+
+// The message to sign is then:
+m = sha512(
+  `${b64_endp_url}.${msg_id}.${timestamp}.${b64_body}`
+)
+```
+
+When verifying the message you should also ensure that the timestamp is recent enough in order to limit the potential of replay attacks as noted in [the symmetric verification docs](https://docs.svix.com/receiving/verifying-payloads/why).
+
+### Additional security considerations
+
+Because of how asymmetric signatures work it's important to not show signatures in the UI, or let customers generate signatures for example URLs and payloads. A common source of attacks on asymmetric signature schemes is by tricking servers into signing attacker controlled messages. It becomes significantly easier to do this if you expose signatures anywhere other than the header of the message being sent. As such signatures should only be sent as part of the message
 
 
 # Differences to the Svix hosted service

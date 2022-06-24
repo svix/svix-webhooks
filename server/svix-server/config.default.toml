@@ -14,6 +14,11 @@ listen_address = "0.0.0.0:8071"
 # The JWT secret for authentication - should be secret and securely generated
 # jwt_secret = "8KjzRXrKkd9YFcNyqLSIY8JwiaCeRc6WK4UkMnSW"
 
+# An array of ed25519 private and public key concatenated and encoded as base64
+# When enabled, webhooks will be signed with ed25519.
+# Note: please read the section in the README before enabling this
+# signature_private_keys = [""]
+
 # The log level to run the service with. Supported: info, debug, trace
 log_level = "info"
 # The log format that all output will follow. Supported: default, json
