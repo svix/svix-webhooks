@@ -31,17 +31,23 @@ jobs:
       with:
         working-directory: server
 
-    - name: Clippy
-      uses: actions-rs/cargo@v1
-      with:
-        command: clippy
-        args: --manifest-path server/Cargo.toml --all --all-targets --all-features -- -D warnings
-
     - name: rustfmt
       uses: actions-rs/cargo@v1
       with:
         command: fmt
         args: --manifest-path server/Cargo.toml --all -- --check
+
+    - name: Build
+      uses: actions-rs/cargo@v1
+      with:
+        command: build
+        args: --manifest-path server/Cargo.toml --all --frozen
+
+    - name: Clippy
+      uses: actions-rs/cargo@v1
+      with:
+        command: clippy
+        args: --manifest-path server/Cargo.toml --all --all-targets --all-features -- -D warnings
 
     - name: Start dependencies
       run: docker-compose -f "server/testing-docker-compose.yml" up -d
