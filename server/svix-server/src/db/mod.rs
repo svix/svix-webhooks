@@ -10,6 +10,7 @@ pub mod models;
 
 static MIGRATIONS: sqlx::migrate::Migrator = sqlx::migrate!();
 
+#[tracing::instrument(level = "trace")]
 async fn connect(cfg: &Configuration) -> sqlx::Pool<sqlx::Postgres> {
     tracing::debug!("DB: Initializing pool");
     if DbBackend::Postgres.is_prefix_of(&cfg.db_dsn) {
@@ -23,10 +24,12 @@ async fn connect(cfg: &Configuration) -> sqlx::Pool<sqlx::Postgres> {
     }
 }
 
+#[tracing::instrument(level = "trace")]
 pub async fn init_db(cfg: &Configuration) -> DatabaseConnection {
     SqlxPostgresConnector::from_sqlx_postgres_pool(connect(cfg).await)
 }
 
+#[tracing::instrument(level = "trace")]
 pub async fn run_migrations(cfg: &Configuration) {
     let db = connect(cfg).await;
     MIGRATIONS.run(&db).await.unwrap();

@@ -35,12 +35,14 @@ pub mod redis;
 pub mod v1;
 pub mod worker;
 
+#[tracing::instrument(name = "app_start", level = "trace")]
 pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
     run_with_prefix(None, cfg, listener).await
 }
 
 // Made public for the purpose of E2E testing in which a queue prefix is necessary to avoid tests
 // consuming from each others' queues
+#[tracing::instrument(level = "trace")]
 pub async fn run_with_prefix(
     prefix: Option<String>,
     cfg: Configuration,
@@ -103,6 +105,8 @@ pub async fn run_with_prefix(
 
     let with_api = cfg.api_enabled;
     let with_worker = cfg.worker_enabled;
+
+	tracing::info!("Service Starting");
 
     let listen_address =
         SocketAddr::from_str(&cfg.listen_address).expect("Error parsing server listen address");
