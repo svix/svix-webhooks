@@ -18,6 +18,8 @@ use std::ops::Deref;
 use svix_ksuid::*;
 use validator::{Validate, ValidationError, ValidationErrors};
 
+use super::security::AsymmetricKey;
+
 const ALL_ERROR: &str = "__all__";
 
 macro_rules! enum_wrapper {
@@ -420,18 +422,296 @@ impl ExpiringSigningKeys {
     pub const OLD_KEY_EXPIRY_HOURS: i64 = 24;
 }
 
+/// The type of encryption key
+#[repr(u8)]
+#[derive(Clone, Debug, PartialEq, Eq, IntoPrimitive, TryFromPrimitive)]
+pub enum EndpointSecretType {
+    Hmac256 = 1,
+    Ed25519 = 2,
+    // Reserved = 3,
+}
+
+impl EndpointSecretType {
+    pub const fn secret_prefix(&self) -> &'static str {
+        match self {
+            EndpointSecretType::Hmac256 => "whsec_",
+            EndpointSecretType::Ed25519 => "whsk_",
+        }
+    }
+
+    pub const fn public_prefix(&self) -> &'static str {
+        match self {
+            EndpointSecretType::Hmac256 => "whsec_",
+            EndpointSecretType::Ed25519 => "whpk_",
+        }
+    }
+}
+
+/// Properties of the encryption key
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct EndpointSecret(pub Vec<u8>);
-impl EndpointSecret {
-    const PREFIX: &'static str = "whsec_";
+struct EndpointSecretMarker {
+    type_: EndpointSecretType,
+}
+
+impl EndpointSecretMarker {
+    fn from_u8(v: u8) -> crate::error::Result<Self> {
+        let type_ = EndpointSecretType::try_from(v)
+            .map_err(|_| crate::error::Error::Generic("Invalid marker value".to_string()))?;
+
+        Ok(Self { type_ })
+    }
+
+    fn to_u8(&self) -> u8 {
+        self.type_.clone().into()
+    }
+
+    fn type_(&self) -> &EndpointSecretType {
+        &self.type_
+    }
+}
+
+/// The internal representation of the endpoint secret.
+/// This is used to store it securely in the database and cache, and to ensure it doesn't get
+/// sent externally.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct EndpointSecretInternal {
+    marker: EndpointSecretMarker,
+
+    key: Vec<u8>,
+}
+
+impl EndpointSecretInternal {
+    // IMPORTANT: has to be at least 24 bytes because of how we encode the type (and legacy ones
+    // didn't have type encoded).
+    // XXX Also: can't change withuot breaking from_vec
+    const KEY_SIZE: usize = 24;
+    // Needed because of rust limitations
+    const KEY_SIZE_MINUS_ONE: usize = Self::KEY_SIZE - 1;
+
+    pub fn generate_symmetric() -> crate::error::Result<Self> {
+        let buf: [u8; Self::KEY_SIZE] = rand::thread_rng().gen();
+        Ok(Self {
+            marker: EndpointSecretMarker {
+                type_: EndpointSecretType::Hmac256,
+            },
+            key: buf.to_vec(),
+        })
+    }
+
+    pub fn generate_asymmetric() -> crate::error::Result<Self> {
+        let key = AsymmetricKey::generate();
+        Ok(Self {
+            marker: EndpointSecretMarker {
+                type_: EndpointSecretType::Ed25519,
+            },
+            key: key.0.sk.to_vec(),
+        })
+    }
+
+    fn into_vec(mut self) -> Vec<u8> {
+        let marker: u8 = self.marker.to_u8();
+
+        let mut vec = vec![marker];
+        vec.append(&mut self.key);
+        vec
+    }
+
+    fn from_vec(v: Vec<u8>) -> crate::error::Result<Self> {
+        // Legacy had exact size
+        match v.len() {
+            0..=Self::KEY_SIZE_MINUS_ONE => {
+                Err(crate::error::Error::Generic("Value too small".to_string()))
+            }
+            Self::KEY_SIZE => Ok(Self {
+                marker: EndpointSecretMarker {
+                    type_: EndpointSecretType::Hmac256,
+                },
+                key: v,
+            }),
+            _ => {
+                let marker = EndpointSecretMarker::from_u8(v[0])?;
+                Ok(Self {
+                    marker,
+                    key: v[1..].to_vec(),
+                })
+            }
+        }
+    }
+
+    pub fn into_endpoint_secret(self) -> EndpointSecret {
+        match self.type_() {
+            EndpointSecretType::Hmac256 => EndpointSecret::Symmetric(self.key),
+            EndpointSecretType::Ed25519 => {
+                EndpointSecret::Asymmetric(AsymmetricKey::from_slice(&self.key[..]).unwrap())
+            }
+        }
+    }
+
+    pub fn from_endpoint_secret(endpoint_secret: EndpointSecret) -> Self {
+        match endpoint_secret {
+            EndpointSecret::Symmetric(key) => EndpointSecretInternal {
+                marker: EndpointSecretMarker {
+                    type_: EndpointSecretType::Hmac256,
+                },
+                key,
+            },
+            EndpointSecret::Asymmetric(key) => EndpointSecretInternal {
+                marker: EndpointSecretMarker {
+                    type_: EndpointSecretType::Ed25519,
+                },
+                key: key.0.sk.to_vec(),
+            },
+        }
+    }
+
+    pub fn sign(&self, bytes: &[u8]) -> Vec<u8> {
+        let key = &self.key[..];
+        // FIXME: remove unwrap
+        match self.marker.type_() {
+            EndpointSecretType::Hmac256 => hmac_sha256::HMAC::mac(bytes, key).to_vec(),
+            EndpointSecretType::Ed25519 => AsymmetricKey::from_slice(key)
+                .unwrap()
+                .0
+                .sk
+                .sign(bytes, None)
+                .to_vec(),
+        }
+    }
+
+    pub fn type_(&self) -> &EndpointSecretType {
+        self.marker.type_()
+    }
+}
+
+impl Serialize for EndpointSecretInternal {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(&base64::encode(self.clone().into_vec()))
+    }
+}
+
+impl<'de> Deserialize<'de> for EndpointSecretInternal {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        use serde::de::Error;
+
+        String::deserialize(deserializer).and_then(|string| {
+            // For backwards compat when loading from ExpiringSigningKeys. Going forward we just b64 it
+            if string.starts_with(EndpointSecretType::Hmac256.secret_prefix()) {
+                Ok(Self {
+                    marker: EndpointSecretMarker {
+                        type_: EndpointSecretType::Hmac256,
+                    },
+                    key: string
+                        .get(EndpointSecretType::Hmac256.secret_prefix().len()..)
+                        .ok_or_else(|| Error::custom("invalid prefix".to_string()))
+                        .and_then(|string| {
+                            base64::decode(string).map_err(|err| Error::custom(err.to_string()))
+                        })?,
+                })
+            } else {
+                let buf = base64::decode(string).map_err(|err| Error::custom(err.to_string()))?;
+                Self::from_vec(buf).map_err(|err| Error::custom(err.to_string()))
+            }
+        })
+    }
+}
+
+impl From<EndpointSecretInternal> for sea_orm::Value {
+    fn from(v: EndpointSecretInternal) -> Self {
+        Self::Bytes(Some(Box::new(v.into_vec())))
+    }
+}
+
+impl TryGetable for EndpointSecretInternal {
+    fn try_get(res: &QueryResult, pre: &str, col: &str) -> Result<Self, TryGetError> {
+        match Vec::<u8>::try_get(res, pre, col) {
+            Ok(v) => EndpointSecretInternal::from_vec(v)
+                .map_err(|x| TryGetError::DbErr(DbErr::Type(x.to_string()))),
+            Err(e) => Err(e),
+        }
+    }
+}
+
+impl Nullable for EndpointSecretInternal {
+    fn null() -> Value {
+        Value::Bytes(None)
+    }
+}
+
+impl ValueType for EndpointSecretInternal {
+    fn try_from(v: Value) -> Result<Self, ValueTypeErr> {
+        match v {
+            Value::Bytes(Some(x)) => EndpointSecretInternal::from_vec(*x).map_err(|_| ValueTypeErr),
+            _ => Err(ValueTypeErr),
+        }
+    }
+
+    fn type_name() -> String {
+        stringify!(EndpointSecretInternal).to_owned()
+    }
+
+    fn column_type() -> ColumnType {
+        ColumnType::Binary(None)
+    }
+}
+
+/// The external representation of the endpoint secret.
+/// This one is used for serializing to and from customers.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum EndpointSecret {
+    Symmetric(Vec<u8>),
+    Asymmetric(AsymmetricKey),
 }
 
 impl EndpointSecret {
+    // IMPORTANT: has to be at least 24 bytes because of how we encode the type (and legacy ones
+    // didn't have type encoded).
+    // XXX Also: can't change withuot breaking from_vec
     const KEY_SIZE: usize = 24;
+    // Needed because of rust limitations
+    const KEY_SIZE_MAX: usize = 75;
 
-    pub fn generate() -> crate::error::Result<Self> {
-        let buf: [u8; Self::KEY_SIZE] = rand::thread_rng().gen();
-        Ok(Self(buf.to_vec()))
+    pub fn serialize_secret_key(&self) -> String {
+        match self {
+            Self::Symmetric(key) => {
+                format!(
+                    "{}{}",
+                    EndpointSecretType::Hmac256.secret_prefix(),
+                    base64::encode(key)
+                )
+            }
+            Self::Asymmetric(key) => {
+                format!(
+                    "{}{}",
+                    EndpointSecretType::Ed25519.secret_prefix(),
+                    &base64::encode(key.0.sk.as_slice())
+                )
+            }
+        }
+    }
+
+    pub fn serialize_public_key(&self) -> String {
+        match self {
+            Self::Symmetric(key) => {
+                format!(
+                    "{}{}",
+                    EndpointSecretType::Hmac256.public_prefix(),
+                    base64::encode(key)
+                )
+            }
+            Self::Asymmetric(key) => {
+                format!(
+                    "{}{}",
+                    EndpointSecretType::Ed25519.public_prefix(),
+                    &base64::encode(key.pubkey())
+                )
+            }
+        }
     }
 }
 
@@ -440,7 +720,7 @@ impl Serialize for EndpointSecret {
     where
         S: serde::Serializer,
     {
-        serializer.serialize_str(&format!("{}{}", Self::PREFIX, &base64::encode(&self.0[..]))[..])
+        serializer.serialize_str(&self.serialize_public_key())
     }
 }
 
@@ -450,19 +730,30 @@ impl<'de> Deserialize<'de> for EndpointSecret {
         D: serde::Deserializer<'de>,
     {
         use serde::de::Error;
-        String::deserialize(deserializer)
-            .and_then(|string| {
-                if !string.starts_with(Self::PREFIX) {
-                    return Err(Error::custom("invalid prefix".to_string()));
-                }
-                string
-                    .get(Self::PREFIX.len()..)
-                    .ok_or_else(|| Error::custom("invalid prefix".to_string()))
-                    .and_then(|string| {
-                        base64::decode(string).map_err(|err| Error::custom(err.to_string()))
-                    })
-            })
-            .map(EndpointSecret)
+        let invalid_prefix = Error::custom("invalid prefix".to_string());
+        String::deserialize(deserializer).and_then(|string| {
+            if string.starts_with(EndpointSecretType::Ed25519.secret_prefix()) {
+                Ok(Self::Asymmetric(
+                    AsymmetricKey::from_base64(
+                        string
+                            .get(EndpointSecretType::Ed25519.secret_prefix().len()..)
+                            .ok_or(invalid_prefix)?,
+                    )
+                    .map_err(|e| Error::custom(e.to_string()))?,
+                ))
+            } else if string.starts_with(EndpointSecretType::Hmac256.secret_prefix()) {
+                Ok(Self::Symmetric(
+                    string
+                        .get(EndpointSecretType::Hmac256.secret_prefix().len()..)
+                        .ok_or(invalid_prefix)
+                        .and_then(|string| {
+                            base64::decode(string).map_err(|err| Error::custom(err.to_string()))
+                        })?,
+                ))
+            } else {
+                Err(invalid_prefix)
+            }
+        })
     }
 }
 
@@ -470,8 +761,22 @@ impl Validate for EndpointSecret {
     fn validate(&self) -> std::result::Result<(), ValidationErrors> {
         let mut errors = ValidationErrors::new();
 
-        if self.0.len() != EndpointSecret::KEY_SIZE {
-            errors.add(ALL_ERROR, ValidationError::new("secret length invalid"));
+        match self {
+            Self::Symmetric(bytes) => {
+                if bytes.len() < Self::KEY_SIZE || bytes.len() > Self::KEY_SIZE_MAX {
+                    errors.add(ALL_ERROR, ValidationError::new("secret length invalid"));
+                }
+            }
+            Self::Asymmetric(key) => {
+                let test_msg = b"123";
+                let signature = key.0.sk.sign(test_msg, None);
+                if key.0.pk.verify(test_msg, &signature).is_err() {
+                    errors.add(
+                        ALL_ERROR,
+                        ValidationError::new("Invalid key, failed signing test msg"),
+                    );
+                }
+            }
         }
 
         if errors.is_empty() {
@@ -481,48 +786,11 @@ impl Validate for EndpointSecret {
         }
     }
 }
-impl From<EndpointSecret> for sea_orm::Value {
-    fn from(v: EndpointSecret) -> Self {
-        Self::Bytes(Some(Box::new(v.0)))
-    }
-}
-
-impl TryGetable for EndpointSecret {
-    fn try_get(res: &QueryResult, pre: &str, col: &str) -> Result<Self, TryGetError> {
-        match Vec::<u8>::try_get(res, pre, col) {
-            Ok(v) => Ok(EndpointSecret(v)),
-            Err(e) => Err(e),
-        }
-    }
-}
-
-impl Nullable for EndpointSecret {
-    fn null() -> Value {
-        Value::Bytes(None)
-    }
-}
-
-impl ValueType for EndpointSecret {
-    fn try_from(v: Value) -> Result<Self, ValueTypeErr> {
-        match v {
-            Value::Bytes(Some(x)) => Ok(EndpointSecret(*x)),
-            _ => Err(ValueTypeErr),
-        }
-    }
-
-    fn type_name() -> String {
-        stringify!(EndpointSecret).to_owned()
-    }
-
-    fn column_type() -> ColumnType {
-        ColumnType::Binary(None)
-    }
-}
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ExpiringSigningKey {
     #[serde(rename = "signingKey")]
-    pub key: EndpointSecret,
+    pub key: EndpointSecretInternal,
     pub expiration: DateTime<Utc>,
 }
 
@@ -668,11 +936,9 @@ enum_wrapper!(StatusCodeClass);
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use crate::core::types::{EventChannel, EventTypeName};
 
-    use super::{
-        ApplicationId, ApplicationUid, EndpointHeaders, EndpointHeadersPatch, EndpointSecret,
-    };
     use std::collections::HashMap;
     use validator::Validate;
 
@@ -804,11 +1070,18 @@ mod tests {
 
     #[test]
     fn test_endpoint_secret_validation() {
-        let secret = EndpointSecret(base64::decode("bm90LXZhbGlkCg==").unwrap());
+        let secret = EndpointSecret::Symmetric(base64::decode("bm90LXZhbGlkCg==").unwrap());
         assert!(secret.validate().is_err());
 
-        let secret = EndpointSecret(base64::decode("C2FVsBQIhrscChlQIMV+b5sSYspob7oD").unwrap());
+        let secret =
+            EndpointSecret::Symmetric(base64::decode("C2FVsBQIhrscChlQIMV+b5sSYspob7oD").unwrap());
         secret.validate().unwrap();
+
+        let secret = EndpointSecret::Asymmetric(AsymmetricKey::from_base64("6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg==").unwrap());
+        secret.validate().unwrap();
+
+        let secret = EndpointSecret::Asymmetric(AsymmetricKey::from_base64("6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlaaaaaaaaaaAJ6p9lMicMFs6Kvg==").unwrap());
+        assert!(secret.validate().is_err());
     }
 
     #[derive(serde::Deserialize)]
@@ -822,6 +1095,8 @@ mod tests {
             "w",
             "whsec_%",
             "whsec_wronglength",
+            "whpk_1SiA4o9hyqTCpIqC5V9HUakiiaeACeqfZTInDBbOir4=", // Public key
+            "whsk_6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kv", // Bad SK
             "hwsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD",
         ] {
             let js = serde_json::json!({ "key": key });
@@ -830,9 +1105,38 @@ mod tests {
 
         let js = serde_json::json!({ "key": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD" });
         let ep = serde_json::from_value::<EndpointSecretTestStruct>(js).unwrap();
-        assert_eq!(
-            base64::decode("C2FVsBQIhrscChlQIMV+b5sSYspob7oD").unwrap(),
-            ep.key.0
-        );
+        if let EndpointSecret::Symmetric(key) = ep.key {
+            assert_eq!(
+                base64::decode("C2FVsBQIhrscChlQIMV+b5sSYspob7oD").unwrap(),
+                key
+            );
+        } else {
+            panic!("Shouldn't get here");
+        }
+
+        // Too long secret
+        let js = serde_json::json!({ "key": "whsec_V09IYXZUaFJoSnFobnpJQkpPMXdpdGFNWnJsRzAxdXZCeTVndVpwRmxSSXFsc0oyYzBTRWRUekJhYnlaZ0JSRGNPQ3BGZG1xYjFVVmRGQ3UK" });
+        let ep = serde_json::from_value::<EndpointSecretTestStruct>(js).unwrap();
+        assert!(ep.key.validate().is_err());
+
+        // Valid long secret
+        let long_sec = "TUdfVE5UMnZlci1TeWxOYXQtX1ZlTW1kLTRtMFdhYmEwanIxdHJvenRCbmlTQ2hFdzBnbHhFbWdFaTJLdzQwSA==";
+        let js = serde_json::json!({ "key": format!("whsec_{}", long_sec) });
+        let ep = serde_json::from_value::<EndpointSecretTestStruct>(js).unwrap();
+        if let EndpointSecret::Symmetric(key) = ep.key {
+            assert_eq!(base64::decode(long_sec).unwrap(), key);
+        } else {
+            panic!("Shouldn't get here");
+        }
+
+        // Asymmetric key
+        let asym_sec = "6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg==";
+        let js = serde_json::json!({ "key": format!("whsk_{}", asym_sec) });
+        let ep = serde_json::from_value::<EndpointSecretTestStruct>(js).unwrap();
+        if let EndpointSecret::Asymmetric(key) = ep.key {
+            assert_eq!(base64::decode(asym_sec).unwrap(), key.0.sk.as_slice());
+        } else {
+            panic!("Shouldn't get here");
+        }
     }
 }

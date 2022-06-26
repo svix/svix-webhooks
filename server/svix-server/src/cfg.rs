@@ -9,10 +9,7 @@ use figment::{
 };
 use std::time::Duration;
 
-use crate::{
-    core::security::{AsymmetricKey, Keys},
-    error::Result,
-};
+use crate::{core::security::Keys, error::Result};
 use serde::{Deserialize, Deserializer};
 use tracing::Level;
 use validator::Validate;
@@ -24,23 +21,6 @@ where
     let buf = String::deserialize(deserializer)?;
 
     Ok(Keys::new(buf.as_bytes()))
-}
-
-fn deserialize_keypair<'de, D>(
-    deserializer: D,
-) -> std::result::Result<Option<Vec<AsymmetricKey>>, D::Error>
-where
-    D: Deserializer<'de>,
-{
-    use serde::de::Error;
-    let buf: Vec<String> = Vec::deserialize(deserializer)?;
-
-    let ret: Result<Vec<AsymmetricKey>> = buf
-        .into_iter()
-        .map(|x| AsymmetricKey::from_base64(&x))
-        .collect();
-
-    Ok(Some(ret.map_err(|x| Error::custom(x.to_string()))?))
 }
 
 #[derive(Deserialize)]
@@ -93,11 +73,10 @@ pub struct ConfigurationInner {
     #[serde(deserialize_with = "deserialize_jwt_secret")]
     pub jwt_secret: Keys,
 
-    /// An array of ed25519 private and public key concatenated and encoded as base64
-    /// When enabled, webhooks will be signed with ed25519.
-    /// Note: please read the section in the README before enabling this
-    #[serde(default, deserialize_with = "deserialize_keypair")]
-    pub signature_asymmetric_keys: Option<Vec<AsymmetricKey>>,
+    /// This determines the type of key that is generated for endpoint secrets by default (when none is set).
+    /// Supported: hmac256 (default), ed25519
+    /// Note: this does not affect existing keys, which will continue signing based on the type they were created with.
+    pub default_signature_type: DefaultSignatureType,
 
     /// The log level to run the service with. Supported: info, debug, trace
     pub log_level: LogLevel,
@@ -200,6 +179,13 @@ pub enum CacheType {
     Redis,
     RedisCluster,
     None,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum DefaultSignatureType {
+    Hmac256,
+    Ed25519,
 }
 
 impl ToString for LogLevel {

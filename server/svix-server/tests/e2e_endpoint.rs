@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
+use std::sync::Arc;
 use std::{
     collections::{HashMap, HashSet},
     time::Duration,
@@ -8,13 +9,21 @@ use std::{
 
 use anyhow::Result;
 use chrono::Utc;
+use ed25519_compact::Signature;
 use reqwest::StatusCode;
+use sea_orm::{ConnectionTrait, DatabaseBackend, Statement};
 
+use serde::Deserialize;
 use svix::webhooks::Webhook;
+use svix_server::cfg::DefaultSignatureType;
 use svix_server::{
-    core::types::{
-        ApplicationId, EndpointHeaders, EndpointHeadersPatch, EndpointSecret, EndpointUid,
-        EventChannel, EventChannelSet, EventTypeName, EventTypeNameSet, ExpiringSigningKeys,
+    core::{
+        security::AsymmetricKey,
+        types::{
+            ApplicationId, EndpointHeaders, EndpointHeadersPatch, EndpointSecret,
+            EndpointSecretInternal, EndpointUid, EventChannel, EventChannelSet, EventTypeName,
+            EventTypeNameSet, ExpiringSigningKeys,
+        },
     },
     v1::{
         endpoints::{
@@ -557,7 +566,9 @@ async fn test_endpoint_rotate_signing_e2e() {
 
     assert_ne!(secret1.key, secret2.key);
 
-    let secret3_key = EndpointSecret::generate().unwrap();
+    let secret3_key = EndpointSecretInternal::generate_symmetric()
+        .unwrap()
+        .into_endpoint_secret();
 
     let _: IgnoredResponse = client
         .post(
@@ -588,10 +599,165 @@ async fn test_endpoint_rotate_signing_e2e() {
     let last_body = receiver.data_recv.recv().await.unwrap().to_string();
 
     for sec in [secret1, secret2, secret3] {
-        let sec = base64::encode(&sec.key.0);
-        let wh = Webhook::new(sec).unwrap();
-        wh.verify(last_body.as_bytes(), &last_headers).unwrap();
+        if let EndpointSecret::Symmetric(key) = &sec.key {
+            let sec = base64::encode(key);
+            let wh = Webhook::new(sec).unwrap();
+            wh.verify(last_body.as_bytes(), &last_headers).unwrap();
+        } else {
+            panic!("Shouldn't get here");
+        }
     }
+}
+
+#[tokio::test]
+async fn test_endpoint_rotate_signing_symmetric_and_asymmetric() {
+    let (client, _jh) = start_svix_server();
+
+    let app_id = create_test_app(&client, "app1").await.unwrap().id;
+
+    let mut receiver = TestReceiver::start(StatusCode::OK);
+
+    let secret_1 = EndpointSecretInternal::generate_symmetric()
+        .unwrap()
+        .into_endpoint_secret();
+    // Asymmetric key
+    let secret_2 = EndpointSecret::Asymmetric(AsymmetricKey::from_base64("6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg==").unwrap());
+    // Long key
+    let secret_3 = EndpointSecret::Symmetric(base64::decode("TUdfVE5UMnZlci1TeWxOYXQtX1ZlTW1kLTRtMFdhYmEwanIxdHJvenRCbmlTQ2hFdzBnbHhFbWdFaTJLdzQwSA==").unwrap());
+
+    let ep_in = EndpointIn {
+        url: receiver.endpoint.clone(),
+        version: 1,
+        key: Some(secret_1.clone()),
+        ..Default::default()
+    };
+
+    let endp = post_endpoint(&client, &app_id, ep_in.clone())
+        .await
+        .unwrap();
+
+    // Rotate to asmmetric
+    let _: IgnoredResponse = client
+        .post(
+            &format!("api/v1/app/{}/endpoint/{}/secret/rotate/", app_id, endp.id),
+            serde_json::json!({ "key": "whsk_6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg==" }),
+            StatusCode::NO_CONTENT,
+        )
+        .await
+        .unwrap();
+
+    // Rotate back to symmetric
+    let _: IgnoredResponse = client
+        .post(
+            &format!("api/v1/app/{}/endpoint/{}/secret/rotate/", app_id, endp.id),
+            serde_json::json!({ "key": secret_3.serialize_public_key() }),
+            StatusCode::NO_CONTENT,
+        )
+        .await
+        .unwrap();
+
+    let raw_payload = r#"{"test":"data1"}"#;
+    let payload = serde_json::from_str(raw_payload).unwrap();
+    let _msg = create_test_message(&client, &app_id, payload)
+        .await
+        .unwrap();
+
+    let last_headers = receiver.header_recv.recv().await.unwrap();
+    let last_body = receiver.data_recv.recv().await.unwrap().to_string();
+
+    for sec in [secret_1, secret_2, secret_3] {
+        match sec {
+            EndpointSecret::Symmetric(key) => {
+                let sec = base64::encode(key);
+                let wh = Webhook::new(sec).unwrap();
+                wh.verify(last_body.as_bytes(), &last_headers).unwrap();
+            }
+            EndpointSecret::Asymmetric(key) => {
+                let msg_id = last_headers.get("svix-id").unwrap().to_str().unwrap();
+                let timestamp = last_headers
+                    .get("svix-timestamp")
+                    .unwrap()
+                    .to_str()
+                    .unwrap();
+                let signatures = last_headers
+                    .get("svix-signature")
+                    .unwrap()
+                    .to_str()
+                    .unwrap();
+                let to_sign = format!("{}.{}.{}", msg_id, timestamp, &last_body);
+                let found =
+                    signatures
+                        .split(' ')
+                        .filter(|x| x.starts_with("v1a,"))
+                        .any(|signature| {
+                            let sig: Signature = Signature::from_slice(
+                                base64::decode(&signature["v1a,".len()..])
+                                    .unwrap()
+                                    .as_slice(),
+                            )
+                            .unwrap();
+                            key.0.pk.verify(to_sign.as_bytes(), &sig).is_ok()
+                        });
+                assert!(found);
+            }
+        }
+    }
+}
+
+#[tokio::test]
+async fn test_endpoint_secret_config() {
+    let mut cfg = get_default_test_config();
+    cfg.default_signature_type = DefaultSignatureType::Ed25519;
+    let (client, _jh) = start_svix_server_with_cfg(&cfg);
+
+    let app_id = create_test_app(&client, "app1").await.unwrap().id;
+
+    let ep_in = EndpointIn {
+        url: "http://www.example.com".to_owned(),
+        version: 1,
+        ..Default::default()
+    };
+
+    let ep = post_endpoint(&client, &app_id, ep_in.clone())
+        .await
+        .unwrap();
+
+    #[derive(Deserialize)]
+    pub struct EndpointSecretOutTest {
+        pub key: String,
+    }
+
+    let key1 = client
+        .get::<EndpointSecretOutTest>(
+            &format!("api/v1/app/{}/endpoint/{}/secret/", app_id, ep.id),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap()
+        .key;
+
+    assert!(key1.starts_with("whpk_"));
+
+    // Rotate to asmmetric
+    let _: IgnoredResponse = client
+        .post(
+            &format!("api/v1/app/{}/endpoint/{}/secret/rotate/", app_id, ep.id),
+            serde_json::json!({ "key": null }),
+            StatusCode::NO_CONTENT,
+        )
+        .await
+        .unwrap();
+
+    let key2 = client
+        .get::<EndpointSecretOutTest>(
+            &format!("api/v1/app/{}/endpoint/{}/secret/", app_id, ep.id),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap()
+        .key;
+
+    assert!(key2.starts_with("whpk_"));
 }
 
 #[tokio::test]
@@ -600,12 +766,22 @@ async fn test_custom_endpoint_secret() {
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
-    let secret = EndpointSecret::generate().unwrap();
+    let secret_1 = EndpointSecretInternal::generate_symmetric()
+        .unwrap()
+        .into_endpoint_secret();
+    // Long key
+    let secret_2 = EndpointSecret::Symmetric(base64::decode("TUdfVE5UMnZlci1TeWxOYXQtX1ZlTW1kLTRtMFdhYmEwanIxdHJvenRCbmlTQ2hFdzBnbHhFbWdFaTJLdzQwSA==").unwrap());
+    // Asymmetric key
+    let secret_3 = EndpointSecret::Asymmetric(AsymmetricKey::from_base64("6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg==").unwrap());
+    assert_eq!(
+        secret_3.serialize_public_key(),
+        "whpk_1SiA4o9hyqTCpIqC5V9HUakiiaeACeqfZTInDBbOir4="
+    );
 
-    let ep_in = EndpointIn {
+    let mut ep_in = EndpointIn {
         url: "http://www.example.com".to_owned(),
         version: 1,
-        key: Some(secret.clone()),
+        key: Some(secret_1.clone()),
         ..Default::default()
     };
 
@@ -613,15 +789,35 @@ async fn test_custom_endpoint_secret() {
         .await
         .unwrap();
 
+    ep_in.key = Some(secret_2.clone());
     let endp_2 = post_endpoint(&client, &app_id, ep_in.clone())
         .await
         .unwrap();
 
-    for ep in [endp_1, endp_2] {
+    // We rotate the key after because it's easier than setting json! for everything
+    ep_in.key = Some(secret_2.clone());
+    let endp_3 = post_endpoint(&client, &app_id, ep_in.clone())
+        .await
+        .unwrap();
+    let _: IgnoredResponse = client
+        .post(
+            &format!("api/v1/app/{}/endpoint/{}/secret/rotate/", app_id, endp_3.id),
+            serde_json::json!({ "key": "whsk_6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg==" }),
+            StatusCode::NO_CONTENT,
+        )
+        .await
+        .unwrap();
+
+    #[derive(Deserialize)]
+    pub struct EndpointSecretOutTest {
+        pub key: String,
+    }
+
+    for (secret, ep) in [(secret_1, endp_1), (secret_2, endp_2), (secret_3, endp_3)] {
         assert_eq!(
-            secret,
+            secret.serialize_public_key(),
             client
-                .get::<EndpointSecretOut>(
+                .get::<EndpointSecretOutTest>(
                     &format!("api/v1/app/{}/endpoint/{}/secret/", app_id, ep.id),
                     StatusCode::OK
                 )
@@ -639,7 +835,9 @@ async fn test_invalid_endpoint_secret() {
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
     let secret_too_short = "whsec_C2FVsBQIhrscChlQIM+b5sSYspob".to_owned();
-    let secret_too_long = "whsec_C2FVsBQIhrscChlQIM+b5sSYspob7oDazfgh".to_owned();
+    let secret_too_long =
+        "whsec_V09IYXZUaFJoSnFobnpJQkpPMXdpdGFNWnJsRzAxdXZCeTVndVpwRmxSSXFsc0oyYzBTRWRUekJhYnlaZ0JSRGNPQ3BGZG1xYjFVVmRGQ3UK"
+            .to_owned();
     let invalid_prefix = "hwsec_C2FVsBQIhrscChlQIM+b5sSYspob7oDazfgh".to_owned();
 
     for sec in [secret_too_short, secret_too_long, invalid_prefix] {
@@ -658,6 +856,64 @@ async fn test_invalid_endpoint_secret() {
             .await
             .unwrap();
     }
+}
+
+/// We used to store the secret in the DB without a type marker, check loading those still works
+#[tokio::test]
+async fn test_legacy_endpoint_secret() {
+    let cfg = get_default_test_config();
+    let (client, _jh) = start_svix_server_with_cfg(&cfg);
+
+    let db = Arc::new(cfg);
+    let db = svix_server::db::init_db(&db).await;
+
+    let app_id = create_test_app(&client, "app1").await.unwrap().id;
+
+    let secret_throwaway = EndpointSecretInternal::generate_symmetric()
+        .unwrap()
+        .into_endpoint_secret();
+    let raw_key = base64::decode("5gasBsSw3Nvf3ugNYVJIqnRVYPW7hPts").unwrap();
+    let secret_1 = EndpointSecret::Symmetric(raw_key.clone());
+
+    let ep_in = EndpointIn {
+        url: "http://www.example.com".to_owned(),
+        version: 1,
+        key: Some(secret_throwaway.clone()),
+        ..Default::default()
+    };
+
+    let endp_1 = post_endpoint(&client, &app_id, ep_in.clone())
+        .await
+        .unwrap();
+
+    // Set the raw value to the database (like legacy)
+    db.execute(Statement::from_sql_and_values(
+        DatabaseBackend::Postgres,
+        "UPDATE endpoint SET key = $1 WHERE id = $2",
+        vec![raw_key.clone().into(), endp_1.id.clone().into()],
+    ))
+    .await
+    .unwrap();
+
+    let endp_1 = get_endpoint(&client, &app_id, &endp_1.id).await.unwrap();
+
+    #[derive(Deserialize)]
+    pub struct EndpointSecretOutTest {
+        pub key: String,
+    }
+
+    let (secret, ep) = (secret_1, endp_1);
+    assert_eq!(
+        secret.serialize_public_key(),
+        client
+            .get::<EndpointSecretOutTest>(
+                &format!("api/v1/app/{}/endpoint/{}/secret/", app_id, ep.id),
+                StatusCode::OK
+            )
+            .await
+            .unwrap()
+            .key
+    );
 }
 
 #[tokio::test]

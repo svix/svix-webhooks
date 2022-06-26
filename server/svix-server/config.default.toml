@@ -14,10 +14,10 @@ listen_address = "0.0.0.0:8071"
 # The JWT secret for authentication - should be secret and securely generated
 # jwt_secret = "8KjzRXrKkd9YFcNyqLSIY8JwiaCeRc6WK4UkMnSW"
 
-# An array of ed25519 private and public key concatenated and encoded as base64
-# When enabled, webhooks will be signed with ed25519.
-# Note: please read the section in the README before enabling this
-# signature_private_keys = [""]
+# This determines the type of key that is generated for endpoint secrets by default (when none is set).
+# Supported: hmac256 (default), ed25519
+# Note: this does not affect existing keys, which will continue signing based on the type they were created with.
+default_signature_type = "hmac256"
 
 # The log level to run the service with. Supported: info, debug, trace
 log_level = "info"

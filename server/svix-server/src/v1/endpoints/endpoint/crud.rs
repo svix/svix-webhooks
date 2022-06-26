@@ -9,15 +9,15 @@ use sea_orm::{entity::prelude::*, ActiveValue::Set, QueryOrder};
 use sea_orm::{ActiveModelTrait, DatabaseConnection, QuerySelect};
 use url::Url;
 
-use super::{EndpointIn, EndpointOut};
+use super::{secrets::generate_secret, EndpointIn, EndpointOut};
 use crate::{
     cfg::Configuration,
     core::{
         operational_webhooks::{EndpointEvent, OperationalWebhook, OperationalWebhookSender},
         security::AuthenticatedApplication,
         types::{
-            ApplicationIdOrUid, EndpointId, EndpointIdOrUid, EndpointSecret, EventTypeName,
-            EventTypeNameSet, OrganizationId,
+            ApplicationIdOrUid, EndpointId, EndpointIdOrUid, EventTypeName, EventTypeNameSet,
+            OrganizationId,
         },
     },
     db::models::{endpoint, eventtype},
@@ -74,7 +74,7 @@ pub(super) async fn create_endpoint(
     } else {
         endpoint::ActiveModel {
             app_id: Set(app.id),
-            key: Set(EndpointSecret::generate()?),
+            key: Set(generate_secret(&cfg.default_signature_type)?),
             ..data.into()
         }
     };

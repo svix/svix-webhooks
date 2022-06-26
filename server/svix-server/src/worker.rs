@@ -2,15 +2,17 @@
 // SPDX-License-Identifier: MIT
 
 use crate::cfg::Configuration;
-use crate::core::security::AsymmetricKey;
-use crate::core::types::{ApplicationUid, MessageUid, OrganizationId};
+
+use crate::core::types::{
+    ApplicationUid, EndpointSecretInternal, EndpointSecretType, MessageUid, OrganizationId,
+};
 use crate::core::{
     cache::Cache,
     message_app::{CreateMessageApp, CreateMessageEndpoint},
     operational_webhooks::{MessageAttemptEvent, OperationalWebhook, OperationalWebhookSender},
     types::{
-        BaseId, EndpointHeaders, EndpointSecret, MessageAttemptId, MessageAttemptTriggerType,
-        MessageId, MessageStatus,
+        BaseId, EndpointHeaders, MessageAttemptId, MessageAttemptTriggerType, MessageId,
+        MessageStatus,
     },
 };
 use crate::db::models::{message, messageattempt, messagedestination};
@@ -19,12 +21,11 @@ use crate::queue::{
     MessageTask, MessageTaskBatch, QueueTask, TaskQueueConsumer, TaskQueueProducer,
 };
 use chrono::Utc;
-use ed25519_compact::Noise;
+
 use futures::future;
 use rand::Rng;
 use reqwest::header::{HeaderMap, HeaderName};
 use sea_orm::{entity::prelude::*, ActiveValue::Set, DatabaseConnection, EntityTrait};
-use sha2::{Digest, Sha512};
 use tokio::time::{sleep, Duration};
 
 use std::{iter, str::FromStr};
@@ -42,42 +43,19 @@ fn sign_msg(
     timestamp: i64,
     body: &str,
     msg_id: &MessageId,
-    endpoint_signing_keys: &[&EndpointSecret],
+    endpoint_signing_keys: &[&EndpointSecretInternal],
 ) -> String {
     let to_sign = format!("{}.{}.{}", msg_id, timestamp, body);
-    let signatures = endpoint_signing_keys
+    endpoint_signing_keys
         .iter()
-        .map(|x| hmac_sha256::HMAC::mac(to_sign.as_bytes(), &x.0[..]));
-
-    signatures
-        .map(|x| format!("v1,{}", base64::encode(x)))
-        .collect::<Vec<String>>()
-        .join(" ")
-}
-
-/// Sign a message with the asymmetric key
-fn sign_msg_asymmetric(
-    timestamp: i64,
-    body: &str,
-    msg_id: &MessageId,
-    endp_url: &str,
-    keys: &[AsymmetricKey],
-) -> String {
-    let mut hasher = Sha512::new();
-    hasher.update(base64::encode(endp_url.as_bytes()));
-    hasher.update(".".as_bytes());
-    hasher.update(msg_id.as_bytes());
-    hasher.update(".".as_bytes());
-    hasher.update(timestamp.to_string().as_bytes());
-    hasher.update(".".as_bytes());
-    hasher.update(base64::encode(body.as_bytes()));
-    let to_sign = hasher.finalize();
-    let signatures = keys
-        .iter()
-        .map(|x| x.0.sk.sign(to_sign, Some(Noise::generate())));
-
-    signatures
-        .map(|x| format!("v1a,{}", base64::encode(x)))
+        .map(|x| {
+            let sig = x.sign(to_sign.as_bytes());
+            let version = match x.type_() {
+                EndpointSecretType::Hmac256 => "v1",
+                EndpointSecretType::Ed25519 => "v1a",
+            };
+            format!("{},{}", version, base64::encode(sig))
+        })
         .collect::<Vec<String>>()
         .join(" ")
 }
@@ -169,7 +147,7 @@ async fn dispatch(
     let now = Utc::now();
     let body = serde_json::to_string(&payload).expect("Error parsing message body");
     let headers = {
-        let keys: Vec<&EndpointSecret> = if let Some(ref old_keys) = endp.old_signing_keys {
+        let keys: Vec<&EndpointSecretInternal> = if let Some(ref old_keys) = endp.old_signing_keys {
             iter::once(&endp.key)
                 .chain(old_keys.0.iter().map(|x| &x.key))
                 .collect()
@@ -177,17 +155,7 @@ async fn dispatch(
             vec![&endp.key]
         };
 
-        let signatures = if let Some(ref asymmetric_keys) = cfg.signature_asymmetric_keys {
-            sign_msg_asymmetric(
-                now.timestamp(),
-                &body,
-                &msg_task.msg_id,
-                &endp.url,
-                asymmetric_keys,
-            )
-        } else {
-            sign_msg(now.timestamp(), &body, &msg_task.msg_id, &keys)
-        };
+        let signatures = sign_msg(now.timestamp(), &body, &msg_task.msg_id, &keys);
 
         let mut headers = generate_msg_headers(
             now.timestamp(),
@@ -574,16 +542,18 @@ pub async fn worker_loop(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::types::BaseId;
+    use crate::core::security::AsymmetricKey;
+    use crate::core::types::{BaseId, EndpointSecret};
 
     use bytes::Bytes;
+    use ed25519_compact::Signature;
     use std::collections::HashMap;
 
     // [`generate_msg_headers`] tests
     const TIMESTAMP: i64 = 1;
     const WHITELABEL_HEADERS: bool = false;
     const BODY: &str = "{\"test\": \"body\"}";
-    const ENDPOINT_SIGNING_KEYS: &[&EndpointSecret] = &[];
+    const ENDPOINT_SIGNING_KEYS: &[&EndpointSecretInternal] = &[];
     const ENDPOINT_URL: &str = "http://localhost:8071";
 
     /// Utility function that returns the default set of headers before configurable header are
@@ -639,7 +609,9 @@ mod tests {
     fn test_generate_msg_headers_with_signing_key() {
         let test_timestamp = 1614265330;
         let test_body = "{\"test\": 2432232314}";
-        let test_key = EndpointSecret(base64::decode("MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw").unwrap());
+        let test_key = EndpointSecretInternal::from_endpoint_secret(EndpointSecret::Symmetric(
+            base64::decode("MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw").unwrap(),
+        ));
         let test_message_id = MessageId("msg_p5jXN8AQM9LWM0D4loKWxJek".to_owned());
 
         let expected_signature_str = "v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE=";
@@ -664,32 +636,26 @@ mod tests {
     // Tests asemmtric signing keys
     #[test]
     fn test_asymmetric_key_signing() {
-        let test_timestamp = 1614265330;
-        let test_body = "{\"test\": 2432232314}";
-        let test_key = AsymmetricKey::from_base64("6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg==").unwrap();
-        let test_message_id = MessageId("msg_p5jXN8AQM9LWM0D4loKWxJek".to_owned());
-        let test_endpoint_url = "https://www.example.com";
+        let timestamp = 1614265330;
+        let body = "{\"test\": 2432232314}";
+        let asym_key = AsymmetricKey::from_base64("6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg==").unwrap();
+        let test_key = EndpointSecretInternal::from_endpoint_secret(EndpointSecret::Asymmetric(
+            asym_key.clone(),
+        ));
+        let msg_id = MessageId("msg_p5jXN8AQM9LWM0D4loKWxJek".to_owned());
 
-        let signatures = sign_msg_asymmetric(
-            test_timestamp,
-            test_body,
-            &test_message_id,
-            test_endpoint_url,
-            &[test_key],
-        );
+        let signatures = sign_msg(timestamp, body, &msg_id, &[&test_key]);
 
-        let _actual = generate_msg_headers(
-            test_timestamp,
-            &test_message_id,
-            signatures,
-            WHITELABEL_HEADERS,
-            None,
-            ENDPOINT_URL,
-        );
-
-        // Note: asymmetric signatures are not deterministic so we can't ensure the value is
-        // correct here without essentially reimplementing the scheme which is pointless.
-        // So we are just checking that the signature at least doesn't barf.
+        let to_sign = format!("{}.{}.{}", msg_id, timestamp, body);
+        assert!(signatures.starts_with("v1a,"));
+        let sig: Signature = Signature::from_slice(
+            base64::decode(&signatures["v1a,".len()..])
+                .unwrap()
+                .as_slice(),
+        )
+        .unwrap();
+        asym_key.0.pk.verify(to_sign.as_bytes(), &sig).unwrap();
+        assert_eq!(signatures, "v1a,hnO3f9T8Ytu9HwrXslvumlUpqtNVqkhqw/enGzPCXe5BdqzCInXqYXFymVJaA7AZdpXwVLPo3mNl8EM+m7TBAg==");
     }
 
     #[test]

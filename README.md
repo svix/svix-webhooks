@@ -296,52 +296,31 @@ As mentioned above, symmetric signatures are recommended. However, please read t
 
 ### Configuring the keys
 
-You can enable asymmetric signatures by setting `signature_asymmetric_keys` in the config (or through an environment variable) to the list of asymmetric keys you'd like to sign messages with. Once set, asymmetric signature mode is automatically enabled, and symmetric is disabled.
+By default, the Svix server generates symmetric secrets for endpoints, which in turn means messages will be signed with symmetric keys. To change this default, set the `default_signature_type` config to `ed25519` as follows:
 
-Example configuration:
 ```toml
-signature_asymmetric_keys = ["6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg=="]
+default_signature_type = "ed25519"
 ```
 
-The format of the private keys is: `base64(private_key + public_key)`.
+Additionally, no matter what the default is set to, you can still override it by explicitly setting a key on an endpoint.
+To set a symmetric key, set the endpoint secret to a secret prefixed with `whsec_`, such as `whsec_51TKyHBy5KFY1Ab98GQ8V60BkWnejkWy`.
+To set an asymmetric key, set the endpoint secret to a **valid** ed25519 base64 encoded private key prefixed with `whsk_` such as: `whsk_6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg==`.
 
-New asymmetric key pairs can be generated using:
+Please note, that the expected private key structure is: `whsk_${base64(private_key + public_key)}`.
+
+For testing purposes, new asymmetric key pairs can be generated using the following command:
 ```bash
 $ svix-server asymmetric-key generate
 
-Secret key: 6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg==
-Public key: 1SiA4o9hyqTCpIqC5V9HUakiiaeACeqfZTInDBbOir4=
+Secret key: whsk_6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg==
+Public key: whpk_1SiA4o9hyqTCpIqC5V9HUakiiaeACeqfZTInDBbOir4=
 ```
 
 ### Signature scheme
 
-Svix uses `ed25519(sha512(m))` for signing the webhook messages.
-Additionally, because asymmetric signatures require different security considerations to symmetric ones, the message construction is slightly different than to the one used with symmetric keys. Here it is:
-
-```javascript
-// The endpoint URL as set on the endpoint encoded in base64
-b64_endp_url = base64_encode(endpoint_url)
-
-// The body encoded in base64
-b64_body = base64_encode(body)
-
-// The svix-id header
-msg_id = headers["svix-id"]
-
-// The svix-timestamp
-timestamp = headers["svix-timestamp"]
-
-// The message to sign is then:
-m = sha512(
-  `${b64_endp_url}.${msg_id}.${timestamp}.${b64_body}`
-)
-```
+Svix uses `ed25519(m)` for signing the webhook messages, and it constructs `m` the same way as it does for the symmetric signatures.
 
 When verifying the message you should also ensure that the timestamp is recent enough in order to limit the potential of replay attacks as noted in [the symmetric verification docs](https://docs.svix.com/receiving/verifying-payloads/why).
-
-### Additional security considerations
-
-Because of how asymmetric signatures work it's important to not show signatures in the UI, or let customers generate signatures for example URLs and payloads. A common source of attacks on asymmetric signature schemes is by tricking servers into signing attacker controlled messages. It becomes significantly easier to do this if you expose signatures anywhere other than the header of the message being sent. As such signatures should only be sent as part of the message
 
 
 # Differences to the Svix hosted service

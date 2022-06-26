@@ -312,6 +312,10 @@ impl AsymmetricKey {
 
         Self::from_slice(bytes.as_slice())
     }
+
+    pub fn pubkey(&self) -> &[u8] {
+        &self.0.pk[..]
+    }
 }
 
 impl Debug for AsymmetricKey {
@@ -321,5 +325,11 @@ impl Debug for AsymmetricKey {
             "<AsymmetricKey sk=*** pk={}>",
             base64::encode(self.0.pk.as_slice())
         )
+    }
+}
+
+impl PartialEq for AsymmetricKey {
+    fn eq(&self, other: &Self) -> bool {
+        self.0.as_slice() == other.0.as_slice()
     }
 }

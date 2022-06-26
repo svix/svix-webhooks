@@ -8,12 +8,12 @@ use dotenv::dotenv;
 use opentelemetry::runtime::Tokio;
 use opentelemetry_otlp::WithExportConfig;
 use std::process::exit;
-use svix_server::core::types::OrganizationId;
+use svix_server::core::types::{EndpointSecretInternal, OrganizationId};
 use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::util::SubscriberInitExt;
 use validator::Validate;
 
-use svix_server::core::security::{default_org_id, generate_org_token, AsymmetricKey};
+use svix_server::core::security::{default_org_id, generate_org_token};
 
 use svix_server::{cfg, db, run};
 
@@ -81,10 +81,6 @@ enum AsymmetricKeyCommands {
     /// Generate a new asymmetric key
     #[clap()]
     Generate,
-
-    /// Print the public keys for the currently set keys
-    #[clap()]
-    PrintPublicKeys,
 }
 
 fn org_id_parser(s: &str) -> Result<OrganizationId, String> {
@@ -189,23 +185,12 @@ async fn main() {
         }
         Some(Commands::AsymmetricKey { command }) => match command {
             AsymmetricKeyCommands::Generate => {
-                let key = AsymmetricKey::generate();
-                let sk = key.0.sk.as_slice();
-                let pk = key.0.pk.as_slice();
-                println!("Secret key: {}", base64::encode(sk));
-                println!("Public key: {}", base64::encode(pk));
+                let secret = EndpointSecretInternal::generate_asymmetric()
+                    .unwrap()
+                    .into_endpoint_secret();
+                println!("Secret key: {}", secret.serialize_secret_key());
+                println!("Public key: {}", secret.serialize_public_key());
                 exit(0);
-            }
-            AsymmetricKeyCommands::PrintPublicKeys => {
-                if let Some(ref keys) = cfg.signature_asymmetric_keys {
-                    for (i, key) in keys.iter().enumerate() {
-                        println!("[{}]: {}", i, base64::encode(key.0.pk.as_slice()));
-                    }
-                    exit(0);
-                } else {
-                    eprintln!("Missing signature_asymmetric_keys in config.");
-                    exit(1);
-                }
             }
         },
         None => {}
