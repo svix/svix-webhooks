@@ -41,7 +41,7 @@ jobs:
       uses: actions-rs/cargo@v1
       with:
         command: build
-        args: --manifest-path server/Cargo.toml --all --frozen
+        args: --manifest-path server/Cargo.toml --all --locked
 
     - name: Clippy
       uses: actions-rs/cargo@v1
