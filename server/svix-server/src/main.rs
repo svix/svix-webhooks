@@ -111,7 +111,7 @@ async fn main() {
                 opentelemetry::sdk::trace::config()
                     .with_sampler(
                         cfg.opentelemetry_sample_ratio
-                            .map(|rate| opentelemetry::sdk::trace::Sampler::TraceIdRatioBased(rate))
+                            .map(opentelemetry::sdk::trace::Sampler::TraceIdRatioBased)
                             .unwrap_or(opentelemetry::sdk::trace::Sampler::AlwaysOn),
                     )
                     .with_resource(opentelemetry::sdk::Resource::new(vec![
