@@ -226,6 +226,12 @@ SVIX_REDIS_DSN = "redis://redis:6379"
 SVIX_QUEUE_TYPE = "redis"
 ```
 
+### OpenTelemetry
+
+You may send tracing information to the OpenTelemetry Collector which allows forwarding trace events to a number of external services.
+
+You can see more in [these instructions](./OpenTelemetry.md)
+
 ### Connection Pool Size
 
 There are two configuration variables `db_pool_max_size` and `redis_pool_max_size` which control the maximum allowed size of the connection pool for PostgreSQL and Redis respectively.
