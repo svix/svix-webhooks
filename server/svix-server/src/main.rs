@@ -5,6 +5,7 @@
 #![forbid(unsafe_code)]
 
 use dotenv::dotenv;
+use opentelemetry::runtime::Tokio;
 use opentelemetry_otlp::WithExportConfig;
 use std::process::exit;
 use svix_server::core::types::OrganizationId;
@@ -93,21 +94,34 @@ async fn main() {
         );
     }
 
-    // Configure the OpenTelemetry tracing layer
-    // TODO: Initialize pipeline based on configuration.
-    opentelemetry::global::set_text_map_propagator(
-        opentelemetry::sdk::propagation::TraceContextPropagator::new(),
-    );
+    let otel_layer = cfg.opentelemetry_address.as_ref().map(|addr| {
+        // Configure the OpenTelemetry tracing layer
+        opentelemetry::global::set_text_map_propagator(
+            opentelemetry::sdk::propagation::TraceContextPropagator::new(),
+        );
 
-    let exporter = opentelemetry_otlp::new_exporter()
-        .tonic()
-        .with_endpoint("http://localhost:4317");
-    let tracer = opentelemetry_otlp::new_pipeline()
-        .tracing()
-        .with_exporter(exporter)
-        .install_simple()
-        .unwrap();
-    let otel_layer = tracing_opentelemetry::layer().with_tracer(tracer);
+        let exporter = opentelemetry_otlp::new_exporter()
+            .tonic()
+            .with_endpoint(addr);
+
+        let tracer = opentelemetry_otlp::new_pipeline()
+            .tracing()
+            .with_exporter(exporter)
+            .with_trace_config(
+                opentelemetry::sdk::trace::config()
+                    .with_sampler(
+                        cfg.opentelemetry_sample_ratio
+                            .map(|rate| opentelemetry::sdk::trace::Sampler::TraceIdRatioBased(rate))
+                            .unwrap_or(opentelemetry::sdk::trace::Sampler::AlwaysOn),
+                    )
+                    .with_resource(opentelemetry::sdk::Resource::new(vec![
+                        opentelemetry::KeyValue::new("service.name", "svix_server"),
+                    ])),
+            )
+            .install_batch(Tokio)
+            .unwrap();
+        tracing_opentelemetry::layer().with_tracer(tracer)
+    });
 
     // Then initialize logging with an additional layer priting to stdout. This additional layer is
     // either formatted normally or in JSON format
