@@ -2905,6 +2905,7 @@ dependencies = [
  "opentelemetry",
  "opentelemetry-http",
  "opentelemetry-otlp",
+ "rand",
  "redis",
  "redis_cluster_async",
  "regex",

@@ -59,6 +59,7 @@ time = { version = "0.3.9", features = [ "std" ]}
 futures = "0.3"
 redis_cluster_async = { git = "https://github.com/redis-rs/redis-cluster-async.git", rev = "e6fe168" }
 url = "2.2.2"
+rand = "0.8.5"
 
 [dev-dependencies]
 anyhow = "1.0.56"
