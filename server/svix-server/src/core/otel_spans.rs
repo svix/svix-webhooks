@@ -126,12 +126,18 @@ impl<B> OnResponse<B> for AxumOtelOnResponse {
     fn on_response(
         self,
         response: &http::Response<B>,
-        _latency: std::time::Duration,
+        latency: std::time::Duration,
         span: &tracing::Span,
     ) {
         let status = response.status().as_u16().to_string();
         span.record("http.status_code", &tracing::field::display(status));
         span.record("otel.status_code", &"OK");
+
+        tracing::debug!(
+            "finished processing request latency={} ms status={}",
+            latency.as_millis(),
+            response.status().as_u16(),
+        );
     }
 }
 
