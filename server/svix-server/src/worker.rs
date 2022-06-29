@@ -108,6 +108,14 @@ struct DispatchExtraIds<'a> {
 }
 
 /// Dispatches one webhook
+#[tracing::instrument(
+    skip_all,
+    fields(
+        org_id = org_id.0.as_str(),
+        endp_id = msg_task.endpoint_id.0.as_str(),
+        msg_id = msg_task.msg_id.0.as_str()
+    )
+)]
 async fn dispatch(
     WorkerContext {
         cfg,
@@ -345,6 +353,7 @@ fn bytes_to_string(bytes: bytes::Bytes) -> String {
 }
 
 /// Manages preparation and execution of a QueueTask type
+#[tracing::instrument(skip_all)]
 async fn process_task(worker_context: WorkerContext<'_>, queue_task: QueueTask) -> Result<()> {
     let WorkerContext { db, cache, .. }: WorkerContext<'_> = worker_context;
 
