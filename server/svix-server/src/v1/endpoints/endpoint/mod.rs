@@ -79,7 +79,7 @@ pub fn validate_url(val: &str) -> std::result::Result<(), ValidationError> {
     }
 }
 
-#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize, Validate, ModelIn)]
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Validate, ModelIn)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointIn {
     #[serde(default)]
@@ -137,7 +137,7 @@ impl ModelIn for EndpointIn {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, ModelOut)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ModelOut)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointOut {
     pub description: String,
@@ -176,7 +176,7 @@ impl From<endpoint::Model> for EndpointOut {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Validate, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Validate, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointSecretRotateIn {
     #[validate]
@@ -184,19 +184,19 @@ pub struct EndpointSecretRotateIn {
     key: Option<EndpointSecret>,
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointSecretOut {
     pub key: EndpointSecret,
 }
 
-#[derive(Clone, Debug, PartialEq, Validate, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Validate, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct RecoverIn {
     pub since: DateTime<Utc>,
 }
 
-#[derive(Clone, Debug, PartialEq, Validate, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Validate, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointHeadersIn {
     #[validate]
@@ -211,7 +211,7 @@ impl ModelIn for EndpointHeadersIn {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize, Default)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointHeadersOut {
     pub headers: HashMap<String, String>,
@@ -242,7 +242,7 @@ impl From<EndpointHeaders> for EndpointHeadersOut {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Validate, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Validate, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointHeadersPatchIn {
     #[validate]

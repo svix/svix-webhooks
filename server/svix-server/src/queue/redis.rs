@@ -609,19 +609,13 @@ pub mod tests {
     pub async fn get_pool(cfg: Configuration) -> RedisPool {
         match cfg.cache_type {
             CacheType::RedisCluster => {
-                let mgr = crate::redis::new_redis_pool_clustered(
+                crate::redis::new_redis_pool_clustered(
                     cfg.redis_dsn.as_ref().unwrap().as_str(),
                     &cfg,
                 )
-                .await;
-                mgr
+                .await
             }
-            _ => {
-                let mgr =
-                    crate::redis::new_redis_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg)
-                        .await;
-                mgr
-            }
+            _ => crate::redis::new_redis_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg).await,
         }
     }
 

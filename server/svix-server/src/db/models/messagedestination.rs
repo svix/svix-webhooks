@@ -7,7 +7,7 @@ use sea_orm::ActiveValue::Set;
 
 use crate::core::types::{BaseId, EndpointId, MessageEndpointId, MessageId, MessageStatus};
 
-#[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
+#[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(table_name = "messagedestination")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]

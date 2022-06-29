@@ -338,7 +338,7 @@ async fn dispatch(
 }
 
 fn bytes_to_string(bytes: bytes::Bytes) -> String {
-    match std::str::from_utf8(&bytes.to_vec()) {
+    match std::str::from_utf8(&bytes) {
         Ok(v) => v.to_owned(),
         Err(_) => base64::encode(&bytes),
     }

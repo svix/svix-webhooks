@@ -42,7 +42,7 @@ pub struct Permissions {
     pub app_id: Option<ApplicationId>,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum KeyType {
     Organization,
     Application,

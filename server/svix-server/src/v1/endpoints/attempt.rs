@@ -38,7 +38,7 @@ use validator::Validate;
 use crate::db::models::messageattempt;
 use crate::v1::utils::Pagination;
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, ModelOut)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ModelOut)]
 #[serde(rename_all = "camelCase")]
 pub struct MessageAttemptOut {
     pub response: String,
@@ -73,7 +73,7 @@ impl From<messageattempt::Model> for MessageAttemptOut {
 
 /// A model containing information on a given message plus additional fields on the last attempt for
 /// that message.
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AttemptedMessageOut {
     #[serde(flatten)]
@@ -429,7 +429,7 @@ async fn list_attempts_by_msg(
 
 /// A type combining information from [`messagedestination::Model`]s and [`endpoint::Model`]s to
 /// output information on attempted destinations
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MessageEndpointOut {
     #[serde(flatten)]

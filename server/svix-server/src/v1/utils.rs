@@ -74,7 +74,7 @@ impl Validate for PaginationLimit {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum ReversibleIterator<T: Validate> {
     Normal(T),
     Prev(T),

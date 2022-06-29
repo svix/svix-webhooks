@@ -49,7 +49,7 @@ pub fn validate_channels_msg(
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize, Validate, ModelIn)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Validate, ModelIn)]
 #[serde(rename_all = "camelCase")]
 pub struct MessageIn {
     #[validate]
@@ -82,7 +82,7 @@ impl ModelIn for MessageIn {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, ModelOut)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ModelOut)]
 #[serde(rename_all = "camelCase")]
 pub struct MessageOut {
     #[serde(rename = "eventId")]
