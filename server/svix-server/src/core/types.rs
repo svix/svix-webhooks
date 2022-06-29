@@ -330,7 +330,7 @@ macro_rules! create_all_id_types {
         }
 
         // Id or uid
-        #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+        #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
         pub struct $name_id_or_uid(pub String);
 
         impl From<$name_id_or_uid> for $name_uid {
@@ -410,7 +410,7 @@ impl Validate for EventTypeNameSet {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ExpiringSigningKeys(pub Vec<ExpiringSigningKey>);
 json_wrapper!(ExpiringSigningKeys);
 
@@ -419,7 +419,7 @@ impl ExpiringSigningKeys {
     pub const OLD_KEY_EXPIRY_HOURS: i64 = 24;
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct EndpointSecret(pub Vec<u8>);
 impl EndpointSecret {
     const PREFIX: &'static str = "whsec_";
@@ -519,7 +519,7 @@ impl ValueType for EndpointSecret {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ExpiringSigningKey {
     #[serde(rename = "signingKey")]
     pub key: EndpointSecret,
@@ -574,7 +574,7 @@ fn validate_header_key(k: &str, errors: &mut ValidationErrors) {
     })
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Default)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Default)]
 pub struct EndpointHeaders(pub HashMap<String, String>);
 json_wrapper!(EndpointHeaders);
 
@@ -606,7 +606,7 @@ impl Validate for EndpointHeaders {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Default)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Default)]
 pub struct EndpointHeadersPatch(pub HashMap<String, Option<String>>);
 json_wrapper!(EndpointHeadersPatch);
 
@@ -636,7 +636,7 @@ impl Validate for EndpointHeadersPatch {
 }
 
 #[repr(i16)]
-#[derive(Clone, Debug, Copy, PartialEq, IntoPrimitive, TryFromPrimitive)]
+#[derive(Clone, Debug, Copy, PartialEq, Eq, IntoPrimitive, TryFromPrimitive)]
 pub enum MessageAttemptTriggerType {
     Scheduled = 0,
     Manual = 1,
@@ -652,7 +652,7 @@ pub enum MessageStatus {
 }
 
 #[repr(i16)]
-#[derive(Clone, Debug, Copy, PartialEq, IntoPrimitive, TryFromPrimitive)]
+#[derive(Clone, Debug, Copy, PartialEq, Eq, IntoPrimitive, TryFromPrimitive)]
 pub enum StatusCodeClass {
     CodeNone = 0,
     Code1xx = 100,

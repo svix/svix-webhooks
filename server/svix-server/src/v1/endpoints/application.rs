@@ -29,7 +29,7 @@ use serde::{Deserialize, Serialize};
 use svix_server_derive::{ModelIn, ModelOut};
 use validator::Validate;
 
-#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize, Validate, ModelIn)]
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Validate, ModelIn)]
 #[serde(rename_all = "camelCase")]
 pub struct ApplicationIn {
     #[validate(
@@ -58,7 +58,7 @@ impl ModelIn for ApplicationIn {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, ModelOut)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ModelOut)]
 #[serde(rename_all = "camelCase")]
 pub struct ApplicationOut {
     // FIXME: Do we want to use serde(flatten) or just duplicate the keys?

@@ -9,7 +9,7 @@ use chrono::Utc;
 use sea_orm::ActiveValue::Set;
 use sea_orm::{entity::prelude::*, Condition};
 
-#[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
+#[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(table_name = "message")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]

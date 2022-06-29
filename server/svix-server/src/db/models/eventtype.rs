@@ -6,7 +6,7 @@ use chrono::Utc;
 use sea_orm::entity::prelude::*;
 use sea_orm::ActiveValue::Set;
 
-#[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
+#[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(table_name = "eventtype")]
 pub struct Model {
     pub created_at: DateTimeWithTimeZone,
