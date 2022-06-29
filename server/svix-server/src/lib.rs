@@ -38,14 +38,13 @@ pub mod redis;
 pub mod v1;
 pub mod worker;
 
-#[tracing::instrument(name = "app_start", level = "trace")]
+#[tracing::instrument(name = "app_start", level = "trace", skip_all)]
 pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
     run_with_prefix(None, cfg, listener).await
 }
 
 // Made public for the purpose of E2E testing in which a queue prefix is necessary to avoid tests
 // consuming from each others' queues
-#[tracing::instrument(level = "trace")]
 pub async fn run_with_prefix(
     prefix: Option<String>,
     cfg: Configuration,
@@ -102,7 +101,6 @@ pub async fn run_with_prefix(
         .layer(
             TraceLayer::new_for_http()
                 .make_span_with(AxumOtelSpanCreator)
-                .on_request(())
                 .on_response(AxumOtelOnResponse)
                 .on_failure(AxumOtelOnFailure),
         )
