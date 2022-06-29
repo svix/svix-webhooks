@@ -18,7 +18,10 @@ use tower_http::trace::TraceLayer;
 use crate::{
     cfg::Configuration,
     core::{
-        cache, idempotency::IdempotencyService, operational_webhooks::OperationalWebhookSenderInner,
+        cache,
+        idempotency::IdempotencyService,
+        operational_webhooks::OperationalWebhookSenderInner,
+        otel_spans::{AxumOtelOnFailure, AxumOtelOnResponse, AxumOtelSpanCreator},
     },
     db::init_db,
     expired_message_cleaner::expired_message_cleaner_loop,
@@ -35,6 +38,7 @@ pub mod redis;
 pub mod v1;
 pub mod worker;
 
+#[tracing::instrument(name = "app_start", level = "trace", skip_all)]
 pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
     run_with_prefix(None, cfg, listener).await
 }
@@ -94,7 +98,12 @@ pub async fn run_with_prefix(
                 .allow_methods(Any)
                 .allow_headers(Any),
         )
-        .layer(TraceLayer::new_for_http().on_request(()))
+        .layer(
+            TraceLayer::new_for_http()
+                .make_span_with(AxumOtelSpanCreator)
+                .on_response(AxumOtelOnResponse)
+                .on_failure(AxumOtelOnFailure),
+        )
         .layer(Extension(pool.clone()))
         .layer(Extension(queue_tx.clone()))
         .layer(Extension(cfg.clone()))

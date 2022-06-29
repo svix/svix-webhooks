@@ -19,6 +19,13 @@ log_level = "info"
 # The log format that all output will follow. Supported: default, json
 log_format = "default"
 
+# The OpenTelemetry address to send trace information to. Disabled when omitted/null.
+# opentelemetry_address = "http://localhost:4317"
+
+# The ratio at which to sample spans when sending to OpenTelemetry. When not given it defaults to
+# always sending. If the OpenTelemetry address is not set, this will do nothing.
+# opentelemetry_sample_ratio = 1.0
+
 # The wanted retry schedule in seconds. Each value is the time to wait between retries.
 retry_schedule = [5,300,1800,7200,18000,36000,36000]
 

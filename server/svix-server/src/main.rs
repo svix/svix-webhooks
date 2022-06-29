@@ -5,8 +5,12 @@
 #![forbid(unsafe_code)]
 
 use dotenv::dotenv;
+use opentelemetry::runtime::Tokio;
+use opentelemetry_otlp::WithExportConfig;
 use std::process::exit;
 use svix_server::core::types::OrganizationId;
+use tracing_subscriber::layer::SubscriberExt;
+use tracing_subscriber::util::SubscriberInitExt;
 use validator::Validate;
 
 use svix_server::core::security::{default_org_id, generate_org_token};
@@ -90,19 +94,58 @@ async fn main() {
         );
     }
 
+    let otel_layer = cfg.opentelemetry_address.as_ref().map(|addr| {
+        // Configure the OpenTelemetry tracing layer
+        opentelemetry::global::set_text_map_propagator(
+            opentelemetry::sdk::propagation::TraceContextPropagator::new(),
+        );
+
+        let exporter = opentelemetry_otlp::new_exporter()
+            .tonic()
+            .with_endpoint(addr);
+
+        let tracer = opentelemetry_otlp::new_pipeline()
+            .tracing()
+            .with_exporter(exporter)
+            .with_trace_config(
+                opentelemetry::sdk::trace::config()
+                    .with_sampler(
+                        cfg.opentelemetry_sample_ratio
+                            .map(opentelemetry::sdk::trace::Sampler::TraceIdRatioBased)
+                            .unwrap_or(opentelemetry::sdk::trace::Sampler::AlwaysOn),
+                    )
+                    .with_resource(opentelemetry::sdk::Resource::new(vec![
+                        opentelemetry::KeyValue::new("service.name", "svix_server"),
+                    ])),
+            )
+            .install_batch(Tokio)
+            .unwrap();
+        tracing_opentelemetry::layer().with_tracer(tracer)
+    });
+
+    // Then initialize logging with an additional layer priting to stdout. This additional layer is
+    // either formatted normally or in JSON format
     match cfg.log_format {
         cfg::LogFormat::Default => {
-            tracing_subscriber::fmt::init();
+            let stdout_layer = tracing_subscriber::fmt::layer();
+            tracing_subscriber::Registry::default()
+                .with(otel_layer)
+                .with(stdout_layer)
+                .with(tracing_subscriber::EnvFilter::from_default_env())
+                .init();
         }
         cfg::LogFormat::Json => {
             let fmt = tracing_subscriber::fmt::format().json().flatten_event(true);
             let json_fields = tracing_subscriber::fmt::format::JsonFields::new();
-            let filter = tracing_subscriber::EnvFilter::from_default_env();
 
-            tracing_subscriber::fmt()
+            let stdout_layer = tracing_subscriber::fmt::layer()
                 .event_format(fmt)
-                .fmt_fields(json_fields)
-                .with_env_filter(filter)
+                .fmt_fields(json_fields);
+
+            tracing_subscriber::Registry::default()
+                .with(otel_layer)
+                .with(stdout_layer)
+                .with(tracing_subscriber::EnvFilter::from_default_env())
                 .init();
         }
     };
@@ -152,4 +195,6 @@ async fn main() {
     }
 
     run(cfg, None).await;
+
+    opentelemetry::global::shutdown_tracer_provider();
 }

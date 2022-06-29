@@ -72,10 +72,17 @@ pub struct ConfigurationInner {
     /// The JWT secret for authentication - should be secret and securely generated
     #[serde(deserialize_with = "deserialize_jwt_secret")]
     pub jwt_secret: Keys,
+
     /// The log level to run the service with. Supported: info, debug, trace
     pub log_level: LogLevel,
     /// The log format that all output will follow. Supported: default, json
     pub log_format: LogFormat,
+    /// The OpenTelemetry address to send events to if given.
+    pub opentelemetry_address: Option<String>,
+    /// The ratio at which to sample spans when sending to OpenTelemetry. When not given it defaults
+    /// to always sending. If the OpenTelemetry address is not set, this will do nothing.
+    pub opentelemetry_sample_ratio: Option<f64>,
+
     /// The wanted retry schedule in seconds. Each value is the time to wait between retries.
     #[serde(deserialize_with = "deserialize_retry_schedule")]
     pub retry_schedule: Vec<Duration>,
