@@ -19,11 +19,16 @@ use crate::queue::{
 };
 use chrono::Utc;
 use futures::future;
+use rand::Rng;
 use reqwest::header::{HeaderMap, HeaderName};
 use sea_orm::{entity::prelude::*, ActiveValue::Set, DatabaseConnection, EntityTrait};
 use tokio::time::{sleep, Duration};
 
 use std::{iter, str::FromStr};
+
+// The maximum variation from the retry schedule when applying jitter to a resent webhook event in
+// percent deviation
+const JITTER_DELTA: f32 = 0.2;
 
 const USER_AGENT: &str = concat!("Svix-Webhooks/", env!("CARGO_PKG_VERSION"));
 /// Send the MessageAttemptFailingEvent after exceeding this number of failed attempts
@@ -272,7 +277,14 @@ async fn dispatch(
                     &msg_dest.id,
                     &endp.id
                 );
+
                 let duration = cfg.retry_schedule[attempt_count];
+
+                // Apply jitter with a maximum variation of JITTER_DELTA
+                let duration = rand::thread_rng().gen_range(
+                    duration.mul_f32(1.0 - JITTER_DELTA)..duration.mul_f32(1.0 + JITTER_DELTA),
+                );
+
                 let msg_dest = messagedestination::ActiveModel {
                     next_attempt: Set(Some(
                         (Utc::now()
