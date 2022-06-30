@@ -3,6 +3,7 @@
 
 use crate::cfg::Configuration;
 
+use crate::core::cryptography::Encryption;
 use crate::core::types::{
     ApplicationUid, EndpointSecretInternal, EndpointSecretType, MessageUid, OrganizationId,
 };
@@ -40,6 +41,7 @@ const OP_WEBHOOKS_SEND_FAILING_EVENT_AFTER: usize = 4;
 
 /// Sign a message
 fn sign_msg(
+    main_secret: &Encryption,
     timestamp: i64,
     body: &str,
     msg_id: &MessageId,
@@ -49,7 +51,7 @@ fn sign_msg(
     endpoint_signing_keys
         .iter()
         .map(|x| {
-            let sig = x.sign(to_sign.as_bytes());
+            let sig = x.sign(main_secret, to_sign.as_bytes());
             let version = match x.type_() {
                 EndpointSecretType::Hmac256 => "v1",
                 EndpointSecretType::Ed25519 => "v1a",
@@ -155,7 +157,13 @@ async fn dispatch(
             vec![&endp.key]
         };
 
-        let signatures = sign_msg(now.timestamp(), &body, &msg_task.msg_id, &keys);
+        let signatures = sign_msg(
+            &cfg.encryption,
+            now.timestamp(),
+            &body,
+            &msg_task.msg_id,
+            &keys,
+        );
 
         let mut headers = generate_msg_headers(
             now.timestamp(),
@@ -542,7 +550,7 @@ pub async fn worker_loop(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::security::AsymmetricKey;
+    use crate::core::cryptography::AsymmetricKey;
     use crate::core::types::{BaseId, EndpointSecret};
 
     use bytes::Bytes;
@@ -561,7 +569,13 @@ mod tests {
     fn mock_headers() -> (HeaderMap, MessageId) {
         let id = MessageId::new(None, None);
 
-        let signatures = sign_msg(TIMESTAMP, BODY, &id, ENDPOINT_SIGNING_KEYS);
+        let signatures = sign_msg(
+            &Encryption::new_noop(),
+            TIMESTAMP,
+            BODY,
+            &id,
+            ENDPOINT_SIGNING_KEYS,
+        );
 
         (
             generate_msg_headers(
@@ -589,7 +603,13 @@ mod tests {
         let (mut expected, id) = mock_headers();
         let _ = expected.insert("test_key", "value".parse().unwrap());
 
-        let signatures = sign_msg(TIMESTAMP, BODY, &id, ENDPOINT_SIGNING_KEYS);
+        let signatures = sign_msg(
+            &Encryption::new_noop(),
+            TIMESTAMP,
+            BODY,
+            &id,
+            ENDPOINT_SIGNING_KEYS,
+        );
 
         let actual = generate_msg_headers(
             TIMESTAMP,
@@ -609,14 +629,22 @@ mod tests {
     fn test_generate_msg_headers_with_signing_key() {
         let test_timestamp = 1614265330;
         let test_body = "{\"test\": 2432232314}";
-        let test_key = EndpointSecretInternal::from_endpoint_secret(EndpointSecret::Symmetric(
-            base64::decode("MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw").unwrap(),
-        ));
+        let test_key = EndpointSecretInternal::from_endpoint_secret(
+            EndpointSecret::Symmetric(base64::decode("MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw").unwrap()),
+            &Encryption::new_noop(),
+        )
+        .unwrap();
         let test_message_id = MessageId("msg_p5jXN8AQM9LWM0D4loKWxJek".to_owned());
 
         let expected_signature_str = "v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE=";
 
-        let signatures = sign_msg(test_timestamp, test_body, &test_message_id, &[&test_key]);
+        let signatures = sign_msg(
+            &Encryption::new_noop(),
+            test_timestamp,
+            test_body,
+            &test_message_id,
+            &[&test_key],
+        );
 
         let actual = generate_msg_headers(
             test_timestamp,
@@ -639,12 +667,20 @@ mod tests {
         let timestamp = 1614265330;
         let body = "{\"test\": 2432232314}";
         let asym_key = AsymmetricKey::from_base64("6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg==").unwrap();
-        let test_key = EndpointSecretInternal::from_endpoint_secret(EndpointSecret::Asymmetric(
-            asym_key.clone(),
-        ));
+        let test_key = EndpointSecretInternal::from_endpoint_secret(
+            EndpointSecret::Asymmetric(asym_key.clone()),
+            &Encryption::new_noop(),
+        )
+        .unwrap();
         let msg_id = MessageId("msg_p5jXN8AQM9LWM0D4loKWxJek".to_owned());
 
-        let signatures = sign_msg(timestamp, body, &msg_id, &[&test_key]);
+        let signatures = sign_msg(
+            &Encryption::new_noop(),
+            timestamp,
+            body,
+            &msg_id,
+            &[&test_key],
+        );
 
         let to_sign = format!("{}.{}.{}", msg_id, timestamp, body);
         assert!(signatures.starts_with("v1a,"));
