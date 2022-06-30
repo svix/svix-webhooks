@@ -11,7 +11,10 @@ use crate::{
     error::Result,
 };
 
+use self::pg::PgQueueOpts;
+
 pub mod memory;
+pub mod pg;
 pub mod redis;
 
 pub async fn new_pair(
@@ -35,6 +38,16 @@ pub async fn new_pair(
             redis::new_pair(pool, prefix).await
         }
         QueueType::Memory => memory::new_pair().await,
+        QueueType::PostgreSQL => {
+            let pool = crate::db::init_db(cfg).await;
+            pg::new_pair(PgQueueOpts {
+                pool,
+                main_queue_name: None,
+                delayed_queue_name: None,
+                prefix: None,
+            })
+            .await
+        }
     }
 }
 

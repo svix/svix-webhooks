@@ -158,6 +158,7 @@ pub enum QueueType {
     Memory,
     Redis,
     RedisCluster,
+    PostgreSQL,
 }
 
 #[derive(Clone, Debug, Deserialize)]
