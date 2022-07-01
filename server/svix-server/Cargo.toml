@@ -49,6 +49,7 @@ reqwest = { version = "0.11.9", features = ["json", "rustls-tls", "trust-dns"], 
 bb8 = "0.7.1"
 bb8-redis = "0.10.1"
 redis = { version = "0.21.5", features = ["tokio-comp", "tokio-native-tls-comp", "streams"] }
+openssl = { version = "0.10", features = ["vendored"] }
 thiserror = "1.0.30"
 bytes = "1.1.0"
 blake2 = "0.10.4"
