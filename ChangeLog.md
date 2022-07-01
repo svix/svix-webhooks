@@ -3,6 +3,15 @@
 ## Next
 * 
 
+## Version 0.61.0
+* Server: add OpenTelemetry support
+* Server: send operational ("incoming") webhooks about events happening on the server.
+* Server: enable TLS support for Redis
+* Server: use correct timestamp for attempt's id and created.
+* Server: add jitter to message retry times.
+* Server: fix endpoint spelling in some error messages and comments.
+* Server: add built in support for waiting for dependencies (database, redis) to be ready (instead of using a script).
+
 ## Version 0.60.0
 * Server: normalize health status output to be in lowercase.
 * Server: implement application portal endpoint and limited access tokens for it.
