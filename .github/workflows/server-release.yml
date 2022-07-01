@@ -3,10 +3,6 @@ name: Server Release
 on:
   release:
     types: [published]
-  pull_request:
-    paths:
-      - 'rust/**'
-      - '.github/workflows/server-release.yml'
 
 jobs:
   release:
