@@ -91,6 +91,8 @@ fn org_id_parser(s: &str) -> Result<OrganizationId, String> {
 
 #[tokio::main]
 async fn main() {
+    #[cfg(target_os = "x86_64-unknown-linux-musl")]
+    openssl_probe::init_ssl_cert_env_vars();
     dotenv().ok();
 
     let args = Args::parse();

@@ -64,6 +64,7 @@ rand = "0.8.5"
 
 [target.x86_64-unknown-linux-musl.dependencies]
 openssl = { version = "0.10", features = ["vendored"] }
+openssl-probe = "0.1.2"
 
 [dev-dependencies]
 anyhow = "1.0.56"

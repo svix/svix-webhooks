@@ -1,6 +1,8 @@
 # Base build
 FROM rust:1.60-slim-bullseye AS build
 
+RUN apt update && apt install -y build-essential checkinstall zlib1g-dev
+
 RUN set -ex ; \
         mkdir -p /app ;\
         useradd appuser ;\
