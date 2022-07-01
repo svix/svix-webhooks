@@ -6,6 +6,7 @@ use std::collections::{HashMap, HashSet};
 use chrono::{DateTime, Utc};
 use lazy_static::lazy_static;
 use num_enum::{IntoPrimitive, TryFromPrimitive};
+use rand::Rng;
 use regex::Regex;
 use sea_orm::{
     entity::prelude::*,
@@ -429,8 +430,7 @@ impl EndpointSecret {
     const KEY_SIZE: usize = 24;
 
     pub fn generate() -> crate::error::Result<Self> {
-        let mut buf = [0u8; Self::KEY_SIZE];
-        getrandom::getrandom(&mut buf)?;
+        let buf: [u8; Self::KEY_SIZE] = rand::thread_rng().gen();
         Ok(Self(buf.to_vec()))
     }
 }

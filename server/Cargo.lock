@@ -2895,7 +2895,6 @@ dependencies = [
  "enum_dispatch",
  "figment",
  "futures",
- "getrandom",
  "hmac-sha256",
  "http",
  "hyper",
