@@ -17,7 +17,6 @@ svix-server_derive = { path = "../svix-server_derive" }
 svix = "0.60"
 svix-ksuid = "^0.5.1"
 dotenv = "0.15.0"
-getrandom = "0.2.4"
 hmac-sha256 = "1"
 clap = { version = "3.2.1", features = ["derive"] }
 axum = { version = "0.5.1", features = ["headers"] }

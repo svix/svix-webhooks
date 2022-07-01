@@ -71,12 +71,6 @@ impl From<redis::RedisError> for Error {
     }
 }
 
-impl From<getrandom::Error> for Error {
-    fn from(err: getrandom::Error) -> Error {
-        Error::Generic(err.to_string())
-    }
-}
-
 impl From<DbErr> for Error {
     fn from(err: DbErr) -> Error {
         if let DbErr::Query(ref err_str) = err {
