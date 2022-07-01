@@ -57,6 +57,7 @@ pub struct MessageIn {
     pub uid: Option<MessageUid>,
     #[validate]
     pub event_type: EventTypeName,
+    #[serde(alias = "payload", alias = "data")]
     pub payload: serde_json::Value,
     #[validate(custom = "validate_channels_msg")]
     #[validate]
