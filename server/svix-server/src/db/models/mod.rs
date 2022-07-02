@@ -7,3 +7,4 @@ pub mod eventtype;
 pub mod message;
 pub mod messageattempt;
 pub mod messagedestination;
+pub mod pg_queue;
