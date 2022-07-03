@@ -111,37 +111,90 @@ impl Cache {
 #[async_trait]
 #[enum_dispatch(Cache)]
 pub trait CacheBehavior: Sync + Send {
+    // TODO: Reduce retry-related duplication
+    // TODO: Test retries
+    // TODO: Retry schedule constant
+    fn should_retry(&self, e: &Error) -> bool;
+
     async fn get<T: CacheValue>(&self, key: &T::Key) -> Result<Option<T>> {
-        self.get_raw(key.as_ref().as_bytes())
-            .await?
-            .map(|x| {
-                String::from_utf8(x)
-                    .map_err(|e| e.into())
-                    .and_then(|json| serde_json::from_str(&json).map_err(|e| e.into()))
-            })
-            .transpose()
+        let mut attempt = 1;
+        loop {
+            let out = self
+                .get_raw(key.as_ref().as_bytes())
+                .await?
+                .map(|x| {
+                    String::from_utf8(x)
+                        .map_err(|e| e.into())
+                        .and_then(|json| serde_json::from_str(&json).map_err(|e| e.into()))
+                })
+                .transpose();
+
+            match out {
+                Ok(_) => break out,
+                Err(ref e) => {
+                    if self.should_retry(e) && attempt < 3 {
+                        tokio::time::sleep(Duration::from_millis(20)).await;
+                        attempt += 1
+                    } else {
+                        break out;
+                    }
+                }
+            }
+        }
     }
 
     async fn get_raw(&self, key: &[u8]) -> Result<Option<Vec<u8>>>;
 
     async fn get_string<T: StringCacheValue>(&self, key: &T::Key) -> Result<Option<T>> {
-        self.get_raw(key.as_ref().as_bytes())
-            .await?
-            .map(|x| {
-                String::from_utf8(x)
-                    .map_err(|e| e.into())
-                    .and_then(|x| x.try_into().map_err(|_| Error::DeserializationOther))
-            })
-            .transpose()
+        let mut attempt = 1;
+        loop {
+            let out = self
+                .get_raw(key.as_ref().as_bytes())
+                .await?
+                .map(|x| {
+                    String::from_utf8(x)
+                        .map_err(|e| e.into())
+                        .and_then(|x| x.try_into().map_err(|_| Error::DeserializationOther))
+                })
+                .transpose();
+
+            match out {
+                Ok(_) => break out,
+                Err(ref e) => {
+                    if self.should_retry(e) && attempt < 3 {
+                        tokio::time::sleep(Duration::from_millis(20)).await;
+                        attempt += 1
+                    } else {
+                        break out;
+                    }
+                }
+            }
+        }
     }
 
     async fn set<T: CacheValue>(&self, key: &T::Key, value: &T, ttl: Duration) -> Result<()> {
-        self.set_raw(
-            key.as_ref().as_bytes(),
-            serde_json::to_string(value)?.as_bytes(),
-            ttl,
-        )
-        .await
+        let mut attempt = 1;
+        loop {
+            let out = self
+                .set_raw(
+                    key.as_ref().as_bytes(),
+                    serde_json::to_string(value)?.as_bytes(),
+                    ttl,
+                )
+                .await;
+
+            match out {
+                Ok(()) => break out,
+                Err(ref e) => {
+                    if self.should_retry(e) && attempt < 3 {
+                        tokio::time::sleep(Duration::from_millis(20)).await;
+                        attempt += 1;
+                    } else {
+                        break out;
+                    }
+                }
+            }
+        }
     }
 
     async fn set_raw(&self, key: &[u8], value: &[u8], ttl: Duration) -> Result<()>;
@@ -152,8 +205,24 @@ pub trait CacheBehavior: Sync + Send {
         value: &T,
         ttl: Duration,
     ) -> Result<()> {
-        self.set_raw(key.as_ref().as_bytes(), value.to_string().as_bytes(), ttl)
-            .await
+        let mut attempt = 1;
+        loop {
+            let out = self
+                .set_raw(key.as_ref().as_bytes(), value.to_string().as_bytes(), ttl)
+                .await;
+
+            match out {
+                Ok(()) => break out,
+                Err(ref e) => {
+                    if self.should_retry(e) && attempt < 3 {
+                        tokio::time::sleep(Duration::from_millis(20)).await;
+                        attempt += 1;
+                    } else {
+                        break out;
+                    }
+                }
+            }
+        }
     }
 
     async fn delete<T: CacheKey>(&self, key: &T) -> Result<()>;
@@ -164,12 +233,28 @@ pub trait CacheBehavior: Sync + Send {
         value: &T,
         ttl: Duration,
     ) -> Result<bool> {
-        self.set_raw_if_not_exists(
-            key.as_ref().as_bytes(),
-            serde_json::to_string(value)?.as_bytes(),
-            ttl,
-        )
-        .await
+        let mut attempt = 1;
+        loop {
+            let out = self
+                .set_raw_if_not_exists(
+                    key.as_ref().as_bytes(),
+                    serde_json::to_string(value)?.as_bytes(),
+                    ttl,
+                )
+                .await;
+
+            match out {
+                Ok(_) => break out,
+                Err(ref e) => {
+                    if self.should_retry(e) && attempt < 3 {
+                        tokio::time::sleep(Duration::from_millis(20)).await;
+                        attempt += 1;
+                    } else {
+                        break out;
+                    }
+                }
+            }
+        }
     }
 
     async fn set_raw_if_not_exists(&self, key: &[u8], value: &[u8], ttl: Duration) -> Result<bool>;
@@ -180,7 +265,23 @@ pub trait CacheBehavior: Sync + Send {
         value: &T,
         ttl: Duration,
     ) -> Result<bool> {
-        self.set_raw_if_not_exists(key.as_ref().as_bytes(), value.to_string().as_bytes(), ttl)
-            .await
+        let mut attempt = 1;
+        loop {
+            let out = self
+                .set_raw_if_not_exists(key.as_ref().as_bytes(), value.to_string().as_bytes(), ttl)
+                .await;
+
+            match out {
+                Ok(_) => break out,
+                Err(ref e) => {
+                    if self.should_retry(e) && attempt < 3 {
+                        tokio::time::sleep(Duration::from_millis(20)).await;
+                        attempt += 1;
+                    } else {
+                        break out;
+                    }
+                }
+            }
+        }
     }
 }
