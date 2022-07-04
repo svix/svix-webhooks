@@ -10,10 +10,11 @@ use std::iter;
 
 use super::{EndpointSecretOut, EndpointSecretRotateIn};
 use crate::{
+    cfg::{Configuration, DefaultSignatureType},
     core::{
         security::AuthenticatedApplication,
         types::{
-            ApplicationIdOrUid, EndpointIdOrUid, EndpointSecret, ExpiringSigningKey,
+            ApplicationIdOrUid, EndpointIdOrUid, EndpointSecretInternal, ExpiringSigningKey,
             ExpiringSigningKeys,
         },
     },
@@ -21,6 +22,13 @@ use crate::{
     error::{HttpError, Result},
     v1::utils::{EmptyResponse, ValidatedJson},
 };
+
+pub(super) fn generate_secret(sig_type: &DefaultSignatureType) -> Result<EndpointSecretInternal> {
+    match sig_type {
+        DefaultSignatureType::Hmac256 => EndpointSecretInternal::generate_symmetric(),
+        DefaultSignatureType::Ed25519 => EndpointSecretInternal::generate_asymmetric(),
+    }
+}
 
 pub(super) async fn get_endpoint_secret(
     Extension(ref db): Extension<DatabaseConnection>,
@@ -34,11 +42,14 @@ pub(super) async fn get_endpoint_secret(
         .one(db)
         .await?
         .ok_or_else(|| HttpError::not_found(None, None))?;
-    Ok(Json(EndpointSecretOut { key: endp.key }))
+    Ok(Json(EndpointSecretOut {
+        key: endp.key.into_endpoint_secret(),
+    }))
 }
 
 pub(super) async fn rotate_endpoint_secret(
     Extension(ref db): Extension<DatabaseConnection>,
+    Extension(cfg): Extension<Configuration>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
     ValidatedJson(data): ValidatedJson<EndpointSecretRotateIn>,
     AuthenticatedApplication {
@@ -75,9 +86,9 @@ pub(super) async fn rotate_endpoint_secret(
 
     let endp = endpoint::ActiveModel {
         key: Set(if let Some(key) = data.key {
-            key
+            EndpointSecretInternal::from_endpoint_secret(key)
         } else {
-            EndpointSecret::generate()?
+            generate_secret(&cfg.default_signature_type)?
         }),
 
         old_keys: Set(Some(ExpiringSigningKeys(

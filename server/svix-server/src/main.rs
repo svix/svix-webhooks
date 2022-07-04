@@ -8,7 +8,7 @@ use dotenv::dotenv;
 use opentelemetry::runtime::Tokio;
 use opentelemetry_otlp::WithExportConfig;
 use std::process::exit;
-use svix_server::core::types::OrganizationId;
+use svix_server::core::types::{EndpointSecretInternal, OrganizationId};
 use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::util::SubscriberInitExt;
 use validator::Validate;
@@ -54,6 +54,12 @@ enum Commands {
         #[clap(subcommand)]
         command: JwtCommands,
     },
+    /// Asymmetric Key utilities
+    #[clap()]
+    AsymmetricKey {
+        #[clap(subcommand)]
+        command: AsymmetricKeyCommands,
+    },
     /// Run database migrations and exit
     #[clap()]
     Migrate,
@@ -68,6 +74,13 @@ enum JwtCommands {
         /// Optional org_id to use when generating token (otherwise, default is used).
         org_id: Option<OrganizationId>,
     },
+}
+
+#[derive(Subcommand)]
+enum AsymmetricKeyCommands {
+    /// Generate a new asymmetric key
+    #[clap()]
+    Generate,
 }
 
 fn org_id_parser(s: &str) -> Result<OrganizationId, String> {
@@ -170,6 +183,16 @@ async fn main() {
             println!("Token (Bearer): {}", token);
             exit(0);
         }
+        Some(Commands::AsymmetricKey { command }) => match command {
+            AsymmetricKeyCommands::Generate => {
+                let secret = EndpointSecretInternal::generate_asymmetric()
+                    .unwrap()
+                    .into_endpoint_secret();
+                println!("Secret key: {}", secret.serialize_secret_key());
+                println!("Public key: {}", secret.serialize_public_key());
+                exit(0);
+            }
+        },
         None => {}
     };
 

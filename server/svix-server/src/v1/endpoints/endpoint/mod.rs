@@ -9,8 +9,8 @@ use crate::{
     core::{
         security::AuthenticatedApplication,
         types::{
-            ApplicationIdOrUid, BaseId, EndpointId, EndpointIdOrUid, EndpointUid, EventChannelSet,
-            EventTypeNameSet, MessageEndpointId, MessageStatus,
+            ApplicationIdOrUid, BaseId, EndpointId, EndpointIdOrUid, EndpointSecretInternal,
+            EndpointUid, EventChannelSet, EventTypeNameSet, MessageEndpointId, MessageStatus,
         },
     },
     db::models::messagedestination,
@@ -132,7 +132,7 @@ impl ModelIn for EndpointIn {
         model.event_types_ids = Set(self.event_types_ids);
         model.channels = Set(self.channels);
         if let Some(key) = self.key {
-            model.key = Set(key);
+            model.key = Set(EndpointSecretInternal::from_endpoint_secret(key));
         }
     }
 }

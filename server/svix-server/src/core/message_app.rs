@@ -12,7 +12,7 @@ use crate::{
     core::{
         cache::{kv_def, Cache, CacheBehavior, CacheKey, CacheValue},
         types::{
-            ApplicationId, ApplicationUid, EndpointHeaders, EndpointId, EndpointSecret,
+            ApplicationId, ApplicationUid, EndpointHeaders, EndpointId, EndpointSecretInternal,
             EventChannelSet, EventTypeNameSet, ExpiringSigningKeys, MessageAttemptTriggerType,
             OrganizationId,
         },
@@ -145,7 +145,7 @@ impl CreateMessageApp {
 pub struct CreateMessageEndpoint {
     pub id: EndpointId,
     pub url: String,
-    pub key: EndpointSecret,
+    pub key: EndpointSecretInternal,
     pub old_signing_keys: Option<ExpiringSigningKeys>,
     pub event_types_ids: Option<EventTypeNameSet>,
     pub channels: Option<EventChannelSet>,

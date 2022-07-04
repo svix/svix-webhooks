@@ -73,6 +73,11 @@ pub struct ConfigurationInner {
     #[serde(deserialize_with = "deserialize_jwt_secret")]
     pub jwt_secret: Keys,
 
+    /// This determines the type of key that is generated for endpoint secrets by default (when none is set).
+    /// Supported: hmac256 (default), ed25519
+    /// Note: this does not affect existing keys, which will continue signing based on the type they were created with.
+    pub default_signature_type: DefaultSignatureType,
+
     /// The log level to run the service with. Supported: info, debug, trace
     pub log_level: LogLevel,
     /// The log format that all output will follow. Supported: default, json
@@ -174,6 +179,13 @@ pub enum CacheType {
     Redis,
     RedisCluster,
     None,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum DefaultSignatureType {
+    Hmac256,
+    Ed25519,
 }
 
 impl ToString for LogLevel {

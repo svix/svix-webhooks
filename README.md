@@ -238,6 +238,18 @@ There are two configuration variables `db_pool_max_size` and `redis_pool_max_siz
 
 They default to a max size of 20, but higher values can significantly increase performance if your database can handle it.
 
+
+### Webhook signature scheme (symmetric vs asymmetric)
+
+To ensure the security and integrity of messages, Svix signs all webhook messages prior to sending.
+Svix supports two types of signature schemes: symmetric (pre-shared key) and asymmetric (public key).
+
+Symmetric signatures are significantly faster (~50x for signing, and ~160x for verifying), and are much simpler (which makes verification easier for your customers), though they require the usage of a pre-shared key per endpoint (endpoint secret) in order to work. Asymmetric signatures on the other hand only require sharing a public key with your customers (not secret).
+
+Because of the above, using symmetric keys is both recommended and the Svix default. Using them is documented in the [verifying signatures section of the docs](https://docs.svix.com/receiving/verifying-payloads/how-manual).
+
+However, in some scenarios it may be beneficial to use asymmetric signatures, which is why they too are supported. For more information please refer to the [asymmetric signatures section](#asymmetric-signatures) below.
+
 ## Authentication
 
 Use valid JWTs generated with the correct secret as `Bearer`.
@@ -277,6 +289,38 @@ To turn operational webhooks on, set the `operational_webhook_address` config to
 Once those are set, create an `Application` with the `uid` set to the `org_id` you're interested in, and add `Endpoint`s for all of the events you'd like to subscribe to.
 
 For example, for the default account, just create an app with the `uid` set to `org_23rb8YdGqMT0qIzpgGwdXfHirMu`.
+
+## Asymmetric signatures
+
+As mentioned above, symmetric signatures are recommended. However, please read the following instructions on setting up asymmetric signatures if you have determined that asymmetric signatures are what you need.
+
+### Configuring the keys
+
+By default, the Svix server generates symmetric secrets for endpoints, which in turn means messages will be signed with symmetric keys. To change this default, set the `default_signature_type` config to `ed25519` as follows:
+
+```toml
+default_signature_type = "ed25519"
+```
+
+Additionally, no matter what the default is set to, you can still override it by explicitly setting a key on an endpoint.
+To set a symmetric key, set the endpoint secret to a secret prefixed with `whsec_`, such as `whsec_51TKyHBy5KFY1Ab98GQ8V60BkWnejkWy`.
+To set an asymmetric key, set the endpoint secret to a **valid** ed25519 base64 encoded private key prefixed with `whsk_` such as: `whsk_6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg==`.
+
+Please note, that the expected private key structure is: `whsk_${base64(private_key + public_key)}`.
+
+For testing purposes, new asymmetric key pairs can be generated using the following command:
+```bash
+$ svix-server asymmetric-key generate
+
+Secret key: whsk_6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg==
+Public key: whpk_1SiA4o9hyqTCpIqC5V9HUakiiaeACeqfZTInDBbOir4=
+```
+
+### Signature scheme
+
+Svix uses `ed25519(m)` for signing the webhook messages, and it constructs `m` the same way as it does for the symmetric signatures.
+
+When verifying the message you should also ensure that the timestamp is recent enough in order to limit the potential of replay attacks as noted in [the symmetric verification docs](https://docs.svix.com/receiving/verifying-payloads/why).
 
 
 # Differences to the Svix hosted service

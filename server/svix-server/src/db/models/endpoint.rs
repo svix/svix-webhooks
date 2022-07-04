@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 use crate::core::types::{
-    ApplicationId, BaseId, EndpointHeaders, EndpointId, EndpointIdOrUid, EndpointSecret,
+    ApplicationId, BaseId, EndpointHeaders, EndpointId, EndpointIdOrUid, EndpointSecretInternal,
     EndpointUid, EventChannelSet, EventTypeNameSet, ExpiringSigningKeys,
 };
 use chrono::Utc;
@@ -17,7 +17,7 @@ pub struct Model {
     pub created_at: DateTimeWithTimeZone,
     pub updated_at: DateTimeWithTimeZone,
     pub app_id: ApplicationId,
-    pub key: EndpointSecret,
+    pub key: EndpointSecretInternal,
     pub url: String,
     pub description: String,
     pub event_types_ids: Option<EventTypeNameSet>,
