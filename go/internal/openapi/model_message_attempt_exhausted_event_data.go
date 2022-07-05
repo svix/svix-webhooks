@@ -18,9 +18,11 @@ import (
 type MessageAttemptExhaustedEventData struct {
 	AppId string `json:"appId"`
 	// Optional unique identifier for the application
-	AppUid *string `json:"appUid,omitempty"`
+	AppUid NullableString `json:"appUid,omitempty"`
 	EndpointId string `json:"endpointId"`
 	LastAttempt MessageAttemptFailedData `json:"lastAttempt"`
+	// Optional unique identifier for the message
+	MsgEventId NullableString `json:"msgEventId,omitempty"`
 	MsgId string `json:"msgId"`
 }
 
@@ -69,36 +71,46 @@ func (o *MessageAttemptExhaustedEventData) SetAppId(v string) {
 	o.AppId = v
 }
 
-// GetAppUid returns the AppUid field value if set, zero value otherwise.
+// GetAppUid returns the AppUid field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *MessageAttemptExhaustedEventData) GetAppUid() string {
-	if o == nil || o.AppUid == nil {
+	if o == nil || o.AppUid.Get() == nil {
 		var ret string
 		return ret
 	}
-	return *o.AppUid
+	return *o.AppUid.Get()
 }
 
 // GetAppUidOk returns a tuple with the AppUid field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *MessageAttemptExhaustedEventData) GetAppUidOk() (*string, bool) {
-	if o == nil || o.AppUid == nil {
+	if o == nil  {
 		return nil, false
 	}
-	return o.AppUid, true
+	return o.AppUid.Get(), o.AppUid.IsSet()
 }
 
 // HasAppUid returns a boolean if a field has been set.
 func (o *MessageAttemptExhaustedEventData) HasAppUid() bool {
-	if o != nil && o.AppUid != nil {
+	if o != nil && o.AppUid.IsSet() {
 		return true
 	}
 
 	return false
 }
 
-// SetAppUid gets a reference to the given string and assigns it to the AppUid field.
+// SetAppUid gets a reference to the given NullableString and assigns it to the AppUid field.
 func (o *MessageAttemptExhaustedEventData) SetAppUid(v string) {
-	o.AppUid = &v
+	o.AppUid.Set(&v)
+}
+// SetAppUidNil sets the value for AppUid to be an explicit nil
+func (o *MessageAttemptExhaustedEventData) SetAppUidNil() {
+	o.AppUid.Set(nil)
+}
+
+// UnsetAppUid ensures that no value is present for AppUid, not even an explicit nil
+func (o *MessageAttemptExhaustedEventData) UnsetAppUid() {
+	o.AppUid.Unset()
 }
 
 // GetEndpointId returns the EndpointId field value
@@ -149,6 +161,48 @@ func (o *MessageAttemptExhaustedEventData) SetLastAttempt(v MessageAttemptFailed
 	o.LastAttempt = v
 }
 
+// GetMsgEventId returns the MsgEventId field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *MessageAttemptExhaustedEventData) GetMsgEventId() string {
+	if o == nil || o.MsgEventId.Get() == nil {
+		var ret string
+		return ret
+	}
+	return *o.MsgEventId.Get()
+}
+
+// GetMsgEventIdOk returns a tuple with the MsgEventId field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *MessageAttemptExhaustedEventData) GetMsgEventIdOk() (*string, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return o.MsgEventId.Get(), o.MsgEventId.IsSet()
+}
+
+// HasMsgEventId returns a boolean if a field has been set.
+func (o *MessageAttemptExhaustedEventData) HasMsgEventId() bool {
+	if o != nil && o.MsgEventId.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetMsgEventId gets a reference to the given NullableString and assigns it to the MsgEventId field.
+func (o *MessageAttemptExhaustedEventData) SetMsgEventId(v string) {
+	o.MsgEventId.Set(&v)
+}
+// SetMsgEventIdNil sets the value for MsgEventId to be an explicit nil
+func (o *MessageAttemptExhaustedEventData) SetMsgEventIdNil() {
+	o.MsgEventId.Set(nil)
+}
+
+// UnsetMsgEventId ensures that no value is present for MsgEventId, not even an explicit nil
+func (o *MessageAttemptExhaustedEventData) UnsetMsgEventId() {
+	o.MsgEventId.Unset()
+}
+
 // GetMsgId returns the MsgId field value
 func (o *MessageAttemptExhaustedEventData) GetMsgId() string {
 	if o == nil {
@@ -178,14 +232,17 @@ func (o MessageAttemptExhaustedEventData) MarshalJSON() ([]byte, error) {
 	if true {
 		toSerialize["appId"] = o.AppId
 	}
-	if o.AppUid != nil {
-		toSerialize["appUid"] = o.AppUid
+	if o.AppUid.IsSet() {
+		toSerialize["appUid"] = o.AppUid.Get()
 	}
 	if true {
 		toSerialize["endpointId"] = o.EndpointId
 	}
 	if true {
 		toSerialize["lastAttempt"] = o.LastAttempt
+	}
+	if o.MsgEventId.IsSet() {
+		toSerialize["msgEventId"] = o.MsgEventId.Get()
 	}
 	if true {
 		toSerialize["msgId"] = o.MsgId

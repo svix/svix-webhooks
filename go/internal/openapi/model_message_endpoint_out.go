@@ -18,17 +18,17 @@ import (
 // MessageEndpointOut struct for MessageEndpointOut
 type MessageEndpointOut struct {
 	// List of message channels this endpoint listens to (omit for all)
-	Channels *[]string `json:"channels,omitempty"`
+	Channels []string `json:"channels,omitempty"`
 	CreatedAt time.Time `json:"createdAt"`
 	Description *string `json:"description,omitempty"`
 	Disabled *bool `json:"disabled,omitempty"`
-	FilterTypes *[]string `json:"filterTypes,omitempty"`
+	FilterTypes []string `json:"filterTypes,omitempty"`
 	Id string `json:"id"`
-	NextAttempt *time.Time `json:"nextAttempt,omitempty"`
-	RateLimit *int32 `json:"rateLimit,omitempty"`
+	NextAttempt NullableTime `json:"nextAttempt,omitempty"`
+	RateLimit NullableInt32 `json:"rateLimit,omitempty"`
 	Status MessageStatus `json:"status"`
 	// Optional unique identifier for the endpoint
-	Uid *string `json:"uid,omitempty"`
+	Uid NullableString `json:"uid,omitempty"`
 	Url string `json:"url"`
 	Version int32 `json:"version"`
 }
@@ -63,22 +63,23 @@ func NewMessageEndpointOutWithDefaults() *MessageEndpointOut {
 	return &this
 }
 
-// GetChannels returns the Channels field value if set, zero value otherwise.
+// GetChannels returns the Channels field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *MessageEndpointOut) GetChannels() []string {
-	if o == nil || o.Channels == nil {
+	if o == nil  {
 		var ret []string
 		return ret
 	}
-	return *o.Channels
+	return o.Channels
 }
 
 // GetChannelsOk returns a tuple with the Channels field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *MessageEndpointOut) GetChannelsOk() (*[]string, bool) {
 	if o == nil || o.Channels == nil {
 		return nil, false
 	}
-	return o.Channels, true
+	return &o.Channels, true
 }
 
 // HasChannels returns a boolean if a field has been set.
@@ -92,7 +93,7 @@ func (o *MessageEndpointOut) HasChannels() bool {
 
 // SetChannels gets a reference to the given []string and assigns it to the Channels field.
 func (o *MessageEndpointOut) SetChannels(v []string) {
-	o.Channels = &v
+	o.Channels = v
 }
 
 // GetCreatedAt returns the CreatedAt field value
@@ -183,22 +184,23 @@ func (o *MessageEndpointOut) SetDisabled(v bool) {
 	o.Disabled = &v
 }
 
-// GetFilterTypes returns the FilterTypes field value if set, zero value otherwise.
+// GetFilterTypes returns the FilterTypes field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *MessageEndpointOut) GetFilterTypes() []string {
-	if o == nil || o.FilterTypes == nil {
+	if o == nil  {
 		var ret []string
 		return ret
 	}
-	return *o.FilterTypes
+	return o.FilterTypes
 }
 
 // GetFilterTypesOk returns a tuple with the FilterTypes field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *MessageEndpointOut) GetFilterTypesOk() (*[]string, bool) {
 	if o == nil || o.FilterTypes == nil {
 		return nil, false
 	}
-	return o.FilterTypes, true
+	return &o.FilterTypes, true
 }
 
 // HasFilterTypes returns a boolean if a field has been set.
@@ -212,7 +214,7 @@ func (o *MessageEndpointOut) HasFilterTypes() bool {
 
 // SetFilterTypes gets a reference to the given []string and assigns it to the FilterTypes field.
 func (o *MessageEndpointOut) SetFilterTypes(v []string) {
-	o.FilterTypes = &v
+	o.FilterTypes = v
 }
 
 // GetId returns the Id field value
@@ -239,68 +241,88 @@ func (o *MessageEndpointOut) SetId(v string) {
 	o.Id = v
 }
 
-// GetNextAttempt returns the NextAttempt field value if set, zero value otherwise.
+// GetNextAttempt returns the NextAttempt field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *MessageEndpointOut) GetNextAttempt() time.Time {
-	if o == nil || o.NextAttempt == nil {
+	if o == nil || o.NextAttempt.Get() == nil {
 		var ret time.Time
 		return ret
 	}
-	return *o.NextAttempt
+	return *o.NextAttempt.Get()
 }
 
 // GetNextAttemptOk returns a tuple with the NextAttempt field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *MessageEndpointOut) GetNextAttemptOk() (*time.Time, bool) {
-	if o == nil || o.NextAttempt == nil {
+	if o == nil  {
 		return nil, false
 	}
-	return o.NextAttempt, true
+	return o.NextAttempt.Get(), o.NextAttempt.IsSet()
 }
 
 // HasNextAttempt returns a boolean if a field has been set.
 func (o *MessageEndpointOut) HasNextAttempt() bool {
-	if o != nil && o.NextAttempt != nil {
+	if o != nil && o.NextAttempt.IsSet() {
 		return true
 	}
 
 	return false
 }
 
-// SetNextAttempt gets a reference to the given time.Time and assigns it to the NextAttempt field.
+// SetNextAttempt gets a reference to the given NullableTime and assigns it to the NextAttempt field.
 func (o *MessageEndpointOut) SetNextAttempt(v time.Time) {
-	o.NextAttempt = &v
+	o.NextAttempt.Set(&v)
+}
+// SetNextAttemptNil sets the value for NextAttempt to be an explicit nil
+func (o *MessageEndpointOut) SetNextAttemptNil() {
+	o.NextAttempt.Set(nil)
 }
 
-// GetRateLimit returns the RateLimit field value if set, zero value otherwise.
+// UnsetNextAttempt ensures that no value is present for NextAttempt, not even an explicit nil
+func (o *MessageEndpointOut) UnsetNextAttempt() {
+	o.NextAttempt.Unset()
+}
+
+// GetRateLimit returns the RateLimit field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *MessageEndpointOut) GetRateLimit() int32 {
-	if o == nil || o.RateLimit == nil {
+	if o == nil || o.RateLimit.Get() == nil {
 		var ret int32
 		return ret
 	}
-	return *o.RateLimit
+	return *o.RateLimit.Get()
 }
 
 // GetRateLimitOk returns a tuple with the RateLimit field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *MessageEndpointOut) GetRateLimitOk() (*int32, bool) {
-	if o == nil || o.RateLimit == nil {
+	if o == nil  {
 		return nil, false
 	}
-	return o.RateLimit, true
+	return o.RateLimit.Get(), o.RateLimit.IsSet()
 }
 
 // HasRateLimit returns a boolean if a field has been set.
 func (o *MessageEndpointOut) HasRateLimit() bool {
-	if o != nil && o.RateLimit != nil {
+	if o != nil && o.RateLimit.IsSet() {
 		return true
 	}
 
 	return false
 }
 
-// SetRateLimit gets a reference to the given int32 and assigns it to the RateLimit field.
+// SetRateLimit gets a reference to the given NullableInt32 and assigns it to the RateLimit field.
 func (o *MessageEndpointOut) SetRateLimit(v int32) {
-	o.RateLimit = &v
+	o.RateLimit.Set(&v)
+}
+// SetRateLimitNil sets the value for RateLimit to be an explicit nil
+func (o *MessageEndpointOut) SetRateLimitNil() {
+	o.RateLimit.Set(nil)
+}
+
+// UnsetRateLimit ensures that no value is present for RateLimit, not even an explicit nil
+func (o *MessageEndpointOut) UnsetRateLimit() {
+	o.RateLimit.Unset()
 }
 
 // GetStatus returns the Status field value
@@ -327,36 +349,46 @@ func (o *MessageEndpointOut) SetStatus(v MessageStatus) {
 	o.Status = v
 }
 
-// GetUid returns the Uid field value if set, zero value otherwise.
+// GetUid returns the Uid field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *MessageEndpointOut) GetUid() string {
-	if o == nil || o.Uid == nil {
+	if o == nil || o.Uid.Get() == nil {
 		var ret string
 		return ret
 	}
-	return *o.Uid
+	return *o.Uid.Get()
 }
 
 // GetUidOk returns a tuple with the Uid field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *MessageEndpointOut) GetUidOk() (*string, bool) {
-	if o == nil || o.Uid == nil {
+	if o == nil  {
 		return nil, false
 	}
-	return o.Uid, true
+	return o.Uid.Get(), o.Uid.IsSet()
 }
 
 // HasUid returns a boolean if a field has been set.
 func (o *MessageEndpointOut) HasUid() bool {
-	if o != nil && o.Uid != nil {
+	if o != nil && o.Uid.IsSet() {
 		return true
 	}
 
 	return false
 }
 
-// SetUid gets a reference to the given string and assigns it to the Uid field.
+// SetUid gets a reference to the given NullableString and assigns it to the Uid field.
 func (o *MessageEndpointOut) SetUid(v string) {
-	o.Uid = &v
+	o.Uid.Set(&v)
+}
+// SetUidNil sets the value for Uid to be an explicit nil
+func (o *MessageEndpointOut) SetUidNil() {
+	o.Uid.Set(nil)
+}
+
+// UnsetUid ensures that no value is present for Uid, not even an explicit nil
+func (o *MessageEndpointOut) UnsetUid() {
+	o.Uid.Unset()
 }
 
 // GetUrl returns the Url field value
@@ -427,17 +459,17 @@ func (o MessageEndpointOut) MarshalJSON() ([]byte, error) {
 	if true {
 		toSerialize["id"] = o.Id
 	}
-	if o.NextAttempt != nil {
-		toSerialize["nextAttempt"] = o.NextAttempt
+	if o.NextAttempt.IsSet() {
+		toSerialize["nextAttempt"] = o.NextAttempt.Get()
 	}
-	if o.RateLimit != nil {
-		toSerialize["rateLimit"] = o.RateLimit
+	if o.RateLimit.IsSet() {
+		toSerialize["rateLimit"] = o.RateLimit.Get()
 	}
 	if true {
 		toSerialize["status"] = o.Status
 	}
-	if o.Uid != nil {
-		toSerialize["uid"] = o.Uid
+	if o.Uid.IsSet() {
+		toSerialize["uid"] = o.Uid.Get()
 	}
 	if true {
 		toSerialize["url"] = o.Url

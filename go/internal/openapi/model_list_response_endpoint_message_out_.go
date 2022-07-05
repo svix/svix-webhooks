@@ -18,8 +18,8 @@ import (
 type ListResponseEndpointMessageOut struct {
 	Data []EndpointMessageOut `json:"data"`
 	Done bool `json:"done"`
-	Iterator *string `json:"iterator,omitempty"`
-	PrevIterator *string `json:"prevIterator,omitempty"`
+	Iterator NullableString `json:"iterator,omitempty"`
+	PrevIterator NullableString `json:"prevIterator,omitempty"`
 }
 
 // NewListResponseEndpointMessageOut instantiates a new ListResponseEndpointMessageOut object
@@ -89,68 +89,88 @@ func (o *ListResponseEndpointMessageOut) SetDone(v bool) {
 	o.Done = v
 }
 
-// GetIterator returns the Iterator field value if set, zero value otherwise.
+// GetIterator returns the Iterator field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *ListResponseEndpointMessageOut) GetIterator() string {
-	if o == nil || o.Iterator == nil {
+	if o == nil || o.Iterator.Get() == nil {
 		var ret string
 		return ret
 	}
-	return *o.Iterator
+	return *o.Iterator.Get()
 }
 
 // GetIteratorOk returns a tuple with the Iterator field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ListResponseEndpointMessageOut) GetIteratorOk() (*string, bool) {
-	if o == nil || o.Iterator == nil {
+	if o == nil  {
 		return nil, false
 	}
-	return o.Iterator, true
+	return o.Iterator.Get(), o.Iterator.IsSet()
 }
 
 // HasIterator returns a boolean if a field has been set.
 func (o *ListResponseEndpointMessageOut) HasIterator() bool {
-	if o != nil && o.Iterator != nil {
+	if o != nil && o.Iterator.IsSet() {
 		return true
 	}
 
 	return false
 }
 
-// SetIterator gets a reference to the given string and assigns it to the Iterator field.
+// SetIterator gets a reference to the given NullableString and assigns it to the Iterator field.
 func (o *ListResponseEndpointMessageOut) SetIterator(v string) {
-	o.Iterator = &v
+	o.Iterator.Set(&v)
+}
+// SetIteratorNil sets the value for Iterator to be an explicit nil
+func (o *ListResponseEndpointMessageOut) SetIteratorNil() {
+	o.Iterator.Set(nil)
 }
 
-// GetPrevIterator returns the PrevIterator field value if set, zero value otherwise.
+// UnsetIterator ensures that no value is present for Iterator, not even an explicit nil
+func (o *ListResponseEndpointMessageOut) UnsetIterator() {
+	o.Iterator.Unset()
+}
+
+// GetPrevIterator returns the PrevIterator field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *ListResponseEndpointMessageOut) GetPrevIterator() string {
-	if o == nil || o.PrevIterator == nil {
+	if o == nil || o.PrevIterator.Get() == nil {
 		var ret string
 		return ret
 	}
-	return *o.PrevIterator
+	return *o.PrevIterator.Get()
 }
 
 // GetPrevIteratorOk returns a tuple with the PrevIterator field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ListResponseEndpointMessageOut) GetPrevIteratorOk() (*string, bool) {
-	if o == nil || o.PrevIterator == nil {
+	if o == nil  {
 		return nil, false
 	}
-	return o.PrevIterator, true
+	return o.PrevIterator.Get(), o.PrevIterator.IsSet()
 }
 
 // HasPrevIterator returns a boolean if a field has been set.
 func (o *ListResponseEndpointMessageOut) HasPrevIterator() bool {
-	if o != nil && o.PrevIterator != nil {
+	if o != nil && o.PrevIterator.IsSet() {
 		return true
 	}
 
 	return false
 }
 
-// SetPrevIterator gets a reference to the given string and assigns it to the PrevIterator field.
+// SetPrevIterator gets a reference to the given NullableString and assigns it to the PrevIterator field.
 func (o *ListResponseEndpointMessageOut) SetPrevIterator(v string) {
-	o.PrevIterator = &v
+	o.PrevIterator.Set(&v)
+}
+// SetPrevIteratorNil sets the value for PrevIterator to be an explicit nil
+func (o *ListResponseEndpointMessageOut) SetPrevIteratorNil() {
+	o.PrevIterator.Set(nil)
+}
+
+// UnsetPrevIterator ensures that no value is present for PrevIterator, not even an explicit nil
+func (o *ListResponseEndpointMessageOut) UnsetPrevIterator() {
+	o.PrevIterator.Unset()
 }
 
 func (o ListResponseEndpointMessageOut) MarshalJSON() ([]byte, error) {
@@ -161,11 +181,11 @@ func (o ListResponseEndpointMessageOut) MarshalJSON() ([]byte, error) {
 	if true {
 		toSerialize["done"] = o.Done
 	}
-	if o.Iterator != nil {
-		toSerialize["iterator"] = o.Iterator
+	if o.Iterator.IsSet() {
+		toSerialize["iterator"] = o.Iterator.Get()
 	}
-	if o.PrevIterator != nil {
-		toSerialize["prevIterator"] = o.PrevIterator
+	if o.PrevIterator.IsSet() {
+		toSerialize["prevIterator"] = o.PrevIterator.Get()
 	}
 	return json.Marshal(toSerialize)
 }

@@ -18,7 +18,7 @@ import (
 type ListResponseEventTypeOut struct {
 	Data []EventTypeOut `json:"data"`
 	Done bool `json:"done"`
-	Iterator *string `json:"iterator,omitempty"`
+	Iterator NullableString `json:"iterator,omitempty"`
 }
 
 // NewListResponseEventTypeOut instantiates a new ListResponseEventTypeOut object
@@ -88,36 +88,46 @@ func (o *ListResponseEventTypeOut) SetDone(v bool) {
 	o.Done = v
 }
 
-// GetIterator returns the Iterator field value if set, zero value otherwise.
+// GetIterator returns the Iterator field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *ListResponseEventTypeOut) GetIterator() string {
-	if o == nil || o.Iterator == nil {
+	if o == nil || o.Iterator.Get() == nil {
 		var ret string
 		return ret
 	}
-	return *o.Iterator
+	return *o.Iterator.Get()
 }
 
 // GetIteratorOk returns a tuple with the Iterator field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ListResponseEventTypeOut) GetIteratorOk() (*string, bool) {
-	if o == nil || o.Iterator == nil {
+	if o == nil  {
 		return nil, false
 	}
-	return o.Iterator, true
+	return o.Iterator.Get(), o.Iterator.IsSet()
 }
 
 // HasIterator returns a boolean if a field has been set.
 func (o *ListResponseEventTypeOut) HasIterator() bool {
-	if o != nil && o.Iterator != nil {
+	if o != nil && o.Iterator.IsSet() {
 		return true
 	}
 
 	return false
 }
 
-// SetIterator gets a reference to the given string and assigns it to the Iterator field.
+// SetIterator gets a reference to the given NullableString and assigns it to the Iterator field.
 func (o *ListResponseEventTypeOut) SetIterator(v string) {
-	o.Iterator = &v
+	o.Iterator.Set(&v)
+}
+// SetIteratorNil sets the value for Iterator to be an explicit nil
+func (o *ListResponseEventTypeOut) SetIteratorNil() {
+	o.Iterator.Set(nil)
+}
+
+// UnsetIterator ensures that no value is present for Iterator, not even an explicit nil
+func (o *ListResponseEventTypeOut) UnsetIterator() {
+	o.Iterator.Unset()
 }
 
 func (o ListResponseEventTypeOut) MarshalJSON() ([]byte, error) {
@@ -128,8 +138,8 @@ func (o ListResponseEventTypeOut) MarshalJSON() ([]byte, error) {
 	if true {
 		toSerialize["done"] = o.Done
 	}
-	if o.Iterator != nil {
-		toSerialize["iterator"] = o.Iterator
+	if o.Iterator.IsSet() {
+		toSerialize["iterator"] = o.Iterator.Get()
 	}
 	return json.Marshal(toSerialize)
 }

@@ -16,7 +16,7 @@ import (
 
 // EndpointSecretOut struct for EndpointSecretOut
 type EndpointSecretOut struct {
-	// The endpoint's verification secret. If `null` is passed, a secret is automatically generated.
+	// The endpoint's verification secret. If `null` is passed, a secret is automatically generated. Format: `base64` encoded random bytes optionally prefixed with `whsec_`. Recommended size: 24.
 	Key string `json:"key"`
 }
 

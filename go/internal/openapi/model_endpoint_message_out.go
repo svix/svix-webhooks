@@ -18,12 +18,12 @@ import (
 // EndpointMessageOut struct for EndpointMessageOut
 type EndpointMessageOut struct {
 	// List of free-form identifiers that endpoints can filter by
-	Channels *[]string `json:"channels,omitempty"`
+	Channels []string `json:"channels,omitempty"`
 	// Optional unique identifier for the message
-	EventId *string `json:"eventId,omitempty"`
+	EventId NullableString `json:"eventId,omitempty"`
 	EventType string `json:"eventType"`
 	Id string `json:"id"`
-	NextAttempt *time.Time `json:"nextAttempt,omitempty"`
+	NextAttempt NullableTime `json:"nextAttempt,omitempty"`
 	Payload map[string]interface{} `json:"payload"`
 	Status MessageStatus `json:"status"`
 	Timestamp time.Time `json:"timestamp"`
@@ -51,22 +51,23 @@ func NewEndpointMessageOutWithDefaults() *EndpointMessageOut {
 	return &this
 }
 
-// GetChannels returns the Channels field value if set, zero value otherwise.
+// GetChannels returns the Channels field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *EndpointMessageOut) GetChannels() []string {
-	if o == nil || o.Channels == nil {
+	if o == nil  {
 		var ret []string
 		return ret
 	}
-	return *o.Channels
+	return o.Channels
 }
 
 // GetChannelsOk returns a tuple with the Channels field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EndpointMessageOut) GetChannelsOk() (*[]string, bool) {
 	if o == nil || o.Channels == nil {
 		return nil, false
 	}
-	return o.Channels, true
+	return &o.Channels, true
 }
 
 // HasChannels returns a boolean if a field has been set.
@@ -80,39 +81,49 @@ func (o *EndpointMessageOut) HasChannels() bool {
 
 // SetChannels gets a reference to the given []string and assigns it to the Channels field.
 func (o *EndpointMessageOut) SetChannels(v []string) {
-	o.Channels = &v
+	o.Channels = v
 }
 
-// GetEventId returns the EventId field value if set, zero value otherwise.
+// GetEventId returns the EventId field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *EndpointMessageOut) GetEventId() string {
-	if o == nil || o.EventId == nil {
+	if o == nil || o.EventId.Get() == nil {
 		var ret string
 		return ret
 	}
-	return *o.EventId
+	return *o.EventId.Get()
 }
 
 // GetEventIdOk returns a tuple with the EventId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EndpointMessageOut) GetEventIdOk() (*string, bool) {
-	if o == nil || o.EventId == nil {
+	if o == nil  {
 		return nil, false
 	}
-	return o.EventId, true
+	return o.EventId.Get(), o.EventId.IsSet()
 }
 
 // HasEventId returns a boolean if a field has been set.
 func (o *EndpointMessageOut) HasEventId() bool {
-	if o != nil && o.EventId != nil {
+	if o != nil && o.EventId.IsSet() {
 		return true
 	}
 
 	return false
 }
 
-// SetEventId gets a reference to the given string and assigns it to the EventId field.
+// SetEventId gets a reference to the given NullableString and assigns it to the EventId field.
 func (o *EndpointMessageOut) SetEventId(v string) {
-	o.EventId = &v
+	o.EventId.Set(&v)
+}
+// SetEventIdNil sets the value for EventId to be an explicit nil
+func (o *EndpointMessageOut) SetEventIdNil() {
+	o.EventId.Set(nil)
+}
+
+// UnsetEventId ensures that no value is present for EventId, not even an explicit nil
+func (o *EndpointMessageOut) UnsetEventId() {
+	o.EventId.Unset()
 }
 
 // GetEventType returns the EventType field value
@@ -163,36 +174,46 @@ func (o *EndpointMessageOut) SetId(v string) {
 	o.Id = v
 }
 
-// GetNextAttempt returns the NextAttempt field value if set, zero value otherwise.
+// GetNextAttempt returns the NextAttempt field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *EndpointMessageOut) GetNextAttempt() time.Time {
-	if o == nil || o.NextAttempt == nil {
+	if o == nil || o.NextAttempt.Get() == nil {
 		var ret time.Time
 		return ret
 	}
-	return *o.NextAttempt
+	return *o.NextAttempt.Get()
 }
 
 // GetNextAttemptOk returns a tuple with the NextAttempt field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EndpointMessageOut) GetNextAttemptOk() (*time.Time, bool) {
-	if o == nil || o.NextAttempt == nil {
+	if o == nil  {
 		return nil, false
 	}
-	return o.NextAttempt, true
+	return o.NextAttempt.Get(), o.NextAttempt.IsSet()
 }
 
 // HasNextAttempt returns a boolean if a field has been set.
 func (o *EndpointMessageOut) HasNextAttempt() bool {
-	if o != nil && o.NextAttempt != nil {
+	if o != nil && o.NextAttempt.IsSet() {
 		return true
 	}
 
 	return false
 }
 
-// SetNextAttempt gets a reference to the given time.Time and assigns it to the NextAttempt field.
+// SetNextAttempt gets a reference to the given NullableTime and assigns it to the NextAttempt field.
 func (o *EndpointMessageOut) SetNextAttempt(v time.Time) {
-	o.NextAttempt = &v
+	o.NextAttempt.Set(&v)
+}
+// SetNextAttemptNil sets the value for NextAttempt to be an explicit nil
+func (o *EndpointMessageOut) SetNextAttemptNil() {
+	o.NextAttempt.Set(nil)
+}
+
+// UnsetNextAttempt ensures that no value is present for NextAttempt, not even an explicit nil
+func (o *EndpointMessageOut) UnsetNextAttempt() {
+	o.NextAttempt.Unset()
 }
 
 // GetPayload returns the Payload field value
@@ -272,8 +293,8 @@ func (o EndpointMessageOut) MarshalJSON() ([]byte, error) {
 	if o.Channels != nil {
 		toSerialize["channels"] = o.Channels
 	}
-	if o.EventId != nil {
-		toSerialize["eventId"] = o.EventId
+	if o.EventId.IsSet() {
+		toSerialize["eventId"] = o.EventId.Get()
 	}
 	if true {
 		toSerialize["eventType"] = o.EventType
@@ -281,8 +302,8 @@ func (o EndpointMessageOut) MarshalJSON() ([]byte, error) {
 	if true {
 		toSerialize["id"] = o.Id
 	}
-	if o.NextAttempt != nil {
-		toSerialize["nextAttempt"] = o.NextAttempt
+	if o.NextAttempt.IsSet() {
+		toSerialize["nextAttempt"] = o.NextAttempt.Get()
 	}
 	if true {
 		toSerialize["payload"] = o.Payload

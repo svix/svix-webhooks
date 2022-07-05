@@ -68,7 +68,7 @@ mypy-extensions==0.4.3
     # via
     #   black
     #   mypy
-openapi-python-client==0.11.3
+openapi-python-client==0.11.4
     # via -r requirements.in/development.txt
 packaging==20.9
     # via pytest
