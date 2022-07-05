@@ -661,6 +661,15 @@ async fn resend_webhook(
         .one(db)
         .await?
         .ok_or_else(|| HttpError::not_found(None, None))?;
+
+    if msg.payload.is_none() {
+        return Err(HttpError::bad_request(
+            Some("missing_payload".to_string()),
+            Some("Unable to resend message. Payload is missing (probably expired).".to_string()),
+        )
+        .into());
+    }
+
     let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
         .one(db)
         .await?
