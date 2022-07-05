@@ -18,8 +18,10 @@ import (
 type EndpointUpdatedEventData struct {
 	AppId string `json:"appId"`
 	// Optional unique identifier for the application
-	AppUid *string `json:"appUid,omitempty"`
+	AppUid NullableString `json:"appUid,omitempty"`
 	EndpointId string `json:"endpointId"`
+	// Optional unique identifier for the endpoint
+	EndpointUid NullableString `json:"endpointUid,omitempty"`
 }
 
 // NewEndpointUpdatedEventData instantiates a new EndpointUpdatedEventData object
@@ -65,36 +67,46 @@ func (o *EndpointUpdatedEventData) SetAppId(v string) {
 	o.AppId = v
 }
 
-// GetAppUid returns the AppUid field value if set, zero value otherwise.
+// GetAppUid returns the AppUid field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *EndpointUpdatedEventData) GetAppUid() string {
-	if o == nil || o.AppUid == nil {
+	if o == nil || o.AppUid.Get() == nil {
 		var ret string
 		return ret
 	}
-	return *o.AppUid
+	return *o.AppUid.Get()
 }
 
 // GetAppUidOk returns a tuple with the AppUid field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EndpointUpdatedEventData) GetAppUidOk() (*string, bool) {
-	if o == nil || o.AppUid == nil {
+	if o == nil  {
 		return nil, false
 	}
-	return o.AppUid, true
+	return o.AppUid.Get(), o.AppUid.IsSet()
 }
 
 // HasAppUid returns a boolean if a field has been set.
 func (o *EndpointUpdatedEventData) HasAppUid() bool {
-	if o != nil && o.AppUid != nil {
+	if o != nil && o.AppUid.IsSet() {
 		return true
 	}
 
 	return false
 }
 
-// SetAppUid gets a reference to the given string and assigns it to the AppUid field.
+// SetAppUid gets a reference to the given NullableString and assigns it to the AppUid field.
 func (o *EndpointUpdatedEventData) SetAppUid(v string) {
-	o.AppUid = &v
+	o.AppUid.Set(&v)
+}
+// SetAppUidNil sets the value for AppUid to be an explicit nil
+func (o *EndpointUpdatedEventData) SetAppUidNil() {
+	o.AppUid.Set(nil)
+}
+
+// UnsetAppUid ensures that no value is present for AppUid, not even an explicit nil
+func (o *EndpointUpdatedEventData) UnsetAppUid() {
+	o.AppUid.Unset()
 }
 
 // GetEndpointId returns the EndpointId field value
@@ -121,16 +133,61 @@ func (o *EndpointUpdatedEventData) SetEndpointId(v string) {
 	o.EndpointId = v
 }
 
+// GetEndpointUid returns the EndpointUid field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *EndpointUpdatedEventData) GetEndpointUid() string {
+	if o == nil || o.EndpointUid.Get() == nil {
+		var ret string
+		return ret
+	}
+	return *o.EndpointUid.Get()
+}
+
+// GetEndpointUidOk returns a tuple with the EndpointUid field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *EndpointUpdatedEventData) GetEndpointUidOk() (*string, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return o.EndpointUid.Get(), o.EndpointUid.IsSet()
+}
+
+// HasEndpointUid returns a boolean if a field has been set.
+func (o *EndpointUpdatedEventData) HasEndpointUid() bool {
+	if o != nil && o.EndpointUid.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetEndpointUid gets a reference to the given NullableString and assigns it to the EndpointUid field.
+func (o *EndpointUpdatedEventData) SetEndpointUid(v string) {
+	o.EndpointUid.Set(&v)
+}
+// SetEndpointUidNil sets the value for EndpointUid to be an explicit nil
+func (o *EndpointUpdatedEventData) SetEndpointUidNil() {
+	o.EndpointUid.Set(nil)
+}
+
+// UnsetEndpointUid ensures that no value is present for EndpointUid, not even an explicit nil
+func (o *EndpointUpdatedEventData) UnsetEndpointUid() {
+	o.EndpointUid.Unset()
+}
+
 func (o EndpointUpdatedEventData) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
 		toSerialize["appId"] = o.AppId
 	}
-	if o.AppUid != nil {
-		toSerialize["appUid"] = o.AppUid
+	if o.AppUid.IsSet() {
+		toSerialize["appUid"] = o.AppUid.Get()
 	}
 	if true {
 		toSerialize["endpointId"] = o.EndpointId
+	}
+	if o.EndpointUid.IsSet() {
+		toSerialize["endpointUid"] = o.EndpointUid.Get()
 	}
 	return json.Marshal(toSerialize)
 }

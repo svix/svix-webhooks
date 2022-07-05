@@ -16,7 +16,7 @@ import (
 
 // FontSizeConfig struct for FontSizeConfig
 type FontSizeConfig struct {
-	Base *int32 `json:"base,omitempty"`
+	Base NullableInt32 `json:"base,omitempty"`
 }
 
 // NewFontSizeConfig instantiates a new FontSizeConfig object
@@ -36,42 +36,52 @@ func NewFontSizeConfigWithDefaults() *FontSizeConfig {
 	return &this
 }
 
-// GetBase returns the Base field value if set, zero value otherwise.
+// GetBase returns the Base field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *FontSizeConfig) GetBase() int32 {
-	if o == nil || o.Base == nil {
+	if o == nil || o.Base.Get() == nil {
 		var ret int32
 		return ret
 	}
-	return *o.Base
+	return *o.Base.Get()
 }
 
 // GetBaseOk returns a tuple with the Base field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *FontSizeConfig) GetBaseOk() (*int32, bool) {
-	if o == nil || o.Base == nil {
+	if o == nil  {
 		return nil, false
 	}
-	return o.Base, true
+	return o.Base.Get(), o.Base.IsSet()
 }
 
 // HasBase returns a boolean if a field has been set.
 func (o *FontSizeConfig) HasBase() bool {
-	if o != nil && o.Base != nil {
+	if o != nil && o.Base.IsSet() {
 		return true
 	}
 
 	return false
 }
 
-// SetBase gets a reference to the given int32 and assigns it to the Base field.
+// SetBase gets a reference to the given NullableInt32 and assigns it to the Base field.
 func (o *FontSizeConfig) SetBase(v int32) {
-	o.Base = &v
+	o.Base.Set(&v)
+}
+// SetBaseNil sets the value for Base to be an explicit nil
+func (o *FontSizeConfig) SetBaseNil() {
+	o.Base.Set(nil)
+}
+
+// UnsetBase ensures that no value is present for Base, not even an explicit nil
+func (o *FontSizeConfig) UnsetBase() {
+	o.Base.Unset()
 }
 
 func (o FontSizeConfig) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Base != nil {
-		toSerialize["base"] = o.Base
+	if o.Base.IsSet() {
+		toSerialize["base"] = o.Base.Get()
 	}
 	return json.Marshal(toSerialize)
 }

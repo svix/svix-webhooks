@@ -18,15 +18,15 @@ import (
 // EndpointOut struct for EndpointOut
 type EndpointOut struct {
 	// List of message channels this endpoint listens to (omit for all)
-	Channels *[]string `json:"channels,omitempty"`
+	Channels []string `json:"channels,omitempty"`
 	CreatedAt time.Time `json:"createdAt"`
 	Description *string `json:"description,omitempty"`
 	Disabled *bool `json:"disabled,omitempty"`
-	FilterTypes *[]string `json:"filterTypes,omitempty"`
+	FilterTypes []string `json:"filterTypes,omitempty"`
 	Id string `json:"id"`
-	RateLimit *int32 `json:"rateLimit,omitempty"`
+	RateLimit NullableInt32 `json:"rateLimit,omitempty"`
 	// Optional unique identifier for the endpoint
-	Uid *string `json:"uid,omitempty"`
+	Uid NullableString `json:"uid,omitempty"`
 	UpdatedAt time.Time `json:"updatedAt"`
 	Url string `json:"url"`
 	Version int32 `json:"version"`
@@ -62,22 +62,23 @@ func NewEndpointOutWithDefaults() *EndpointOut {
 	return &this
 }
 
-// GetChannels returns the Channels field value if set, zero value otherwise.
+// GetChannels returns the Channels field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *EndpointOut) GetChannels() []string {
-	if o == nil || o.Channels == nil {
+	if o == nil  {
 		var ret []string
 		return ret
 	}
-	return *o.Channels
+	return o.Channels
 }
 
 // GetChannelsOk returns a tuple with the Channels field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EndpointOut) GetChannelsOk() (*[]string, bool) {
 	if o == nil || o.Channels == nil {
 		return nil, false
 	}
-	return o.Channels, true
+	return &o.Channels, true
 }
 
 // HasChannels returns a boolean if a field has been set.
@@ -91,7 +92,7 @@ func (o *EndpointOut) HasChannels() bool {
 
 // SetChannels gets a reference to the given []string and assigns it to the Channels field.
 func (o *EndpointOut) SetChannels(v []string) {
-	o.Channels = &v
+	o.Channels = v
 }
 
 // GetCreatedAt returns the CreatedAt field value
@@ -182,22 +183,23 @@ func (o *EndpointOut) SetDisabled(v bool) {
 	o.Disabled = &v
 }
 
-// GetFilterTypes returns the FilterTypes field value if set, zero value otherwise.
+// GetFilterTypes returns the FilterTypes field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *EndpointOut) GetFilterTypes() []string {
-	if o == nil || o.FilterTypes == nil {
+	if o == nil  {
 		var ret []string
 		return ret
 	}
-	return *o.FilterTypes
+	return o.FilterTypes
 }
 
 // GetFilterTypesOk returns a tuple with the FilterTypes field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EndpointOut) GetFilterTypesOk() (*[]string, bool) {
 	if o == nil || o.FilterTypes == nil {
 		return nil, false
 	}
-	return o.FilterTypes, true
+	return &o.FilterTypes, true
 }
 
 // HasFilterTypes returns a boolean if a field has been set.
@@ -211,7 +213,7 @@ func (o *EndpointOut) HasFilterTypes() bool {
 
 // SetFilterTypes gets a reference to the given []string and assigns it to the FilterTypes field.
 func (o *EndpointOut) SetFilterTypes(v []string) {
-	o.FilterTypes = &v
+	o.FilterTypes = v
 }
 
 // GetId returns the Id field value
@@ -238,68 +240,88 @@ func (o *EndpointOut) SetId(v string) {
 	o.Id = v
 }
 
-// GetRateLimit returns the RateLimit field value if set, zero value otherwise.
+// GetRateLimit returns the RateLimit field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *EndpointOut) GetRateLimit() int32 {
-	if o == nil || o.RateLimit == nil {
+	if o == nil || o.RateLimit.Get() == nil {
 		var ret int32
 		return ret
 	}
-	return *o.RateLimit
+	return *o.RateLimit.Get()
 }
 
 // GetRateLimitOk returns a tuple with the RateLimit field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EndpointOut) GetRateLimitOk() (*int32, bool) {
-	if o == nil || o.RateLimit == nil {
+	if o == nil  {
 		return nil, false
 	}
-	return o.RateLimit, true
+	return o.RateLimit.Get(), o.RateLimit.IsSet()
 }
 
 // HasRateLimit returns a boolean if a field has been set.
 func (o *EndpointOut) HasRateLimit() bool {
-	if o != nil && o.RateLimit != nil {
+	if o != nil && o.RateLimit.IsSet() {
 		return true
 	}
 
 	return false
 }
 
-// SetRateLimit gets a reference to the given int32 and assigns it to the RateLimit field.
+// SetRateLimit gets a reference to the given NullableInt32 and assigns it to the RateLimit field.
 func (o *EndpointOut) SetRateLimit(v int32) {
-	o.RateLimit = &v
+	o.RateLimit.Set(&v)
+}
+// SetRateLimitNil sets the value for RateLimit to be an explicit nil
+func (o *EndpointOut) SetRateLimitNil() {
+	o.RateLimit.Set(nil)
 }
 
-// GetUid returns the Uid field value if set, zero value otherwise.
+// UnsetRateLimit ensures that no value is present for RateLimit, not even an explicit nil
+func (o *EndpointOut) UnsetRateLimit() {
+	o.RateLimit.Unset()
+}
+
+// GetUid returns the Uid field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *EndpointOut) GetUid() string {
-	if o == nil || o.Uid == nil {
+	if o == nil || o.Uid.Get() == nil {
 		var ret string
 		return ret
 	}
-	return *o.Uid
+	return *o.Uid.Get()
 }
 
 // GetUidOk returns a tuple with the Uid field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EndpointOut) GetUidOk() (*string, bool) {
-	if o == nil || o.Uid == nil {
+	if o == nil  {
 		return nil, false
 	}
-	return o.Uid, true
+	return o.Uid.Get(), o.Uid.IsSet()
 }
 
 // HasUid returns a boolean if a field has been set.
 func (o *EndpointOut) HasUid() bool {
-	if o != nil && o.Uid != nil {
+	if o != nil && o.Uid.IsSet() {
 		return true
 	}
 
 	return false
 }
 
-// SetUid gets a reference to the given string and assigns it to the Uid field.
+// SetUid gets a reference to the given NullableString and assigns it to the Uid field.
 func (o *EndpointOut) SetUid(v string) {
-	o.Uid = &v
+	o.Uid.Set(&v)
+}
+// SetUidNil sets the value for Uid to be an explicit nil
+func (o *EndpointOut) SetUidNil() {
+	o.Uid.Set(nil)
+}
+
+// UnsetUid ensures that no value is present for Uid, not even an explicit nil
+func (o *EndpointOut) UnsetUid() {
+	o.Uid.Unset()
 }
 
 // GetUpdatedAt returns the UpdatedAt field value
@@ -394,11 +416,11 @@ func (o EndpointOut) MarshalJSON() ([]byte, error) {
 	if true {
 		toSerialize["id"] = o.Id
 	}
-	if o.RateLimit != nil {
-		toSerialize["rateLimit"] = o.RateLimit
+	if o.RateLimit.IsSet() {
+		toSerialize["rateLimit"] = o.RateLimit.Get()
 	}
-	if o.Uid != nil {
-		toSerialize["uid"] = o.Uid
+	if o.Uid.IsSet() {
+		toSerialize["uid"] = o.Uid.Get()
 	}
 	if true {
 		toSerialize["updatedAt"] = o.UpdatedAt

@@ -17,9 +17,9 @@ import (
 // ApplicationIn struct for ApplicationIn
 type ApplicationIn struct {
 	Name string `json:"name"`
-	RateLimit *int32 `json:"rateLimit,omitempty"`
+	RateLimit NullableInt32 `json:"rateLimit,omitempty"`
 	// Optional unique identifier for the application
-	Uid *string `json:"uid,omitempty"`
+	Uid NullableString `json:"uid,omitempty"`
 }
 
 // NewApplicationIn instantiates a new ApplicationIn object
@@ -64,68 +64,88 @@ func (o *ApplicationIn) SetName(v string) {
 	o.Name = v
 }
 
-// GetRateLimit returns the RateLimit field value if set, zero value otherwise.
+// GetRateLimit returns the RateLimit field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *ApplicationIn) GetRateLimit() int32 {
-	if o == nil || o.RateLimit == nil {
+	if o == nil || o.RateLimit.Get() == nil {
 		var ret int32
 		return ret
 	}
-	return *o.RateLimit
+	return *o.RateLimit.Get()
 }
 
 // GetRateLimitOk returns a tuple with the RateLimit field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ApplicationIn) GetRateLimitOk() (*int32, bool) {
-	if o == nil || o.RateLimit == nil {
+	if o == nil  {
 		return nil, false
 	}
-	return o.RateLimit, true
+	return o.RateLimit.Get(), o.RateLimit.IsSet()
 }
 
 // HasRateLimit returns a boolean if a field has been set.
 func (o *ApplicationIn) HasRateLimit() bool {
-	if o != nil && o.RateLimit != nil {
+	if o != nil && o.RateLimit.IsSet() {
 		return true
 	}
 
 	return false
 }
 
-// SetRateLimit gets a reference to the given int32 and assigns it to the RateLimit field.
+// SetRateLimit gets a reference to the given NullableInt32 and assigns it to the RateLimit field.
 func (o *ApplicationIn) SetRateLimit(v int32) {
-	o.RateLimit = &v
+	o.RateLimit.Set(&v)
+}
+// SetRateLimitNil sets the value for RateLimit to be an explicit nil
+func (o *ApplicationIn) SetRateLimitNil() {
+	o.RateLimit.Set(nil)
 }
 
-// GetUid returns the Uid field value if set, zero value otherwise.
+// UnsetRateLimit ensures that no value is present for RateLimit, not even an explicit nil
+func (o *ApplicationIn) UnsetRateLimit() {
+	o.RateLimit.Unset()
+}
+
+// GetUid returns the Uid field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *ApplicationIn) GetUid() string {
-	if o == nil || o.Uid == nil {
+	if o == nil || o.Uid.Get() == nil {
 		var ret string
 		return ret
 	}
-	return *o.Uid
+	return *o.Uid.Get()
 }
 
 // GetUidOk returns a tuple with the Uid field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ApplicationIn) GetUidOk() (*string, bool) {
-	if o == nil || o.Uid == nil {
+	if o == nil  {
 		return nil, false
 	}
-	return o.Uid, true
+	return o.Uid.Get(), o.Uid.IsSet()
 }
 
 // HasUid returns a boolean if a field has been set.
 func (o *ApplicationIn) HasUid() bool {
-	if o != nil && o.Uid != nil {
+	if o != nil && o.Uid.IsSet() {
 		return true
 	}
 
 	return false
 }
 
-// SetUid gets a reference to the given string and assigns it to the Uid field.
+// SetUid gets a reference to the given NullableString and assigns it to the Uid field.
 func (o *ApplicationIn) SetUid(v string) {
-	o.Uid = &v
+	o.Uid.Set(&v)
+}
+// SetUidNil sets the value for Uid to be an explicit nil
+func (o *ApplicationIn) SetUidNil() {
+	o.Uid.Set(nil)
+}
+
+// UnsetUid ensures that no value is present for Uid, not even an explicit nil
+func (o *ApplicationIn) UnsetUid() {
+	o.Uid.Unset()
 }
 
 func (o ApplicationIn) MarshalJSON() ([]byte, error) {
@@ -133,11 +153,11 @@ func (o ApplicationIn) MarshalJSON() ([]byte, error) {
 	if true {
 		toSerialize["name"] = o.Name
 	}
-	if o.RateLimit != nil {
-		toSerialize["rateLimit"] = o.RateLimit
+	if o.RateLimit.IsSet() {
+		toSerialize["rateLimit"] = o.RateLimit.Get()
 	}
-	if o.Uid != nil {
-		toSerialize["uid"] = o.Uid
+	if o.Uid.IsSet() {
+		toSerialize["uid"] = o.Uid.Get()
 	}
 	return json.Marshal(toSerialize)
 }

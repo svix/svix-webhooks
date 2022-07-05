@@ -18,9 +18,9 @@ import (
 // MessageOut struct for MessageOut
 type MessageOut struct {
 	// List of free-form identifiers that endpoints can filter by
-	Channels *[]string `json:"channels,omitempty"`
+	Channels []string `json:"channels,omitempty"`
 	// Optional unique identifier for the message
-	EventId *string `json:"eventId,omitempty"`
+	EventId NullableString `json:"eventId,omitempty"`
 	EventType string `json:"eventType"`
 	Id string `json:"id"`
 	Payload map[string]interface{} `json:"payload"`
@@ -48,22 +48,23 @@ func NewMessageOutWithDefaults() *MessageOut {
 	return &this
 }
 
-// GetChannels returns the Channels field value if set, zero value otherwise.
+// GetChannels returns the Channels field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *MessageOut) GetChannels() []string {
-	if o == nil || o.Channels == nil {
+	if o == nil  {
 		var ret []string
 		return ret
 	}
-	return *o.Channels
+	return o.Channels
 }
 
 // GetChannelsOk returns a tuple with the Channels field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *MessageOut) GetChannelsOk() (*[]string, bool) {
 	if o == nil || o.Channels == nil {
 		return nil, false
 	}
-	return o.Channels, true
+	return &o.Channels, true
 }
 
 // HasChannels returns a boolean if a field has been set.
@@ -77,39 +78,49 @@ func (o *MessageOut) HasChannels() bool {
 
 // SetChannels gets a reference to the given []string and assigns it to the Channels field.
 func (o *MessageOut) SetChannels(v []string) {
-	o.Channels = &v
+	o.Channels = v
 }
 
-// GetEventId returns the EventId field value if set, zero value otherwise.
+// GetEventId returns the EventId field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *MessageOut) GetEventId() string {
-	if o == nil || o.EventId == nil {
+	if o == nil || o.EventId.Get() == nil {
 		var ret string
 		return ret
 	}
-	return *o.EventId
+	return *o.EventId.Get()
 }
 
 // GetEventIdOk returns a tuple with the EventId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *MessageOut) GetEventIdOk() (*string, bool) {
-	if o == nil || o.EventId == nil {
+	if o == nil  {
 		return nil, false
 	}
-	return o.EventId, true
+	return o.EventId.Get(), o.EventId.IsSet()
 }
 
 // HasEventId returns a boolean if a field has been set.
 func (o *MessageOut) HasEventId() bool {
-	if o != nil && o.EventId != nil {
+	if o != nil && o.EventId.IsSet() {
 		return true
 	}
 
 	return false
 }
 
-// SetEventId gets a reference to the given string and assigns it to the EventId field.
+// SetEventId gets a reference to the given NullableString and assigns it to the EventId field.
 func (o *MessageOut) SetEventId(v string) {
-	o.EventId = &v
+	o.EventId.Set(&v)
+}
+// SetEventIdNil sets the value for EventId to be an explicit nil
+func (o *MessageOut) SetEventIdNil() {
+	o.EventId.Set(nil)
+}
+
+// UnsetEventId ensures that no value is present for EventId, not even an explicit nil
+func (o *MessageOut) UnsetEventId() {
+	o.EventId.Unset()
 }
 
 // GetEventType returns the EventType field value
@@ -213,8 +224,8 @@ func (o MessageOut) MarshalJSON() ([]byte, error) {
 	if o.Channels != nil {
 		toSerialize["channels"] = o.Channels
 	}
-	if o.EventId != nil {
-		toSerialize["eventId"] = o.EventId
+	if o.EventId.IsSet() {
+		toSerialize["eventId"] = o.EventId.Get()
 	}
 	if true {
 		toSerialize["eventType"] = o.EventType

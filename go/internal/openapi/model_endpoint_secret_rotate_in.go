@@ -16,8 +16,8 @@ import (
 
 // EndpointSecretRotateIn struct for EndpointSecretRotateIn
 type EndpointSecretRotateIn struct {
-	// The endpoint's verification secret. If `null` is passed, a secret is automatically generated.
-	Key *string `json:"key,omitempty"`
+	// The endpoint's verification secret. If `null` is passed, a secret is automatically generated. Format: `base64` encoded random bytes optionally prefixed with `whsec_`. Recommended size: 24.
+	Key NullableString `json:"key,omitempty"`
 }
 
 // NewEndpointSecretRotateIn instantiates a new EndpointSecretRotateIn object
@@ -37,42 +37,52 @@ func NewEndpointSecretRotateInWithDefaults() *EndpointSecretRotateIn {
 	return &this
 }
 
-// GetKey returns the Key field value if set, zero value otherwise.
+// GetKey returns the Key field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *EndpointSecretRotateIn) GetKey() string {
-	if o == nil || o.Key == nil {
+	if o == nil || o.Key.Get() == nil {
 		var ret string
 		return ret
 	}
-	return *o.Key
+	return *o.Key.Get()
 }
 
 // GetKeyOk returns a tuple with the Key field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EndpointSecretRotateIn) GetKeyOk() (*string, bool) {
-	if o == nil || o.Key == nil {
+	if o == nil  {
 		return nil, false
 	}
-	return o.Key, true
+	return o.Key.Get(), o.Key.IsSet()
 }
 
 // HasKey returns a boolean if a field has been set.
 func (o *EndpointSecretRotateIn) HasKey() bool {
-	if o != nil && o.Key != nil {
+	if o != nil && o.Key.IsSet() {
 		return true
 	}
 
 	return false
 }
 
-// SetKey gets a reference to the given string and assigns it to the Key field.
+// SetKey gets a reference to the given NullableString and assigns it to the Key field.
 func (o *EndpointSecretRotateIn) SetKey(v string) {
-	o.Key = &v
+	o.Key.Set(&v)
+}
+// SetKeyNil sets the value for Key to be an explicit nil
+func (o *EndpointSecretRotateIn) SetKeyNil() {
+	o.Key.Set(nil)
+}
+
+// UnsetKey ensures that no value is present for Key, not even an explicit nil
+func (o *EndpointSecretRotateIn) UnsetKey() {
+	o.Key.Unset()
 }
 
 func (o EndpointSecretRotateIn) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Key != nil {
-		toSerialize["key"] = o.Key
+	if o.Key.IsSet() {
+		toSerialize["key"] = o.Key.Get()
 	}
 	return json.Marshal(toSerialize)
 }
