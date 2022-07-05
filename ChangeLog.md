@@ -3,6 +3,13 @@
 ## Next
 * 
 
+## Version 0.62.0
+* Server: add support for asymmetric signatures.
+* Server: ensure msg content exists before attempting resend.
+* Server: Improve HTTP error response logging.
+* Server: fix docker builds due to changes to Redis SSL.
+* Libs: fix nullable fields to be marked as such (fixes parsing errors in some clients).
+
 ## Version 0.61.0
 * Server: add OpenTelemetry support
 * Server: send operational ("incoming") webhooks about events happening on the server.
