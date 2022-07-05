@@ -88,10 +88,15 @@ impl From<DbErr> for Error {
 
 impl IntoResponse for Error {
     fn into_response(self) -> Response {
-        tracing::debug!("{:?}", &self);
         match self {
-            Error::Http(s) => s.into_response(),
-            _ => (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({}))).into_response(),
+            Error::Http(s) => {
+                tracing::debug!("{:?}", &s);
+                s.into_response()
+            }
+            s => {
+                tracing::error!("{:?}", &s);
+                (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({}))).into_response()
+            }
         }
     }
 }
