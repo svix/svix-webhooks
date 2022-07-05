@@ -62,10 +62,5 @@ redis_cluster_async = { git = "https://github.com/redis-rs/redis-cluster-async.g
 url = "2.2.2"
 rand = "0.8.5"
 
-[target.x86_64-unknown-linux-musl.dependencies]
-openssl = { version = "0.10", features = ["vendored"] }
-openssl-probe = "0.1.2"
-openssl-src = "300.0"
-
 [dev-dependencies]
 anyhow = "1.0.56"
