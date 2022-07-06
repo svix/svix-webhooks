@@ -3,6 +3,9 @@
 ## Next
 * 
 
+## Version 0.62.1
+* Libs: fix Kotlin and Java build
+
 ## Version 0.62.0
 * Server: add support for asymmetric signatures.
 * Server: ensure msg content exists before attempting resend.

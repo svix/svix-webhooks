@@ -54,7 +54,7 @@ import * as base64 from "@stablelib/base64";
 import * as sha256 from "fast-sha256";
 
 const WEBHOOK_TOLERANCE_IN_SECONDS = 5 * 60; // 5 minutes
-const VERSION = "0.62.0";
+const VERSION = "0.62.1";
 
 class UserAgentMiddleware implements Middleware {
   public pre(context: RequestContext): Promise<RequestContext> {
