@@ -675,9 +675,6 @@
                         "type": "string"
                     },
                     "payload": {
-                        "additionalProperties": {
-                            "nullable": true
-                        },
                         "example": {
                             "email": "test@example.com",
                             "username": "test_user"
@@ -1152,9 +1149,6 @@
             "EventTypeExampleOut": {
                 "properties": {
                     "example": {
-                        "additionalProperties": {
-                            "nullable": true
-                        },
                         "example": {
                             "data": {
                                 "email": "test@example.com",
@@ -2306,9 +2300,6 @@
                         "type": "string"
                     },
                     "payload": {
-                        "additionalProperties": {
-                            "nullable": true
-                        },
                         "example": {
                             "email": "test@example.com",
                             "username": "test_user"
@@ -2377,9 +2368,6 @@
                         "type": "string"
                     },
                     "payload": {
-                        "additionalProperties": {
-                            "nullable": true
-                        },
                         "example": {
                             "email": "test@example.com",
                             "username": "test_user"
