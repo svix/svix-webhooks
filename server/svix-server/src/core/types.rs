@@ -7,6 +7,7 @@ use chrono::{DateTime, Utc};
 use lazy_static::lazy_static;
 use num_enum::{IntoPrimitive, TryFromPrimitive};
 use rand::Rng;
+
 use regex::Regex;
 use sea_orm::{
     entity::prelude::*,
@@ -18,7 +19,7 @@ use std::ops::Deref;
 use svix_ksuid::*;
 use validator::{Validate, ValidationError, ValidationErrors};
 
-use super::security::AsymmetricKey;
+use super::cryptography::{AsymmetricKey, Encryption};
 
 const ALL_ERROR: &str = "__all__";
 
@@ -451,18 +452,27 @@ impl EndpointSecretType {
 #[derive(Clone, Debug, PartialEq, Eq)]
 struct EndpointSecretMarker {
     type_: EndpointSecretType,
+    encrypted: bool,
 }
 
 impl EndpointSecretMarker {
+    const ENCRYPTED_FLAG: u8 = 0b1000_0000;
+
     fn from_u8(v: u8) -> crate::error::Result<Self> {
+        let encrypted = (v & Self::ENCRYPTED_FLAG) != 0;
+        let v = v & !Self::ENCRYPTED_FLAG;
         let type_ = EndpointSecretType::try_from(v)
             .map_err(|_| crate::error::Error::Generic("Invalid marker value".to_string()))?;
 
-        Ok(Self { type_ })
+        Ok(Self { type_, encrypted })
     }
 
     fn to_u8(&self) -> u8 {
-        self.type_.clone().into()
+        let mut ret = self.type_.clone().into();
+        if self.encrypted {
+            ret |= Self::ENCRYPTED_FLAG;
+        }
+        ret
     }
 
     fn type_(&self) -> &EndpointSecretType {
@@ -488,24 +498,28 @@ impl EndpointSecretInternal {
     // Needed because of rust limitations
     const KEY_SIZE_MINUS_ONE: usize = Self::KEY_SIZE - 1;
 
-    pub fn generate_symmetric() -> crate::error::Result<Self> {
-        let buf: [u8; Self::KEY_SIZE] = rand::thread_rng().gen();
+    fn new(
+        encryption: &Encryption,
+        type_: EndpointSecretType,
+        key: &[u8],
+    ) -> crate::error::Result<Self> {
         Ok(Self {
             marker: EndpointSecretMarker {
-                type_: EndpointSecretType::Hmac256,
+                type_,
+                encrypted: encryption.enabled(),
             },
-            key: buf.to_vec(),
+            key: encryption.encrypt(key)?,
         })
     }
 
-    pub fn generate_asymmetric() -> crate::error::Result<Self> {
+    pub fn generate_symmetric(encryption: &Encryption) -> crate::error::Result<Self> {
+        let buf: [u8; Self::KEY_SIZE] = rand::thread_rng().gen();
+        Self::new(encryption, EndpointSecretType::Hmac256, &buf)
+    }
+
+    pub fn generate_asymmetric(encryption: &Encryption) -> crate::error::Result<Self> {
         let key = AsymmetricKey::generate();
-        Ok(Self {
-            marker: EndpointSecretMarker {
-                type_: EndpointSecretType::Ed25519,
-            },
-            key: key.0.sk.to_vec(),
-        })
+        Self::new(encryption, EndpointSecretType::Ed25519, key.0.sk.as_slice())
     }
 
     fn into_vec(mut self) -> Vec<u8> {
@@ -525,6 +539,7 @@ impl EndpointSecretInternal {
             Self::KEY_SIZE => Ok(Self {
                 marker: EndpointSecretMarker {
                     type_: EndpointSecretType::Hmac256,
+                    encrypted: false,
                 },
                 key: v,
             }),
@@ -538,44 +553,59 @@ impl EndpointSecretInternal {
         }
     }
 
-    pub fn into_endpoint_secret(self) -> EndpointSecret {
-        match self.type_() {
-            EndpointSecretType::Hmac256 => EndpointSecret::Symmetric(self.key),
+    pub fn into_endpoint_secret(
+        self,
+        encryption: &Encryption,
+    ) -> crate::error::Result<EndpointSecret> {
+        let key = self.key(encryption)?;
+        Ok(match self.type_() {
+            EndpointSecretType::Hmac256 => EndpointSecret::Symmetric(key),
             EndpointSecretType::Ed25519 => {
-                EndpointSecret::Asymmetric(AsymmetricKey::from_slice(&self.key[..]).unwrap())
+                EndpointSecret::Asymmetric(AsymmetricKey::from_slice(&key[..])?)
             }
-        }
+        })
     }
 
-    pub fn from_endpoint_secret(endpoint_secret: EndpointSecret) -> Self {
-        match endpoint_secret {
-            EndpointSecret::Symmetric(key) => EndpointSecretInternal {
-                marker: EndpointSecretMarker {
-                    type_: EndpointSecretType::Hmac256,
-                },
-                key,
-            },
-            EndpointSecret::Asymmetric(key) => EndpointSecretInternal {
-                marker: EndpointSecretMarker {
-                    type_: EndpointSecretType::Ed25519,
-                },
-                key: key.0.sk.to_vec(),
-            },
-        }
+    pub fn from_endpoint_secret(
+        endpoint_secret: EndpointSecret,
+        encryption: &Encryption,
+    ) -> crate::error::Result<Self> {
+        Ok(match endpoint_secret {
+            EndpointSecret::Symmetric(key) => {
+                Self::new(encryption, EndpointSecretType::Hmac256, &key)?
+            }
+            EndpointSecret::Asymmetric(key) => {
+                Self::new(encryption, EndpointSecretType::Ed25519, key.0.sk.as_slice())?
+            }
+        })
     }
 
-    pub fn sign(&self, bytes: &[u8]) -> Vec<u8> {
-        let key = &self.key[..];
+    pub fn sign(&self, encryption: &Encryption, bytes: &[u8]) -> Vec<u8> {
+        let key = self.key(encryption).unwrap();
         // FIXME: remove unwrap
         match self.marker.type_() {
             EndpointSecretType::Hmac256 => hmac_sha256::HMAC::mac(bytes, key).to_vec(),
-            EndpointSecretType::Ed25519 => AsymmetricKey::from_slice(key)
+            EndpointSecretType::Ed25519 => AsymmetricKey::from_slice(&key[..])
                 .unwrap()
                 .0
                 .sk
                 .sign(bytes, None)
                 .to_vec(),
         }
+    }
+
+    fn key(&self, encryption: &Encryption) -> crate::error::Result<Vec<u8>> {
+        Ok(if self.marker.encrypted {
+            if encryption.enabled() {
+                encryption.decrypt(&self.key)?
+            } else {
+                return Err(crate::error::Error::Generic(
+                    "main_secret unset, can't decrypt key".to_string(),
+                ));
+            }
+        } else {
+            self.key.to_vec()
+        })
     }
 
     pub fn type_(&self) -> &EndpointSecretType {
@@ -605,6 +635,7 @@ impl<'de> Deserialize<'de> for EndpointSecretInternal {
                 Ok(Self {
                     marker: EndpointSecretMarker {
                         type_: EndpointSecretType::Hmac256,
+                        encrypted: false,
                     },
                     key: string
                         .get(EndpointSecretType::Hmac256.secret_prefix().len()..)

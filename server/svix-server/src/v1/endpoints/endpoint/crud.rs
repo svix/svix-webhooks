@@ -16,8 +16,8 @@ use crate::{
         operational_webhooks::{EndpointEvent, OperationalWebhook, OperationalWebhookSender},
         security::AuthenticatedApplication,
         types::{
-            ApplicationIdOrUid, EndpointId, EndpointIdOrUid, EventTypeName, EventTypeNameSet,
-            OrganizationId,
+            ApplicationIdOrUid, EndpointId, EndpointIdOrUid, EndpointSecretInternal, EventTypeName,
+            EventTypeNameSet, OrganizationId,
         },
     },
     db::models::{endpoint, eventtype},
@@ -66,15 +66,22 @@ pub(super) async fn create_endpoint(
     }
     validate_endpoint_url(&data.url, cfg.endpoint_https_only)?;
 
-    let endp = if data.key.is_some() {
+    let endp = if let Some(key) = data.key.clone().take() {
         endpoint::ActiveModel {
             app_id: Set(app.id),
+            key: Set(EndpointSecretInternal::from_endpoint_secret(
+                key,
+                &cfg.encryption,
+            )?),
             ..data.into()
         }
     } else {
         endpoint::ActiveModel {
             app_id: Set(app.id),
-            key: Set(generate_secret(&cfg.default_signature_type)?),
+            key: Set(generate_secret(
+                &cfg.encryption,
+                &cfg.default_signature_type,
+            )?),
             ..data.into()
         }
     };

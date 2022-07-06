@@ -8,7 +8,6 @@ use axum::{
     extract::{Extension, FromRequest, Path, RequestParts, TypedHeader},
     headers::{authorization::Bearer, Authorization},
 };
-use ed25519_compact::*;
 
 use jwt_simple::prelude::*;
 use sea_orm::DatabaseConnection;
@@ -288,48 +287,5 @@ impl Keys {
         Self {
             key: HS256Key::from_bytes(secret),
         }
-    }
-}
-
-// Asymmetric Signature keys
-#[derive(Clone, Eq)]
-pub struct AsymmetricKey(pub KeyPair);
-
-impl AsymmetricKey {
-    pub fn generate() -> AsymmetricKey {
-        AsymmetricKey(KeyPair::from_seed(Seed::generate()))
-    }
-
-    pub fn from_slice(bytes: &[u8]) -> Result<AsymmetricKey> {
-        Ok(AsymmetricKey(KeyPair::from_slice(bytes).map_err(|_| {
-            Error::Generic("Failed parsing key.".to_string())
-        })?))
-    }
-
-    pub fn from_base64(b64: &str) -> Result<AsymmetricKey> {
-        let bytes =
-            base64::decode(b64).map_err(|_| Error::Generic("Failed parsing base64".to_string()))?;
-
-        Self::from_slice(bytes.as_slice())
-    }
-
-    pub fn pubkey(&self) -> &[u8] {
-        &self.0.pk[..]
-    }
-}
-
-impl Debug for AsymmetricKey {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "<AsymmetricKey sk=*** pk={}>",
-            base64::encode(self.0.pk.as_slice())
-        )
-    }
-}
-
-impl PartialEq for AsymmetricKey {
-    fn eq(&self, other: &Self) -> bool {
-        self.0.as_slice() == other.0.as_slice()
     }
 }

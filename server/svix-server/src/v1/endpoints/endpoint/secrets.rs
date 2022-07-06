@@ -12,6 +12,7 @@ use super::{EndpointSecretOut, EndpointSecretRotateIn};
 use crate::{
     cfg::{Configuration, DefaultSignatureType},
     core::{
+        cryptography::Encryption,
         security::AuthenticatedApplication,
         types::{
             ApplicationIdOrUid, EndpointIdOrUid, EndpointSecretInternal, ExpiringSigningKey,
@@ -23,15 +24,19 @@ use crate::{
     v1::utils::{EmptyResponse, ValidatedJson},
 };
 
-pub(super) fn generate_secret(sig_type: &DefaultSignatureType) -> Result<EndpointSecretInternal> {
+pub(super) fn generate_secret(
+    encryption: &Encryption,
+    sig_type: &DefaultSignatureType,
+) -> Result<EndpointSecretInternal> {
     match sig_type {
-        DefaultSignatureType::Hmac256 => EndpointSecretInternal::generate_symmetric(),
-        DefaultSignatureType::Ed25519 => EndpointSecretInternal::generate_asymmetric(),
+        DefaultSignatureType::Hmac256 => EndpointSecretInternal::generate_symmetric(encryption),
+        DefaultSignatureType::Ed25519 => EndpointSecretInternal::generate_asymmetric(encryption),
     }
 }
 
 pub(super) async fn get_endpoint_secret(
     Extension(ref db): Extension<DatabaseConnection>,
+    Extension(cfg): Extension<Configuration>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
     AuthenticatedApplication {
         permissions: _,
@@ -43,7 +48,7 @@ pub(super) async fn get_endpoint_secret(
         .await?
         .ok_or_else(|| HttpError::not_found(None, None))?;
     Ok(Json(EndpointSecretOut {
-        key: endp.key.into_endpoint_secret(),
+        key: endp.key.into_endpoint_secret(&cfg.encryption)?,
     }))
 }
 
@@ -86,9 +91,9 @@ pub(super) async fn rotate_endpoint_secret(
 
     let endp = endpoint::ActiveModel {
         key: Set(if let Some(key) = data.key {
-            EndpointSecretInternal::from_endpoint_secret(key)
+            EndpointSecretInternal::from_endpoint_secret(key, &cfg.encryption)?
         } else {
-            generate_secret(&cfg.default_signature_type)?
+            generate_secret(&cfg.encryption, &cfg.default_signature_type)?
         }),
 
         old_keys: Set(Some(ExpiringSigningKeys(

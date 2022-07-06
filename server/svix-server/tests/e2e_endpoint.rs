@@ -11,14 +11,15 @@ use anyhow::Result;
 use chrono::Utc;
 use ed25519_compact::Signature;
 use reqwest::StatusCode;
-use sea_orm::{ConnectionTrait, DatabaseBackend, Statement};
+use sea_orm::{ConnectionTrait, DatabaseBackend, QueryResult, Statement};
 
 use serde::Deserialize;
 use svix::webhooks::Webhook;
 use svix_server::cfg::DefaultSignatureType;
+use svix_server::core::types::{BaseId, OrganizationId};
 use svix_server::{
     core::{
-        security::AsymmetricKey,
+        cryptography::{AsymmetricKey, Encryption},
         types::{
             ApplicationId, EndpointHeaders, EndpointHeadersPatch, EndpointSecret,
             EndpointSecretInternal, EndpointUid, EventChannel, EventChannelSet, EventTypeName,
@@ -46,8 +47,8 @@ use utils::{
         delete_test_app, endpoint_in, event_type_in, get_msg_attempt_list_and_assert_count,
         post_endpoint, put_endpoint, recover_webhooks,
     },
-    get_default_test_config, start_svix_server, start_svix_server_with_cfg, IgnoredResponse,
-    TestClient, TestReceiver,
+    get_default_test_config, start_svix_server, start_svix_server_with_cfg,
+    start_svix_server_with_cfg_and_org_id, IgnoredResponse, TestClient, TestReceiver,
 };
 
 async fn get_endpoint(
@@ -566,9 +567,10 @@ async fn test_endpoint_rotate_signing_e2e() {
 
     assert_ne!(secret1.key, secret2.key);
 
-    let secret3_key = EndpointSecretInternal::generate_symmetric()
+    let secret3_key = EndpointSecretInternal::generate_symmetric(&Encryption::new_noop())
         .unwrap()
-        .into_endpoint_secret();
+        .into_endpoint_secret(&Encryption::new_noop())
+        .unwrap();
 
     let _: IgnoredResponse = client
         .post(
@@ -617,9 +619,10 @@ async fn test_endpoint_rotate_signing_symmetric_and_asymmetric() {
 
     let mut receiver = TestReceiver::start(StatusCode::OK);
 
-    let secret_1 = EndpointSecretInternal::generate_symmetric()
+    let secret_1 = EndpointSecretInternal::generate_symmetric(&Encryption::new_noop())
         .unwrap()
-        .into_endpoint_secret();
+        .into_endpoint_secret(&Encryption::new_noop())
+        .unwrap();
     // Asymmetric key
     let secret_2 = EndpointSecret::Asymmetric(AsymmetricKey::from_base64("6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg==").unwrap());
     // Long key
@@ -766,9 +769,10 @@ async fn test_custom_endpoint_secret() {
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
-    let secret_1 = EndpointSecretInternal::generate_symmetric()
+    let secret_1 = EndpointSecretInternal::generate_symmetric(&Encryption::new_noop())
         .unwrap()
-        .into_endpoint_secret();
+        .into_endpoint_secret(&Encryption::new_noop())
+        .unwrap();
     // Long key
     let secret_2 = EndpointSecret::Symmetric(base64::decode("TUdfVE5UMnZlci1TeWxOYXQtX1ZlTW1kLTRtMFdhYmEwanIxdHJvenRCbmlTQ2hFdzBnbHhFbWdFaTJLdzQwSA==").unwrap());
     // Asymmetric key
@@ -829,6 +833,89 @@ async fn test_custom_endpoint_secret() {
 }
 
 #[tokio::test]
+async fn test_endpoint_secret_encryption() {
+    let org_id = OrganizationId::new(None, None);
+    let cfg = get_default_test_config();
+    let (client, _jh) = start_svix_server_with_cfg_and_org_id(&cfg, org_id.clone());
+
+    #[derive(Deserialize)]
+    pub struct EndpointSecretOutTest {
+        pub key: String,
+    }
+
+    let app_id = create_test_app(&client, "app1").await.unwrap().id;
+
+    let ep_in = EndpointIn {
+        url: "http://www.example.com".to_owned(),
+        version: 1,
+        ..Default::default()
+    };
+
+    let ep = post_endpoint(&client, &app_id, ep_in.clone())
+        .await
+        .unwrap();
+
+    let secret = client
+        .get::<EndpointSecretOutTest>(
+            &format!("api/v1/app/{}/endpoint/{}/secret/", app_id, ep.id),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap()
+        .key;
+
+    // Now add encryption and check the secret is still fine
+    let mut cfg = get_default_test_config();
+    cfg.encryption = Encryption::new([1; 32]);
+    let (client, _jh) = start_svix_server_with_cfg_and_org_id(&cfg, org_id.clone());
+
+    let secret2 = client
+        .get::<EndpointSecretOutTest>(
+            &format!("api/v1/app/{}/endpoint/{}/secret/", app_id, ep.id),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap()
+        .key;
+
+    // Ensure loading the existing secret works
+    assert_eq!(secret, secret2);
+
+    // Generate a new encrypted secret
+    let _: IgnoredResponse = client
+        .post(
+            &format!("api/v1/app/{}/endpoint/{}/secret/rotate/", app_id, ep.id),
+            serde_json::json!({ "key": secret }),
+            StatusCode::NO_CONTENT,
+        )
+        .await
+        .unwrap();
+
+    let secret2 = client
+        .get::<EndpointSecretOutTest>(
+            &format!("api/v1/app/{}/endpoint/{}/secret/", app_id, ep.id),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap()
+        .key;
+
+    // Ensure loading and saving works for encrypted
+    assert_eq!(secret, secret2);
+
+    // Make sure we can't read it with the secret unset
+    let cfg = get_default_test_config();
+    let (client, _jh) = start_svix_server_with_cfg_and_org_id(&cfg, org_id.clone());
+    client
+        .get::<IgnoredResponse>(
+            &format!("api/v1/app/{}/endpoint/{}/secret/", app_id, ep.id),
+            StatusCode::INTERNAL_SERVER_ERROR,
+        )
+        .await
+        .unwrap();
+}
+
+#[tokio::test]
 async fn test_invalid_endpoint_secret() {
     let (client, _jh) = start_svix_server();
 
@@ -869,9 +956,10 @@ async fn test_legacy_endpoint_secret() {
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
-    let secret_throwaway = EndpointSecretInternal::generate_symmetric()
+    let secret_throwaway = EndpointSecretInternal::generate_symmetric(&Encryption::new_noop())
         .unwrap()
-        .into_endpoint_secret();
+        .into_endpoint_secret(&Encryption::new_noop())
+        .unwrap();
     let raw_key = base64::decode("5gasBsSw3Nvf3ugNYVJIqnRVYPW7hPts").unwrap();
     let secret_1 = EndpointSecret::Symmetric(raw_key.clone());
 
@@ -914,6 +1002,66 @@ async fn test_legacy_endpoint_secret() {
             .unwrap()
             .key
     );
+}
+
+#[tokio::test]
+async fn test_endpoint_secret_encryption_in_database() {
+    let mut cfg = get_default_test_config();
+    cfg.encryption = Encryption::new([1; 32]);
+    let (client, _jh) = start_svix_server_with_cfg(&cfg);
+
+    let db = Arc::new(cfg);
+    let db = svix_server::db::init_db(&db).await;
+
+    let app_id = create_test_app(&client, "app1").await.unwrap().id;
+
+    let ep_in = EndpointIn {
+        url: "http://www.example.com".to_owned(),
+        version: 1,
+        ..Default::default()
+    };
+
+    let ep = post_endpoint(&client, &app_id, ep_in.clone())
+        .await
+        .unwrap();
+
+    let secret_encrypted: Option<QueryResult> = db
+        .query_one(Statement::from_sql_and_values(
+            DatabaseBackend::Postgres,
+            "SELECT key FROM endpoint WHERE id = $1",
+            vec![ep.id.clone().into()],
+        ))
+        .await
+        .unwrap();
+    let secret_encrypted: Vec<u8> = secret_encrypted.unwrap().try_get("", "key").unwrap();
+
+    let cfg = get_default_test_config();
+    let (client, _jh) = start_svix_server_with_cfg(&cfg);
+
+    let app_id = create_test_app(&client, "app1").await.unwrap().id;
+
+    let ep_in = EndpointIn {
+        url: "http://www.example.com".to_owned(),
+        version: 1,
+        ..Default::default()
+    };
+
+    let ep = post_endpoint(&client, &app_id, ep_in.clone())
+        .await
+        .unwrap();
+
+    let secret_clear: Option<QueryResult> = db
+        .query_one(Statement::from_sql_and_values(
+            DatabaseBackend::Postgres,
+            "SELECT key FROM endpoint WHERE id = $1",
+            vec![ep.id.clone().into()],
+        ))
+        .await
+        .unwrap();
+    let secret_clear: Vec<u8> = secret_clear.unwrap().try_get("", "key").unwrap();
+
+    // Ensure that the length of the encrypted is much longer than the clear
+    assert!(secret_encrypted.len() > secret_clear.len() + 10);
 }
 
 #[tokio::test]

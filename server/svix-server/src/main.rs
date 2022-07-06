@@ -185,9 +185,10 @@ async fn main() {
         }
         Some(Commands::AsymmetricKey { command }) => match command {
             AsymmetricKeyCommands::Generate => {
-                let secret = EndpointSecretInternal::generate_asymmetric()
+                let secret = EndpointSecretInternal::generate_asymmetric(&cfg.encryption)
                     .unwrap()
-                    .into_endpoint_secret();
+                    .into_endpoint_secret(&cfg.encryption)
+                    .unwrap();
                 println!("Secret key: {}", secret.serialize_secret_key());
                 println!("Public key: {}", secret.serialize_public_key());
                 exit(0);

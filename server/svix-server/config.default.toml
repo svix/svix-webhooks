@@ -11,6 +11,10 @@ listen_address = "0.0.0.0:8071"
 # For a list of supported events please refer to: https://api.svix.com/docs#tag/Webhooks
 # operational_webhook_address = "http://127.0.0.1:8071"
 
+# The main secret used by Svix. Used for client-side encryption of sensitive data, etc.
+# IMPORTANT: Once set, it can't be changed.
+# main_secret = "kPafCtH7KC351nWXQb2pEGa6IRW3OsYpzQJldB8X"
+
 # The JWT secret for authentication - should be secret and securely generated
 # jwt_secret = "8KjzRXrKkd9YFcNyqLSIY8JwiaCeRc6WK4UkMnSW"
 

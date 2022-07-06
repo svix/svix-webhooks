@@ -9,7 +9,7 @@ use figment::{
 };
 use std::time::Duration;
 
-use crate::{core::security::Keys, error::Result};
+use crate::{core::cryptography::Encryption, core::security::Keys, error::Result};
 use serde::{Deserialize, Deserializer};
 use tracing::Level;
 use validator::Validate;
@@ -21,6 +21,16 @@ where
     let buf = String::deserialize(deserializer)?;
 
     Ok(Keys::new(buf.as_bytes()))
+}
+
+fn deserialize_main_secret<'de, D>(deserializer: D) -> std::result::Result<Encryption, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let key = String::deserialize(deserializer)?;
+    // Derive a key so we get a key of the right size
+    let key = hmac_sha256::HMAC::mac(b"main", key.as_bytes());
+    Ok(Encryption::new(key))
 }
 
 #[derive(Deserialize)]
@@ -68,6 +78,15 @@ pub struct ConfigurationInner {
     /// The address to send operational webhooks to. When None, operational webhooks will not be
     /// sent. When Some, the API server with the given URL will be used to send operational webhooks.
     pub operational_webhook_address: Option<String>,
+
+    /// The main secret used by Svix. Used for client-side encryption of sensitive data, etc.
+    /// IMPORTANT: Once set, it can't be changed.
+    #[serde(
+        rename = "main_secret",
+        deserialize_with = "deserialize_main_secret",
+        default
+    )]
+    pub encryption: Encryption,
 
     /// The JWT secret for authentication - should be secret and securely generated
     #[serde(deserialize_with = "deserialize_jwt_secret")]
