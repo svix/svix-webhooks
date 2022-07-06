@@ -38,7 +38,7 @@ class {{ class_name }}({{"Exception" if is_exception}}):
     status_code: int
     def __init__(self, response: Dict[str, str], status_code: int):
         self.status_code = status_code
-        super({{class_name}}, self).__init__(response) 
+        super({{class_name}}, self).__init__(response)
     {%else%}
     """{% if model.title %}{{ model.title | wordwrap(116) }}
 
@@ -75,6 +75,7 @@ class {{ class_name }}({{"Exception" if is_exception}}):
     {% if model.additional_properties %}
     additional_properties: Dict[str, {{ additional_property_type }}] = attr.ib(init=False, factory=dict)
     {% endif %}
+
 {% macro _to_dict(multipart=False) %}
 {% for property in model.required_properties + model.optional_properties %}
 {% import "property_templates/" + property.template as prop_template %}
@@ -98,7 +99,7 @@ field_dict: Dict[str, Any] = {}
 {% endif %}
 {% if prop_template and prop_template.transform %}
 for prop_name, prop in self.additional_properties.items():
-    {{ prop_template.transform(model.additional_properties, "prop", "field_dict[prop_name]", multipart=multipart) | indent(4) }}
+    {{ prop_template.transform(model.additional_properties, "prop", "field_dict[prop_name]", multipart=multipart, declare_type=false) | indent(4) }}
 {% elif multipart %}
 field_dict.update({
     key: (None, str(value).encode(), "text/plain")
@@ -196,5 +197,5 @@ return field_dict
     def __contains__(self, key: str) -> bool:
         return key in self.additional_properties
     {% endif %}
-    {%endif%}
+    {% endif %}
 {% endif %}
