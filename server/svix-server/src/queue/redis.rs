@@ -674,7 +674,8 @@ pub mod tests {
         let should_be_none: Option<String> = pool.lpop(TEST_QUEUE, None).await.unwrap();
         assert!(should_be_none.is_none());
 
-        migrate_list(&mut pool, TEST_LEGACY, TEST_QUEUE).await;
+        let res = migrate_list(&mut pool, TEST_LEGACY, TEST_QUEUE).await;
+        assert!(res.is_ok());
 
         let test_key: Option<String> = pool.lpop(TEST_QUEUE, None).await.unwrap();
 
@@ -704,7 +705,8 @@ pub mod tests {
         let should_be_none: Vec<(String, i32)> = pool.zpopmin(TEST_QUEUE, 1).await.unwrap();
         assert!(should_be_none.is_empty());
 
-        migrate_sset(&mut pool, TEST_LEGACY, TEST_QUEUE).await;
+        let res = migrate_sset(&mut pool, TEST_LEGACY, TEST_QUEUE).await;
+        assert!(res.is_ok());
 
         let test_key: Vec<(String, i32)> = pool.zpopmin(TEST_QUEUE, 1).await.unwrap();
 
@@ -968,13 +970,18 @@ pub mod tests {
             }
 
             // v1 to v2
-            migrate_list(&mut conn, v1_main, v2_main).await;
-            migrate_list(&mut conn, v1_processing, v2_processing).await;
-            migrate_sset(&mut conn, v1_delayed, v2_delayed).await;
+            let r1 = migrate_list(&mut conn, v1_main, v2_main).await;
+            let r2 = migrate_list(&mut conn, v1_processing, v2_processing).await;
+            let r3 = migrate_sset(&mut conn, v1_delayed, v2_delayed).await;
+            assert!(r1.is_ok());
+            assert!(r2.is_ok());
+            assert!(r3.is_ok());
 
             // v2 to v3
-            migrate_list_to_stream(&mut conn, v2_main, v3_main).await;
-            migrate_list_to_stream(&mut conn, v2_processing, v3_main).await;
+            let r4 = migrate_list_to_stream(&mut conn, v2_main, v3_main).await;
+            let r5 = migrate_list_to_stream(&mut conn, v2_processing, v3_main).await;
+            assert!(r4.is_ok());
+            assert!(r5.is_ok());
         }
 
         // Read
