@@ -19,13 +19,11 @@ pub async fn run_with_retries<
                     tracing::warn!("Retrying after error {}", e);
                     tokio::time::sleep(*duration).await;
                 } else {
-                    tracing::warn!("Unrecoverable error {}", e);
                     return fun_ret;
                 }
             }
         }
     }
 
-    tracing::warn!("Exhausted retry schedule");
     fun().await
 }
