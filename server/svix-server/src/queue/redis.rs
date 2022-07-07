@@ -126,8 +126,7 @@ async fn background_task(
         // FIXME: needs to be a transaction
         let keys: Vec<(String, String)> = pool
             .zpopmin(&delayed_queue_name, keys.len() as isize)
-            .await
-            .unwrap();
+            .await?;
         let tasks: Vec<&str> = keys
             .iter()
             // All information is stored in the key in which the ID and JSON formated task
@@ -212,9 +211,9 @@ async fn background_task(
 /// Runs Redis queue migrations with the given delay schedule. Migrations are run on this schedule
 /// such that if an old instance of the server is online after the migrations are made, that no data
 /// will be lost assuming the old server is taken offline before the last scheduled delay.
-async fn run_migration_schedule(delays: &[Duration], pool: RedisPool) {
+async fn run_migration_schedule(delays: &[Duration], pool: RedisPool) -> Result<()> {
     for delay in delays {
-        let mut pool = pool.get().await.unwrap();
+        let mut pool = pool.get().await?;
 
         // drain legacy queues:
         migrate_v1_to_v2_queues(&mut pool).await;
@@ -222,6 +221,8 @@ async fn run_migration_schedule(delays: &[Duration], pool: RedisPool) {
 
         tokio::time::sleep(*delay).await;
     }
+
+    Ok(())
 }
 
 /// An inner function allowing key constants to be variable for testing purposes
@@ -306,7 +307,9 @@ async fn new_pair_inner(
                     Duration::from_secs(60 * 60 * 24),
                 ];
 
-                run_migration_schedule(&delays, pool).await;
+                if let Err(err) = run_migration_schedule(&delays, pool).await {
+                    tracing::error!("{}", err);
+                };
             }
         });
 
@@ -367,15 +370,17 @@ fn to_redis_key(delivery: &TaskQueueDelivery) -> String {
     format!(
         "{}|{}",
         delivery.id,
-        serde_json::to_string(&delivery.task).unwrap()
+        serde_json::to_string(&delivery.task)
+            .expect("Could not parse string from TaskQueueDelivery.task")
     )
 }
 
 fn from_redis_key(key: &str) -> TaskQueueDelivery {
     // Get the first delimiter -> it has to have the |
-    let pos = key.find('|').unwrap();
+    let pos = key.find('|').expect("Key must contain '|'");
     let id = (&key[..pos]).to_string();
-    let task = serde_json::from_str(&key[pos + 1..]).unwrap();
+    let task =
+        serde_json::from_str(&key[pos + 1..]).expect("Could not parse string from delimitted key");
     TaskQueueDelivery { id, task }
 }
 
@@ -507,17 +512,24 @@ impl TaskQueueReceive for RedisQueueConsumer {
 }
 
 async fn migrate_v2_to_v3_queues(pool: &mut PooledConnection<'_>) {
-    migrate_list_to_stream(pool, LEGACY_V2_MAIN, MAIN).await;
-    migrate_list_to_stream(pool, LEGACY_V2_PROCESSING, MAIN).await;
+    if let Err(err) = migrate_list_to_stream(pool, LEGACY_V2_MAIN, MAIN).await {
+        tracing::error!("{}", err);
+    };
+    if let Err(err) = migrate_list_to_stream(pool, LEGACY_V2_PROCESSING, MAIN).await {
+        tracing::error!("{}", err);
+    };
 }
 
-async fn migrate_list_to_stream(pool: &mut PooledConnection<'_>, legacy_queue: &str, queue: &str) {
+async fn migrate_list_to_stream(
+    pool: &mut PooledConnection<'_>,
+    legacy_queue: &str,
+    queue: &str,
+) -> Result<()> {
     let batch_size = 1000;
     loop {
         let legacy_keys: Vec<String> = pool
             .lpop(legacy_queue, NonZeroUsize::new(batch_size))
-            .await
-            .unwrap();
+            .await?;
         if legacy_keys.is_empty() {
             break;
         }
@@ -533,28 +545,43 @@ async fn migrate_list_to_stream(pool: &mut PooledConnection<'_>, legacy_queue: &
             let _ = pipe.xadd(
                 queue,
                 GENERATE_STREAM_ID,
-                &[(QUEUE_KV_KEY, serde_json::to_string(&delivery.task).unwrap())],
+                &[(
+                    QUEUE_KV_KEY,
+                    serde_json::to_string(&delivery.task)
+                        .expect("Could not parse string from TaskQueueDelivery.task"),
+                )],
             );
         }
 
-        let _: () = pool.query_async_pipeline(pipe).await.unwrap();
+        let _: () = pool.query_async_pipeline(pipe).await?;
     }
+
+    Ok(())
 }
 
 async fn migrate_v1_to_v2_queues(pool: &mut PooledConnection<'_>) {
-    migrate_list(pool, LEGACY_V1_MAIN, LEGACY_V2_MAIN).await;
-    migrate_list(pool, LEGACY_V1_PROCESSING, LEGACY_V2_PROCESSING).await;
-    migrate_sset(pool, LEGACY_V1_DELAYED, DELAYED).await;
+    if let Err(err) = migrate_list(pool, LEGACY_V1_MAIN, LEGACY_V2_MAIN).await {
+        tracing::error!("{}", err);
+    };
+    if let Err(err) = migrate_list(pool, LEGACY_V1_PROCESSING, LEGACY_V2_PROCESSING).await {
+        tracing::error!("{}", err);
+    };
+    if let Err(err) = migrate_sset(pool, LEGACY_V1_DELAYED, DELAYED).await {
+        tracing::error!("{}", err);
+    };
 }
 
-async fn migrate_list(pool: &mut PooledConnection<'_>, legacy_queue: &str, queue: &str) {
+async fn migrate_list(
+    pool: &mut PooledConnection<'_>,
+    legacy_queue: &str,
+    queue: &str,
+) -> Result<()> {
     let batch_size = 1000;
     loop {
         // Checking for old messages from queue
         let legacy_keys: Vec<String> = pool
             .lpop(legacy_queue, NonZeroUsize::new(batch_size))
-            .await
-            .unwrap();
+            .await?;
         if legacy_keys.is_empty() {
             break;
         }
@@ -563,15 +590,21 @@ async fn migrate_list(pool: &mut PooledConnection<'_>, legacy_queue: &str, queue
             legacy_keys.len(),
             legacy_queue
         );
-        let _: () = pool.rpush(queue, legacy_keys).await.unwrap();
+        let _: () = pool.rpush(queue, legacy_keys).await?;
     }
+
+    Ok(())
 }
 
-async fn migrate_sset(pool: &mut PooledConnection<'_>, legacy_queue: &str, queue: &str) {
+async fn migrate_sset(
+    pool: &mut PooledConnection<'_>,
+    legacy_queue: &str,
+    queue: &str,
+) -> Result<()> {
     let batch_size = 1000;
     loop {
         // Checking for old messages from LEGACY_DELAYED
-        let legacy_keys: Vec<(String, f64)> = pool.zpopmin(legacy_queue, batch_size).await.unwrap();
+        let legacy_keys: Vec<(String, f64)> = pool.zpopmin(legacy_queue, batch_size).await?;
 
         if legacy_keys.is_empty() {
             break;
@@ -584,8 +617,10 @@ async fn migrate_sset(pool: &mut PooledConnection<'_>, legacy_queue: &str, queue
         let legacy_keys: Vec<(f64, String)> =
             legacy_keys.into_iter().map(|(x, y)| (y, x)).collect();
 
-        let _: () = pool.zadd_multiple(queue, &legacy_keys).await.unwrap();
+        let _: () = pool.zadd_multiple(queue, &legacy_keys).await?;
     }
+
+    Ok(())
 }
 
 #[cfg(test)]
