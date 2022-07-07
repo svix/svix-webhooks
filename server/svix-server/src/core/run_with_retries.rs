@@ -11,19 +11,20 @@ pub async fn run_with_retries<
     retry_schedule: &[Duration],
 ) -> Result<T, E> {
     for duration in retry_schedule {
-        let fun_ret = fun().await;
-        match fun_ret {
-            Ok(_) => return fun_ret,
-            Err(ref e) => {
-                if should_retry(e) {
+        match fun().await {
+            Ok(ret) => return Ok(ret),
+            Err(e) => {
+                if should_retry(&e) {
                     tracing::warn!("Retrying after error {}", e);
                     tokio::time::sleep(*duration).await;
                 } else {
-                    return fun_ret;
+                    return Err(e);
                 }
             }
         }
     }
 
+    // Loop sleeps after a failed attempt so you need this last fun call to avoid a fencepost error
+    // with durations between tries.
     fun().await
 }
