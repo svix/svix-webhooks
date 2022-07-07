@@ -254,7 +254,7 @@ async fn dispatch(
         Err(err) => {
             let attempt = messageattempt::ActiveModel {
                 response_status_code: Set(0),
-                response: Set("".to_owned()),
+                response: Set(err.to_string()),
                 status: Set(MessageStatus::Fail),
 
                 ..attempt
