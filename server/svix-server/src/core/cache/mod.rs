@@ -119,9 +119,6 @@ const RETRY_SCHEDULE: &[Duration] = &[
 #[async_trait]
 #[enum_dispatch(Cache)]
 pub trait CacheBehavior: Sync + Send {
-    // TODO: Reduce retry-related duplication
-    // TODO: Test retries
-    // TODO: Retry schedule constant
     fn should_retry(&self, e: &Error) -> bool;
     async fn get<T: CacheValue>(&self, key: &T::Key) -> Result<Option<T>> {
         run_with_retries(
