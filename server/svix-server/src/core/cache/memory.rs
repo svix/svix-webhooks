@@ -57,6 +57,10 @@ pub struct MemoryCache {
 
 #[async_trait]
 impl CacheBehavior for MemoryCache {
+    fn should_retry(&self, _e: &super::Error) -> bool {
+        false
+    }
+
     async fn get_raw(&self, key: &[u8]) -> Result<Option<Vec<u8>>> {
         Ok(self
             .map

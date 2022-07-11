@@ -20,6 +20,10 @@ pub struct RedisCache {
 
 #[async_trait]
 impl CacheBehavior for RedisCache {
+    fn should_retry(&self, e: &Error) -> bool {
+        matches!(e, Error::Pool(_) | Error::Database(_))
+    }
+
     async fn get_raw(&self, key: &[u8]) -> Result<Option<Vec<u8>>> {
         let mut pool = self.redis.get().await.unwrap();
 

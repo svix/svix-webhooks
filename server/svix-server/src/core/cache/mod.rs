@@ -8,6 +8,8 @@ use axum::async_trait;
 use enum_dispatch::enum_dispatch;
 use serde::{de::DeserializeOwned, Serialize};
 
+use crate::core::run_with_retries::run_with_retries;
+
 pub mod memory;
 pub mod none;
 pub mod redis;
@@ -108,38 +110,66 @@ impl Cache {
     }
 }
 
+const RETRY_SCHEDULE: &[Duration] = &[
+    Duration::from_millis(10),
+    Duration::from_millis(20),
+    Duration::from_millis(40),
+];
+
 #[async_trait]
 #[enum_dispatch(Cache)]
 pub trait CacheBehavior: Sync + Send {
+    fn should_retry(&self, e: &Error) -> bool;
     async fn get<T: CacheValue>(&self, key: &T::Key) -> Result<Option<T>> {
-        self.get_raw(key.as_ref().as_bytes())
-            .await?
-            .map(|x| {
-                String::from_utf8(x)
-                    .map_err(|e| e.into())
-                    .and_then(|json| serde_json::from_str(&json).map_err(|e| e.into()))
-            })
-            .transpose()
+        run_with_retries(
+            || async move {
+                self.get_raw(key.as_ref().as_bytes())
+                    .await?
+                    .map(|x| {
+                        String::from_utf8(x)
+                            .map_err(|e| e.into())
+                            .and_then(|json| serde_json::from_str(&json).map_err(|e| e.into()))
+                    })
+                    .transpose()
+            },
+            |e| self.should_retry(e),
+            RETRY_SCHEDULE,
+        )
+        .await
     }
 
     async fn get_raw(&self, key: &[u8]) -> Result<Option<Vec<u8>>>;
 
     async fn get_string<T: StringCacheValue>(&self, key: &T::Key) -> Result<Option<T>> {
-        self.get_raw(key.as_ref().as_bytes())
-            .await?
-            .map(|x| {
-                String::from_utf8(x)
-                    .map_err(|e| e.into())
-                    .and_then(|x| x.try_into().map_err(|_| Error::DeserializationOther))
-            })
-            .transpose()
+        run_with_retries(
+            || async move {
+                self.get_raw(key.as_ref().as_bytes())
+                    .await?
+                    .map(|x| {
+                        String::from_utf8(x)
+                            .map_err(|e| e.into())
+                            .and_then(|x| x.try_into().map_err(|_| Error::DeserializationOther))
+                    })
+                    .transpose()
+            },
+            |e| self.should_retry(e),
+            RETRY_SCHEDULE,
+        )
+        .await
     }
 
     async fn set<T: CacheValue>(&self, key: &T::Key, value: &T, ttl: Duration) -> Result<()> {
-        self.set_raw(
-            key.as_ref().as_bytes(),
-            serde_json::to_string(value)?.as_bytes(),
-            ttl,
+        run_with_retries(
+            || async move {
+                self.set_raw(
+                    key.as_ref().as_bytes(),
+                    serde_json::to_string(value)?.as_bytes(),
+                    ttl,
+                )
+                .await
+            },
+            |e| self.should_retry(e),
+            RETRY_SCHEDULE,
         )
         .await
     }
@@ -152,8 +182,15 @@ pub trait CacheBehavior: Sync + Send {
         value: &T,
         ttl: Duration,
     ) -> Result<()> {
-        self.set_raw(key.as_ref().as_bytes(), value.to_string().as_bytes(), ttl)
-            .await
+        run_with_retries(
+            || async move {
+                self.set_raw(key.as_ref().as_bytes(), value.to_string().as_bytes(), ttl)
+                    .await
+            },
+            |e| self.should_retry(e),
+            RETRY_SCHEDULE,
+        )
+        .await
     }
 
     async fn delete<T: CacheKey>(&self, key: &T) -> Result<()>;
@@ -164,10 +201,17 @@ pub trait CacheBehavior: Sync + Send {
         value: &T,
         ttl: Duration,
     ) -> Result<bool> {
-        self.set_raw_if_not_exists(
-            key.as_ref().as_bytes(),
-            serde_json::to_string(value)?.as_bytes(),
-            ttl,
+        run_with_retries(
+            || async move {
+                self.set_raw_if_not_exists(
+                    key.as_ref().as_bytes(),
+                    serde_json::to_string(value)?.as_bytes(),
+                    ttl,
+                )
+                .await
+            },
+            |e| self.should_retry(e),
+            RETRY_SCHEDULE,
         )
         .await
     }
@@ -180,7 +224,18 @@ pub trait CacheBehavior: Sync + Send {
         value: &T,
         ttl: Duration,
     ) -> Result<bool> {
-        self.set_raw_if_not_exists(key.as_ref().as_bytes(), value.to_string().as_bytes(), ttl)
-            .await
+        run_with_retries(
+            || async move {
+                self.set_raw_if_not_exists(
+                    key.as_ref().as_bytes(),
+                    value.to_string().as_bytes(),
+                    ttl,
+                )
+                .await
+            },
+            |e| self.should_retry(e),
+            RETRY_SCHEDULE,
+        )
+        .await
     }
 }
