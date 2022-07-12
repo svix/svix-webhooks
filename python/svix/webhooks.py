@@ -27,7 +27,7 @@ class Webhook:
             if whsecret.startswith(self._SECRET_PREFIX):
                 whsecret = whsecret[len(self._SECRET_PREFIX) :]
             self._whsecret = base64.b64decode(whsecret)
-            
+
         if isinstance(whsecret, bytes):
             self._whsecret = whsecret
 
