@@ -36,11 +36,11 @@ public final class Webhook {
 		this.key = Base64.getDecoder().decode(sec);
 	}
 
-	public Webhook(final byte[] secret) {
+	public WebhookRaw(final byte[] secret) {
 		this.key = secret;
 	}
 
-	public WebhookFromRawString(final String secret) {
+	public WebhookRaw(final String secret) {
 		this.key = secret.getBytes();
 	}
 
