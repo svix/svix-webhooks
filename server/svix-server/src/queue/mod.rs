@@ -150,7 +150,13 @@ trait TaskQueueSend: Sync + Send {
     fn clone_box(&self) -> Box<dyn TaskQueueSend>;
 
     async fn ack(&self, delivery: TaskQueueDelivery) -> Result<()>;
-    async fn nack(&self, delivery: TaskQueueDelivery) -> Result<()>;
+
+    /// By default NACKing a [`TaskQueueDelivery`] simply reinserts it in the back of the queue without
+    /// any delay.
+    async fn nack(&self, delivery: TaskQueueDelivery) -> Result<()> {
+        tracing::debug!("nack {}", delivery.id);
+        self.send(delivery.task, None).await
+    }
 }
 
 impl Clone for Box<dyn TaskQueueSend> {
@@ -248,11 +254,7 @@ mod tests {
         assert_recv(&mut rx_mem, msg_1).await;
     }
 
-    // TODO: Eliminate code duplication in ack and nack tests
-
     #[tokio::test]
-    #[ignore]
-    // ack only works with the Redis queue as of present, so this test is ignored for now
     async fn test_ack() {
         let (tx_mem, mut rx_mem) = memory::new_pair().await;
         assert!(tx_mem
@@ -283,8 +285,6 @@ mod tests {
     }
 
     #[tokio::test]
-    #[ignore]
-    // nack only works with the Redis queue as of present, so this test is ignored for now
     async fn test_nack() {
         let (tx_mem, mut rx_mem) = memory::new_pair().await;
         assert!(tx_mem

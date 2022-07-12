@@ -440,14 +440,6 @@ impl TaskQueueSend for RedisQueueProducer {
         Ok(())
     }
 
-    async fn nack(&self, delivery: TaskQueueDelivery) -> Result<()> {
-        tracing::error!(
-            "NACKing is not yet supported | Delivery ID: {}",
-            delivery.id
-        );
-        Ok(())
-    }
-
     fn clone_box(&self) -> Box<dyn TaskQueueSend> {
         Box::new(self.clone())
     }
@@ -785,6 +777,48 @@ pub mod tests {
             }
 
             _ = tokio::time::sleep(Duration::from_secs(1)) => {}
+        }
+    }
+
+    #[tokio::test]
+    async fn test_nack() {
+        let cfg = crate::cfg::load().unwrap();
+        let pool = get_pool(cfg).await;
+
+        let (p, mut c) = new_pair_inner(
+            pool,
+            Duration::from_millis(500),
+            "",
+            "{test}_nack",
+            "{test}_nack_delayed",
+        )
+        .await;
+
+        tokio::time::sleep(Duration::from_millis(550)).await;
+
+        flush_stale_queue_items(p.clone(), &mut c).await;
+
+        let mt = QueueTask::MessageV1(MessageTask {
+            msg_id: MessageId("test".to_owned()),
+            app_id: ApplicationId("test".to_owned()),
+            endpoint_id: EndpointId("test".to_owned()),
+            trigger_type: MessageAttemptTriggerType::Manual,
+            attempt_count: 0,
+        });
+        p.send(mt.clone(), None).await.unwrap();
+
+        let recv = c.receive_all().await.unwrap().pop().unwrap();
+        assert_eq!(recv.task, mt);
+        p.nack(recv).await.unwrap();
+
+        tokio::select! {
+            recv = c.receive_all() => {
+                assert_eq!(recv.unwrap().pop().unwrap().task, mt);
+            }
+
+            _ = tokio::time::sleep(Duration::from_secs(1)) => {
+                panic!("Expected QueueTask");
+            }
         }
     }
 

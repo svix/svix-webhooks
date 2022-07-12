@@ -47,10 +47,6 @@ impl TaskQueueSend for MemoryQueueProducer {
         Ok(())
     }
 
-    async fn nack(&self, _delivery: TaskQueueDelivery) -> Result<()> {
-        Ok(())
-    }
-
     fn clone_box(&self) -> Box<dyn TaskQueueSend> {
         Box::new(self.clone())
     }
