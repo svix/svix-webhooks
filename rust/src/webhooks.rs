@@ -59,7 +59,7 @@ impl Webhook {
 
     pub fn new_from_raw_string(secret: String) -> Result<Self, WebhookError> {
         Ok(Webhook {
-            key: secret.as_bytes(),
+            key: secret.to_vec(),
         })
     }
 
