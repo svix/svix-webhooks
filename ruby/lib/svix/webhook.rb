@@ -4,11 +4,11 @@ module Svix
     class Webhook
 
         def self.new_using_raw_bytes(secret)
-            self.new(secret.pack('C*').force_encoding('UTF-8'))
+            self.new(secret.pack("C*").force_encoding("UTF-8"))
         end
 
         def self.new_using_raw_string(secret)
-           self.new(Base64.encode(secret)) 
+           self.new(Base64.encode(secret))
         end
 
         def initialize(secret)
