@@ -45,7 +45,7 @@ func NewWebhookRaw(secret []byte) (*Webhook, error) {
 	}, nil
 }
 
-func NewWebhookRaw(secret string) (*Webhook, error) {
+func NewWebhookRawString(secret string) (*Webhook, error) {
 	return &Webhook {
 		key: []byte(secret),
 	}, nil
