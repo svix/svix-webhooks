@@ -19,7 +19,7 @@ class Webhook:
     _SECRET_PREFIX: str = "whsec_"
     _whsecret: bytes
 
-    def __init__(self, whsecret: t.Union[str, bytes], *):
+    def __init__(self, whsecret: t.Union[str, bytes]):
         if not whsecret:
             raise RuntimeError("Secret can't be empty.")
 
