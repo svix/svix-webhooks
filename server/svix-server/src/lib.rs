@@ -10,9 +10,10 @@ use cfg::CacheType;
 use std::{
     net::{SocketAddr, TcpListener},
     str::FromStr,
+    time::Duration,
 };
 use tower::ServiceBuilder;
-use tower_http::cors::{Any, CorsLayer};
+use tower_http::cors::{AllowHeaders, Any, CorsLayer};
 use tower_http::trace::TraceLayer;
 
 use crate::{
@@ -93,10 +94,10 @@ pub async fn run_with_prefix(
         )
         .layer(
             CorsLayer::new()
-                .allow_credentials(true)
                 .allow_origin(Any)
                 .allow_methods(Any)
-                .allow_headers(Any),
+                .allow_headers(AllowHeaders::mirror_request())
+                .max_age(Duration::from_secs(600)),
         )
         .layer(
             TraceLayer::new_for_http()
