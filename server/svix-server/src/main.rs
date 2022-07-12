@@ -163,6 +163,27 @@ async fn main() {
         }
     };
 
+    if let Some(wait_for_seconds) = args.wait_for {
+        let mut wait_for = Vec::with_capacity(2);
+        wait_for.push(wait_for_dsn(
+            &cfg.db_dsn,
+            POSTGRES_NAME,
+            POSTGRES_PORT,
+            wait_for_seconds,
+        ));
+
+        if let Some(redis_dsn) = &cfg.redis_dsn {
+            wait_for.push(wait_for_dsn(
+                redis_dsn,
+                REDIS_NAME,
+                REDIS_PORT,
+                wait_for_seconds,
+            ));
+        }
+
+        futures::future::join_all(wait_for).await;
+    }
+
     if args.run_migrations {
         db::run_migrations(&cfg).await;
         tracing::debug!("Migrations: success");
@@ -196,27 +217,6 @@ async fn main() {
         },
         None => {}
     };
-
-    if let Some(wait_for_seconds) = args.wait_for {
-        let mut wait_for = Vec::with_capacity(2);
-        wait_for.push(wait_for_dsn(
-            &cfg.db_dsn,
-            POSTGRES_NAME,
-            POSTGRES_PORT,
-            wait_for_seconds,
-        ));
-
-        if let Some(redis_dsn) = &cfg.redis_dsn {
-            wait_for.push(wait_for_dsn(
-                redis_dsn,
-                REDIS_NAME,
-                REDIS_PORT,
-                wait_for_seconds,
-            ));
-        }
-
-        futures::future::join_all(wait_for).await;
-    }
 
     run(cfg, None).await;
 
