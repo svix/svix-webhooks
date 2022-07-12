@@ -41,13 +41,13 @@ func NewWebhook(secret string) (*Webhook, error) {
 
 func NewWebhookFromRaw(secret []byte) (*Webhook, error) {
 	return &Webhook {
-		key: secret
+		key: secret,
 	}, nil
 }
 
 func NewWebhookFromRawString(secret string) (*Webhook, error) {
 	return &Webhook {
-		key: []byte(secret)
+		key: []byte(secret),
 	}, nil
 }
 
