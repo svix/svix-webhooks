@@ -54,12 +54,12 @@ impl Webhook {
     }
 
     pub fn new_from_raw_bytes(secret: Vec<u8>) -> Result<Self, WebhookError> {
-        Ok(Webhook { secret })
+        Ok(Webhook { key: secret })
     }
 
     pub fn new_from_raw_string(secret: String) -> Result<Self, WebhookError> {
         Ok(Webhook {
-            key: secret.to_string().as_bytes(),
+            key: secret.as_bytes().to_vec(),
         })
     }
 
