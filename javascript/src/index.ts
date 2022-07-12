@@ -602,18 +602,19 @@ export class Webhook {
     if (!secret) {
       throw new Error("Secret can't be empty.");
     }
-    if (
-      options?.format !== "raw" &&
-      secret instanceof String &&
-      secret.startsWith(Webhook.prefix)
-    ) {
-      secret = secret.substring(Webhook.prefix.length);
-    }
-    if (options?.format === "raw" && secret instanceof Uint8Array) {
-      this.key = secret;
-    } else if (options?.format === "raw" && secret instanceof String) {
-      this.key = Uint8Array.from(secret, (c) => c.charCodeAt(0));
+    if (options?.format === "raw") {
+      if (secret instanceof Uint8Array) {
+        this.key = secret;
+      } else {
+        this.key = Uint8Array.from(secret, (c) => c.charCodeAt(0));
+      }
     } else {
+      if (!(secret instanceof String)) {
+        throw new Error("Expected secret to be of type string");
+      }
+      if (secret.startsWith(Webhook.prefix)) {
+        secret = secret.substring(Webhook.prefix.length);
+      }
       this.key = base64.decode(secret as string);
     }
   }
