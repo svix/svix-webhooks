@@ -590,10 +590,8 @@ export interface WebhookUnbrandedRequiredHeaders {
   "webhook-signature": string;
 }
 
-const SECRET_FORMAT_RAW = "raw";
-
 export interface WebhookOptions {
-  format?: string;
+  format?: "raw";
 }
 
 export class Webhook {
@@ -605,18 +603,18 @@ export class Webhook {
       throw new Error("Secret can't be empty.");
     }
     if (
-      options?.format !== SECRET_FORMAT_RAW &&
+      options?.format !== "raw" &&
       secret instanceof String &&
       secret.startsWith(Webhook.prefix)
     ) {
       secret = secret.substring(Webhook.prefix.length);
     }
-    if (options?.format === SECRET_FORMAT_RAW && secret instanceof Uint8Array) {
+    if (options?.format === "raw" && secret instanceof Uint8Array) {
       this.key = secret;
-    } else if (options?.format === SECRET_FORMAT_RAW && secret instanceof String) {
-      this.key = Uint8Array.from(secret.toString(), (c) => c.charCodeAt(0));
+    } else if (options?.format === "raw" && secret instanceof String) {
+      this.key = Uint8Array.from(secret, (c) => c.charCodeAt(0));
     } else {
-      this.key = base64.decode(secret.toString());
+      this.key = base64.decode(secret as string);
     }
   }
 
