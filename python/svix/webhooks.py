@@ -18,26 +18,18 @@ class WebhookVerificationError(Exception):
 class Webhook:
     _SECRET_PREFIX: str = "whsec_"
     _whsecret: bytes
-    _enc_key: t.Optional[bytes]
 
-    def __init__(self, whsecret: str, *, enc_key: t.Optional[str] = None):
+    def __init__(self, whsecret: t.Union[str, bytes], *):
         if not whsecret:
             raise RuntimeError("Secret can't be empty.")
 
-        if whsecret.startswith(self._SECRET_PREFIX):
-            whsecret = whsecret[len(self._SECRET_PREFIX) :]
-        self._whsecret = base64.b64decode(whsecret)
-        self._enc_key = base64.b64decode(enc_key) if enc_key is not None else None
-
-    def from_raw(whsecret: bytes):
-        wh = Webhook()
-        wh._whsecret = whsecret
-        return wh
-
-    def from_raw(whsecret: str):
-        wh = Webhook()
-        wh._whsecret = str.encode(whsecret)
-        return wh
+        if isinstance(whsecret, str):
+            if whsecret.startswith(self._SECRET_PREFIX):
+                whsecret = whsecret[len(self._SECRET_PREFIX) :]
+            self._whsecret = base64.b64decode(whsecret)
+            
+        if isinstance(whsecret, bytes):
+            self._whsecret = whsecret
 
     def verify(self, data: t.Union[bytes, str], headers: t.Dict[str, str]) -> t.Any:
         data = data if isinstance(data, str) else data.decode()
