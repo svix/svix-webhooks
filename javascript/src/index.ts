@@ -590,19 +590,25 @@ export interface WebhookUnbrandedRequiredHeaders {
   "webhook-signature": string;
 }
 
+export interface WebhookOptions {
+  raw?: boolean;
+}
+
 export class Webhook {
   private static prefix = "whsec_";
   private readonly key: Uint8Array;
 
-  constructor(secret: string | Uint8Array) {
+  constructor(secret: string | Uint8Array, options?: WebhookOptions) {
     if (!secret) {
       throw new Error("Secret can't be empty.");
     }
-    if (secret instanceof String && secret.startsWith(Webhook.prefix)) {
+    if (!options?.raw && secret instanceof String && secret.startsWith(Webhook.prefix)) {
       secret = secret.substring(Webhook.prefix.length);
     }
-    if (secret instanceof Uint8Array) {
+    if (options?.raw && secret instanceof Uint8Array) {
       this.key = secret;
+    } else if (options?.raw && secret instanceof String) {
+      this.key = Uint8Array.from(atob(secret.toString()), (c) => c.charCodeAt(0));
     } else {
       this.key = base64.decode(secret.toString());
     }
