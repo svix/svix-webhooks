@@ -29,6 +29,16 @@ class Webhook:
         self._whsecret = base64.b64decode(whsecret)
         self._enc_key = base64.b64decode(enc_key) if enc_key is not None else None
 
+    def from_raw(whsecret: bytes):
+        wh = Webhook()
+        wh._whsecret = whsecret
+        return wh
+
+    def from_raw(whsecret: str):
+        wh = Webhook()
+        wh._whsecret = str.encode(whsecret)
+        return wh
+
     def verify(self, data: t.Union[bytes, str], headers: t.Dict[str, str]) -> t.Any:
         data = data if isinstance(data, str) else data.decode()
         headers = {k.lower(): v for (k, v) in headers.items()}
