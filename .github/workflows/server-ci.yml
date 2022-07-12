@@ -62,7 +62,7 @@ jobs:
         SVIX_CACHE_TYPE: "memory"
       with:
         command: run
-        args: --manifest-path server/Cargo.toml -- migrate
+        args: --manifest-path server/Cargo.toml -- --wait-for 15 migrate
 
     - name: Run tests
       working-directory: ./server
