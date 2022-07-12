@@ -31,14 +31,9 @@ namespace Svix
             this.key = Convert.FromBase64String(key);
         }
 
-        public WebhookRaw(byte[] key)
+        public Webhook(byte[] key)
         {
             this.key = key;
-        }
-
-        public WebhookRaw(string key)
-        {
-            this.key = Encoding.ASCII.GetBytes(string);
         }
 
         public void Verify(string payload, WebHeaderCollection headers)

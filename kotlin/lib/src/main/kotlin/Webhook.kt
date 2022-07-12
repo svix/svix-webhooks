@@ -107,12 +107,6 @@ class Webhook(secret: String) {
         key = Base64.getDecoder().decode(secret)
     }
 
-    constructor(secret: String, format: String) {
-        if (format === "raw") {
-            key = secret.toByteArray()
-        }
-    }
-
     constructor(secret: ByteArray) {
         key = secret
     }

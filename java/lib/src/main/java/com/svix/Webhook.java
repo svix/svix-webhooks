@@ -36,12 +36,8 @@ public final class Webhook {
 		this.key = Base64.getDecoder().decode(sec);
 	}
 
-	public WebhookRaw(final byte[] secret) {
+	public Webhook(final byte[] secret) {
 		this.key = secret;
-	}
-
-	public WebhookRaw(final String secret) {
-		this.key = secret.getBytes();
 	}
 
 	public void verify(final String payload, final HttpHeaders headers) throws WebhookVerificationException {

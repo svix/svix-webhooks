@@ -7,10 +7,6 @@ module Svix
             self.new(secret.pack("C*").force_encoding("UTF-8"))
         end
 
-        def self.new_using_raw_string(secret)
-           self.new(Base64.encode(secret))
-        end
-
         def initialize(secret)
             if secret.start_with?(SECRET_PREFIX)
                 secret = secret[SECRET_PREFIX.length..-1]

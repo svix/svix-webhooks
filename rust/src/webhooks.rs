@@ -53,14 +53,8 @@ impl Webhook {
         Ok(Webhook { key })
     }
 
-    pub fn new_from_raw_bytes(secret: Vec<u8>) -> Result<Self, WebhookError> {
+    pub fn raw(secret: Vec<u8>) -> Result<Self, WebhookError> {
         Ok(Webhook { key: secret })
-    }
-
-    pub fn new_from_raw_string(secret: String) -> Result<Self, WebhookError> {
-        Ok(Webhook {
-            key: secret.as_bytes().to_vec(),
-        })
     }
 
     pub fn verify(&self, payload: &[u8], headers: &HeaderMap) -> Result<(), WebhookError> {
