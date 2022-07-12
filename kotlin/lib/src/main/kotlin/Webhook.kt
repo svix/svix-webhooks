@@ -100,11 +100,20 @@ class Webhook(secret: String) {
         }
     }
 
-    init {
-        var sec = secret
-        if (sec.startsWith(SECRET_PREFIX)) {
-            sec = sec.substring(SECRET_PREFIX.length)
+    constructor(secret: String) {
+        if (secret.startsWith(SECRET_PREFIX)) {
+            secret = secret.substring(SECRET_PREFIX.length)
         }
-        key = Base64.getDecoder().decode(sec)
+        key = Base64.getDecoder().decode(secret)
+    }
+
+    constructor(secret: String, format: String) {
+        if (format === "raw") {
+            key = secret.toByteArray()
+        }
+    }
+
+    constructor(secret: ByteArray) {
+        key = secret
     }
 }
