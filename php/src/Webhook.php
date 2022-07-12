@@ -16,8 +16,9 @@ class Webhook
         $this->secret = base64_decode($secret);
     }
 
-    public static function fromRaw($secret) {
-        $obj = new self(); 
+    public static function fromRaw($secret)
+    {
+        $obj = new self();
         $obj->secret = $secret;
         return $obj;
     }
