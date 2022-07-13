@@ -1,4 +1,4 @@
-use std::time::Duration;
+use std::{sync::Arc, time::Duration};
 
 use axum::async_trait;
 use chrono::Utc;
@@ -26,10 +26,10 @@ pub struct MemoryQueueProducer {
 
 #[async_trait]
 impl TaskQueueSend for MemoryQueueProducer {
-    async fn send(&self, msg: QueueTask, delay: Option<Duration>) -> Result<()> {
+    async fn send(&self, msg: Arc<QueueTask>, delay: Option<Duration>) -> Result<()> {
         let tx = self.tx.clone();
         let timestamp = delay.map(|delay| Utc::now() + chrono::Duration::from_std(delay).unwrap());
-        let delivery = TaskQueueDelivery::new(msg, timestamp);
+        let delivery = TaskQueueDelivery::from_arc(msg, timestamp);
         tokio::spawn(async move {
             // We just assume memory queue always works, so we can defer the error handling
             tracing::trace!("MemoryQueue: event sent > (delay: {:?})", delay);
@@ -43,7 +43,7 @@ impl TaskQueueSend for MemoryQueueProducer {
         Ok(())
     }
 
-    async fn ack(&self, _delivery: TaskQueueDelivery) -> Result<()> {
+    async fn ack(&self, _delivery: &TaskQueueDelivery) -> Result<()> {
         Ok(())
     }
 
