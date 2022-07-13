@@ -11,7 +11,7 @@ import java.util.Base64
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
-class Webhook(secret: String) {
+class Webhook {
     private val key: ByteArray
 
     @Throws(WebhookVerificationException::class)
@@ -101,10 +101,11 @@ class Webhook(secret: String) {
     }
 
     constructor(secret: String) {
-        if (secret.startsWith(SECRET_PREFIX)) {
-            secret = secret.substring(SECRET_PREFIX.length)
+        var sec = secret
+        if (sec.startsWith(SECRET_PREFIX)) {
+            sec = sec.substring(SECRET_PREFIX.length)
         }
-        key = Base64.getDecoder().decode(secret)
+        key = Base64.getDecoder().decode(sec)
     }
 
     constructor(secret: ByteArray) {
