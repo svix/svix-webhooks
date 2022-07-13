@@ -53,7 +53,7 @@ impl Webhook {
         Ok(Webhook { key })
     }
 
-    pub fn raw(secret: Vec<u8>) -> Result<Self, WebhookError> {
+    pub fn from_bytes(secret: Vec<u8>) -> Result<Self, WebhookError> {
         Ok(Webhook { key: secret })
     }
 
