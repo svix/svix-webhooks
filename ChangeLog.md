@@ -3,6 +3,14 @@
 ## Next
 * 
 
+## Version 0.63.0
+* Server: add support for encrypting webhook secrets in the database.
+* Server: include the error message in the attempt's response for non HTTP errors.
+* Server: change the CORS headers to be more strictly compliant.
+* Server: wait-for db before attempting to run migrations.
+* Server: add retry functionality to Redis cache.
+* Libs: update libraries to accept a raw webhook secret.
+
 ## Version 0.62.1
 * Libs: fix Kotlin and Java build
 
