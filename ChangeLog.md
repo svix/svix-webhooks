@@ -3,6 +3,9 @@
 ## Next
 * 
 
+## Version 0.63.1
+* Lib/JavaScript: fix setting string webhook secrets.
+
 ## Version 0.63.0
 * Server: add support for encrypting webhook secrets in the database.
 * Server: include the error message in the attempt's response for non HTTP errors.
