@@ -594,6 +594,10 @@ export interface WebhookOptions {
   format?: "raw";
 }
 
+function isString(data: any): data is string {
+  return typeof data === "string";
+}
+
 export class Webhook {
   private static prefix = "whsec_";
   private readonly key: Uint8Array;
@@ -609,13 +613,13 @@ export class Webhook {
         this.key = Uint8Array.from(secret, (c) => c.charCodeAt(0));
       }
     } else {
-      if (!(secret instanceof String)) {
+      if (!isString(secret)) {
         throw new Error("Expected secret to be of type string");
       }
       if (secret.startsWith(Webhook.prefix)) {
         secret = secret.substring(Webhook.prefix.length);
       }
-      this.key = base64.decode(secret as string);
+      this.key = base64.decode(secret);
     }
   }
 
