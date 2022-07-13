@@ -43,14 +43,14 @@ jobs:
         command: build
         args: --manifest-path server/Cargo.toml --all --locked
 
+    - name: Start dependencies
+      run: docker-compose -f "server/testing-docker-compose.yml" up -d
+
     - name: Clippy
       uses: actions-rs/cargo@v1
       with:
         command: clippy
         args: --manifest-path server/Cargo.toml --all --all-targets --all-features -- -D warnings
-
-    - name: Start dependencies
-      run: docker-compose -f "server/testing-docker-compose.yml" up -d
 
     - name: Run migrations
       uses: actions-rs/cargo@v1
