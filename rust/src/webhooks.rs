@@ -53,6 +53,10 @@ impl Webhook {
         Ok(Webhook { key })
     }
 
+    pub fn from_bytes(secret: Vec<u8>) -> Result<Self, WebhookError> {
+        Ok(Webhook { key: secret })
+    }
+
     pub fn verify(&self, payload: &[u8], headers: &HeaderMap) -> Result<(), WebhookError> {
         let msg_id = Self::get_header(headers, SVIX_MSG_ID_KEY, UNBRANDED_MSG_ID_KEY, "id")?;
         let msg_signature = Self::get_header(

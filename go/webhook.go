@@ -39,6 +39,12 @@ func NewWebhook(secret string) (*Webhook, error) {
 	}, nil
 }
 
+func NewWebhookRaw(secret []byte) (*Webhook, error) {
+	return &Webhook {
+		key: secret,
+	}, nil
+}
+
 // Verify validates the payload against the svix signature headers
 // using the webhooks signing secret.
 //

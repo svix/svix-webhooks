@@ -36,6 +36,10 @@ public final class Webhook {
 		this.key = Base64.getDecoder().decode(sec);
 	}
 
+	public Webhook(final byte[] secret) {
+		this.key = secret;
+	}
+
 	public void verify(final String payload, final HttpHeaders headers) throws WebhookVerificationException {
 		Optional<String> msgId = headers.firstValue(SVIX_MSG_ID_KEY);
 		Optional<String> msgSignature = headers.firstValue(SVIX_MSG_SIGNATURE_KEY);
