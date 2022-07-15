@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
+use std::sync::atomic::Ordering;
+
 use crate::db::models::message;
 use crate::error::Result;
 use chrono::Utc;
@@ -21,13 +23,19 @@ pub async fn clean_expired_messages(
         .await
 }
 
-/// Runs every 5 minutes
+/// Runs every 10 seconds
 pub async fn expired_message_cleaner_loop(pool: &DatabaseConnection) -> Result<()> {
     loop {
-        sleep(std::time::Duration::from_secs(5 * 60)).await;
+        sleep(std::time::Duration::from_secs(10)).await;
         let pool = pool.clone();
         if let Err(err) = clean_expired_messages(&pool).await {
             tracing::error!("{}", err)
         }
+
+        if crate::SHUTTING_DOWN.load(Ordering::SeqCst) {
+            break;
+        }
     }
+
+    Ok(())
 }

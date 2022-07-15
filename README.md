@@ -322,6 +322,9 @@ Svix uses `ed25519(m)` for signing the webhook messages, and it constructs `m` t
 
 When verifying the message you should also ensure that the timestamp is recent enough in order to limit the potential of replay attacks as noted in [the symmetric verification docs](https://docs.svix.com/receiving/verifying-payloads/why).
 
+## Shutting down the server
+
+To support graceful shutdown on the server, all running tasks are finished before shutting down on a SIGINT/SIGTERM. This usually takes less than ten seconds.
 
 # Differences to the Svix hosted service
 

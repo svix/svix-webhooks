@@ -59,11 +59,16 @@ pub struct MemoryQueueConsumer {
 #[async_trait]
 impl TaskQueueReceive for MemoryQueueConsumer {
     async fn receive_all(&mut self) -> Result<Vec<TaskQueueDelivery>> {
-        if let Some(delivery) = self.rx.recv().await {
-            tracing::trace!("MemoryQueue: event recv <");
-            Ok(vec![delivery])
-        } else {
-            Err(Error::Queue("Failed to fetch from queue".to_owned()))
+        tokio::select! {
+            _ = tokio::time::sleep(Duration::from_secs(30)) => Ok(Vec::new()),
+            recv = self.rx.recv() => {
+                if let Some(delivery) = recv {
+                    tracing::trace!("MemoryQueue: event recv <");
+                    Ok(vec![delivery])
+                } else {
+                    Err(Error::Queue("Failed to fetch from queue".to_owned()))
+                }
+            }
         }
     }
 }
