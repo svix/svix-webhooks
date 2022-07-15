@@ -29,8 +29,11 @@ use reqwest::header::{HeaderMap, HeaderName};
 use sea_orm::{entity::prelude::*, ActiveValue::Set, DatabaseConnection, EntityTrait};
 use tokio::time::{sleep, Duration};
 
-use std::sync::atomic::Ordering;
-use std::{iter, str::FromStr};
+use std::{
+    iter,
+    str::FromStr,
+    sync::{atomic::Ordering, Arc},
+};
 
 // The maximum variation from the retry schedule when applying jitter to a resent webhook event in
 // percent deviation
@@ -379,14 +382,14 @@ fn bytes_to_string(bytes: bytes::Bytes) -> String {
 
 /// Manages preparation and execution of a QueueTask type
 #[tracing::instrument(skip_all)]
-async fn process_task(worker_context: WorkerContext<'_>, queue_task: QueueTask) -> Result<()> {
+async fn process_task(worker_context: WorkerContext<'_>, queue_task: Arc<QueueTask>) -> Result<()> {
     let WorkerContext { db, cache, .. }: WorkerContext<'_> = worker_context;
 
-    if queue_task == QueueTask::HealthCheck {
+    if *queue_task == QueueTask::HealthCheck {
         return Ok(());
     }
 
-    let (msg_id, trigger_type) = match queue_task.clone() {
+    let (msg_id, trigger_type) = match &*queue_task {
         QueueTask::MessageBatch(MessageTaskBatch {
             msg_id,
             trigger_type,
@@ -421,9 +424,9 @@ async fn process_task(worker_context: WorkerContext<'_>, queue_task: QueueTask) 
     let app_uid = create_message_app.uid.clone();
 
     let endpoints: Vec<CreateMessageEndpoint> = create_message_app
-        .filtered_endpoints(trigger_type, &msg)
+        .filtered_endpoints(*trigger_type, &msg)
         .iter()
-        .filter(|endpoint| match &queue_task {
+        .filter(|endpoint| match &*queue_task {
             QueueTask::HealthCheck => unreachable!(),
             QueueTask::MessageV1(task) => task.endpoint_id == endpoint.id,
             QueueTask::MessageBatch(_) => true,
@@ -432,7 +435,7 @@ async fn process_task(worker_context: WorkerContext<'_>, queue_task: QueueTask) 
         .collect();
 
     // TODO: remove this section once destinations are obsolete
-    if matches!(queue_task, QueueTask::MessageBatch(_)) {
+    if matches!(*queue_task, QueueTask::MessageBatch(_)) {
         let destinations = endpoints
             .iter()
             .map(|endpoint| messagedestination::ActiveModel {
@@ -452,7 +455,7 @@ async fn process_task(worker_context: WorkerContext<'_>, queue_task: QueueTask) 
     let futures: Vec<_> = endpoints
         .into_iter()
         .map(|endpoint| {
-            let task = match &queue_task {
+            let task = match &*queue_task {
                 QueueTask::MessageV1(task) => task.clone(),
                 QueueTask::MessageBatch(MessageTaskBatch {
                     msg_id,

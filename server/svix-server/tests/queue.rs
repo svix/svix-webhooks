@@ -26,7 +26,7 @@ pub async fn get_pool(cfg: Configuration) -> RedisPool {
 }
 
 fn task_queue_delivery_to_u16(tqd: &TaskQueueDelivery) -> u16 {
-    match &tqd.task {
+    match &*tqd.task {
         QueueTask::HealthCheck => panic!("Health check in test"),
         QueueTask::MessageBatch(batch) => u16::from_str(batch.msg_id.as_str()).unwrap(),
         QueueTask::MessageV1(task) => u16::from_str(task.msg_id.as_str()).unwrap(),

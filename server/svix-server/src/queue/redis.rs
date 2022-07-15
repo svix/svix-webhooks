@@ -27,7 +27,7 @@
 // have generic return types. This is cleaner than the turbofish operator in my opinion.
 #![allow(clippy::let_unit_value)]
 
-use std::{num::NonZeroUsize, time::Duration};
+use std::{num::NonZeroUsize, sync::Arc, time::Duration};
 
 use axum::async_trait;
 
@@ -381,7 +381,7 @@ fn from_redis_key(key: &str) -> TaskQueueDelivery {
 
 #[async_trait]
 impl TaskQueueSend for RedisQueueProducer {
-    async fn send(&self, task: QueueTask, delay: Option<Duration>) -> Result<()> {
+    async fn send(&self, task: Arc<QueueTask>, delay: Option<Duration>) -> Result<()> {
         let mut pool = self.pool.get().await?;
 
         // If there's a delay, compute the timestamp at which the delay is up
@@ -395,7 +395,7 @@ impl TaskQueueSend for RedisQueueProducer {
             let timestamp = timestamp?;
             // If there's a delay, add it to the DELAYED queue by ZADDING the Redis-key-ified
             // delivery
-            let delivery = TaskQueueDelivery::new(task, Some(timestamp));
+            let delivery = TaskQueueDelivery::from_arc(task.clone(), Some(timestamp));
             let key = to_redis_key(&delivery);
             let _: () = pool
                 .zadd(&self.delayed_queue_name, key, timestamp.timestamp())
@@ -408,7 +408,7 @@ impl TaskQueueSend for RedisQueueProducer {
                     GENERATE_STREAM_ID,
                     &[(
                         QUEUE_KV_KEY,
-                        serde_json::to_string(&task)
+                        serde_json::to_string(&*task)
                             .map_err(|e| Error::Generic(format!("serialization error: {}", e)))?,
                     )],
                 ))
@@ -419,7 +419,7 @@ impl TaskQueueSend for RedisQueueProducer {
     }
 
     /// ACKing the delivery, XACKs the message in the queue so it will no longer be retried
-    async fn ack(&self, delivery: TaskQueueDelivery) -> Result<()> {
+    async fn ack(&self, delivery: &TaskQueueDelivery) -> Result<()> {
         let mut pool = self.pool.get().await?;
         let processed: u8 = pool
             .query_async(Cmd::xack(
@@ -486,7 +486,10 @@ impl TaskQueueReceive for RedisQueueConsumer {
 
                 tracing::trace!("RedisQueue: event recv <");
 
-                Ok(vec![TaskQueueDelivery { id, task }])
+                Ok(vec![TaskQueueDelivery {
+                    id,
+                    task: Arc::new(task),
+                }])
             } else {
                 Ok(Vec::new())
             }
@@ -581,7 +584,7 @@ async fn migrate_sset(pool: &mut PooledConnection<'_>, legacy_queue: &str, queue
 #[cfg(test)]
 pub mod tests {
 
-    use std::time::Duration;
+    use std::{sync::Arc, time::Duration};
 
     use chrono::Utc;
 
@@ -714,7 +717,7 @@ pub mod tests {
 
         tokio::select! {
             recv = c.receive_all() => {
-                assert_eq!(recv.unwrap()[0].task, mt);
+                assert_eq!(*recv.unwrap()[0].task, mt);
             }
 
             _ = tokio::time::sleep(Duration::from_secs(5)) => {
@@ -727,7 +730,7 @@ pub mod tests {
         tokio::select! {
             recv = c.receive_all() => {
                 let recv = recv.unwrap().pop().unwrap();
-                assert_eq!(recv.task, mt);
+                assert_eq!(*recv.task, mt);
                 // Acknowledge so the queue isn't further polluted
                 p.ack(recv).await.unwrap();
             }
@@ -766,7 +769,7 @@ pub mod tests {
         p.send(mt.clone(), None).await.unwrap();
 
         let recv = c.receive_all().await.unwrap().pop().unwrap();
-        assert_eq!(recv.task, mt);
+        assert_eq!(*recv.task, mt);
         p.ack(recv).await.unwrap();
 
         tokio::select! {
@@ -806,12 +809,12 @@ pub mod tests {
         p.send(mt.clone(), None).await.unwrap();
 
         let recv = c.receive_all().await.unwrap().pop().unwrap();
-        assert_eq!(recv.task, mt);
+        assert_eq!(*recv.task, mt);
         p.nack(recv).await.unwrap();
 
         tokio::select! {
             recv = c.receive_all() => {
-                assert_eq!(recv.unwrap().pop().unwrap().task, mt);
+                assert_eq!(*recv.unwrap().pop().unwrap().task, mt);
             }
 
             _ = tokio::time::sleep(Duration::from_secs(1)) => {
@@ -859,11 +862,11 @@ pub mod tests {
         p.send(mt2.clone(), None).await.unwrap();
 
         let recv2 = c.receive_all().await.unwrap().pop().unwrap();
-        assert_eq!(recv2.task, mt2);
+        assert_eq!(*recv2.task, mt2);
         p.ack(recv2).await.unwrap();
 
         let recv1 = c.receive_all().await.unwrap().pop().unwrap();
-        assert_eq!(recv1.task, mt1);
+        assert_eq!(*recv1.task, mt1);
         p.ack(recv1).await.unwrap();
     }
 
@@ -919,13 +922,13 @@ pub mod tests {
                         v1_main,
                         to_redis_key(&TaskQueueDelivery {
                             id: num.to_string(),
-                            task: QueueTask::MessageV1(MessageTask {
+                            task: Arc::new(QueueTask::MessageV1(MessageTask {
                                 msg_id: MessageId(format!("TestMessageID{}", num)),
                                 app_id: ApplicationId("TestApplicationID".to_owned()),
                                 endpoint_id: EndpointId("TestEndpointID".to_owned()),
                                 trigger_type: MessageAttemptTriggerType::Manual,
                                 attempt_count: 0,
-                            }),
+                            })),
                         }),
                     ))
                     .await
@@ -938,13 +941,13 @@ pub mod tests {
                         v1_delayed,
                         to_redis_key(&TaskQueueDelivery {
                             id: num.to_string(),
-                            task: QueueTask::MessageV1(MessageTask {
+                            task: Arc::new(QueueTask::MessageV1(MessageTask {
                                 msg_id: MessageId(format!("TestMessageID{}", num)),
                                 app_id: ApplicationId("TestApplicationID".to_owned()),
                                 endpoint_id: EndpointId("TestEndpointID".to_owned()),
                                 trigger_type: MessageAttemptTriggerType::Manual,
                                 attempt_count: 0,
-                            }),
+                            })),
                         }),
                         Utc::now().timestamp() + 2,
                     ))
@@ -983,7 +986,7 @@ pub mod tests {
 
         for num in 6..=10 {
             assert_eq!(
-                c.receive_all().await.unwrap().pop().unwrap().task,
+                *c.receive_all().await.unwrap().pop().unwrap().task,
                 QueueTask::MessageV1(MessageTask {
                     msg_id: MessageId(format!("TestMessageID{}", num)),
                     app_id: ApplicationId("TestApplicationID".to_owned()),
@@ -995,7 +998,7 @@ pub mod tests {
         }
         for num in 1..=5 {
             assert_eq!(
-                c.receive_all().await.unwrap().pop().unwrap().task,
+                *c.receive_all().await.unwrap().pop().unwrap().task,
                 QueueTask::MessageV1(MessageTask {
                     msg_id: MessageId(format!("TestMessageID{}", num)),
                     app_id: ApplicationId("TestApplicationID".to_owned()),
@@ -1007,7 +1010,7 @@ pub mod tests {
         }
         for num in 11..=15 {
             assert_eq!(
-                c.receive_all().await.unwrap().pop().unwrap().task,
+                *c.receive_all().await.unwrap().pop().unwrap().task,
                 QueueTask::MessageV1(MessageTask {
                     msg_id: MessageId(format!("TestMessageID{}", num)),
                     app_id: ApplicationId("TestApplicationID".to_owned()),

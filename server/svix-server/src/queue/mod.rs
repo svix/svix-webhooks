@@ -1,4 +1,4 @@
-use std::time::Duration;
+use std::{sync::Arc, time::Duration};
 
 use axum::async_trait;
 use chrono::{DateTime, Utc};
@@ -7,12 +7,25 @@ use svix_ksuid::*;
 
 use crate::{
     cfg::{Configuration, QueueType},
-    core::types::{ApplicationId, EndpointId, MessageAttemptTriggerType, MessageId},
-    error::Result,
+    core::{
+        run_with_retries::run_with_retries,
+        types::{ApplicationId, EndpointId, MessageAttemptTriggerType, MessageId},
+    },
+    error::{Error, Result},
 };
 
 pub mod memory;
 pub mod redis;
+
+const RETRY_SCHEDULE: &[Duration] = &[
+    Duration::from_millis(10),
+    Duration::from_millis(20),
+    Duration::from_millis(40),
+];
+
+fn should_retry(err: &Error) -> bool {
+    matches!(err, Error::Queue(_))
+}
 
 pub async fn new_pair(
     cfg: &Configuration,
@@ -106,17 +119,33 @@ impl Clone for TaskQueueProducer {
 
 impl TaskQueueProducer {
     pub async fn send(&self, task: QueueTask, delay: Option<Duration>) -> Result<()> {
-        self.0.send(task, delay).await
+        let task = Arc::new(task);
+        run_with_retries(
+            || async { self.0.send(task.clone(), delay).await },
+            should_retry,
+            RETRY_SCHEDULE,
+        )
+        .await
     }
 
     pub async fn ack(&self, delivery: TaskQueueDelivery) -> Result<()> {
         tracing::trace!("ack {}", delivery.id);
-        self.0.ack(delivery).await
+        run_with_retries(
+            || async { self.0.ack(&delivery).await },
+            should_retry,
+            RETRY_SCHEDULE,
+        )
+        .await
     }
 
     pub async fn nack(&self, delivery: TaskQueueDelivery) -> Result<()> {
         tracing::trace!("nack {}", delivery.id);
-        self.0.nack(delivery).await
+        run_with_retries(
+            || async { self.0.nack(&delivery).await },
+            should_retry,
+            RETRY_SCHEDULE,
+        )
+        .await
     }
 }
 
@@ -130,12 +159,12 @@ impl TaskQueueConsumer {
 
 pub struct TaskQueueDelivery {
     pub id: String,
-    pub task: QueueTask,
+    pub task: Arc<QueueTask>,
 }
 
 impl TaskQueueDelivery {
     /// The `timestamp` is when this message will be delivered at
-    fn new(task: QueueTask, timestamp: Option<DateTime<Utc>>) -> Self {
+    fn from_arc(task: Arc<QueueTask>, timestamp: Option<DateTime<Utc>>) -> Self {
         let ksuid = KsuidMs::new(timestamp, None);
         Self {
             id: ksuid.to_string(),
@@ -146,16 +175,16 @@ impl TaskQueueDelivery {
 
 #[async_trait]
 trait TaskQueueSend: Sync + Send {
-    async fn send(&self, task: QueueTask, delay: Option<Duration>) -> Result<()>;
+    async fn send(&self, task: Arc<QueueTask>, delay: Option<Duration>) -> Result<()>;
     fn clone_box(&self) -> Box<dyn TaskQueueSend>;
 
-    async fn ack(&self, delivery: TaskQueueDelivery) -> Result<()>;
+    async fn ack(&self, delivery: &TaskQueueDelivery) -> Result<()>;
 
     /// By default NACKing a [`TaskQueueDelivery`] simply reinserts it in the back of the queue without
     /// any delay.
-    async fn nack(&self, delivery: TaskQueueDelivery) -> Result<()> {
+    async fn nack(&self, delivery: &TaskQueueDelivery) -> Result<()> {
         tracing::debug!("nack {}", delivery.id);
-        self.send(delivery.task, None).await
+        self.send(delivery.task.clone(), None).await
     }
 }
 
@@ -198,7 +227,7 @@ mod tests {
     /// equal to the mock message with the given message_id.
     async fn assert_recv(rx: &mut TaskQueueConsumer, message_id: &str) {
         assert_eq!(
-            rx.receive_all().await.unwrap().get(0).unwrap().task,
+            *rx.receive_all().await.unwrap().get(0).unwrap().task,
             mock_message(message_id.to_owned())
         )
     }
@@ -270,7 +299,7 @@ mod tests {
             .next()
             .unwrap();
 
-        assert_eq!(recv.task, mock_message("test".to_owned()));
+        assert_eq!(*recv.task, mock_message("test".to_owned()));
 
         assert!(tx_mem.ack(recv).await.is_ok());
 
@@ -299,7 +328,7 @@ mod tests {
             .into_iter()
             .next()
             .unwrap();
-        assert_eq!(&recv.task, &mock_message("test".to_owned()));
+        assert_eq!(*recv.task, mock_message("test".to_owned()));
 
         assert!(tx_mem.nack(recv).await.is_ok());
 
