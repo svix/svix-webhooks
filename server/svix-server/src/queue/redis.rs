@@ -462,36 +462,34 @@ impl TaskQueueReceive for RedisQueueConsumer {
 
             // There is no way to make it await a message for unbounded times, so simply block for a short
             // amount of time (to avoid locking) and loop if no messages were retreived
-            let resp = loop {
-                let resp: StreamReadReply = pool
-                    .query_async(Cmd::xread_options(
-                        &[&main_queue_name],
-                        &[LISTEN_STREAM_ID],
-                        &StreamReadOptions::default()
-                            .group(WORKERS_GROUP, WORKER_CONSUMER)
-                            .count(1)
-                            .block(30_000),
-                    ))
-                    .await?;
+            let resp: StreamReadReply = pool
+                .query_async(Cmd::xread_options(
+                    &[&main_queue_name],
+                    &[LISTEN_STREAM_ID],
+                    &StreamReadOptions::default()
+                        .group(WORKERS_GROUP, WORKER_CONSUMER)
+                        .count(1)
+                        .block(10_000),
+                ))
+                .await?;
 
-                if !resp.keys.is_empty() && !resp.keys[0].ids.is_empty() {
-                    break resp;
-                }
-            };
+            if !resp.keys.is_empty() && !resp.keys[0].ids.is_empty() {
+                let element = &resp.keys[0].ids[0];
+                let id = element.id.clone();
+                let map = &element.map;
 
-            let element = &resp.keys[0].ids[0];
-            let id = element.id.clone();
-            let map = &element.map;
+                let task: QueueTask = if let Some(redis::Value::Data(data)) = map.get("data") {
+                    serde_json::from_slice(data).expect("Invalid QueueTask")
+                } else {
+                    panic!("No QueueTask associated with key");
+                };
 
-            let task: QueueTask = if let Some(redis::Value::Data(data)) = map.get("data") {
-                serde_json::from_slice(data).expect("Invalid QueueTask")
+                tracing::trace!("RedisQueue: event recv <");
+
+                Ok(vec![TaskQueueDelivery { id, task }])
             } else {
-                panic!("No QueueTask associated with key");
-            };
-
-            tracing::trace!("RedisQueue: event recv <");
-
-            Ok(vec![TaskQueueDelivery { id, task }])
+                Ok(Vec::new())
+            }
         })
         .await
         .map_err(|e| Error::Generic(format!("task join error {}", e)))?

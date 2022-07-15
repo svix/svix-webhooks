@@ -29,6 +29,7 @@ use reqwest::header::{HeaderMap, HeaderName};
 use sea_orm::{entity::prelude::*, ActiveValue::Set, DatabaseConnection, EntityTrait};
 use tokio::time::{sleep, Duration};
 
+use std::sync::atomic::Ordering;
 use std::{iter, str::FromStr};
 
 // The maximum variation from the retry schedule when applying jitter to a resent webhook event in
@@ -508,6 +509,15 @@ pub async fn worker_loop(
     loop {
         match queue_rx.receive_all().await {
             Ok(batch) => {
+                if crate::SHUTTING_DOWN.load(Ordering::SeqCst) {
+                    for delivery in batch {
+                        queue_tx.nack(delivery).await.expect(
+                            "Error sending 'nack' to Redis after receiving shutdown signal",
+                        );
+                    }
+                    break;
+                }
+
                 for delivery in batch {
                     let cfg = cfg.clone();
                     let pool = pool.clone();
@@ -545,6 +555,8 @@ pub async fn worker_loop(
             }
         }
     }
+
+    Ok(())
 }
 
 #[cfg(test)]

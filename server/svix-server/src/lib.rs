@@ -7,9 +7,11 @@
 use axum::{extract::Extension, Router};
 
 use cfg::CacheType;
+use lazy_static::lazy_static;
 use std::{
     net::{SocketAddr, TcpListener},
     str::FromStr,
+    sync::atomic::{AtomicBool, Ordering},
     time::Duration,
 };
 use tower::ServiceBuilder;
@@ -38,6 +40,36 @@ pub mod queue;
 pub mod redis;
 pub mod v1;
 pub mod worker;
+
+lazy_static! {
+    pub static ref SHUTTING_DOWN: AtomicBool = AtomicBool::new(false);
+}
+
+async fn graceful_shutdown_handler() {
+    let ctrl_c = async {
+        tokio::signal::ctrl_c()
+            .await
+            .expect("Failed to install Ctrl+C handler");
+    };
+
+    #[cfg(unix)]
+    let sigterm = async {
+        tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())
+            .expect("Failed to install SIGTERM handler")
+            .recv()
+            .await;
+    };
+
+    #[cfg(not(unix))]
+    let sigterm = std::future::pending::<()>();
+
+    tokio::select! {
+        _ = ctrl_c => {},
+        _ = sigterm => {},
+    }
+
+    SHUTTING_DOWN.store(true, Ordering::SeqCst)
+}
 
 #[tracing::instrument(name = "app_start", level = "trace", skip_all)]
 pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
@@ -116,6 +148,7 @@ pub async fn run_with_prefix(
 
     let listen_address =
         SocketAddr::from_str(&cfg.listen_address).expect("Error parsing server listen address");
+
     let (server, worker_loop, expired_message_cleaner_loop) = tokio::join!(
         async {
             if with_api {
@@ -124,15 +157,18 @@ pub async fn run_with_prefix(
                     axum::Server::from_tcp(l)
                         .expect("Error starting http server")
                         .serve(app.into_make_service())
+                        .with_graceful_shutdown(graceful_shutdown_handler())
                         .await
                 } else {
                     tracing::debug!("API: Listening on {}", listen_address);
                     axum::Server::bind(&listen_address)
                         .serve(app.into_make_service())
+                        .with_graceful_shutdown(graceful_shutdown_handler())
                         .await
                 }
             } else {
                 tracing::debug!("API: off");
+                graceful_shutdown_handler().await;
                 Ok(())
             }
         },
@@ -155,6 +191,7 @@ pub async fn run_with_prefix(
             }
         }
     );
+
     server.expect("Error initializing server");
     worker_loop.expect("Error initializing worker");
     expired_message_cleaner_loop.expect("Error initializing expired message cleaner")
