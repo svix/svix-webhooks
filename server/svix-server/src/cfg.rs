@@ -66,6 +66,14 @@ where
     }
 }
 
+fn deserialize_hours<'de, D>(deserializer: D) -> std::result::Result<Duration, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let hours = u64::deserialize(deserializer)?;
+    Ok(Duration::from_secs(60 * 60 * hours))
+}
+
 const DEFAULTS: &str = include_str!("../config.default.toml");
 
 pub type Configuration = Arc<ConfigurationInner>;
@@ -138,6 +146,17 @@ pub struct ConfigurationInner {
     /// How long to wait when making a request (in seconds)
     #[validate(range(min = 1, max = 30))]
     pub worker_request_timeout: u16,
+
+    /// How long of a period to wait after the first dispatch failure to disable an endpoint. If a
+    /// message is successfully sent during this time, then the endpoint will not disable.
+    #[serde(deserialize_with = "deserialize_hours")]
+    pub dispatch_disable_grace_period: Duration,
+
+    /// How long of a period to wait after a first failure has been cached to remove the record. If
+    /// a consistently failing endpoint is called only once within this period, then it will never
+    /// be disabled.
+    #[serde(deserialize_with = "deserialize_hours")]
+    pub dispatch_disable_expiration_period: Duration,
 
     // Execution mode
     /// Should this instance run the API
