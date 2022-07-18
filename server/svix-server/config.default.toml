@@ -70,6 +70,15 @@ whitelabel_headers = false
 # If true, only allow https endpoints, otherwise also allow http.
 endpoint_https_only = false
 
+# How long of a period to wait after the first dispatch failure to disable an endpoint. If a message
+# is successfully sent during this time, then the endpoint will not disable. Measured in hours.
+dispatch_disable_grace_period = 12
+
+# How long of a period to wait after a first failure has been cached to remove the record. If a
+# consistently failing endpoint is called only once within this period, then it will never be
+# disabled. Measured in hours.
+dispatch_disable_expiration_period = 36
+
 # How long to wait when making a request (in seconds)
 worker_request_timeout = 30
 
