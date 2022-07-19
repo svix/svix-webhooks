@@ -129,8 +129,7 @@ async fn test_endpoint_disable_on_repeated_failure() {
 
     if !matches!(cfg.cache_type, svix_server::cfg::CacheType::None) {
         cfg.retry_schedule = vec![];
-        cfg.dispatch_disable_grace_period = Duration::from_secs(1);
-        cfg.dispatch_disable_expiration_period = Duration::from_secs(5);
+        cfg.endpoint_failure_disable_after = Duration::from_secs(1);
 
         let (client, _jh) = start_svix_server_with_cfg(&cfg);
 
@@ -180,8 +179,7 @@ async fn test_endpoint_disable_expiration_duration() {
 
     if !matches!(cfg.cache_type, svix_server::cfg::CacheType::None) {
         cfg.retry_schedule = vec![];
-        cfg.dispatch_disable_grace_period = Duration::from_secs(2);
-        cfg.dispatch_disable_expiration_period = Duration::from_secs(1);
+        cfg.endpoint_failure_disable_after = Duration::from_millis(250);
 
         let (client, _jh) = start_svix_server_with_cfg(&cfg);
 
@@ -279,8 +277,7 @@ async fn test_endpoint_disable_on_sporadic_failure() {
             SporadicallyFailingReceiver::start((StatusCode::OK, StatusCode::INTERNAL_SERVER_ERROR));
 
         cfg.retry_schedule = vec![];
-        cfg.dispatch_disable_grace_period = Duration::from_secs(1);
-        cfg.dispatch_disable_expiration_period = Duration::from_secs(3);
+        cfg.endpoint_failure_disable_after = Duration::from_secs(1);
 
         let (client, _jh) = start_svix_server_with_cfg(&cfg);
 
