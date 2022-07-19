@@ -147,16 +147,10 @@ pub struct ConfigurationInner {
     #[validate(range(min = 1, max = 30))]
     pub worker_request_timeout: u16,
 
-    /// How long of a period to wait after the first dispatch failure to disable an endpoint. If a
-    /// message is successfully sent during this time, then the endpoint will not disable.
+    /// How long of a period an endpoint must be consistently failing to be disabled. If a message
+    /// is successfully sent during this time, then the endpoint will not disable.
     #[serde(deserialize_with = "deserialize_hours")]
-    pub dispatch_disable_grace_period: Duration,
-
-    /// How long of a period to wait after a first failure has been cached to remove the record. If
-    /// a consistently failing endpoint is called only once within this period, then it will never
-    /// be disabled.
-    #[serde(deserialize_with = "deserialize_hours")]
-    pub dispatch_disable_expiration_period: Duration,
+    pub endpoint_failure_disable_after: Duration,
 
     // Execution mode
     /// Should this instance run the API

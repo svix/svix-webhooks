@@ -46,11 +46,12 @@ const USER_AGENT: &str = concat!("Svix-Webhooks/", env!("CARGO_PKG_VERSION"));
 /// Send the MessageAttemptFailingEvent after exceeding this number of failed attempts
 const OP_WEBHOOKS_SEND_FAILING_EVENT_AFTER: usize = 4;
 
-/// A simple enum noting whether to disable or not to disable an endpoint. Returned from the
-/// [`process_failure_cache`] function which is to be called after all retry events are exhausted.
-enum EndpointDisableStatus {
-    DoNotDisable,
-    DoDisable { first_failure_at: DateTimeUtc },
+/// A simple struct noting the context of the wrapped [`DateTimeUtc`]. This struct is returned when
+/// you are to disable disable an endpoint. This is optionally returned by [`process_failure_cache`]
+/// which is to be called after all retry events are exhausted.
+#[repr(transparent)]
+struct EndpointDisableInfo {
+    first_failure_at: DateTimeUtc,
 }
 
 /// The first_failure_at time is only stored in Postgres after the endpoint has been disabled.
@@ -101,7 +102,6 @@ async fn process_success_cache(
 ) -> Result<()> {
     let key = FailureCacheKey::new(app_id, endp_id);
 
-    // XXX: Make sure to test deleting a value that does not exist doesn't cause an error response
     cache
         .delete(&key)
         .await
@@ -127,9 +127,8 @@ async fn process_failure_cache(
     app_id: &ApplicationId,
     endp_id: &EndpointId,
 
-    grace_period: chrono::Duration,
-    expiration_period: Duration,
-) -> Result<EndpointDisableStatus> {
+    disable_in: Duration,
+) -> Result<Option<EndpointDisableInfo>> {
     let key = FailureCacheKey::new(app_id, endp_id);
     let now = Utc::now();
 
@@ -139,10 +138,12 @@ async fn process_failure_cache(
         .await
         .map_err(|e| Error::from(e.to_string()))?
     {
-        if now - first_failure_at > grace_period {
-            Ok(EndpointDisableStatus::DoDisable { first_failure_at })
+        if now - first_failure_at
+            > chrono::Duration::from_std(disable_in).expect("Given `disable_in` is too large")
+        {
+            Ok(Some(EndpointDisableInfo { first_failure_at }))
         } else {
-            Ok(EndpointDisableStatus::DoNotDisable)
+            Ok(None)
         }
     }
     // If it does not yet exist in the cache, set the first_failure_at value to now
@@ -153,12 +154,14 @@ async fn process_failure_cache(
                 &FailureCacheValue {
                     first_failure_at: now,
                 },
-                expiration_period,
+                // Failures are forgiven after double the `disable_in` `Duration` with the expiry of
+                // the Redis key
+                disable_in * 2,
             )
             .await
             .map_err(|e| Error::from(e.to_string()))?;
 
-        Ok(EndpointDisableStatus::DoNotDisable)
+        Ok(None)
     }
 }
 
@@ -474,35 +477,33 @@ async fn dispatch(
                 };
                 let _msg_dest = msg_dest.update(db).await?;
 
+                // Send common operational webhook
+                op_webhook_sender
+                    .send_operational_webhook(
+                        org_id,
+                        OperationalWebhook::MessageAttemptExhausted(MessageAttemptEvent {
+                            app_id: &msg_task.app_id,
+                            app_uid,
+                            endpoint_id: &msg_task.endpoint_id,
+                            msg_id: &msg_task.msg_id,
+                            msg_event_id: msg_uid,
+                            last_attempt: (&attempt).into(),
+                        }),
+                    )
+                    .await?;
+
                 match process_failure_cache(
                     cache,
                     &msg_task.app_id,
                     &msg_task.endpoint_id,
-                    chrono::Duration::from_std(cfg.dispatch_disable_grace_period)
-                        .expect("Expiration period exceeds maximum"),
-                    cfg.dispatch_disable_expiration_period,
+                    cfg.endpoint_failure_disable_after,
                 )
                 .await?
                 {
-                    EndpointDisableStatus::DoNotDisable => {
-                        // Send operational webhook
-                        op_webhook_sender
-                            .send_operational_webhook(
-                                org_id,
-                                OperationalWebhook::MessageAttemptExhausted(MessageAttemptEvent {
-                                    app_id: &msg_task.app_id,
-                                    app_uid,
-                                    endpoint_id: &msg_task.endpoint_id,
-                                    msg_id: &msg_task.msg_id,
-                                    msg_event_id: msg_uid,
-                                    last_attempt: (&attempt).into(),
-                                }),
-                            )
-                            .await?;
-                    }
+                    None => {}
 
-                    EndpointDisableStatus::DoDisable { first_failure_at } => {
-                        // Send operational webhook
+                    Some(EndpointDisableInfo { first_failure_at }) => {
+                        // Send operational webhooks
                         op_webhook_sender
                             .send_operational_webhook(
                                 org_id,
