@@ -10,7 +10,7 @@ use crate::core::types::{
     MessageUid, OrganizationId,
 };
 use crate::core::{
-    cache::{Cache, CacheBehavior, CacheKey, CacheValue},
+    cache::{kv_def, Cache, CacheBehavior, CacheKey, CacheValue},
     message_app::{CreateMessageApp, CreateMessageEndpoint},
     operational_webhooks::{MessageAttemptEvent, OperationalWebhook, OperationalWebhookSender},
     types::{
@@ -61,32 +61,12 @@ pub struct FailureCacheValue {
     pub first_failure_at: DateTimeUtc,
 }
 
-/// The key is simply a formatted [`String`] containing the [`ApplicationId`] and [`EndpointId`]
-/// of the endpoint which exhausted the retry schedule.
-pub struct FailureCacheKey {
-    key: String,
-}
+kv_def!(FailureCacheKey, FailureCacheValue, "SVIX_FAILURE_CACHE");
 
 impl FailureCacheKey {
     pub fn new(app_id: &ApplicationId, endp_id: &EndpointId) -> FailureCacheKey {
-        FailureCacheKey {
-            key: format!("_{}_{}", app_id, endp_id),
-        }
+        FailureCacheKey(format!("_{}_{}", app_id, endp_id))
     }
-}
-
-impl AsRef<str> for FailureCacheKey {
-    fn as_ref(&self) -> &str {
-        &self.key
-    }
-}
-
-impl CacheKey for FailureCacheKey {
-    const PREFIX_CACHE: &'static str = "SVIX_FAILURE_CACHE";
-}
-
-impl CacheValue for FailureCacheValue {
-    type Key = FailureCacheKey;
 }
 
 /// Called upon the successful dispatch of an endpoint. Simply clears the cache of a

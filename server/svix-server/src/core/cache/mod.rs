@@ -51,9 +51,9 @@ pub trait StringCacheValue: ToString + TryFrom<String> + Send + Sync {
     type Key: CacheKey;
 }
 
-/// A macro that creates a [`CacheKey`] and ties it to any value that implements
-/// [`DeserializeOwned`] and [`Serialize`]
-macro_rules! kv_def {
+/// An inner macro which defines everything common to the below macro. Not really meant to be used,
+/// but it can't be made private or else it couldn't be used in the outer macro.
+macro_rules! kv_def_inner {
     ($key_id:ident, $val_struct:ident) => {
         #[derive(Clone, Debug)]
         pub struct $key_id(String);
@@ -63,19 +63,37 @@ macro_rules! kv_def {
                 &self.0
             }
         }
-
-        impl CacheKey for $key_id {}
 
         impl CacheValue for $val_struct {
             type Key = $key_id;
         }
     };
 }
+pub(crate) use kv_def_inner;
+
+/// A macro that creates a [`CacheKey`] and ties it to any value that implements
+/// [`DeserializeOwned`] and [`Serialize`]
+macro_rules! kv_def {
+    ($key_id:ident, $val_struct:ident, $lit_prefix:literal) => {
+        crate::core::cache::kv_def_inner!($key_id, $val_struct);
+
+        impl CacheKey for $key_id {
+            const PREFIX_CACHE: &'static str = $lit_prefix;
+        }
+    };
+
+    ($key_id:ident, $val_struct:ident) => {
+        crate::core::cache::kv_def_inner!($key_id, $val_struct);
+
+        impl CacheKey for $key_id {}
+    };
+}
 pub(crate) use kv_def;
 
-// Used downstream and for testing:
+/// An inner macro which defines everything common to the below macro. Not really meant to be used,
+/// but it can't be made private or else it couldn't be used in the outer macro.
 #[allow(unused_macros)]
-macro_rules! string_kv_def {
+macro_rules! string_kv_def_inner {
     ($key_id:ident, $val_struct:ident) => {
         #[derive(Clone, Debug)]
         pub struct $key_id(String);
@@ -86,11 +104,29 @@ macro_rules! string_kv_def {
             }
         }
 
-        impl CacheKey for $key_id {}
-
         impl StringCacheValue for $val_struct {
             type Key = $key_id;
         }
+    };
+}
+#[allow(unused_imports)]
+pub(crate) use string_kv_def_inner;
+
+// Used downstream and for testing:
+#[allow(unused_macros)]
+macro_rules! string_kv_def {
+    ($key_id:ident, $val_struct:ident, $lit_prefix:literal) => {
+        crate::core::cache::string_kv_def_inner!($key_id, $val_struct);
+
+        impl CacheKey for $key_id {
+            const PREFIX_CACHE: &'static str = $lit_prefix;
+        }
+    };
+
+    ($key_id:ident, $val_struct:ident) => {
+        crate::core::cache::string_kv_def_inner!($key_id, $val_struct);
+
+        impl CacheKey for $key_id {}
     };
 }
 #[allow(unused_imports)]
