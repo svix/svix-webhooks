@@ -21,7 +21,7 @@ use http::request::Parts;
 use serde::{Deserialize, Serialize};
 use tower::Service;
 
-use super::cache::{Cache, CacheBehavior, CacheKey, CacheValue};
+use super::cache::{kv_def, Cache, CacheBehavior, CacheKey, CacheValue};
 use crate::error::Error;
 
 /// Returns the default exipry period for cached responses
@@ -51,8 +51,22 @@ enum SerializedResponse {
         body: Option<Vec<u8>>,
     },
 }
-impl CacheValue for SerializedResponse {
-    type Key = IdempotencyKey;
+
+kv_def!(IdempotencyKey, SerializedResponse, "SVIX_IDEMPOTENCY_CACHE");
+
+impl IdempotencyKey {
+    fn new(auth_token: &str, key: &str, url: &str) -> IdempotencyKey {
+        let mut hasher = Blake2b512::new();
+
+        hasher.update(auth_token);
+        hasher.update(":");
+        hasher.update(key);
+        hasher.update(":");
+        hasher.update(url);
+
+        let res = hasher.finalize();
+        IdempotencyKey(base64::encode(&res))
+    }
 }
 
 #[derive(thiserror::Error, Debug)]
@@ -87,34 +101,6 @@ fn finished_serialized_response_to_reponse(
     }
 
     Ok(out)
-}
-
-#[derive(Clone)]
-struct IdempotencyKey(String);
-
-impl IdempotencyKey {
-    fn new(auth_token: &str, key: &str, url: &str) -> IdempotencyKey {
-        let mut hasher = Blake2b512::new();
-
-        hasher.update(auth_token);
-        hasher.update(":");
-        hasher.update(key);
-        hasher.update(":");
-        hasher.update(url);
-
-        let res = hasher.finalize();
-        IdempotencyKey(base64::encode(&res))
-    }
-}
-
-impl CacheKey for IdempotencyKey {
-    const PREFIX_CACHE: &'static str = "SVIX_IDEMPOTENCY_CACHE";
-}
-
-impl AsRef<str> for IdempotencyKey {
-    fn as_ref(&self) -> &str {
-        &self.0
-    }
 }
 
 async fn resolve_service<S>(
