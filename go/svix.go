@@ -47,7 +47,7 @@ func New(token string, options *SvixOptions) *Svix {
 	conf.Host = "api.svix.com"
 	conf.HTTPClient = defaultHTTPClient
 
-	var tokenParts = strings.Split(s, ".")
+	var tokenParts = strings.Split(token, ".")
 	if len(tokenParts) == 2 {
 		var region = tokenParts[1]
 		if region == "us" {
