@@ -72,6 +72,12 @@ export interface SvixOptions {
   serverUrl?: string;
 }
 
+const REGIONS = [
+  { region: "us", url: "https://api.us.svix.com" },
+  { region: "eu", url: "https://api.eu.svix.com" },
+  { region: "in", url: "https://api.in.svix.com" },
+];
+
 export class Svix {
   public readonly _configuration: Configuration;
   public readonly authentication: Authentication;
@@ -83,7 +89,8 @@ export class Svix {
   public readonly messageAttempt: MessageAttempt;
 
   public constructor(token: string, options: SvixOptions = {}) {
-    const baseUrl: string = options.serverUrl ?? "https://api.svix.com";
+    const regionalUrl = REGIONS.find((x) => x.region === token.split(".")[1])?.url;
+    const baseUrl: string = options.serverUrl ?? regionalUrl ?? "https://api.svix.com";
 
     const baseServer = new ServerConfiguration<any>(baseUrl, {});
 
