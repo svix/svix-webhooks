@@ -56,8 +56,6 @@ use super::{
 /// Confusingly, each message in the queue may have any number of KV pairs.
 const MAIN: &str = "{queue}_svix_v3_main";
 
-// TODO: Migrate DELAYED queue to use streams too
-
 /// The key for the DELAYED queue in which scheduled messages are placed. This is the same DELAYED
 /// queue as v2 of the queue implementation.
 const DELAYED: &str = "{queue}_svix_delayed";
@@ -181,29 +179,31 @@ async fn background_task(
             ))
             .await?;
 
-        // Acknowledge all the stale ones so the pending queue is cleared
-        let _: RedisResult<()> = pool
-            .query_async(Cmd::xack(&main_queue_name, WORKERS_GROUP, &ids))
-            .await;
+        let mut pipe = redis::pipe();
 
         // And reinsert the map of KV pairs into the MAIN qunue with a new stream ID
         for StreamId { map, .. } in claimed.ids {
-            let _: RedisResult<()> = pool
-                .query_async(Cmd::xadd(
-                    &main_queue_name,
-                    GENERATE_STREAM_ID,
-                    &map.iter()
-                        .filter_map(|(k, v)| {
-                            if let redis::Value::Data(data) = v {
-                                Some((k.as_str(), data.as_slice()))
-                            } else {
-                                None
-                            }
-                        })
-                        .collect::<Vec<(&str, &[u8])>>(),
-                ))
-                .await;
+            let _ = pipe.xadd(
+                &main_queue_name,
+                GENERATE_STREAM_ID,
+                &map.iter()
+                    .filter_map(|(k, v)| {
+                        if let redis::Value::Data(data) = v {
+                            Some((k.as_str(), data.as_slice()))
+                        } else {
+                            None
+                        }
+                    })
+                    .collect::<Vec<(&str, &[u8])>>(),
+            );
         }
+
+        let _: () = pool.query_async_pipeline(pipe).await?;
+
+        // Acknowledge all the stale ones so the pending queue is cleared
+        let _: () = pool
+            .query_async(Cmd::xack(&main_queue_name, WORKERS_GROUP, &ids))
+            .await?;
     }
 
     Ok(())
