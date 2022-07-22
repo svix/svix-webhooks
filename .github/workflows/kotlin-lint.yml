@@ -2,7 +2,7 @@ name: Kotlin Lint
 on:
   pull_request:
     paths:
-      - "javascript/**"
+      - "kotlin/**"
 jobs:
   kotlin:
     name: Kotlin Lint
