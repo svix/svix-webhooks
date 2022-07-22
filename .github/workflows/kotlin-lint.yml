@@ -22,7 +22,7 @@ jobs:
           yarn
           ./regen_openapi.sh
 
-      - name: Publish
+      - name: Build
         run: |
           cd kotlin
           ./gradlew build
