@@ -34,7 +34,7 @@ impl Svix {
         let base_path =
             options
                 .and_then(|x| x.server_url)
-                .unwrap_or_else(|| match token.split(".").nth(1) {
+                .unwrap_or_else(|| match token.split('.').nth(1) {
                     Some(region) => match region {
                         "us" => "https://api.us.svix.com".to_string(),
                         "eu" => "https://api.eu.svix.com".to_string(),
