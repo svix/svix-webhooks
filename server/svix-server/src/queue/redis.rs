@@ -33,10 +33,8 @@ use axum::async_trait;
 
 use chrono::Utc;
 use redis::{
-    streams::{
-        StreamClaimReply, StreamId, StreamPendingCountReply, StreamReadOptions, StreamReadReply,
-    },
-    Cmd, RedisResult, RedisWrite, ToRedisArgs,
+    streams::{StreamClaimReply, StreamId, StreamReadOptions, StreamReadReply},
+    Cmd, FromRedisValue, RedisResult, RedisWrite, ToRedisArgs,
 };
 use tokio::time::sleep;
 
@@ -108,6 +106,28 @@ pub async fn new_pair(
     .await
 }
 
+struct StreamAutoclaimReply {
+    ids: Vec<StreamId>,
+}
+
+impl FromRedisValue for StreamAutoclaimReply {
+    fn from_redis_value(v: &redis::Value) -> RedisResult<Self> {
+        // First try the two member array from before Redis 7.0
+        match <((), StreamClaimReply)>::from_redis_value(v) {
+            Ok(res) => Ok(StreamAutoclaimReply { ids: res.1.ids }),
+
+            // If it's a type error, then try the three member array from Redis 7.0 and after
+            Err(e) if e.kind() == redis::ErrorKind::TypeError => {
+                <((), StreamClaimReply, ())>::from_redis_value(v)
+                    .map(|ok| StreamAutoclaimReply { ids: ok.1.ids })
+            }
+
+            // Any other error should be returned as is
+            Err(e) => Err(e),
+        }
+    }
+}
+
 async fn background_task_pending(
     pool: RedisPool,
     main_queue_name: String,
@@ -115,39 +135,24 @@ async fn background_task_pending(
 ) -> Result<()> {
     let mut pool = pool.get().await?;
 
-    // Every iteration checks whether the processing queue has items that should be picked back up
-    let mut cmd = redis::cmd("XPENDING");
-    let _ = cmd
-        .arg(&main_queue_name)
+    // Every iteration checks whether the processing queue has items that should be picked back up,
+    // claiming them in the process
+    let mut cmd = redis::cmd("XAUTOCLAIM");
+    cmd.arg(&main_queue_name)
         .arg(WORKERS_GROUP)
-        // Search only for IDs that have been idle for at least the pending_duration
-        .arg("IDLE")
+        .arg(WORKER_CONSUMER)
         .arg(pending_duration)
-        // And search for at most 1000 IDs from the minimum ID value to the maximum ID value
         .arg("-")
-        .arg("+")
+        .arg("COUNT")
         .arg(PENDING_BATCH_SIZE);
 
-    let keys: StreamPendingCountReply = pool.query_async(cmd).await?;
-
-    let ids: Vec<String> = keys.ids.into_iter().map(|id| id.id).collect();
+    let StreamAutoclaimReply { ids } = pool.query_async(cmd).await.unwrap();
 
     if !ids.is_empty() {
-        // You can then claim all these IDs to receive the KV pairs associated with each
-        let claimed: StreamClaimReply = pool
-            .query_async(Cmd::xclaim(
-                &main_queue_name,
-                WORKERS_GROUP,
-                WORKER_CONSUMER,
-                pending_duration,
-                &ids,
-            ))
-            .await?;
-
         let mut pipe = redis::pipe();
 
         // And reinsert the map of KV pairs into the MAIN qunue with a new stream ID
-        for StreamId { map, .. } in claimed.ids {
+        for StreamId { map, .. } in &ids {
             let _ = pipe.xadd(
                 &main_queue_name,
                 GENERATE_STREAM_ID,
@@ -167,7 +172,11 @@ async fn background_task_pending(
 
         // Acknowledge all the stale ones so the pending queue is cleared
         let _: () = pool
-            .query_async(Cmd::xack(&main_queue_name, WORKERS_GROUP, &ids))
+            .query_async(Cmd::xack(
+                &main_queue_name,
+                WORKERS_GROUP,
+                &ids.iter().map(|wrapped| &wrapped.id).collect::<Vec<_>>(),
+            ))
             .await?;
     } else {
         // Wait for half a second before attempting to fetch again if nothing was found
