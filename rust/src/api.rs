@@ -31,9 +31,18 @@ pub struct Svix {
 
 impl Svix {
     pub fn new(token: String, options: Option<SvixOptions>) -> Self {
-        let base_path = options
-            .and_then(|x| x.server_url)
-            .unwrap_or_else(|| "https://api.svix.com".to_string());
+        let base_path =
+            options
+                .and_then(|x| x.server_url)
+                .unwrap_or_else(|| match token.split(".").nth(1) {
+                    Some(region) => match region {
+                        "us" => "https://api.us.svix.com".to_string(),
+                        "eu" => "https://api.eu.svix.com".to_string(),
+                        "in" => "https://api.in.svix.com".to_string(),
+                        _ => "https://api.svix.com".to_string(),
+                    },
+                    None => "https://api.svix.com".to_string(),
+                });
         let cfg = Configuration {
             base_path,
             user_agent: Some(format!("svix-libs/{}/rust", CRATE_VERSION)),
