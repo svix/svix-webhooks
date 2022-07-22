@@ -104,53 +104,14 @@ pub async fn new_pair(
     .await
 }
 
-async fn background_task(
+async fn background_task_pending(
     pool: RedisPool,
     main_queue_name: String,
-    delayed_queue_name: String,
     pending_duration: i64,
 ) -> Result<()> {
-    let batch_size: isize = 50;
-
     let mut pool = pool.get().await?;
 
-    // First look for delayed keys whose time is up and add them to the main qunue
-    let timestamp = Utc::now().timestamp();
-    let keys: Vec<String> = pool
-        .zrangebyscore_limit(&delayed_queue_name, 0isize, timestamp, 0isize, batch_size)
-        .await?;
-
-    if !keys.is_empty() {
-        // FIXME: needs to be a transaction
-        let keys: Vec<(String, String)> = pool
-            .zpopmin(&delayed_queue_name, keys.len() as isize)
-            .await
-            .unwrap();
-        let tasks: Vec<&str> = keys
-            .iter()
-            // All information is stored in the key in which the ID and JSON formated task
-            // are separated by a `|`. So, take the key, then take the part after the `|`
-            .map(|x| &x.0)
-            .map(|x| x.split('|').nth(1).expect("Improper key format"))
-            .collect();
-
-        // Then for each task, XADD them to ghe MAIN queue
-        let mut pipe = redis::pipe();
-        for task in tasks {
-            let _ = pipe.xadd(
-                &main_queue_name,
-                GENERATE_STREAM_ID,
-                &[(QUEUE_KV_KEY, task)],
-            );
-        }
-        let _: () = pool.query_async_pipeline(pipe).await?;
-    } else {
-        // Wait for half a second before attempting to fetch again if nothing was found
-        sleep(Duration::from_millis(500)).await;
-    }
-
-    // Every iteration here also check whether the processing queue has items that
-    // should be picked back up
+    // Every iteration checks whether the processing queue has items that should be picked back up
     let mut cmd = redis::cmd("XPENDING");
     let _ = cmd
         .arg(&main_queue_name)
@@ -204,6 +165,56 @@ async fn background_task(
         let _: () = pool
             .query_async(Cmd::xack(&main_queue_name, WORKERS_GROUP, &ids))
             .await?;
+    } else {
+        // Wait for half a second before attempting to fetch again if nothing was found
+        sleep(Duration::from_millis(500)).await;
+    }
+
+    Ok(())
+}
+
+async fn background_task_delayed(
+    pool: RedisPool,
+    main_queue_name: String,
+    delayed_queue_name: String,
+) -> Result<()> {
+    let batch_size: isize = 50;
+
+    let mut pool = pool.get().await?;
+
+    // First look for delayed keys whose time is up and add them to the main qunue
+    let timestamp = Utc::now().timestamp();
+    let keys: Vec<String> = pool
+        .zrangebyscore_limit(&delayed_queue_name, 0isize, timestamp, 0isize, batch_size)
+        .await?;
+
+    if !keys.is_empty() {
+        // FIXME: needs to be a transaction
+        let keys: Vec<(String, String)> = pool
+            .zpopmin(&delayed_queue_name, keys.len() as isize)
+            .await
+            .unwrap();
+        let tasks: Vec<&str> = keys
+            .iter()
+            // All information is stored in the key in which the ID and JSON formated task
+            // are separated by a `|`. So, take the key, then take the part after the `|`
+            .map(|x| &x.0)
+            .map(|x| x.split('|').nth(1).expect("Improper key format"))
+            .collect();
+
+        // Then for each task, XADD them to ghe MAIN queue
+        let mut pipe = redis::pipe();
+        for task in tasks {
+            let _ = pipe.xadd(
+                &main_queue_name,
+                GENERATE_STREAM_ID,
+                &[(QUEUE_KV_KEY, task)],
+            );
+        }
+        let _: () = pool.query_async_pipeline(pipe).await?;
+    } else {
+        // Wait for half a second before attempting to fetch again if nothing was found
+        sleep(Duration::from_millis(500)).await;
     }
 
     Ok(())
@@ -279,46 +290,62 @@ async fn new_pair_inner(
     let mqn = main_queue_name.clone();
     let dqn = delayed_queue_name.clone();
 
-    // This is the background thread that monitors the DELAYED queue for messages ready to be
-    // inserted into the MAIN queue and that monitors the pending tasks of the MAIN queue for
-    // messages that must be reinserted.
-    tokio::spawn(async move {
-        // Migrate v1 queues to v2 and v2 queues to v3 on a loop with exponential backoff.
-        tokio::spawn({
-            let pool = pool.clone();
-            async move {
-                let delays = [
-                    // 11.25 min
-                    Duration::from_secs(60 * 11 + 15),
-                    // 22.5  min
-                    Duration::from_secs(60 * 22 + 30),
-                    // 45 min
-                    Duration::from_secs(60 * 45),
-                    // 1.5 hours
-                    Duration::from_secs(60 * 30 * 3),
-                    // 3  hours
-                    Duration::from_secs(60 * 60 * 3),
-                    // 6 hours
-                    Duration::from_secs(60 * 60 * 6),
-                    // 12 hours
-                    Duration::from_secs(60 * 60 * 12),
-                    // 24 hours
-                    Duration::from_secs(60 * 60 * 24),
-                ];
+    // Migrate v1 queues to v2 and v2 queues to v3 on a loop with exponential backoff.
+    tokio::spawn({
+        let pool = pool.clone();
+        async move {
+            let delays = [
+                // 11.25 min
+                Duration::from_secs(60 * 11 + 15),
+                // 22.5  min
+                Duration::from_secs(60 * 22 + 30),
+                // 45 min
+                Duration::from_secs(60 * 45),
+                // 1.5 hours
+                Duration::from_secs(60 * 30 * 3),
+                // 3  hours
+                Duration::from_secs(60 * 60 * 3),
+                // 6 hours
+                Duration::from_secs(60 * 60 * 6),
+                // 12 hours
+                Duration::from_secs(60 * 60 * 12),
+                // 24 hours
+                Duration::from_secs(60 * 60 * 24),
+            ];
 
-                run_migration_schedule(&delays, pool).await;
+            run_migration_schedule(&delays, pool).await;
+        }
+    });
+
+    // FIXME: enforce we only have one such worker via locking
+    tokio::spawn({
+        let pool = pool.clone();
+        let mqn = mqn.clone();
+        async move {
+            loop {
+                if let Err(err) =
+                    background_task_delayed(pool.clone(), mqn.clone(), dqn.clone()).await
+                {
+                    tracing::error!("{}", err);
+                    tokio::time::sleep(Duration::from_millis(500)).await;
+                    continue;
+                };
             }
-        });
+        }
+    });
 
-        // FIXME: enforce we only have one such worker via locking
-        loop {
-            if let Err(err) =
-                background_task(pool.clone(), mqn.clone(), dqn.clone(), pending_duration).await
-            {
-                tracing::error!("{}", err);
-                tokio::time::sleep(Duration::from_millis(500)).await;
-                continue;
-            };
+    tokio::spawn({
+        let pool = pool.clone();
+        async move {
+            loop {
+                if let Err(err) =
+                    background_task_pending(pool.clone(), mqn.clone(), pending_duration).await
+                {
+                    tracing::error!("{}", err);
+                    tokio::time::sleep(Duration::from_millis(500)).await;
+                    continue;
+                }
+            }
         }
     });
 
