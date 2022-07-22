@@ -24,7 +24,7 @@ module Svix
 
             token_parts = auth_token.split(".")
             regional_url = nil
-            if token_parts.length() == 2
+            if token_parts.length == 2
               region = token_parts[1]
               if region == "us"
                   regional_url = "https://api.us.svix.com"
