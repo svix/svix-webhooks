@@ -60,6 +60,9 @@ const MAIN: &str = "{queue}_svix_v3_main";
 /// queue as v2 of the queue implementation.
 const DELAYED: &str = "{queue}_svix_delayed";
 
+/// The key for the lock guarding the delayed queue background task.
+const DELAYED_LOCK: &str = "{queue}_svix_delayed_lock";
+
 // v2 KEY CONSTANTS
 const LEGACY_V2_MAIN: &str = "{queue}_svix_main";
 const LEGACY_V2_PROCESSING: &str = "{queue}_svix_processing";
@@ -100,6 +103,7 @@ pub async fn new_pair(
         prefix.unwrap_or_default(),
         MAIN,
         DELAYED,
+        DELAYED_LOCK,
     )
     .await
 }
@@ -177,43 +181,65 @@ async fn background_task_delayed(
     pool: RedisPool,
     main_queue_name: String,
     delayed_queue_name: String,
+    delayed_lock: &str,
 ) -> Result<()> {
     let batch_size: isize = 50;
 
     let mut pool = pool.get().await?;
 
-    // First look for delayed keys whose time is up and add them to the main qunue
-    let timestamp = Utc::now().timestamp();
-    let keys: Vec<String> = pool
-        .zrangebyscore_limit(&delayed_queue_name, 0isize, timestamp, 0isize, batch_size)
-        .await?;
+    // There is a lock on the delayed queue processing to avoid race conditions. So first try to
+    // acquire the lock should it not already exist. The lock expires after five seconds in case a
+    // worker crashes while holding the lock.
+    let mut cmd = redis::cmd("SET");
+    cmd.arg(delayed_lock)
+        .arg(true)
+        .arg("NX")
+        .arg("PX")
+        .arg(5000);
+    // WIll be Some("OK") when set or None when not set
+    let resp: Option<String> = pool.query_async(cmd).await?;
 
-    if !keys.is_empty() {
-        // FIXME: needs to be a transaction
-        let keys: Vec<(String, String)> = pool
-            .zpopmin(&delayed_queue_name, keys.len() as isize)
-            .await
-            .unwrap();
-        let tasks: Vec<&str> = keys
-            .iter()
-            // All information is stored in the key in which the ID and JSON formated task
-            // are separated by a `|`. So, take the key, then take the part after the `|`
-            .map(|x| &x.0)
-            .map(|x| x.split('|').nth(1).expect("Improper key format"))
-            .collect();
+    if resp.as_deref() == Some("OK") {
+        // First look for delayed keys whose time is up and add them to the main qunue
+        let timestamp = Utc::now().timestamp();
+        let keys: Vec<String> = pool
+            .zrangebyscore_limit(&delayed_queue_name, 0isize, timestamp, 0isize, batch_size)
+            .await?;
 
-        // Then for each task, XADD them to ghe MAIN queue
-        let mut pipe = redis::pipe();
-        for task in tasks {
-            let _ = pipe.xadd(
-                &main_queue_name,
-                GENERATE_STREAM_ID,
-                &[(QUEUE_KV_KEY, task)],
-            );
+        if !keys.is_empty() {
+            let tasks: Vec<&str> = keys
+                .iter()
+                // All information is stored in the key in which the ID and JSON formated task
+                // are separated by a `|`. So, take the key, then take the part after the `|`
+                .map(|x| x.split('|').nth(1).expect("Improper key format"))
+                .collect();
+
+            // For each task, XADD them to the MAIN queue
+            let mut pipe = redis::pipe();
+            for task in tasks {
+                let _ = pipe.xadd(
+                    &main_queue_name,
+                    GENERATE_STREAM_ID,
+                    &[(QUEUE_KV_KEY, task)],
+                );
+            }
+            let _: () = pool.query_async_pipeline(pipe).await?;
+
+            // Then remove the tasks from the delayed queue so they aren't resent
+            let _: () = pool
+                .query_async(Cmd::zrem(&delayed_queue_name, keys))
+                .await?;
+
+            // Make sure to release the lock after done processing
+            let _: () = pool.del(delayed_lock).await?;
+        } else {
+            // Make sure to release the lock before sleeping
+            let _: () = pool.del(delayed_lock).await?;
+            // Wait for half a second before attempting to fetch again if nothing was found
+            sleep(Duration::from_millis(500)).await;
         }
-        let _: () = pool.query_async_pipeline(pipe).await?;
     } else {
-        // Wait for half a second before attempting to fetch again if nothing was found
+        // Also sleep half a second if hte lock could not be fetched
         sleep(Duration::from_millis(500)).await;
     }
 
@@ -242,9 +268,11 @@ async fn new_pair_inner(
     queue_prefix: &str,
     main_queue_name: &'static str,
     delayed_queue_name: &'static str,
+    delayed_lock: &'static str,
 ) -> (TaskQueueProducer, TaskQueueConsumer) {
     let main_queue_name = format!("{}{}", queue_prefix, main_queue_name);
     let delayed_queue_name = format!("{}{}", queue_prefix, delayed_queue_name);
+    let delayed_lock = format!("{}{}", queue_prefix, delayed_lock);
 
     // Create the stream and consumer group for the MAIN queue should it not already exist. The
     // consumer is created automatically upon use so it does not have to be created here.
@@ -317,14 +345,14 @@ async fn new_pair_inner(
         }
     });
 
-    // FIXME: enforce we only have one such worker via locking
     tokio::spawn({
         let pool = pool.clone();
         let mqn = mqn.clone();
         async move {
             loop {
                 if let Err(err) =
-                    background_task_delayed(pool.clone(), mqn.clone(), dqn.clone()).await
+                    background_task_delayed(pool.clone(), mqn.clone(), dqn.clone(), &delayed_lock)
+                        .await
                 {
                     tracing::error!("{}", err);
                     tokio::time::sleep(Duration::from_millis(500)).await;
@@ -727,6 +755,7 @@ pub mod tests {
             "",
             "{test}_idle_period",
             "{test}_idle_period_delayed",
+            "{test}_idle_period_delayed_lock",
         )
         .await;
 
@@ -779,6 +808,7 @@ pub mod tests {
             "",
             "{test}_ack",
             "{test}_ack_delayed",
+            "{test}_ack_delayed_lock",
         )
         .await;
 
@@ -819,6 +849,7 @@ pub mod tests {
             "",
             "{test}_nack",
             "{test}_nack_delayed",
+            "{test}_nack_delayed_lock",
         )
         .await;
 
@@ -861,6 +892,7 @@ pub mod tests {
             "",
             "{test}_delay",
             "{test}_delay_delayed",
+            "{test}_delay_delayed_lock",
         )
         .await;
 
@@ -913,6 +945,7 @@ pub mod tests {
 
         let v1_delayed = "{test}_migrations_delayed_v1";
         let v2_delayed = "{test}_migrations_delayed_v2";
+        let v2_delayed_lock = "{test}_migrations_delayed_lock_v2";
         // v3_delayed doesn not yet exist
 
         {
@@ -1005,16 +1038,24 @@ pub mod tests {
         }
 
         // Read
-        let (_p, mut c) =
-            new_pair_inner(pool, Duration::from_secs(5), "", v3_main, v2_delayed).await;
+        let (p, mut c) = new_pair_inner(
+            pool,
+            Duration::from_secs(5),
+            "",
+            v3_main,
+            v2_delayed,
+            v2_delayed_lock,
+        )
+        .await;
 
         // 2 second delay on the delayed and pending queue is inserted after main queue, so first
         // the 6-10 should appear, then 1-5, then 11-15
 
         for num in 6..=10 {
+            let recv = c.receive_all().await.unwrap().pop().unwrap();
             assert_eq!(
-                *c.receive_all().await.unwrap().pop().unwrap().task,
-                QueueTask::MessageV1(MessageTask {
+                &*recv.task,
+                &QueueTask::MessageV1(MessageTask {
                     msg_id: MessageId(format!("TestMessageID{}", num)),
                     app_id: ApplicationId("TestApplicationID".to_owned()),
                     endpoint_id: EndpointId("TestEndpointID".to_owned()),
@@ -1022,11 +1063,13 @@ pub mod tests {
                     attempt_count: 0,
                 })
             );
+            p.ack(recv).await.unwrap();
         }
         for num in 1..=5 {
+            let recv = c.receive_all().await.unwrap().pop().unwrap();
             assert_eq!(
-                *c.receive_all().await.unwrap().pop().unwrap().task,
-                QueueTask::MessageV1(MessageTask {
+                &*recv.task,
+                &QueueTask::MessageV1(MessageTask {
                     msg_id: MessageId(format!("TestMessageID{}", num)),
                     app_id: ApplicationId("TestApplicationID".to_owned()),
                     endpoint_id: EndpointId("TestEndpointID".to_owned()),
@@ -1034,11 +1077,13 @@ pub mod tests {
                     attempt_count: 0,
                 })
             );
+            p.ack(recv).await.unwrap();
         }
         for num in 11..=15 {
+            let recv = c.receive_all().await.unwrap().pop().unwrap();
             assert_eq!(
-                *c.receive_all().await.unwrap().pop().unwrap().task,
-                QueueTask::MessageV1(MessageTask {
+                &*recv.task,
+                &QueueTask::MessageV1(MessageTask {
                     msg_id: MessageId(format!("TestMessageID{}", num)),
                     app_id: ApplicationId("TestApplicationID".to_owned()),
                     endpoint_id: EndpointId("TestEndpointID".to_owned()),
@@ -1046,6 +1091,7 @@ pub mod tests {
                     attempt_count: 0,
                 })
             );
+            p.ack(recv).await.unwrap();
         }
     }
 }
