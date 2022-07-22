@@ -25,4 +25,4 @@ jobs:
       - name: Build
         run: |
           cd kotlin
-          ./gradlew build
+          ./gradlew build -x test
