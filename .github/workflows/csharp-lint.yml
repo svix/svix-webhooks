@@ -1,4 +1,4 @@
-name: C# Lint
+name: Csharp Lint
 
 on:
   pull_request:
