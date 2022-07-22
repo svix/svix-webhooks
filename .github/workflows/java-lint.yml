@@ -1,8 +1,8 @@
 name: Java Lint
 on:
   pull_request:
-  paths:
-    - "java/**"
+    paths:
+      - "java/**"
 jobs:
   dotnet:
   name: Java Lint
