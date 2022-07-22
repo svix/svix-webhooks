@@ -815,16 +815,14 @@ class ClientBase:
     def __init__(self, auth_token: str, options: SvixOptions = SvixOptions()) -> None:
         from . import __version__
 
-        token_parts = auth_token.split(".")
         regional_url = None
-        if len(token_parts) == 2:
-            region = token_parts[1]
-            if region == "us":
-                regional_url = "https://api.us.svix.com"
-            if region == "eu":
-                regional_url = "https://api.ei.svix.com"
-            if region == "in":
-                regional_url = "https://api.in.svix.com"
+        region = auth_token.split(".")[-1]
+        if region == "us":
+            regional_url = "https://api.us.svix.com"
+        elif region == "eu":
+            regional_url = "https://api.ei.svix.com"
+        elif region == "in":
+            regional_url = "https://api.in.svix.com"
 
         host = options.server_url or regional_url or DEFAULT_SERVER_URL
         client = AuthenticatedClient(

@@ -22,17 +22,13 @@ public final class Svix {
 		ApiClient apiClient = Configuration.getDefaultApiClient();
 
 		String[] tokenParts = token.split("\\.");
-		if (tokenParts.length == 2) {
-			String region = tokenParts[1];
-			if (region.equals("us")) {
-				apiClient.setBasePath("https://api.us.svix.com");
-			}
-			if (region.equals("eu")) {
-				apiClient.setBasePath("https://api.eu.svix.com");
-			}
-			if (region.equals("in")) {
-				apiClient.setBasePath("https://api.in.svix.com");
-			}
+		String region = tokenParts[tokenParts.length-1]
+		if (region.equals("us")) {
+			apiClient.setBasePath("https://api.us.svix.com");
+		} else if (region.equals("eu")) {
+			apiClient.setBasePath("https://api.eu.svix.com");
+		} else if (region.equals("in")) {
+			apiClient.setBasePath("https://api.in.svix.com");
 		}
 
 		apiClient.setBasePath(options.getServerUrl());
