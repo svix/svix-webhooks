@@ -48,8 +48,6 @@ use super::{
     TaskQueueSend,
 };
 
-// FIXME: Change unwraps to have our own error type for the queue module entirely
-
 /// This is the key of the main queue. As a KV store, redis places the entire stream under this key.
 /// Confusingly, each message in the queue may have any number of KV pairs.
 const MAIN: &str = "{queue}_svix_v3_main";
@@ -146,7 +144,7 @@ async fn background_task_pending(
         .arg("COUNT")
         .arg(PENDING_BATCH_SIZE);
 
-    let StreamAutoclaimReply { ids } = pool.query_async(cmd).await.unwrap();
+    let StreamAutoclaimReply { ids } = pool.query_async(cmd).await?;
 
     if !ids.is_empty() {
         let mut pipe = redis::pipe();
@@ -260,11 +258,29 @@ async fn background_task_delayed(
 /// will be lost assuming the old server is taken offline before the last scheduled delay.
 async fn run_migration_schedule(delays: &[Duration], pool: RedisPool) {
     for delay in delays {
-        let mut pool = pool.get().await.unwrap();
+        let mut pool = match pool.get().await {
+            Ok(pool) => pool,
+            Err(e) => {
+                tracing::error!(
+                    "Error fetching Redis connection from pool in migration schedule: {}",
+                    e
+                );
+                tokio::time::sleep(*delay).await;
+                continue;
+            }
+        };
 
         // drain legacy queues:
-        migrate_v1_to_v2_queues(&mut pool).await;
-        migrate_v2_to_v3_queues(&mut pool).await;
+        if let Err(e) = migrate_v1_to_v2_queues(&mut pool).await {
+            tracing::error!("Error migrating queue: {}", e);
+            tokio::time::sleep(*delay).await;
+            continue;
+        }
+        if let Err(e) = migrate_v2_to_v3_queues(&mut pool).await {
+            tracing::error!("Error migrating queue: {}", e);
+            tokio::time::sleep(*delay).await;
+            continue;
+        }
 
         tokio::time::sleep(*delay).await;
     }
@@ -563,20 +579,25 @@ impl TaskQueueReceive for RedisQueueConsumer {
     }
 }
 
-async fn migrate_v2_to_v3_queues(pool: &mut PooledConnection<'_>) {
-    migrate_list_to_stream(pool, LEGACY_V2_MAIN, MAIN).await;
-    migrate_list_to_stream(pool, LEGACY_V2_PROCESSING, MAIN).await;
+async fn migrate_v2_to_v3_queues(pool: &mut PooledConnection<'_>) -> Result<()> {
+    migrate_list_to_stream(pool, LEGACY_V2_MAIN, MAIN).await?;
+    migrate_list_to_stream(pool, LEGACY_V2_PROCESSING, MAIN).await?;
+
+    Ok(())
 }
 
-async fn migrate_list_to_stream(pool: &mut PooledConnection<'_>, legacy_queue: &str, queue: &str) {
+async fn migrate_list_to_stream(
+    pool: &mut PooledConnection<'_>,
+    legacy_queue: &str,
+    queue: &str,
+) -> Result<()> {
     let batch_size = 1000;
     loop {
         let legacy_keys: Vec<String> = pool
             .lpop(legacy_queue, NonZeroUsize::new(batch_size))
-            .await
-            .unwrap();
+            .await?;
         if legacy_keys.is_empty() {
-            break;
+            break Ok(());
         }
         tracing::info!(
             "Migrating {} keys from queue {}",
@@ -594,44 +615,53 @@ async fn migrate_list_to_stream(pool: &mut PooledConnection<'_>, legacy_queue: &
             );
         }
 
-        let _: () = pool.query_async_pipeline(pipe).await.unwrap();
+        let _: () = pool.query_async_pipeline(pipe).await?;
     }
 }
 
-async fn migrate_v1_to_v2_queues(pool: &mut PooledConnection<'_>) {
-    migrate_list(pool, LEGACY_V1_MAIN, LEGACY_V2_MAIN).await;
-    migrate_list(pool, LEGACY_V1_PROCESSING, LEGACY_V2_PROCESSING).await;
-    migrate_sset(pool, LEGACY_V1_DELAYED, DELAYED).await;
+async fn migrate_v1_to_v2_queues(pool: &mut PooledConnection<'_>) -> Result<()> {
+    migrate_list(pool, LEGACY_V1_MAIN, LEGACY_V2_MAIN).await?;
+    migrate_list(pool, LEGACY_V1_PROCESSING, LEGACY_V2_PROCESSING).await?;
+    migrate_sset(pool, LEGACY_V1_DELAYED, DELAYED).await?;
+
+    Ok(())
 }
 
-async fn migrate_list(pool: &mut PooledConnection<'_>, legacy_queue: &str, queue: &str) {
+async fn migrate_list(
+    pool: &mut PooledConnection<'_>,
+    legacy_queue: &str,
+    queue: &str,
+) -> Result<()> {
     let batch_size = 1000;
     loop {
         // Checking for old messages from queue
         let legacy_keys: Vec<String> = pool
             .lpop(legacy_queue, NonZeroUsize::new(batch_size))
-            .await
-            .unwrap();
+            .await?;
         if legacy_keys.is_empty() {
-            break;
+            break Ok(());
         }
         tracing::info!(
             "Migrating {} keys from queue {}",
             legacy_keys.len(),
             legacy_queue
         );
-        let _: () = pool.rpush(queue, legacy_keys).await.unwrap();
+        let _: () = pool.rpush(queue, legacy_keys).await?;
     }
 }
 
-async fn migrate_sset(pool: &mut PooledConnection<'_>, legacy_queue: &str, queue: &str) {
+async fn migrate_sset(
+    pool: &mut PooledConnection<'_>,
+    legacy_queue: &str,
+    queue: &str,
+) -> Result<()> {
     let batch_size = 1000;
     loop {
         // Checking for old messages from LEGACY_DELAYED
-        let legacy_keys: Vec<(String, f64)> = pool.zpopmin(legacy_queue, batch_size).await.unwrap();
+        let legacy_keys: Vec<(String, f64)> = pool.zpopmin(legacy_queue, batch_size).await?;
 
         if legacy_keys.is_empty() {
-            break;
+            break Ok(());
         }
         tracing::info!(
             "Migrating {} keys from queue {}",
@@ -641,7 +671,7 @@ async fn migrate_sset(pool: &mut PooledConnection<'_>, legacy_queue: &str, queue
         let legacy_keys: Vec<(f64, String)> =
             legacy_keys.into_iter().map(|(x, y)| (y, x)).collect();
 
-        let _: () = pool.zadd_multiple(queue, &legacy_keys).await.unwrap();
+        let _: () = pool.zadd_multiple(queue, &legacy_keys).await?;
     }
 }
 
@@ -696,7 +726,9 @@ pub mod tests {
         let should_be_none: Option<String> = pool.lpop(TEST_QUEUE, None).await.unwrap();
         assert!(should_be_none.is_none());
 
-        migrate_list(&mut pool, TEST_LEGACY, TEST_QUEUE).await;
+        migrate_list(&mut pool, TEST_LEGACY, TEST_QUEUE)
+            .await
+            .unwrap();
 
         let test_key: Option<String> = pool.lpop(TEST_QUEUE, None).await.unwrap();
 
@@ -726,7 +758,9 @@ pub mod tests {
         let should_be_none: Vec<(String, i32)> = pool.zpopmin(TEST_QUEUE, 1).await.unwrap();
         assert!(should_be_none.is_empty());
 
-        migrate_sset(&mut pool, TEST_LEGACY, TEST_QUEUE).await;
+        migrate_sset(&mut pool, TEST_LEGACY, TEST_QUEUE)
+            .await
+            .unwrap();
 
         let test_key: Vec<(String, i32)> = pool.zpopmin(TEST_QUEUE, 1).await.unwrap();
 
@@ -1037,13 +1071,21 @@ pub mod tests {
             }
 
             // v1 to v2
-            migrate_list(&mut conn, v1_main, v2_main).await;
-            migrate_list(&mut conn, v1_processing, v2_processing).await;
-            migrate_sset(&mut conn, v1_delayed, v2_delayed).await;
+            migrate_list(&mut conn, v1_main, v2_main).await.unwrap();
+            migrate_list(&mut conn, v1_processing, v2_processing)
+                .await
+                .unwrap();
+            migrate_sset(&mut conn, v1_delayed, v2_delayed)
+                .await
+                .unwrap();
 
             // v2 to v3
-            migrate_list_to_stream(&mut conn, v2_main, v3_main).await;
-            migrate_list_to_stream(&mut conn, v2_processing, v3_main).await;
+            migrate_list_to_stream(&mut conn, v2_main, v3_main)
+                .await
+                .unwrap();
+            migrate_list_to_stream(&mut conn, v2_processing, v3_main)
+                .await
+                .unwrap();
         }
 
         // Read
