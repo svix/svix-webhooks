@@ -3,6 +3,14 @@
 ## Next
 * 
 
+## Version 0.64.0
+* Server: disable endpoints on repeated failures.
+* Server: add retry functionality to the Redis queue (to be more resistant minor networking hiccups).
+* Server: improve the delayed queue processing to be resilient to errors and better support concurrent processing.
+* Server: gracefully shutdown the server on SIGTERM.
+* Libs/Kotlin: fix compilation issues.
+* Libs: automatically detect region (and URL) from auth token.
+
 ## Version 0.63.1
 * Lib/JavaScript: fix setting string webhook secrets.
 
