@@ -68,6 +68,7 @@ async fn graceful_shutdown_handler() {
         _ = sigterm => {},
     }
 
+    tracing::info!("Received shutdown signal. Shutting down gracefully...");
     SHUTTING_DOWN.store(true, Ordering::SeqCst)
 }
 
