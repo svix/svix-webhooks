@@ -1,0 +1,34 @@
+name: Ruby Lint
+
+on: 
+  pull_request:
+    paths:
+      - "ruby/**"
+
+jobs:
+  dotnet:
+    name: Ruby Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7
+
+      - name: Regen openapi libs
+        run: |
+          yarn
+          ./regen_openapi.sh
+
+      - name: Install dependencies
+        run: |
+          cd ruby
+          bundler install
+
+      - name: Build
+        run: |
+          cd ruby
+          bundler exec rake build

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/url"
 	"time"
+	"strings"
 
 	"github.com/svix/svix-webhooks/go/internal/openapi"
 	"github.com/svix/svix-webhooks/go/internal/version"
@@ -45,6 +46,17 @@ func New(token string, options *SvixOptions) *Svix {
 	conf.Scheme = "https"
 	conf.Host = "api.svix.com"
 	conf.HTTPClient = defaultHTTPClient
+
+	var tokenParts = strings.Split(token, ".")
+	var region = tokenParts[len(tokenParts)-1]
+	if region == "us" {
+		conf.Host = "api.us.svix.com"
+	} else if region == "eu" {
+		conf.Host = "api.eu.svix.com"
+	} else if region == "in" {
+		conf.Host = "api.in.svix.com"
+	}
+
 	if options != nil {
 		conf.Debug = options.Debug
 		if options.ServerUrl != nil {

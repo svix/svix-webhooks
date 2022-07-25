@@ -21,7 +21,18 @@ module Svix
         attr_accessor :message_attempt
 
         def initialize(auth_token, options = SvixOptions.new)
-            uri = URI(options.server_url)
+
+            regional_url = nil
+            region = auth_token.split(".").last
+            if region == "us"
+                regional_url = "https://api.us.svix.com"
+            elsif region == "eu"
+                regional_url = "https://api.eu.svix.com"
+            elsif region == "in"
+                regional_url = "https://api.in.svix.com"
+            end
+
+            uri = URI(options.server_url || regional_url)
 
             configuration = Configuration.new
             configuration.debugging = options.debug
