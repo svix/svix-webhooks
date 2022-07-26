@@ -3,6 +3,9 @@
 ## Next
 * 
 
+## Version 0.64.1
+* Libs/Go: export missing `svix.NullableString` utility.
+
 ## Version 0.64.0
 * Server: disable endpoints on repeated failures.
 * Server: add retry functionality to the Redis queue (to be more resistant minor networking hiccups).
