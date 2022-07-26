@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"time"
 	"strings"
+	"time"
 
 	"github.com/svix/svix-webhooks/go/internal/openapi"
 	"github.com/svix/svix-webhooks/go/internal/version"
@@ -36,6 +36,9 @@ var defaultHTTPClient = &http.Client{
 
 func String(s string) *string {
 	return &s
+}
+func NullableString(s string) *openapi.NullableString {
+	return openapi.NewNullableString(&s)
 }
 func Int32(i int32) *int32 {
 	return &i
