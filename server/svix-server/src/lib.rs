@@ -6,11 +6,9 @@
 
 use axum::{extract::Extension, Router};
 
-use cfg::CacheType;
 use lazy_static::lazy_static;
 use std::{
-    net::{SocketAddr, TcpListener},
-    str::FromStr,
+    net::TcpListener,
     sync::atomic::{AtomicBool, Ordering},
     time::Duration,
 };
@@ -19,7 +17,7 @@ use tower_http::cors::{AllowHeaders, Any, CorsLayer};
 use tower_http::trace::TraceLayer;
 
 use crate::{
-    cfg::Configuration,
+    cfg::{CacheBackend, Configuration},
     core::{
         cache,
         idempotency::IdempotencyService,
@@ -86,25 +84,18 @@ pub async fn run_with_prefix(
 ) {
     let pool = init_db(&cfg).await;
 
-    let redis_dsn = || {
-        cfg.redis_dsn
-            .as_ref()
-            .expect("Redis DSN not found")
-            .as_str()
-    };
-
     tracing::debug!("Cache type: {:?}", cfg.cache_type);
-    let cache = match cfg.cache_type {
-        CacheType::Redis => {
-            let mgr = crate::redis::new_redis_pool(redis_dsn(), &cfg).await;
+    let cache = match cfg.cache_backend() {
+        CacheBackend::None => cache::none::new(),
+        CacheBackend::Memory => cache::memory::new(),
+        CacheBackend::Redis(dsn) => {
+            let mgr = crate::redis::new_redis_pool(dsn, &cfg).await;
             cache::redis::new(mgr)
         }
-        CacheType::RedisCluster => {
-            let mgr = crate::redis::new_redis_pool_clustered(redis_dsn(), &cfg).await;
+        CacheBackend::RedisCluster(dsn) => {
+            let mgr = crate::redis::new_redis_pool_clustered(dsn, &cfg).await;
             cache::redis::new(mgr)
         }
-        CacheType::Memory => cache::memory::new(),
-        CacheType::None => cache::none::new(),
     };
 
     tracing::debug!("Queue type: {:?}", cfg.queue_type);
@@ -147,8 +138,7 @@ pub async fn run_with_prefix(
     let with_api = cfg.api_enabled;
     let with_worker = cfg.worker_enabled;
 
-    let listen_address =
-        SocketAddr::from_str(&cfg.listen_address).expect("Error parsing server listen address");
+    let listen_address = cfg.listen_address;
 
     let (server, worker_loop, expired_message_cleaner_loop) = tokio::join!(
         async {

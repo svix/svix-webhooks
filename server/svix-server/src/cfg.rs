@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use std::sync::Arc;
+use std::{borrow::Cow, collections::HashMap, net::SocketAddr, sync::Arc};
 
 use figment::{
     providers::{Env, Format, Toml},
@@ -12,7 +12,7 @@ use std::time::Duration;
 use crate::{core::cryptography::Encryption, core::security::Keys, error::Result};
 use serde::{Deserialize, Deserializer};
 use tracing::Level;
-use validator::Validate;
+use validator::{Validate, ValidationError};
 
 fn deserialize_jwt_secret<'de, D>(deserializer: D) -> std::result::Result<Keys, D::Error>
 where
@@ -79,9 +79,13 @@ const DEFAULTS: &str = include_str!("../config.default.toml");
 pub type Configuration = Arc<ConfigurationInner>;
 
 #[derive(Clone, Debug, Deserialize, Validate)]
+#[validate(
+    schema(function = "validate_config_complete"),
+    skip_on_field_errors = false
+)]
 pub struct ConfigurationInner {
     /// The address to listen on
-    pub listen_address: String,
+    pub listen_address: SocketAddr,
 
     /// The address to send operational webhooks to. When None, operational webhooks will not be
     /// sent. When Some, the API server with the given URL will be used to send operational webhooks.
@@ -162,6 +166,81 @@ pub struct ConfigurationInner {
     pub internal: InternalConfig,
 }
 
+fn validate_config_complete(
+    config: &ConfigurationInner,
+) -> std::result::Result<(), ValidationError> {
+    match config.cache_type {
+        CacheType::None | CacheType::Memory => {}
+        CacheType::Redis | CacheType::RedisCluster => {
+            if config.redis_dsn.is_none() {
+                return Err(ValidationError {
+                    code: Cow::from("missing field"),
+                    message: Some(Cow::from(
+                        "The redis_dsn field must be set if the cache_type is `redis` or `rediscluster`"
+                    )),
+                    params: HashMap::new(),
+                });
+            }
+        }
+    }
+
+    match config.queue_type {
+        QueueType::Memory => {}
+        QueueType::Redis | QueueType::RedisCluster => {
+            if config.redis_dsn.is_none() {
+                return Err(ValidationError {
+                    code: Cow::from("missing field"),
+                    message: Some(Cow::from(
+                        "The redis_dsn field must be set if the queue_type is `redis` or `rediscluster`"
+                    )),
+                    params: HashMap::new(),
+                });
+            }
+        }
+    }
+
+    Ok(())
+}
+
+impl ConfigurationInner {
+    /// Fetches the configured backend information for the queue. May panic is the configuration has
+    /// not been validated
+    pub fn queue_backend(&self) -> QueueBackend<'_> {
+        match self.queue_type {
+            QueueType::Memory => QueueBackend::Memory,
+            QueueType::Redis => QueueBackend::Redis(
+                self.redis_dsn
+                    .as_ref()
+                    .expect("Called [`queue_backend`] before validating configuration"),
+            ),
+            QueueType::RedisCluster => QueueBackend::RedisCluster(
+                self.redis_dsn
+                    .as_ref()
+                    .expect("Called [`queue_backend`] before validating configuration"),
+            ),
+        }
+    }
+
+    /// Fetches the configured backend information for the cache, or `None` if the [`CacheType`] is
+    ///  `None`. May panic is the configuration has not been validated
+    pub fn cache_backend(&self) -> CacheBackend<'_> {
+        match self.cache_type {
+            CacheType::None => CacheBackend::None,
+            CacheType::Memory => CacheBackend::Memory,
+            CacheType::Redis => CacheBackend::Redis(
+                self.redis_dsn
+                    .as_ref()
+                    .expect("Called [`cache_backend`] before validating configuration"),
+            ),
+            CacheType::RedisCluster => CacheBackend::RedisCluster(
+                self.redis_dsn
+                    .as_ref()
+                    .expect("Called [`cache_backend`] before validating configuration"),
+            ),
+        }
+    }
+}
+
 #[derive(Clone, Debug, Deserialize)]
 pub struct InternalConfig {
     /// The region to use in the Svix URL given in th dashboard access endpoint
@@ -179,6 +258,19 @@ fn default_region() -> String {
 
 fn default_app_portal_url() -> String {
     "https://app.svix.com".to_owned()
+}
+
+pub enum QueueBackend<'a> {
+    Memory,
+    Redis(&'a str),
+    RedisCluster(&'a str),
+}
+
+pub enum CacheBackend<'a> {
+    None,
+    Memory,
+    Redis(&'a str),
+    RedisCluster(&'a str),
 }
 
 #[derive(Clone, Debug, Deserialize)]
