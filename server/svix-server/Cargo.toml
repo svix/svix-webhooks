@@ -23,6 +23,7 @@ clap = { version = "3.2.1", features = ["derive"] }
 axum = { version = "0.5.1", features = ["headers"] }
 base64 = "0.13.0"
 hyper = { version = "0.14.16", features = ["full"] }
+hyper-rustls = { version = "0.23.0", features = ["http2"] }
 tokio = { version = "1.15.0", features = ["full"] }
 tower = "0.4.11"
 tower-http = { version = "0.3.4", features = ["trace", "cors", "request-id"] }
@@ -62,6 +63,7 @@ futures = "0.3"
 redis_cluster_async = { git = "https://github.com/redis-rs/redis-cluster-async.git", rev = "e6fe168" }
 url = "2.2.2"
 rand = "0.8.5"
+ipnet = { version = "2.5.0", features = ["serde"] }
 
 [dev-dependencies]
 anyhow = "1.0.56"

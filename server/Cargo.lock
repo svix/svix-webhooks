@@ -1182,7 +1182,9 @@ checksum = "d87c48c02e0dc5e3b849a2041db3029fd066650f8f717c07bf8ed78ccb895cac"
 dependencies = [
  "http",
  "hyper",
+ "log",
  "rustls 0.20.6",
+ "rustls-native-certs",
  "tokio",
  "tokio-rustls 0.23.4",
 ]
@@ -1258,6 +1260,9 @@ name = "ipnet"
 version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "879d54834c8c76457ef4293a689b2a8c59b076067ad77b15efafbb05f92a592b"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "itertools"
@@ -2335,6 +2340,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "rustls-native-certs"
+version = "0.6.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0167bac7a9f490495f3c33013e7722b53cb087ecbe082fb0c6387c96f634ea50"
+dependencies = [
+ "openssl-probe",
+ "rustls-pemfile",
+ "schannel",
+ "security-framework",
+]
+
+[[package]]
 name = "rustls-pemfile"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2954,6 +2971,8 @@ dependencies = [
  "hmac-sha256",
  "http",
  "hyper",
+ "hyper-rustls",
+ "ipnet",
  "jwt-simple",
  "lazy_static",
  "num_enum",

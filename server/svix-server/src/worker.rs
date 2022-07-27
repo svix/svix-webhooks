@@ -33,7 +33,10 @@ use serde::{Deserialize, Serialize};
 use tokio::time::{sleep, Duration};
 
 use std::{
+    future::Future,
     iter,
+    net::{IpAddr, SocketAddr, ToSocketAddrs},
+    pin::Pin,
     str::FromStr,
     sync::{atomic::Ordering, Arc},
 };
@@ -224,6 +227,93 @@ struct DispatchExtraIds<'a> {
     msg_uid: Option<&'a MessageUid>,
 }
 
+/// This is the [`Future`] returned by the [`DnsResolver`] [`tower::Service`]. It simply wraps
+/// the [`tokio::task::JoinHandle`] created when blocking on resolving the domain name and flattens
+/// the [`Result`] of a [`Result`].
+struct DnsResolverFuture<I: Iterator<Item = SocketAddr>> {
+    inner: tokio::task::JoinHandle<std::result::Result<I, std::io::Error>>,
+}
+
+impl<I: Iterator<Item = SocketAddr>> Future for DnsResolverFuture<I> {
+    type Output = std::result::Result<I, std::io::Error>;
+
+    fn poll(
+        mut self: Pin<&mut Self>,
+        cx: &mut std::task::Context<'_>,
+    ) -> std::task::Poll<Self::Output> {
+        Pin::new(&mut self.inner).poll(cx).map(|res| {
+            let res = res.map_err(|e| {
+                if e.is_cancelled() {
+                    std::io::Error::new(std::io::ErrorKind::Interrupted, e)
+                } else {
+                    panic!("DNS resolution background task failed: {:?}", e)
+                }
+            });
+            match res {
+                Ok(Ok(out)) => Ok(out),
+                Ok(Err(e)) => Err(e),
+                Err(e) => Err(e),
+            }
+        })
+    }
+}
+
+/// The [`DnsResolver`] is a simple struct implementing a [`tower::Service`] that lets it be used
+/// as a `hyper` DNS resolver for the default [`hyper::client::HttpConnector`]. This resolution does
+/// the exact same as `hyper`'s built-in [`
+#[derive(Clone)]
+struct DnsResolver {
+    allowed_private_subnets: Vec<ipnet::IpNet>,
+}
+
+impl tower::Service<hyper::client::connect::dns::Name> for DnsResolver {
+    type Response = Box<dyn Iterator<Item = SocketAddr> + Send>;
+    type Error = std::io::Error;
+    type Future = DnsResolverFuture<Self::Response>;
+
+    fn poll_ready(
+        &mut self,
+        _cx: &mut std::task::Context<'_>,
+    ) -> std::task::Poll<std::result::Result<(), Self::Error>> {
+        std::task::Poll::Ready(Ok(()))
+    }
+
+    fn call(&mut self, name: hyper::client::connect::dns::Name) -> Self::Future {
+        let inner = tokio::task::spawn_blocking({
+            let allowed_private_subnets = self.allowed_private_subnets.clone();
+            move || {
+                let ips_res = (name.as_str(), 0).to_socket_addrs();
+
+                ips_res
+                    .map(move |ips| {
+                        ips.filter(move |socket| {
+                            let ip = socket.ip();
+
+                            let is_private = ip.is_loopback()
+                                || ip.is_multicast()
+                                || match ip {
+                                    IpAddr::V4(ip) => ip.is_private(),
+                                    IpAddr::V6(_) => false,
+                                };
+
+                            if is_private {
+                                allowed_private_subnets
+                                    .iter()
+                                    .map(|subnet| subnet.contains(&ip))
+                                    .fold(false, |acc, contained| acc || contained)
+                            } else {
+                                true
+                            }
+                        })
+                    })
+                    .map(|ips| Box::new(ips) as Box<dyn Iterator<Item = SocketAddr> + Send>)
+            }
+        });
+
+        DnsResolverFuture { inner }
+    }
+}
+
 /// Dispatches one webhook
 #[tracing::instrument(
     skip_all,
@@ -284,17 +374,46 @@ async fn dispatch(
         headers
     };
 
-    let client = reqwest::Client::builder()
-        .redirect(reqwest::redirect::Policy::none())
-        .build()
-        .expect("Invalid reqwest Client configuration");
-    let res = client
-        .post(&endp.url)
-        .headers(headers)
-        .timeout(Duration::from_secs(cfg.worker_request_timeout as u64))
-        .json(&payload)
-        .send()
-        .await;
+    // Creates the `HttpConnector` with overridden DNS resoluteon and a connection timeout
+    let mut connector = hyper::client::connect::HttpConnector::new_with_resolver(DnsResolver {
+        allowed_private_subnets: vec![],
+    });
+    connector.set_connect_timeout(Some(Duration::from_secs(cfg.worker_request_timeout as u64)));
+
+    // Creates a new `Connector` type which wraps the `HttpConnector` for TLS support
+    let connector = hyper_rustls::HttpsConnectorBuilder::new()
+        .with_native_roots()
+        .https_or_http()
+        .enable_http1()
+        .enable_http2()
+        .wrap_connector(connector);
+
+    // Actually creates the HTTP client with the above wrapper `Connector`
+    let client: hyper::client::Client<_, hyper::body::Body> =
+        hyper::client::Client::builder().build(connector);
+
+    // Creates a request for the client
+    let mut req = hyper::Request::builder()
+        .method(hyper::Method::POST)
+        .uri(&endp.url);
+
+    // `headers_mut` returns `None` on invalid config, so I'm just extending the mutable
+    // reference with the configured header map so no defaults are overridden
+    req.headers_mut().map(|header_map| {
+        header_map.extend(headers.into_iter());
+        header_map.append(
+            "Content-Type",
+            http::HeaderValue::from_static("application/json"),
+        );
+    });
+
+    let req = req
+        .body(hyper::Body::from(
+            serde_json::to_string(&payload).expect("Error serializing payload"),
+        ))
+        .expect("Failure to create requst");
+
+    let res = client.request(req).await;
 
     let msg_dest = messagedestination::Entity::secure_find_by_msg(msg_task.msg_id.clone())
         .filter(messagedestination::Column::EndpId.eq(endp.id.clone()))
@@ -334,18 +453,19 @@ async fn dispatch(
     let attempt = match res {
         Ok(res) => {
             let status_code = res.status().as_u16() as i16;
-            let status = if res.status().is_success() {
-                MessageStatus::Success
+            let (status, http_error) = if res.status().is_success() {
+                (MessageStatus::Success, None)
             } else {
-                MessageStatus::Fail
+                (
+                    MessageStatus::Fail,
+                    Some(format!("HTTP status {}", status_code)),
+                )
             };
-            let http_error = res.error_for_status_ref().err();
 
-            let bytes = res
-                .bytes()
-                .await
-                .expect("Could not read endpoint response body");
-            let body = bytes_to_string(bytes);
+            // TODO: Size check
+            // TODO: Error handling
+            let body = res.into_body();
+            let body = bytes_to_string(hyper::body::to_bytes(body).await.unwrap());
 
             let attempt = messageattempt::ActiveModel {
                 response_status_code: Set(status_code),
@@ -366,7 +486,7 @@ async fn dispatch(
 
                 ..attempt
             };
-            Err((attempt, err))
+            Err((attempt, err.to_string()))
         }
     };
 
