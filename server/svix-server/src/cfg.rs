@@ -135,11 +135,19 @@ pub struct ConfigurationInner {
     #[validate(range(min = 10))]
     pub redis_pool_max_size: u16,
 
-    /// What kind of message queue to use. Supported: memory, redis (must have redis_dsn configured).
+    /// What kind of message queue to use. Supported: memory, redis (must have redis_dsn or
+    /// queue_dsn configured).
     pub queue_type: QueueType,
+    /// The DSN for the Redis-backed queue. Overrides `redis_dsn`. (can be left empty if not using
+    /// redis)
+    pub queue_dsn: Option<String>,
 
-    /// What kind of cache to use. Supported: memory, redis (must have redis_dsn configured), none.
+    /// What kind of cache to use. Supported: memory, redis (must have redis_dsn or cache_dsn
+    /// configured), none.
     pub cache_type: CacheType,
+    /// The DSN for the Redis-backed cache. Overrides `redis_dsn`. (can be left empty if not using
+    /// redis)
+    pub cache_dsn: Option<String>,
 
     /// If true, headers are prefixed with `Webhook-`, otherwise with `Svix-` (default).
     pub whitelabel_headers: bool,
@@ -172,11 +180,11 @@ fn validate_config_complete(
     match config.cache_type {
         CacheType::None | CacheType::Memory => {}
         CacheType::Redis | CacheType::RedisCluster => {
-            if config.redis_dsn.is_none() {
+            if config.cache_dsn().is_none() {
                 return Err(ValidationError {
                     code: Cow::from("missing field"),
                     message: Some(Cow::from(
-                        "The redis_dsn field must be set if the cache_type is `redis` or `rediscluster`"
+                        "The redis_dsn or cache_dsn field must be set if the cache_type is `redis` or `rediscluster`"
                     )),
                     params: HashMap::new(),
                 });
@@ -187,11 +195,11 @@ fn validate_config_complete(
     match config.queue_type {
         QueueType::Memory => {}
         QueueType::Redis | QueueType::RedisCluster => {
-            if config.redis_dsn.is_none() {
+            if config.queue_dsn().is_none() {
                 return Err(ValidationError {
                     code: Cow::from("missing field"),
                     message: Some(Cow::from(
-                        "The redis_dsn field must be set if the queue_type is `redis` or `rediscluster`"
+                        "The redis_dsn or queue_dsn field must be set if the queue_type is `redis` or `rediscluster`"
                     )),
                     params: HashMap::new(),
                 });
@@ -203,40 +211,36 @@ fn validate_config_complete(
 }
 
 impl ConfigurationInner {
+    pub(self) fn queue_dsn(&self) -> Option<&str> {
+        self.queue_dsn.as_deref().or(self.redis_dsn.as_deref())
+    }
+
+    pub(self) fn cache_dsn(&self) -> Option<&str> {
+        self.cache_dsn.as_deref().or(self.redis_dsn.as_deref())
+    }
+
     /// Fetches the configured backend information for the queue. May panic is the configuration has
     /// not been validated
     pub fn queue_backend(&self) -> QueueBackend<'_> {
+        let err = "Called [`queue_backend`] before validating configuration";
+
         match self.queue_type {
             QueueType::Memory => QueueBackend::Memory,
-            QueueType::Redis => QueueBackend::Redis(
-                self.redis_dsn
-                    .as_ref()
-                    .expect("Called [`queue_backend`] before validating configuration"),
-            ),
-            QueueType::RedisCluster => QueueBackend::RedisCluster(
-                self.redis_dsn
-                    .as_ref()
-                    .expect("Called [`queue_backend`] before validating configuration"),
-            ),
+            QueueType::Redis => QueueBackend::Redis(self.queue_dsn().expect(err)),
+            QueueType::RedisCluster => QueueBackend::RedisCluster(self.queue_dsn().expect(err)),
         }
     }
 
     /// Fetches the configured backend information for the cache, or `None` if the [`CacheType`] is
     ///  `None`. May panic is the configuration has not been validated
     pub fn cache_backend(&self) -> CacheBackend<'_> {
+        let err = "Called [`cache_backend`] before validating configuration";
+
         match self.cache_type {
             CacheType::None => CacheBackend::None,
             CacheType::Memory => CacheBackend::Memory,
-            CacheType::Redis => CacheBackend::Redis(
-                self.redis_dsn
-                    .as_ref()
-                    .expect("Called [`cache_backend`] before validating configuration"),
-            ),
-            CacheType::RedisCluster => CacheBackend::RedisCluster(
-                self.redis_dsn
-                    .as_ref()
-                    .expect("Called [`cache_backend`] before validating configuration"),
-            ),
+            CacheType::Redis => CacheBackend::Redis(self.cache_dsn().expect(err)),
+            CacheType::RedisCluster => CacheBackend::RedisCluster(self.cache_dsn().expect(err)),
         }
     }
 }
@@ -260,12 +264,14 @@ fn default_app_portal_url() -> String {
     "https://app.svix.com".to_owned()
 }
 
+#[derive(Debug, Eq, PartialEq)]
 pub enum QueueBackend<'a> {
     Memory,
     Redis(&'a str),
     RedisCluster(&'a str),
 }
 
+#[derive(Debug, Eq, PartialEq)]
 pub enum CacheBackend<'a> {
     None,
     Memory,
@@ -394,5 +400,24 @@ mod tests {
 
             Ok(())
         });
+    }
+
+    #[test]
+    fn test_cache_or_queue_dsn_priority() {
+        // NOTE: Does not use `figment::Jail` like the above because set env vars will leak into
+        // other tests overwriting real configurations
+        let mut cfg = load().unwrap();
+        let mut cfg = Arc::make_mut(&mut cfg);
+
+        // Override all relevant values
+        cfg.queue_type = QueueType::Redis;
+        cfg.cache_type = CacheType::Redis;
+        cfg.queue_dsn = Some("test_a".to_owned());
+        cfg.cache_dsn = Some("test_b".to_owned());
+        cfg.redis_dsn = Some("this_value_shoud_be_overriden".to_owned());
+
+        // Assert that the queue_dsn and cache_dsn overwrite the `redis_dsn`
+        assert_eq!(cfg.queue_backend(), QueueBackend::Redis("test_a"));
+        assert_eq!(cfg.cache_backend(), CacheBackend::Redis("test_b"));
     }
 }
