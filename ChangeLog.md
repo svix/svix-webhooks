@@ -3,6 +3,10 @@
 ## Next
 * 
 
+## Version 0.64.2
+* Server: change the dashboard authentication payload to note that the server is self hosted.
+* Libs/JavaScript: fix issue when signing/verifying payloads with high Unicode codepoints (e.g. some new emoji)
+
 ## Version 0.64.1
 * Libs/Go: export missing `svix.NullableString` utility.
 
