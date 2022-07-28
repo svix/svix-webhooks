@@ -49,7 +49,6 @@ import {
 } from "./openapi/index";
 export * from "./openapi/models/all";
 export * from "./openapi/apis/exception";
-import * as utf8 from "@stablelib/utf8";
 import * as base64 from "@stablelib/base64";
 import * as sha256 from "fast-sha256";
 
@@ -672,7 +671,8 @@ export class Webhook {
   }
 
   public sign(msgId: string, timestamp: Date, payload: string): string {
-    const toSign = utf8.encode(`${msgId}.${timestamp.getTime() / 1000}.${payload}`);
+    const encoder = new TextEncoder();
+    const toSign = encoder.encode(`${msgId}.${timestamp.getTime() / 1000}.${payload}`);
     const expectedSignature = base64.encode(sha256.hmac(this.key, toSign));
     return `v1,${expectedSignature}`;
   }
