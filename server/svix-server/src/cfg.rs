@@ -253,7 +253,7 @@ pub struct InternalConfig {
 }
 
 fn default_region() -> String {
-    "eu".to_owned()
+    "self_hosted".to_owned()
 }
 
 fn default_app_portal_url() -> String {
