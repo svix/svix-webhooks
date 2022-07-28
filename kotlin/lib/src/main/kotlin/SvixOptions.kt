@@ -1,7 +1,7 @@
 package com.svix.kotlin
 
 data class SvixOptions(internal var wantedServerUrl: String? = null) {
-    private val version = "0.64.1"
+    private val version = "0.64.2"
 
     var serverUrl: String
         get() = this.wantedServerUrl ?: DEFAULT_URL
