@@ -9,8 +9,9 @@ use crate::{
     db::models::eventtype,
     error::{HttpError, Result},
     v1::utils::{
-        api_not_implemented, validate_no_control_characters, EmptyResponse, ListResponse, ModelIn,
-        ModelOut, NullablePatchField, Pagination, PaginationLimit, ValidatedJson, ValidatedQuery,
+        api_not_implemented, patch_field_non_nullable, patch_field_nullable,
+        validate_no_control_characters, EmptyResponse, ListResponse, ModelIn, ModelOut,
+        NullablePatchField, Pagination, PaginationLimit, ValidatedJson, ValidatedQuery,
     },
 };
 use axum::{
@@ -88,21 +89,9 @@ impl ModelIn for EventTypePatch {
     type ActiveModel = eventtype::ActiveModel;
 
     fn update_model(self, model: &mut Self::ActiveModel) {
-        match self.description {
-            Some(v) => model.description = Set(v),
-            None => {}
-        }
-
-        match self.deleted {
-            Some(v) => model.deleted = Set(v),
-            None => {}
-        }
-
-        match self.schemas {
-            NullablePatchField::Some(v) => model.schemas = Set(Some(v)),
-            NullablePatchField::None => model.schemas = Set(None),
-            NullablePatchField::Absent => {}
-        }
+        patch_field_non_nullable!(self, model, description);
+        patch_field_non_nullable!(self, model, deleted);
+        patch_field_nullable!(self, model, schemas);
     }
 }
 

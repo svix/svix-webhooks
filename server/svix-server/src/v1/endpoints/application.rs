@@ -14,8 +14,9 @@ use crate::{
     db::models::application,
     error::{HttpError, Result},
     v1::utils::{
-        validate_no_control_characters, EmptyResponse, ListResponse, ModelIn, ModelOut,
-        NullablePatchField, Pagination, PaginationLimit, ValidatedJson, ValidatedQuery,
+        patch_field_non_nullable, patch_field_nullable, validate_no_control_characters,
+        EmptyResponse, ListResponse, ModelIn, ModelOut, NullablePatchField, Pagination,
+        PaginationLimit, ValidatedJson, ValidatedQuery,
     },
 };
 use axum::{
@@ -85,22 +86,12 @@ impl ModelIn for ApplicationPatch {
     type ActiveModel = application::ActiveModel;
 
     fn update_model(self, model: &mut Self::ActiveModel) {
-        match self.name {
-            Some(v) => model.name = Set(v),
-            None => {}
-        }
+        // `model`'s version of `rate_limit` is an i32, while `self`'s is a u16.
+        let rate_limit_map = |x: u16| -> i32 { x.into() };
 
-        match self.rate_limit {
-            NullablePatchField::Some(v) => model.rate_limit = Set(Some(v.into())),
-            NullablePatchField::None => model.rate_limit = Set(None),
-            NullablePatchField::Absent => {}
-        }
-
-        match self.uid {
-            NullablePatchField::Some(v) => model.uid = Set(Some(v)),
-            NullablePatchField::None => model.uid = Set(None),
-            NullablePatchField::Absent => {}
-        }
+        patch_field_non_nullable!(self, model, name);
+        patch_field_nullable!(self, model, rate_limit, rate_limit_map);
+        patch_field_nullable!(self, model, uid);
     }
 }
 

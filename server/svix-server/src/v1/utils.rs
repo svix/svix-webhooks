@@ -274,6 +274,14 @@ impl<T> NullablePatchField<T> {
     pub fn is_absent(&self) -> bool {
         matches!(self, NullablePatchField::Absent)
     }
+
+    pub fn map<U>(self, f: impl Fn(T) -> U) -> NullablePatchField<U> {
+        match self {
+            NullablePatchField::Absent => NullablePatchField::Absent,
+            NullablePatchField::None => NullablePatchField::None,
+            NullablePatchField::Some(v) => NullablePatchField::Some(f(v)),
+        }
+    }
 }
 
 impl<T> Default for NullablePatchField<T> {
@@ -320,6 +328,63 @@ where
         }
     }
 }
+
+// FIXME: With a proc_macro we could infer whether a field is nullable or not as well as avoid
+// requiring that `self` and `model` are always passed in.
+
+// FIXME: Sanitize the macros
+
+/// Macro that simplifies updating a field on an [`ActiveModel`] for use in a [`ModelIn`]
+/// implementation. This macro expands to setting the field when the [`Option`] is `Some`, but
+/// performs no operation in the case it is `None`.
+///
+/// The input for this macro is three identifiers meant to be `self`, the `model` in a [`ModelIn`]
+/// implementation, and the member that `self`, and `model` share that is being modified.
+///
+/// The nullable equivalent which is used for [`NullablePatchField`] is [`patch_field_nullable`].
+macro_rules! patch_field_non_nullable {
+    ($self:ident, $model:ident, $member:ident) => {
+        match $self.$member {
+            Some(v) => $model.$member = Set(v),
+            None => {}
+        }
+    };
+}
+pub(crate) use patch_field_non_nullable;
+
+/// Macro that simplifies updating a field on an [`ActiveModel`] for use in a [`ModelIn`]
+/// implementation. This macro expands to setting the field when the [`NullablePatchField`] is
+/// `Some` and unsetting the field when it is `None`, but performs no operation in the case it is
+///  `Absent`.
+///
+/// The input for this macro is three identifiers meant to be `self`, the `model` in a [`ModelIn`]
+/// implementation, and the member that `self`, and `model` share that is being modified.
+///
+/// Optionally, a fourth identifier may be given which is meant to be a closure that takes the type
+/// of self's version of the member beng modified and returns model's version of the member being
+/// modified. This is applied via [`NullablePatchField::map`] such that  basic type conversions may
+/// be made.
+///
+/// The non-nullable equivalent which is used for [`Option`] is [`patch_field_non_nullable`].
+macro_rules! patch_field_nullable {
+    ($self:ident, $model:ident, $member:ident) => {
+        match $self.$member {
+            NullablePatchField::Some(v) => $model.$member = Set(Some(v)),
+            NullablePatchField::None => $model.$member = Set(None),
+            NullablePatchField::Absent => {}
+        }
+    };
+
+    ($self:ident, $model:ident, $member:ident, $f:ident) => {
+        let mapped = $self.$member.map($f);
+        match mapped {
+            NullablePatchField::Some(v) => $model.$member = Set(Some(v)),
+            NullablePatchField::None => $model.$member = Set(None),
+            NullablePatchField::Absent => {}
+        }
+    };
+}
+pub(crate) use patch_field_nullable;
 
 #[derive(Debug, Clone, Copy, Default)]
 pub struct ValidatedJson<T>(pub T);
