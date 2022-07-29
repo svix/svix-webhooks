@@ -10,7 +10,7 @@ use crate::{
     error::{HttpError, Result},
     v1::utils::{
         api_not_implemented, validate_no_control_characters, EmptyResponse, ListResponse, ModelIn,
-        ModelOut, Pagination, PaginationLimit, ValidatedJson, ValidatedQuery,
+        ModelOut, NullablePatchField, Pagination, PaginationLimit, ValidatedJson, ValidatedQuery,
     },
 };
 use axum::{
@@ -67,6 +67,42 @@ impl ModelIn for EventTypeUpdate {
         model.description = Set(self.description);
         model.deleted = Set(self.deleted);
         model.schemas = Set(self.schemas);
+    }
+}
+
+#[derive(Deserialize, ModelIn, Serialize, Validate)]
+#[serde(rename_all = "camelCase")]
+struct EventTypePatch {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[validate(custom = "validate_no_control_characters")]
+    description: Option<String>,
+
+    #[serde(default, rename = "archived", skip_serializing_if = "Option::is_none")]
+    deleted: Option<bool>,
+
+    #[serde(default, skip_serializing_if = "NullablePatchField::is_absent")]
+    schemas: NullablePatchField<serde_json::Value>,
+}
+
+impl ModelIn for EventTypePatch {
+    type ActiveModel = eventtype::ActiveModel;
+
+    fn update_model(self, model: &mut Self::ActiveModel) {
+        match self.description {
+            Some(v) => model.description = Set(v),
+            None => {}
+        }
+
+        match self.deleted {
+            Some(v) => model.deleted = Set(v),
+            None => {}
+        }
+
+        match self.schemas {
+            NullablePatchField::Some(v) => model.schemas = Set(Some(v)),
+            NullablePatchField::None => model.schemas = Set(None),
+            NullablePatchField::Absent => {}
+        }
     }
 }
 
@@ -218,6 +254,24 @@ async fn update_event_type(
     Ok(Json(ret.into()))
 }
 
+async fn patch_event_type(
+    Extension(ref db): Extension<DatabaseConnection>,
+    Path(evtype_name): Path<EventTypeName>,
+    ValidatedJson(data): ValidatedJson<EventTypePatch>,
+    AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
+) -> Result<Json<EventTypeOut>> {
+    let evtype = eventtype::Entity::secure_find_by_name(permissions.org_id.clone(), evtype_name)
+        .one(db)
+        .await?
+        .ok_or_else(|| HttpError::not_found(None, None))?;
+
+    let mut evtype: eventtype::ActiveModel = evtype.into();
+    data.update_model(&mut evtype);
+
+    let ret = evtype.update(db).await?;
+    Ok(Json(ret.into()))
+}
+
 async fn delete_event_type(
     Extension(ref db): Extension<DatabaseConnection>,
     Path(evtype_name): Path<EventTypeName>,
@@ -244,6 +298,7 @@ pub fn router() -> Router {
             "/event-type/:event_type_name/",
             get(get_event_type)
                 .put(update_event_type)
+                .patch(patch_event_type)
                 .delete(delete_event_type),
         )
         .route(

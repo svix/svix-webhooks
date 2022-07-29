@@ -256,6 +256,71 @@ fn validation_errors(
         .collect()
 }
 
+/// This is an enum that will wrap every nullable field for a PATCH request. Nonnullable fields can
+/// be represented via an [`Option`] for simplicity. This differs from an [`Option`] in that it
+/// distinguished null values and absent values such that an optional value in a model may be made
+/// None via PATCHing while allowing omitted fields to be skipped when updating.
+///
+/// NOTE: You must tag these fields with `#[serde(default)]` in order for the serialization to work
+/// correctly.
+#[derive(Debug)]
+pub enum NullablePatchField<T> {
+    Absent,
+    None,
+    Some(T),
+}
+
+impl<T> NullablePatchField<T> {
+    pub fn is_absent(&self) -> bool {
+        matches!(self, NullablePatchField::Absent)
+    }
+}
+
+impl<T> Default for NullablePatchField<T> {
+    fn default() -> Self {
+        Self::Absent
+    }
+}
+
+impl<T> From<Option<T>> for NullablePatchField<T> {
+    fn from(opt: Option<T>) -> Self {
+        match opt {
+            Some(v) => NullablePatchField::Some(v),
+            None => NullablePatchField::None,
+        }
+    }
+}
+
+impl<'de, T> Deserialize<'de> for NullablePatchField<T>
+where
+    T: Deserialize<'de>,
+{
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        Option::deserialize(deserializer).map(Into::into)
+    }
+}
+
+impl<T> Serialize for NullablePatchField<T>
+where
+    T: Serialize,
+{
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        match self {
+            NullablePatchField::Absent => Err(serde::ser::Error::custom(
+                "NullablePatchField must skip serializing if field is absent",
+            )),
+            NullablePatchField::None => serializer.serialize_none(),
+            NullablePatchField::Some(v) => v.serialize(serializer),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, Default)]
 pub struct ValidatedJson<T>(pub T);
 
