@@ -299,6 +299,26 @@ impl<T> From<Option<T>> for NullablePatchField<T> {
     }
 }
 
+impl<T: Validate> Validate for NullablePatchField<T> {
+    fn validate(&self) -> std::result::Result<(), validator::ValidationErrors> {
+        match self {
+            NullablePatchField::Absent | NullablePatchField::None => Ok(()),
+            NullablePatchField::Some(v) => v.validate(),
+        }
+    }
+}
+
+impl<T: Clone> Clone for NullablePatchField<T> {
+    fn clone(&self) -> Self {
+        match self {
+            NullablePatchField::Absent => NullablePatchField::Absent,
+            NullablePatchField::None => NullablePatchField::None,
+            NullablePatchField::Some(v) => NullablePatchField::Some(v.clone()),
+        }
+    }
+}
+impl<T: Clone + Copy> Copy for NullablePatchField<T> {}
+
 impl<'de, T> Deserialize<'de> for NullablePatchField<T>
 where
     T: Deserialize<'de>,
@@ -385,6 +405,58 @@ macro_rules! patch_field_nullable {
     };
 }
 pub(crate) use patch_field_nullable;
+
+// NOTE: proc_macro here would allow you to avoid passing the type, let you do it all by just
+// annotating the function probably, and allow you to infer whether the type is one passed without
+// reference by Validate.
+
+// XXX: Uncomment when implementing the `endpoint` PATCHing
+// /// Macro that, reimplements a validation function to work with a [`NullablePatchField`] whose
+// /// generic type is the same as that validation function.
+// ///
+// /// It takes the original validation function's identifier, an arbitrary identifier meant to be the
+// /// name of an equivalent validation function , and an arbitrary type meant to be the type that the
+// /// given validation function takes.
+// ///
+// /// NOTE: The given type is supposed to be a reference. Some types are passed directly, without
+// /// reference by `validate`, however. Even though [`NullablePatchField`] is [`Copy`] when its inner
+// /// type is [`Copy`], it must be passed by refernce requiring a different expansion. If you find
+// /// this is the case, then use [`patch_validation_direct`] instead.
+// ///
+// /// NOTE: It is assumed the desired functionality is to not throw a [`ValidationError`] when the value
+// /// is `Absent` or `None`.
+// macro_rules! patch_validation {
+//     ($original_fn:ident, $new_fn:ident, $type:ty) => {
+//         fn $new_fn(
+//             to_be_validated: NullablePatchField<$type>,
+//         ) -> std::result::Result<(), ValidationError> {
+//             match to_be_validated {
+//                 NullablePatchField::Absent | NullablePatchField::None => Ok(()),
+//                 NullablePatchField::Some(v) => $original_fn(v),
+//             }
+//         }
+//     };
+// }
+// pub(crate) use patch_validation;
+
+// This macro is equivalent to [`patch_validation`] in functionality and input. However, it is only
+// to be used with the primitive Copy types that validate passes directly instead of by reference.
+//
+// If the original validation function takes a reference instead of a concrete value, then use
+// [`patch_validation`] instead.
+macro_rules! patch_validation_direct {
+    ($original_fn:ident, $new_fn:ident, $type:ty) => {
+        fn $new_fn(
+            to_be_validated: &NullablePatchField<$type>,
+        ) -> std::result::Result<(), ValidationError> {
+            match to_be_validated {
+                NullablePatchField::Absent | NullablePatchField::None => Ok(()),
+                NullablePatchField::Some(v) => $original_fn(*v),
+            }
+        }
+    };
+}
+pub(crate) use patch_validation_direct;
 
 #[derive(Debug, Clone, Copy, Default)]
 pub struct ValidatedJson<T>(pub T);

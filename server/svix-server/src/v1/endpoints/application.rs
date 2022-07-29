@@ -14,9 +14,9 @@ use crate::{
     db::models::application,
     error::{HttpError, Result},
     v1::utils::{
-        patch_field_non_nullable, patch_field_nullable, validate_no_control_characters,
-        EmptyResponse, ListResponse, ModelIn, ModelOut, NullablePatchField, Pagination,
-        PaginationLimit, ValidatedJson, ValidatedQuery,
+        patch_field_non_nullable, patch_field_nullable, patch_validation_direct,
+        validate_no_control_characters, EmptyResponse, ListResponse, ModelIn, ModelOut,
+        NullablePatchField, Pagination, PaginationLimit, ValidatedJson, ValidatedQuery,
     },
 };
 use axum::{
@@ -41,7 +41,7 @@ pub struct ApplicationIn {
     )]
     pub name: String,
 
-    #[validate(range(min = 1, message = "Application rate limits must be at least 1 if set"))]
+    #[validate(custom = "validate_rate_limit")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub rate_limit: Option<u16>,
     /// Optional unique identifier for the application
@@ -74,11 +74,11 @@ pub struct ApplicationPatch {
     pub name: Option<String>,
 
     #[serde(default, skip_serializing_if = "NullablePatchField::is_absent")]
-    #[validate(custom = "validate_nullable_patch_rate_limit")]
+    #[validate(custom = "validate_rate_limit_patch")]
     pub rate_limit: NullablePatchField<u16>,
 
     #[serde(default, skip_serializing_if = "NullablePatchField::is_absent")]
-    #[validate(custom = "validate_nullable_patch_uid")]
+    #[validate]
     pub uid: NullablePatchField<ApplicationUid>,
 }
 
@@ -95,46 +95,25 @@ impl ModelIn for ApplicationPatch {
     }
 }
 
-/// Replicates the following validation attribute but for a [`NullablePatchField`]
-///
-/// `#[validate(range(min = 1, message = "Application rate limits must be at least 1 if set"))]`
-fn validate_nullable_patch_rate_limit(
-    rate_limit: &NullablePatchField<u16>,
-) -> std::result::Result<(), ValidationError> {
-    match rate_limit {
-        NullablePatchField::Absent | NullablePatchField::None => Ok(()),
-        NullablePatchField::Some(v) => {
-            if *v == 0 {
-                let mut error = ValidationError::new("range");
-                error.message = Some(Cow::from(
-                    "Application rate limits must be at least 1 if set",
-                ));
-                Err(error)
-            } else {
-                Ok(())
-            }
-        }
+// NOTE: While the `validator` crate has a built in `validate_range` functionality, this is
+// implemented sepcifically for `rate_limit`s here such that an [`ApplicationPatch`] equivalent may
+// be made via the [`patch_validation`] macro and so that it can be more easily ensured that the
+// error that is output from either the base type or PATCH equivalent for the same given input/inner
+// input are identical.
+fn validate_rate_limit(rate_limit: u16) -> std::result::Result<(), ValidationError> {
+    if rate_limit == 0 {
+        // TODO: Decide if the "range" code is appropriate or if something more suitable should be
+        // used.
+        let mut error = ValidationError::new("range");
+        error.message = Some(Cow::from(
+            "Application rate limits must be at least 1 if set",
+        ));
+        Err(error)
+    } else {
+        Ok(())
     }
 }
-
-/// Replicates UID validation buf for a [`NullablePatchField`]
-fn validate_nullable_patch_uid(
-    uid: &NullablePatchField<ApplicationUid>,
-) -> std::result::Result<(), ValidationError> {
-    match uid {
-        NullablePatchField::Absent | NullablePatchField::None => Ok(()),
-        NullablePatchField::Some(v) => v.validate().map_err(|_| {
-            // Can only return one error, but [`validate`] returns multiple with no easy way to get one.
-            // As such simply return an opaque error message.
-            //
-            // TODO: Is it better to just reimplement it in whole?
-            // TODO: Decide a better code than "opaque" if keeping this impl
-            let mut error = ValidationError::new("opaque");
-            error.message = Some(Cow::from("Error validating application UID"));
-            error
-        }),
-    }
-}
+patch_validation_direct!(validate_rate_limit, validate_rate_limit_patch, u16);
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ModelOut)]
 #[serde(rename_all = "camelCase")]
