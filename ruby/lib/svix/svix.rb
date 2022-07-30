@@ -5,7 +5,7 @@ module Svix
         attr_accessor :debug
         attr_accessor :server_url
 
-        def initialize(debug = false, server_url = "https://api.svix.com")
+        def initialize(debug = false, server_url = nil)
             @debug=debug
             @server_url=server_url
         end
@@ -22,7 +22,6 @@ module Svix
 
         def initialize(auth_token, options = SvixOptions.new)
 
-            regional_url = nil
             region = auth_token.split(".").last
             if region == "us"
                 regional_url = "https://api.us.svix.com"
@@ -30,6 +29,8 @@ module Svix
                 regional_url = "https://api.eu.svix.com"
             elsif region == "in"
                 regional_url = "https://api.in.svix.com"
+            else
+                regional_url = "https://api.svix.com"
             end
 
             uri = URI(options.server_url || regional_url)
