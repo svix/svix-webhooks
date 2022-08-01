@@ -9,10 +9,14 @@ use crate::{
     db::models::eventtype,
     error::{HttpError, Result},
     v1::utils::{
-        api_not_implemented, patch_field_non_nullable, patch_field_nullable,
+        api_not_implemented,
+        patch::{
+            patch_field_non_nullable, patch_field_nullable, UnrequiredField,
+            UnrequiredNullableField,
+        },
         validate_no_control_characters, validate_no_control_characters_unrequired, EmptyResponse,
-        ListResponse, ModelIn, ModelOut, Pagination, PaginationLimit, UnrequiredField,
-        UnrequiredNullableField, ValidatedJson, ValidatedQuery,
+        ListResponse, ModelIn, ModelOut, Pagination, PaginationLimit, ValidatedJson,
+        ValidatedQuery,
     },
 };
 use axum::{

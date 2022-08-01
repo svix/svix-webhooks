@@ -16,9 +16,12 @@ use crate::{
     db::models::messagedestination,
     error::HttpError,
     v1::utils::{
-        api_not_implemented, patch_field_non_nullable, patch_field_nullable,
+        api_not_implemented,
+        patch::{
+            patch_field_non_nullable, patch_field_nullable, UnrequiredField,
+            UnrequiredNullableField,
+        },
         validate_no_control_characters, validate_no_control_characters_unrequired, ModelIn,
-        UnrequiredField, UnrequiredNullableField,
     },
 };
 

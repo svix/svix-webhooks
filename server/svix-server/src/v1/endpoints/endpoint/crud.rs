@@ -23,8 +23,9 @@ use crate::{
     db::models::{endpoint, eventtype},
     error::{HttpError, Result, ValidationErrorItem},
     v1::utils::{
-        EmptyResponse, ListResponse, ModelIn, ModelOut, Pagination, PaginationLimit,
-        UnrequiredField, UnrequiredNullableField, ValidatedJson, ValidatedQuery,
+        patch::{UnrequiredField, UnrequiredNullableField},
+        EmptyResponse, ListResponse, ModelIn, ModelOut, Pagination, PaginationLimit, ValidatedJson,
+        ValidatedQuery,
     },
 };
 use hack::EventTypeNameResult;
