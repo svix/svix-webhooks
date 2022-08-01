@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
+use std::borrow::Cow;
+
 use crate::{
     core::{
         security::{
@@ -12,8 +14,13 @@ use crate::{
     db::models::application,
     error::{HttpError, Result},
     v1::utils::{
-        validate_no_control_characters, EmptyResponse, ListResponse, ModelIn, ModelOut, Pagination,
-        PaginationLimit, ValidatedJson, ValidatedQuery,
+        patch::{
+            patch_field_non_nullable, patch_field_nullable, UnrequiredField,
+            UnrequiredNullableField,
+        },
+        validate_no_control_characters, validate_no_control_characters_unrequired, EmptyResponse,
+        ListResponse, ModelIn, ModelOut, Pagination, PaginationLimit, ValidatedJson,
+        ValidatedQuery,
     },
 };
 use axum::{
@@ -27,7 +34,7 @@ use sea_orm::{entity::prelude::*, ActiveValue::Set, QueryOrder};
 use sea_orm::{ActiveModelTrait, DatabaseConnection, QuerySelect};
 use serde::{Deserialize, Serialize};
 use svix_server_derive::{ModelIn, ModelOut};
-use validator::Validate;
+use validator::{Validate, ValidationError};
 
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Validate, ModelIn)]
 #[serde(rename_all = "camelCase")]
@@ -55,6 +62,82 @@ impl ModelIn for ApplicationIn {
         model.name = Set(self.name);
         model.rate_limit = Set(self.rate_limit.map(|x| x.into()));
         model.uid = Set(self.uid);
+    }
+}
+
+#[derive(Deserialize, ModelIn, Serialize, Validate)]
+#[serde(rename_all = "camelCase")]
+pub struct ApplicationPatch {
+    #[serde(default, skip_serializing_if = "UnrequiredField::is_absent")]
+    #[validate(
+        custom = "validate_name_length_patch",
+        custom = "validate_no_control_characters_unrequired"
+    )]
+    pub name: UnrequiredField<String>,
+
+    #[serde(default, skip_serializing_if = "UnrequiredNullableField::is_absent")]
+    #[validate(custom = "validate_rate_limit_patch")]
+    pub rate_limit: UnrequiredNullableField<u16>,
+
+    #[serde(default, skip_serializing_if = "UnrequiredNullableField::is_absent")]
+    #[validate]
+    pub uid: UnrequiredNullableField<ApplicationUid>,
+}
+
+impl ModelIn for ApplicationPatch {
+    type ActiveModel = application::ActiveModel;
+
+    fn update_model(self, model: &mut Self::ActiveModel) {
+        let ApplicationPatch {
+            name,
+            rate_limit,
+            uid,
+        } = self;
+
+        // `model`'s version of `rate_limit` is an i32, while `self`'s is a u16.
+        let rate_limit_map = |x: u16| -> i32 { x.into() };
+
+        patch_field_non_nullable!(model, name);
+        patch_field_nullable!(model, rate_limit, rate_limit_map);
+        patch_field_nullable!(model, uid);
+    }
+}
+
+fn validate_name_length_patch(
+    name: &UnrequiredField<String>,
+) -> std::result::Result<(), ValidationError> {
+    match name {
+        UnrequiredField::Absent => Ok(()),
+        UnrequiredField::Some(s) => {
+            if s.is_empty() {
+                let mut error = ValidationError::new("length");
+                error.message = Some(Cow::from(
+                    "Application names must be at least one character",
+                ));
+                Err(error)
+            } else {
+                Ok(())
+            }
+        }
+    }
+}
+
+fn validate_rate_limit_patch(
+    rate_limit: &UnrequiredNullableField<u16>,
+) -> std::result::Result<(), ValidationError> {
+    match rate_limit {
+        UnrequiredNullableField::Absent | UnrequiredNullableField::None => Ok(()),
+        UnrequiredNullableField::Some(rate_limit) => {
+            if *rate_limit > 0 {
+                Ok(())
+            } else {
+                let mut error = ValidationError::new("range");
+                error.message = Some(Cow::from(
+                    "Application rate limits must be at least 1 if set",
+                ));
+                Err(error)
+            }
+        }
     }
 }
 
@@ -172,6 +255,21 @@ async fn update_application(
     Ok(Json(ret.into()))
 }
 
+async fn patch_application(
+    Extension(ref db): Extension<DatabaseConnection>,
+    ValidatedJson(data): ValidatedJson<ApplicationPatch>,
+    AuthenticatedOrganizationWithApplication {
+        permissions: _,
+        app,
+    }: AuthenticatedOrganizationWithApplication,
+) -> Result<Json<ApplicationOut>> {
+    let mut app: application::ActiveModel = app.into();
+    data.update_model(&mut app);
+
+    let ret = app.update(db).await?;
+    Ok(Json(ret.into()))
+}
+
 async fn delete_application(
     Extension(ref db): Extension<DatabaseConnection>,
     AuthenticatedOrganizationWithApplication {
@@ -193,13 +291,14 @@ pub fn router() -> Router {
             "/app/:app_id/",
             get(get_application)
                 .put(update_application)
+                .patch(patch_application)
                 .delete(delete_application),
         )
 }
 
 #[cfg(test)]
 mod tests {
-    use super::ApplicationIn;
+    use super::{ApplicationIn, ApplicationPatch};
     use serde_json::json;
     use validator::Validate;
 
@@ -228,6 +327,33 @@ mod tests {
         }
 
         let valid: ApplicationIn = serde_json::from_value(json!({
+            "name": APP_NAME_VALID,
+            "rateLimit": RATE_LIMIT_VALID,
+            "uid": UID_VALID,
+        }))
+        .unwrap();
+        valid.validate().unwrap();
+    }
+
+    // FIXME: How to eliminate the repetition here?
+    #[test]
+    fn test_application_patch_validation() {
+        let invalid_1: ApplicationPatch =
+            serde_json::from_value(json!({ "name": APP_NAME_INVALID })).unwrap();
+        let invalid_2: ApplicationPatch = serde_json::from_value(json!({
+                    "name": APP_NAME_VALID,
+                    "rateLimit": RATE_LIMIT_INVALID }))
+        .unwrap();
+        let invalid_3: ApplicationPatch = serde_json::from_value(json!({
+                    "name": APP_NAME_VALID, 
+                    "uid": UID_INVALID }))
+        .unwrap();
+
+        for a in [invalid_1, invalid_2, invalid_3] {
+            assert!(a.validate().is_err());
+        }
+
+        let valid: ApplicationPatch = serde_json::from_value(json!({
             "name": APP_NAME_VALID,
             "rateLimit": RATE_LIMIT_VALID,
             "uid": UID_VALID,

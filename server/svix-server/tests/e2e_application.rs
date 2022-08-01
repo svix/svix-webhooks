@@ -15,6 +15,128 @@ use utils::{
     start_svix_server, IgnoredResponse,
 };
 
+// NOTE: PATCHing must be tested exhaustively as if any of the boilerplate is missed then the
+// operation could fail. This should probably be made into a macro if at all possible.
+#[tokio::test]
+async fn test_patch() {
+    let (client, _jh) = start_svix_server();
+
+    let app: ApplicationOut = client
+        .post(
+            "api/v1/app/",
+            application_in("first_name"),
+            StatusCode::CREATED,
+        )
+        .await
+        .unwrap();
+
+    // Test that name may be set while the rest are omitted
+    let _: ApplicationOut = client
+        .patch(
+            &format!("api/v1/app/{}/", app.id),
+            serde_json::json! ({
+                "name": "second_name"
+            }),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    // Assert change was made when later fetched
+    let out = client
+        .get::<ApplicationOut>(&format!("api/v1/app/{}/", app.id), StatusCode::OK)
+        .await
+        .unwrap();
+    assert_eq!(out.name, "second_name".to_owned());
+    // Assert that no other field was changed
+    assert_eq!(out.rate_limit, None);
+    assert_eq!(out.uid, None);
+
+    // Test that rate_limit may be set while the rest are omitted
+    let _: ApplicationOut = client
+        .patch(
+            &format!("api/v1/app/{}/", app.id),
+            serde_json::json! ({
+                "rateLimit": 1
+            }),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    // Assert the change was made
+    let out = client
+        .get::<ApplicationOut>(&format!("api/v1/app/{}/", app.id), StatusCode::OK)
+        .await
+        .unwrap();
+    assert_eq!(out.rate_limit, Some(1));
+    // Assert that no other field was changed
+    assert_eq!(out.name, "second_name".to_owned());
+    assert_eq!(out.uid, None);
+
+    // Test that rate_limit may be unset while the rest are omitted
+    let _: ApplicationOut = client
+        .patch(
+            &format!("api/v1/app/{}/", app.id),
+            serde_json::json!({ "rateLimit": null }),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    // Assert the change was made
+    let out = client
+        .get::<ApplicationOut>(&format!("api/v1/app/{}/", app.id), StatusCode::OK)
+        .await
+        .unwrap();
+    assert_eq!(out.rate_limit, None);
+    // Assert that no other field was changed
+    assert_eq!(out.name, "second_name".to_owned());
+    assert_eq!(out.uid, None);
+
+    // Test that uid may be set while the rest are omitted
+    let _: ApplicationOut = client
+        .patch(
+            &format!("api/v1/app/{}/", app.id),
+            serde_json::json! ({
+                "uid": "test_uid"
+            }),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    // Assert the change was made
+    let out = client
+        .get::<ApplicationOut>(&format!("api/v1/app/{}/", app.id), StatusCode::OK)
+        .await
+        .unwrap();
+    assert_eq!(out.uid, Some(ApplicationUid("test_uid".to_owned())));
+    // Assert that no other field was changed
+    assert_eq!(out.name, "second_name".to_owned());
+    assert_eq!(out.rate_limit, None);
+
+    // Test that uid may be unset while the rest are omitted
+    let _: ApplicationOut = client
+        .patch(
+            &format!("api/v1/app/{}/", app.id),
+            serde_json::json!({ "uid": null }),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    // Assert the change was made
+    let out = client
+        .get::<ApplicationOut>(&format!("api/v1/app/{}/", app.id), StatusCode::OK)
+        .await
+        .unwrap();
+    assert_eq!(out.uid, None);
+    // Assert that no other field was changed
+    assert_eq!(out.name, "second_name".to_owned());
+    assert_eq!(out.rate_limit, None);
+}
+
 #[tokio::test]
 async fn test_crud() {
     let (client, _jh) = start_svix_server();

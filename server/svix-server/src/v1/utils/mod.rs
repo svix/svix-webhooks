@@ -20,6 +20,9 @@ use crate::{
     error::{Error, HttpError, Result, ValidationErrorItem},
 };
 
+pub mod patch;
+use patch::UnrequiredField;
+
 const fn default_limit() -> PaginationLimit {
     PaginationLimit(50)
 }
@@ -394,6 +397,15 @@ pub fn validate_no_control_characters(str: &str) -> std::result::Result<(), Vali
         ));
     }
     Ok(())
+}
+
+pub fn validate_no_control_characters_unrequired(
+    str: &UnrequiredField<String>,
+) -> std::result::Result<(), ValidationError> {
+    match str {
+        UnrequiredField::Absent => Ok(()),
+        UnrequiredField::Some(str) => validate_no_control_characters(str),
+    }
 }
 
 #[cfg(test)]

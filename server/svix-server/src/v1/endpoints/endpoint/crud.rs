@@ -9,7 +9,7 @@ use sea_orm::{entity::prelude::*, ActiveValue::Set, QueryOrder};
 use sea_orm::{ActiveModelTrait, DatabaseConnection, QuerySelect};
 use url::Url;
 
-use super::{secrets::generate_secret, EndpointIn, EndpointOut};
+use super::{secrets::generate_secret, EndpointIn, EndpointOut, EndpointPatch};
 use crate::{
     cfg::Configuration,
     core::{
@@ -23,6 +23,7 @@ use crate::{
     db::models::{endpoint, eventtype},
     error::{HttpError, Result, ValidationErrorItem},
     v1::utils::{
+        patch::{UnrequiredField, UnrequiredNullableField},
         EmptyResponse, ListResponse, ModelIn, ModelOut, Pagination, PaginationLimit, ValidatedJson,
         ValidatedQuery,
     },
@@ -134,6 +135,47 @@ pub(super) async fn update_endpoint(
         validate_event_types(db, event_types_ids, &permissions.org_id).await?;
     }
     validate_endpoint_url(&data.url, cfg.endpoint_https_only)?;
+
+    let mut endp: endpoint::ActiveModel = endp.into();
+    data.update_model(&mut endp);
+
+    let ret = endp.update(db).await?;
+
+    let app_uid = app.uid;
+    op_webhooks
+        .send_operational_webhook(
+            &permissions.org_id,
+            OperationalWebhook::EndpointUpdated(EndpointEvent {
+                app_id: &ret.app_id,
+                app_uid: app_uid.as_ref(),
+                endpoint_id: &ret.id,
+                endpoint_uid: ret.uid.as_ref(),
+            }),
+        )
+        .await?;
+
+    Ok(Json(ret.into()))
+}
+
+pub(super) async fn patch_endpoint(
+    Extension(ref db): Extension<DatabaseConnection>,
+    Extension(cfg): Extension<Configuration>,
+    Extension(op_webhooks): Extension<OperationalWebhookSender>,
+    Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
+    ValidatedJson(data): ValidatedJson<EndpointPatch>,
+    AuthenticatedApplication { permissions, app }: AuthenticatedApplication,
+) -> Result<Json<EndpointOut>> {
+    let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
+        .one(db)
+        .await?
+        .ok_or_else(|| HttpError::not_found(None, None))?;
+
+    if let UnrequiredNullableField::Some(ref event_types_ids) = data.event_types_ids {
+        validate_event_types(db, event_types_ids, &permissions.org_id).await?;
+    }
+    if let UnrequiredField::Some(url) = &data.url {
+        validate_endpoint_url(url, cfg.endpoint_https_only)?;
+    }
 
     let mut endp: endpoint::ActiveModel = endp.into();
     data.update_model(&mut endp);

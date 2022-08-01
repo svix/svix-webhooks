@@ -15,7 +15,14 @@ use crate::{
     },
     db::models::messagedestination,
     error::HttpError,
-    v1::utils::{api_not_implemented, validate_no_control_characters, ModelIn},
+    v1::utils::{
+        api_not_implemented,
+        patch::{
+            patch_field_non_nullable, patch_field_nullable, UnrequiredField,
+            UnrequiredNullableField,
+        },
+        validate_no_control_characters, validate_no_control_characters_unrequired, ModelIn,
+    },
 };
 
 use axum::{
@@ -28,7 +35,7 @@ use sea_orm::{
     ActiveValue::Set, ColumnTrait, DatabaseConnection, FromQueryResult, QueryFilter, QuerySelect,
 };
 use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, collections::HashSet};
+use std::{borrow::Cow, collections::HashMap, collections::HashSet};
 use url::Url;
 
 use svix_server_derive::{ModelIn, ModelOut};
@@ -49,6 +56,15 @@ pub fn validate_event_types_ids(
     }
 }
 
+fn validate_event_types_ids_unrequired_nullable(
+    event_types_ids: &UnrequiredNullableField<EventTypeNameSet>,
+) -> std::result::Result<(), ValidationError> {
+    match event_types_ids {
+        UnrequiredNullableField::Absent | UnrequiredNullableField::None => Ok(()),
+        UnrequiredNullableField::Some(event_type_ids) => validate_event_types_ids(event_type_ids),
+    }
+}
+
 pub fn validate_channels_endpoint(
     channels: &EventChannelSet,
 ) -> std::result::Result<(), ValidationError> {
@@ -59,6 +75,15 @@ pub fn validate_channels_endpoint(
         ))
     } else {
         Ok(())
+    }
+}
+
+fn validate_channels_endpoint_unrequired_nullable(
+    channels: &UnrequiredNullableField<EventChannelSet>,
+) -> std::result::Result<(), ValidationError> {
+    match channels {
+        UnrequiredNullableField::Absent | UnrequiredNullableField::None => Ok(()),
+        UnrequiredNullableField::Some(channels) => validate_channels_endpoint(channels),
     }
 }
 
@@ -76,6 +101,15 @@ pub fn validate_url(val: &str) -> std::result::Result<(), ValidationError> {
         }
 
         Err(_) => Err(ValidationError::new("Endpoint URLs must be valid")),
+    }
+}
+
+fn validate_url_unrequired(
+    val: &UnrequiredField<String>,
+) -> std::result::Result<(), ValidationError> {
+    match val {
+        UnrequiredField::Absent => Ok(()),
+        UnrequiredField::Some(val) => validate_url(val),
     }
 }
 
@@ -131,6 +165,115 @@ impl ModelIn for EndpointIn {
         model.disabled = Set(self.disabled);
         model.event_types_ids = Set(self.event_types_ids);
         model.channels = Set(self.channels);
+    }
+}
+
+#[derive(Clone, Debug, Default, Serialize, Deserialize, Validate, ModelIn)]
+#[serde(rename_all = "camelCase")]
+pub struct EndpointPatch {
+    #[serde(default)]
+    #[serde(skip_serializing_if = "UnrequiredField::is_absent")]
+    #[validate(custom = "validate_no_control_characters_unrequired")]
+    pub description: UnrequiredField<String>,
+
+    #[validate(custom = "validate_rate_limit_patch")]
+    #[serde(default, skip_serializing_if = "UnrequiredNullableField::is_absent")]
+    pub rate_limit: UnrequiredNullableField<u16>,
+
+    #[validate]
+    #[serde(default, skip_serializing_if = "UnrequiredNullableField::is_absent")]
+    pub uid: UnrequiredNullableField<EndpointUid>,
+
+    #[validate(custom = "validate_url_unrequired")]
+    #[serde(default)]
+    pub url: UnrequiredField<String>,
+
+    #[validate(custom = "validate_minimum_version_patch")]
+    #[serde(default)]
+    pub version: UnrequiredField<u16>,
+
+    #[serde(default)]
+    #[serde(skip_serializing_if = "UnrequiredField::is_absent")]
+    pub disabled: UnrequiredField<bool>,
+
+    #[serde(default, rename = "filterTypes")]
+    #[validate(custom = "validate_event_types_ids_unrequired_nullable")]
+    #[validate]
+    #[serde(skip_serializing_if = "UnrequiredNullableField::is_absent")]
+    pub event_types_ids: UnrequiredNullableField<EventTypeNameSet>,
+
+    #[validate(custom = "validate_channels_endpoint_unrequired_nullable")]
+    #[validate]
+    #[serde(default, skip_serializing_if = "UnrequiredNullableField::is_absent")]
+    pub channels: UnrequiredNullableField<EventChannelSet>,
+
+    #[validate]
+    #[serde(default)]
+    #[serde(rename = "secret")]
+    #[serde(skip_serializing_if = "UnrequiredNullableField::is_absent")]
+    pub key: UnrequiredNullableField<EndpointSecret>,
+}
+
+impl ModelIn for EndpointPatch {
+    type ActiveModel = endpoint::ActiveModel;
+
+    fn update_model(self, model: &mut Self::ActiveModel) {
+        let EndpointPatch {
+            description,
+            rate_limit,
+            uid,
+            url,
+            version,
+            disabled,
+            event_types_ids,
+            channels,
+            key: _,
+        } = self;
+
+        let map = |x: u16| -> i32 { x.into() };
+
+        patch_field_non_nullable!(model, description);
+        patch_field_nullable!(model, rate_limit, map);
+        patch_field_nullable!(model, uid);
+        patch_field_non_nullable!(model, url);
+        patch_field_non_nullable!(model, version, map);
+        patch_field_non_nullable!(model, disabled);
+        patch_field_nullable!(model, event_types_ids);
+        patch_field_nullable!(model, channels);
+    }
+}
+
+fn validate_rate_limit_patch(
+    rate_limit: &UnrequiredNullableField<u16>,
+) -> std::result::Result<(), ValidationError> {
+    match rate_limit {
+        UnrequiredNullableField::Absent | UnrequiredNullableField::None => Ok(()),
+        UnrequiredNullableField::Some(rate_limit) => {
+            if *rate_limit > 0 {
+                Ok(())
+            } else {
+                let mut error = ValidationError::new("range");
+                error.message = Some(Cow::from("Endpoint rate limits must be at least 1 if set"));
+                Err(error)
+            }
+        }
+    }
+}
+
+fn validate_minimum_version_patch(
+    version: &UnrequiredField<u16>,
+) -> std::result::Result<(), ValidationError> {
+    match version {
+        UnrequiredField::Absent => Ok(()),
+        UnrequiredField::Some(version) => {
+            if *version == 0 {
+                let mut error = ValidationError::new("range");
+                error.message = Some(Cow::from("Endpoint versions must be at least one"));
+                Err(error)
+            } else {
+                Ok(())
+            }
+        }
     }
 }
 
@@ -338,6 +481,7 @@ pub fn router() -> Router {
                 "/endpoint/:endp_id/",
                 get(crud::get_endpoint)
                     .put(crud::update_endpoint)
+                    .patch(crud::patch_endpoint)
                     .delete(crud::delete_endpoint),
             )
             .route(
