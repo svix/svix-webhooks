@@ -157,14 +157,26 @@ impl ModelIn for EndpointIn {
     type ActiveModel = endpoint::ActiveModel;
 
     fn update_model(self, model: &mut Self::ActiveModel) {
-        model.description = Set(self.description);
-        model.rate_limit = Set(self.rate_limit.map(|x| x.into()));
-        model.uid = Set(self.uid);
-        model.url = Set(self.url);
-        model.version = Set(self.version.into());
-        model.disabled = Set(self.disabled);
-        model.event_types_ids = Set(self.event_types_ids);
-        model.channels = Set(self.channels);
+        let EndpointIn {
+            description,
+            rate_limit,
+            uid,
+            url,
+            version,
+            disabled,
+            event_types_ids,
+            channels,
+            key: _,
+        } = self;
+
+        model.description = Set(description);
+        model.rate_limit = Set(rate_limit.map(|x| x.into()));
+        model.uid = Set(uid);
+        model.url = Set(url);
+        model.version = Set(version.into());
+        model.disabled = Set(disabled);
+        model.event_types_ids = Set(event_types_ids);
+        model.channels = Set(channels);
     }
 }
 
@@ -347,7 +359,8 @@ impl ModelIn for EndpointHeadersIn {
     type ActiveModel = endpoint::ActiveModel;
 
     fn update_model(self, model: &mut Self::ActiveModel) {
-        model.headers = Set(Some(self.headers));
+        let EndpointHeadersIn { headers } = self;
+        model.headers = Set(Some(headers));
     }
 }
 
@@ -393,8 +406,10 @@ impl ModelIn for EndpointHeadersPatchIn {
     type ActiveModel = endpoint::ActiveModel;
 
     fn update_model(self, model: &mut Self::ActiveModel) {
+        let EndpointHeadersPatchIn { headers } = self;
+
         model.headers = if let Some(Some(mut hdrs)) = model.headers.take() {
-            for (k, v) in self.headers.0 {
+            for (k, v) in headers.0 {
                 if let Some(v) = v {
                     hdrs.0.insert(k, v);
                 } else {
@@ -403,8 +418,7 @@ impl ModelIn for EndpointHeadersPatchIn {
             }
             Set(Some(hdrs))
         } else {
-            let headers: HashMap<String, String> = self
-                .headers
+            let headers: HashMap<String, String> = headers
                 .0
                 .into_iter()
                 .filter_map(|(k, v)| v.map(|v| (k, v)))

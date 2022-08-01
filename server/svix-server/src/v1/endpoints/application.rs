@@ -59,9 +59,15 @@ impl ModelIn for ApplicationIn {
     type ActiveModel = application::ActiveModel;
 
     fn update_model(self, model: &mut Self::ActiveModel) {
-        model.name = Set(self.name);
-        model.rate_limit = Set(self.rate_limit.map(|x| x.into()));
-        model.uid = Set(self.uid);
+        let ApplicationIn {
+            name,
+            rate_limit,
+            uid,
+        } = self;
+
+        model.name = Set(name);
+        model.rate_limit = Set(rate_limit.map(|x| x.into()));
+        model.uid = Set(uid);
     }
 }
 

@@ -73,13 +73,21 @@ impl ModelIn for MessageIn {
     type ActiveModel = message::ActiveModel;
 
     fn update_model(self, model: &mut message::ActiveModel) {
-        let expiration = Utc::now() + Duration::days(self.payload_retention_period);
+        let MessageIn {
+            uid,
+            payload,
+            event_type,
+            channels,
+            payload_retention_period,
+        } = self;
 
-        model.uid = Set(self.uid);
-        model.payload = Set(Some(self.payload));
-        model.event_type = Set(self.event_type);
+        let expiration = Utc::now() + Duration::days(payload_retention_period);
+
+        model.uid = Set(uid);
+        model.payload = Set(Some(payload));
+        model.event_type = Set(event_type);
         model.expiration = Set(expiration.with_timezone(&Utc).into());
-        model.channels = Set(self.channels);
+        model.channels = Set(channels);
     }
 }
 
