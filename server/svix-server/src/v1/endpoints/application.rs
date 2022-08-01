@@ -88,12 +88,18 @@ impl ModelIn for ApplicationPatch {
     type ActiveModel = application::ActiveModel;
 
     fn update_model(self, model: &mut Self::ActiveModel) {
+        let ApplicationPatch {
+            name,
+            rate_limit,
+            uid,
+        } = self;
+
         // `model`'s version of `rate_limit` is an i32, while `self`'s is a u16.
         let rate_limit_map = |x: u16| -> i32 { x.into() };
 
-        patch_field_non_nullable!(self, model, name);
-        patch_field_nullable!(self, model, rate_limit, rate_limit_map);
-        patch_field_nullable!(self, model, uid);
+        patch_field_non_nullable!(model, name);
+        patch_field_nullable!(model, rate_limit, rate_limit_map);
+        patch_field_nullable!(model, uid);
     }
 }
 
@@ -122,14 +128,14 @@ fn validate_rate_limit_patch(
     match rate_limit {
         UnrequiredNullableField::Absent | UnrequiredNullableField::None => Ok(()),
         UnrequiredNullableField::Some(rate_limit) => {
-            if *rate_limit == 0 {
+            if *rate_limit > 0 {
+                Ok(())
+            } else {
                 let mut error = ValidationError::new("range");
                 error.message = Some(Cow::from(
                     "Application rate limits must be at least 1 if set",
                 ));
                 Err(error)
-            } else {
-                Ok(())
             }
         }
     }

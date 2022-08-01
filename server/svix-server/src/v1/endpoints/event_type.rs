@@ -98,9 +98,15 @@ impl ModelIn for EventTypePatch {
     type ActiveModel = eventtype::ActiveModel;
 
     fn update_model(self, model: &mut Self::ActiveModel) {
-        patch_field_non_nullable!(self, model, description);
-        patch_field_non_nullable!(self, model, deleted);
-        patch_field_nullable!(self, model, schemas);
+        let EventTypePatch {
+            description,
+            deleted,
+            schemas,
+        } = self;
+
+        patch_field_non_nullable!(model, description);
+        patch_field_non_nullable!(model, deleted);
+        patch_field_nullable!(model, schemas);
     }
 }
 

@@ -194,15 +194,15 @@ where
 ///
 /// The nullable equivalent which is used for [`UnrequiredNullableField`] is [`patch_field_nullable`].
 macro_rules! patch_field_non_nullable {
-    ($self:ident, $model:ident, $member:ident) => {
-        match $self.$member {
+    ($model:ident, $member:ident) => {
+        match $member {
             UnrequiredField::Some(v) => $model.$member = Set(v),
             UnrequiredField::Absent => {}
         }
     };
 
-    ($self:ident, $model:ident, $member:ident, $f:ident) => {
-        let mapped = $self.$member.map($f);
+    ($model:ident, $member:ident, $f:ident) => {
+        let mapped = $member.map($f);
         match mapped {
             UnrequiredField::Some(v) => $model.$member = Set(v),
             UnrequiredField::Absent => {}
@@ -226,16 +226,16 @@ pub(crate) use patch_field_non_nullable;
 ///
 /// The non-nullable equivalent which is used for [`Option`] is [`patch_field_non_nullable`].
 macro_rules! patch_field_nullable {
-    ($self:ident, $model:ident, $member:ident) => {
-        match $self.$member {
+    ($model:ident, $member:ident) => {
+        match $member {
             UnrequiredNullableField::Some(v) => $model.$member = Set(Some(v)),
             UnrequiredNullableField::None => $model.$member = Set(None),
             UnrequiredNullableField::Absent => {}
         }
     };
 
-    ($self:ident, $model:ident, $member:ident, $f:ident) => {
-        let mapped = $self.$member.map($f);
+    ($model:ident, $member:ident, $f:ident) => {
+        let mapped = $member.map($f);
         match mapped {
             UnrequiredNullableField::Some(v) => $model.$member = Set(Some(v)),
             UnrequiredNullableField::None => $model.$member = Set(None),

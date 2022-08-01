@@ -218,16 +218,28 @@ impl ModelIn for EndpointPatch {
     type ActiveModel = endpoint::ActiveModel;
 
     fn update_model(self, model: &mut Self::ActiveModel) {
+        let EndpointPatch {
+            description,
+            rate_limit,
+            uid,
+            url,
+            version,
+            disabled,
+            event_types_ids,
+            channels,
+            key: _,
+        } = self;
+
         let map = |x: u16| -> i32 { x.into() };
 
-        patch_field_non_nullable!(self, model, description);
-        patch_field_nullable!(self, model, rate_limit, map);
-        patch_field_nullable!(self, model, uid);
-        patch_field_non_nullable!(self, model, url);
-        patch_field_non_nullable!(self, model, version, map);
-        patch_field_non_nullable!(self, model, disabled);
-        patch_field_nullable!(self, model, event_types_ids);
-        patch_field_nullable!(self, model, channels);
+        patch_field_non_nullable!(model, description);
+        patch_field_nullable!(model, rate_limit, map);
+        patch_field_nullable!(model, uid);
+        patch_field_non_nullable!(model, url);
+        patch_field_non_nullable!(model, version, map);
+        patch_field_non_nullable!(model, disabled);
+        patch_field_nullable!(model, event_types_ids);
+        patch_field_nullable!(model, channels);
     }
 }
 
@@ -237,12 +249,12 @@ fn validate_rate_limit_patch(
     match rate_limit {
         UnrequiredNullableField::Absent | UnrequiredNullableField::None => Ok(()),
         UnrequiredNullableField::Some(rate_limit) => {
-            if *rate_limit == 0 {
+            if *rate_limit > 0 {
+                Ok(())
+            } else {
                 let mut error = ValidationError::new("range");
                 error.message = Some(Cow::from("Endpoint rate limits must be at least 1 if set"));
                 Err(error)
-            } else {
-                Ok(())
             }
         }
     }
