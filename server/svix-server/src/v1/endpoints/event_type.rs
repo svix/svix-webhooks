@@ -48,10 +48,17 @@ impl ModelIn for EventTypeIn {
     type ActiveModel = eventtype::ActiveModel;
 
     fn update_model(self, model: &mut Self::ActiveModel) {
-        model.name = Set(self.name);
-        model.description = Set(self.description);
-        model.deleted = Set(self.deleted);
-        model.schemas = Set(self.schemas);
+        let EventTypeIn {
+            name,
+            description,
+            deleted,
+            schemas,
+        } = self;
+
+        model.name = Set(name);
+        model.description = Set(description);
+        model.deleted = Set(deleted);
+        model.schemas = Set(schemas);
     }
 }
 
@@ -70,9 +77,15 @@ impl ModelIn for EventTypeUpdate {
     type ActiveModel = eventtype::ActiveModel;
 
     fn update_model(self, model: &mut Self::ActiveModel) {
-        model.description = Set(self.description);
-        model.deleted = Set(self.deleted);
-        model.schemas = Set(self.schemas);
+        let EventTypeUpdate {
+            description,
+            deleted,
+            schemas,
+        } = self;
+
+        model.description = Set(description);
+        model.deleted = Set(deleted);
+        model.schemas = Set(schemas);
     }
 }
 
