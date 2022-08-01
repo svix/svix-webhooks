@@ -88,6 +88,370 @@ async fn delete_endpoint(client: &TestClient, app_id: &ApplicationId, ep_id: &st
 }
 
 #[tokio::test]
+async fn test_patch() {
+    let (client, _jh) = start_svix_server();
+
+    let app = create_test_app(&client, "v1EndpointPatchTestApp")
+        .await
+        .unwrap()
+        .id;
+    let ep = create_test_endpoint(&client, &app, "http://bad.url")
+        .await
+        .unwrap()
+        .id;
+
+    let url = format!("api/v1/app/{}/endpoint/{}/", app, ep);
+
+    // Test that the description may be set
+    let _: EndpointOut = client
+        .patch(
+            &url,
+            serde_json::json!({
+                "description": "test"
+            }),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    // Assert the change was made
+    let out = client
+        .get::<EndpointOut>(&url, StatusCode::OK)
+        .await
+        .unwrap();
+    assert_eq!(out.description, "test".to_owned());
+    // Assert that no other changes were made
+    assert_eq!(out.rate_limit, None);
+    assert_eq!(out.uid, None);
+    assert_eq!(out.url, "http://bad.url".to_owned());
+    assert_eq!(out.version, 1);
+    assert!(!out.disabled);
+    assert_eq!(out.event_types_ids, None);
+    assert_eq!(out.channels, None);
+
+    // Test that the rate limit may be set
+    let _: EndpointOut = client
+        .patch(
+            &url,
+            serde_json::json!({
+                "rateLimit": 1,
+            }),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    // Assert the change was made
+    let out = client
+        .get::<EndpointOut>(&url, StatusCode::OK)
+        .await
+        .unwrap();
+    assert_eq!(out.rate_limit, Some(1));
+    // Assert that no other changes were made
+    assert_eq!(out.description, "test".to_owned());
+    assert_eq!(out.uid, None);
+    assert_eq!(out.url, "http://bad.url".to_owned());
+    assert_eq!(out.version, 1);
+    assert!(!out.disabled);
+    assert_eq!(out.event_types_ids, None);
+    assert_eq!(out.channels, None);
+
+    // Test that the rate limit may be unset
+    let _: EndpointOut = client
+        .patch(
+            &url,
+            serde_json::json!({
+                "rateLimit": null,
+            }),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    // Assert the change was made
+    let out = client
+        .get::<EndpointOut>(&url, StatusCode::OK)
+        .await
+        .unwrap();
+    assert_eq!(out.rate_limit, None);
+    // Assert that no other changes were made
+    assert_eq!(out.description, "test".to_owned());
+    assert_eq!(out.uid, None);
+    assert_eq!(out.url, "http://bad.url".to_owned());
+    assert_eq!(out.version, 1);
+    assert!(!out.disabled);
+    assert_eq!(out.event_types_ids, None);
+    assert_eq!(out.channels, None);
+
+    // Test that the UID may be set
+    let _: EndpointOut = client
+        .patch(
+            &url,
+            serde_json::json!({
+                "uid": "some",
+            }),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    // Assert the change was made
+    let out = client
+        .get::<EndpointOut>(&url, StatusCode::OK)
+        .await
+        .unwrap();
+    assert_eq!(out.uid, Some(EndpointUid("some".to_owned())));
+    // Assert that no other changes were made
+    assert_eq!(out.description, "test".to_owned());
+    assert_eq!(out.rate_limit, None);
+    assert_eq!(out.url, "http://bad.url".to_owned());
+    assert_eq!(out.version, 1);
+    assert!(!out.disabled);
+    assert_eq!(out.event_types_ids, None);
+    assert_eq!(out.channels, None);
+
+    // Test the UID may be unset
+    let _: EndpointOut = client
+        .patch(
+            &url,
+            serde_json::json!({
+                "uid": null,
+            }),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    // Assert the change was made
+    let out = client
+        .get::<EndpointOut>(&url, StatusCode::OK)
+        .await
+        .unwrap();
+    assert_eq!(out.uid, None);
+    // Assert that no other changes were made
+    assert_eq!(out.description, "test".to_owned());
+    assert_eq!(out.rate_limit, None);
+    assert_eq!(out.url, "http://bad.url".to_owned());
+    assert_eq!(out.version, 1);
+    assert!(!out.disabled);
+    assert_eq!(out.event_types_ids, None);
+    assert_eq!(out.channels, None);
+
+    // Test that the URL may be set
+    let _: EndpointOut = client
+        .patch(
+            &url,
+            serde_json::json!({
+                "url": "http://bad.url2",
+            }),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    // Assert the change was made
+    let out = client
+        .get::<EndpointOut>(&url, StatusCode::OK)
+        .await
+        .unwrap();
+    assert_eq!(out.url, "http://bad.url2".to_owned());
+    // Assert that no other changes were made
+    assert_eq!(out.description, "test".to_owned());
+    assert_eq!(out.rate_limit, None);
+    assert_eq!(out.uid, None);
+    assert_eq!(out.version, 1);
+    assert!(!out.disabled);
+    assert_eq!(out.event_types_ids, None);
+    assert_eq!(out.channels, None);
+
+    // Test that the version may be set
+    let _: EndpointOut = client
+        .patch(
+            &url,
+            serde_json::json!({
+                "version": 2,
+            }),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    // Assert the change was made
+    let out = client
+        .get::<EndpointOut>(&url, StatusCode::OK)
+        .await
+        .unwrap();
+    assert_eq!(out.version, 2);
+    // Assert that no other changes were made
+    assert_eq!(out.description, "test".to_owned());
+    assert_eq!(out.rate_limit, None);
+    assert_eq!(out.uid, None);
+    assert_eq!(out.url, "http://bad.url2".to_owned());
+    assert!(!out.disabled);
+    assert_eq!(out.event_types_ids, None);
+    assert_eq!(out.channels, None);
+
+    // Test that disabled may be set
+    let _: EndpointOut = client
+        .patch(
+            &url,
+            serde_json::json!({
+                "disabled": true,
+            }),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    // Assert the change was made
+    let out = client
+        .get::<EndpointOut>(&url, StatusCode::OK)
+        .await
+        .unwrap();
+    assert!(out.disabled);
+    // Assert that no other changes were made
+    assert_eq!(out.description, "test".to_owned());
+    assert_eq!(out.rate_limit, None);
+    assert_eq!(out.uid, None);
+    assert_eq!(out.url, "http://bad.url2".to_owned());
+    assert_eq!(out.version, 2);
+    assert_eq!(out.event_types_ids, None);
+    assert_eq!(out.channels, None);
+
+    // Test that event type IDs may be set
+
+    // But first make an event type to set it to
+    let _: EventTypeOut = client
+        .post(
+            "api/v1/event-type",
+            serde_json::json!({
+                "description": "a test event type",
+                "name": "test",
+            }),
+            StatusCode::CREATED,
+        )
+        .await
+        .unwrap();
+
+    let _: EndpointOut = client
+        .patch(
+            &url,
+            serde_json::json!({
+                "filterTypes": [ "test" ],
+            }),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    // Assert the change was made
+    let out = client
+        .get::<EndpointOut>(&url, StatusCode::OK)
+        .await
+        .unwrap();
+    assert_eq!(
+        out.event_types_ids,
+        Some(EventTypeNameSet(HashSet::from([EventTypeName(
+            "test".to_owned()
+        )])))
+    );
+    // Assert that no other changes were made
+    assert_eq!(out.description, "test".to_owned());
+    assert_eq!(out.rate_limit, None);
+    assert_eq!(out.uid, None);
+    assert_eq!(out.url, "http://bad.url2".to_owned());
+    assert_eq!(out.version, 2);
+    assert!(out.disabled);
+    assert_eq!(out.channels, None);
+
+    // Test that event type IDs may be unset
+    let _: EndpointOut = client
+        .patch(
+            &url,
+            serde_json::json!({
+                "filterTypes": null,
+            }),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    // Assert the change was made
+    let out = client
+        .get::<EndpointOut>(&url, StatusCode::OK)
+        .await
+        .unwrap();
+    assert_eq!(out.event_types_ids, None);
+    // Assert that no other changes were made
+    assert_eq!(out.description, "test".to_owned());
+    assert_eq!(out.rate_limit, None);
+    assert_eq!(out.uid, None);
+    assert_eq!(out.url, "http://bad.url2".to_owned());
+    assert_eq!(out.version, 2);
+    assert!(out.disabled);
+    assert_eq!(out.channels, None);
+
+    // Test that channels may be set
+    let _: EndpointOut = client
+        .patch(
+            &url,
+            serde_json::json!({
+                "channels": [ "test" ],
+            }),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    // Assert the change was made
+    let out = client
+        .get::<EndpointOut>(&url, StatusCode::OK)
+        .await
+        .unwrap();
+    assert_eq!(
+        out.channels,
+        Some(EventChannelSet(HashSet::from([EventChannel(
+            "test".to_owned()
+        )])))
+    );
+    // Assert that no other changes were made
+    assert_eq!(out.description, "test".to_owned());
+    assert_eq!(out.rate_limit, None);
+    assert_eq!(out.uid, None);
+    assert_eq!(out.url, "http://bad.url2".to_owned());
+    assert_eq!(out.version, 2);
+    assert!(out.disabled);
+    assert_eq!(out.event_types_ids, None);
+
+    // Test that channels may be unset
+    let _: EndpointOut = client
+        .patch(
+            &url,
+            serde_json::json!({
+                "channels": null,
+            }),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    // Assert the change was made
+    let out = client
+        .get::<EndpointOut>(&url, StatusCode::OK)
+        .await
+        .unwrap();
+    assert_eq!(out.channels, None);
+    // Assert that no other changes were made
+    assert_eq!(out.description, "test".to_owned());
+    assert_eq!(out.rate_limit, None);
+    assert_eq!(out.uid, None);
+    assert_eq!(out.url, "http://bad.url2".to_owned());
+    assert_eq!(out.version, 2);
+    assert!(out.disabled);
+    assert_eq!(out.event_types_ids, None);
+}
+
+#[tokio::test]
 async fn test_crud() {
     let (client, _jh) = start_svix_server();
 

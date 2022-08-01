@@ -10,8 +10,9 @@ use crate::{
     error::{HttpError, Result},
     v1::utils::{
         api_not_implemented, patch_field_non_nullable, patch_field_nullable,
-        validate_no_control_characters, EmptyResponse, ListResponse, ModelIn, ModelOut,
-        NullablePatchField, Pagination, PaginationLimit, ValidatedJson, ValidatedQuery,
+        validate_no_control_characters, validate_no_control_characters_unrequired, EmptyResponse,
+        ListResponse, ModelIn, ModelOut, Pagination, PaginationLimit, UnrequiredField,
+        UnrequiredNullableField, ValidatedJson, ValidatedQuery,
     },
 };
 use axum::{
@@ -74,15 +75,19 @@ impl ModelIn for EventTypeUpdate {
 #[derive(Deserialize, ModelIn, Serialize, Validate)]
 #[serde(rename_all = "camelCase")]
 struct EventTypePatch {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    #[validate(custom = "validate_no_control_characters")]
-    description: Option<String>,
+    #[serde(default, skip_serializing_if = "UnrequiredField::is_absent")]
+    #[validate(custom = "validate_no_control_characters_unrequired")]
+    description: UnrequiredField<String>,
 
-    #[serde(default, rename = "archived", skip_serializing_if = "Option::is_none")]
-    deleted: Option<bool>,
+    #[serde(
+        default,
+        rename = "archived",
+        skip_serializing_if = "UnrequiredField::is_absent"
+    )]
+    deleted: UnrequiredField<bool>,
 
-    #[serde(default, skip_serializing_if = "NullablePatchField::is_absent")]
-    schemas: NullablePatchField<serde_json::Value>,
+    #[serde(default, skip_serializing_if = "UnrequiredNullableField::is_absent")]
+    schemas: UnrequiredNullableField<serde_json::Value>,
 }
 
 impl ModelIn for EventTypePatch {

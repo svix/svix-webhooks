@@ -14,9 +14,10 @@ use crate::{
     db::models::application,
     error::{HttpError, Result},
     v1::utils::{
-        patch_field_non_nullable, patch_field_nullable, patch_validation_direct,
-        validate_no_control_characters, EmptyResponse, ListResponse, ModelIn, ModelOut,
-        NullablePatchField, Pagination, PaginationLimit, ValidatedJson, ValidatedQuery,
+        patch_field_non_nullable, patch_field_nullable, validate_no_control_characters,
+        validate_no_control_characters_unrequired, EmptyResponse, ListResponse, ModelIn, ModelOut,
+        Pagination, PaginationLimit, UnrequiredField, UnrequiredNullableField, ValidatedJson,
+        ValidatedQuery,
     },
 };
 use axum::{
@@ -41,7 +42,7 @@ pub struct ApplicationIn {
     )]
     pub name: String,
 
-    #[validate(custom = "validate_rate_limit")]
+    #[validate(range(min = 1, message = "Application rate limits must be at least 1 if set"))]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub rate_limit: Option<u16>,
     /// Optional unique identifier for the application
@@ -61,25 +62,23 @@ impl ModelIn for ApplicationIn {
     }
 }
 
-// FIXME: Patching needs to be made as painless as possible and needs drastic deduplication (via
-// macros?)
 #[derive(Deserialize, ModelIn, Serialize, Validate)]
 #[serde(rename_all = "camelCase")]
 pub struct ApplicationPatch {
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default, skip_serializing_if = "UnrequiredField::is_absent")]
     #[validate(
-        length(min = 1, message = "Application names must be at least one character"),
-        custom = "validate_no_control_characters"
+        custom = "validate_name_length_patch",
+        custom = "validate_no_control_characters_unrequired"
     )]
-    pub name: Option<String>,
+    pub name: UnrequiredField<String>,
 
-    #[serde(default, skip_serializing_if = "NullablePatchField::is_absent")]
+    #[serde(default, skip_serializing_if = "UnrequiredNullableField::is_absent")]
     #[validate(custom = "validate_rate_limit_patch")]
-    pub rate_limit: NullablePatchField<u16>,
+    pub rate_limit: UnrequiredNullableField<u16>,
 
-    #[serde(default, skip_serializing_if = "NullablePatchField::is_absent")]
+    #[serde(default, skip_serializing_if = "UnrequiredNullableField::is_absent")]
     #[validate]
-    pub uid: NullablePatchField<ApplicationUid>,
+    pub uid: UnrequiredNullableField<ApplicationUid>,
 }
 
 impl ModelIn for ApplicationPatch {
@@ -95,25 +94,43 @@ impl ModelIn for ApplicationPatch {
     }
 }
 
-// NOTE: While the `validator` crate has a built in `validate_range` functionality, this is
-// implemented sepcifically for `rate_limit`s here such that an [`ApplicationPatch`] equivalent may
-// be made via the [`patch_validation`] macro and so that it can be more easily ensured that the
-// error that is output from either the base type or PATCH equivalent for the same given input/inner
-// input are identical.
-fn validate_rate_limit(rate_limit: u16) -> std::result::Result<(), ValidationError> {
-    if rate_limit == 0 {
-        // TODO: Decide if the "range" code is appropriate or if something more suitable should be
-        // used.
-        let mut error = ValidationError::new("range");
-        error.message = Some(Cow::from(
-            "Application rate limits must be at least 1 if set",
-        ));
-        Err(error)
-    } else {
-        Ok(())
+fn validate_name_length_patch(
+    name: &UnrequiredField<String>,
+) -> std::result::Result<(), ValidationError> {
+    match name {
+        UnrequiredField::Absent => Ok(()),
+        UnrequiredField::Some(s) => {
+            if s.is_empty() {
+                let mut error = ValidationError::new("length");
+                error.message = Some(Cow::from(
+                    "Application names must be at least one character",
+                ));
+                Err(error)
+            } else {
+                Ok(())
+            }
+        }
     }
 }
-patch_validation_direct!(validate_rate_limit, validate_rate_limit_patch, u16);
+
+fn validate_rate_limit_patch(
+    rate_limit: &UnrequiredNullableField<u16>,
+) -> std::result::Result<(), ValidationError> {
+    match rate_limit {
+        UnrequiredNullableField::Absent | UnrequiredNullableField::None => Ok(()),
+        UnrequiredNullableField::Some(rate_limit) => {
+            if *rate_limit == 0 {
+                let mut error = ValidationError::new("range");
+                error.message = Some(Cow::from(
+                    "Application rate limits must be at least 1 if set",
+                ));
+                Err(error)
+            } else {
+                Ok(())
+            }
+        }
+    }
+}
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ModelOut)]
 #[serde(rename_all = "camelCase")]
