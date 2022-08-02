@@ -258,17 +258,32 @@ async fn update_event_type(
     Path(evtype_name): Path<EventTypeName>,
     ValidatedJson(data): ValidatedJson<EventTypeUpdate>,
     AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
-) -> Result<Json<EventTypeOut>> {
+) -> Result<(StatusCode, Json<EventTypeOut>)> {
     let evtype = eventtype::Entity::secure_find_by_name(permissions.org_id.clone(), evtype_name)
         .one(db)
-        .await?
-        .ok_or_else(|| HttpError::not_found(None, None))?;
+        .await?;
 
-    let mut evtype: eventtype::ActiveModel = evtype.into();
-    data.update_model(&mut evtype);
+    let (status_code, ret) = match evtype {
+        Some(evtype) => {
+            let mut evtype: eventtype::ActiveModel = evtype.into();
+            data.update_model(&mut evtype);
+            let ret = evtype.update(db).await?;
 
-    let ret = evtype.update(db).await?;
-    Ok(Json(ret.into()))
+            (StatusCode::OK, ret)
+        }
+        None => {
+            let ret = eventtype::ActiveModel {
+                org_id: Set(permissions.org_id.clone()),
+                ..data.into()
+            }
+            .insert(db)
+            .await?;
+
+            (StatusCode::CREATED, ret)
+        }
+    };
+
+    Ok((status_code, Json(ret.into())))
 }
 
 async fn patch_event_type(

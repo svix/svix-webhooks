@@ -538,6 +538,16 @@ async fn test_crud() {
         .unwrap();
     assert_eq!(app_1_ep_1.url, EP_URI_APP_1_EP_1_VER_2);
 
+    // Test that PUT with an invalid ID creates an endpoint
+    let _: EndpointOut = client
+        .put(
+            &format!("api/v1/app/{}/endpoint/fake-id/", app_1),
+            endpoint_in(EP_URI_APP_1_EP_1_VER_2),
+            StatusCode::CREATED,
+        )
+        .await
+        .unwrap();
+
     // CONFIRM UPDATE
     assert_eq!(
         get_endpoint(&client, &app_1, &app_1_ep_1_id).await.unwrap(),

@@ -30,6 +30,16 @@ async fn test_patch() {
         .await
         .unwrap();
 
+    // Test that PUT with an invalid ID creates an application
+    let _: ApplicationOut = client
+        .put(
+            "api/v1/app/fake-id/",
+            application_in("first_name"),
+            StatusCode::CREATED,
+        )
+        .await
+        .unwrap();
+
     // Test that name may be set while the rest are omitted
     let _: ApplicationOut = client
         .patch(

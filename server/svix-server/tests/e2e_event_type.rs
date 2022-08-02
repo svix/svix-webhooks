@@ -28,6 +28,16 @@ async fn test_patch() {
         .await
         .unwrap();
 
+    // Test that PUT with invalid ID creates an event type
+    let _: EventTypeOut = client
+        .put(
+            "api/v1/event-type/fake-id",
+            event_type_in("test-event-type", serde_json::json!({"test": "value"})).unwrap(),
+            StatusCode::CREATED,
+        )
+        .await
+        .unwrap();
+
     // Test that description may be set while the rest are omitted
     let _: EventTypeOut = client
         .patch(
