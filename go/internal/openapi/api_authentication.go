@@ -44,8 +44,8 @@ func (r ApiGetDashboardAccessApiV1AuthDashboardAccessAppIdPostRequest) Execute()
 }
 
 /*
- * GetDashboardAccessApiV1AuthDashboardAccessAppIdPost Get App Portal Access
- * Use this function to get magic links (and authentication codes) for connecting your users to the Application Portal.
+ * GetDashboardAccessApiV1AuthDashboardAccessAppIdPost Get Consumer App Portal Access
+ * Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param appId
  * @return ApiGetDashboardAccessApiV1AuthDashboardAccessAppIdPostRequest
