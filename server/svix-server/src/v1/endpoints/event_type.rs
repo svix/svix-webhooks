@@ -259,9 +259,10 @@ async fn update_event_type(
     ValidatedJson(data): ValidatedJson<EventTypeUpdate>,
     AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
 ) -> Result<(StatusCode, Json<EventTypeOut>)> {
-    let evtype = eventtype::Entity::secure_find_by_name(permissions.org_id.clone(), evtype_name)
-        .one(db)
-        .await?;
+    let evtype =
+        eventtype::Entity::secure_find_by_name(permissions.org_id.clone(), evtype_name.clone())
+            .one(db)
+            .await?;
 
     let (status_code, ret) = match evtype {
         Some(evtype) => {
@@ -274,6 +275,7 @@ async fn update_event_type(
         None => {
             let ret = eventtype::ActiveModel {
                 org_id: Set(permissions.org_id.clone()),
+                name: Set(evtype_name),
                 ..data.into()
             }
             .insert(db)
