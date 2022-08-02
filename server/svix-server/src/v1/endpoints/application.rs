@@ -9,7 +9,7 @@ use crate::{
             AuthenticatedApplication, AuthenticatedOrganization,
             AuthenticatedOrganizationWithApplication,
         },
-        types::{ApplicationId, ApplicationUid},
+        types::{ApplicationId, ApplicationIdOrUid, ApplicationUid},
     },
     db::models::application,
     error::{HttpError, Result},
@@ -24,7 +24,7 @@ use crate::{
     },
 };
 use axum::{
-    extract::Extension,
+    extract::{Extension, Path},
     routing::{get, post},
     Json, Router,
 };
@@ -249,16 +249,32 @@ async fn get_application(
 async fn update_application(
     Extension(ref db): Extension<DatabaseConnection>,
     ValidatedJson(data): ValidatedJson<ApplicationIn>,
-    AuthenticatedOrganizationWithApplication {
-        permissions: _,
-        app,
-    }: AuthenticatedOrganizationWithApplication,
-) -> Result<Json<ApplicationOut>> {
-    let mut app: application::ActiveModel = app.into();
-    data.update_model(&mut app);
+    Path(app_id): Path<ApplicationIdOrUid>,
+    AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
+) -> Result<(StatusCode, Json<ApplicationOut>)> {
+    let app = application::Entity::secure_find_by_id_or_uid(permissions.org_id.clone(), app_id)
+        .one(db)
+        .await?;
 
-    let ret = app.update(db).await?;
-    Ok(Json(ret.into()))
+    match app {
+        Some(app) => {
+            let mut app: application::ActiveModel = app.into();
+            data.update_model(&mut app);
+            let ret = app.update(db).await?;
+
+            Ok((StatusCode::OK, Json(ret.into())))
+        }
+        None => {
+            let ret = application::ActiveModel {
+                org_id: Set(permissions.org_id.clone()),
+                ..data.into()
+            }
+            .insert(db)
+            .await?;
+
+            Ok((StatusCode::CREATED, Json(ret.into())))
+        }
+    }
 }
 
 async fn patch_application(

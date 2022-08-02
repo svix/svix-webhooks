@@ -125,36 +125,73 @@ pub(super) async fn update_endpoint(
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
     ValidatedJson(data): ValidatedJson<EndpointIn>,
     AuthenticatedApplication { permissions, app }: AuthenticatedApplication,
-) -> Result<Json<EndpointOut>> {
+) -> Result<(StatusCode, Json<EndpointOut>)> {
     let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
         .one(db)
-        .await?
-        .ok_or_else(|| HttpError::not_found(None, None))?;
+        .await?;
 
     if let Some(ref event_types_ids) = data.event_types_ids {
         validate_event_types(db, event_types_ids, &permissions.org_id).await?;
     }
     validate_endpoint_url(&data.url, cfg.endpoint_https_only)?;
 
-    let mut endp: endpoint::ActiveModel = endp.into();
-    data.update_model(&mut endp);
-
-    let ret = endp.update(db).await?;
-
     let app_uid = app.uid;
-    op_webhooks
-        .send_operational_webhook(
-            &permissions.org_id,
-            OperationalWebhook::EndpointUpdated(EndpointEvent {
-                app_id: &ret.app_id,
-                app_uid: app_uid.as_ref(),
-                endpoint_id: &ret.id,
-                endpoint_uid: ret.uid.as_ref(),
-            }),
-        )
-        .await?;
 
-    Ok(Json(ret.into()))
+    match endp {
+        Some(endp) => {
+            let mut endp: endpoint::ActiveModel = endp.into();
+            data.update_model(&mut endp);
+            let ret = endp.update(db).await?;
+
+            op_webhooks
+                .send_operational_webhook(
+                    &permissions.org_id,
+                    OperationalWebhook::EndpointUpdated(EndpointEvent {
+                        app_id: &ret.app_id,
+                        app_uid: app_uid.as_ref(),
+                        endpoint_id: &ret.id,
+                        endpoint_uid: ret.uid.as_ref(),
+                    }),
+                )
+                .await?;
+
+            Ok((StatusCode::OK, Json(ret.into())))
+        }
+        None => {
+            let key = match data.key.clone().take() {
+                Some(key) => Set(EndpointSecretInternal::from_endpoint_secret(
+                    key,
+                    &cfg.encryption,
+                )?),
+                None => Set(generate_secret(
+                    &cfg.encryption,
+                    &cfg.default_signature_type,
+                )?),
+            };
+
+            let ret = endpoint::ActiveModel {
+                app_id: Set(app.id),
+                key,
+                ..data.into()
+            }
+            .insert(db)
+            .await?;
+
+            op_webhooks
+                .send_operational_webhook(
+                    &permissions.org_id,
+                    OperationalWebhook::EndpointCreated(EndpointEvent {
+                        app_id: &ret.app_id,
+                        app_uid: app_uid.as_ref(),
+                        endpoint_id: &ret.id,
+                        endpoint_uid: ret.uid.as_ref(),
+                    }),
+                )
+                .await?;
+
+            Ok((StatusCode::CREATED, Json(ret.into())))
+        }
+    }
 }
 
 pub(super) async fn patch_endpoint(
