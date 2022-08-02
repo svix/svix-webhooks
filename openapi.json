@@ -3483,6 +3483,17 @@
                         },
                         "description": "Successful Response"
                     },
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApplicationOut",
+                                    "nullable": true
+                                }
+                            }
+                        },
+                        "description": "Created"
+                    },
                     "401": {
                         "content": {
                             "application/json": {
@@ -5058,6 +5069,17 @@
                             }
                         },
                         "description": "Successful Response"
+                    },
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EndpointOut",
+                                    "nullable": true
+                                }
+                            }
+                        },
+                        "description": "Created"
                     },
                     "401": {
                         "content": {
@@ -10311,7 +10333,7 @@
         },
         "/api/v1/auth/dashboard-access/{app_id}/": {
             "post": {
-                "description": "Use this function to get magic links (and authentication codes) for connecting your users to the Application Portal.",
+                "description": "Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.",
                 "operationId": "get_dashboard_access_api_v1_auth_dashboard_access__app_id___post",
                 "parameters": [
                     {
@@ -10424,7 +10446,7 @@
                         "HTTPBearer": []
                     }
                 ],
-                "summary": "Get App Portal Access",
+                "summary": "Get Consumer App Portal Access",
                 "tags": [
                     "Authentication"
                 ],
@@ -11973,6 +11995,17 @@
                         },
                         "description": "Successful Response"
                     },
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EventTypeOut",
+                                    "nullable": true
+                                }
+                            }
+                        },
+                        "description": "Created"
+                    },
                     "401": {
                         "content": {
                             "application/json": {
@@ -12475,7 +12508,7 @@
     },
     "tags": [
         {
-            "description": "Applications are where messages are sent to. In most cases you would wantto have one application for each of your users.",
+            "description": "Consumer Applications are where messages are sent to. In most cases you would want to have one application for each of your users.",
             "name": "Application"
         },
         {
