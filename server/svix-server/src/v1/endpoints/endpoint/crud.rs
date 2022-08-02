@@ -137,48 +137,61 @@ pub(super) async fn update_endpoint(
 
     let app_uid = app.uid;
 
-    let (status_code, ret) = match endp {
+    match endp {
         Some(endp) => {
             let mut endp: endpoint::ActiveModel = endp.into();
             data.update_model(&mut endp);
             let ret = endp.update(db).await?;
 
-            (StatusCode::OK, ret)
+            op_webhooks
+                .send_operational_webhook(
+                    &permissions.org_id,
+                    OperationalWebhook::EndpointUpdated(EndpointEvent {
+                        app_id: &ret.app_id,
+                        app_uid: app_uid.as_ref(),
+                        endpoint_id: &ret.id,
+                        endpoint_uid: ret.uid.as_ref(),
+                    }),
+                )
+                .await?;
+
+            Ok((StatusCode::OK, Json(ret.into())))
         }
         None => {
-            let ret = endpoint::ActiveModel {
-                app_id: Set(app.id),
-                key: Set(generate_secret(
+            let key = match data.key.clone().take() {
+                Some(key) => Set(EndpointSecretInternal::from_endpoint_secret(
+                    key,
+                    &cfg.encryption,
+                )?),
+                None => Set(generate_secret(
                     &cfg.encryption,
                     &cfg.default_signature_type,
                 )?),
+            };
+
+            let ret = endpoint::ActiveModel {
+                app_id: Set(app.id),
+                key,
                 ..data.into()
             }
             .insert(db)
             .await?;
 
-            (StatusCode::CREATED, ret)
+            op_webhooks
+                .send_operational_webhook(
+                    &permissions.org_id,
+                    OperationalWebhook::EndpointCreated(EndpointEvent {
+                        app_id: &ret.app_id,
+                        app_uid: app_uid.as_ref(),
+                        endpoint_id: &ret.id,
+                        endpoint_uid: ret.uid.as_ref(),
+                    }),
+                )
+                .await?;
+
+            Ok((StatusCode::CREATED, Json(ret.into())))
         }
-    };
-
-    let op_event = EndpointEvent {
-        app_id: &ret.app_id,
-        app_uid: app_uid.as_ref(),
-        endpoint_id: &ret.id,
-        endpoint_uid: ret.uid.as_ref(),
-    };
-
-    let op_webhook = match status_code {
-        StatusCode::OK => OperationalWebhook::EndpointUpdated(op_event),
-        StatusCode::CREATED => OperationalWebhook::EndpointCreated(op_event),
-        _ => panic!("Upserting endpoint resulted in invalid state"),
-    };
-
-    op_webhooks
-        .send_operational_webhook(&permissions.org_id, op_webhook)
-        .await?;
-
-    Ok((status_code, Json(ret.into())))
+    }
 }
 
 pub(super) async fn patch_endpoint(

@@ -264,13 +264,13 @@ async fn update_event_type(
             .one(db)
             .await?;
 
-    let (status_code, ret) = match evtype {
+    match evtype {
         Some(evtype) => {
             let mut evtype: eventtype::ActiveModel = evtype.into();
             data.update_model(&mut evtype);
             let ret = evtype.update(db).await?;
 
-            (StatusCode::OK, ret)
+            Ok((StatusCode::OK, Json(ret.into())))
         }
         None => {
             let ret = eventtype::ActiveModel {
@@ -281,11 +281,9 @@ async fn update_event_type(
             .insert(db)
             .await?;
 
-            (StatusCode::CREATED, ret)
+            Ok((StatusCode::CREATED, Json(ret.into())))
         }
-    };
-
-    Ok((status_code, Json(ret.into())))
+    }
 }
 
 async fn patch_event_type(

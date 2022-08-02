@@ -256,13 +256,13 @@ async fn update_application(
         .one(db)
         .await?;
 
-    let (status_code, ret) = match app {
+    match app {
         Some(app) => {
             let mut app: application::ActiveModel = app.into();
             data.update_model(&mut app);
             let ret = app.update(db).await?;
 
-            (StatusCode::OK, ret)
+            Ok((StatusCode::OK, Json(ret.into())))
         }
         None => {
             let ret = application::ActiveModel {
@@ -272,11 +272,9 @@ async fn update_application(
             .insert(db)
             .await?;
 
-            (StatusCode::CREATED, ret)
+            Ok((StatusCode::CREATED, Json(ret.into())))
         }
-    };
-
-    Ok((status_code, Json(ret.into())))
+    }
 }
 
 async fn patch_application(
