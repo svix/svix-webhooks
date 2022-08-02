@@ -152,7 +152,7 @@ impl HttpError {
         Self::new_standard(
             StatusCode::NOT_FOUND,
             code.unwrap_or_else(|| "not_found".to_owned()),
-            detail.unwrap_or_else(|| "Entity not fonud".to_owned()),
+            detail.unwrap_or_else(|| "Entity not found".to_owned()),
         )
     }
 
