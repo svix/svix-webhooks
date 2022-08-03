@@ -5,23 +5,18 @@ use std::time::Duration;
 
 use axum::async_trait;
 
-use super::{Cache, CacheBehavior, CacheKey, CacheValue, Result, StringCacheValue};
-
-pub fn new() -> Cache {
-    tracing::warn!("Running with caching disabled will negatively affect performance. Idempotency is not supported without a cache.");
-    NoCache {}.into()
-}
+use super::{KeyValueStoreBackend, Result, StringValue, Value};
 
 #[derive(Clone)]
-pub struct NoCache;
+pub struct NoKeyValueStore;
 
 #[async_trait]
-impl CacheBehavior for NoCache {
+impl KeyValueStoreBackend for NoKeyValueStore {
     fn should_retry(&self, _e: &super::Error) -> bool {
         false
     }
 
-    async fn get<T: CacheValue>(&self, _key: &T::Key) -> Result<Option<T>> {
+    async fn get<T: Value>(&self, _key: &T::Key) -> Result<Option<T>> {
         Ok(None)
     }
 
@@ -29,11 +24,11 @@ impl CacheBehavior for NoCache {
         Ok(None)
     }
 
-    async fn get_string<T: StringCacheValue>(&self, _key: &T::Key) -> Result<Option<T>> {
+    async fn get_string<T: StringValue>(&self, _key: &T::Key) -> Result<Option<T>> {
         Ok(None)
     }
 
-    async fn set<T: CacheValue>(&self, _key: &T::Key, _value: &T, _ttl: Duration) -> Result<()> {
+    async fn set<T: Value>(&self, _key: &T::Key, _value: &T, _ttl: Duration) -> Result<()> {
         Ok(())
     }
 
@@ -41,7 +36,7 @@ impl CacheBehavior for NoCache {
         Ok(())
     }
 
-    async fn set_string<T: StringCacheValue>(
+    async fn set_string<T: StringValue>(
         &self,
         _key: &T::Key,
         _value: &T,
@@ -50,11 +45,11 @@ impl CacheBehavior for NoCache {
         Ok(())
     }
 
-    async fn delete<T: CacheKey>(&self, _key: &T) -> Result<()> {
+    async fn delete_raw(&self, _key: &[u8]) -> Result<()> {
         Ok(())
     }
 
-    async fn set_if_not_exists<T: CacheValue>(
+    async fn set_if_not_exists<T: Value>(
         &self,
         _key: &T::Key,
         _value: &T,
@@ -72,7 +67,7 @@ impl CacheBehavior for NoCache {
         Ok(false)
     }
 
-    async fn set_string_if_not_exists<T: StringCacheValue>(
+    async fn set_string_if_not_exists<T: StringValue>(
         &self,
         _key: &T::Key,
         _value: &T,

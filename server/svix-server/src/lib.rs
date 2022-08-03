@@ -17,12 +17,13 @@ use tower_http::cors::{AllowHeaders, Any, CorsLayer};
 use tower_http::trace::TraceLayer;
 
 use crate::{
-    cfg::{CacheBackend, Configuration},
+    cfg::{CacheBackend, Configuration, SharedStoreBackend},
     core::{
-        cache,
+        cache::Cache,
         idempotency::IdempotencyService,
         operational_webhooks::OperationalWebhookSenderInner,
         otel_spans::{AxumOtelOnFailure, AxumOtelOnResponse, AxumOtelSpanCreator},
+        shared_store::SharedStore,
     },
     db::init_db,
     expired_message_cleaner::expired_message_cleaner_loop,
@@ -86,15 +87,34 @@ pub async fn run_with_prefix(
 
     tracing::debug!("Cache type: {:?}", cfg.cache_type);
     let cache = match cfg.cache_backend() {
-        CacheBackend::None => cache::none::new(),
-        CacheBackend::Memory => cache::memory::new(),
+        CacheBackend::None => {
+            tracing::warn!("With no cache backend, you will see reduced performance");
+            Cache::new_none()
+        }
+        CacheBackend::Memory => Cache::new_memory(),
         CacheBackend::Redis(dsn) => {
             let mgr = crate::redis::new_redis_pool(dsn, &cfg).await;
-            cache::redis::new(mgr)
+            Cache::new_redis(mgr)
         }
         CacheBackend::RedisCluster(dsn) => {
             let mgr = crate::redis::new_redis_pool_clustered(dsn, &cfg).await;
-            cache::redis::new(mgr)
+            Cache::new_redis(mgr)
+        }
+    };
+
+    tracing::debug!("Store type: {:?}", cfg.shared_store_type());
+    let store = match cfg.shared_store_backend() {
+        SharedStoreBackend::Memory => {
+            tracing::warn!("When using memory backed shared store, features such as idempotency and disabling endpoints on repeated failure will not work correctly across multiple instances and instance restarts");
+            SharedStore::new_memory()
+        }
+        SharedStoreBackend::Redis(dsn) => {
+            let mgr = crate::redis::new_redis_pool(dsn, &cfg).await;
+            SharedStore::new_redis(mgr)
+        }
+        SharedStoreBackend::RedisCluster(dsn) => {
+            let mgr = crate::redis::new_redis_pool_clustered(dsn, &cfg).await;
+            SharedStore::new_redis(mgr)
         }
     };
 
@@ -112,7 +132,7 @@ pub async fn run_with_prefix(
         .merge(docs::router())
         .layer(
             ServiceBuilder::new().layer_fn(|service| IdempotencyService {
-                cache: cache.clone(),
+                store: store.clone(),
                 service,
             }),
         )
@@ -166,7 +186,16 @@ pub async fn run_with_prefix(
         async {
             if with_worker {
                 tracing::debug!("Worker: Initializing");
-                worker_loop(&cfg, &pool, cache, queue_tx, queue_rx, op_webhook_sender).await
+                worker_loop(
+                    cache,
+                    &cfg,
+                    &pool,
+                    store,
+                    queue_tx,
+                    queue_rx,
+                    op_webhook_sender,
+                )
+                .await
             } else {
                 tracing::debug!("Worker: off");
                 Ok(())

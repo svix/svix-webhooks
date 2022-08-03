@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 use crate::{
-    cache::Cache,
     core::{
+        cache::Cache,
         message_app::CreateMessageApp,
         security::{AuthenticatedApplication, AuthenticatedOrganizationWithApplication},
         types::{

@@ -11,7 +11,7 @@ use axum::async_trait;
 use std::collections::HashMap;
 use std::sync::Arc;
 
-use super::{Cache, CacheBehavior, CacheKey, Result};
+use super::{KeyValueStoreBackend, Result};
 
 #[derive(Debug)]
 struct ValueWrapper {
@@ -33,30 +33,38 @@ impl ValueWrapper {
 type State = HashMap<Vec<u8>, ValueWrapper>;
 type SharedState = Arc<RwLock<State>>;
 
-pub fn new() -> Cache {
-    let shared_state = Arc::new(RwLock::new(State::new()));
-
-    let shared_state_clone = shared_state.clone();
-    task::spawn(async move {
-        loop {
-            sleep(Duration::from_secs(60 * 5)).await;
-            shared_state_clone
-                .write()
-                .await
-                .retain(|_, v| check_is_expired(v))
-        }
-    });
-
-    MemoryCache { map: shared_state }.into()
-}
-
 #[derive(Clone)]
-pub struct MemoryCache {
+pub struct MemoryKeyValueStore {
     map: SharedState,
 }
 
+impl MemoryKeyValueStore {
+    pub fn new() -> MemoryKeyValueStore {
+        let shared_state = Arc::new(RwLock::new(State::new()));
+
+        let shared_state_clone = shared_state.clone();
+        task::spawn(async move {
+            loop {
+                sleep(Duration::from_secs(60 * 5)).await;
+                shared_state_clone
+                    .write()
+                    .await
+                    .retain(|_, v| check_is_expired(v))
+            }
+        });
+
+        MemoryKeyValueStore { map: shared_state }
+    }
+}
+
+impl Default for MemoryKeyValueStore {
+    fn default() -> Self {
+        MemoryKeyValueStore::new()
+    }
+}
+
 #[async_trait]
-impl CacheBehavior for MemoryCache {
+impl KeyValueStoreBackend for MemoryKeyValueStore {
     fn should_retry(&self, _e: &super::Error) -> bool {
         false
     }
@@ -92,8 +100,8 @@ impl CacheBehavior for MemoryCache {
         Ok(false)
     }
 
-    async fn delete<T: CacheKey>(&self, key: &T) -> Result<()> {
-        self.map.write().await.remove(key.as_ref().as_bytes());
+    async fn delete_raw(&self, key: &[u8]) -> Result<()> {
+        self.map.write().await.remove(key);
 
         Ok(())
     }
@@ -106,38 +114,42 @@ fn check_is_expired(vw: &ValueWrapper) -> bool {
 #[cfg(test)]
 mod tests {
     use super::{
-        super::{kv_def, CacheValue, StringCacheValue},
+        super::{kv_def, string_kv_def},
         *,
     };
-    use crate::core::cache::string_kv_def;
     use serde::{Deserialize, Serialize};
 
     // Test structures
 
     #[derive(Deserialize, Serialize, Debug, PartialEq)]
     struct TestValA(usize);
-    kv_def!(TestKeyA, TestValA);
+    kv_def!(TestKeyA, TestValA, "SVIX_TEST_KEY_A_", "TEST_");
     impl TestKeyA {
         fn new(id: String) -> TestKeyA {
-            TestKeyA(format!("SVIX_TEST_KEY_A_{}", id))
+            TestKeyA(id)
         }
     }
 
     #[derive(Deserialize, Serialize, Debug, PartialEq)]
     struct TestValB(String);
-    kv_def!(TestKeyB, TestValB);
+    kv_def!(TestKeyB, TestValB, "SVIX_TEST_KEY_B_", "TEST_");
     impl TestKeyB {
         fn new(id: String) -> TestKeyB {
-            TestKeyB(format!("SVIX_TEST_KEY_B_{}", id))
+            TestKeyB(id)
         }
     }
 
     #[derive(Deserialize, Serialize, Debug, PartialEq)]
     struct StringTestVal(String);
-    string_kv_def!(StringTestKey, StringTestVal);
+    string_kv_def!(
+        StringTestKey,
+        StringTestVal,
+        "SVIX_TEST_KEY_STRING_",
+        "TEST_"
+    );
     impl StringTestKey {
         fn new(id: String) -> StringTestKey {
-            StringTestKey(format!("SVIX_TEST_KEY_STRING_{}", id))
+            StringTestKey(id)
         }
     }
 
@@ -155,8 +167,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_cache_crud_no_ttl() {
-        let cache = new();
+    async fn test_kv_crud_no_ttl() {
+        let kv = MemoryKeyValueStore::new();
 
         let (first_key, first_val_a, first_val_b) =
             (TestKeyA::new("1".to_owned()), TestValA(1), TestValA(2));
@@ -172,93 +184,87 @@ mod tests {
         );
 
         // Create
-        assert!(cache
+        assert!(kv
             .set(&first_key, &first_val_a, Duration::from_secs(30),)
             .await
             .is_ok());
-        assert!(cache
+        assert!(kv
             .set(&second_key, &second_val_a, Duration::from_secs(30),)
             .await
             .is_ok());
-        assert!(cache
+        assert!(kv
             .set_string(&third_key, &third_val_a, Duration::from_secs(30),)
             .await
             .is_ok());
 
         // Read
-        assert_eq!(cache.get(&first_key).await.unwrap(), Some(first_val_a));
-        assert_eq!(cache.get(&second_key).await.unwrap(), Some(second_val_a));
-        assert_eq!(
-            cache.get_string(&third_key).await.unwrap(),
-            Some(third_val_a)
-        );
+        assert_eq!(kv.get(&first_key).await.unwrap(), Some(first_val_a));
+        assert_eq!(kv.get(&second_key).await.unwrap(), Some(second_val_a));
+        assert_eq!(kv.get_string(&third_key).await.unwrap(), Some(third_val_a));
 
         // Update (overwrite)
-        assert!(cache
+        assert!(kv
             .set(&first_key, &first_val_b, Duration::from_secs(30),)
             .await
             .is_ok());
-        assert!(cache
+        assert!(kv
             .set(&second_key, &second_val_b, Duration::from_secs(30),)
             .await
             .is_ok());
-        assert!(cache
+        assert!(kv
             .set_string(&third_key, &third_val_b, Duration::from_secs(30),)
             .await
             .is_ok());
 
         // Confirm update
-        assert_eq!(cache.get(&first_key).await.unwrap(), Some(first_val_b));
-        assert_eq!(cache.get(&second_key).await.unwrap(), Some(second_val_b));
-        assert_eq!(
-            cache.get_string(&third_key).await.unwrap(),
-            Some(third_val_b)
-        );
+        assert_eq!(kv.get(&first_key).await.unwrap(), Some(first_val_b));
+        assert_eq!(kv.get(&second_key).await.unwrap(), Some(second_val_b));
+        assert_eq!(kv.get_string(&third_key).await.unwrap(), Some(third_val_b));
 
         // Delete
-        assert!(cache.delete(&first_key).await.is_ok());
-        assert!(cache.delete(&second_key).await.is_ok());
-        assert!(cache.delete(&third_key).await.is_ok());
+        assert!(kv.delete(&first_key).await.is_ok());
+        assert!(kv.delete(&second_key).await.is_ok());
+        assert!(kv.delete(&third_key).await.is_ok());
 
         // Confirm deletion
-        assert_eq!(cache.get::<TestValA>(&first_key).await.unwrap(), None);
-        assert_eq!(cache.get::<TestValB>(&second_key).await.unwrap(), None);
+        assert_eq!(kv.get::<TestValA>(&first_key).await.unwrap(), None);
+        assert_eq!(kv.get::<TestValB>(&second_key).await.unwrap(), None);
         assert_eq!(
-            cache.get_string::<StringTestVal>(&third_key).await.unwrap(),
+            kv.get_string::<StringTestVal>(&third_key).await.unwrap(),
             None
         );
     }
 
     #[tokio::test]
-    async fn test_cache_ttl() {
-        let cache = new();
+    async fn test_kv_ttl() {
+        let kv = MemoryKeyValueStore::new();
         let key = TestKeyA::new("key".to_owned());
 
-        assert!(cache
+        assert!(kv
             .set(&key, &TestValA(1), Duration::from_secs(1),)
             .await
             .is_ok());
         tokio::time::sleep(std::time::Duration::from_millis(1200)).await;
-        assert_eq!(cache.get::<TestValA>(&key).await.unwrap(), None);
+        assert_eq!(kv.get::<TestValA>(&key).await.unwrap(), None);
     }
 
     #[tokio::test]
-    async fn test_cache_nx_status() {
-        let cache = new();
+    async fn test_kv_nx_status() {
+        let kv = MemoryKeyValueStore::new();
         let key = TestKeyA::new("nx_status_test_key".to_owned());
 
-        assert!(cache
+        assert!(kv
             .set_if_not_exists(&key, &TestValA(1), Duration::from_secs(30),)
             .await
             .unwrap());
-        assert_eq!(cache.get(&key).await.unwrap(), Some(TestValA(1)));
+        assert_eq!(kv.get(&key).await.unwrap(), Some(TestValA(1)));
 
-        assert!(!cache
+        assert!(!kv
             .set_if_not_exists(&key, &TestValA(2), Duration::from_secs(30),)
             .await
             .unwrap());
-        assert_eq!(cache.get(&key).await.unwrap(), Some(TestValA(1)));
+        assert_eq!(kv.get(&key).await.unwrap(), Some(TestValA(1)));
 
-        assert!(cache.delete(&key).await.is_ok());
+        assert!(kv.delete(&key).await.is_ok());
     }
 }

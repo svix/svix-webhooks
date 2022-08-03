@@ -136,17 +136,17 @@ pub struct ConfigurationInner {
     pub redis_pool_max_size: u16,
 
     /// What kind of message queue to use. Supported: memory, redis (must have redis_dsn or
-    /// queue_dsn configured).
+    /// queue_dsn configured), and rediscluster (must also have a DSN set).
     pub queue_type: QueueType,
     /// The DSN for the Redis-backed queue. Overrides `redis_dsn`. (can be left empty if not using
     /// redis)
     pub queue_dsn: Option<String>,
 
     /// What kind of cache to use. Supported: memory, redis (must have redis_dsn or cache_dsn
-    /// configured), none.
+    /// configured), rediscluster (must also have a DSN set) and none.
     pub cache_type: CacheType,
-    /// The DSN for the Redis-backed cache. Overrides `redis_dsn`. (can be left empty if not using
-    /// redis)
+    /// The DSN for the Redis-backed cache store. Overrides `redis_dsn`. (can be left empty if not
+    /// using redis)
     pub cache_dsn: Option<String>,
 
     /// If true, headers are prefixed with `Webhook-`, otherwise with `Svix-` (default).
@@ -219,6 +219,10 @@ impl ConfigurationInner {
         self.cache_dsn.as_deref().or(self.redis_dsn.as_deref())
     }
 
+    pub(self) fn shared_store_dsn(&self) -> Option<&str> {
+        self.cache_dsn()
+    }
+
     /// Fetches the configured backend information for the queue. May panic is the configuration has
     /// not been validated
     pub fn queue_backend(&self) -> QueueBackend<'_> {
@@ -241,6 +245,29 @@ impl ConfigurationInner {
             CacheType::Memory => CacheBackend::Memory,
             CacheType::Redis => CacheBackend::Redis(self.cache_dsn().expect(err)),
             CacheType::RedisCluster => CacheBackend::RedisCluster(self.cache_dsn().expect(err)),
+        }
+    }
+
+    pub fn shared_store_backend(&self) -> SharedStoreBackend<'_> {
+        let err = "Called [`shared_store_backend`] before validating configuration";
+
+        match self.shared_store_type() {
+            SharedStoreType::Memory => SharedStoreBackend::Memory,
+            SharedStoreType::Redis => {
+                SharedStoreBackend::Redis(self.shared_store_dsn().expect(err))
+            }
+            SharedStoreType::RedisCluster => {
+                SharedStoreBackend::RedisCluster(self.shared_store_dsn().expect(err))
+            }
+        }
+    }
+
+    pub fn shared_store_type(&self) -> SharedStoreType {
+        match self.cache_type {
+            CacheType::None => SharedStoreType::Memory,
+            CacheType::Memory => SharedStoreType::Memory,
+            CacheType::Redis => SharedStoreType::Redis,
+            CacheType::RedisCluster => SharedStoreType::RedisCluster,
         }
     }
 }
@@ -279,6 +306,13 @@ pub enum CacheBackend<'a> {
     RedisCluster(&'a str),
 }
 
+#[derive(Debug, Eq, PartialEq)]
+pub enum SharedStoreBackend<'a> {
+    Memory,
+    Redis(&'a str),
+    RedisCluster(&'a str),
+}
+
 #[derive(Clone, Debug, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum LogLevel {
@@ -294,7 +328,7 @@ pub enum LogFormat {
     Json,
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Copy, Debug, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum QueueType {
     Memory,
@@ -302,13 +336,21 @@ pub enum QueueType {
     RedisCluster,
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Copy, Debug, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum CacheType {
     Memory,
     Redis,
     RedisCluster,
     None,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum SharedStoreType {
+    Memory,
+    Redis,
+    RedisCluster,
 }
 
 #[derive(Clone, Debug, Deserialize)]

@@ -3,6 +3,7 @@
 
 use crate::cfg::Configuration;
 
+use crate::core::cache::Cache;
 use crate::core::cryptography::Encryption;
 use crate::core::operational_webhooks::EndpointDisabledEvent;
 use crate::core::types::{
@@ -10,9 +11,9 @@ use crate::core::types::{
     MessageUid, OrganizationId,
 };
 use crate::core::{
-    cache::{kv_def, Cache, CacheBehavior, CacheKey, CacheValue},
     message_app::{CreateMessageApp, CreateMessageEndpoint},
     operational_webhooks::{MessageAttemptEvent, OperationalWebhook, OperationalWebhookSender},
+    shared_store::{store_kv_def, SharedStore},
     types::{
         BaseId, EndpointHeaders, MessageAttemptId, MessageAttemptTriggerType, MessageId,
         MessageStatus,
@@ -47,7 +48,7 @@ const USER_AGENT: &str = concat!("Svix-Webhooks/", env!("CARGO_PKG_VERSION"));
 const OP_WEBHOOKS_SEND_FAILING_EVENT_AFTER: usize = 4;
 
 /// A simple struct noting the context of the wrapped [`DateTimeUtc`]. This struct is returned when
-/// you are to disable disable an endpoint. This is optionally returned by [`process_failure_cache`]
+/// you are to disable disable an endpoint. This is optionally returned by [`process_failure_store`]
 /// which is to be called after all retry events are exhausted.
 #[repr(transparent)]
 struct EndpointDisableInfo {
@@ -55,34 +56,34 @@ struct EndpointDisableInfo {
 }
 
 /// The first_failure_at time is only stored in Postgres after the endpoint has been disabled.
-/// Otherwise, it is stored in the cache with an expiration.
+/// Otherwise, it is stored in the store with an expiration.
 #[derive(Deserialize, Serialize)]
-pub struct FailureCacheValue {
+pub struct FailureValue {
     pub first_failure_at: DateTimeUtc,
 }
 
-kv_def!(FailureCacheKey, FailureCacheValue, "SVIX_FAILURE_CACHE");
+store_kv_def!(FailureKey, FailureValue, "FAILURES_");
 
-impl FailureCacheKey {
-    pub fn new(app_id: &ApplicationId, endp_id: &EndpointId) -> FailureCacheKey {
-        FailureCacheKey(format!("_{}_{}", app_id, endp_id))
+impl FailureKey {
+    pub fn new(app_id: &ApplicationId, endp_id: &EndpointId) -> FailureKey {
+        FailureKey(format!("{}_{}", app_id, endp_id))
     }
 }
 
-/// Called upon the successful dispatch of an endpoint. Simply clears the cache of a
+/// Called upon the successful dispatch of an endpoint. Simply clears the store of a
 /// [`FailureCacheKey`]/[`FailureCacheValue`] pair associated with a given endpoint. This is such
 /// that an endpoint that was previously not responding is not disabled after responding again.
 ///
-/// If the key value pair does not already exist in the cache, indicating that the endpoint never
+/// If the key value pair does not already exist in the store, indicating that the endpoint never
 /// stopped responding, no operation is performed.
-async fn process_success_cache(
-    cache: &Cache,
+async fn process_success_store(
+    store: &SharedStore,
     app_id: &ApplicationId,
     endp_id: &EndpointId,
 ) -> Result<()> {
-    let key = FailureCacheKey::new(app_id, endp_id);
+    let key = FailureKey::new(app_id, endp_id);
 
-    cache
+    store
         .delete(&key)
         .await
         .map_err(|e| Error::from(e.to_string()))?;
@@ -91,30 +92,30 @@ async fn process_success_cache(
 }
 
 /// Called upon endpoint failure. Returns whether to disable the endpoint based on the time of first
-/// failure stored in the cache.
+/// failure stored in the store.
 ///
-/// If no failure has previously been reported, then now is cached as the time of first failure and
+/// If no failure has previously been reported, then now is stored as the time of first failure and
 /// the endpoint is not disabled.
 ///
 /// If there has been a  preivous failure, then it is compared to the configured grace period, where
 /// if there have been only failures within the grace period, then the endpoint is disabled.
 ///
-/// All cache values are set with an expiration time greater thah the grace period, so occasional
+/// All store values are set with an expiration time greater thah the grace period, so occasional
 /// failures will not cause an endpoint to be disabled.
-async fn process_failure_cache(
-    cache: &Cache,
+async fn process_failure_store(
+    store: &SharedStore,
 
     app_id: &ApplicationId,
     endp_id: &EndpointId,
 
     disable_in: Duration,
 ) -> Result<Option<EndpointDisableInfo>> {
-    let key = FailureCacheKey::new(app_id, endp_id);
+    let key = FailureKey::new(app_id, endp_id);
     let now = Utc::now();
 
-    // If it already exists in the cache, see if the grace preiod has already elapsed
-    if let Some(FailureCacheValue { first_failure_at }) = cache
-        .get::<FailureCacheValue>(&key)
+    // If it already exists in the store, see if the grace preiod has already elapsed
+    if let Some(FailureValue { first_failure_at }) = store
+        .get::<FailureValue>(&key)
         .await
         .map_err(|e| Error::from(e.to_string()))?
     {
@@ -126,12 +127,12 @@ async fn process_failure_cache(
             Ok(None)
         }
     }
-    // If it does not yet exist in the cache, set the first_failure_at value to now
+    // If it does not yet exist in the store, set the first_failure_at value to now
     else {
-        cache
+        store
             .set(
                 &key,
-                &FailureCacheValue {
+                &FailureValue {
                     first_failure_at: now,
                 },
                 // Failures are forgiven after double the `disable_in` `Duration` with the expiry of
@@ -211,9 +212,10 @@ fn generate_msg_headers(
 
 #[derive(Clone)]
 struct WorkerContext<'a> {
+    cache: &'a Cache,
     cfg: &'a Configuration,
     db: &'a DatabaseConnection,
-    cache: &'a Cache,
+    store: &'a SharedStore,
     queue_tx: &'a TaskQueueProducer,
     op_webhook_sender: &'a OperationalWebhookSender,
 }
@@ -235,7 +237,7 @@ struct DispatchExtraIds<'a> {
 )]
 async fn dispatch(
     WorkerContext {
-        cache,
+        store,
         cfg,
         db,
         queue_tx,
@@ -381,7 +383,7 @@ async fn dispatch(
             };
             let msg_dest = msg_dest.update(db).await?;
 
-            process_success_cache(cache, &msg_task.app_id, &msg_task.endpoint_id).await?;
+            process_success_store(store, &msg_task.app_id, &msg_task.endpoint_id).await?;
 
             tracing::trace!("Worker success: {} {}", &msg_dest.id, &endp.id,);
         }
@@ -472,8 +474,8 @@ async fn dispatch(
                     )
                     .await?;
 
-                match process_failure_cache(
-                    cache,
+                match process_failure_store(
+                    store,
                     &msg_task.app_id,
                     &msg_task.endpoint_id,
                     cfg.endpoint_failure_disable_after,
@@ -536,7 +538,7 @@ fn bytes_to_string(bytes: bytes::Bytes) -> String {
 /// Manages preparation and execution of a QueueTask type
 #[tracing::instrument(skip_all)]
 async fn process_task(worker_context: WorkerContext<'_>, queue_task: Arc<QueueTask>) -> Result<()> {
-    let WorkerContext { db, cache, .. }: WorkerContext<'_> = worker_context;
+    let WorkerContext { cache, db, .. }: WorkerContext<'_> = worker_context;
 
     if *queue_task == QueueTask::HealthCheck {
         return Ok(());
@@ -655,9 +657,10 @@ async fn process_task(worker_context: WorkerContext<'_>, queue_task: Arc<QueueTa
 
 /// Listens on the message queue for new tasks
 pub async fn worker_loop(
+    cache: Cache,
     cfg: &Configuration,
     pool: &DatabaseConnection,
-    cache: Cache,
+    store: SharedStore,
     queue_tx: TaskQueueProducer,
     mut queue_rx: TaskQueueConsumer,
     op_webhook_sender: OperationalWebhookSender,
@@ -675,18 +678,20 @@ pub async fn worker_loop(
                 }
 
                 for delivery in batch {
+                    let cache = cache.clone();
                     let cfg = cfg.clone();
                     let pool = pool.clone();
-                    let cache = cache.clone();
+                    let store = store.clone();
                     let queue_tx = queue_tx.clone();
                     let queue_task = delivery.task.clone();
                     let op_webhook_sender = op_webhook_sender.clone();
 
                     tokio::spawn(async move {
                         let worker_context = WorkerContext {
+                            cache: &cache,
                             cfg: &cfg,
                             db: &pool,
-                            cache: &cache,
+                            store: &store,
                             queue_tx: &queue_tx,
                             op_webhook_sender: &op_webhook_sender,
                         };
