@@ -3,6 +3,13 @@
 ## Next
 * 
 
+## Version 0.65.0
+* Server: support "upsert" of entities on PUT methods.
+* Server: support PATCH methods on entities for partial updates.
+* Server: allow overriding redis_dsn for separate queue and cache DSNs.
+* Libs: support "upsert" of entities on PUT methods.
+* Libs/Ruby: fix region auto-detection.
+
 ## Version 0.64.2
 * Server: change the dashboard authentication payload to note that the server is self hosted.
 * Libs/JavaScript: fix issue when signing/verifying payloads with high Unicode codepoints (e.g. some new emoji)
