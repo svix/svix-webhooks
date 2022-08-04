@@ -10,13 +10,16 @@ use std::{
 use anyhow::Result;
 use chrono::Utc;
 use ed25519_compact::Signature;
+use p256::ecdsa::signature::Verifier;
+use p256::ecdsa::{self, VerifyingKey};
 use reqwest::StatusCode;
 use sea_orm::{ConnectionTrait, DatabaseBackend, QueryResult, Statement};
 
 use serde::Deserialize;
 use svix::webhooks::Webhook;
 use svix_server::cfg::DefaultSignatureType;
-use svix_server::core::types::{BaseId, OrganizationId};
+use svix_server::core::cryptography::AsymmetricKeyP256;
+use svix_server::core::types::{BaseId, EndpointSecretType, OrganizationId};
 use svix_server::{
     core::{
         cryptography::{AsymmetricKey, Encryption},
@@ -942,10 +945,11 @@ async fn test_endpoint_rotate_signing_e2e() {
 
     assert_ne!(secret1.key, secret2.key);
 
-    let secret3_key = EndpointSecretInternal::generate_symmetric(&Encryption::new_noop())
-        .unwrap()
-        .into_endpoint_secret(&Encryption::new_noop())
-        .unwrap();
+    let secret3_key =
+        EndpointSecretInternal::generate(&Encryption::new_noop(), EndpointSecretType::Hmac256)
+            .unwrap()
+            .into_endpoint_secret(&Encryption::new_noop())
+            .unwrap();
 
     let _: IgnoredResponse = client
         .post(
@@ -994,14 +998,19 @@ async fn test_endpoint_rotate_signing_symmetric_and_asymmetric() {
 
     let mut receiver = TestReceiver::start(StatusCode::OK);
 
-    let secret_1 = EndpointSecretInternal::generate_symmetric(&Encryption::new_noop())
-        .unwrap()
-        .into_endpoint_secret(&Encryption::new_noop())
-        .unwrap();
+    let secret_1 =
+        EndpointSecretInternal::generate(&Encryption::new_noop(), EndpointSecretType::Hmac256)
+            .unwrap()
+            .into_endpoint_secret(&Encryption::new_noop())
+            .unwrap();
     // Asymmetric key
     let secret_2 = EndpointSecret::Asymmetric(AsymmetricKey::from_base64("6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg==").unwrap());
+    // Asymmetric P256
+    let secret_3 = EndpointSecret::AsymmetricP256(
+        AsymmetricKeyP256::from_base64("lSHTLz7txaVMVG3nmVC+JvU4PwP9kLTtQczSkljunXI=").unwrap(),
+    );
     // Long key
-    let secret_3 = EndpointSecret::Symmetric(base64::decode("TUdfVE5UMnZlci1TeWxOYXQtX1ZlTW1kLTRtMFdhYmEwanIxdHJvenRCbmlTQ2hFdzBnbHhFbWdFaTJLdzQwSA==").unwrap());
+    let secret_4 = EndpointSecret::Symmetric(base64::decode("TUdfVE5UMnZlci1TeWxOYXQtX1ZlTW1kLTRtMFdhYmEwanIxdHJvenRCbmlTQ2hFdzBnbHhFbWdFaTJLdzQwSA==").unwrap());
 
     let ep_in = EndpointIn {
         url: receiver.endpoint.clone(),
@@ -1024,11 +1033,21 @@ async fn test_endpoint_rotate_signing_symmetric_and_asymmetric() {
         .await
         .unwrap();
 
+    // Rotate to p256 asymmetric
+    let _: IgnoredResponse = client
+        .post(
+            &format!("api/v1/app/{}/endpoint/{}/secret/rotate/", app_id, endp.id),
+            serde_json::json!({ "key": "whsk1_lSHTLz7txaVMVG3nmVC+JvU4PwP9kLTtQczSkljunXI=" }),
+            StatusCode::NO_CONTENT,
+        )
+        .await
+        .unwrap();
+
     // Rotate back to symmetric
     let _: IgnoredResponse = client
         .post(
             &format!("api/v1/app/{}/endpoint/{}/secret/rotate/", app_id, endp.id),
-            serde_json::json!({ "key": secret_3.serialize_public_key() }),
+            serde_json::json!({ "key": secret_4.serialize_public_key() }),
             StatusCode::NO_CONTENT,
         )
         .await
@@ -1043,7 +1062,20 @@ async fn test_endpoint_rotate_signing_symmetric_and_asymmetric() {
     let last_headers = receiver.header_recv.recv().await.unwrap();
     let last_body = receiver.data_recv.recv().await.unwrap().to_string();
 
-    for sec in [secret_1, secret_2, secret_3] {
+    for sec in [secret_1, secret_2, secret_3, secret_4] {
+        let msg_id = last_headers.get("svix-id").unwrap().to_str().unwrap();
+        let timestamp = last_headers
+            .get("svix-timestamp")
+            .unwrap()
+            .to_str()
+            .unwrap();
+        let signatures = last_headers
+            .get("svix-signature")
+            .unwrap()
+            .to_str()
+            .unwrap();
+        let to_sign = format!("{}.{}.{}", msg_id, timestamp, &last_body);
+
         match sec {
             EndpointSecret::Symmetric(key) => {
                 let sec = base64::encode(key);
@@ -1051,18 +1083,6 @@ async fn test_endpoint_rotate_signing_symmetric_and_asymmetric() {
                 wh.verify(last_body.as_bytes(), &last_headers).unwrap();
             }
             EndpointSecret::Asymmetric(key) => {
-                let msg_id = last_headers.get("svix-id").unwrap().to_str().unwrap();
-                let timestamp = last_headers
-                    .get("svix-timestamp")
-                    .unwrap()
-                    .to_str()
-                    .unwrap();
-                let signatures = last_headers
-                    .get("svix-signature")
-                    .unwrap()
-                    .to_str()
-                    .unwrap();
-                let to_sign = format!("{}.{}.{}", msg_id, timestamp, &last_body);
                 let found =
                     signatures
                         .split(' ')
@@ -1075,6 +1095,26 @@ async fn test_endpoint_rotate_signing_symmetric_and_asymmetric() {
                             )
                             .unwrap();
                             key.0.pk.verify(to_sign.as_bytes(), &sig).is_ok()
+                        });
+                assert!(found);
+            }
+            EndpointSecret::AsymmetricP256(key) => {
+                let found =
+                    signatures
+                        .split(' ')
+                        .filter(|x| x.starts_with("v1b,"))
+                        .any(|signature| {
+                            use ecdsa::signature::Signature;
+
+                            let sig = ecdsa::Signature::from_bytes(
+                                base64::decode(&signature["v1b,".len()..])
+                                    .unwrap()
+                                    .as_slice(),
+                            )
+                            .unwrap();
+                            let pubkey = key.pubkey();
+                            let pubkey = VerifyingKey::from_sec1_bytes(&pubkey).unwrap();
+                            pubkey.verify(to_sign.as_bytes(), &sig).is_ok()
                         });
                 assert!(found);
             }
@@ -1144,10 +1184,11 @@ async fn test_custom_endpoint_secret() {
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
-    let secret_1 = EndpointSecretInternal::generate_symmetric(&Encryption::new_noop())
-        .unwrap()
-        .into_endpoint_secret(&Encryption::new_noop())
-        .unwrap();
+    let secret_1 =
+        EndpointSecretInternal::generate(&Encryption::new_noop(), EndpointSecretType::Hmac256)
+            .unwrap()
+            .into_endpoint_secret(&Encryption::new_noop())
+            .unwrap();
     // Long key
     let secret_2 = EndpointSecret::Symmetric(base64::decode("TUdfVE5UMnZlci1TeWxOYXQtX1ZlTW1kLTRtMFdhYmEwanIxdHJvenRCbmlTQ2hFdzBnbHhFbWdFaTJLdzQwSA==").unwrap());
     // Asymmetric key
@@ -1331,10 +1372,11 @@ async fn test_legacy_endpoint_secret() {
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
-    let secret_throwaway = EndpointSecretInternal::generate_symmetric(&Encryption::new_noop())
-        .unwrap()
-        .into_endpoint_secret(&Encryption::new_noop())
-        .unwrap();
+    let secret_throwaway =
+        EndpointSecretInternal::generate(&Encryption::new_noop(), EndpointSecretType::Hmac256)
+            .unwrap()
+            .into_endpoint_secret(&Encryption::new_noop())
+            .unwrap();
     let raw_key = base64::decode("5gasBsSw3Nvf3ugNYVJIqnRVYPW7hPts").unwrap();
     let secret_1 = EndpointSecret::Symmetric(raw_key.clone());
 

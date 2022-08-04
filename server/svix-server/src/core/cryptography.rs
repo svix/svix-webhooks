@@ -6,6 +6,8 @@ use std::fmt::Debug;
 use chacha20poly1305::aead::{Aead, NewAead};
 use chacha20poly1305::{Key, XChaCha20Poly1305, XNonce};
 use ed25519_compact::*;
+use p256::ecdsa::VerifyingKey;
+use p256::ecdsa::{signature::Signer, SigningKey};
 use rand::Rng;
 
 use crate::error::{Error, Result};
@@ -15,14 +17,18 @@ use crate::error::{Error, Result};
 pub struct AsymmetricKey(pub KeyPair);
 
 impl AsymmetricKey {
-    pub fn generate() -> AsymmetricKey {
-        AsymmetricKey(KeyPair::from_seed(Seed::generate()))
+    pub fn generate() -> Self {
+        Self(KeyPair::from_seed(Seed::generate()))
     }
 
     pub fn from_slice(bytes: &[u8]) -> Result<Self> {
-        Ok(AsymmetricKey(KeyPair::from_slice(bytes).map_err(|_| {
+        Ok(Self(KeyPair::from_slice(bytes).map_err(|_| {
             Error::Generic("Failed parsing key.".to_string())
         })?))
+    }
+
+    pub fn to_slice(&self) -> &[u8] {
+        self.0.sk.as_slice()
     }
 
     pub fn from_base64(b64: &str) -> Result<Self> {
@@ -34,6 +40,10 @@ impl AsymmetricKey {
 
     pub fn pubkey(&self) -> &[u8] {
         &self.0.pk[..]
+    }
+
+    pub fn sign(&self, bytes: &[u8]) -> Vec<u8> {
+        self.0.sk.sign(bytes, None).to_vec()
     }
 }
 
@@ -50,6 +60,61 @@ impl Debug for AsymmetricKey {
 impl PartialEq for AsymmetricKey {
     fn eq(&self, other: &Self) -> bool {
         self.0.as_slice() == other.0.as_slice()
+    }
+}
+
+// Asymmetric Signature keys (P256)
+#[derive(Clone, Eq)]
+pub struct AsymmetricKeyP256(pub SigningKey);
+
+impl AsymmetricKeyP256 {
+    pub fn generate() -> Self {
+        let mut rng = rand::thread_rng();
+        Self(SigningKey::random(&mut rng))
+    }
+
+    pub fn from_slice(bytes: &[u8]) -> Result<Self> {
+        Ok(Self(SigningKey::from_bytes(bytes).map_err(|_| {
+            Error::Generic("Failed parsing key.".to_string())
+        })?))
+    }
+
+    pub fn to_slice(&self) -> Vec<u8> {
+        self.0.to_bytes().to_vec()
+    }
+
+    pub fn from_base64(b64: &str) -> Result<Self> {
+        let bytes =
+            base64::decode(b64).map_err(|_| Error::Generic("Failed parsing base64".to_string()))?;
+
+        Self::from_slice(bytes.as_slice())
+    }
+
+    pub fn pubkey(&self) -> Vec<u8> {
+        VerifyingKey::from(&self.0)
+            .to_encoded_point(true)
+            .to_bytes()
+            .to_vec()
+    }
+
+    pub fn sign(&self, bytes: &[u8]) -> Vec<u8> {
+        self.0.sign(bytes).to_vec()
+    }
+}
+
+impl Debug for AsymmetricKeyP256 {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "<AsymmetricKeyP256 sk=*** pk={}>",
+            base64::encode(self.pubkey())
+        )
+    }
+}
+
+impl PartialEq for AsymmetricKeyP256 {
+    fn eq(&self, other: &Self) -> bool {
+        self.0 == other.0
     }
 }
 

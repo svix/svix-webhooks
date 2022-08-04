@@ -161,6 +161,7 @@ fn sign_msg(
             let version = match x.type_() {
                 EndpointSecretType::Hmac256 => "v1",
                 EndpointSecretType::Ed25519 => "v1a",
+                EndpointSecretType::P256 => "v1b",
             };
             format!("{},{}", version, base64::encode(sig))
         })

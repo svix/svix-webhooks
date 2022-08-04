@@ -1291,9 +1291,9 @@ dependencies = [
 
 [[package]]
 name = "jwt-simple"
-version = "0.10.10"
+version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a6ae17b3b351f55edf6c5d2f0776ad8a467677751362207b92f443bf0a348f67"
+checksum = "6cf3a9f4c365a97b89e846cdb1c18dddbeafa692ebef1005cea26b8f04386e43"
 dependencies = [
  "anyhow",
  "coarsetime",
@@ -2960,6 +2960,7 @@ dependencies = [
  "opentelemetry",
  "opentelemetry-http",
  "opentelemetry-otlp",
+ "p256",
  "rand",
  "redis",
  "redis_cluster_async",

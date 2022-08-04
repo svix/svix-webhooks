@@ -8,7 +8,8 @@ use dotenv::dotenv;
 use opentelemetry::runtime::Tokio;
 use opentelemetry_otlp::WithExportConfig;
 use std::process::exit;
-use svix_server::core::types::{EndpointSecretInternal, OrganizationId};
+use svix_server::cfg::DefaultSignatureType;
+use svix_server::core::types::{EndpointSecretInternal, EndpointSecretType, OrganizationId};
 use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::util::SubscriberInitExt;
 use validator::Validate;
@@ -80,7 +81,17 @@ enum JwtCommands {
 enum AsymmetricKeyCommands {
     /// Generate a new asymmetric key
     #[clap()]
-    Generate,
+    Generate {
+        #[clap(value_parser = signature_type_parser)]
+        /// Optional type to use when generating a secret
+        type_: Option<DefaultSignatureType>,
+    },
+}
+
+fn signature_type_parser(s: &str) -> Result<DefaultSignatureType, String> {
+    // XXX A bit hacky, but it's fine since an issue will just fail serde immediately after
+    let type_ = format!("\"{}\"", s);
+    serde_json::from_str(&type_).map_err(|x| x.to_string())
 }
 
 fn org_id_parser(s: &str) -> Result<OrganizationId, String> {
@@ -205,11 +216,17 @@ async fn main() {
             exit(0);
         }
         Some(Commands::AsymmetricKey { command }) => match command {
-            AsymmetricKeyCommands::Generate => {
-                let secret = EndpointSecretInternal::generate_asymmetric(&cfg.encryption)
-                    .unwrap()
-                    .into_endpoint_secret(&cfg.encryption)
-                    .unwrap();
+            AsymmetricKeyCommands::Generate { type_ } => {
+                let secret = match type_ {
+                    Some(type_) => EndpointSecretInternal::generate(&cfg.encryption, type_.into()),
+                    None => EndpointSecretInternal::generate(
+                        &cfg.encryption,
+                        EndpointSecretType::Ed25519,
+                    ),
+                }
+                .unwrap()
+                .into_endpoint_secret(&cfg.encryption)
+                .unwrap();
                 println!("Secret key: {}", secret.serialize_secret_key());
                 println!("Public key: {}", secret.serialize_public_key());
                 exit(0);

@@ -6,6 +6,10 @@ use std::collections::{HashMap, HashSet};
 use chrono::{DateTime, Utc};
 use lazy_static::lazy_static;
 use num_enum::{IntoPrimitive, TryFromPrimitive};
+use p256::ecdsa::{
+    signature::{Signer, Verifier},
+    VerifyingKey,
+};
 use rand::Rng;
 
 use regex::Regex;
@@ -19,9 +23,9 @@ use std::ops::Deref;
 use svix_ksuid::*;
 use validator::{Validate, ValidationErrors};
 
-use crate::v1::utils::validation_error;
+use crate::{cfg::DefaultSignatureType, v1::utils::validation_error};
 
-use super::cryptography::{AsymmetricKey, Encryption};
+use super::cryptography::{AsymmetricKey, AsymmetricKeyP256, Encryption};
 
 const ALL_ERROR: &str = "__all__";
 
@@ -438,7 +442,7 @@ impl ExpiringSigningKeys {
 pub enum EndpointSecretType {
     Hmac256 = 1,
     Ed25519 = 2,
-    // Reserved = 3,
+    P256 = 3, // Reserved in upstream for this
 }
 
 impl EndpointSecretType {
@@ -446,6 +450,7 @@ impl EndpointSecretType {
         match self {
             EndpointSecretType::Hmac256 => "whsec_",
             EndpointSecretType::Ed25519 => "whsk_",
+            EndpointSecretType::P256 => "whsk1_",
         }
     }
 
@@ -453,6 +458,23 @@ impl EndpointSecretType {
         match self {
             EndpointSecretType::Hmac256 => "whsec_",
             EndpointSecretType::Ed25519 => "whpk_",
+            EndpointSecretType::P256 => "whpk1_",
+        }
+    }
+}
+
+impl From<DefaultSignatureType> for EndpointSecretType {
+    fn from(type_: DefaultSignatureType) -> Self {
+        Self::from(&type_)
+    }
+}
+
+impl From<&DefaultSignatureType> for EndpointSecretType {
+    fn from(type_: &DefaultSignatureType) -> Self {
+        match type_ {
+            DefaultSignatureType::Hmac256 => Self::Hmac256,
+            DefaultSignatureType::Ed25519 => Self::Ed25519,
+            DefaultSignatureType::P256 => Self::P256,
         }
     }
 }
@@ -521,14 +543,24 @@ impl EndpointSecretInternal {
         })
     }
 
-    pub fn generate_symmetric(encryption: &Encryption) -> crate::error::Result<Self> {
-        let buf: [u8; Self::KEY_SIZE] = rand::thread_rng().gen();
-        Self::new(encryption, EndpointSecretType::Hmac256, &buf)
-    }
-
-    pub fn generate_asymmetric(encryption: &Encryption) -> crate::error::Result<Self> {
-        let key = AsymmetricKey::generate();
-        Self::new(encryption, EndpointSecretType::Ed25519, key.0.sk.as_slice())
+    pub fn generate(
+        encryption: &Encryption,
+        type_: EndpointSecretType,
+    ) -> crate::error::Result<Self> {
+        match type_ {
+            EndpointSecretType::Hmac256 => {
+                let buf: [u8; Self::KEY_SIZE] = rand::thread_rng().gen();
+                Self::new(encryption, EndpointSecretType::Hmac256, &buf)
+            }
+            EndpointSecretType::Ed25519 => {
+                let key = AsymmetricKey::generate();
+                Self::new(encryption, EndpointSecretType::Ed25519, key.to_slice())
+            }
+            EndpointSecretType::P256 => {
+                let key = AsymmetricKeyP256::generate();
+                Self::new(encryption, EndpointSecretType::P256, &key.to_slice())
+            }
+        }
     }
 
     fn into_vec(mut self) -> Vec<u8> {
@@ -572,6 +604,9 @@ impl EndpointSecretInternal {
             EndpointSecretType::Ed25519 => {
                 EndpointSecret::Asymmetric(AsymmetricKey::from_slice(&key[..])?)
             }
+            EndpointSecretType::P256 => {
+                EndpointSecret::AsymmetricP256(AsymmetricKeyP256::from_slice(&key[..])?)
+            }
         })
     }
 
@@ -584,7 +619,10 @@ impl EndpointSecretInternal {
                 Self::new(encryption, EndpointSecretType::Hmac256, &key)?
             }
             EndpointSecret::Asymmetric(key) => {
-                Self::new(encryption, EndpointSecretType::Ed25519, key.0.sk.as_slice())?
+                Self::new(encryption, EndpointSecretType::Ed25519, key.to_slice())?
+            }
+            EndpointSecret::AsymmetricP256(key) => {
+                Self::new(encryption, EndpointSecretType::P256, &key.to_slice())?
             }
         })
     }
@@ -594,12 +632,10 @@ impl EndpointSecretInternal {
         // FIXME: remove unwrap
         match self.marker.type_() {
             EndpointSecretType::Hmac256 => hmac_sha256::HMAC::mac(bytes, key).to_vec(),
-            EndpointSecretType::Ed25519 => AsymmetricKey::from_slice(&key[..])
-                .unwrap()
-                .0
-                .sk
-                .sign(bytes, None)
-                .to_vec(),
+            EndpointSecretType::Ed25519 => AsymmetricKey::from_slice(&key[..]).unwrap().sign(bytes),
+            EndpointSecretType::P256 => {
+                AsymmetricKeyP256::from_slice(&key[..]).unwrap().sign(bytes)
+            }
         }
     }
 
@@ -706,6 +742,7 @@ impl ValueType for EndpointSecretInternal {
 pub enum EndpointSecret {
     Symmetric(Vec<u8>),
     Asymmetric(AsymmetricKey),
+    AsymmetricP256(AsymmetricKeyP256),
 }
 
 impl EndpointSecret {
@@ -732,6 +769,13 @@ impl EndpointSecret {
                     &base64::encode(key.0.sk.as_slice())
                 )
             }
+            Self::AsymmetricP256(key) => {
+                format!(
+                    "{}{}",
+                    EndpointSecretType::P256.secret_prefix(),
+                    &base64::encode(key.0.to_bytes())
+                )
+            }
         }
     }
 
@@ -748,6 +792,13 @@ impl EndpointSecret {
                 format!(
                     "{}{}",
                     EndpointSecretType::Ed25519.public_prefix(),
+                    &base64::encode(key.pubkey())
+                )
+            }
+            Self::AsymmetricP256(key) => {
+                format!(
+                    "{}{}",
+                    EndpointSecretType::P256.public_prefix(),
                     &base64::encode(key.pubkey())
                 )
             }
@@ -777,6 +828,15 @@ impl<'de> Deserialize<'de> for EndpointSecret {
                     AsymmetricKey::from_base64(
                         string
                             .get(EndpointSecretType::Ed25519.secret_prefix().len()..)
+                            .ok_or(invalid_prefix)?,
+                    )
+                    .map_err(|e| Error::custom(e.to_string()))?,
+                ))
+            } else if string.starts_with(EndpointSecretType::P256.secret_prefix()) {
+                Ok(Self::AsymmetricP256(
+                    AsymmetricKeyP256::from_base64(
+                        string
+                            .get(EndpointSecretType::P256.secret_prefix().len()..)
                             .ok_or(invalid_prefix)?,
                     )
                     .map_err(|e| Error::custom(e.to_string()))?,
@@ -814,6 +874,20 @@ impl Validate for EndpointSecret {
                 let test_msg = b"123";
                 let signature = key.0.sk.sign(test_msg, None);
                 if key.0.pk.verify(test_msg, &signature).is_err() {
+                    errors.add(
+                        ALL_ERROR,
+                        validation_error(
+                            Some("invalid_key"),
+                            Some("Invalid key, failed signing test msg"),
+                        ),
+                    );
+                }
+            }
+            Self::AsymmetricP256(key) => {
+                let test_msg = b"123";
+                let signature = key.0.sign(test_msg);
+                let pubkey = &VerifyingKey::from(&key.0);
+                if pubkey.verify(test_msg, &signature).is_err() {
                     errors.add(
                         ALL_ERROR,
                         validation_error(

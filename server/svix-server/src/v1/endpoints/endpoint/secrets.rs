@@ -28,10 +28,7 @@ pub(super) fn generate_secret(
     encryption: &Encryption,
     sig_type: &DefaultSignatureType,
 ) -> Result<EndpointSecretInternal> {
-    match sig_type {
-        DefaultSignatureType::Hmac256 => EndpointSecretInternal::generate_symmetric(encryption),
-        DefaultSignatureType::Ed25519 => EndpointSecretInternal::generate_asymmetric(encryption),
-    }
+    EndpointSecretInternal::generate(encryption, sig_type.into())
 }
 
 pub(super) async fn get_endpoint_secret(

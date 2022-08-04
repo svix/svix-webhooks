@@ -19,7 +19,7 @@ listen_address = "0.0.0.0:8071"
 # jwt_secret = "8KjzRXrKkd9YFcNyqLSIY8JwiaCeRc6WK4UkMnSW"
 
 # This determines the type of key that is generated for endpoint secrets by default (when none is set).
-# Supported: hmac256 (default), ed25519
+# Supported: hmac256 (default), ed25519, p256
 # Note: this does not affect existing keys, which will continue signing based on the type they were created with.
 default_signature_type = "hmac256"
 

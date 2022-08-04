@@ -316,6 +316,7 @@ pub enum CacheType {
 pub enum DefaultSignatureType {
     Hmac256,
     Ed25519,
+    P256,
 }
 
 impl ToString for LogLevel {
