@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use std::borrow::Cow;
-
 use crate::{
     core::{
         security::{
@@ -18,9 +16,9 @@ use crate::{
             patch_field_non_nullable, patch_field_nullable, UnrequiredField,
             UnrequiredNullableField,
         },
-        validate_no_control_characters, validate_no_control_characters_unrequired, EmptyResponse,
-        ListResponse, ModelIn, ModelOut, Pagination, PaginationLimit, ValidatedJson,
-        ValidatedQuery,
+        validate_no_control_characters, validate_no_control_characters_unrequired,
+        validation_error, EmptyResponse, ListResponse, ModelIn, ModelOut, Pagination,
+        PaginationLimit, ValidatedJson, ValidatedQuery,
     },
 };
 use axum::{
@@ -116,11 +114,10 @@ fn validate_name_length_patch(
         UnrequiredField::Absent => Ok(()),
         UnrequiredField::Some(s) => {
             if s.is_empty() {
-                let mut error = ValidationError::new("length");
-                error.message = Some(Cow::from(
-                    "Application names must be at least one character",
-                ));
-                Err(error)
+                Err(validation_error(
+                    Some("length"),
+                    Some("Application names must be at least one character"),
+                ))
             } else {
                 Ok(())
             }
@@ -137,11 +134,10 @@ fn validate_rate_limit_patch(
             if *rate_limit > 0 {
                 Ok(())
             } else {
-                let mut error = ValidationError::new("range");
-                error.message = Some(Cow::from(
-                    "Application rate limits must be at least 1 if set",
-                ));
-                Err(error)
+                Err(validation_error(
+                    Some("range"),
+                    Some("Application rate limits must be at least 1 if set"),
+                ))
             }
         }
     }

@@ -14,8 +14,9 @@ use crate::{
     error::{Error, HttpError, Result},
     queue::{MessageTaskBatch, TaskQueueProducer},
     v1::utils::{
-        apply_pagination, iterator_from_before_or_after, ListResponse, MessageListFetchOptions,
-        ModelIn, ModelOut, PaginationLimit, ReversibleIterator, ValidatedJson, ValidatedQuery,
+        apply_pagination, iterator_from_before_or_after, validation_error, ListResponse,
+        MessageListFetchOptions, ModelIn, ModelOut, PaginationLimit, ReversibleIterator,
+        ValidatedJson, ValidatedQuery,
     },
 };
 use axum::{
@@ -41,8 +42,9 @@ pub fn validate_channels_msg(
 ) -> std::result::Result<(), ValidationError> {
     let len = channels.0.len();
     if !(1..=5).contains(&len) {
-        Err(ValidationError::new(
-            "Channels must have at least 1 and at most 5 items, or be set to null.",
+        Err(validation_error(
+            Some("channels"),
+            Some("Channels must have at least 1 and at most 5 items, or be set to null."),
         ))
     } else {
         Ok(())

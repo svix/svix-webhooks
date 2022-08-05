@@ -17,7 +17,9 @@ use sea_orm::{
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 use svix_ksuid::*;
-use validator::{Validate, ValidationError, ValidationErrors};
+use validator::{Validate, ValidationErrors};
+
+use crate::v1::utils::validation_error;
 
 use super::cryptography::{AsymmetricKey, Encryption};
 
@@ -141,7 +143,7 @@ pub trait BaseId: Deref<Target = String> {
         if !&self.starts_with(Self::PREFIX) {
             errors.add(
                 ALL_ERROR,
-                ValidationError::new("Invalid id. Expected different prefix"),
+                validation_error(Some("id"), Some("Invalid id. Expected different prefix")),
             );
         }
         if errors.is_empty() {
@@ -176,11 +178,17 @@ fn validate_limited_str(s: &str) -> std::result::Result<(), ValidationErrors> {
     }
     let mut errors = ValidationErrors::new();
     if s.len() > MAX_LENGTH {
-        errors.add(ALL_ERROR, ValidationError::new("String too long"));
+        errors.add(
+            ALL_ERROR,
+            validation_error(Some("length"), Some("String too long")),
+        );
     } else if !RE.is_match(s) {
         errors.add(
             ALL_ERROR,
-            ValidationError::new("String must match the following pattern: [a-zA-Z0-9\\-_.]."),
+            validation_error(
+                Some("illegal_string_pattern"),
+                Some("String must match the following pattern: [a-zA-Z0-9\\-_.]."),
+            ),
         );
     }
     if errors.is_empty() {
@@ -201,8 +209,9 @@ pub trait BaseUid: Deref<Target = String> {
         if self.starts_with(Self::ID_PREFIX) {
             errors.add(
                 ALL_ERROR,
-                ValidationError::new(
-                    "Uids are not allowed to have the same prefix as the ID. Prefix with _?",
+                validation_error(
+                    Some("invalid_uid_prefix"),
+                    Some("Uids are not allowed to have the same prefix as the ID. Prefix with _?"),
                 ),
             );
         }
@@ -795,7 +804,10 @@ impl Validate for EndpointSecret {
         match self {
             Self::Symmetric(bytes) => {
                 if bytes.len() < Self::KEY_SIZE || bytes.len() > Self::KEY_SIZE_MAX {
-                    errors.add(ALL_ERROR, ValidationError::new("secret length invalid"));
+                    errors.add(
+                        ALL_ERROR,
+                        validation_error(Some("length"), Some("secret length invalid")),
+                    );
                 }
             }
             Self::Asymmetric(key) => {
@@ -804,7 +816,10 @@ impl Validate for EndpointSecret {
                 if key.0.pk.verify(test_msg, &signature).is_err() {
                     errors.add(
                         ALL_ERROR,
-                        ValidationError::new("Invalid key, failed signing test msg"),
+                        validation_error(
+                            Some("invalid_key"),
+                            Some("Invalid key, failed signing test msg"),
+                        ),
                     );
                 }
             }
@@ -855,19 +870,25 @@ const FORBIDDEN_PREFIXES: [&str; 10] = [
 fn validate_header_key(k: &str, errors: &mut ValidationErrors) {
     let k = &k.to_lowercase();
     if let Err(_e) = http::header::HeaderName::try_from(k) {
-        errors.add(ALL_ERROR, ValidationError::new("Invalid Header Name."));
+        errors.add(
+            ALL_ERROR,
+            validation_error(Some("header"), Some("Invalid Header Name.")),
+        );
     }
     if FORBIDDEN_KEYS.contains(&k.as_str()) {
         errors.add(
             ALL_ERROR,
-            ValidationError::new("Header uses a forbidden key."),
+            validation_error(Some("header"), Some("Header uses a forbidden key.")),
         );
     }
     FORBIDDEN_PREFIXES.iter().for_each(|p| {
         if k.starts_with(p) {
             errors.add(
                 ALL_ERROR,
-                ValidationError::new("Header starts with a forbidden prefix."),
+                validation_error(
+                    Some("header"),
+                    Some("Header starts with a forbidden prefix."),
+                ),
             )
         }
     })
@@ -894,7 +915,10 @@ impl Validate for EndpointHeaders {
         self.0.iter().for_each(|(k, v)| {
             validate_header_key(k, &mut errors);
             if let Err(_e) = http::header::HeaderValue::try_from(v) {
-                errors.add(ALL_ERROR, ValidationError::new("Invalid Header Value."));
+                errors.add(
+                    ALL_ERROR,
+                    validation_error(Some("header"), Some("Invalid Header Value.")),
+                );
             }
         });
         if errors.is_empty() {
