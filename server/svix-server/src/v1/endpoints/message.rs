@@ -51,6 +51,18 @@ pub fn validate_channels_msg(
     }
 }
 
+pub fn validate_message_in_payload(
+    payload: &serde_json::Value,
+) -> std::result::Result<(), ValidationError> {
+    match payload {
+        serde_json::Value::Object(_) => Ok(()),
+        _ => Err(validation_error(
+            Some("payload"),
+            Some("Payload must be an object."),
+        )),
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Validate, ModelIn)]
 #[serde(rename_all = "camelCase")]
 pub struct MessageIn {
@@ -59,6 +71,7 @@ pub struct MessageIn {
     pub uid: Option<MessageUid>,
     #[validate]
     pub event_type: EventTypeName,
+    #[validate(custom = "validate_message_in_payload")]
     #[serde(alias = "payload", alias = "data")]
     pub payload: serde_json::Value,
     #[validate(custom = "validate_channels_msg")]
@@ -333,7 +346,30 @@ mod tests {
         }))
         .unwrap();
 
-        for m in [invalid_1, invalid_2, invalid_3] {
+        let invalid_4: MessageIn = serde_json::from_value(json!({
+            "eventType": EVENT_TYPE_VALID,
+            "payload": "this should be invalid",
+            "channels": EVENT_CHANNELS_VALID
+        }))
+        .unwrap();
+
+        let invalid_5: MessageIn = serde_json::from_value(json!({
+            "eventType": EVENT_TYPE_VALID,
+            "payload": json!([ "this should be invalid" ]),
+            "channels": EVENT_CHANNELS_VALID
+        }))
+        .unwrap();
+
+        let invalid_6: MessageIn = serde_json::from_value(json!({
+            "eventType": EVENT_TYPE_VALID,
+            "payload": json!([ { "msg": "this should be invalid" } ]),
+            "channels": EVENT_CHANNELS_VALID
+        }))
+        .unwrap();
+
+        for m in [
+            invalid_1, invalid_2, invalid_3, invalid_4, invalid_5, invalid_6,
+        ] {
             assert!(m.validate().is_err());
         }
 
