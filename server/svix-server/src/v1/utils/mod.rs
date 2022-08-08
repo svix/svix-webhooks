@@ -13,6 +13,7 @@ use chrono::{DateTime, Utc};
 use regex::Regex;
 use sea_orm::{ColumnTrait, QueryFilter, QueryOrder, QuerySelect};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
+
 use validator::{Validate, ValidationError};
 
 use crate::{
@@ -66,7 +67,10 @@ impl Validate for PaginationLimit {
         let mut errs = validator::ValidationErrors::new();
 
         if self.0 > PAGINATION_LIMIT_CAP_LIMIT {
-            errs.add("limit", ValidationError::new(PAGINATION_LIMIT_ERROR));
+            errs.add(
+                "limit",
+                validation_error(Some("pagination"), Some(PAGINATION_LIMIT_ERROR)),
+            );
         }
 
         if errs.is_empty() {
@@ -207,6 +211,15 @@ pub trait ModelOut: Clone {
 
     fn list_response_no_prev(data: Vec<Self>, limit: usize) -> ListResponse<Self> {
         list_response_inner(data, limit, false, false)
+    }
+}
+
+// Helper method to simplify the somewhat egregious API for creating a ValidationError
+pub fn validation_error(code: Option<&'static str>, msg: Option<&'static str>) -> ValidationError {
+    ValidationError {
+        code: std::borrow::Cow::from(code.unwrap_or("validation")),
+        message: msg.map(std::borrow::Cow::from),
+        params: std::collections::HashMap::new(),
     }
 }
 
@@ -392,8 +405,9 @@ pub async fn api_not_implemented() -> Result<()> {
 pub fn validate_no_control_characters(str: &str) -> std::result::Result<(), ValidationError> {
     let re = Regex::new(r"[\x00-\x08]").unwrap();
     if re.is_match(str) {
-        return Err(ValidationError::new(
-            "Control characters 0x00-0x08 not allowed.",
+        return Err(validation_error(
+            Some("illegal_character"),
+            Some("Control characters 0x00-0x08 not allowed."),
         ));
     }
     Ok(())

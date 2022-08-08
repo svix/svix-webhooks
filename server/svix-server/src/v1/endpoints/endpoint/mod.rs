@@ -21,7 +21,8 @@ use crate::{
             patch_field_non_nullable, patch_field_nullable, UnrequiredField,
             UnrequiredNullableField,
         },
-        validate_no_control_characters, validate_no_control_characters_unrequired, ModelIn,
+        validate_no_control_characters, validate_no_control_characters_unrequired,
+        validation_error, ModelIn,
     },
 };
 
@@ -35,7 +36,7 @@ use sea_orm::{
     ActiveValue::Set, ColumnTrait, DatabaseConnection, FromQueryResult, QueryFilter, QuerySelect,
 };
 use serde::{Deserialize, Serialize};
-use std::{borrow::Cow, collections::HashMap, collections::HashSet};
+use std::{collections::HashMap, collections::HashSet};
 use url::Url;
 
 use svix_server_derive::{ModelIn, ModelOut};
@@ -48,8 +49,9 @@ pub fn validate_event_types_ids(
     event_types_ids: &EventTypeNameSet,
 ) -> std::result::Result<(), ValidationError> {
     if event_types_ids.0.is_empty() {
-        Err(ValidationError::new(
-            "filterTypes can't be empty, it must have at least one item.",
+        Err(validation_error(
+            Some("filterTypes"),
+            Some("filterTypes can't be empty, it must have at least one item."),
         ))
     } else {
         Ok(())
@@ -70,8 +72,9 @@ pub fn validate_channels_endpoint(
 ) -> std::result::Result<(), ValidationError> {
     let len = channels.0.len();
     if !(1..=10).contains(&len) {
-        Err(ValidationError::new(
-            "Channels must have at least 1 and at most 10 items, or be set to null.",
+        Err(validation_error(
+            Some("channels"),
+            Some("Channels must have at least 1 and at most 10 items, or be set to null."),
         ))
     } else {
         Ok(())
@@ -94,13 +97,17 @@ pub fn validate_url(val: &str) -> std::result::Result<(), ValidationError> {
             if scheme == "https" || scheme == "http" {
                 Ok(())
             } else {
-                Err(ValidationError::new(
-                    "Endpoint URL schemes must be http or https",
+                Err(validation_error(
+                    Some("url"),
+                    Some("Endpoint URL schemes must be http or https"),
                 ))
             }
         }
 
-        Err(_) => Err(ValidationError::new("Endpoint URLs must be valid")),
+        Err(_) => Err(validation_error(
+            Some("url"),
+            Some("Endpoint URLs must be valid"),
+        )),
     }
 }
 
@@ -264,9 +271,10 @@ fn validate_rate_limit_patch(
             if *rate_limit > 0 {
                 Ok(())
             } else {
-                let mut error = ValidationError::new("range");
-                error.message = Some(Cow::from("Endpoint rate limits must be at least 1 if set"));
-                Err(error)
+                Err(validation_error(
+                    Some("range"),
+                    Some("Endpoint rate limits must be at least 1 if set"),
+                ))
             }
         }
     }
@@ -279,9 +287,10 @@ fn validate_minimum_version_patch(
         UnrequiredField::Absent => Ok(()),
         UnrequiredField::Some(version) => {
             if *version == 0 {
-                let mut error = ValidationError::new("range");
-                error.message = Some(Cow::from("Endpoint versions must be at least one"));
-                Err(error)
+                Err(validation_error(
+                    Some("range"),
+                    Some("Endpoint versions must be at least one"),
+                ))
             } else {
                 Ok(())
             }
