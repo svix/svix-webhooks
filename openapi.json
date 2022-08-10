@@ -4073,8 +4073,11 @@
                         "name": "status",
                         "required": false,
                         "schema": {
-                            "$ref": "#/components/schemas/MessageStatus",
-                            "nullable": true
+                            "items": {
+                                "$ref": "#/components/schemas/MessageStatus"
+                            },
+                            "nullable": true,
+                            "type": "array"
                         }
                     },
                     {
@@ -4370,8 +4373,11 @@
                         "name": "status",
                         "required": false,
                         "schema": {
-                            "$ref": "#/components/schemas/MessageStatus",
-                            "nullable": true
+                            "items": {
+                                "$ref": "#/components/schemas/MessageStatus"
+                            },
+                            "nullable": true,
+                            "type": "array"
                         }
                     },
                     {
@@ -6206,8 +6212,11 @@
                         "name": "status",
                         "required": false,
                         "schema": {
-                            "$ref": "#/components/schemas/MessageStatus",
-                            "nullable": true
+                            "items": {
+                                "$ref": "#/components/schemas/MessageStatus"
+                            },
+                            "nullable": true,
+                            "type": "array"
                         }
                     },
                     {
@@ -10131,8 +10140,11 @@
                         "name": "status",
                         "required": false,
                         "schema": {
-                            "$ref": "#/components/schemas/MessageStatus",
-                            "nullable": true
+                            "items": {
+                                "$ref": "#/components/schemas/MessageStatus"
+                            },
+                            "nullable": true,
+                            "type": "array"
                         }
                     },
                     {
@@ -10979,8 +10991,11 @@
                         "name": "status",
                         "required": false,
                         "schema": {
-                            "$ref": "#/components/schemas/MessageStatus",
-                            "nullable": true
+                            "items": {
+                                "$ref": "#/components/schemas/MessageStatus"
+                            },
+                            "nullable": true,
+                            "type": "array"
                         }
                     },
                     {

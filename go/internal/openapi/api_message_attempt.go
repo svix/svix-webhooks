@@ -17,8 +17,8 @@ import (
 	_nethttp "net/http"
 	_neturl "net/url"
 	"strings"
-	"time"
 	"reflect"
+	"time"
 )
 
 // Linger please
@@ -628,7 +628,7 @@ type ApiListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGetRequest struct
 	iterator *string
 	limit *int32
 	channel *string
-	status *MessageStatus
+	status *[]MessageStatus
 	before *time.Time
 	after *time.Time
 	idempotencyKey *string
@@ -646,7 +646,7 @@ func (r ApiListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGetRequest) Ch
 	r.channel = &channel
 	return r
 }
-func (r ApiListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGetRequest) Status(status MessageStatus) ApiListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGetRequest {
+func (r ApiListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGetRequest) Status(status []MessageStatus) ApiListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGetRequest {
 	r.status = &status
 	return r
 }
@@ -735,7 +735,15 @@ func (a *MessageAttemptApiService) ListAttemptedMessagesApiV1AppAppIdEndpointEnd
 		localVarQueryParams.Add("channel", parameterToString(*r.channel, ""))
 	}
 	if r.status != nil {
-		localVarQueryParams.Add("status", parameterToString(*r.status, ""))
+		t := *r.status
+		if reflect.TypeOf(t).Kind() == reflect.Slice {
+			s := reflect.ValueOf(t)
+			for i := 0; i < s.Len(); i++ {
+				localVarQueryParams.Add("status", parameterToString(s.Index(i), "multi"))
+			}
+		} else {
+			localVarQueryParams.Add("status", parameterToString(t, "multi"))
+		}
 	}
 	if r.before != nil {
 		localVarQueryParams.Add("before", parameterToString(*r.before, ""))
@@ -869,7 +877,7 @@ type ApiListAttemptsApiV1AppAppIdMsgMsgIdAttemptGetRequest struct {
 	endpointId *string
 	eventTypes *[]string
 	channel *string
-	status *MessageStatus
+	status *[]MessageStatus
 	before *time.Time
 	after *time.Time
 	idempotencyKey *string
@@ -895,7 +903,7 @@ func (r ApiListAttemptsApiV1AppAppIdMsgMsgIdAttemptGetRequest) Channel(channel s
 	r.channel = &channel
 	return r
 }
-func (r ApiListAttemptsApiV1AppAppIdMsgMsgIdAttemptGetRequest) Status(status MessageStatus) ApiListAttemptsApiV1AppAppIdMsgMsgIdAttemptGetRequest {
+func (r ApiListAttemptsApiV1AppAppIdMsgMsgIdAttemptGetRequest) Status(status []MessageStatus) ApiListAttemptsApiV1AppAppIdMsgMsgIdAttemptGetRequest {
 	r.status = &status
 	return r
 }
@@ -998,7 +1006,15 @@ func (a *MessageAttemptApiService) ListAttemptsApiV1AppAppIdMsgMsgIdAttemptGetEx
 		localVarQueryParams.Add("channel", parameterToString(*r.channel, ""))
 	}
 	if r.status != nil {
-		localVarQueryParams.Add("status", parameterToString(*r.status, ""))
+		t := *r.status
+		if reflect.TypeOf(t).Kind() == reflect.Slice {
+			s := reflect.ValueOf(t)
+			for i := 0; i < s.Len(); i++ {
+				localVarQueryParams.Add("status", parameterToString(s.Index(i), "multi"))
+			}
+		} else {
+			localVarQueryParams.Add("status", parameterToString(t, "multi"))
+		}
 	}
 	if r.before != nil {
 		localVarQueryParams.Add("before", parameterToString(*r.before, ""))
@@ -1129,7 +1145,7 @@ type ApiListAttemptsByEndpointApiV1AppAppIdAttemptEndpointEndpointIdGetRequest s
 	endpointId string
 	iterator *string
 	limit *int32
-	status *MessageStatus
+	status *[]MessageStatus
 	statusCodeClass *StatusCodeClass
 	eventTypes *[]string
 	channel *string
@@ -1146,7 +1162,7 @@ func (r ApiListAttemptsByEndpointApiV1AppAppIdAttemptEndpointEndpointIdGetReques
 	r.limit = &limit
 	return r
 }
-func (r ApiListAttemptsByEndpointApiV1AppAppIdAttemptEndpointEndpointIdGetRequest) Status(status MessageStatus) ApiListAttemptsByEndpointApiV1AppAppIdAttemptEndpointEndpointIdGetRequest {
+func (r ApiListAttemptsByEndpointApiV1AppAppIdAttemptEndpointEndpointIdGetRequest) Status(status []MessageStatus) ApiListAttemptsByEndpointApiV1AppAppIdAttemptEndpointEndpointIdGetRequest {
 	r.status = &status
 	return r
 }
@@ -1242,7 +1258,15 @@ func (a *MessageAttemptApiService) ListAttemptsByEndpointApiV1AppAppIdAttemptEnd
 		localVarQueryParams.Add("limit", parameterToString(*r.limit, ""))
 	}
 	if r.status != nil {
-		localVarQueryParams.Add("status", parameterToString(*r.status, ""))
+		t := *r.status
+		if reflect.TypeOf(t).Kind() == reflect.Slice {
+			s := reflect.ValueOf(t)
+			for i := 0; i < s.Len(); i++ {
+				localVarQueryParams.Add("status", parameterToString(s.Index(i), "multi"))
+			}
+		} else {
+			localVarQueryParams.Add("status", parameterToString(t, "multi"))
+		}
 	}
 	if r.statusCodeClass != nil {
 		localVarQueryParams.Add("status_code_class", parameterToString(*r.statusCodeClass, ""))
@@ -1391,7 +1415,7 @@ type ApiListAttemptsByMsgApiV1AppAppIdAttemptMsgMsgIdGetRequest struct {
 	endpointId *string
 	iterator *string
 	limit *int32
-	status *MessageStatus
+	status *[]MessageStatus
 	statusCodeClass *StatusCodeClass
 	eventTypes *[]string
 	channel *string
@@ -1412,7 +1436,7 @@ func (r ApiListAttemptsByMsgApiV1AppAppIdAttemptMsgMsgIdGetRequest) Limit(limit 
 	r.limit = &limit
 	return r
 }
-func (r ApiListAttemptsByMsgApiV1AppAppIdAttemptMsgMsgIdGetRequest) Status(status MessageStatus) ApiListAttemptsByMsgApiV1AppAppIdAttemptMsgMsgIdGetRequest {
+func (r ApiListAttemptsByMsgApiV1AppAppIdAttemptMsgMsgIdGetRequest) Status(status []MessageStatus) ApiListAttemptsByMsgApiV1AppAppIdAttemptMsgMsgIdGetRequest {
 	r.status = &status
 	return r
 }
@@ -1511,7 +1535,15 @@ func (a *MessageAttemptApiService) ListAttemptsByMsgApiV1AppAppIdAttemptMsgMsgId
 		localVarQueryParams.Add("limit", parameterToString(*r.limit, ""))
 	}
 	if r.status != nil {
-		localVarQueryParams.Add("status", parameterToString(*r.status, ""))
+		t := *r.status
+		if reflect.TypeOf(t).Kind() == reflect.Slice {
+			s := reflect.ValueOf(t)
+			for i := 0; i < s.Len(); i++ {
+				localVarQueryParams.Add("status", parameterToString(s.Index(i), "multi"))
+			}
+		} else {
+			localVarQueryParams.Add("status", parameterToString(t, "multi"))
+		}
 	}
 	if r.statusCodeClass != nil {
 		localVarQueryParams.Add("status_code_class", parameterToString(*r.statusCodeClass, ""))
@@ -1662,7 +1694,7 @@ type ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGet
 	limit *int32
 	eventTypes *[]string
 	channel *string
-	status *MessageStatus
+	status *[]MessageStatus
 	before *time.Time
 	after *time.Time
 	idempotencyKey *string
@@ -1684,7 +1716,7 @@ func (r ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttempt
 	r.channel = &channel
 	return r
 }
-func (r ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGetRequest) Status(status MessageStatus) ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGetRequest {
+func (r ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGetRequest) Status(status []MessageStatus) ApiListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGetRequest {
 	r.status = &status
 	return r
 }
@@ -1797,7 +1829,15 @@ func (a *MessageAttemptApiService) ListAttemptsForEndpointApiV1AppAppIdMsgMsgIdE
 		localVarQueryParams.Add("channel", parameterToString(*r.channel, ""))
 	}
 	if r.status != nil {
-		localVarQueryParams.Add("status", parameterToString(*r.status, ""))
+		t := *r.status
+		if reflect.TypeOf(t).Kind() == reflect.Slice {
+			s := reflect.ValueOf(t)
+			for i := 0; i < s.Len(); i++ {
+				localVarQueryParams.Add("status", parameterToString(s.Index(i), "multi"))
+			}
+		} else {
+			localVarQueryParams.Add("status", parameterToString(t, "multi"))
+		}
 	}
 	if r.before != nil {
 		localVarQueryParams.Add("before", parameterToString(*r.before, ""))

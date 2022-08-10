@@ -167,7 +167,7 @@ export interface MessageListOptions extends ListOptions {
 }
 
 export interface MessageAttemptListOptions extends ListOptions {
-  status?: MessageStatus;
+  status?: MessageStatus[];
   eventTypes?: string[];
   before?: Date;
   after?: Date;
