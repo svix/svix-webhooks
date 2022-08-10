@@ -25,7 +25,7 @@ type (
 type MessageAttemptListOptions struct {
 	Iterator        *string
 	Limit           *int32
-	Status          *MessageStatus
+	Status          *[]MessageStatus
 	EventTypes      *[]string
 	Before          *time.Time
 	After           *time.Time
