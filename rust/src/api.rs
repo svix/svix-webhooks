@@ -787,7 +787,7 @@ pub struct MessageAttemptListOptions {
     /// RFC3339 date string
     after: Option<String>,
     channel: Option<String>,
-    status: Option<MessageStatus>,
+    status: Option<Vec<MessageStatus>>,
     status_code_class: Option<StatusCodeClass>,
 }
 
