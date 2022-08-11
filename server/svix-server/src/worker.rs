@@ -258,7 +258,13 @@ async fn dispatch(
     let headers = {
         let keys: Vec<&EndpointSecretInternal> = if let Some(ref old_keys) = endp.old_signing_keys {
             iter::once(&endp.key)
-                .chain(old_keys.0.iter().map(|x| &x.key))
+                .chain(
+                    old_keys
+                        .0
+                        .iter()
+                        .filter(|x| x.expiration > Utc::now())
+                        .map(|x| &x.key),
+                )
                 .collect()
         } else {
             vec![&endp.key]
