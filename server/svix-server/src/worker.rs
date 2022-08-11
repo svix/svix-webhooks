@@ -7,7 +7,7 @@ use crate::core::cryptography::Encryption;
 use crate::core::operational_webhooks::EndpointDisabledEvent;
 use crate::core::types::{
     ApplicationId, ApplicationUid, EndpointId, EndpointSecretInternal, EndpointSecretType,
-    MessageUid, OrganizationId,
+    ExpiringSigningKeys, MessageUid, OrganizationId,
 };
 use crate::core::{
     cache::{kv_def, Cache, CacheBehavior, CacheKey, CacheValue},
@@ -151,7 +151,7 @@ fn sign_msg(
     timestamp: i64,
     body: &str,
     msg_id: &MessageId,
-    endpoint_signing_keys: &[&EndpointSecretInternal],
+    endpoint_signing_keys: Vec<EndpointSecretInternal>,
 ) -> String {
     let to_sign = format!("{}.{}.{}", msg_id, timestamp, body);
     endpoint_signing_keys
@@ -256,26 +256,14 @@ async fn dispatch(
     let now = Utc::now();
     let body = serde_json::to_string(&payload).expect("Error parsing message body");
     let headers = {
-        let keys: Vec<&EndpointSecretInternal> = if let Some(ref old_keys) = endp.old_signing_keys {
-            iter::once(&endp.key)
-                .chain(
-                    old_keys
-                        .0
-                        .iter()
-                        .filter(|x| x.expiration > Utc::now())
-                        .map(|x| &x.key),
-                )
-                .collect()
-        } else {
-            vec![&endp.key]
-        };
+        let keys = filter_expired_keys(&endp.key, &endp.old_signing_keys);
 
         let signatures = sign_msg(
             &cfg.encryption,
             now.timestamp(),
             &body,
             &msg_task.msg_id,
-            &keys,
+            keys,
         );
 
         let mut headers = generate_msg_headers(
@@ -532,6 +520,24 @@ async fn dispatch(
     Ok(())
 }
 
+fn filter_expired_keys(
+    key: &EndpointSecretInternal,
+    old_keys: &Option<ExpiringSigningKeys>,
+) -> Vec<EndpointSecretInternal> {
+    match old_keys {
+        Some(ref old_keys) => iter::once(key.to_owned())
+            .chain(
+                old_keys
+                    .0
+                    .iter()
+                    .filter(|x| x.expiration > Utc::now())
+                    .map(|x| x.key.to_owned()),
+            )
+            .collect(),
+        None => vec![key.to_owned()],
+    }
+}
+
 fn bytes_to_string(bytes: bytes::Bytes) -> String {
     match std::str::from_utf8(&bytes) {
         Ok(v) => v.to_owned(),
@@ -725,7 +731,7 @@ pub async fn worker_loop(
 mod tests {
     use super::*;
     use crate::core::cryptography::AsymmetricKey;
-    use crate::core::types::{BaseId, EndpointSecret};
+    use crate::core::types::{BaseId, EndpointSecret, ExpiringSigningKey};
 
     use bytes::Bytes;
     use ed25519_compact::Signature;
@@ -735,7 +741,7 @@ mod tests {
     const TIMESTAMP: i64 = 1;
     const WHITELABEL_HEADERS: bool = false;
     const BODY: &str = "{\"test\": \"body\"}";
-    const ENDPOINT_SIGNING_KEYS: &[&EndpointSecretInternal] = &[];
+    const ENDPOINT_SIGNING_KEYS: Vec<EndpointSecretInternal> = vec![];
     const ENDPOINT_URL: &str = "http://localhost:8071";
 
     /// Utility function that returns the default set of headers before configurable header are
@@ -817,7 +823,7 @@ mod tests {
             test_timestamp,
             test_body,
             &test_message_id,
-            &[&test_key],
+            vec![test_key],
         );
 
         let actual = generate_msg_headers(
@@ -833,6 +839,31 @@ mod tests {
             actual.get("svix-signature").unwrap(),
             expected_signature_str
         );
+    }
+
+    // Tests filtering expired keys
+    #[test]
+    fn test_filter_expired_keys() {
+        let key = EndpointSecretInternal::from_endpoint_secret(
+            EndpointSecret::Symmetric(base64::decode("MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw").unwrap()),
+            &Encryption::new_noop(),
+        )
+        .unwrap();
+        let unexpired_old_key = ExpiringSigningKey {
+            key: key.clone(),
+            expiration: Utc::now()
+                + chrono::Duration::hours(ExpiringSigningKeys::OLD_KEY_EXPIRY_HOURS),
+        };
+        let expired_old_key = ExpiringSigningKey {
+            key: key.clone(),
+            expiration: Utc::now()
+                - chrono::Duration::hours(ExpiringSigningKeys::OLD_KEY_EXPIRY_HOURS),
+        };
+        let old_signing_keys = ExpiringSigningKeys(vec![unexpired_old_key, expired_old_key]);
+
+        let keys = filter_expired_keys(&key, &Some(old_signing_keys));
+
+        assert_eq!(keys.len(), 2);
     }
 
     // Tests asemmtric signing keys
@@ -853,7 +884,7 @@ mod tests {
             timestamp,
             body,
             &msg_id,
-            &[&test_key],
+            vec![test_key],
         );
 
         let to_sign = format!("{}.{}.{}", msg_id, timestamp, body);
