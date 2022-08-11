@@ -4,7 +4,7 @@ use std::{
     time::Duration,
 };
 
-use chrono::{DateTime, FixedOffset};
+use chrono::{DateTime, FixedOffset, Utc};
 use sea_orm::{DatabaseConnection, DatabaseTransaction, TransactionTrait};
 use serde::{Deserialize, Serialize};
 
@@ -157,6 +157,23 @@ pub struct CreateMessageEndpoint {
     pub deleted: bool,
 }
 
+impl CreateMessageEndpoint {
+    pub fn valid_signing_keys(&self) -> Vec<&EndpointSecretInternal> {
+        match self.old_signing_keys {
+            Some(ref old_keys) => std::iter::once(&self.key)
+                .chain(
+                    old_keys
+                        .0
+                        .iter()
+                        .filter(|x| x.expiration > Utc::now())
+                        .map(|x| &x.key),
+                )
+                .collect(),
+            None => vec![&self.key],
+        }
+    }
+}
+
 impl TryFrom<endpoint::Model> for CreateMessageEndpoint {
     type Error = Error;
 
@@ -187,5 +204,54 @@ impl AppEndpointKey {
     /// Returns a key for fetching all cached endpoints for a given organization and application.
     pub fn new(org: OrganizationId, app: ApplicationId) -> AppEndpointKey {
         AppEndpointKey(format!("{}_APP_v3_{}_{}", Self::PREFIX_CACHE, org, app))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::core::cryptography::Encryption;
+    use crate::core::types::{EndpointSecret, ExpiringSigningKey};
+
+    #[test]
+    fn test_valid_signing_keys() {
+        let key = EndpointSecretInternal::from_endpoint_secret(
+            EndpointSecret::Symmetric(base64::decode("MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw").unwrap()),
+            &Encryption::new_noop(),
+        )
+        .unwrap();
+
+        let unexpired_old_key = ExpiringSigningKey {
+            key: key.clone(),
+            expiration: Utc::now()
+                + chrono::Duration::hours(ExpiringSigningKeys::OLD_KEY_EXPIRY_HOURS),
+        };
+        let expired_old_key = ExpiringSigningKey {
+            key: key.clone(),
+            expiration: Utc::now()
+                - chrono::Duration::hours(ExpiringSigningKeys::OLD_KEY_EXPIRY_HOURS),
+        };
+        let old_signing_keys = Some(ExpiringSigningKeys(vec![
+            unexpired_old_key,
+            expired_old_key,
+        ]));
+
+        let cme = CreateMessageEndpoint {
+            id: EndpointId::from("Test".to_string()),
+            url: "".to_string(),
+            key,
+            old_signing_keys,
+            event_types_ids: None,
+            channels: None,
+            rate_limit: None,
+            first_failure_at: None,
+            headers: None,
+            disabled: false,
+            deleted: false,
+        };
+
+        let keys = cme.valid_signing_keys();
+
+        assert_eq!(keys.len(), 2);
     }
 }

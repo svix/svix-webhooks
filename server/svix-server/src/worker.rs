@@ -33,7 +33,6 @@ use serde::{Deserialize, Serialize};
 use tokio::time::{sleep, Duration};
 
 use std::{
-    iter,
     str::FromStr,
     sync::{atomic::Ordering, Arc},
 };
@@ -256,13 +255,7 @@ async fn dispatch(
     let now = Utc::now();
     let body = serde_json::to_string(&payload).expect("Error parsing message body");
     let headers = {
-        let keys: Vec<&EndpointSecretInternal> = if let Some(ref old_keys) = endp.old_signing_keys {
-            iter::once(&endp.key)
-                .chain(old_keys.0.iter().map(|x| &x.key))
-                .collect()
-        } else {
-            vec![&endp.key]
-        };
+        let keys = endp.valid_signing_keys();
 
         let signatures = sign_msg(
             &cfg.encryption,
