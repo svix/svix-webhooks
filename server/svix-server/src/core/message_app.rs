@@ -158,7 +158,7 @@ pub struct CreateMessageEndpoint {
 }
 
 impl CreateMessageEndpoint {
-    pub fn get_valid_signing_keys(&self) -> Vec<&EndpointSecretInternal> {
+    pub fn valid_signing_keys(&self) -> Vec<&EndpointSecretInternal> {
         match self.old_signing_keys {
             Some(ref old_keys) => std::iter::once(&self.key)
                 .chain(
@@ -214,7 +214,7 @@ mod tests {
     use crate::core::types::{EndpointSecret, ExpiringSigningKey};
 
     #[test]
-    fn test_get_valid_signing_keys() {
+    fn test_valid_signing_keys() {
         let key = EndpointSecretInternal::from_endpoint_secret(
             EndpointSecret::Symmetric(base64::decode("MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw").unwrap()),
             &Encryption::new_noop(),
@@ -250,7 +250,7 @@ mod tests {
             deleted: false,
         };
 
-        let keys = cme.get_valid_signing_keys();
+        let keys = cme.valid_signing_keys();
 
         assert_eq!(keys.len(), 2);
     }

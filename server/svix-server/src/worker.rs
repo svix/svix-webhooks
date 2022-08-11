@@ -255,7 +255,7 @@ async fn dispatch(
     let now = Utc::now();
     let body = serde_json::to_string(&payload).expect("Error parsing message body");
     let headers = {
-        let keys = endp.get_valid_signing_keys();
+        let keys = endp.valid_signing_keys();
 
         let signatures = sign_msg(
             &cfg.encryption,
