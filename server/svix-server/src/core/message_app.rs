@@ -4,7 +4,7 @@ use std::{
     time::Duration,
 };
 
-use chrono::{DateTime, FixedOffset};
+use chrono::{DateTime, FixedOffset, Utc};
 use sea_orm::{DatabaseConnection, DatabaseTransaction, TransactionTrait};
 use serde::{Deserialize, Serialize};
 
@@ -155,6 +155,23 @@ pub struct CreateMessageEndpoint {
     pub headers: Option<EndpointHeaders>,
     pub disabled: bool,
     pub deleted: bool,
+}
+
+impl CreateMessageEndpoint {
+    pub fn get_valid_signing_keys(&self) -> Vec<&EndpointSecretInternal> {
+        match self.old_signing_keys {
+            Some(ref old_keys) => std::iter::once(&self.key)
+                .chain(
+                    old_keys
+                        .0
+                        .iter()
+                        .filter(|x| x.expiration > Utc::now())
+                        .map(|x| &x.key),
+                )
+                .collect(),
+            None => vec![&self.key],
+        }
+    }
 }
 
 impl TryFrom<endpoint::Model> for CreateMessageEndpoint {
