@@ -8,7 +8,10 @@ use sea_orm::{query::Statement, ConnectionTrait, DatabaseBackend, DatabaseConnec
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    core::cache::{kv_def, Cache, CacheBehavior, CacheKey, CacheValue},
+    core::{
+        cache::{cache_kv_def, Cache},
+        shared_store::{store_kv_def, SharedStore},
+    },
     queue::{QueueTask, TaskQueueProducer},
 };
 
@@ -67,16 +70,33 @@ pub struct HealthReport {
 
     queue: HealthStatus,
     cache: HealthStatus,
+    store: HealthStatus,
 }
 
 #[derive(Deserialize, Serialize, Debug, PartialEq)]
 struct HealthCheckCacheValue(());
-kv_def!(HealthCheckCacheKey, HealthCheckCacheValue);
+#[derive(Deserialize, Serialize, Debug, PartialEq)]
+struct HealthCheckStoreValue(());
+
+cache_kv_def!(HealthCheckCacheKey, HealthCheckCacheValue, "HEALTH_CHECK_");
+impl HealthCheckCacheKey {
+    pub fn new(id: String) -> HealthCheckCacheKey {
+        HealthCheckCacheKey(id)
+    }
+}
+
+store_kv_def!(HealthCheckStoreKey, HealthCheckStoreValue, "HEALTH_CHECK_");
+impl HealthCheckStoreKey {
+    pub fn new(id: String) -> HealthCheckStoreKey {
+        HealthCheckStoreKey(id)
+    }
+}
 
 async fn health(
     Extension(ref db): Extension<DatabaseConnection>,
     Extension(queue_tx): Extension<TaskQueueProducer>,
     Extension(cache): Extension<Cache>,
+    Extension(store): Extension<SharedStore>,
 ) -> (StatusCode, Json<HealthReport>) {
     // SELECT 1 FROM any table
     let database: HealthStatus = db
@@ -93,7 +113,7 @@ async fn health(
     // Set a cache value with an expiration to ensure it works
     let cache: HealthStatus = cache
         .set(
-            &HealthCheckCacheKey("health_check_value".to_owned()),
+            &HealthCheckCacheKey::new("health_check_key".to_owned()),
             &HealthCheckCacheValue(()),
             // Expires after this time, so it won't pollute the DB
             Duration::from_millis(100),
@@ -101,7 +121,16 @@ async fn health(
         .await
         .into();
 
-    let status = if database.is_ok() && queue.is_ok() && cache.is_ok() {
+    let store: HealthStatus = store
+        .set(
+            &HealthCheckStoreKey::new("health_check_key".to_owned()),
+            &HealthCheckStoreValue(()),
+            Duration::from_millis(100),
+        )
+        .await
+        .into();
+
+    let status = if database.is_ok() && queue.is_ok() && cache.is_ok() && store.is_ok() {
         StatusCode::OK
     } else {
         StatusCode::INTERNAL_SERVER_ERROR
@@ -113,6 +142,7 @@ async fn health(
             database,
             queue,
             cache,
+            store,
         }),
     )
 }

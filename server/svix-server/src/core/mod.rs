@@ -4,11 +4,13 @@
 pub mod cache;
 pub mod cryptography;
 pub mod idempotency;
+pub mod kv_backend;
 pub mod message_app;
 pub mod operational_webhooks;
 pub mod otel_spans;
 pub mod run_with_retries;
 pub mod security;
+pub mod shared_store;
 pub mod types;
 
 #[cfg(test)]
