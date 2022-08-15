@@ -91,7 +91,7 @@ impl Webhook {
                     .fold(0, |acc, (a, b)| acc | (a ^ b))
                     == 0
             })
-            .then(|| ())
+            .then_some(())
             .ok_or(WebhookError::InvalidSignature)
     }
 

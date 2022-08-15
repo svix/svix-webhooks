@@ -454,7 +454,7 @@ fn to_redis_key(delivery: &TaskQueueDelivery) -> String {
 fn from_redis_key(key: &str) -> TaskQueueDelivery {
     // Get the first delimiter -> it has to have the |
     let pos = key.find('|').unwrap();
-    let id = (&key[..pos]).to_string();
+    let id = key[..pos].to_string();
     let task = serde_json::from_str(&key[pos + 1..]).unwrap();
     TaskQueueDelivery { id, task }
 }
