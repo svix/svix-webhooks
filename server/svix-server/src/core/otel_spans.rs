@@ -8,9 +8,9 @@ use std::{borrow::Cow, net::SocketAddr};
 use axum::extract::{ConnectInfo, MatchedPath};
 use http::{header, uri::Scheme, Method, Version};
 use opentelemetry::trace::TraceContextExt;
+use svix_ksuid::{KsuidLike, KsuidMs};
 use tower_http::{
     classify::ServerErrorsFailureClass,
-    request_id::RequestId,
     trace::{MakeSpan, OnFailure, OnResponse},
 };
 use tracing::field::Empty;
@@ -58,11 +58,7 @@ impl<B> MakeSpan<B> for AxumOtelSpanCreator {
             .map(|ConnectInfo(ip)| Cow::from(ip.to_string()))
             .unwrap_or_default();
 
-        let request_id = request
-            .extensions()
-            .get::<RequestId>()
-            .and_then(|id| id.header_value().to_str().ok())
-            .unwrap_or_default();
+        let request_id = KsuidMs::new(None, None).to_string();
 
         let remote_context = opentelemetry::global::get_text_map_propagator(|p| {
             p.extract(&opentelemetry_http::HeaderExtractor(request.headers()))
