@@ -25,7 +25,7 @@ impl CacheBehavior for RedisCache {
     }
 
     async fn get_raw(&self, key: &[u8]) -> Result<Option<Vec<u8>>> {
-        let mut pool = self.redis.get().await.unwrap();
+        let mut pool = self.redis.get().await?;
 
         let fetched: Option<Vec<u8>> = pool.get(key).await?;
 
