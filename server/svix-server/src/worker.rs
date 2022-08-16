@@ -26,6 +26,7 @@ use crate::queue::{
 use chrono::Utc;
 
 use futures::future;
+use p256::ecdsa::{signature, Signature};
 use rand::Rng;
 use reqwest::header::{HeaderMap, HeaderName};
 use sea_orm::{entity::prelude::*, ActiveValue::Set, DatabaseConnection, EntityTrait};
@@ -163,7 +164,21 @@ fn sign_msg(
                 EndpointSecretType::Ed25519 => "v1a",
                 EndpointSecretType::P256 => "v1b",
             };
-            format!("{},{}", version, base64::encode(sig))
+
+            let ret = format!("{},{}", version, base64::encode(&sig));
+            // For P256 we also follow OpenSSL/AWS and provide a DER
+            if matches!(x.type_(), EndpointSecretType::P256) {
+                let der: Signature = signature::Signature::from_bytes(&sig)
+                    .expect("Can't happen because we just generate the signature.");
+                format!(
+                    "{} {},{}",
+                    ret,
+                    "v1bder",
+                    base64::encode(der.to_der().as_bytes())
+                )
+            } else {
+                ret
+            }
         })
         .collect::<Vec<String>>()
         .join(" ")
@@ -718,11 +733,13 @@ pub async fn worker_loop(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::cryptography::AsymmetricKey;
+    use crate::core::cryptography::{AsymmetricKey, AsymmetricKeyP256};
     use crate::core::types::{BaseId, EndpointSecret};
 
     use bytes::Bytes;
     use ed25519_compact::Signature;
+    use p256::ecdsa;
+    use p256::ecdsa::signature::Verifier;
     use std::collections::HashMap;
 
     // [`generate_msg_headers`] tests
@@ -860,6 +877,48 @@ mod tests {
         .unwrap();
         asym_key.0.pk.verify(to_sign.as_bytes(), &sig).unwrap();
         assert_eq!(signatures, "v1a,hnO3f9T8Ytu9HwrXslvumlUpqtNVqkhqw/enGzPCXe5BdqzCInXqYXFymVJaA7AZdpXwVLPo3mNl8EM+m7TBAg==");
+
+        // P256
+        let asym_key =
+            AsymmetricKeyP256::from_base64("kFNprtCyFJtEo/J5kOF69ai4dpbjsJYc1vCFcFpJseU=").unwrap();
+        let test_key = EndpointSecretInternal::from_endpoint_secret(
+            EndpointSecret::AsymmetricP256(asym_key.clone()),
+            &Encryption::new_noop(),
+        )
+        .unwrap();
+
+        let signatures = sign_msg(
+            &Encryption::new_noop(),
+            timestamp,
+            body,
+            &msg_id,
+            &[&test_key],
+        );
+
+        let to_sign = format!("{}.{}.{}", msg_id, timestamp, body);
+        let sig_arry: Vec<&str> = signatures.split(' ').collect();
+        let v1b = sig_arry[0];
+        assert!(v1b.starts_with("v1b,"));
+        let v1bder = sig_arry[1];
+        assert!(v1bder.starts_with("v1bder,"));
+
+        let pubkey = &ecdsa::VerifyingKey::from(&asym_key.0);
+
+        let sig: ecdsa::Signature = ecdsa::signature::Signature::from_bytes(
+            base64::decode(&v1b["v1b,".len()..]).unwrap().as_slice(),
+        )
+        .unwrap();
+        pubkey.verify(to_sign.as_bytes(), &sig).unwrap();
+        assert_eq!(v1b, "v1b,OWJtTkfkXDHzQhY1QA3i8zpCFmkfKa+9IUZaAw2lNc5e7tpewd2sIJ2a7ocaUrv7WtqltC0NqkuQQtXQhvAt1A==");
+
+        let sig: ecdsa::Signature = ecdsa::Signature::from_der(
+            base64::decode(&v1bder["v1bder,".len()..])
+                .unwrap()
+                .as_slice(),
+        )
+        .unwrap();
+        pubkey.verify(to_sign.as_bytes(), &sig).unwrap();
+        assert_eq!(v1bder, "v1bder,MEQCIDlibU5H5Fwx80IWNUAN4vM6QhZpHymvvSFGWgMNpTXOAiBe7tpewd2sIJ2a7ocaUrv7WtqltC0NqkuQQtXQhvAt1A==");
     }
 
     #[test]
