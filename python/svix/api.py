@@ -820,7 +820,7 @@ class ClientBase:
         if region == "us":
             regional_url = "https://api.us.svix.com"
         elif region == "eu":
-            regional_url = "https://api.ei.svix.com"
+            regional_url = "https://api.eu.svix.com"
         elif region == "in":
             regional_url = "https://api.in.svix.com"
 
