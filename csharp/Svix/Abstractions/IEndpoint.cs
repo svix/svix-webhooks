@@ -63,9 +63,9 @@ namespace Svix.Abstractions
         Task<bool> UpdateHeadersAsync(string appId, string endpointId, EndpointHeadersIn headers,
             string idempotencyKey = default, CancellationToken cancellationToken = default);
 
-        EndpointStats GetStats(string appId, string endpointId, string idempotencyKey = default);
+        EndpointStats GetStats(string appId, string endpointId);
 
-        Task<EndpointStats> GetStatsAsync(string appId, string endpointId, string idempotencyKey = default,
+        Task<EndpointStats> GetStatsAsync(string appId, string endpointId,
             CancellationToken cancellationToken = default);
     }
 }
