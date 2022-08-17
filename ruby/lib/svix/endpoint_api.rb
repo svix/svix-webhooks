@@ -51,5 +51,9 @@ module Svix
             return @api.patch_endpoint_headers_api_v1_app_app_id_endpoint_endpoint_id_headers_patch(app_id, endpoint_id, endpoint_headers_in)
         end
 
+        def get_stats(app_id, endpoint_id)
+            return @api.get_endpoint_stats_api_v1_app_app_id_endpoint_endpoint_id_stats_get(endpoint_id app_id)
+        end
+
     end
 end

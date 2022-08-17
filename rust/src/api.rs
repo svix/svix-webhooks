@@ -7,9 +7,9 @@ use crate::error::Result;
 pub use crate::models::{
     ApplicationIn, ApplicationOut, DashboardAccessOut, EndpointHeadersIn, EndpointHeadersOut,
     EndpointHeadersPatchIn, EndpointIn, EndpointOut, EndpointSecretOut, EndpointSecretRotateIn,
-    EndpointUpdate, EventTypeIn, EventTypeOut, EventTypeUpdate, ListResponseApplicationOut,
-    ListResponseEndpointMessageOut, ListResponseEndpointOut, ListResponseEventTypeOut,
-    ListResponseMessageAttemptEndpointOut, ListResponseMessageAttemptOut,
+    EndpointStats, EndpointUpdate, EventTypeIn, EventTypeOut, EventTypeUpdate,
+    ListResponseApplicationOut, ListResponseEndpointMessageOut, ListResponseEndpointOut,
+    ListResponseEventTypeOut, ListResponseMessageAttemptEndpointOut, ListResponseMessageAttemptOut,
     ListResponseMessageEndpointOut, ListResponseMessageOut, MessageAttemptOut, MessageIn,
     MessageOut, MessageStatus, RecoverIn, StatusCodeClass,
 };
@@ -438,6 +438,20 @@ impl<'a> Endpoint<'a> {
                     app_id,
                     endpoint_id,
                     endpoint_headers_patch_in,
+                    idempotency_key: None,
+                },
+            )
+            .await?,
+        )
+    }
+
+    pub async fn get_stats(&self, app_id: String, endpoint_id: String) -> Result<EndpointStats> {
+        Ok(
+            endpoint_api::get_endpoint_stats_api_v1_app_app_id_endpoint_endpoint_id_stats_get(
+                self.cfg,
+                endpoint_api::GetEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGetParams {
+                    app_id,
+                    endpoint_id,
                     idempotency_key: None,
                 },
             )

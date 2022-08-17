@@ -12,6 +12,7 @@ import com.svix.kotlin.models.EndpointSecretRotateIn
 import com.svix.kotlin.models.EndpointUpdate
 import com.svix.kotlin.models.ListResponseEndpointOut
 import com.svix.kotlin.models.RecoverIn
+import com.svix.kotlin.models.EndpointStats
 
 class Endpoint internal constructor(token: String, options: SvixOptions) {
     val api = EndpointApi(options.serverUrl)
@@ -173,6 +174,18 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
                 appId,
                 endpointId,
                 endpointHeadersIn,
+                null
+            )
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
+
+    suspend fun getStats(appId: String, endpointId: String): EndpointStats {
+        try {
+            return api.getEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGet(
+                endpointId,
+                appId,
                 null
             )
         } catch (e: Exception) {

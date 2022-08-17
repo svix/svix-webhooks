@@ -12,6 +12,7 @@ import com.svix.models.EndpointSecretOut;
 import com.svix.models.EndpointSecretRotateIn;
 import com.svix.models.ListResponseEndpointOut;
 import com.svix.models.RecoverIn;
+import com.svix.models.EndpointStats;
 
 public final class Endpoint {
 	private final EndpointApi api;
@@ -115,6 +116,14 @@ public final class Endpoint {
 	public void patchHeaders(final String appId, final String endpointId, final EndpointHeadersPatchIn endpointHeadersIn) throws ApiException {
 		try {
 			api.patchEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPatch(appId, endpointId, endpointHeadersIn, null);
+		} catch (com.svix.internal.ApiException e) {
+			throw Utils.wrapInternalApiException(e);
+		}
+	}
+
+	public EndpointStats getStats(final String appId, final String endpointId) throws ApiException {
+		try {
+			return api.getEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGet(endpointId, appId, null);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
