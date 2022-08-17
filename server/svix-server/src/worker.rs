@@ -30,6 +30,7 @@ use rand::Rng;
 use reqwest::header::{HeaderMap, HeaderName};
 use sea_orm::{entity::prelude::*, ActiveValue::Set, DatabaseConnection, EntityTrait};
 use serde::{Deserialize, Serialize};
+use svix_ksuid::{KsuidLike, KsuidMs};
 use tokio::time::{sleep, Duration};
 
 use std::{
@@ -208,8 +209,9 @@ fn generate_msg_headers(
     headers
 }
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 struct WorkerContext<'a> {
+    task_id: &'a str,
     cfg: &'a Configuration,
     db: &'a DatabaseConnection,
     cache: &'a Cache,
@@ -227,6 +229,7 @@ struct DispatchExtraIds<'a> {
 #[tracing::instrument(
     skip_all,
     fields(
+        task_id = task_id,
         org_id = org_id.0.as_str(),
         endp_id = msg_task.endpoint_id.0.as_str(),
         msg_id = msg_task.msg_id.0.as_str()
@@ -234,6 +237,7 @@ struct DispatchExtraIds<'a> {
 )]
 async fn dispatch(
     WorkerContext {
+        task_id,
         cache,
         cfg,
         db,
@@ -527,7 +531,7 @@ fn bytes_to_string(bytes: bytes::Bytes) -> String {
 }
 
 /// Manages preparation and execution of a QueueTask type
-#[tracing::instrument(skip_all)]
+#[tracing::instrument(skip_all, fields(task_id = worker_context.task_id))]
 async fn process_task(worker_context: WorkerContext<'_>, queue_task: Arc<QueueTask>) -> Result<()> {
     let WorkerContext { db, cache, .. }: WorkerContext<'_> = worker_context;
 
@@ -620,7 +624,7 @@ async fn process_task(worker_context: WorkerContext<'_>, queue_task: Arc<QueueTa
             };
 
             dispatch(
-                worker_context.clone(),
+                worker_context,
                 task,
                 DispatchExtraIds {
                     org_id,
@@ -676,7 +680,9 @@ pub async fn worker_loop(
                     let op_webhook_sender = op_webhook_sender.clone();
 
                     tokio::spawn(async move {
+                        let task_id = KsuidMs::new(None, None).to_string();
                         let worker_context = WorkerContext {
+                            task_id: &task_id,
                             cfg: &cfg,
                             db: &pool,
                             cache: &cache,
