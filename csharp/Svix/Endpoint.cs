@@ -551,7 +551,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(GetEndpointStats)} failed");
+                Logger?.LogError(e, $"{nameof(GetStats)} failed");
         
                 if (Throw)
                     throw;
@@ -574,7 +574,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(GetEndpointStatsAsync)} failed");
+                Logger?.LogError(e, $"{nameof(GetStatsAsync)} failed");
         
                 if (Throw)
                     throw;
