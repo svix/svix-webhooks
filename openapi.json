@@ -580,7 +580,8 @@
                     },
                     "rateLimit": {
                         "example": 1000,
-                        "exclusiveMinimum": 0.0,
+                        "maximum": 65535.0,
+                        "minimum": 1.0,
                         "nullable": true,
                         "title": "Ratelimit",
                         "type": "integer"
@@ -760,7 +761,8 @@
                     },
                     "rateLimit": {
                         "example": 1000,
-                        "exclusiveMinimum": 0.0,
+                        "maximum": 65535.0,
+                        "minimum": 1.0,
                         "nullable": true,
                         "title": "Ratelimit",
                         "type": "integer"
@@ -912,7 +914,8 @@
                     },
                     "rateLimit": {
                         "example": 1000,
-                        "exclusiveMinimum": 0.0,
+                        "maximum": 65535.0,
+                        "minimum": 1.0,
                         "nullable": true,
                         "title": "Ratelimit",
                         "type": "integer"
@@ -2218,7 +2221,8 @@
                     },
                     "rateLimit": {
                         "example": 1000,
-                        "exclusiveMinimum": 0.0,
+                        "maximum": 65535.0,
+                        "minimum": 1.0,
                         "nullable": true,
                         "title": "Ratelimit",
                         "type": "integer"
@@ -6985,6 +6989,61 @@
                     "Endpoint"
                 ],
                 "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const endpointStats = await svix.endpoint.getStats('app_id', 'endpoint_id');"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const endpointStats = await svix.endpoint.getStats('app_id', 'endpoint_id');"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "endpoint_stats = svix.endpoint.get_stats('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "endpoint_stats = await svix.endpoint.get_stats('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "endpointStats, err := svixClient.Endpoint.GetStats(\"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val endpointStats = svix.endpoint.getStats('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "EndpointStats endpointStats = svix.getEndpoint().getStats('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "endpoint_stats = svix.endpoint.get_stats('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let endpoint_stats = svix.endpoint().get_stats(\"app_id\", \"endpoint_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var endpointStats = await svix.Endpoint.GetStatsAsync(\"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix endpoint get-stats 'app_id' 'endpoint_id'"
+                    },
                     {
                         "label": "cURL",
                         "lang": "Shell",
