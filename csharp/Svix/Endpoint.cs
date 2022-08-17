@@ -547,16 +547,16 @@ namespace Svix
                     endpointId,
                     appId,
                     idempotencyKey);
-        
+
                 return lStats;
             }
             catch (ApiException e)
             {
                 Logger?.LogError(e, $"{nameof(GetStats)} failed");
-        
+
                 if (Throw)
                     throw;
-        
+
                 return null;
             }
         }
@@ -571,16 +571,16 @@ namespace Svix
                     appId,
                     idempotencyKey,
                     cancellationToken);
-        
+
                 return lStats;
             }
             catch (ApiException e)
             {
                 Logger?.LogError(e, $"{nameof(GetStatsAsync)} failed");
-        
+
                 if (Throw)
                     throw;
-        
+
                 return null;
             }
         }
