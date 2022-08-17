@@ -3,6 +3,14 @@
 ## Next
 * 
 
+## Version 0.65.1
+* Server: fix validation errors to be more informative.
+* Server: more strict message payload validation to match the libs.
+* Server: fix issue with messages being signed with expired keys in some situations (not a security concern, just superfluous data being sent).
+* Server: attach a unique ID to a request (used in logs) when none is provided in headers.
+* Libs/Python: fix typo in Python lib causing auto-detection of EU servers to fail.
+* Libs/C#: make logger optional when creating SvixClient.
+
 ## Version 0.65.0
 * Server: support "upsert" of entities on PUT methods.
 * Server: support PATCH methods on entities for partial updates.
