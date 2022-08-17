@@ -539,13 +539,14 @@ namespace Svix
             }
         }
 
-        public EndpointStats GetStats(string appId, string endpointId)
+        public EndpointStats GetStats(string appId, string endpointId, string idempotencyKey = default)
         {
             try
             {
                 var lStats = _endpointApi.GetEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGet(
                     endpointId,
-                    appId);
+                    appId,
+                    idempotencyKey);
         
                 return lStats;
             }
@@ -560,7 +561,7 @@ namespace Svix
             }
         }
 
-        public async Task<EndpointStats> GetStatsAsync(string appId, string endpointId,
+        public async Task<EndpointStats> GetStatsAsync(string appId, string endpointId, string idempotencyKey = default
             CancellationToken cancellationToken = default)
         {
             try
@@ -568,6 +569,7 @@ namespace Svix
                 var lStats = await _endpointApi.GetEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGetAsync(
                     endpointId,
                     appId,
+                    idempotencyKey,
                     cancellationToken);
         
                 return lStats;
