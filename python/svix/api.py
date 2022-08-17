@@ -21,13 +21,13 @@ from .internal.openapi_client.api.endpoint import (
     get_endpoint_api_v1_app_app_id_endpoint_endpoint_id_get,
     get_endpoint_headers_api_v1_app_app_id_endpoint_endpoint_id_headers_get,
     get_endpoint_secret_api_v1_app_app_id_endpoint_endpoint_id_secret_get,
+    get_endpoint_stats_api_v1_app_app_id_endpoint_endpoint_id_stats_get,
     list_endpoints_api_v1_app_app_id_endpoint_get,
     patch_endpoint_headers_api_v1_app_app_id_endpoint_endpoint_id_headers_patch,
     recover_failed_webhooks_api_v1_app_app_id_endpoint_endpoint_id_recover_post,
     rotate_endpoint_secret_api_v1_app_app_id_endpoint_endpoint_id_secret_rotate_post,
     update_endpoint_api_v1_app_app_id_endpoint_endpoint_id_put,
     update_endpoint_headers_api_v1_app_app_id_endpoint_endpoint_id_headers_put,
-    get_endpoint_stats_api_v1_app_app_id_endpoint_endpoint_id_stats_get,
 )
 from .internal.openapi_client.api.event_type import (
     create_event_type_api_v1_event_type_post,
@@ -71,8 +71,8 @@ from .internal.openapi_client.models.endpoint_message_out_payload import Endpoin
 from .internal.openapi_client.models.endpoint_out import EndpointOut
 from .internal.openapi_client.models.endpoint_secret_out import EndpointSecretOut
 from .internal.openapi_client.models.endpoint_secret_rotate_in import EndpointSecretRotateIn
-from .internal.openapi_client.models.endpoint_update import EndpointUpdate
 from .internal.openapi_client.models.endpoint_stats import EndpointStats
+from .internal.openapi_client.models.endpoint_update import EndpointUpdate
 from .internal.openapi_client.models.event_type_in import EventTypeIn
 from .internal.openapi_client.models.event_type_out import EventTypeOut
 from .internal.openapi_client.models.event_type_update import EventTypeUpdate
