@@ -539,7 +539,7 @@ namespace Svix
             }
         }
 
-        public EndpointStatsOut GetStats(string appId, string endpointId)
+        public EndpointStats GetStats(string appId, string endpointId)
         {
             try
             {
@@ -560,7 +560,7 @@ namespace Svix
             }
         }
 
-        public async Task<EndpointHeadersOut> GetStatsAsync(string appId, string endpointId,
+        public async Task<EndpointStats> GetStatsAsync(string appId, string endpointId,
             CancellationToken cancellationToken = default)
         {
             try
