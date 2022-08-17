@@ -27,6 +27,7 @@ from .internal.openapi_client.api.endpoint import (
     rotate_endpoint_secret_api_v1_app_app_id_endpoint_endpoint_id_secret_rotate_post,
     update_endpoint_api_v1_app_app_id_endpoint_endpoint_id_put,
     update_endpoint_headers_api_v1_app_app_id_endpoint_endpoint_id_headers_put,
+    get_endpoint_stats_api_v1_app_app_id_endpoint_endpoint_id_stats_get,
 )
 from .internal.openapi_client.api.event_type import (
     create_event_type_api_v1_event_type_post,
