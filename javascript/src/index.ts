@@ -17,6 +17,7 @@ import {
   EndpointHeadersIn,
   EndpointHeadersPatchIn,
   EndpointHeadersOut,
+  EndpointStats,
   RecoverIn,
   IntegrationApi,
   ListResponseIntegrationOut,
@@ -329,6 +330,13 @@ class Endpoint {
       appId,
       endpointId,
       endpointHeadersPatchIn,
+    });
+  }
+
+  public getStats(appId: string, endpointId: string): Promise<EndpointStats> {
+    return this.api.getEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGet({
+      appId,
+      endpointId,
     });
   }
 }

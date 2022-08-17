@@ -21,6 +21,7 @@ from .internal.openapi_client.api.endpoint import (
     get_endpoint_api_v1_app_app_id_endpoint_endpoint_id_get,
     get_endpoint_headers_api_v1_app_app_id_endpoint_endpoint_id_headers_get,
     get_endpoint_secret_api_v1_app_app_id_endpoint_endpoint_id_secret_get,
+    get_endpoint_stats_api_v1_app_app_id_endpoint_endpoint_id_stats_get,
     list_endpoints_api_v1_app_app_id_endpoint_get,
     patch_endpoint_headers_api_v1_app_app_id_endpoint_endpoint_id_headers_patch,
     recover_failed_webhooks_api_v1_app_app_id_endpoint_endpoint_id_recover_post,
@@ -70,6 +71,7 @@ from .internal.openapi_client.models.endpoint_message_out_payload import Endpoin
 from .internal.openapi_client.models.endpoint_out import EndpointOut
 from .internal.openapi_client.models.endpoint_secret_out import EndpointSecretOut
 from .internal.openapi_client.models.endpoint_secret_rotate_in import EndpointSecretRotateIn
+from .internal.openapi_client.models.endpoint_stats import EndpointStats
 from .internal.openapi_client.models.endpoint_update import EndpointUpdate
 from .internal.openapi_client.models.event_type_in import EventTypeIn
 from .internal.openapi_client.models.event_type_out import EventTypeOut
@@ -428,6 +430,13 @@ class Endpoint(ApiBase):
             app_id=app_id,
             endpoint_id=endpoint_id,
             json_body=endpoint_headers_in,
+        )
+
+    def get_stats(self, app_id: str, endpoint_id: str) -> EndpointStats:
+        return get_endpoint_stats_api_v1_app_app_id_endpoint_endpoint_id_stats_get.sync(
+            client=self._client,
+            app_id=app_id,
+            endpoint_id=endpoint_id,
         )
 
 

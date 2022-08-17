@@ -538,5 +538,51 @@ namespace Svix
                 return false;
             }
         }
+
+        public EndpointStats GetStats(string appId, string endpointId, string idempotencyKey = default)
+        {
+            try
+            {
+                var lStats = _endpointApi.GetEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGet(
+                    endpointId,
+                    appId,
+                    idempotencyKey);
+
+                return lStats;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(GetStats)} failed");
+
+                if (Throw)
+                    throw;
+
+                return null;
+            }
+        }
+
+        public async Task<EndpointStats> GetStatsAsync(string appId, string endpointId, string idempotencyKey = default,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var lStats = await _endpointApi.GetEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGetAsync(
+                    endpointId,
+                    appId,
+                    idempotencyKey,
+                    cancellationToken);
+
+                return lStats;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(GetStatsAsync)} failed");
+
+                if (Throw)
+                    throw;
+
+                return null;
+            }
+        }
     }
 }

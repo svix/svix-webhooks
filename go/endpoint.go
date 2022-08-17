@@ -17,6 +17,7 @@ type (
 	EndpointHeadersIn       openapi.EndpointHeadersIn
 	EndpointHeadersPatchIn  openapi.EndpointHeadersPatchIn
 	EndpointHeadersOut      openapi.EndpointHeadersOut
+	EndpointStats			openapi.EndpointStats
 )
 
 type Endpoint struct {
@@ -169,4 +170,14 @@ func (e *Endpoint) PatchHeaders(appId string, endpointId string, endpointHeaders
 		return wrapError(err, res)
 	}
 	return nil
+}
+
+func (e *Endpoint) GetStats(appId string, endpointId string) (*EndpointStats, error) {
+	req := e.api.EndpointApi.GetEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGet(context.Background(), endpointId, appId)
+	out, res, err := req.Execute()
+	if err != nil {
+		return nil, wrapError(err, res)
+	}
+	ret := EndpointStats(out)
+	return &ret, nil
 }
