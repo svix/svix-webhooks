@@ -249,7 +249,7 @@ namespace Svix.Tests
 
             var lHeaderKey = "MyHeaderKey";
             var lHeaderValue = "MyHeaderValue";
-            var lHeaders = new EndpointHeadersIn(new Dictionary<string, string>
+            var lHeaders = new EndpointHeadersPatchIn(new Dictionary<string, string>
             {
                 { lHeaderKey, lHeaderValue }
             });
@@ -274,7 +274,7 @@ namespace Svix.Tests
 
             var lHeaderKey = "MyHeaderKey";
             var lHeaderValue = "MyHeaderValue";
-            var lHeaders = new EndpointHeadersIn(new Dictionary<string, string>
+            var lHeaders = new EndpointHeadersPatchIn(new Dictionary<string, string>
             {
                 { lHeaderKey, lHeaderValue }
             });

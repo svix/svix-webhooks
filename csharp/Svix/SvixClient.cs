@@ -60,7 +60,7 @@ namespace Svix
             MessageAttempt = new MessageAttempt(this, messageAttemptApi ?? new MessageAttemptApi(Config));
         }
 
-        public SvixClient(string token, ISvixOptions options, ILogger<SvixClient> logger = null)
+        public SvixClient(string token, ISvixOptions options, ILogger<SvixClient> logger)
             : this(token, options, logger, healthApi: null, applicationApi: null)
         {
             // empty
