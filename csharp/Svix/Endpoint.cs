@@ -561,7 +561,7 @@ namespace Svix
             }
         }
 
-        public async Task<EndpointStats> GetStatsAsync(string appId, string endpointId, string idempotencyKey = default
+        public async Task<EndpointStats> GetStatsAsync(string appId, string endpointId, string idempotencyKey = default,
             CancellationToken cancellationToken = default)
         {
             try
