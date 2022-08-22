@@ -97,14 +97,17 @@ async fn main() {
     let cfg = cfg::load().expect("Error loading configuration");
 
     if std::env::var_os("RUST_LOG").is_none() {
-        std::env::set_var(
-            "RUST_LOG",
-            format!(
-                "{crate}={level},tower_http={level}",
-                crate = CRATE_NAME,
-                level = cfg.log_level.to_string()
-            ),
-        );
+        let level = cfg.log_level.to_string();
+        let mut var = vec![
+            format!("{crate}={level}", crate = CRATE_NAME),
+            format!("tower_http={level}"),
+        ];
+
+        if cfg.db_tracing {
+            var.push(format!("sqlx={level}"));
+        }
+
+        std::env::set_var("RUST_LOG", var.join(","));
     }
 
     let otel_layer = cfg.opentelemetry_address.as_ref().map(|addr| {
