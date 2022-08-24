@@ -865,6 +865,106 @@
                 "title": "EndpointStats",
                 "type": "object"
             },
+            "EndpointTransformationIn": {
+                "properties": {
+                    "code": {
+                        "maxLength": 51200,
+                        "minLength": 10,
+                        "nullable": true,
+                        "title": "Code",
+                        "type": "string"
+                    },
+                    "enabled": {
+                        "default": false,
+                        "title": "Enabled",
+                        "type": "boolean"
+                    }
+                },
+                "title": "EndpointTransformationIn",
+                "type": "object"
+            },
+            "EndpointTransformationOut": {
+                "properties": {
+                    "code": {
+                        "maxLength": 51200,
+                        "minLength": 10,
+                        "nullable": true,
+                        "title": "Code",
+                        "type": "string"
+                    },
+                    "enabled": {
+                        "default": false,
+                        "title": "Enabled",
+                        "type": "boolean"
+                    }
+                },
+                "title": "EndpointTransformationOut",
+                "type": "object"
+            },
+            "EndpointTransformationSimulateIn": {
+                "properties": {
+                    "channels": {
+                        "items": {
+                            "example": "project_1337",
+                            "maxLength": 128,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "nullable": true,
+                        "title": "Channels",
+                        "type": "array"
+                    },
+                    "code": {
+                        "maxLength": 51200,
+                        "minLength": 10,
+                        "title": "Code",
+                        "type": "string"
+                    },
+                    "eventType": {
+                        "example": "user.signup",
+                        "maxLength": 256,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "title": "Eventtype",
+                        "type": "string"
+                    },
+                    "payload": {
+                        "title": "Payload",
+                        "type": "object"
+                    }
+                },
+                "required": [
+                    "code",
+                    "eventType",
+                    "payload"
+                ],
+                "title": "EndpointTransformationSimulateIn",
+                "type": "object"
+            },
+            "EndpointTransformationSimulateOut": {
+                "properties": {
+                    "method": {
+                        "$ref": "#/components/schemas/TransformationHttpMethod",
+                        "nullable": true
+                    },
+                    "payload": {
+                        "title": "Payload",
+                        "type": "object"
+                    },
+                    "url": {
+                        "format": "uri",
+                        "maxLength": 65536,
+                        "minLength": 1,
+                        "title": "Url",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "url",
+                    "payload"
+                ],
+                "title": "EndpointTransformationSimulateOut",
+                "type": "object"
+            },
             "EndpointUpdate": {
                 "properties": {
                     "channels": {
@@ -2609,6 +2709,15 @@
                     "Code4xx",
                     "Code5xx"
                 ]
+            },
+            "TransformationHttpMethod": {
+                "description": "An enumeration.",
+                "enum": [
+                    "PUT",
+                    "POST"
+                ],
+                "title": "TransformationHttpMethod",
+                "type": "string"
             },
             "ValidationError": {
                 "properties": {
@@ -7048,6 +7157,607 @@
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/stats/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation/": {
+            "get": {
+                "description": "Get the transformation code associated with this endpoint",
+                "operationId": "get_endpoint_transformation_api_v1_app__app_id__endpoint__endpoint_id__transformation__get",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The endpoint's ID or UID",
+                            "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "Endpoint Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "App Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "nullable": true,
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EndpointTransformationOut",
+                                    "nullable": true
+                                }
+                            }
+                        },
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut",
+                                    "nullable": true
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut",
+                                    "nullable": true
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut",
+                                    "nullable": true
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut",
+                                    "nullable": true
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut",
+                                    "nullable": true
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Get Endpoint Transformation",
+                "tags": [
+                    "Endpoint"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const endpointTransformationOut = await svix.endpoint.get('app_id', 'endpoint_id');"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const endpointTransformationOut = await svix.endpoint.get('app_id', 'endpoint_id');"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "endpoint_transformation_out = svix.endpoint.get('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "endpoint_transformation_out = await svix.endpoint.get('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "endpointTransformationOut, err := svixClient.Endpoint.Get(\"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val endpointTransformationOut = svix.endpoint.get('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "EndpointTransformationOut endpointTransformationOut = svix.getEndpoint().get('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "endpoint_transformation_out = svix.endpoint.get('app_id', 'endpoint_id')"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let endpoint_transformation_out = svix.endpoint().get(\"app_id\", \"endpoint_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var endpointTransformationOut = await svix.Endpoint.GetAsync(\"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix endpoint get 'app_id' 'endpoint_id'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            },
+            "patch": {
+                "description": "Set or unset the transformation code associated with this endpoint",
+                "operationId": "set_endpoint_transformation_api_v1_app__app_id__endpoint__endpoint_id__transformation__patch",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "App Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The endpoint's ID or UID",
+                            "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "Endpoint Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "nullable": true,
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EndpointTransformationIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut",
+                                    "nullable": true
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut",
+                                    "nullable": true
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut",
+                                    "nullable": true
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut",
+                                    "nullable": true
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut",
+                                    "nullable": true
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Set Endpoint Transformation",
+                "tags": [
+                    "Endpoint"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.endpoint.set('app_id', 'endpoint_id', {\n    code: None,\n    enabled: None\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.endpoint.set('app_id', 'endpoint_id', {\n    code: None,\n    enabled: None\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "svix.endpoint.set('app_id', 'endpoint_id', EndpointTransformationIn(\n    code=None,\n    enabled=None\n))"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "await svix.endpoint.set('app_id', 'endpoint_id', EndpointTransformationIn(\n    code=None,\n    enabled=None\n))"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "err := svixClient.Endpoint.Set(\"app_id\", \"endpoint_id\", &svix.EndpointTransformationIn{\n    Code: None,\n    Enabled: None\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "svix.endpoint.set('app_id', 'endpoint_id', EndpointTransformationIn()\n    .code(None),\n    .enabled(None)\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "svix.getEndpoint().set('app_id', 'endpoint_id', new EndpointTransformationIn()\n    .code(None),\n    .enabled(None)\n)"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "svix.endpoint.set('app_id', 'endpoint_id', Svix::EndpointTransformationIn.new({\n    \"code\": null,\n    \"enabled\": null\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "svix.endpoint().set(\"app_id\", \"endpoint_id\", EndpointTransformationIn {\n    code: None,\n    enabled: None\n}).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "await svix.Endpoint.SetAsync(\"app_id\", \"endpoint_id\", new EndpointTransformationIn{\n    code: None,\n    enabled: None\n})"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix endpoint set 'app_id' 'endpoint_id' '{\n    \"code\": null,\n    \"enabled\": null\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'PATCH' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"code\": null,\n    \"enabled\": null\n}'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation/simulate/": {
+            "post": {
+                "description": "Simulate running the transformation on the payload and code",
+                "operationId": "simulate_endpoint_transformation_api_v1_app__app_id__endpoint__endpoint_id__transformation_simulate__post",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The endpoint's ID or UID",
+                            "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "Endpoint Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "App Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "nullable": true,
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EndpointTransformationSimulateIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EndpointTransformationSimulateOut",
+                                    "nullable": true
+                                }
+                            }
+                        },
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut",
+                                    "nullable": true
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut",
+                                    "nullable": true
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut",
+                                    "nullable": true
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut",
+                                    "nullable": true
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut",
+                                    "nullable": true
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Simulate Endpoint Transformation",
+                "tags": [
+                    "Endpoint"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const endpointTransformationSimulateOut = await svix.endpoint.simulate('app_id', 'endpoint_id', {\n    code: None,\n    eventType: \"user.signup\",\n    channels: None,\n    payload: None\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const endpointTransformationSimulateOut = await svix.endpoint.simulate('app_id', 'endpoint_id', {\n    code: None,\n    eventType: \"user.signup\",\n    channels: None,\n    payload: None\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "endpoint_transformation_simulate_out = svix.endpoint.simulate('app_id', 'endpoint_id', EndpointTransformationSimulateIn(\n    code=None,\n    event_type=\"user.signup\",\n    channels=None,\n    payload=None\n))"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "endpoint_transformation_simulate_out = await svix.endpoint.simulate('app_id', 'endpoint_id', EndpointTransformationSimulateIn(\n    code=None,\n    event_type=\"user.signup\",\n    channels=None,\n    payload=None\n))"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "endpointTransformationSimulateOut, err := svixClient.Endpoint.Simulate(\"app_id\", \"endpoint_id\", &svix.EndpointTransformationSimulateIn{\n    Code: None,\n    EventType: \"user.signup\",\n    Channels: None,\n    Payload: None\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val endpointTransformationSimulateOut = svix.endpoint.simulate('app_id', 'endpoint_id', EndpointTransformationSimulateIn()\n    .code(None),\n    .eventType(\"user.signup\"),\n    .channels(None),\n    .payload(None)\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "EndpointTransformationSimulateOut endpointTransformationSimulateOut = svix.getEndpoint().simulate('app_id', 'endpoint_id', new EndpointTransformationSimulateIn()\n    .code(None),\n    .eventType(\"user.signup\"),\n    .channels(None),\n    .payload(None)\n)"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "endpoint_transformation_simulate_out = svix.endpoint.simulate('app_id', 'endpoint_id', Svix::EndpointTransformationSimulateIn.new({\n    \"code\": null,\n    \"event_type\": \"user.signup\",\n    \"channels\": null,\n    \"payload\": null\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let endpoint_transformation_simulate_out = svix.endpoint().simulate(\"app_id\", \"endpoint_id\", EndpointTransformationSimulateIn {\n    code: None,\n    event_type: \"user.signup\".to_string(),\n    channels: None,\n    payload: None\n}).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var endpointTransformationSimulateOut = await svix.Endpoint.SimulateAsync(\"app_id\", \"endpoint_id\", new EndpointTransformationSimulateIn{\n    code: None,\n    eventType: \"user.signup\",\n    channels: None,\n    payload: None\n})"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix endpoint simulate 'app_id' 'endpoint_id' '{\n    \"code\": null,\n    \"eventType\": \"user.signup\",\n    \"channels\": null,\n    \"payload\": null\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation/simulate/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"code\": null,\n    \"eventType\": \"user.signup\",\n    \"channels\": null,\n    \"payload\": null\n}'"
                     }
                 ]
             }
