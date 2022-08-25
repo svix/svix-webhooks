@@ -96,7 +96,7 @@ impl<B> MakeSpan<B> for AxumOtelSpanCreator {
             other => other.to_string().into(),
         };
 
-        let span = tracing::info_span!(
+        let span = tracing::error_span!(
             "HTTP request",
             grpc.code = Empty,
             http.client_ip = %client_ip,
