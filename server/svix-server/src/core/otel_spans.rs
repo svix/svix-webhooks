@@ -96,6 +96,11 @@ impl<B> MakeSpan<B> for AxumOtelSpanCreator {
             other => other.to_string().into(),
         };
 
+        let idempotency_key = request
+            .headers()
+            .get("idempotency-key")
+            .and_then(|v| v.to_str().ok());
+
         let span = tracing::error_span!(
             "HTTP request",
             grpc.code = Empty,
@@ -112,7 +117,12 @@ impl<B> MakeSpan<B> for AxumOtelSpanCreator {
             otel.status_code = Empty,
             request_id = %request_id,
             trace_id = %trace_id,
+            idempotency_key = tracing::field::Empty,
         );
+
+        if let Some(key) = idempotency_key {
+            span.record("idempotency_key", &key);
+        }
 
         span.set_parent(remote_context);
 
