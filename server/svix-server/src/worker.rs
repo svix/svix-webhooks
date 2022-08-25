@@ -234,6 +234,7 @@ struct DispatchExtraIds<'a> {
         endp_id = msg_task.endpoint_id.0.as_str(),
         msg_id = msg_task.msg_id.0.as_str()
     )
+    level = "error"
 )]
 async fn dispatch(
     WorkerContext {
@@ -531,7 +532,7 @@ fn bytes_to_string(bytes: bytes::Bytes) -> String {
 }
 
 /// Manages preparation and execution of a QueueTask type
-#[tracing::instrument(skip_all, fields(task_id = worker_context.task_id))]
+#[tracing::instrument(skip_all, fields(task_id = worker_context.task_id), level = "error")]
 async fn process_task(worker_context: WorkerContext<'_>, queue_task: Arc<QueueTask>) -> Result<()> {
     let WorkerContext { db, cache, .. }: WorkerContext<'_> = worker_context;
 
