@@ -10,7 +10,7 @@ use crate::{
         security::AuthenticatedApplication,
         types::{
             ApplicationIdOrUid, BaseId, EndpointId, EndpointIdOrUid, EndpointUid, EventChannelSet,
-            EventTypeNameSet, MessageEndpointId, MessageStatus,
+            EventTypeNameSet, MessageEndpointId, MessageStatus, RetrySchedule,
         },
     },
     db::models::messagedestination,
@@ -157,6 +157,9 @@ pub struct EndpointIn {
     #[serde(rename = "secret")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub key: Option<EndpointSecret>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub retry_schedule: Option<RetrySchedule>,
 }
 
 // FIXME: This can and should be a derive macro
@@ -174,6 +177,7 @@ impl ModelIn for EndpointIn {
             event_types_ids,
             channels,
             key: _,
+            retry_schedule,
         } = self;
 
         model.description = Set(description);
@@ -184,6 +188,7 @@ impl ModelIn for EndpointIn {
         model.disabled = Set(disabled);
         model.event_types_ids = Set(event_types_ids);
         model.channels = Set(channels);
+        model.retry_schedule = Set(retry_schedule);
     }
 }
 
@@ -231,6 +236,9 @@ pub struct EndpointPatch {
     #[serde(rename = "secret")]
     #[serde(skip_serializing_if = "UnrequiredNullableField::is_absent")]
     pub key: UnrequiredNullableField<EndpointSecret>,
+
+    #[serde(skip_serializing_if = "UnrequiredNullableField::is_absent")]
+    pub retry_schedule: UnrequiredNullableField<RetrySchedule>,
 }
 
 impl ModelIn for EndpointPatch {
@@ -247,6 +255,7 @@ impl ModelIn for EndpointPatch {
             event_types_ids,
             channels,
             key: _,
+            retry_schedule,
         } = self;
 
         let map = |x: u16| -> i32 { x.into() };
@@ -259,6 +268,7 @@ impl ModelIn for EndpointPatch {
         patch_field_non_nullable!(model, disabled);
         patch_field_nullable!(model, event_types_ids);
         patch_field_nullable!(model, channels);
+        patch_field_nullable!(model, retry_schedule);
     }
 }
 
@@ -311,6 +321,7 @@ pub struct EndpointOut {
     #[serde(rename = "filterTypes")]
     pub event_types_ids: Option<EventTypeNameSet>,
     pub channels: Option<EventChannelSet>,
+    pub retry_schedule: Option<RetrySchedule>,
 
     pub id: EndpointId,
     pub created_at: DateTime<Utc>,
@@ -329,6 +340,7 @@ impl From<endpoint::Model> for EndpointOut {
             disabled: model.disabled,
             event_types_ids: model.event_types_ids,
             channels: model.channels,
+            retry_schedule: model.retry_schedule,
 
             id: model.id,
             created_at: model.created_at.into(),
