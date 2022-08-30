@@ -427,6 +427,10 @@ impl Validate for EventTypeNameSet {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub struct RetrySchedule(pub Vec<i32>);
+json_wrapper!(RetrySchedule);
+
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ExpiringSigningKeys(pub Vec<ExpiringSigningKey>);
 json_wrapper!(ExpiringSigningKeys);

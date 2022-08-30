@@ -3,7 +3,7 @@
 
 use crate::core::types::{
     ApplicationId, BaseId, EndpointHeaders, EndpointId, EndpointIdOrUid, EndpointSecretInternal,
-    EndpointUid, EventChannelSet, EventTypeNameSet, ExpiringSigningKeys,
+    EndpointUid, EventChannelSet, EventTypeNameSet, ExpiringSigningKeys, RetrySchedule,
 };
 use chrono::Utc;
 use sea_orm::ActiveValue::Set;
@@ -30,6 +30,7 @@ pub struct Model {
     pub old_keys: Option<ExpiringSigningKeys>,
     pub channels: Option<EventChannelSet>,
     pub headers: Option<EndpointHeaders>,
+    pub retry_schedule: Option<RetrySchedule>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
