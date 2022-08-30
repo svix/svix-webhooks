@@ -402,7 +402,7 @@ async fn dispatch(
             let attempt = attempt.insert(db).await?;
 
             let retry_schedule = match endp.retry_schedule {
-                Some(retry_schedule) => retry_schedule.0,
+                Some(retry_schedule) => retry_schedule.to_durations(),
                 None => cfg.retry_schedule.clone(),
             };
 

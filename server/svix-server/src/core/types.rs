@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 use std::collections::{HashMap, HashSet};
+use std::time::Duration;
 
 use chrono::{DateTime, Utc};
 use lazy_static::lazy_static;
@@ -428,8 +429,18 @@ impl Validate for EventTypeNameSet {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
-pub struct RetrySchedule(pub Vec<std::time::Duration>);
+pub struct RetrySchedule(pub Vec<u64>);
 json_wrapper!(RetrySchedule);
+
+impl RetrySchedule {
+    pub fn as_durations(&self) -> Vec<Duration> {
+        self.0
+            .clone()
+            .into_iter()
+            .map(|x| Duration::from_secs(x))
+            .collect()
+    }
+}
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ExpiringSigningKeys(pub Vec<ExpiringSigningKey>);
