@@ -437,7 +437,7 @@ impl RetrySchedule {
         self.0
             .clone()
             .into_iter()
-            .map(|x| Duration::from_secs(x))
+            .map(Duration::from_secs)
             .collect()
     }
 }
