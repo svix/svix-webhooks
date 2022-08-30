@@ -401,10 +401,15 @@ async fn dispatch(
         Err((attempt, err)) => {
             let attempt = attempt.insert(db).await?;
 
+            let retry_schedule = match endp.retry_schedule {
+                Some(retry_schedule) => retry_schedule.0,
+                None => cfg.retry_schedule.clone(),
+            };
+
             let attempt_count = msg_task.attempt_count as usize;
             if msg_task.trigger_type == MessageAttemptTriggerType::Manual {
                 tracing::debug!("Manual retry failed");
-            } else if attempt_count < cfg.retry_schedule.len() {
+            } else if attempt_count < retry_schedule.len() {
                 tracing::debug!(
                     "Worker failure retrying for attempt {}: {} {} {}",
                     attempt_count,
@@ -413,7 +418,7 @@ async fn dispatch(
                     &endp.id
                 );
 
-                let duration = cfg.retry_schedule[attempt_count];
+                let duration = retry_schedule[attempt_count];
 
                 // Apply jitter with a maximum variation of JITTER_DELTA
                 let duration = rand::thread_rng().gen_range(

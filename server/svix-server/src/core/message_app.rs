@@ -14,7 +14,7 @@ use crate::{
         types::{
             ApplicationId, ApplicationUid, EndpointHeaders, EndpointId, EndpointSecretInternal,
             EventChannelSet, EventTypeNameSet, ExpiringSigningKeys, MessageAttemptTriggerType,
-            OrganizationId,
+            OrganizationId, RetrySchedule,
         },
     },
     db::models::{application, endpoint, message},
@@ -155,6 +155,7 @@ pub struct CreateMessageEndpoint {
     pub headers: Option<EndpointHeaders>,
     pub disabled: bool,
     pub deleted: bool,
+    pub retry_schedule: Option<RetrySchedule>,
 }
 
 impl CreateMessageEndpoint {
@@ -194,6 +195,7 @@ impl TryFrom<endpoint::Model> for CreateMessageEndpoint {
             headers: m.headers,
             disabled: m.disabled,
             deleted: m.deleted,
+            retry_schedule: m.retry_schedule,
         })
     }
 }
@@ -248,6 +250,7 @@ mod tests {
             headers: None,
             disabled: false,
             deleted: false,
+            retry_schedule: None,
         };
 
         let keys = cme.valid_signing_keys();
