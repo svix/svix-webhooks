@@ -428,7 +428,7 @@ impl Validate for EventTypeNameSet {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
-pub struct RetrySchedule(pub Vec<i32>);
+pub struct RetrySchedule(pub Vec<std::time::Duration>);
 json_wrapper!(RetrySchedule);
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
