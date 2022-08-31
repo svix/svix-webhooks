@@ -19,7 +19,6 @@ use hyper::StatusCode;
 use sea_orm::ActiveValue::Set;
 use sea_orm::{ActiveModelTrait, DatabaseConnection};
 use serde::{Deserialize, Serialize};
-// use svix_server_derive::ModelIn;
 use validator::Validate;
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Validate)]
@@ -51,7 +50,7 @@ async fn update_retry_schedule(
     Path(evtype_name): Path<EventTypeName>,
     ValidatedJson(data): ValidatedJson<RetryScheduleInOut>,
     AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
-) -> Result<(StatusCode, Json<EmptyResponse>)> {
+) -> Result<(StatusCode, Json<RetryScheduleInOut>)> {
     let evtype = eventtype::Entity::secure_find_by_name(permissions.org_id, evtype_name)
         .one(db)
         .await?
@@ -59,9 +58,13 @@ async fn update_retry_schedule(
 
     let mut evtype: eventtype::ActiveModel = evtype.into();
     evtype.retry_schedule = Set(data.retry_schedule);
-    evtype.update(db).await?;
+    let evtype = evtype.update(db).await?;
 
-    Ok((StatusCode::OK, Json(EmptyResponse {})))
+    let retry_schedule = RetryScheduleInOut {
+        retry_schedule: evtype.retry_schedule,
+    };
+
+    Ok((StatusCode::OK, Json(retry_schedule)))
 }
 
 pub fn router() -> Router {
