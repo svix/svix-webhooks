@@ -426,7 +426,7 @@ async fn dispatch(
 
             let retry_schedule = match retry_schedule_override {
                 Some(retry_schedule) => retry_schedule.to_durations(),
-                None => cfg.retry_schedule.clone(),
+                None => cfg.retry_schedule.to_owned(),
             };
 
             let attempt_count = msg_task.attempt_count as usize;
