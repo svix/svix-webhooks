@@ -427,7 +427,7 @@ async fn dispatch(
                     .map(|x| x.to_durations());
             let retry_schedule = retry_schedule_override
                 .as_deref()
-                .unwrap_or(&cfg.retry_schedule);
+                .unwrap_or_else(|| &cfg.retry_schedule);
 
             let attempt_count = msg_task.attempt_count as usize;
             if msg_task.trigger_type == MessageAttemptTriggerType::Manual {
