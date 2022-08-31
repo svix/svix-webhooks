@@ -8,7 +8,7 @@ use crate::{
     },
     db::models::eventtype,
     error::{HttpError, Result},
-    v1::utils::{EmptyResponse, ValidatedJson},
+    v1::utils::ValidatedJson,
 };
 use axum::{
     extract::{Extension, Path},
