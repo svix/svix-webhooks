@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use crate::core::types::{BaseId, EventTypeId, EventTypeName, OrganizationId};
+use crate::core::types::{BaseId, EventTypeId, EventTypeName, OrganizationId, RetrySchedule};
 use chrono::Utc;
 use sea_orm::entity::prelude::*;
 use sea_orm::ActiveValue::Set;
@@ -18,6 +18,7 @@ pub struct Model {
     pub deleted: bool,
     pub schemas: Option<Json>,
     pub name: EventTypeName,
+    pub retry_schedule: Option<RetrySchedule>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter)]

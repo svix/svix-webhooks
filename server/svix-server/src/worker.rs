@@ -7,18 +7,18 @@ use crate::core::cryptography::Encryption;
 use crate::core::operational_webhooks::EndpointDisabledEvent;
 use crate::core::types::{
     ApplicationId, ApplicationUid, EndpointId, EndpointSecretInternal, EndpointSecretType,
-    MessageUid, OrganizationId,
+    MessageUid, OrganizationId, RetrySchedule,
 };
 use crate::core::{
     cache::{kv_def, Cache, CacheBehavior, CacheKey, CacheValue},
     message_app::{CreateMessageApp, CreateMessageEndpoint},
     operational_webhooks::{MessageAttemptEvent, OperationalWebhook, OperationalWebhookSender},
     types::{
-        BaseId, EndpointHeaders, MessageAttemptId, MessageAttemptTriggerType, MessageId,
-        MessageStatus,
+        BaseId, EndpointHeaders, EventTypeName, MessageAttemptId, MessageAttemptTriggerType,
+        MessageId, MessageStatus,
     },
 };
-use crate::db::models::{endpoint, message, messageattempt, messagedestination};
+use crate::db::models::{endpoint, eventtype, message, messageattempt, messagedestination};
 use crate::error::{Error, Result};
 use crate::queue::{
     MessageTask, MessageTaskBatch, QueueTask, TaskQueueConsumer, TaskQueueProducer,
@@ -67,6 +67,24 @@ kv_def!(FailureCacheKey, FailureCacheValue, "SVIX_FAILURE_CACHE");
 impl FailureCacheKey {
     pub fn new(app_id: &ApplicationId, endp_id: &EndpointId) -> FailureCacheKey {
         FailureCacheKey(format!("_{}_{}", app_id, endp_id))
+    }
+}
+
+/// RetrySchedule is cached for some time after being retrieved from the db
+#[derive(Serialize, Deserialize)]
+struct RetryScheduleCacheValue {
+    pub retry_schedule: Option<RetrySchedule>,
+}
+
+kv_def!(
+    RetryScheduleCacheKey,
+    RetryScheduleCacheValue,
+    "SVIX_RETRY_VALUE"
+);
+
+impl RetryScheduleCacheKey {
+    pub fn new(org_id: &OrganizationId, event_type_name: &EventTypeName) -> RetryScheduleCacheKey {
+        RetryScheduleCacheKey(format!("_{}_{}", org_id, event_type_name))
     }
 }
 
@@ -239,6 +257,7 @@ struct DispatchExtraIds<'a> {
     org_id: &'a OrganizationId,
     app_uid: Option<&'a ApplicationUid>,
     msg_uid: Option<&'a MessageUid>,
+    event_type_name: &'a EventTypeName,
 }
 
 /// Dispatches one webhook
@@ -266,6 +285,7 @@ async fn dispatch(
         org_id,
         app_uid,
         msg_uid,
+        event_type_name,
     }: DispatchExtraIds<'_>,
     payload: &Json,
     endp: CreateMessageEndpoint,
@@ -401,10 +421,18 @@ async fn dispatch(
         Err((attempt, err)) => {
             let attempt = attempt.insert(db).await?;
 
+            let retry_schedule_override =
+                get_retry_schedule_override(db, cache, org_id, event_type_name).await?;
+
+            let retry_schedule = match retry_schedule_override {
+                Some(retry_schedule) => retry_schedule.to_durations(),
+                None => cfg.retry_schedule.clone(),
+            };
+
             let attempt_count = msg_task.attempt_count as usize;
             if msg_task.trigger_type == MessageAttemptTriggerType::Manual {
                 tracing::debug!("Manual retry failed");
-            } else if attempt_count < cfg.retry_schedule.len() {
+            } else if attempt_count < retry_schedule.len() {
                 tracing::debug!(
                     "Worker failure retrying for attempt {}: {} {} {}",
                     attempt_count,
@@ -413,7 +441,7 @@ async fn dispatch(
                     &endp.id
                 );
 
-                let duration = cfg.retry_schedule[attempt_count];
+                let duration = retry_schedule[attempt_count];
 
                 // Apply jitter with a maximum variation of JITTER_DELTA
                 let duration = rand::thread_rng().gen_range(
@@ -546,6 +574,43 @@ fn bytes_to_string(bytes: bytes::Bytes) -> String {
     }
 }
 
+async fn get_retry_schedule_override(
+    db: &DbConn,
+    cache: &Cache,
+    org_id: &OrganizationId,
+    event_type_name: &EventTypeName,
+) -> Result<Option<RetrySchedule>> {
+    let cache_key = RetryScheduleCacheKey::new(org_id, event_type_name);
+
+    if let Some(retry_schedule) = cache
+        .get::<RetryScheduleCacheValue>(&cache_key)
+        .await
+        .map_err(|e| Error::from(e.to_string()))?
+    {
+        return Ok(retry_schedule.retry_schedule);
+    };
+
+    let retry_schedule =
+        eventtype::Entity::secure_find_by_name(org_id.to_owned(), event_type_name.to_owned())
+            .one(db)
+            .await?
+            .unwrap()
+            .retry_schedule;
+
+    cache
+        .set(
+            &cache_key,
+            &RetryScheduleCacheValue {
+                retry_schedule: retry_schedule.clone(),
+            },
+            Duration::from_secs(60),
+        )
+        .await
+        .map_err(|e| Error::from(e.to_string()))?;
+
+    Ok(retry_schedule)
+}
+
 /// Manages preparation and execution of a QueueTask type
 #[tracing::instrument(skip_all, fields(task_id = worker_context.task_id))]
 async fn process_task(worker_context: WorkerContext<'_>, queue_task: Arc<QueueTask>) -> Result<()> {
@@ -646,6 +711,7 @@ async fn process_task(worker_context: WorkerContext<'_>, queue_task: Arc<QueueTa
                     org_id,
                     app_uid: app_uid.as_ref(),
                     msg_uid: msg_uid.as_ref(),
+                    event_type_name: &msg.event_type,
                 },
                 payload,
                 endpoint,

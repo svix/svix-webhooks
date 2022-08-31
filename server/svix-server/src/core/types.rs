@@ -433,12 +433,8 @@ pub struct RetrySchedule(pub Vec<u64>);
 json_wrapper!(RetrySchedule);
 
 impl RetrySchedule {
-    pub fn as_durations(&self) -> Vec<Duration> {
-        self.0
-            .clone()
-            .into_iter()
-            .map(Duration::from_secs)
-            .collect()
+    pub fn to_durations(self) -> Vec<Duration> {
+        self.0.into_iter().map(Duration::from_secs).collect()
     }
 }
 
