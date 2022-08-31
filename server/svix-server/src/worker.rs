@@ -422,11 +422,12 @@ async fn dispatch(
             let attempt = attempt.insert(db).await?;
 
             let retry_schedule_override =
-                get_retry_schedule_override(db, cache, org_id, event_type_name).await?;
-
+                get_retry_schedule_override(db, cache, org_id, event_type_name)
+                    .await?
+                    .map(|x| x.to_durations());
             let retry_schedule = retry_schedule_override
-                .map(|x| x.to_durations())
-                .unwrap_or(cfg.retry_schedule.clone());
+                .as_deref()
+                .unwrap_or(&cfg.retry_schedule);
 
             let attempt_count = msg_task.attempt_count as usize;
             if msg_task.trigger_type == MessageAttemptTriggerType::Manual {
