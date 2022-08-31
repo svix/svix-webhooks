@@ -14,7 +14,8 @@ pub fn router() -> Router {
         .merge(endpoints::endpoint::router())
         .merge(endpoints::event_type::router())
         .merge(endpoints::message::router())
-        .merge(endpoints::attempt::router());
+        .merge(endpoints::attempt::router())
+        .merge(endpoints::retry_schedule::router());
 
     #[cfg(debug_assertions)]
     if cfg!(debug_assertions) {
