@@ -4,7 +4,7 @@
 use crate::{
     core::{
         security::{AuthenticatedOrganization, Permissions},
-        types::EventTypeName,
+        types::{EventTypeName, RetrySchedule},
     },
     db::models::eventtype,
     error::{HttpError, Result},
@@ -320,6 +320,52 @@ async fn delete_event_type(
     Ok((StatusCode::NO_CONTENT, Json(EmptyResponse {})))
 }
 
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Validate)]
+#[serde(rename_all = "camelCase")]
+pub struct RetryScheduleInOut {
+    retry_schedule: Option<RetrySchedule>,
+}
+
+async fn get_retry_schedule(
+    Extension(ref db): Extension<DatabaseConnection>,
+    Path(evtype_name): Path<EventTypeName>,
+    AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
+) -> Result<Json<RetryScheduleInOut>> {
+    let evtype = eventtype::Entity::secure_find_by_name(permissions.org_id, evtype_name)
+        .one(db)
+        .await?
+        .ok_or_else(|| HttpError::not_found(None, None))
+        .unwrap();
+
+    let retry_schedule = RetryScheduleInOut {
+        retry_schedule: evtype.retry_schedule,
+    };
+
+    Ok(Json(retry_schedule))
+}
+
+async fn update_retry_schedule(
+    Extension(ref db): Extension<DatabaseConnection>,
+    Path(evtype_name): Path<EventTypeName>,
+    ValidatedJson(data): ValidatedJson<RetryScheduleInOut>,
+    AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
+) -> Result<Json<RetryScheduleInOut>> {
+    let evtype = eventtype::Entity::secure_find_by_name(permissions.org_id, evtype_name)
+        .one(db)
+        .await?
+        .ok_or_else(|| HttpError::not_found(None, None))?;
+
+    let mut evtype: eventtype::ActiveModel = evtype.into();
+    evtype.retry_schedule = Set(data.retry_schedule);
+    let evtype = evtype.update(db).await?;
+
+    let retry_schedule = RetryScheduleInOut {
+        retry_schedule: evtype.retry_schedule,
+    };
+
+    Ok(Json(retry_schedule))
+}
+
 pub fn router() -> Router {
     Router::new()
         .route(
@@ -332,6 +378,10 @@ pub fn router() -> Router {
                 .put(update_event_type)
                 .patch(patch_event_type)
                 .delete(delete_event_type),
+        )
+        .route(
+            "/event-type/:event_type_name/retry-schedule/",
+            get(get_retry_schedule).put(update_retry_schedule),
         )
         .route(
             "/event-type/schema/generate-example/",

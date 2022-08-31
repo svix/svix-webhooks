@@ -8,4 +8,3 @@ pub mod endpoint;
 pub mod event_type;
 pub mod health;
 pub mod message;
-pub mod retry_schedule;

@@ -424,10 +424,9 @@ async fn dispatch(
             let retry_schedule_override =
                 get_retry_schedule_override(db, cache, org_id, event_type_name).await?;
 
-            let retry_schedule = match retry_schedule_override {
-                Some(retry_schedule) => retry_schedule.to_durations(),
-                None => cfg.retry_schedule.to_owned(),
-            };
+            let retry_schedule = retry_schedule_override
+                .map(|x| x.to_durations())
+                .unwrap_or(cfg.retry_schedule.clone());
 
             let attempt_count = msg_task.attempt_count as usize;
             if msg_task.trigger_type == MessageAttemptTriggerType::Manual {
@@ -590,25 +589,30 @@ async fn get_retry_schedule_override(
         return Ok(retry_schedule.retry_schedule);
     };
 
-    let retry_schedule =
+    let event_type =
         eventtype::Entity::secure_find_by_name(org_id.to_owned(), event_type_name.to_owned())
             .one(db)
-            .await?
-            .unwrap()
-            .retry_schedule;
+            .await?;
 
-    cache
-        .set(
-            &cache_key,
-            &RetryScheduleCacheValue {
-                retry_schedule: retry_schedule.clone(),
-            },
-            Duration::from_secs(60),
-        )
-        .await
-        .map_err(|e| Error::from(e.to_string()))?;
+    match event_type {
+        Some(event_type) => {
+            let retry_schedule = event_type.retry_schedule;
 
-    Ok(retry_schedule)
+            cache
+                .set(
+                    &cache_key,
+                    &RetryScheduleCacheValue {
+                        retry_schedule: retry_schedule.clone(),
+                    },
+                    Duration::from_secs(60),
+                )
+                .await
+                .map_err(|e| Error::from(e.to_string()))?;
+
+            Ok(retry_schedule)
+        }
+        None => Ok(None),
+    }
 }
 
 /// Manages preparation and execution of a QueueTask type
