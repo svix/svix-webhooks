@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 use std::collections::{HashMap, HashSet};
+use std::time::Duration;
 
 use chrono::{DateTime, Utc};
 use lazy_static::lazy_static;
@@ -424,6 +425,32 @@ impl Validate for EventTypeNameSet {
             item.validate()?;
         }
         Ok(())
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct RetrySchedule(pub Vec<Duration>);
+json_wrapper!(RetrySchedule);
+
+impl Serialize for RetrySchedule {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let buf: Vec<u64> = self.0.iter().map(|x| x.as_secs()).collect();
+        buf.serialize(serializer)
+    }
+}
+
+impl<'de> Deserialize<'de> for RetrySchedule {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let buf: Vec<u64> = Vec::deserialize(deserializer)?;
+        Ok(RetrySchedule(
+            buf.into_iter().map(Duration::from_secs).collect(),
+        ))
     }
 }
 

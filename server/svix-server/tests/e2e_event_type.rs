@@ -4,14 +4,19 @@
 use reqwest::StatusCode;
 
 use svix_server::v1::{
-    endpoints::event_type::{EventTypeIn, EventTypeOut},
+    endpoints::endpoint::EndpointOut,
+    endpoints::event_type::{EventTypeIn, EventTypeOut, RetryScheduleInOut},
+    endpoints::message::MessageOut,
     utils::ListResponse,
 };
 
 mod utils;
 
 use utils::{
-    common_calls::{common_test_list, event_type_in},
+    common_calls::{
+        common_test_list, create_test_app, event_type_in, get_msg_attempt_list_and_assert_count,
+        message_in,
+    },
     start_svix_server,
 };
 
@@ -191,4 +196,100 @@ async fn test_list() {
     )
     .await
     .unwrap();
+}
+
+#[tokio::test]
+async fn test_retry_schedule_crud() {
+    let (client, _jh) = start_svix_server();
+
+    let event_type_name = "test-event-type-for-retry-schedule-override";
+
+    let _: EventTypeOut = client
+        .post(
+            "api/v1/event-type",
+            event_type_in(event_type_name, serde_json::json!({"test": "value"})).unwrap(),
+            StatusCode::CREATED,
+        )
+        .await
+        .unwrap();
+
+    let retry_schedule_payload = serde_json::json!({ "retrySchedule": vec![1, 2] });
+
+    let rsi: RetryScheduleInOut = client
+        .put(
+            &format!("api/v1/event-type/{}/retry-schedule/", event_type_name),
+            retry_schedule_payload,
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    let rso: RetryScheduleInOut = client
+        .get(
+            &format!("api/v1/event-type/{}/retry-schedule", event_type_name),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(rsi, rso);
+}
+
+#[tokio::test]
+async fn test_retry_schedule_override() {
+    let (client, _jh) = start_svix_server();
+
+    let event_type_name = "retry-schedule-override";
+
+    let _: EventTypeOut = client
+        .post(
+            "api/v1/event-type",
+            event_type_in(event_type_name, serde_json::json!({"test": "value"})).unwrap(),
+            StatusCode::CREATED,
+        )
+        .await
+        .unwrap();
+
+    let _: RetryScheduleInOut = client
+        .put(
+            &format!("api/v1/event-type/{}/retry-schedule/", event_type_name),
+            serde_json::json!({ "retrySchedule": vec![1, 1, 1] }),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    let app_id = create_test_app(&client, "app").await.unwrap().id;
+
+    let bad_url = "http://localhost:4920/bad-url".to_string();
+
+    let _: EndpointOut = client
+        .post(
+            &format!("api/v1/app/{}/endpoint/", app_id),
+            serde_json::json!({
+                "url": bad_url.clone(),
+                "version": 1,
+                "filterTypes": vec![event_type_name]
+            }),
+            StatusCode::CREATED,
+        )
+        .await
+        .unwrap();
+
+    let msg: MessageOut = client
+        .post(
+            &format!("api/v1/app/{}/msg/", &app_id),
+            message_in(event_type_name, serde_json::json!({"test": "data"})).unwrap(),
+            StatusCode::ACCEPTED,
+        )
+        .await
+        .unwrap();
+
+    tokio::time::sleep(std::time::Duration::from_secs(3)).await;
+
+    let list = get_msg_attempt_list_and_assert_count(&client, &app_id, &msg.id, 4)
+        .await
+        .unwrap();
+
+    assert_eq!(list.data.len(), 4);
 }
