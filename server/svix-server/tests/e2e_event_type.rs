@@ -199,7 +199,7 @@ async fn test_list() {
 }
 
 #[tokio::test]
-async fn test_retry_schedule_crud_and_override() {
+async fn test_retry_schedule_crud() {
     let (client, _jh) = start_svix_server();
 
     let event_type_name = "test-event-type-for-retry-schedule-override";
@@ -232,7 +232,6 @@ async fn test_retry_schedule_crud_and_override() {
         .await
         .unwrap();
 
-    // assert that crud works
     assert_eq!(rsi, rso);
 }
 
