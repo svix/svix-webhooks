@@ -19,7 +19,7 @@ use sea_orm::{
     sea_query::{ColumnType, Nullable, ValueType, ValueTypeErr},
     TryFromU64, TryGetError, TryGetable,
 };
-use serde::{ser::SerializeSeq, Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 use svix_ksuid::*;
 use validator::{Validate, ValidationErrors};
