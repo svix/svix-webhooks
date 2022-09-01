@@ -437,7 +437,7 @@ impl Serialize for RetrySchedule {
     where
         S: serde::Serializer,
     {
-        let buf: Vec<u64> = self.0.clone().into_iter().map(|x| x.as_secs()).collect();
+        let buf: Vec<u64> = self.0.iter().map(|x| x.as_secs()).collect();
         buf.serialize(serializer)
     }
 }
