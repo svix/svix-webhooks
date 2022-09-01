@@ -598,19 +598,14 @@ async fn get_retry_schedule_override(
     match event_type {
         Some(event_type) => {
             let retry_schedule = event_type.retry_schedule;
+            let cache_value = RetryScheduleCacheValue { retry_schedule };
 
             cache
-                .set(
-                    &cache_key,
-                    &RetryScheduleCacheValue {
-                        retry_schedule: retry_schedule.clone(),
-                    },
-                    Duration::from_secs(60),
-                )
+                .set(&cache_key, &cache_value, Duration::from_secs(60))
                 .await
                 .map_err(|e| Error::from(e.to_string()))?;
 
-            Ok(retry_schedule)
+            Ok(cache_value.retry_schedule)
         }
         None => Ok(None),
     }
