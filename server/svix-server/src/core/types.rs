@@ -19,7 +19,7 @@ use sea_orm::{
     sea_query::{ColumnType, Nullable, ValueType, ValueTypeErr},
     TryFromU64, TryGetError, TryGetable,
 };
-use serde::{Deserialize, Serialize};
+use serde::{ser::SerializeSeq, Deserialize, Serialize};
 use std::ops::Deref;
 use svix_ksuid::*;
 use validator::{Validate, ValidationErrors};
@@ -428,13 +428,32 @@ impl Validate for EventTypeNameSet {
     }
 }
 
-#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
-pub struct RetrySchedule(pub Vec<u64>);
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct RetrySchedule(pub Vec<Duration>);
 json_wrapper!(RetrySchedule);
 
-impl RetrySchedule {
-    pub fn to_durations(self) -> Vec<Duration> {
-        self.0.into_iter().map(Duration::from_secs).collect()
+impl Serialize for RetrySchedule {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let mut seq = serializer.serialize_seq(Some(self.0.len()))?;
+        for e in self.clone().0 {
+            seq.serialize_element(&e.as_secs())?;
+        }
+        seq.end()
+    }
+}
+
+impl<'de> Deserialize<'de> for RetrySchedule {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let buf: Vec<u64> = Vec::deserialize(deserializer)?;
+        Ok(RetrySchedule(
+            buf.into_iter().map(Duration::from_secs).collect(),
+        ))
     }
 }
 

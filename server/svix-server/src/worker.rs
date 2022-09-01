@@ -424,7 +424,7 @@ async fn dispatch(
             let retry_schedule_override =
                 get_retry_schedule_override(db, cache, org_id, event_type_name)
                     .await?
-                    .map(|x| x.to_durations());
+                    .map(|x| x.0);
             let retry_schedule = retry_schedule_override
                 .as_deref()
                 .unwrap_or(&cfg.retry_schedule);
