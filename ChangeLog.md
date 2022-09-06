@@ -3,6 +3,10 @@
 ## Next
 * 
 
+## Version 0.67.0
+* Server: include idempotency key in log spans.
+* Server: correct trace ID handling in tracing spans.
+
 ## Version 0.66.0
 * Server: add unique IDs when tracing worker tasks.
 * Server: allow enabling extra tracing for db operations.
