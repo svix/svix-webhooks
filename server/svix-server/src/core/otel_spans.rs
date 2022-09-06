@@ -11,7 +11,6 @@ use opentelemetry::trace::TraceContextExt;
 use svix_ksuid::{KsuidLike, KsuidMs};
 use tower_http::{
     classify::ServerErrorsFailureClass,
-    request_id::RequestId,
     trace::{MakeSpan, OnFailure, OnResponse},
 };
 use tracing::field::Empty;
@@ -60,9 +59,17 @@ impl<B> MakeSpan<B> for AxumOtelSpanCreator {
             .unwrap_or_default();
 
         let request_id = request
-            .extensions()
-            .get::<RequestId>()
-            .and_then(|id| id.header_value().to_str().map(ToOwned::to_owned).ok())
+            .headers()
+            .get("x-request-id")
+            .and_then(|id| id.to_str().map(ToOwned::to_owned).ok())
+            // If `x-requst-id` isn't set, check `svix-req-id`. If the `svix-req-id` isn't a
+            // valid `str`, or it isn't set, then fallback to a random [`KsuidMs`]
+            .or_else(|| {
+                request
+                    .headers()
+                    .get("svix-req-id")
+                    .and_then(|v| v.to_str().map(ToOwned::to_owned).ok())
+            })
             .unwrap_or_else(|| KsuidMs::new(None, None).to_string());
 
         let remote_context = opentelemetry::global::get_text_map_propagator(|p| {
