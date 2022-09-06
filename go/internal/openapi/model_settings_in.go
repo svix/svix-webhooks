@@ -27,6 +27,7 @@ type SettingsIn struct {
 	DisplayName NullableString `json:"displayName,omitempty"`
 	EnableChannels *bool `json:"enableChannels,omitempty"`
 	EnableIntegrationManagement *bool `json:"enableIntegrationManagement,omitempty"`
+	EnableTransformations *bool `json:"enableTransformations,omitempty"`
 	EnforceHttps *bool `json:"enforceHttps,omitempty"`
 	EventCatalogPublished NullableBool `json:"eventCatalogPublished,omitempty"`
 }
@@ -43,6 +44,8 @@ func NewSettingsIn() *SettingsIn {
 	this.EnableChannels = &enableChannels
 	var enableIntegrationManagement bool = false
 	this.EnableIntegrationManagement = &enableIntegrationManagement
+	var enableTransformations bool = false
+	this.EnableTransformations = &enableTransformations
 	var enforceHttps bool = true
 	this.EnforceHttps = &enforceHttps
 	var eventCatalogPublished bool = false
@@ -61,6 +64,8 @@ func NewSettingsInWithDefaults() *SettingsIn {
 	this.EnableChannels = &enableChannels
 	var enableIntegrationManagement bool = false
 	this.EnableIntegrationManagement = &enableIntegrationManagement
+	var enableTransformations bool = false
+	this.EnableTransformations = &enableTransformations
 	var enforceHttps bool = true
 	this.EnforceHttps = &enforceHttps
 	var eventCatalogPublished bool = false
@@ -470,6 +475,38 @@ func (o *SettingsIn) SetEnableIntegrationManagement(v bool) {
 	o.EnableIntegrationManagement = &v
 }
 
+// GetEnableTransformations returns the EnableTransformations field value if set, zero value otherwise.
+func (o *SettingsIn) GetEnableTransformations() bool {
+	if o == nil || o.EnableTransformations == nil {
+		var ret bool
+		return ret
+	}
+	return *o.EnableTransformations
+}
+
+// GetEnableTransformationsOk returns a tuple with the EnableTransformations field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *SettingsIn) GetEnableTransformationsOk() (*bool, bool) {
+	if o == nil || o.EnableTransformations == nil {
+		return nil, false
+	}
+	return o.EnableTransformations, true
+}
+
+// HasEnableTransformations returns a boolean if a field has been set.
+func (o *SettingsIn) HasEnableTransformations() bool {
+	if o != nil && o.EnableTransformations != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetEnableTransformations gets a reference to the given bool and assigns it to the EnableTransformations field.
+func (o *SettingsIn) SetEnableTransformations(v bool) {
+	o.EnableTransformations = &v
+}
+
 // GetEnforceHttps returns the EnforceHttps field value if set, zero value otherwise.
 func (o *SettingsIn) GetEnforceHttps() bool {
 	if o == nil || o.EnforceHttps == nil {
@@ -578,6 +615,9 @@ func (o SettingsIn) MarshalJSON() ([]byte, error) {
 	}
 	if o.EnableIntegrationManagement != nil {
 		toSerialize["enableIntegrationManagement"] = o.EnableIntegrationManagement
+	}
+	if o.EnableTransformations != nil {
+		toSerialize["enableTransformations"] = o.EnableTransformations
 	}
 	if o.EnforceHttps != nil {
 		toSerialize["enforceHttps"] = o.EnforceHttps
