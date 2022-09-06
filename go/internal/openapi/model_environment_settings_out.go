@@ -24,6 +24,7 @@ type EnvironmentSettingsOut struct {
 	CustomThemeOverride *CustomThemeOverride `json:"customThemeOverride,omitempty"`
 	EnableChannels *bool `json:"enableChannels,omitempty"`
 	EnableIntegrationManagement *bool `json:"enableIntegrationManagement,omitempty"`
+	EnableTransformations *bool `json:"enableTransformations,omitempty"`
 }
 
 // NewEnvironmentSettingsOut instantiates a new EnvironmentSettingsOut object
@@ -36,6 +37,8 @@ func NewEnvironmentSettingsOut() *EnvironmentSettingsOut {
 	this.EnableChannels = &enableChannels
 	var enableIntegrationManagement bool = false
 	this.EnableIntegrationManagement = &enableIntegrationManagement
+	var enableTransformations bool = false
+	this.EnableTransformations = &enableTransformations
 	return &this
 }
 
@@ -48,6 +51,8 @@ func NewEnvironmentSettingsOutWithDefaults() *EnvironmentSettingsOut {
 	this.EnableChannels = &enableChannels
 	var enableIntegrationManagement bool = false
 	this.EnableIntegrationManagement = &enableIntegrationManagement
+	var enableTransformations bool = false
+	this.EnableTransformations = &enableTransformations
 	return &this
 }
 
@@ -337,6 +342,38 @@ func (o *EnvironmentSettingsOut) SetEnableIntegrationManagement(v bool) {
 	o.EnableIntegrationManagement = &v
 }
 
+// GetEnableTransformations returns the EnableTransformations field value if set, zero value otherwise.
+func (o *EnvironmentSettingsOut) GetEnableTransformations() bool {
+	if o == nil || o.EnableTransformations == nil {
+		var ret bool
+		return ret
+	}
+	return *o.EnableTransformations
+}
+
+// GetEnableTransformationsOk returns a tuple with the EnableTransformations field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *EnvironmentSettingsOut) GetEnableTransformationsOk() (*bool, bool) {
+	if o == nil || o.EnableTransformations == nil {
+		return nil, false
+	}
+	return o.EnableTransformations, true
+}
+
+// HasEnableTransformations returns a boolean if a field has been set.
+func (o *EnvironmentSettingsOut) HasEnableTransformations() bool {
+	if o != nil && o.EnableTransformations != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetEnableTransformations gets a reference to the given bool and assigns it to the EnableTransformations field.
+func (o *EnvironmentSettingsOut) SetEnableTransformations(v bool) {
+	o.EnableTransformations = &v
+}
+
 func (o EnvironmentSettingsOut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if o.ColorPaletteDark != nil {
@@ -362,6 +399,9 @@ func (o EnvironmentSettingsOut) MarshalJSON() ([]byte, error) {
 	}
 	if o.EnableIntegrationManagement != nil {
 		toSerialize["enableIntegrationManagement"] = o.EnableIntegrationManagement
+	}
+	if o.EnableTransformations != nil {
+		toSerialize["enableTransformations"] = o.EnableTransformations
 	}
 	return json.Marshal(toSerialize)
 }
