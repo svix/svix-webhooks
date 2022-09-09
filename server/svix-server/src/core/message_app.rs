@@ -55,9 +55,7 @@ impl CreateMessageApp {
                 .rate_limit
                 .map(|v| v.try_into())
                 .transpose()
-                .map_err(|_| {
-                    Error::Validation("Application rate limit out of bounds".to_owned())
-                })?,
+                .map_err(|_| Error::validation("Application rate limit out of bounds"))?,
             endpoints,
             deleted: app.deleted,
         })
@@ -189,7 +187,7 @@ impl TryFrom<endpoint::Model> for CreateMessageEndpoint {
                 .rate_limit
                 .map(|v| v.try_into())
                 .transpose()
-                .map_err(|_| Error::Validation("Endpoint rate limit out of bounds".to_owned()))?,
+                .map_err(|_| Error::validation("Endpoint rate limit out of bounds"))?,
             first_failure_at: m.first_failure_at,
             headers: m.headers,
             disabled: m.disabled,

@@ -21,7 +21,6 @@ use crate::{
         PaginationLimit, ValidatedJson, ValidatedQuery,
     },
 };
-use anyhow::Context;
 use axum::{
     extract::{Extension, Path},
     routing::{get, post},
@@ -184,7 +183,7 @@ async fn list_applications(
     pagination: ValidatedQuery<Pagination<ApplicationId>>,
     AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
 ) -> Result<Json<ListResponse<ApplicationOut>>> {
-    fallible().with_context(|| "fallible thing happened")?;
+    fallible()?;
 
     let PaginationLimit(limit) = pagination.limit;
     let iterator = pagination.iterator.clone();

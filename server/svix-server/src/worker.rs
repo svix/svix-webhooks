@@ -25,6 +25,7 @@ use crate::queue::{
 };
 use chrono::Utc;
 
+use anyhow::anyhow;
 use futures::future;
 use rand::Rng;
 use reqwest::header::{HeaderMap, HeaderName};
@@ -299,9 +300,10 @@ async fn dispatch(
         .one(db)
         .await?
         .ok_or_else(|| {
-            Error::Generic(format!(
+            Error::Generic(anyhow!(
                 "Msg dest not found {} {}",
-                msg_task.msg_id, endp.id
+                msg_task.msg_id,
+                endp.id
             ))
         })?;
 
@@ -504,9 +506,10 @@ async fn dispatch(
                         .one(db)
                         .await?
                         .ok_or_else(|| {
-                            Error::Generic(format!(
+                            Error::Generic(anyhow!(
                                 "Endpoint not found {} {}",
-                                &msg_task.app_id, &msg_task.endpoint_id
+                                &msg_task.app_id,
+                                &msg_task.endpoint_id
                             ))
                         })?;
 
@@ -558,7 +561,7 @@ async fn process_task(worker_context: WorkerContext<'_>, queue_task: Arc<QueueTa
     let msg = message::Entity::find_by_id(msg_id.clone())
         .one(db)
         .await?
-        .ok_or_else(|| Error::Generic(format!("Unexpected: message doesn't exist {}", msg_id,)))?;
+        .ok_or_else(|| Error::Generic(anyhow!("Unexpected: message doesn't exist {}", msg_id,)))?;
     let payload = msg.payload.as_ref().expect("Message payload is NULL");
 
     let create_message_app = CreateMessageApp::layered_fetch(
@@ -570,7 +573,7 @@ async fn process_task(worker_context: WorkerContext<'_>, queue_task: Arc<QueueTa
         Duration::from_secs(30),
     )
     .await?
-    .ok_or_else(|| Error::Generic(format!("Application doesn't exist: {}", &msg.app_id)))?;
+    .ok_or_else(|| Error::Generic(anyhow!("Application doesn't exist: {}", &msg.app_id)))?;
 
     let app_uid = create_message_app.uid.clone();
 
@@ -642,7 +645,7 @@ async fn process_task(worker_context: WorkerContext<'_>, queue_task: Arc<QueueTa
 
     let errs: Vec<_> = join.iter().filter(|x| x.is_err()).collect();
     if !errs.is_empty() {
-        return Err(Error::Generic(format!(
+        return Err(Error::Generic(anyhow!(
             "Some dispatches failed unexpectedly: {:?}",
             errs
         )));

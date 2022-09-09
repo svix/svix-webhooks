@@ -178,9 +178,8 @@ async fn list_attempted_messages(
     );
 
     let into = |(dest, msg): (messagedestination::Model, Option<message::Model>)| {
-        let msg = msg.ok_or_else(|| {
-            Error::Database("No associated message with messagedestination".to_owned())
-        })?;
+        let msg =
+            msg.ok_or_else(|| Error::database("No associated message with messagedestination"))?;
         Ok(AttemptedMessageOut::from_dest_and_msg(dest, msg))
     };
 
@@ -496,7 +495,7 @@ async fn list_attempted_destinations(
             .map(
                 |(dest, endp): (messagedestination::Model, Option<endpoint::Model>)| {
                     let endp = endp.ok_or_else(|| {
-                        Error::Database("No associated endpoint with messagedestination".to_owned())
+                        Error::database("No associated endpoint with messagedestination")
                     })?;
                     Ok(MessageEndpointOut::from_dest_and_endp(dest, endp))
                 },

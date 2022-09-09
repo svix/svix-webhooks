@@ -20,14 +20,13 @@ impl AsymmetricKey {
     }
 
     pub fn from_slice(bytes: &[u8]) -> Result<Self> {
-        Ok(AsymmetricKey(KeyPair::from_slice(bytes).map_err(|_| {
-            Error::Generic("Failed parsing key.".to_string())
-        })?))
+        Ok(AsymmetricKey(
+            KeyPair::from_slice(bytes).map_err(|_| Error::generic("Failed parsing key."))?,
+        ))
     }
 
     pub fn from_base64(b64: &str) -> Result<Self> {
-        let bytes =
-            base64::decode(b64).map_err(|_| Error::Generic("Failed parsing base64".to_string()))?;
+        let bytes = base64::decode(b64).map_err(|_| Error::generic("Failed parsing base64"))?;
 
         Self::from_slice(bytes.as_slice())
     }
@@ -74,7 +73,7 @@ impl Encryption {
             let nonce = XNonce::from_slice(&nonce);
             let mut ciphertext = cipher
                 .encrypt(nonce, data)
-                .map_err(|_| crate::error::Error::Generic("Encryption failed".to_string()))?;
+                .map_err(|_| crate::error::Error::generic("Encryption failed"))?;
             let mut ret = nonce.to_vec();
             ret.append(&mut ciphertext);
             Ok(ret)
@@ -90,7 +89,7 @@ impl Encryption {
             let ciphertext = &ciphertext[Self::NONCE_SIZE..];
             cipher
                 .decrypt(XNonce::from_slice(nonce), ciphertext)
-                .map_err(|_| crate::error::Error::Generic("Encryption failed".to_string()))
+                .map_err(|_| crate::error::Error::generic("Encryption failed"))
         } else {
             Ok(ciphertext.to_vec())
         }

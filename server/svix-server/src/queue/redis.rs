@@ -29,8 +29,8 @@
 
 use std::{num::NonZeroUsize, sync::Arc, time::Duration};
 
+use anyhow::Context;
 use axum::async_trait;
-
 use chrono::Utc;
 use redis::{
     streams::{StreamClaimReply, StreamId, StreamReadOptions, StreamReadReply},
@@ -468,7 +468,7 @@ impl TaskQueueSend for RedisQueueProducer {
         let timestamp = delay.map(|delay| -> Result<_> {
             Ok(Utc::now()
                 + chrono::Duration::from_std(delay)
-                    .map_err(|_| Error::Generic("Duration out of bounds".to_owned()))?)
+                    .map_err(|_| Error::generic("Duration out of bounds"))?)
         });
 
         if let Some(timestamp) = timestamp {
@@ -489,7 +489,8 @@ impl TaskQueueSend for RedisQueueProducer {
                     &[(
                         QUEUE_KV_KEY,
                         serde_json::to_string(&*task)
-                            .map_err(|e| Error::Generic(format!("serialization error: {}", e)))?,
+                            .with_context(|| "serialization error")
+                            .map_err(|e| Error::Generic(e.into()))?,
                     )],
                 ))
                 .await?;
@@ -514,7 +515,8 @@ impl TaskQueueSend for RedisQueueProducer {
                 processed,
                 delivery.id,
                 serde_json::to_string(&delivery.task)
-                    .map_err(|e| Error::Generic(format!("serialization error: {}", e)))?
+                    .with_context(|| "serialization error")
+                    .map_err(|e| Error::Generic(e.into()))?
             );
         }
         Ok(())
@@ -575,7 +577,8 @@ impl TaskQueueReceive for RedisQueueConsumer {
             }
         })
         .await
-        .map_err(|e| Error::Generic(format!("task join error {}", e)))?
+        .with_context(|| "task join error")
+        .map_err(|e| Error::Generic(e.into()))?
     }
 }
 

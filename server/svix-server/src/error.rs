@@ -16,18 +16,36 @@ use serde_json::json;
 pub type Result<T> = std::result::Result<T, Error>;
 
 /// The error type returned from the Svix API
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub enum Error {
     /// A generic error
-    Generic(String),
+    Generic(anyhow::Error),
     /// Database error
-    Database(String),
+    Database(anyhow::Error),
     /// Queue error
-    Queue(String),
+    Queue(anyhow::Error),
     /// Database error
-    Validation(String),
+    Validation(anyhow::Error),
     /// Any kind of HttpError
     Http(HttpError),
+}
+
+impl Error {
+    pub fn generic(msg: &'static str) -> Self {
+        Self::Generic(anyhow::Error::msg(msg))
+    }
+
+    pub fn database(msg: &'static str) -> Self {
+        Self::Database(anyhow::Error::msg(msg))
+    }
+
+    pub fn queue(msg: &'static str) -> Self {
+        Self::Queue(anyhow::Error::msg(msg))
+    }
+
+    pub fn validation(msg: &'static str) -> Self {
+        Self::Queue(anyhow::Error::msg(msg))
+    }
 }
 
 impl fmt::Display for Error {
@@ -56,18 +74,18 @@ impl error::Error for Error {
 
 impl From<String> for Error {
     fn from(err: String) -> Error {
-        Error::Generic(err)
+        Error::Generic(anyhow::anyhow!(err))
     }
 }
 
-impl<T: error::Error + 'static> From<bb8::RunError<T>> for Error {
+impl<T: error::Error + 'static + Send + Sync> From<bb8::RunError<T>> for Error {
     fn from(err: bb8::RunError<T>) -> Self {
-        Error::Queue(err.to_string())
+        Error::Queue(err.into())
     }
 }
 impl From<redis::RedisError> for Error {
     fn from(err: redis::RedisError) -> Self {
-        Error::Queue(err.to_string())
+        Error::Queue(err.into())
     }
 }
 
@@ -78,30 +96,23 @@ impl From<DbErr> for Error {
             if err_str.contains("duplicate key value violates unique constraint") {
                 Error::Http(HttpError::conflict(None, None))
             } else {
-                Error::Database(err.to_string())
+                Error::Database(err.into())
             }
         } else {
-            Error::Database(err.to_string())
+            Error::Database(err.into())
         }
-    }
-}
-
-impl From<anyhow::Error> for Error {
-    fn from(e: anyhow::Error) -> Self {
-        tracing::error!("context trace: {:#}", e);
-        Error::Http(HttpError::internal_server_errer(None, None))
     }
 }
 
 impl IntoResponse for Error {
     fn into_response(self) -> Response {
         match self {
-            Error::Http(s) => {
+            Self::Http(s) => {
                 tracing::debug!("{:?}", &s);
                 s.into_response()
             }
-            s => {
-                tracing::error!("{:?}", &s);
+            Self::Generic(e) | Self::Database(e) | Self::Queue(e) | Self::Validation(e) => {
+                tracing::error!("context: {:#} backtrace: {}", e, e.backtrace());
                 (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({}))).into_response()
             }
         }

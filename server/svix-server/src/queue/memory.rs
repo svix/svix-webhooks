@@ -66,7 +66,7 @@ impl TaskQueueReceive for MemoryQueueConsumer {
                     tracing::trace!("MemoryQueue: event recv <");
                     Ok(vec![delivery])
                 } else {
-                    Err(Error::Queue("Failed to fetch from queue".to_owned()))
+                    Err(Error::queue("Failed to fetch from queue"))
                 }
             }
         }

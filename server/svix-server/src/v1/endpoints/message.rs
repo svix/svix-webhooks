@@ -19,6 +19,7 @@ use crate::{
         ValidatedJson, ValidatedQuery,
     },
 };
+use anyhow::anyhow;
 use axum::{
     extract::{Extension, Path},
     routing::{get, post},
@@ -236,7 +237,7 @@ async fn create_message(
     )
     .await?
     // Should never happen since you're giving it an existing Application, but just in case
-    .ok_or_else(|| Error::Generic(format!("Application doesn't exist: {}", app.id)))?;
+    .ok_or_else(|| Error::Generic(anyhow!("Application doesn't exist: {}", app.id)))?;
 
     let msg = message::ActiveModel {
         app_id: Set(app.id.clone()),
