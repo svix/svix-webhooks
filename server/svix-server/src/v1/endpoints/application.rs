@@ -21,6 +21,7 @@ use crate::{
         PaginationLimit, ValidatedJson, ValidatedQuery,
     },
 };
+use anyhow::Context;
 use axum::{
     extract::{Extension, Path},
     routing::{get, post},
@@ -173,11 +174,18 @@ impl From<application::Model> for ApplicationOut {
     }
 }
 
+// TODO GABRIEL REMOVE
+fn fallible() -> std::result::Result<(), DbErr> {
+    Err(DbErr::Custom("some internal server error happened".into()))
+}
+
 async fn list_applications(
     Extension(ref db): Extension<DatabaseConnection>,
     pagination: ValidatedQuery<Pagination<ApplicationId>>,
     AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
 ) -> Result<Json<ListResponse<ApplicationOut>>> {
+    fallible().with_context(|| "fallible thing happened")?;
+
     let PaginationLimit(limit) = pagination.limit;
     let iterator = pagination.iterator.clone();
 

@@ -86,6 +86,13 @@ impl From<DbErr> for Error {
     }
 }
 
+impl From<anyhow::Error> for Error {
+    fn from(e: anyhow::Error) -> Self {
+        tracing::error!("context trace: {:#}", e);
+        Error::Http(HttpError::internal_server_errer(None, None))
+    }
+}
+
 impl IntoResponse for Error {
     fn into_response(self) -> Response {
         match self {
