@@ -11,7 +11,7 @@ use crate::{
         run_with_retries::run_with_retries,
         types::{ApplicationId, EndpointId, MessageAttemptTriggerType, MessageId},
     },
-    error::{Error, Result},
+    error::{Error, ErrorType, Result},
 };
 
 pub mod memory;
@@ -24,7 +24,7 @@ const RETRY_SCHEDULE: &[Duration] = &[
 ];
 
 fn should_retry(err: &Error) -> bool {
-    matches!(err, Error::Queue(_))
+    matches!(err.typ, ErrorType::Queue(_))
 }
 
 pub async fn new_pair(

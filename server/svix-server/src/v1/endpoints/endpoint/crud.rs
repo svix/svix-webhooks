@@ -20,6 +20,7 @@ use crate::{
             EventTypeNameSet, OrganizationId,
         },
     },
+    ctx,
     db::models::{endpoint, eventtype},
     error::{HttpError, Result, ValidationErrorItem},
     v1::utils::{
@@ -50,7 +51,10 @@ pub(super) async fn list_endpoints(
     }
 
     Ok(Json(EndpointOut::list_response_no_prev(
-        query.all(db).await?.into_iter().map(|x| x.into()).collect(),
+        ctx!(query.all(db).await)?
+            .into_iter()
+            .map(|x| x.into())
+            .collect(),
         limit as usize,
     )))
 }
@@ -86,7 +90,7 @@ pub(super) async fn create_endpoint(
             ..data.into()
         }
     };
-    let ret = endp.insert(db).await?;
+    let ret = ctx!(endp.insert(db).await)?;
 
     op_webhooks
         .send_operational_webhook(
@@ -111,10 +115,12 @@ pub(super) async fn get_endpoint(
         app,
     }: AuthenticatedApplication,
 ) -> Result<Json<EndpointOut>> {
-    let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id, endp_id)
-        .one(db)
-        .await?
-        .ok_or_else(|| HttpError::not_found(None, None))?;
+    let endp = ctx!(
+        endpoint::Entity::secure_find_by_id_or_uid(app.id, endp_id)
+            .one(db)
+            .await
+    )?
+    .ok_or_else(|| HttpError::not_found(None, None))?;
     Ok(Json(endp.into()))
 }
 
@@ -126,9 +132,11 @@ pub(super) async fn update_endpoint(
     ValidatedJson(data): ValidatedJson<EndpointIn>,
     AuthenticatedApplication { permissions, app }: AuthenticatedApplication,
 ) -> Result<(StatusCode, Json<EndpointOut>)> {
-    let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
-        .one(db)
-        .await?;
+    let endp = ctx!(
+        endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
+            .one(db)
+            .await
+    )?;
 
     if let Some(ref event_types_ids) = data.event_types_ids {
         validate_event_types(db, event_types_ids, &permissions.org_id).await?;
@@ -141,7 +149,7 @@ pub(super) async fn update_endpoint(
         Some(endp) => {
             let mut endp: endpoint::ActiveModel = endp.into();
             data.update_model(&mut endp);
-            let ret = endp.update(db).await?;
+            let ret = ctx!(endp.update(db).await)?;
 
             op_webhooks
                 .send_operational_webhook(
@@ -169,13 +177,15 @@ pub(super) async fn update_endpoint(
                 )?),
             };
 
-            let ret = endpoint::ActiveModel {
-                app_id: Set(app.id),
-                key,
-                ..data.into()
-            }
-            .insert(db)
-            .await?;
+            let ret = ctx!(
+                endpoint::ActiveModel {
+                    app_id: Set(app.id),
+                    key,
+                    ..data.into()
+                }
+                .insert(db)
+                .await
+            )?;
 
             op_webhooks
                 .send_operational_webhook(
@@ -202,10 +212,12 @@ pub(super) async fn patch_endpoint(
     ValidatedJson(data): ValidatedJson<EndpointPatch>,
     AuthenticatedApplication { permissions, app }: AuthenticatedApplication,
 ) -> Result<Json<EndpointOut>> {
-    let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
-        .one(db)
-        .await?
-        .ok_or_else(|| HttpError::not_found(None, None))?;
+    let endp = ctx!(
+        endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
+            .one(db)
+            .await
+    )?
+    .ok_or_else(|| HttpError::not_found(None, None))?;
 
     if let UnrequiredNullableField::Some(ref event_types_ids) = data.event_types_ids {
         validate_event_types(db, event_types_ids, &permissions.org_id).await?;
@@ -217,7 +229,7 @@ pub(super) async fn patch_endpoint(
     let mut endp: endpoint::ActiveModel = endp.into();
     data.update_model(&mut endp);
 
-    let ret = endp.update(db).await?;
+    let ret = ctx!(endp.update(db).await)?;
 
     let app_uid = app.uid;
     op_webhooks
@@ -241,10 +253,12 @@ pub(super) async fn delete_endpoint(
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
     AuthenticatedApplication { permissions, app }: AuthenticatedApplication,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
-    let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
-        .one(db)
-        .await?
-        .ok_or_else(|| HttpError::not_found(None, None))?;
+    let endp = ctx!(
+        endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
+            .one(db)
+            .await
+    )?
+    .ok_or_else(|| HttpError::not_found(None, None))?;
 
     // Cloning the ID/UID out of endp before it's consumed below
     let endpoint_id = endp.id.clone();
@@ -253,7 +267,7 @@ pub(super) async fn delete_endpoint(
     let mut endp: endpoint::ActiveModel = endp.into();
     endp.deleted = Set(true);
     endp.uid = Set(None); // We don't want deleted UIDs to clash
-    endp.update(db).await?;
+    ctx!(endp.update(db).await)?;
 
     op_webhooks
         .send_operational_webhook(
@@ -287,13 +301,15 @@ async fn validate_event_types(
     event_types_ids: &EventTypeNameSet,
     org_id: &OrganizationId,
 ) -> Result<()> {
-    let event_types: Vec<EventTypeNameResult> = eventtype::Entity::secure_find(org_id.clone())
-        .filter(eventtype::Column::Deleted.eq(false))
-        .select_only()
-        .column(eventtype::Column::Name)
-        .into_model::<EventTypeNameResult>()
-        .all(db)
-        .await?;
+    let event_types: Vec<EventTypeNameResult> = ctx!(
+        eventtype::Entity::secure_find(org_id.clone())
+            .filter(eventtype::Column::Deleted.eq(false))
+            .select_only()
+            .column(eventtype::Column::Name)
+            .into_model::<EventTypeNameResult>()
+            .all(db)
+            .await
+    )?;
     let event_types: HashSet<EventTypeName> =
         HashSet::from_iter(event_types.into_iter().map(|x| x.name));
     let missing: Vec<&EventTypeName> = event_types_ids

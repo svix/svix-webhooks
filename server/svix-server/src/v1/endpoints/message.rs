@@ -11,7 +11,8 @@ use crate::{
             MessageAttemptTriggerType, MessageId, MessageIdOrUid, MessageUid,
         },
     },
-    error::{Error, HttpError, Result},
+    ctx, err_generic,
+    error::{HttpError, Result},
     queue::{MessageTaskBatch, TaskQueueProducer},
     v1::utils::{
         apply_pagination, iterator_from_before_or_after, validation_error, ListResponse,
@@ -202,9 +203,13 @@ async fn list_messages(
     };
 
     let out = if is_prev {
-        query.all(db).await?.into_iter().rev().map(into).collect()
+        ctx!(query.all(db).await)?
+            .into_iter()
+            .rev()
+            .map(into)
+            .collect()
     } else {
-        query.all(db).await?.into_iter().map(into).collect()
+        ctx!(query.all(db).await)?.into_iter().map(into).collect()
     };
 
     Ok(Json(MessageOut::list_response(out, limit as usize, false)))
@@ -236,14 +241,14 @@ async fn create_message(
     )
     .await?
     // Should never happen since you're giving it an existing Application, but just in case
-    .ok_or_else(|| Error::Generic(format!("Application doesn't exist: {}", app.id)))?;
+    .ok_or_else(|| err_generic!("Application doesn't exist: {}", app.id))?;
 
     let msg = message::ActiveModel {
         app_id: Set(app.id.clone()),
         org_id: Set(permissions.org_id),
         ..data.into()
     };
-    let msg = msg.insert(db).await?;
+    let msg = ctx!(msg.insert(db).await)?;
 
     let trigger_type = MessageAttemptTriggerType::Scheduled;
     if !create_message_app
@@ -285,10 +290,12 @@ async fn get_message(
         app,
     }: AuthenticatedApplication,
 ) -> Result<Json<MessageOut>> {
-    let msg = message::Entity::secure_find_by_id_or_uid(app.id, msg_id)
-        .one(db)
-        .await?
-        .ok_or_else(|| HttpError::not_found(None, None))?;
+    let msg = ctx!(
+        message::Entity::secure_find_by_id_or_uid(app.id, msg_id)
+            .one(db)
+            .await
+    )?
+    .ok_or_else(|| HttpError::not_found(None, None))?;
     let msg_out = if with_content {
         msg.into()
     } else {
