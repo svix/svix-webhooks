@@ -288,7 +288,7 @@ where
     async fn from_request(req: &mut RequestParts<B>) -> Result<Self> {
         let b = bytes::Bytes::from_request(req).await.map_err(|e| {
             tracing::error!("Error reading body as bytes: {}", e);
-            HttpError::internal_server_errer(None, Some("Failed to read request body".to_owned()))
+            HttpError::internal_server_error(None, Some("Failed to read request body".to_owned()))
         })?;
         let mut de = serde_json::Deserializer::from_slice(&b);
 

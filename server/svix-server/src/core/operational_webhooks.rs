@@ -125,14 +125,14 @@ impl OperationalWebhookSenderInner {
         );
 
         let payload = serde_json::to_value(&payload)
-            .map_err(|_| HttpError::internal_server_errer(None, None))?;
+            .map_err(|_| HttpError::internal_server_error(None, None))?;
 
         // Get the event type from the type field
         let event_type: String = payload
             .get("type")
-            .ok_or_else(|| HttpError::internal_server_errer(None, None))?
+            .ok_or_else(|| HttpError::internal_server_error(None, None))?
             .as_str()
-            .ok_or_else(|| HttpError::internal_server_errer(None, None))?
+            .ok_or_else(|| HttpError::internal_server_error(None, None))?
             .to_string();
 
         let recipient_org_id = recipient_org_id.to_string();
