@@ -25,7 +25,7 @@ async fn dashboard_access(
         "token": token,
         "region": &cfg.internal.region,
     }))
-    .map_err(|_| HttpError::internal_server_errer(None, None))?;
+    .map_err(|_| HttpError::internal_server_error(None, None))?;
 
     let login_key = base64::encode(&login_key);
 
