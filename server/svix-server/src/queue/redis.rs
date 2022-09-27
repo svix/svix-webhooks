@@ -721,7 +721,7 @@ pub mod tests {
         let _: () = pool.del(TEST_QUEUE).await.unwrap();
         let _: () = pool.del(TEST_LEGACY).await.unwrap();
 
-        let _: () = pool.rpush(TEST_LEGACY, &v).await.unwrap();
+        let _: () = pool.rpush(TEST_LEGACY, v).await.unwrap();
 
         let should_be_none: Option<String> = pool.lpop(TEST_QUEUE, None).await.unwrap();
         assert!(should_be_none.is_none());
@@ -753,7 +753,7 @@ pub mod tests {
         let _: () = pool.del(TEST_QUEUE).await.unwrap();
         let _: () = pool.del(TEST_LEGACY).await.unwrap();
 
-        let _: () = pool.zadd(TEST_LEGACY, &v, 1isize).await.unwrap();
+        let _: () = pool.zadd(TEST_LEGACY, v, 1isize).await.unwrap();
 
         let should_be_none: Vec<(String, i32)> = pool.zpopmin(TEST_QUEUE, 1).await.unwrap();
         assert!(should_be_none.is_empty());
@@ -1011,7 +1011,7 @@ pub mod tests {
             // Add v3 consumer group
             let _: () = conn
                 .query_async(redis::Cmd::xgroup_create_mkstream(
-                    &v3_main,
+                    v3_main,
                     super::WORKERS_GROUP,
                     0i8,
                 ))

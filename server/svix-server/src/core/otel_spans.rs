@@ -128,7 +128,7 @@ impl<B> MakeSpan<B> for AxumOtelSpanCreator {
         );
 
         if let Some(key) = idempotency_key {
-            span.record("idempotency_key", &key);
+            span.record("idempotency_key", key);
         }
 
         span.set_parent(remote_context);
@@ -149,7 +149,7 @@ impl<B> OnResponse<B> for AxumOtelOnResponse {
     ) {
         let status = response.status().as_u16().to_string();
         span.record("http.status_code", &tracing::field::display(status));
-        span.record("otel.status_code", &"OK");
+        span.record("otel.status_code", "OK");
 
         tracing::debug!(
             "finished processing request latency={} ms status={}",
@@ -171,7 +171,7 @@ impl OnFailure<ServerErrorsFailureClass> for AxumOtelOnFailure {
     ) {
         match failure_classification {
             ServerErrorsFailureClass::StatusCode(status) if status.is_server_error() => {
-                span.record("otel.status_code", &"ERROR");
+                span.record("otel.status_code", "ERROR");
             }
             _ => {}
         }
