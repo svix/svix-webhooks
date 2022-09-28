@@ -19,10 +19,11 @@ use crate::core::{
     },
 };
 use crate::db::models::{endpoint, message, messageattempt, messagedestination};
-use crate::error::{Error, Result};
+use crate::error::Result;
 use crate::queue::{
     MessageTask, MessageTaskBatch, QueueTask, TaskQueueConsumer, TaskQueueProducer,
 };
+use crate::{ctx, err_generic};
 use chrono::Utc;
 
 use futures::future;
@@ -82,10 +83,7 @@ async fn process_success_cache(
 ) -> Result<()> {
     let key = FailureCacheKey::new(app_id, endp_id);
 
-    cache
-        .delete(&key)
-        .await
-        .map_err(|e| Error::from(e.to_string()))?;
+    cache.delete(&key).await.map_err(|e| err_generic!(e))?;
 
     Ok(())
 }
@@ -116,7 +114,7 @@ async fn process_failure_cache(
     if let Some(FailureCacheValue { first_failure_at }) = cache
         .get::<FailureCacheValue>(&key)
         .await
-        .map_err(|e| Error::from(e.to_string()))?
+        .map_err(|e| err_generic!(e))?
     {
         if now - first_failure_at
             > chrono::Duration::from_std(disable_in).expect("Given `disable_in` is too large")
@@ -139,7 +137,7 @@ async fn process_failure_cache(
                 disable_in * 2,
             )
             .await
-            .map_err(|e| Error::from(e.to_string()))?;
+            .map_err(|e| err_generic!(e))?;
 
         Ok(None)
     }
@@ -294,16 +292,13 @@ async fn dispatch(
         .send()
         .await;
 
-    let msg_dest = messagedestination::Entity::secure_find_by_msg(msg_task.msg_id.clone())
-        .filter(messagedestination::Column::EndpId.eq(endp.id.clone()))
-        .one(db)
-        .await?
-        .ok_or_else(|| {
-            Error::Generic(format!(
-                "Msg dest not found {} {}",
-                msg_task.msg_id, endp.id
-            ))
-        })?;
+    let msg_dest = ctx!(
+        messagedestination::Entity::secure_find_by_msg(msg_task.msg_id.clone())
+            .filter(messagedestination::Column::EndpId.eq(endp.id.clone()))
+            .one(db)
+            .await
+    )?
+    .ok_or_else(|| err_generic!("Msg dest not found {} {}", msg_task.msg_id, endp.id))?;
 
     if (msg_dest.status != MessageStatus::Pending && msg_dest.status != MessageStatus::Sending)
         && (msg_task.trigger_type != MessageAttemptTriggerType::Manual)
@@ -370,21 +365,21 @@ async fn dispatch(
 
     match attempt {
         Ok(attempt) => {
-            let _attempt = attempt.insert(db).await?;
+            let _attempt = ctx!(attempt.insert(db).await)?;
 
             let msg_dest = messagedestination::ActiveModel {
                 status: Set(MessageStatus::Success),
                 next_attempt: Set(None),
                 ..msg_dest.into()
             };
-            let msg_dest = msg_dest.update(db).await?;
+            let msg_dest = ctx!(msg_dest.update(db).await)?;
 
             process_success_cache(cache, &msg_task.app_id, &msg_task.endpoint_id).await?;
 
             tracing::trace!("Worker success: {} {}", &msg_dest.id, &endp.id,);
         }
         Err((attempt, err)) => {
-            let attempt = attempt.insert(db).await?;
+            let attempt = ctx!(attempt.insert(db).await)?;
 
             let attempt_count = msg_task.attempt_count as usize;
             if msg_task.trigger_type == MessageAttemptTriggerType::Manual {
@@ -414,7 +409,7 @@ async fn dispatch(
                     )),
                     ..msg_dest.into()
                 };
-                let _msg_dest = msg_dest.update(db).await?;
+                let _msg_dest = ctx!(msg_dest.update(db).await)?;
 
                 if attempt_count == OP_WEBHOOKS_SEND_FAILING_EVENT_AFTER {
                     op_webhook_sender
@@ -453,7 +448,7 @@ async fn dispatch(
                     next_attempt: Set(None),
                     ..msg_dest.into()
                 };
-                let _msg_dest = msg_dest.update(db).await?;
+                let _msg_dest = ctx!(msg_dest.update(db).await)?;
 
                 // Send common operational webhook
                 op_webhook_sender
@@ -497,17 +492,20 @@ async fn dispatch(
                             .await?;
 
                         // Disable endpoint in DB
-                        let endp = endpoint::Entity::secure_find_by_id(
-                            msg_task.app_id.clone(),
-                            msg_task.endpoint_id.clone(),
-                        )
-                        .one(db)
-                        .await?
+                        let endp = ctx!(
+                            endpoint::Entity::secure_find_by_id(
+                                msg_task.app_id.clone(),
+                                msg_task.endpoint_id.clone(),
+                            )
+                            .one(db)
+                            .await
+                        )?
                         .ok_or_else(|| {
-                            Error::Generic(format!(
+                            err_generic!(
                                 "Endpoint not found {} {}",
-                                &msg_task.app_id, &msg_task.endpoint_id
-                            ))
+                                &msg_task.app_id,
+                                &msg_task.endpoint_id
+                            )
                         })?;
 
                         let endp = endpoint::ActiveModel {
@@ -515,7 +513,7 @@ async fn dispatch(
                             first_failure_at: Set(Some(first_failure_at.into())),
                             ..endp.into()
                         };
-                        let _endp = endp.update(db).await?;
+                        let _endp = ctx!(endp.update(db).await)?;
                     }
                 }
             }
@@ -555,10 +553,8 @@ async fn process_task(worker_context: WorkerContext<'_>, queue_task: Arc<QueueTa
         QueueTask::HealthCheck => unreachable!(),
     };
 
-    let msg = message::Entity::find_by_id(msg_id.clone())
-        .one(db)
-        .await?
-        .ok_or_else(|| Error::Generic(format!("Unexpected: message doesn't exist {}", msg_id,)))?;
+    let msg = ctx!(message::Entity::find_by_id(msg_id.clone()).one(db).await)?
+        .ok_or_else(|| err_generic!("Unexpected: message doesn't exist {}", msg_id,))?;
     let payload = msg.payload.as_ref().expect("Message payload is NULL");
 
     let create_message_app = CreateMessageApp::layered_fetch(
@@ -570,7 +566,7 @@ async fn process_task(worker_context: WorkerContext<'_>, queue_task: Arc<QueueTa
         Duration::from_secs(30),
     )
     .await?
-    .ok_or_else(|| Error::Generic(format!("Application doesn't exist: {}", &msg.app_id)))?;
+    .ok_or_else(|| err_generic!("Application doesn't exist: {}", &msg.app_id))?;
 
     let app_uid = create_message_app.uid.clone();
 
@@ -596,9 +592,11 @@ async fn process_task(worker_context: WorkerContext<'_>, queue_task: Arc<QueueTa
                 status: Set(MessageStatus::Sending),
                 ..Default::default()
             });
-        messagedestination::Entity::insert_many(destinations)
-            .exec(db)
-            .await?;
+        ctx!(
+            messagedestination::Entity::insert_many(destinations)
+                .exec(db)
+                .await
+        )?;
     }
 
     let org_id = &msg.org_id;
@@ -642,10 +640,10 @@ async fn process_task(worker_context: WorkerContext<'_>, queue_task: Arc<QueueTa
 
     let errs: Vec<_> = join.iter().filter(|x| x.is_err()).collect();
     if !errs.is_empty() {
-        return Err(Error::Generic(format!(
+        return Err(err_generic!(
             "Some dispatches failed unexpectedly: {:?}",
             errs
-        )));
+        ));
     }
 
     Ok(())

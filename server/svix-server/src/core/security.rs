@@ -15,6 +15,7 @@ use validator::Validate;
 
 use crate::{
     cfg::Configuration,
+    ctx,
     db::models::application,
     error::{Error, HttpError, Result},
 };
@@ -191,12 +192,14 @@ where
         let Extension(ref db) = Extension::<DatabaseConnection>::from_request(req)
             .await
             .map_err(to_internal_server_error)?;
-        let app = application::Entity::secure_find_by_id_or_uid(
-            permissions.org_id.clone(),
-            app_id.to_owned(),
-        )
-        .one(db)
-        .await?
+        let app = ctx!(
+            application::Entity::secure_find_by_id_or_uid(
+                permissions.org_id.clone(),
+                app_id.to_owned(),
+            )
+            .one(db)
+            .await
+        )?
         .ok_or_else(|| HttpError::not_found(None, None))?;
         Ok(AuthenticatedOrganizationWithApplication { permissions, app })
     }
@@ -223,12 +226,14 @@ where
         let Extension(ref db) = Extension::<DatabaseConnection>::from_request(req)
             .await
             .map_err(to_internal_server_error)?;
-        let app = application::Entity::secure_find_by_id_or_uid(
-            permissions.org_id.clone(),
-            app_id.to_owned(),
-        )
-        .one(db)
-        .await?
+        let app = ctx!(
+            application::Entity::secure_find_by_id_or_uid(
+                permissions.org_id.clone(),
+                app_id.to_owned(),
+            )
+            .one(db)
+            .await
+        )?
         .ok_or_else(|| HttpError::not_found(None, None))?;
 
         if let Some(permitted_app_id) = &permissions.app_id {

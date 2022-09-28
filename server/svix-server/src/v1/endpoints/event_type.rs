@@ -6,6 +6,7 @@ use crate::{
         security::{AuthenticatedOrganization, Permissions},
         types::EventTypeName,
     },
+    ctx,
     db::models::eventtype,
     error::{HttpError, Result},
     v1::utils::{
@@ -190,9 +191,7 @@ async fn list_event_types(
     }
 
     Ok(Json(EventTypeOut::list_response_no_prev(
-        query
-            .all(db)
-            .await?
+        ctx!(query.all(db).await)?
             .into_iter()
             .map(|x| {
                 if !fetch_options.with_content {
@@ -211,17 +210,18 @@ async fn create_event_type(
     ValidatedJson(data): ValidatedJson<EventTypeIn>,
     AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
 ) -> Result<(StatusCode, Json<EventTypeOut>)> {
-    let evtype =
+    let evtype = ctx!(
         eventtype::Entity::secure_find_by_name(permissions.org_id.clone(), data.name.to_owned())
             .one(db)
-            .await?;
+            .await
+    )?;
     let ret = match evtype {
         Some(evtype) => {
             if evtype.deleted {
                 let mut evtype: eventtype::ActiveModel = evtype.into();
                 evtype.deleted = Set(false);
                 data.update_model(&mut evtype);
-                evtype.update(db).await?
+                ctx!(evtype.update(db).await)?
             } else {
                 return Err(HttpError::conflict(
                     Some("event_type_exists".to_owned()),
@@ -235,7 +235,7 @@ async fn create_event_type(
                 org_id: Set(permissions.org_id.clone()),
                 ..data.into()
             };
-            evtype.insert(db).await?
+            ctx!(evtype.insert(db).await)?
         }
     };
     Ok((StatusCode::CREATED, Json(ret.into())))
@@ -246,10 +246,12 @@ async fn get_event_type(
     Path(evtype_name): Path<EventTypeName>,
     AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
 ) -> Result<Json<EventTypeOut>> {
-    let evtype = eventtype::Entity::secure_find_by_name(permissions.org_id, evtype_name)
-        .one(db)
-        .await?
-        .ok_or_else(|| HttpError::not_found(None, None))?;
+    let evtype = ctx!(
+        eventtype::Entity::secure_find_by_name(permissions.org_id, evtype_name)
+            .one(db)
+            .await
+    )?
+    .ok_or_else(|| HttpError::not_found(None, None))?;
     Ok(Json(evtype.into()))
 }
 
@@ -259,27 +261,30 @@ async fn update_event_type(
     ValidatedJson(data): ValidatedJson<EventTypeUpdate>,
     AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
 ) -> Result<(StatusCode, Json<EventTypeOut>)> {
-    let evtype =
+    let evtype = ctx!(
         eventtype::Entity::secure_find_by_name(permissions.org_id.clone(), evtype_name.clone())
             .one(db)
-            .await?;
+            .await
+    )?;
 
     match evtype {
         Some(evtype) => {
             let mut evtype: eventtype::ActiveModel = evtype.into();
             data.update_model(&mut evtype);
-            let ret = evtype.update(db).await?;
+            let ret = ctx!(evtype.update(db).await)?;
 
             Ok((StatusCode::OK, Json(ret.into())))
         }
         None => {
-            let ret = eventtype::ActiveModel {
-                org_id: Set(permissions.org_id.clone()),
-                name: Set(evtype_name),
-                ..data.into()
-            }
-            .insert(db)
-            .await?;
+            let ret = ctx!(
+                eventtype::ActiveModel {
+                    org_id: Set(permissions.org_id.clone()),
+                    name: Set(evtype_name),
+                    ..data.into()
+                }
+                .insert(db)
+                .await
+            )?;
 
             Ok((StatusCode::CREATED, Json(ret.into())))
         }
@@ -292,15 +297,17 @@ async fn patch_event_type(
     ValidatedJson(data): ValidatedJson<EventTypePatch>,
     AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
 ) -> Result<Json<EventTypeOut>> {
-    let evtype = eventtype::Entity::secure_find_by_name(permissions.org_id.clone(), evtype_name)
-        .one(db)
-        .await?
-        .ok_or_else(|| HttpError::not_found(None, None))?;
+    let evtype = ctx!(
+        eventtype::Entity::secure_find_by_name(permissions.org_id.clone(), evtype_name)
+            .one(db)
+            .await
+    )?
+    .ok_or_else(|| HttpError::not_found(None, None))?;
 
     let mut evtype: eventtype::ActiveModel = evtype.into();
     data.update_model(&mut evtype);
 
-    let ret = evtype.update(db).await?;
+    let ret = ctx!(evtype.update(db).await)?;
     Ok(Json(ret.into()))
 }
 
@@ -309,14 +316,16 @@ async fn delete_event_type(
     Path(evtype_name): Path<EventTypeName>,
     AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
-    let evtype = eventtype::Entity::secure_find_by_name(permissions.org_id, evtype_name)
-        .one(db)
-        .await?
-        .ok_or_else(|| HttpError::not_found(None, None))?;
+    let evtype = ctx!(
+        eventtype::Entity::secure_find_by_name(permissions.org_id, evtype_name)
+            .one(db)
+            .await
+    )?
+    .ok_or_else(|| HttpError::not_found(None, None))?;
 
     let mut evtype: eventtype::ActiveModel = evtype.into();
     evtype.deleted = Set(true);
-    evtype.update(db).await?;
+    ctx!(evtype.update(db).await)?;
     Ok((StatusCode::NO_CONTENT, Json(EmptyResponse {})))
 }
 

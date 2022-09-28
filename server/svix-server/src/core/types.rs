@@ -19,7 +19,7 @@ use std::ops::Deref;
 use svix_ksuid::*;
 use validator::{Validate, ValidationErrors};
 
-use crate::v1::utils::validation_error;
+use crate::{err_generic, v1::utils::validation_error};
 
 use super::cryptography::{AsymmetricKey, Encryption};
 
@@ -470,8 +470,8 @@ impl EndpointSecretMarker {
     fn from_u8(v: u8) -> crate::error::Result<Self> {
         let encrypted = (v & Self::ENCRYPTED_FLAG) != 0;
         let v = v & !Self::ENCRYPTED_FLAG;
-        let type_ = EndpointSecretType::try_from(v)
-            .map_err(|_| crate::error::Error::Generic("Invalid marker value".to_string()))?;
+        let type_ =
+            EndpointSecretType::try_from(v).map_err(|_| err_generic!("Invalid marker value"))?;
 
         Ok(Self { type_, encrypted })
     }
@@ -542,9 +542,7 @@ impl EndpointSecretInternal {
     fn from_vec(v: Vec<u8>) -> crate::error::Result<Self> {
         // Legacy had exact size
         match v.len() {
-            0..=Self::KEY_SIZE_MINUS_ONE => {
-                Err(crate::error::Error::Generic("Value too small".to_string()))
-            }
+            0..=Self::KEY_SIZE_MINUS_ONE => Err(err_generic!("Value too small")),
             Self::KEY_SIZE => Ok(Self {
                 marker: EndpointSecretMarker {
                     type_: EndpointSecretType::Hmac256,
@@ -608,9 +606,7 @@ impl EndpointSecretInternal {
             if encryption.enabled() {
                 encryption.decrypt(&self.key)?
             } else {
-                return Err(crate::error::Error::Generic(
-                    "main_secret unset, can't decrypt key".to_string(),
-                ));
+                return Err(err_generic!("main_secret unset, can't decrypt key"));
             }
         } else {
             self.key.to_vec()

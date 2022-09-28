@@ -11,6 +11,7 @@ use crate::{
         security::AuthenticatedApplication,
         types::{ApplicationIdOrUid, EndpointIdOrUid},
     },
+    ctx,
     db::models::endpoint,
     error::{HttpError, Result},
     v1::utils::{EmptyResponse, ModelIn, ValidatedJson},
@@ -24,10 +25,12 @@ pub(super) async fn get_endpoint_headers(
         app,
     }: AuthenticatedApplication,
 ) -> Result<Json<EndpointHeadersOut>> {
-    let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id, endp_id)
-        .one(db)
-        .await?
-        .ok_or_else(|| HttpError::not_found(None, None))?;
+    let endp = ctx!(
+        endpoint::Entity::secure_find_by_id_or_uid(app.id, endp_id)
+            .one(db)
+            .await
+    )?
+    .ok_or_else(|| HttpError::not_found(None, None))?;
 
     match endp.headers {
         Some(h) => Ok(Json(h.into())),
@@ -44,14 +47,16 @@ pub(super) async fn update_endpoint_headers(
         app,
     }: AuthenticatedApplication,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
-    let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
-        .one(db)
-        .await?
-        .ok_or_else(|| HttpError::not_found(None, None))?;
+    let endp = ctx!(
+        endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
+            .one(db)
+            .await
+    )?
+    .ok_or_else(|| HttpError::not_found(None, None))?;
 
     let mut endp: endpoint::ActiveModel = endp.into();
     data.update_model(&mut endp);
-    endp.update(db).await?;
+    ctx!(endp.update(db).await)?;
 
     Ok((StatusCode::NO_CONTENT, Json(EmptyResponse {})))
 }
@@ -65,14 +70,16 @@ pub(super) async fn patch_endpoint_headers(
         app,
     }: AuthenticatedApplication,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
-    let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
-        .one(db)
-        .await?
-        .ok_or_else(|| HttpError::not_found(None, None))?;
+    let endp = ctx!(
+        endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
+            .one(db)
+            .await
+    )?
+    .ok_or_else(|| HttpError::not_found(None, None))?;
 
     let mut endp: endpoint::ActiveModel = endp.into();
     data.update_model(&mut endp);
-    endp.update(db).await?;
+    ctx!(endp.update(db).await)?;
 
     Ok((StatusCode::NO_CONTENT, Json(EmptyResponse {})))
 }
