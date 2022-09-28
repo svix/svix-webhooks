@@ -65,7 +65,7 @@ impl IdempotencyKey {
         hasher.update(url);
 
         let res = hasher.finalize();
-        IdempotencyKey(base64::encode(&res))
+        IdempotencyKey(base64::encode(res))
     }
 }
 
