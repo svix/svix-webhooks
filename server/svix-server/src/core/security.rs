@@ -72,58 +72,39 @@ where
                 .await
                 .map_err(|_| HttpError::unauthorized(None, Some("Invalid token".to_string())))?;
 
-        let claims = cfg
-            .jwt_secret
-            .key
-            .verify_token::<CustomClaim>(bearer.token(), None)
-            .map_err(|_| HttpError::unauthorized(None, Some("Invalid token".to_string())))?;
+        permissions_from_bearer(&cfg.jwt_secret.key, bearer)
+    }
+}
 
-        let bad_token = |field: &str, id_type: &str| {
-            HttpError::bad_request(
-                Some("bad token".to_string()),
-                Some(format!("`{}` is not a valid {} id", field, id_type)),
-            )
-        };
+pub fn permissions_from_bearer(key: &HS256Key, bearer: Bearer) -> Result<Permissions> {
+    let claims = key
+        .verify_token::<CustomClaim>(bearer.token(), None)
+        .map_err(|_| HttpError::unauthorized(None, Some("Invalid token".to_string())))?;
 
-        // If there is an `org` field then it is an Application authentication
-        if let Some(org_id) = claims.custom.organization {
-            let org_id = OrganizationId(org_id);
-            org_id
+    let bad_token = |field: &str, id_type: &str| {
+        HttpError::bad_request(
+            Some("bad token".to_string()),
+            Some(format!("`{}` is not a valid {} id", field, id_type)),
+        )
+    };
+
+    // If there is an `org` field then it is an Application authentication
+    if let Some(org_id) = claims.custom.organization {
+        let org_id = OrganizationId(org_id);
+        org_id
+            .validate()
+            .map_err(|_| bad_token("org", "organization"))?;
+
+        if let Some(app_id) = claims.subject {
+            let app_id = ApplicationId(app_id);
+            app_id
                 .validate()
-                .map_err(|_| bad_token("org", "organization"))?;
+                .map_err(|_| bad_token("sub", "application"))?;
 
-            if let Some(app_id) = claims.subject {
-                let app_id = ApplicationId(app_id);
-                app_id
-                    .validate()
-                    .map_err(|_| bad_token("sub", "application"))?;
-
-                Ok(Permissions {
-                    org_id,
-                    app_id: Some(app_id),
-                    type_: KeyType::Application,
-                })
-            } else {
-                Err(HttpError::unauthorized(
-                    None,
-                    Some("Invalid token (missing `sub`).".to_string()),
-                )
-                .into())
-            }
-        }
-        // Otherwsie it's an Organization authentication
-        else if let Some(org_id) = claims.subject {
-            let org_id = OrganizationId(org_id);
-            org_id.validate().map_err(|_| {
-                HttpError::bad_request(
-                    Some("bad_token".to_string()),
-                    Some("`sub' is not a valid organization id.".to_string()),
-                )
-            })?;
             Ok(Permissions {
                 org_id,
-                app_id: None,
-                type_: KeyType::Organization,
+                app_id: Some(app_id),
+                type_: KeyType::Application,
             })
         } else {
             Err(
@@ -131,6 +112,26 @@ where
                     .into(),
             )
         }
+    }
+    // Otherwise it's an Organization authentication
+    else if let Some(org_id) = claims.subject {
+        let org_id = OrganizationId(org_id);
+        org_id.validate().map_err(|_| {
+            HttpError::bad_request(
+                Some("bad_token".to_string()),
+                Some("`sub' is not a valid organization id.".to_string()),
+            )
+        })?;
+        Ok(Permissions {
+            org_id,
+            app_id: None,
+            type_: KeyType::Organization,
+        })
+    } else {
+        Err(
+            HttpError::unauthorized(None, Some("Invalid token (missing `sub`).".to_string()))
+                .into(),
+        )
     }
 }
 
