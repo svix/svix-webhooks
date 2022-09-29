@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use std::fmt::{Debug, Display};
+use std::fmt::Debug;
 
 use axum::{
     async_trait,
@@ -32,11 +32,6 @@ pub fn management_org_id() -> OrganizationId {
     OrganizationId("org_00000000000SvixManagement00".to_owned())
 }
 
-fn to_internal_server_error(x: impl Display) -> HttpError {
-    tracing::error!("Error: {}", x);
-    HttpError::internal_server_error(None, None)
-}
-
 pub struct Permissions {
     pub type_: KeyType,
     pub org_id: OrganizationId,
@@ -63,14 +58,10 @@ where
     type Rejection = Error;
 
     async fn from_request(req: &mut RequestParts<B>) -> Result<Self> {
-        let Extension(ref cfg) = Extension::<Configuration>::from_request(req)
-            .await
-            .map_err(to_internal_server_error)?;
+        let Extension(ref cfg) = ctx!(Extension::<Configuration>::from_request(req).await)?;
 
         let TypedHeader(Authorization(bearer)) =
-            TypedHeader::<Authorization<Bearer>>::from_request(req)
-                .await
-                .map_err(|_| HttpError::unauthorized(None, Some("Invalid token".to_string())))?;
+            ctx!(TypedHeader::<Authorization<Bearer>>::from_request(req).await)?;
 
         permissions_from_bearer(&cfg.jwt_secret.key, bearer)
     }
@@ -187,12 +178,8 @@ where
         }
 
         let Path(ApplicationPathParams { app_id }) =
-            Path::<ApplicationPathParams>::from_request(req)
-                .await
-                .map_err(to_internal_server_error)?;
-        let Extension(ref db) = Extension::<DatabaseConnection>::from_request(req)
-            .await
-            .map_err(to_internal_server_error)?;
+            ctx!(Path::<ApplicationPathParams>::from_request(req).await)?;
+        let Extension(ref db) = ctx!(Extension::<DatabaseConnection>::from_request(req).await)?;
         let app = ctx!(
             application::Entity::secure_find_by_id_or_uid(
                 permissions.org_id.clone(),
@@ -221,12 +208,8 @@ where
     async fn from_request(req: &mut RequestParts<B>) -> Result<Self> {
         let permissions = Permissions::from_request(req).await?;
         let Path(ApplicationPathParams { app_id }) =
-            Path::<ApplicationPathParams>::from_request(req)
-                .await
-                .map_err(to_internal_server_error)?;
-        let Extension(ref db) = Extension::<DatabaseConnection>::from_request(req)
-            .await
-            .map_err(to_internal_server_error)?;
+            ctx!(Path::<ApplicationPathParams>::from_request(req).await)?;
+        let Extension(ref db) = ctx!(Extension::<DatabaseConnection>::from_request(req).await)?;
         let app = ctx!(
             application::Entity::secure_find_by_id_or_uid(
                 permissions.org_id.clone(),
