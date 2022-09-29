@@ -4,9 +4,15 @@
 use std::error;
 use std::fmt;
 
+use axum::extract::rejection::ExtensionRejection;
+use axum::extract::rejection::PathRejection;
+use axum::extract::rejection::TypedHeaderRejection;
+use axum::headers::authorization::Bearer;
+use axum::headers::Authorization;
 use axum::response::IntoResponse;
 use axum::response::Response;
 use axum::Json;
+use axum::TypedHeader;
 use hyper::StatusCode;
 use sea_orm::DbErr;
 use serde::Serialize;
@@ -185,6 +191,26 @@ impl<T> Traceable<T> for std::result::Result<T, redis::RedisError> {
 impl<T, E: error::Error + 'static> Traceable<T> for std::result::Result<T, bb8::RunError<E>> {
     fn trace(self, location: &'static str) -> Result<T> {
         self.map_err(|e| Error::queue(e, location))
+    }
+}
+
+impl<T> Traceable<T> for std::result::Result<T, ExtensionRejection> {
+    fn trace(self, location: &'static str) -> Result<T> {
+        self.map_err(|e| Error::generic(e, location))
+    }
+}
+
+impl<T> Traceable<T> for std::result::Result<T, PathRejection> {
+    fn trace(self, location: &'static str) -> Result<T> {
+        self.map_err(|e| Error::generic(e, location))
+    }
+}
+
+impl Traceable<TypedHeader<Authorization<Bearer>>>
+    for std::result::Result<TypedHeader<Authorization<Bearer>>, TypedHeaderRejection>
+{
+    fn trace(self, _location: &'static str) -> Result<TypedHeader<Authorization<Bearer>>> {
+        self.map_err(|_| HttpError::unauthorized(None, Some("Invalid token".to_string())).into())
     }
 }
 
