@@ -250,7 +250,6 @@ pub fn generate_org_token(keys: &Keys, org_id: OrganizationId) -> Result<String>
         Duration::from_hours(24 * 365 * 10),
     )
     .with_issuer(JWT_ISSUER)
-    .with_jwt_id(JWT_ISSUER)
     .with_subject(org_id.0);
     Ok(keys.key.authenticate(claims).unwrap())
 }
@@ -259,7 +258,6 @@ pub fn generate_management_token(keys: &Keys) -> Result<String> {
     let claims =
         Claims::with_custom_claims(CustomClaim { organization: None }, Duration::from_mins(10))
             .with_issuer(JWT_ISSUER)
-            .with_jwt_id(JWT_ISSUER)
             .with_subject(management_org_id());
     Ok(keys.key.authenticate(claims).unwrap())
 }
@@ -276,7 +274,6 @@ pub fn generate_app_token(
         Duration::from_hours(24 * 28),
     )
     .with_issuer(JWT_ISSUER)
-    .with_jwt_id(JWT_ISSUER)
     .with_subject(app_id.0);
     Ok(keys.key.authenticate(claims).unwrap())
 }
