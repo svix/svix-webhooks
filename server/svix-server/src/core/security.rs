@@ -112,7 +112,7 @@ pub fn permissions_from_bearer(key: &HS256Key, bearer: Bearer) -> Result<Permiss
             )
         }
     }
-    // Otherwsie it's an Organization authentication
+    // Otherwise it's an Organization authentication
     else if let Some(org_id) = claims.subject {
         let org_id = OrganizationId(org_id);
         org_id.validate().map_err(|_| {
