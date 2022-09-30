@@ -47,7 +47,7 @@ pub enum KeyType {
 #[derive(Clone, Serialize, Deserialize)]
 pub struct CustomClaim {
     #[serde(rename = "org", default, skip_serializing_if = "Option::is_none")]
-    organization: Option<String>,
+    pub organization: Option<String>,
 }
 
 #[async_trait]
@@ -63,12 +63,14 @@ where
         let TypedHeader(Authorization(bearer)) =
             ctx!(TypedHeader::<Authorization<Bearer>>::from_request(req).await)?;
 
-        permissions_from_bearer(&cfg.jwt_secret.key, bearer)
+        permissions_from_bearer(cfg, &bearer)
     }
 }
 
-pub fn permissions_from_bearer(key: &HS256Key, bearer: Bearer) -> Result<Permissions> {
-    let claims = key
+pub fn permissions_from_bearer(cfg: &Configuration, bearer: &Bearer) -> Result<Permissions> {
+    let claims = cfg
+        .jwt_secret
+        .key
         .verify_token::<CustomClaim>(bearer.token(), None)
         .map_err(|_| HttpError::unauthorized(None, Some("Invalid token".to_string())))?;
 
@@ -268,7 +270,7 @@ pub fn generate_app_token(
 
 #[derive(Clone, Debug)]
 pub struct Keys {
-    key: HS256Key,
+    pub key: HS256Key,
 }
 
 impl Keys {
