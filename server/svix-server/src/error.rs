@@ -65,6 +65,13 @@ impl Error {
         }
     }
 
+    pub fn cache(s: impl fmt::Display, location: &'static str) -> Self {
+        Self {
+            trace: Self::init_trace(location),
+            typ: ErrorType::Cache(s.to_string()),
+        }
+    }
+
     fn init_trace(location: &'static str) -> Vec<&'static str> {
         let mut trace = Vec::with_capacity(10); // somewhat arbitrary capacity, but avoids reallocation when building an error trace later on
         trace.push(location);
@@ -214,6 +221,12 @@ impl Traceable<TypedHeader<Authorization<Bearer>>>
     }
 }
 
+impl<T> Traceable<T> for std::result::Result<T, crate::core::cache::Error> {
+    fn trace(self, location: &'static str) -> Result<T> {
+        self.map_err(|e| Error::cache(e, location))
+    }
+}
+
 #[derive(Debug, Clone)]
 pub enum ErrorType {
     /// A generic error
@@ -226,6 +239,8 @@ pub enum ErrorType {
     Validation(String),
     /// Any kind of HttpError
     Http(HttpError),
+    /// Cache error
+    Cache(String),
 }
 
 impl fmt::Display for ErrorType {
@@ -236,6 +251,7 @@ impl fmt::Display for ErrorType {
             Self::Queue(s) => s.fmt(f),
             Self::Validation(s) => s.fmt(f),
             Self::Http(s) => s.fmt(f),
+            Self::Cache(s) => s.fmt(f),
         }
     }
 }
