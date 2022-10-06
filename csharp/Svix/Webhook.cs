@@ -55,12 +55,12 @@ namespace Svix
             var timestamp = Webhook.VerifyTimestamp(msgTimestamp);
 
             var signature = this.Sign(msgId, timestamp, payload);
-            var expectedSignature = signature.Split(",")[1];
+            var expectedSignature = signature.Split(',')[1];
 
             var passedSignatures = msgSignature.Split(' ');
             foreach (string versionedSignature in passedSignatures)
             {
-                var parts = versionedSignature.Split(",");
+                var parts = versionedSignature.Split(',');
                 if (parts.Length < 2)
                 {
                     throw new WebhookVerificationException("Invalid Signature Headers");
