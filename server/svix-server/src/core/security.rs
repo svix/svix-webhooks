@@ -58,22 +58,29 @@ where
     type Rejection = Error;
 
     async fn from_request(req: &mut RequestParts<B>) -> Result<Self> {
-        let Extension(ref cfg) = ctx!(Extension::<Configuration>::from_request(req).await)?;
-
-        let TypedHeader(Authorization(bearer)) =
-            ctx!(TypedHeader::<Authorization<Bearer>>::from_request(req).await)?;
-
-        permissions_from_bearer(cfg, &bearer)
+        permissions_from_bearer(req).await
     }
 }
 
-pub fn permissions_from_bearer(cfg: &Configuration, bearer: &Bearer) -> Result<Permissions> {
-    let claims = cfg
-        .jwt_secret
+pub async fn permissions_from_bearer<B: Send>(req: &mut RequestParts<B>) -> Result<Permissions> {
+    let Extension(ref cfg) = ctx!(Extension::<Configuration>::from_request(req).await)?;
+
+    let TypedHeader(Authorization(bearer)) =
+        ctx!(TypedHeader::<Authorization<Bearer>>::from_request(req).await)?;
+
+    let claims = parse_bearer(cfg, &bearer)
+        .ok_or_else(|| HttpError::unauthorized(None, Some("Invalid token".to_string())))?;
+    permissions_from_jwt(claims)
+}
+
+pub fn parse_bearer(cfg: &Configuration, bearer: &Bearer) -> Option<JWTClaims<CustomClaim>> {
+    cfg.jwt_secret
         .key
         .verify_token::<CustomClaim>(bearer.token(), None)
-        .map_err(|_| HttpError::unauthorized(None, Some("Invalid token".to_string())))?;
+        .ok()
+}
 
+pub fn permissions_from_jwt(claims: JWTClaims<CustomClaim>) -> Result<Permissions> {
     let bad_token = |field: &str, id_type: &str| {
         HttpError::bad_request(
             Some("bad token".to_string()),
