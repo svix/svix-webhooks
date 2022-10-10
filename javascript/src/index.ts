@@ -19,6 +19,7 @@ import {
   EndpointHeadersOut,
   EndpointStats,
   RecoverIn,
+  ReplayIn,
   IntegrationApi,
   ListResponseIntegrationOut,
   IntegrationOut,
@@ -301,6 +302,21 @@ class Endpoint {
       })
       .then(() => Promise.resolve());
   }
+  
+  public replay(
+    appId: string,
+    endpointId: string,
+    replayIn: ReplayIn,
+    options?: PostOptions
+  ): Promise<void> {
+    return this.api.replayMissingWebhooksApiV1AppAppIdEndpointEndpointIdReplayMissingPost({
+      appId,
+      endpointId,
+      replayIn,
+      ...options,
+    })
+    .then(() => Promise.resolve());
+  }
 
   public getHeaders(appId: string, endpointId: string): Promise<EndpointHeadersOut> {
     return this.api.getEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersGet({
@@ -538,7 +554,7 @@ class MessageAttempt {
       ...options,
     });
   }
-
+  
   public listAttemptedMessages(
     appId: string,
     endpointId: string,
