@@ -3,6 +3,13 @@
 ## Next
 * 
 
+## Version 0.68.0
+* Server: add file/line information to errors for easier debugging.
+* Server: update dependencies.
+* Libs: add application/endpoint metadata fields.
+* Libs/C#: Add netstandard2.0 support.
+* Add gitleaks config to ignore test auth tokens.
+
 ## Version 0.67.0
 * Server: include idempotency key in log spans.
 * Server: correct trace ID handling in tracing spans.
