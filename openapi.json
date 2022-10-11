@@ -3,6 +3,14 @@
         "schemas": {
             "ApplicationIn": {
                 "properties": {
+                    "metadata": {
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "nullable": true,
+                        "title": "Metadata",
+                        "type": "object"
+                    },
                     "name": {
                         "example": "My first application",
                         "title": "Name",
@@ -43,6 +51,14 @@
                         "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                         "title": "Id",
                         "type": "string"
+                    },
+                    "metadata": {
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "nullable": true,
+                        "title": "Metadata",
+                        "type": "object"
                     },
                     "name": {
                         "example": "My first application",
@@ -607,6 +623,14 @@
                         "type": "array",
                         "uniqueItems": true
                     },
+                    "metadata": {
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "nullable": true,
+                        "title": "Metadata",
+                        "type": "object"
+                    },
                     "rateLimit": {
                         "example": 1000,
                         "maximum": 65535.0,
@@ -787,6 +811,14 @@
                         "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                         "title": "Id",
                         "type": "string"
+                    },
+                    "metadata": {
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "nullable": true,
+                        "title": "Metadata",
+                        "type": "object"
                     },
                     "rateLimit": {
                         "example": 1000,
@@ -1040,6 +1072,14 @@
                         "title": "Filtertypes",
                         "type": "array",
                         "uniqueItems": true
+                    },
+                    "metadata": {
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "nullable": true,
+                        "title": "Metadata",
+                        "type": "object"
                     },
                     "rateLimit": {
                         "example": 1000,
@@ -2374,6 +2414,14 @@
                         "title": "Id",
                         "type": "string"
                     },
+                    "metadata": {
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "nullable": true,
+                        "title": "Metadata",
+                        "type": "object"
+                    },
                     "nextAttempt": {
                         "format": "date-time",
                         "nullable": true,
@@ -2685,6 +2733,11 @@
                         "nullable": true,
                         "title": "Eventcatalogpublished",
                         "type": "boolean"
+                    },
+                    "readOnly": {
+                        "default": false,
+                        "title": "Readonly",
+                        "type": "boolean"
                     }
                 },
                 "title": "SettingsIn",
@@ -2764,6 +2817,11 @@
                         "default": false,
                         "nullable": true,
                         "title": "Eventcatalogpublished",
+                        "type": "boolean"
+                    },
+                    "readOnly": {
+                        "default": false,
+                        "title": "Readonly",
                         "type": "boolean"
                     }
                 },
@@ -3205,62 +3263,62 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const applicationOut = await svix.application.create({\n    uid: \"unique-app-identifier\",\n    name: \"My first application\",\n    rateLimit: 1000\n})\n// Or \nconst applicationOut = await svix.application.getOrCreate({\n    uid: \"unique-app-identifier\",\n    name: \"My first application\",\n    rateLimit: 1000\n})"
+                        "source": "const applicationOut = await svix.application.create({\n    uid: \"unique-app-identifier\",\n    name: \"My first application\",\n    rateLimit: 1000,\n    metadata: None\n})\n// Or \nconst applicationOut = await svix.application.getOrCreate({\n    uid: \"unique-app-identifier\",\n    name: \"My first application\",\n    rateLimit: 1000,\n    metadata: None\n})"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const applicationOut = await svix.application.create({\n    uid: \"unique-app-identifier\",\n    name: \"My first application\",\n    rateLimit: 1000\n})\n// Or \nconst applicationOut = await svix.application.getOrCreate({\n    uid: \"unique-app-identifier\",\n    name: \"My first application\",\n    rateLimit: 1000\n})"
+                        "source": "const applicationOut = await svix.application.create({\n    uid: \"unique-app-identifier\",\n    name: \"My first application\",\n    rateLimit: 1000,\n    metadata: None\n})\n// Or \nconst applicationOut = await svix.application.getOrCreate({\n    uid: \"unique-app-identifier\",\n    name: \"My first application\",\n    rateLimit: 1000,\n    metadata: None\n})"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "application_out = svix.application.create(ApplicationIn(\n    uid=\"unique-app-identifier\",\n    name=\"My first application\",\n    rate_limit=1000\n))\n# Or \napplication_out = svix.application.get_or_create(ApplicationIn(\n    uid=\"unique-app-identifier\",\n    name=\"My first application\",\n    rate_limit=1000\n))"
+                        "source": "application_out = svix.application.create(ApplicationIn(\n    uid=\"unique-app-identifier\",\n    name=\"My first application\",\n    rate_limit=1000,\n    metadata=None\n))\n# Or \napplication_out = svix.application.get_or_create(ApplicationIn(\n    uid=\"unique-app-identifier\",\n    name=\"My first application\",\n    rate_limit=1000,\n    metadata=None\n))"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "application_out = await svix.application.create(ApplicationIn(\n    uid=\"unique-app-identifier\",\n    name=\"My first application\",\n    rate_limit=1000\n))\n# Or \napplication_out = await svix.application.get_or_create(ApplicationIn(\n    uid=\"unique-app-identifier\",\n    name=\"My first application\",\n    rate_limit=1000\n))"
+                        "source": "application_out = await svix.application.create(ApplicationIn(\n    uid=\"unique-app-identifier\",\n    name=\"My first application\",\n    rate_limit=1000,\n    metadata=None\n))\n# Or \napplication_out = await svix.application.get_or_create(ApplicationIn(\n    uid=\"unique-app-identifier\",\n    name=\"My first application\",\n    rate_limit=1000,\n    metadata=None\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "applicationOut, err := svixClient.Application.Create(&svix.ApplicationIn{\n    Uid: \"unique-app-identifier\",\n    Name: \"My first application\",\n    RateLimit: 1000\n})\n// Or \napplicationOut, err := svixClient.Application.GetOrCreate(&svix.ApplicationIn{\n    Uid: \"unique-app-identifier\",\n    Name: \"My first application\",\n    RateLimit: 1000\n})"
+                        "source": "applicationOut, err := svixClient.Application.Create(&svix.ApplicationIn{\n    Uid: \"unique-app-identifier\",\n    Name: \"My first application\",\n    RateLimit: 1000,\n    Metadata: None\n})\n// Or \napplicationOut, err := svixClient.Application.GetOrCreate(&svix.ApplicationIn{\n    Uid: \"unique-app-identifier\",\n    Name: \"My first application\",\n    RateLimit: 1000,\n    Metadata: None\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val applicationOut = svix.application.create(ApplicationIn()\n    .uid(\"unique-app-identifier\"),\n    .name(\"My first application\"),\n    .rateLimit(1000)\n)\n// Or \nval applicationOut = svix.application.getOrCreate(ApplicationIn()\n    .uid(\"unique-app-identifier\"),\n    .name(\"My first application\"),\n    .rateLimit(1000)\n)"
+                        "source": "val applicationOut = svix.application.create(ApplicationIn()\n    .uid(\"unique-app-identifier\"),\n    .name(\"My first application\"),\n    .rateLimit(1000),\n    .metadata(None)\n)\n// Or \nval applicationOut = svix.application.getOrCreate(ApplicationIn()\n    .uid(\"unique-app-identifier\"),\n    .name(\"My first application\"),\n    .rateLimit(1000),\n    .metadata(None)\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "ApplicationOut applicationOut = svix.getApplication().create(new ApplicationIn()\n    .uid(\"unique-app-identifier\"),\n    .name(\"My first application\"),\n    .rateLimit(1000)\n)\n// Or \nApplicationOut applicationOut = svix.getApplication().getOrCreate(new ApplicationIn()\n    .uid(\"unique-app-identifier\"),\n    .name(\"My first application\"),\n    .rateLimit(1000)\n)"
+                        "source": "ApplicationOut applicationOut = svix.getApplication().create(new ApplicationIn()\n    .uid(\"unique-app-identifier\"),\n    .name(\"My first application\"),\n    .rateLimit(1000),\n    .metadata(None)\n)\n// Or \nApplicationOut applicationOut = svix.getApplication().getOrCreate(new ApplicationIn()\n    .uid(\"unique-app-identifier\"),\n    .name(\"My first application\"),\n    .rateLimit(1000),\n    .metadata(None)\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "application_out = svix.application.create(Svix::ApplicationIn.new({\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\",\n    \"rate_limit\": 1000\n}))\n# Or \napplication_out = svix.application.get_or_create(Svix::ApplicationIn.new({\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\",\n    \"rate_limit\": 1000\n}))"
+                        "source": "application_out = svix.application.create(Svix::ApplicationIn.new({\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\",\n    \"rate_limit\": 1000,\n    \"metadata\": null\n}))\n# Or \napplication_out = svix.application.get_or_create(Svix::ApplicationIn.new({\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\",\n    \"rate_limit\": 1000,\n    \"metadata\": null\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let application_out = svix.application().create(ApplicationIn {\n    uid: \"unique-app-identifier\".to_string(),\n    name: \"My first application\".to_string(),\n    rate_limit: 1000\n}).await?;\n// Or \nlet application_out = svix.application().get_or_create(ApplicationIn {\n    uid: \"unique-app-identifier\".to_string(),\n    name: \"My first application\".to_string(),\n    rate_limit: 1000\n}).await?;"
+                        "source": "let application_out = svix.application().create(ApplicationIn {\n    uid: \"unique-app-identifier\".to_string(),\n    name: \"My first application\".to_string(),\n    rate_limit: 1000,\n    metadata: None\n}).await?;\n// Or \nlet application_out = svix.application().get_or_create(ApplicationIn {\n    uid: \"unique-app-identifier\".to_string(),\n    name: \"My first application\".to_string(),\n    rate_limit: 1000,\n    metadata: None\n}).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var applicationOut = await svix.Application.CreateAsync(new ApplicationIn{\n    uid: \"unique-app-identifier\",\n    name: \"My first application\",\n    rateLimit: 1000\n})"
+                        "source": "var applicationOut = await svix.Application.CreateAsync(new ApplicationIn{\n    uid: \"unique-app-identifier\",\n    name: \"My first application\",\n    rateLimit: 1000,\n    metadata: None\n})"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix application create '{\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\",\n    \"rateLimit\": 1000\n}'"
+                        "source": "svix application create '{\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\",\n    \"rateLimit\": 1000,\n    \"metadata\": null\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\",\n    \"rateLimit\": 1000\n}'"
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\",\n    \"rateLimit\": 1000,\n    \"metadata\": null\n}'"
                     }
                 ]
             }
@@ -3895,62 +3953,62 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const applicationOut = await svix.application.update('app_id', {\n    uid: \"unique-app-identifier\",\n    name: \"My first application\",\n    rateLimit: 1000\n});"
+                        "source": "const applicationOut = await svix.application.update('app_id', {\n    uid: \"unique-app-identifier\",\n    name: \"My first application\",\n    rateLimit: 1000,\n    metadata: None\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const applicationOut = await svix.application.update('app_id', {\n    uid: \"unique-app-identifier\",\n    name: \"My first application\",\n    rateLimit: 1000\n});"
+                        "source": "const applicationOut = await svix.application.update('app_id', {\n    uid: \"unique-app-identifier\",\n    name: \"My first application\",\n    rateLimit: 1000,\n    metadata: None\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "application_out = svix.application.update('app_id', ApplicationIn(\n    uid=\"unique-app-identifier\",\n    name=\"My first application\",\n    rate_limit=1000\n))"
+                        "source": "application_out = svix.application.update('app_id', ApplicationIn(\n    uid=\"unique-app-identifier\",\n    name=\"My first application\",\n    rate_limit=1000,\n    metadata=None\n))"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "application_out = await svix.application.update('app_id', ApplicationIn(\n    uid=\"unique-app-identifier\",\n    name=\"My first application\",\n    rate_limit=1000\n))"
+                        "source": "application_out = await svix.application.update('app_id', ApplicationIn(\n    uid=\"unique-app-identifier\",\n    name=\"My first application\",\n    rate_limit=1000,\n    metadata=None\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "applicationOut, err := svixClient.Application.Update(\"app_id\", &svix.ApplicationIn{\n    Uid: \"unique-app-identifier\",\n    Name: \"My first application\",\n    RateLimit: 1000\n})"
+                        "source": "applicationOut, err := svixClient.Application.Update(\"app_id\", &svix.ApplicationIn{\n    Uid: \"unique-app-identifier\",\n    Name: \"My first application\",\n    RateLimit: 1000,\n    Metadata: None\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val applicationOut = svix.application.update('app_id', ApplicationIn()\n    .uid(\"unique-app-identifier\"),\n    .name(\"My first application\"),\n    .rateLimit(1000)\n)"
+                        "source": "val applicationOut = svix.application.update('app_id', ApplicationIn()\n    .uid(\"unique-app-identifier\"),\n    .name(\"My first application\"),\n    .rateLimit(1000),\n    .metadata(None)\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "ApplicationOut applicationOut = svix.getApplication().update('app_id', new ApplicationIn()\n    .uid(\"unique-app-identifier\"),\n    .name(\"My first application\"),\n    .rateLimit(1000)\n)"
+                        "source": "ApplicationOut applicationOut = svix.getApplication().update('app_id', new ApplicationIn()\n    .uid(\"unique-app-identifier\"),\n    .name(\"My first application\"),\n    .rateLimit(1000),\n    .metadata(None)\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "application_out = svix.application.update('app_id', Svix::ApplicationIn.new({\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\",\n    \"rate_limit\": 1000\n}))"
+                        "source": "application_out = svix.application.update('app_id', Svix::ApplicationIn.new({\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\",\n    \"rate_limit\": 1000,\n    \"metadata\": null\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let application_out = svix.application().update(\"app_id\", ApplicationIn {\n    uid: \"unique-app-identifier\".to_string(),\n    name: \"My first application\".to_string(),\n    rate_limit: 1000\n}).await?;"
+                        "source": "let application_out = svix.application().update(\"app_id\", ApplicationIn {\n    uid: \"unique-app-identifier\".to_string(),\n    name: \"My first application\".to_string(),\n    rate_limit: 1000,\n    metadata: None\n}).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var applicationOut = await svix.Application.UpdateAsync(\"app_id\", new ApplicationIn{\n    uid: \"unique-app-identifier\",\n    name: \"My first application\",\n    rateLimit: 1000\n})"
+                        "source": "var applicationOut = await svix.Application.UpdateAsync(\"app_id\", new ApplicationIn{\n    uid: \"unique-app-identifier\",\n    name: \"My first application\",\n    rateLimit: 1000,\n    metadata: None\n})"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix application update 'app_id' '{\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\",\n    \"rateLimit\": 1000\n}'"
+                        "source": "svix application update 'app_id' '{\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\",\n    \"rateLimit\": 1000,\n    \"metadata\": null\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.svix.com/api/v1/app/{app_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\",\n    \"rateLimit\": 1000\n}'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.svix.com/api/v1/app/{app_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"uid\": \"unique-app-identifier\",\n    \"name\": \"My first application\",\n    \"rateLimit\": 1000,\n    \"metadata\": null\n}'"
                     }
                 ]
             }
@@ -4858,62 +4916,62 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const endpointOut = await svix.endpoint.create('app_id', {\n    uid: \"unique-endpoint-identifier\",\n    url: \"https://example.com/webhook/\",\n    version: 1,\n    description: \"An example endpoint name\",\n    filterTypes: [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    channels: [\n        \"project_123\",\n        \"group_2\"\n    ],\n    disabled: false,\n    rateLimit: 1000,\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
+                        "source": "const endpointOut = await svix.endpoint.create('app_id', {\n    uid: \"unique-endpoint-identifier\",\n    url: \"https://example.com/webhook/\",\n    version: 1,\n    description: \"An example endpoint name\",\n    filterTypes: [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    channels: [\n        \"project_123\",\n        \"group_2\"\n    ],\n    disabled: false,\n    rateLimit: 1000,\n    metadata: None,\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const endpointOut = await svix.endpoint.create('app_id', {\n    uid: \"unique-endpoint-identifier\",\n    url: \"https://example.com/webhook/\",\n    version: 1,\n    description: \"An example endpoint name\",\n    filterTypes: [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    channels: [\n        \"project_123\",\n        \"group_2\"\n    ],\n    disabled: false,\n    rateLimit: 1000,\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
+                        "source": "const endpointOut = await svix.endpoint.create('app_id', {\n    uid: \"unique-endpoint-identifier\",\n    url: \"https://example.com/webhook/\",\n    version: 1,\n    description: \"An example endpoint name\",\n    filterTypes: [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    channels: [\n        \"project_123\",\n        \"group_2\"\n    ],\n    disabled: false,\n    rateLimit: 1000,\n    metadata: None,\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "endpoint_out = svix.endpoint.create('app_id', EndpointIn(\n    uid=\"unique-endpoint-identifier\",\n    url=\"https://example.com/webhook/\",\n    version=1,\n    description=\"An example endpoint name\",\n    filter_types=['user.signup', 'user.deleted'],\n    channels=['project_123', 'group_2'],\n    disabled=False,\n    rate_limit=1000,\n    secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n))"
+                        "source": "endpoint_out = svix.endpoint.create('app_id', EndpointIn(\n    uid=\"unique-endpoint-identifier\",\n    url=\"https://example.com/webhook/\",\n    version=1,\n    description=\"An example endpoint name\",\n    filter_types=['user.signup', 'user.deleted'],\n    channels=['project_123', 'group_2'],\n    disabled=False,\n    rate_limit=1000,\n    metadata=None,\n    secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n))"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "endpoint_out = await svix.endpoint.create('app_id', EndpointIn(\n    uid=\"unique-endpoint-identifier\",\n    url=\"https://example.com/webhook/\",\n    version=1,\n    description=\"An example endpoint name\",\n    filter_types=['user.signup', 'user.deleted'],\n    channels=['project_123', 'group_2'],\n    disabled=False,\n    rate_limit=1000,\n    secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n))"
+                        "source": "endpoint_out = await svix.endpoint.create('app_id', EndpointIn(\n    uid=\"unique-endpoint-identifier\",\n    url=\"https://example.com/webhook/\",\n    version=1,\n    description=\"An example endpoint name\",\n    filter_types=['user.signup', 'user.deleted'],\n    channels=['project_123', 'group_2'],\n    disabled=False,\n    rate_limit=1000,\n    metadata=None,\n    secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "endpointOut, err := svixClient.Endpoint.Create(\"app_id\", &svix.EndpointIn{\n    Uid: \"unique-endpoint-identifier\",\n    Url: \"https://example.com/webhook/\",\n    Version: 1,\n    Description: \"An example endpoint name\",\n    FilterTypes: [...]string{\"user.signup\", \"user.deleted\"},\n    Channels: [...]string{\"project_123\", \"group_2\"},\n    Disabled: False,\n    RateLimit: 1000,\n    Secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n})"
+                        "source": "endpointOut, err := svixClient.Endpoint.Create(\"app_id\", &svix.EndpointIn{\n    Uid: \"unique-endpoint-identifier\",\n    Url: \"https://example.com/webhook/\",\n    Version: 1,\n    Description: \"An example endpoint name\",\n    FilterTypes: [...]string{\"user.signup\", \"user.deleted\"},\n    Channels: [...]string{\"project_123\", \"group_2\"},\n    Disabled: False,\n    RateLimit: 1000,\n    Metadata: None,\n    Secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val endpointOut = svix.endpoint.create('app_id', EndpointIn()\n    .uid(\"unique-endpoint-identifier\"),\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\")),\n    .channels(arrayOf(\"project_123\", \"group_2\")),\n    .disabled(False),\n    .rateLimit(1000),\n    .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n)"
+                        "source": "val endpointOut = svix.endpoint.create('app_id', EndpointIn()\n    .uid(\"unique-endpoint-identifier\"),\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\")),\n    .channels(arrayOf(\"project_123\", \"group_2\")),\n    .disabled(False),\n    .rateLimit(1000),\n    .metadata(None),\n    .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "EndpointOut endpointOut = svix.getEndpoint().create('app_id', new EndpointIn()\n    .uid(\"unique-endpoint-identifier\"),\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"}),\n    .channels(new String[]{\"project_123\", \"group_2\"}),\n    .disabled(False),\n    .rateLimit(1000),\n    .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n)"
+                        "source": "EndpointOut endpointOut = svix.getEndpoint().create('app_id', new EndpointIn()\n    .uid(\"unique-endpoint-identifier\"),\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"}),\n    .channels(new String[]{\"project_123\", \"group_2\"}),\n    .disabled(False),\n    .rateLimit(1000),\n    .metadata(None),\n    .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "endpoint_out = svix.endpoint.create('app_id', Svix::EndpointIn.new({\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filter_types\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"channels\": [\n        \"project_123\",\n        \"group_2\"\n    ],\n    \"disabled\": false,\n    \"rate_limit\": 1000,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}))"
+                        "source": "endpoint_out = svix.endpoint.create('app_id', Svix::EndpointIn.new({\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filter_types\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"channels\": [\n        \"project_123\",\n        \"group_2\"\n    ],\n    \"disabled\": false,\n    \"rate_limit\": 1000,\n    \"metadata\": null,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let endpoint_out = svix.endpoint().create(\"app_id\", EndpointIn {\n    uid: \"unique-endpoint-identifier\".to_string(),\n    url: \"https://example.com/webhook/\".to_string(),\n    version: 1,\n    description: \"An example endpoint name\".to_string(),\n    filter_types: vec![\"user.signup\".to_string(), \"user.deleted\".to_string()],\n    channels: vec![\"project_123\".to_string(), \"group_2\".to_string()],\n    disabled: False,\n    rate_limit: 1000,\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\".to_string()\n}).await?;"
+                        "source": "let endpoint_out = svix.endpoint().create(\"app_id\", EndpointIn {\n    uid: \"unique-endpoint-identifier\".to_string(),\n    url: \"https://example.com/webhook/\".to_string(),\n    version: 1,\n    description: \"An example endpoint name\".to_string(),\n    filter_types: vec![\"user.signup\".to_string(), \"user.deleted\".to_string()],\n    channels: vec![\"project_123\".to_string(), \"group_2\".to_string()],\n    disabled: False,\n    rate_limit: 1000,\n    metadata: None,\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\".to_string()\n}).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var endpointOut = await svix.Endpoint.CreateAsync(\"app_id\", new EndpointIn{\n    uid: \"unique-endpoint-identifier\",\n    url: \"https://example.com/webhook/\",\n    version: 1,\n    description: \"An example endpoint name\",\n    filterTypes: new string[] {\"user.signup\", \"user.deleted\"},\n    channels: new string[] {\"project_123\", \"group_2\"},\n    disabled: false,\n    rateLimit: 1000,\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n})"
+                        "source": "var endpointOut = await svix.Endpoint.CreateAsync(\"app_id\", new EndpointIn{\n    uid: \"unique-endpoint-identifier\",\n    url: \"https://example.com/webhook/\",\n    version: 1,\n    description: \"An example endpoint name\",\n    filterTypes: new string[] {\"user.signup\", \"user.deleted\"},\n    channels: new string[] {\"project_123\", \"group_2\"},\n    disabled: false,\n    rateLimit: 1000,\n    metadata: None,\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n})"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix endpoint create 'app_id' '{\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"channels\": [\n        \"project_123\",\n        \"group_2\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}'"
+                        "source": "svix endpoint create 'app_id' '{\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"channels\": [\n        \"project_123\",\n        \"group_2\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000,\n    \"metadata\": null,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"channels\": [\n        \"project_123\",\n        \"group_2\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}'"
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"channels\": [\n        \"project_123\",\n        \"group_2\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000,\n    \"metadata\": null,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}'"
                     }
                 ]
             }
@@ -5440,62 +5498,62 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const endpointOut = await svix.endpoint.update('app_id', 'endpoint_id', {\n    uid: \"unique-endpoint-identifier\",\n    url: \"https://example.com/webhook/\",\n    version: 1,\n    description: \"An example endpoint name\",\n    filterTypes: [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    channels: [\n        \"project_123\",\n        \"group_2\"\n    ],\n    disabled: false,\n    rateLimit: 1000\n});"
+                        "source": "const endpointOut = await svix.endpoint.update('app_id', 'endpoint_id', {\n    uid: \"unique-endpoint-identifier\",\n    url: \"https://example.com/webhook/\",\n    version: 1,\n    description: \"An example endpoint name\",\n    filterTypes: [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    channels: [\n        \"project_123\",\n        \"group_2\"\n    ],\n    disabled: false,\n    rateLimit: 1000,\n    metadata: None\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const endpointOut = await svix.endpoint.update('app_id', 'endpoint_id', {\n    uid: \"unique-endpoint-identifier\",\n    url: \"https://example.com/webhook/\",\n    version: 1,\n    description: \"An example endpoint name\",\n    filterTypes: [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    channels: [\n        \"project_123\",\n        \"group_2\"\n    ],\n    disabled: false,\n    rateLimit: 1000\n});"
+                        "source": "const endpointOut = await svix.endpoint.update('app_id', 'endpoint_id', {\n    uid: \"unique-endpoint-identifier\",\n    url: \"https://example.com/webhook/\",\n    version: 1,\n    description: \"An example endpoint name\",\n    filterTypes: [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    channels: [\n        \"project_123\",\n        \"group_2\"\n    ],\n    disabled: false,\n    rateLimit: 1000,\n    metadata: None\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "endpoint_out = svix.endpoint.update('app_id', 'endpoint_id', EndpointUpdate(\n    uid=\"unique-endpoint-identifier\",\n    url=\"https://example.com/webhook/\",\n    version=1,\n    description=\"An example endpoint name\",\n    filter_types=['user.signup', 'user.deleted'],\n    channels=['project_123', 'group_2'],\n    disabled=False,\n    rate_limit=1000\n))"
+                        "source": "endpoint_out = svix.endpoint.update('app_id', 'endpoint_id', EndpointUpdate(\n    uid=\"unique-endpoint-identifier\",\n    url=\"https://example.com/webhook/\",\n    version=1,\n    description=\"An example endpoint name\",\n    filter_types=['user.signup', 'user.deleted'],\n    channels=['project_123', 'group_2'],\n    disabled=False,\n    rate_limit=1000,\n    metadata=None\n))"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "endpoint_out = await svix.endpoint.update('app_id', 'endpoint_id', EndpointUpdate(\n    uid=\"unique-endpoint-identifier\",\n    url=\"https://example.com/webhook/\",\n    version=1,\n    description=\"An example endpoint name\",\n    filter_types=['user.signup', 'user.deleted'],\n    channels=['project_123', 'group_2'],\n    disabled=False,\n    rate_limit=1000\n))"
+                        "source": "endpoint_out = await svix.endpoint.update('app_id', 'endpoint_id', EndpointUpdate(\n    uid=\"unique-endpoint-identifier\",\n    url=\"https://example.com/webhook/\",\n    version=1,\n    description=\"An example endpoint name\",\n    filter_types=['user.signup', 'user.deleted'],\n    channels=['project_123', 'group_2'],\n    disabled=False,\n    rate_limit=1000,\n    metadata=None\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "endpointOut, err := svixClient.Endpoint.Update(\"app_id\", \"endpoint_id\", &svix.EndpointUpdate{\n    Uid: \"unique-endpoint-identifier\",\n    Url: \"https://example.com/webhook/\",\n    Version: 1,\n    Description: \"An example endpoint name\",\n    FilterTypes: [...]string{\"user.signup\", \"user.deleted\"},\n    Channels: [...]string{\"project_123\", \"group_2\"},\n    Disabled: False,\n    RateLimit: 1000\n})"
+                        "source": "endpointOut, err := svixClient.Endpoint.Update(\"app_id\", \"endpoint_id\", &svix.EndpointUpdate{\n    Uid: \"unique-endpoint-identifier\",\n    Url: \"https://example.com/webhook/\",\n    Version: 1,\n    Description: \"An example endpoint name\",\n    FilterTypes: [...]string{\"user.signup\", \"user.deleted\"},\n    Channels: [...]string{\"project_123\", \"group_2\"},\n    Disabled: False,\n    RateLimit: 1000,\n    Metadata: None\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val endpointOut = svix.endpoint.update('app_id', 'endpoint_id', EndpointUpdate()\n    .uid(\"unique-endpoint-identifier\"),\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\")),\n    .channels(arrayOf(\"project_123\", \"group_2\")),\n    .disabled(False),\n    .rateLimit(1000)\n)"
+                        "source": "val endpointOut = svix.endpoint.update('app_id', 'endpoint_id', EndpointUpdate()\n    .uid(\"unique-endpoint-identifier\"),\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\")),\n    .channels(arrayOf(\"project_123\", \"group_2\")),\n    .disabled(False),\n    .rateLimit(1000),\n    .metadata(None)\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "EndpointOut endpointOut = svix.getEndpoint().update('app_id', 'endpoint_id', new EndpointUpdate()\n    .uid(\"unique-endpoint-identifier\"),\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"}),\n    .channels(new String[]{\"project_123\", \"group_2\"}),\n    .disabled(False),\n    .rateLimit(1000)\n)"
+                        "source": "EndpointOut endpointOut = svix.getEndpoint().update('app_id', 'endpoint_id', new EndpointUpdate()\n    .uid(\"unique-endpoint-identifier\"),\n    .url(\"https://example.com/webhook/\"),\n    .version(1),\n    .description(\"An example endpoint name\"),\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"}),\n    .channels(new String[]{\"project_123\", \"group_2\"}),\n    .disabled(False),\n    .rateLimit(1000),\n    .metadata(None)\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "endpoint_out = svix.endpoint.update('app_id', 'endpoint_id', Svix::EndpointUpdate.new({\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filter_types\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"channels\": [\n        \"project_123\",\n        \"group_2\"\n    ],\n    \"disabled\": false,\n    \"rate_limit\": 1000\n}))"
+                        "source": "endpoint_out = svix.endpoint.update('app_id', 'endpoint_id', Svix::EndpointUpdate.new({\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filter_types\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"channels\": [\n        \"project_123\",\n        \"group_2\"\n    ],\n    \"disabled\": false,\n    \"rate_limit\": 1000,\n    \"metadata\": null\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let endpoint_out = svix.endpoint().update(\"app_id\", \"endpoint_id\", EndpointUpdate {\n    uid: \"unique-endpoint-identifier\".to_string(),\n    url: \"https://example.com/webhook/\".to_string(),\n    version: 1,\n    description: \"An example endpoint name\".to_string(),\n    filter_types: vec![\"user.signup\".to_string(), \"user.deleted\".to_string()],\n    channels: vec![\"project_123\".to_string(), \"group_2\".to_string()],\n    disabled: False,\n    rate_limit: 1000\n}).await?;"
+                        "source": "let endpoint_out = svix.endpoint().update(\"app_id\", \"endpoint_id\", EndpointUpdate {\n    uid: \"unique-endpoint-identifier\".to_string(),\n    url: \"https://example.com/webhook/\".to_string(),\n    version: 1,\n    description: \"An example endpoint name\".to_string(),\n    filter_types: vec![\"user.signup\".to_string(), \"user.deleted\".to_string()],\n    channels: vec![\"project_123\".to_string(), \"group_2\".to_string()],\n    disabled: False,\n    rate_limit: 1000,\n    metadata: None\n}).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var endpointOut = await svix.Endpoint.UpdateAsync(\"app_id\", \"endpoint_id\", new EndpointUpdate{\n    uid: \"unique-endpoint-identifier\",\n    url: \"https://example.com/webhook/\",\n    version: 1,\n    description: \"An example endpoint name\",\n    filterTypes: new string[] {\"user.signup\", \"user.deleted\"},\n    channels: new string[] {\"project_123\", \"group_2\"},\n    disabled: false,\n    rateLimit: 1000\n})"
+                        "source": "var endpointOut = await svix.Endpoint.UpdateAsync(\"app_id\", \"endpoint_id\", new EndpointUpdate{\n    uid: \"unique-endpoint-identifier\",\n    url: \"https://example.com/webhook/\",\n    version: 1,\n    description: \"An example endpoint name\",\n    filterTypes: new string[] {\"user.signup\", \"user.deleted\"},\n    channels: new string[] {\"project_123\", \"group_2\"},\n    disabled: false,\n    rateLimit: 1000,\n    metadata: None\n})"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix endpoint update 'app_id' 'endpoint_id' '{\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"channels\": [\n        \"project_123\",\n        \"group_2\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000\n}'"
+                        "source": "svix endpoint update 'app_id' 'endpoint_id' '{\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"channels\": [\n        \"project_123\",\n        \"group_2\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000,\n    \"metadata\": null\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"channels\": [\n        \"project_123\",\n        \"group_2\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000\n}'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"uid\": \"unique-endpoint-identifier\",\n    \"url\": \"https://example.com/webhook/\",\n    \"version\": 1,\n    \"description\": \"An example endpoint name\",\n    \"filterTypes\": [\n        \"user.signup\",\n        \"user.deleted\"\n    ],\n    \"channels\": [\n        \"project_123\",\n        \"group_2\"\n    ],\n    \"disabled\": false,\n    \"rateLimit\": 1000,\n    \"metadata\": null\n}'"
                     }
                 ]
             }
