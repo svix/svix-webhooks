@@ -95,7 +95,7 @@ impl IntoResponse for Error {
     fn into_response(self) -> Response {
         match self.typ {
             ErrorType::Http(s) => {
-                tracing::debug!("{:?}", &s);
+                tracing::debug!("{:?}, location: {:?}", &s, &self.trace);
                 s.into_response()
             }
             s => {

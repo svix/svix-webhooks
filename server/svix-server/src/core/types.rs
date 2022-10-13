@@ -89,6 +89,7 @@ macro_rules! enum_wrapper {
     };
 }
 
+#[macro_export]
 macro_rules! json_wrapper {
     ($name_id:ty) => {
         impl From<$name_id> for sea_orm::Value {
@@ -98,8 +99,12 @@ macro_rules! json_wrapper {
             }
         }
 
-        impl TryGetable for $name_id {
-            fn try_get(res: &QueryResult, pre: &str, col: &str) -> Result<Self, TryGetError> {
+        impl sea_orm::TryGetable for $name_id {
+            fn try_get(
+                res: &QueryResult,
+                pre: &str,
+                col: &str,
+            ) -> Result<Self, sea_orm::TryGetError> {
                 match Json::try_get(res, pre, col) {
                     Ok(v) => Ok(serde_json::from_value(v).expect("Error deserializing JSON")),
                     Err(e) => Err(e),
@@ -107,19 +112,19 @@ macro_rules! json_wrapper {
             }
         }
 
-        impl Nullable for $name_id {
+        impl sea_orm::sea_query::Nullable for $name_id {
             fn null() -> Value {
                 Value::Json(None)
             }
         }
 
-        impl ValueType for $name_id {
-            fn try_from(v: Value) -> Result<Self, ValueTypeErr> {
+        impl sea_orm::sea_query::ValueType for $name_id {
+            fn try_from(v: Value) -> Result<Self, sea_orm::sea_query::ValueTypeErr> {
                 match v {
                     Value::Json(Some(x)) => {
                         Ok(serde_json::from_value(*x).expect("Error deserializing JSON"))
                     }
-                    _ => Err(ValueTypeErr),
+                    _ => Err(sea_orm::sea_query::ValueTypeErr),
                 }
             }
 
@@ -127,8 +132,8 @@ macro_rules! json_wrapper {
                 stringify!($name_id).to_owned()
             }
 
-            fn column_type() -> ColumnType {
-                ColumnType::JsonBinary
+            fn column_type() -> sea_orm::sea_query::ColumnType {
+                sea_orm::sea_query::ColumnType::JsonBinary
             }
         }
     };
