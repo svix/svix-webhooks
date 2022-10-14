@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use std::collections::HashMap;
 use std::time::Duration;
 
 use anyhow::Result;
@@ -11,7 +10,6 @@ use reqwest::StatusCode;
 use serde::{de::DeserializeOwned, Serialize};
 use svix_server::{
     core::types::{ApplicationId, EventTypeName, MessageId},
-    db::models::eventtype::Schema,
     v1::{
         endpoints::{
             application::{ApplicationIn, ApplicationOut},
@@ -120,15 +118,8 @@ pub async fn create_test_message(
         .await
 }
 
-pub fn event_type_in<T: Serialize>(name: &str, payload: T) -> Result<EventTypeIn> {
-    let mut schema = Schema(HashMap::new());
-    for (k, v) in serde_json::to_value(payload)?
-        .as_object()
-        .unwrap()
-        .into_iter()
-    {
-        schema.0.insert(k.to_string(), v.to_owned());
-    }
+pub fn event_type_in(name: &str, payload: serde_json::Value) -> Result<EventTypeIn> {
+    let schema = serde_json::from_value(payload).unwrap();
 
     Ok(EventTypeIn {
         name: EventTypeName(name.to_owned()),
