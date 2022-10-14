@@ -354,7 +354,7 @@ impl HttpError {
         Self::new_standard(
             StatusCode::NOT_IMPLEMENTED,
             code.unwrap_or_else(|| "not_implemented".to_owned()),
-            detail.unwrap_or_else(|| "This API endpoint is not yet implented.".to_owned()),
+            detail.unwrap_or_else(|| "This API endpoint is not yet implemented.".to_owned()),
         )
     }
 }
