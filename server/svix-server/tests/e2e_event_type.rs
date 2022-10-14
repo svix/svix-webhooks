@@ -1,11 +1,16 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
+use std::collections::HashMap;
+
 use reqwest::StatusCode;
 
-use svix_server::v1::{
-    endpoints::event_type::{EventTypeIn, EventTypeOut},
-    utils::ListResponse,
+use svix_server::{
+    db::models::eventtype::Schema,
+    v1::{
+        endpoints::event_type::{EventTypeIn, EventTypeOut},
+        utils::ListResponse,
+    },
 };
 
 mod utils;
@@ -79,7 +84,7 @@ async fn test_patch() {
         .await
         .unwrap();
 
-    assert_eq!(out.schemas, Some(serde_json::json!({})));
+    assert_eq!(out.schemas, Some(Schema(HashMap::new())));
 
     // Assert the other fields remain unchanged
     assert_eq!(out.deleted, et.deleted);

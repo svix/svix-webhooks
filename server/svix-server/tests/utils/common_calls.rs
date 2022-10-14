@@ -118,12 +118,14 @@ pub async fn create_test_message(
         .await
 }
 
-pub fn event_type_in<T: Serialize>(name: &str, payload: T) -> Result<EventTypeIn> {
+pub fn event_type_in(name: &str, payload: serde_json::Value) -> Result<EventTypeIn> {
+    let schema = serde_json::from_value(payload).unwrap();
+
     Ok(EventTypeIn {
         name: EventTypeName(name.to_owned()),
         description: "test-event-description".to_owned(),
         deleted: false,
-        schemas: Some(serde_json::to_value(payload)?),
+        schemas: Some(schema),
     })
 }
 

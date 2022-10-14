@@ -41,7 +41,7 @@ pub struct EventTypeIn {
     pub description: String,
     #[serde(default, rename = "archived")]
     pub deleted: bool,
-    pub schemas: Option<serde_json::Value>,
+    pub schemas: Option<eventtype::Schema>,
 }
 
 // FIXME: This can and should be a derive macro
@@ -70,7 +70,7 @@ struct EventTypeUpdate {
     description: String,
     #[serde(default, rename = "archived")]
     deleted: bool,
-    schemas: Option<serde_json::Value>,
+    schemas: Option<eventtype::Schema>,
 }
 
 // FIXME: This can and should be a derive macro
@@ -105,7 +105,7 @@ struct EventTypePatch {
     deleted: UnrequiredField<bool>,
 
     #[serde(default, skip_serializing_if = "UnrequiredNullableField::is_absent")]
-    schemas: UnrequiredNullableField<serde_json::Value>,
+    schemas: UnrequiredNullableField<eventtype::Schema>,
 }
 
 impl ModelIn for EventTypePatch {
@@ -131,7 +131,7 @@ pub struct EventTypeOut {
     pub description: String,
     #[serde(rename = "archived")]
     pub deleted: bool,
-    pub schemas: Option<serde_json::Value>,
+    pub schemas: Option<eventtype::Schema>,
 
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,

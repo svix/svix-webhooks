@@ -1,10 +1,20 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use crate::core::types::{BaseId, EventTypeId, EventTypeName, OrganizationId};
+use std::collections::HashMap;
+
+use crate::{
+    core::types::{BaseId, EventTypeId, EventTypeName, OrganizationId},
+    json_wrapper,
+};
 use chrono::Utc;
 use sea_orm::entity::prelude::*;
 use sea_orm::ActiveValue::Set;
+use serde::{Deserialize, Serialize};
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Default)]
+pub struct Schema(pub HashMap<String, Json>);
+json_wrapper!(Schema);
 
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(table_name = "eventtype")]
@@ -16,7 +26,7 @@ pub struct Model {
     pub org_id: OrganizationId,
     pub description: String,
     pub deleted: bool,
-    pub schemas: Option<Json>,
+    pub schemas: Option<Schema>,
     pub name: EventTypeName,
 }
 
