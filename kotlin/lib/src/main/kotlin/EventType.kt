@@ -13,6 +13,8 @@ class EventType internal constructor(token: String, options: SvixOptions) {
     init {
         api.accessToken = token
         api.userAgent = options.getUA()
+        options.initialRetryDelayMillis?.let { api.initialRetryDelayMillis = it }
+        options.numRetries?.let { api.numRetries = it }
     }
 
     suspend fun list(options: EventTypeListOptions = EventTypeListOptions()): ListResponseEventTypeOut {
