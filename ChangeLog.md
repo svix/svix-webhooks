@@ -3,6 +3,11 @@
 ## Next
 * 
 
+## Version 0.68.1
+* Server: update the event-type CRUD endpoints to be more strict about the schema type.
+* Server: fix typo in error messages for unimplemented errors.
+* Libs/Java: fix issue with creating multiple Svix instances in parallel.
+
 ## Version 0.68.0
 * Server: add file/line information to errors for easier debugging.
 * Server: update dependencies.
