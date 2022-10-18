@@ -14,6 +14,8 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
     init {
         api.accessToken = token
         api.userAgent = options.getUA()
+        options.initialRetryDelayMillis?.let { api.initialRetryDelayMillis = it }
+        options.numRetries?.let { api.numRetries = it }
     }
 
     /**
@@ -38,7 +40,7 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
                 options.channel,
                 options.before,
                 options.after,
-                null,
+                null
             )
         } catch (e: Exception) {
             throw ApiException.wrap(e)
@@ -58,7 +60,7 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
                 options.channel,
                 options.before,
                 options.after,
-                null,
+                null
             )
         } catch (e: Exception) {
             throw ApiException.wrap(e)
