@@ -170,14 +170,13 @@ async fn background_task_pending(
         let _: () = ctx!(pool.query_async_pipeline(pipe).await)?;
 
         // Acknowledge all the stale ones so the pending queue is cleared
-        let _: () = ctx!(
-            pool.query_async(Cmd::xack(
-                &main_queue_name,
-                WORKERS_GROUP,
-                &ids.iter().map(|wrapped| &wrapped.id).collect::<Vec<_>>(),
-            ))
-            .await
-        )?;
+        let ids: Vec<_> = ids.iter().map(|wrapped| &wrapped.id).collect();
+
+        let mut pipe = redis::pipe();
+        pipe.add_command(Cmd::xack(&main_queue_name, WORKERS_GROUP, &ids));
+        pipe.add_command(Cmd::xdel(&main_queue_name, &ids));
+
+        let _: () = ctx!(pool.query_async_pipeline(pipe).await)?;
     } else {
         // Wait for half a second before attempting to fetch again if nothing was found
         sleep(Duration::from_millis(500)).await;
@@ -504,23 +503,28 @@ impl TaskQueueSend for RedisQueueProducer {
     /// ACKing the delivery, XACKs the message in the queue so it will no longer be retried
     async fn ack(&self, delivery: &TaskQueueDelivery) -> Result<()> {
         let mut pool = ctx!(self.pool.get().await)?;
-        let processed: u8 = ctx!(
-            pool.query_async(Cmd::xack(
-                &self.main_queue_name,
-                WORKERS_GROUP,
-                &[delivery.id.as_str()],
-            ))
-            .await
-        )?;
-        if processed != 1 {
+
+        let mut pipe = redis::pipe();
+
+        pipe.add_command(Cmd::xack(
+            &self.main_queue_name,
+            WORKERS_GROUP,
+            &[delivery.id.as_str()],
+        ))
+        .add_command(Cmd::xdel(&self.main_queue_name, &[delivery.id.as_str()]));
+
+        let (processed, deleted): (u8, u8) = ctx!(pool.query_async_pipeline(pipe).await)?;
+        if processed != 1 || deleted != 1 {
             tracing::warn!(
-                "Expected to remove 1 from the list, removed {} for {}|{}",
+                "Expected to remove 1 from the list, acked {}, deleted {}, for {}|{}",
                 processed,
+                deleted,
                 delivery.id,
                 serde_json::to_string(&delivery.task)
                     .map_err(|e| err_generic!("serialization error: {}", e))?
             );
         }
+
         Ok(())
     }
 
@@ -684,6 +688,7 @@ pub mod tests {
     use std::{sync::Arc, time::Duration};
 
     use chrono::Utc;
+    use redis::{streams::StreamReadReply, Cmd};
 
     use super::{
         migrate_list, migrate_list_to_stream, migrate_sset, new_pair_inner, to_redis_key, Direction,
@@ -796,7 +801,7 @@ pub mod tests {
         let pool = get_pool(cfg).await;
 
         let (p, mut c) = new_pair_inner(
-            pool,
+            pool.clone(),
             Duration::from_millis(100),
             "",
             "{test}_idle_period",
@@ -841,6 +846,18 @@ pub mod tests {
                 panic!("`c.receive()` has timed out")
             }
         }
+
+        // And assert that the task has been deleted
+        let mut conn = pool
+            .get()
+            .await
+            .expect("Error retreiving connection from Redis pool");
+        assert!(conn
+            .query_async::<StreamReadReply>(Cmd::xread(&["{test}_ack"], &[0]))
+            .await
+            .unwrap()
+            .keys
+            .is_empty());
     }
 
     #[tokio::test]
@@ -848,19 +865,28 @@ pub mod tests {
         let cfg = crate::cfg::load().unwrap();
         let pool = get_pool(cfg).await;
 
+        // Delete the keys used in this test to ensure nothing polutes the output
+        let mut conn = pool
+            .get()
+            .await
+            .expect("Error retreiving connection from Redis pool");
+        conn.query_async::<()>(Cmd::del(&[
+            "{test}_ack",
+            "{test}_ack_delayed",
+            "{test}_ack_delayed_lock",
+        ]))
+        .await
+        .unwrap();
+
         let (p, mut c) = new_pair_inner(
-            pool,
-            Duration::from_millis(500),
+            pool.clone(),
+            Duration::from_millis(5000),
             "",
             "{test}_ack",
             "{test}_ack_delayed",
             "{test}_ack_delayed_lock",
         )
         .await;
-
-        tokio::time::sleep(Duration::from_millis(550)).await;
-
-        flush_stale_queue_items(p.clone(), &mut c).await;
 
         let mt = QueueTask::MessageV1(MessageTask {
             msg_id: MessageId("test2".to_owned()),
@@ -882,6 +908,14 @@ pub mod tests {
 
             _ = tokio::time::sleep(Duration::from_secs(1)) => {}
         }
+
+        // And assert that the task has been deleted
+        assert!(conn
+            .query_async::<StreamReadReply>(Cmd::xread(&["{test}_ack"], &[0]))
+            .await
+            .unwrap()
+            .keys
+            .is_empty());
     }
 
     #[tokio::test]
