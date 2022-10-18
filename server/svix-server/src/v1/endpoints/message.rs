@@ -5,7 +5,7 @@ use crate::{
     cache::Cache,
     core::{
         message_app::CreateMessageApp,
-        security::{AuthenticatedApplication, AuthenticatedOrganizationWithApplication},
+        permissions,
         types::{
             ApplicationIdOrUid, EventChannel, EventChannelSet, EventTypeName, EventTypeNameSet,
             MessageAttemptTriggerType, MessageId, MessageIdOrUid, MessageUid,
@@ -173,10 +173,7 @@ async fn list_messages(
         after,
     }): ValidatedQuery<ListMessagesQueryParams>,
     list_filter: MessageListFetchOptions,
-    AuthenticatedApplication {
-        permissions: _,
-        app,
-    }: AuthenticatedApplication,
+    permissions::Application { app }: permissions::Application,
 ) -> Result<Json<ListResponse<MessageOut>>> {
     let PaginationLimit(limit) = pagination.limit;
 
@@ -229,14 +226,14 @@ async fn create_message(
         CreateMessageQueryParams,
     >,
     ValidatedJson(data): ValidatedJson<MessageIn>,
-    AuthenticatedOrganizationWithApplication { permissions, app }: AuthenticatedOrganizationWithApplication,
+    permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
 ) -> Result<(StatusCode, Json<MessageOut>)> {
     let create_message_app = CreateMessageApp::layered_fetch(
         cache,
         db,
         Some(app.clone()),
         app.id.clone(),
-        app.org_id,
+        app.org_id.clone(),
         std::time::Duration::from_secs(30),
     )
     .await?
@@ -245,7 +242,7 @@ async fn create_message(
 
     let msg = message::ActiveModel {
         app_id: Set(app.id.clone()),
-        org_id: Set(permissions.org_id),
+        org_id: Set(app.org_id),
         ..data.into()
     };
     let msg = ctx!(msg.insert(db).await)?;
@@ -285,10 +282,7 @@ async fn get_message(
     Extension(ref db): Extension<DatabaseConnection>,
     Path((_app_id, msg_id)): Path<(ApplicationIdOrUid, MessageIdOrUid)>,
     ValidatedQuery(GetMessageQueryParams { with_content }): ValidatedQuery<GetMessageQueryParams>,
-    AuthenticatedApplication {
-        permissions: _,
-        app,
-    }: AuthenticatedApplication,
+    permissions::Application { app }: permissions::Application,
 ) -> Result<Json<MessageOut>> {
     let msg = ctx!(
         message::Entity::secure_find_by_id_or_uid(app.id, msg_id)
