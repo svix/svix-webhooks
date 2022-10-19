@@ -334,23 +334,35 @@ async fn dispatch(
             };
             let http_error = res.error_for_status_ref().err();
 
-            let bytes = res
-                .bytes()
-                .await
-                .expect("Could not read endpoint response body");
-            let body = bytes_to_string(bytes);
+            let attempt = match res.bytes().await {
+                Ok(bytes) => {
+                    let body = bytes_to_string(bytes);
 
-            let attempt = messageattempt::ActiveModel {
-                response_status_code: Set(status_code),
-                response: Set(body),
-                status: Set(status),
-                ..attempt
+                    messageattempt::ActiveModel {
+                        response_status_code: Set(status_code),
+                        response: Set(body),
+                        status: Set(status),
+                        ..attempt
+                    }
+                }
+
+                Err(err) => {
+                    tracing::warn!("Error reading response body: {}", err);
+                    messageattempt::ActiveModel {
+                        response_status_code: Set(status_code),
+                        response: Set(format!("failed to read response body: {}", err)),
+                        status: Set(status),
+                        ..attempt
+                    }
+                }
             };
+
             match http_error {
                 Some(err) => Err((attempt, err)),
                 None => Ok(attempt),
             }
         }
+
         Err(err) => {
             let attempt = messageattempt::ActiveModel {
                 response_status_code: Set(0),
