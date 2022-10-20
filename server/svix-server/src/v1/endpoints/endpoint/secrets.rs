@@ -13,7 +13,7 @@ use crate::{
     cfg::{Configuration, DefaultSignatureType},
     core::{
         cryptography::Encryption,
-        security::AuthenticatedApplication,
+        permissions,
         types::{
             ApplicationIdOrUid, EndpointIdOrUid, EndpointSecretInternal, ExpiringSigningKey,
             ExpiringSigningKeys,
@@ -39,10 +39,7 @@ pub(super) async fn get_endpoint_secret(
     Extension(ref db): Extension<DatabaseConnection>,
     Extension(cfg): Extension<Configuration>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
-    AuthenticatedApplication {
-        permissions: _,
-        app,
-    }: AuthenticatedApplication,
+    permissions::Application { app }: permissions::Application,
 ) -> Result<Json<EndpointSecretOut>> {
     let endp = ctx!(
         endpoint::Entity::secure_find_by_id_or_uid(app.id, endp_id)
@@ -60,10 +57,7 @@ pub(super) async fn rotate_endpoint_secret(
     Extension(cfg): Extension<Configuration>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
     ValidatedJson(data): ValidatedJson<EndpointSecretRotateIn>,
-    AuthenticatedApplication {
-        permissions: _,
-        app,
-    }: AuthenticatedApplication,
+    permissions::Application { app }: permissions::Application,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
     let mut endp = ctx!(
         endpoint::Entity::secure_find_by_id_or_uid(app.id, endp_id)

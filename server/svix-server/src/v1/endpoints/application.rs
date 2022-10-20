@@ -3,15 +3,12 @@
 
 use crate::{
     core::{
-        security::{
-            AuthenticatedApplication, AuthenticatedOrganization,
-            AuthenticatedOrganizationWithApplication,
-        },
+        permissions,
         types::{ApplicationId, ApplicationIdOrUid, ApplicationUid},
     },
     ctx,
     db::models::application,
-    error::{HttpError, Result},
+    error::Result,
     v1::utils::{
         patch::{
             patch_field_non_nullable, patch_field_nullable, UnrequiredField,
@@ -177,12 +174,12 @@ impl From<application::Model> for ApplicationOut {
 async fn list_applications(
     Extension(ref db): Extension<DatabaseConnection>,
     pagination: ValidatedQuery<Pagination<ApplicationId>>,
-    AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
+    permissions::Organization { org_id }: permissions::Organization,
 ) -> Result<Json<ListResponse<ApplicationOut>>> {
     let PaginationLimit(limit) = pagination.limit;
     let iterator = pagination.iterator.clone();
 
-    let mut query = application::Entity::secure_find(permissions.org_id)
+    let mut query = application::Entity::secure_find(org_id)
         .order_by_asc(application::Column::Id)
         .limit(limit + 1);
 
@@ -213,12 +210,12 @@ async fn create_application(
     Extension(ref db): Extension<DatabaseConnection>,
     ValidatedJson(data): ValidatedJson<ApplicationIn>,
     query: ValidatedQuery<CreateApplicationQuery>,
-    AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
+    permissions::Organization { org_id }: permissions::Organization,
 ) -> Result<(StatusCode, Json<ApplicationOut>)> {
     if query.get_if_exists {
         if let Some(ref uid) = data.uid {
             let app = ctx!(
-                application::Entity::secure_find(permissions.org_id.clone())
+                application::Entity::secure_find(org_id.clone())
                     .filter(application::Column::Uid.eq(uid.to_owned()))
                     .one(db)
                     .await
@@ -230,7 +227,7 @@ async fn create_application(
     }
 
     let app = application::ActiveModel {
-        org_id: Set(permissions.org_id.clone()),
+        org_id: Set(org_id),
         ..data.into()
     };
     let ret = ctx!(app.insert(db).await)?;
@@ -238,15 +235,8 @@ async fn create_application(
 }
 
 async fn get_application(
-    Extension(ref db): Extension<DatabaseConnection>,
-    AuthenticatedApplication { app, permissions }: AuthenticatedApplication,
+    permissions::Application { app }: permissions::Application,
 ) -> Result<Json<ApplicationOut>> {
-    let app = ctx!(
-        application::Entity::secure_find_by_id(permissions.org_id, app.id)
-            .one(db)
-            .await
-    )?
-    .ok_or_else(|| HttpError::not_found(None, None))?;
     Ok(Json(app.into()))
 }
 
@@ -254,10 +244,10 @@ async fn update_application(
     Extension(ref db): Extension<DatabaseConnection>,
     ValidatedJson(data): ValidatedJson<ApplicationIn>,
     Path(app_id): Path<ApplicationIdOrUid>,
-    AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
+    permissions::Organization { org_id }: permissions::Organization,
 ) -> Result<(StatusCode, Json<ApplicationOut>)> {
     let app = ctx!(
-        application::Entity::secure_find_by_id_or_uid(permissions.org_id.clone(), app_id)
+        application::Entity::secure_find_by_id_or_uid(org_id.clone(), app_id)
             .one(db)
             .await
     )?;
@@ -273,7 +263,7 @@ async fn update_application(
         None => {
             let ret = ctx!(
                 application::ActiveModel {
-                    org_id: Set(permissions.org_id.clone()),
+                    org_id: Set(org_id),
                     ..data.into()
                 }
                 .insert(db)
@@ -288,10 +278,7 @@ async fn update_application(
 async fn patch_application(
     Extension(ref db): Extension<DatabaseConnection>,
     ValidatedJson(data): ValidatedJson<ApplicationPatch>,
-    AuthenticatedOrganizationWithApplication {
-        permissions: _,
-        app,
-    }: AuthenticatedOrganizationWithApplication,
+    permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
 ) -> Result<Json<ApplicationOut>> {
     let mut app: application::ActiveModel = app.into();
     data.update_model(&mut app);
@@ -302,10 +289,7 @@ async fn patch_application(
 
 async fn delete_application(
     Extension(ref db): Extension<DatabaseConnection>,
-    AuthenticatedOrganizationWithApplication {
-        permissions: _,
-        app,
-    }: AuthenticatedOrganizationWithApplication,
+    permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
     let mut app: application::ActiveModel = app.into();
     app.deleted = Set(true);

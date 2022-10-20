@@ -7,7 +7,7 @@ mod secrets;
 
 use crate::{
     core::{
-        security::AuthenticatedApplication,
+        permissions,
         types::{
             ApplicationIdOrUid, BaseId, EndpointId, EndpointIdOrUid, EndpointUid, EventChannelSet,
             EventTypeNameSet, MessageEndpointId, MessageStatus,
@@ -455,10 +455,7 @@ pub struct EndpointStatsQueryOut {
 async fn endpoint_stats(
     Extension(ref db): Extension<DatabaseConnection>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
-    AuthenticatedApplication {
-        permissions: _,
-        app,
-    }: AuthenticatedApplication,
+    permissions::Application { app }: permissions::Application,
 ) -> crate::error::Result<Json<EndpointStatsOut>> {
     let endpoint = ctx!(
         crate::db::models::endpoint::Entity::secure_find_by_id_or_uid(app.id, endp_id)

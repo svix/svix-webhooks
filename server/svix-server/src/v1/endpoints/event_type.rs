@@ -2,10 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 use crate::{
-    core::{
-        security::{AuthenticatedOrganization, Permissions},
-        types::EventTypeName,
-    },
+    core::{permissions, types::EventTypeName},
     ctx,
     db::models::eventtype,
     error::{HttpError, Result},
@@ -173,12 +170,12 @@ async fn list_event_types(
     Extension(ref db): Extension<DatabaseConnection>,
     pagination: ValidatedQuery<Pagination<EventTypeName>>,
     fetch_options: ValidatedQuery<ListFetchOptions>,
-    permissions: Permissions,
+    permissions::Organization { org_id }: permissions::Organization,
 ) -> Result<Json<ListResponse<EventTypeOut>>> {
     let PaginationLimit(limit) = pagination.limit;
     let iterator = pagination.iterator.clone();
 
-    let mut query = eventtype::Entity::secure_find(permissions.org_id)
+    let mut query = eventtype::Entity::secure_find(org_id)
         .order_by_asc(eventtype::Column::Name)
         .limit(limit + 1);
 
@@ -208,10 +205,10 @@ async fn list_event_types(
 async fn create_event_type(
     Extension(ref db): Extension<DatabaseConnection>,
     ValidatedJson(data): ValidatedJson<EventTypeIn>,
-    AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
+    permissions::Organization { org_id }: permissions::Organization,
 ) -> Result<(StatusCode, Json<EventTypeOut>)> {
     let evtype = ctx!(
-        eventtype::Entity::secure_find_by_name(permissions.org_id.clone(), data.name.to_owned())
+        eventtype::Entity::secure_find_by_name(org_id.clone(), data.name.to_owned())
             .one(db)
             .await
     )?;
@@ -232,7 +229,7 @@ async fn create_event_type(
         }
         None => {
             let evtype = eventtype::ActiveModel {
-                org_id: Set(permissions.org_id.clone()),
+                org_id: Set(org_id),
                 ..data.into()
             };
             ctx!(evtype.insert(db).await)?
@@ -244,10 +241,10 @@ async fn create_event_type(
 async fn get_event_type(
     Extension(ref db): Extension<DatabaseConnection>,
     Path(evtype_name): Path<EventTypeName>,
-    AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
+    permissions::Organization { org_id }: permissions::Organization,
 ) -> Result<Json<EventTypeOut>> {
     let evtype = ctx!(
-        eventtype::Entity::secure_find_by_name(permissions.org_id, evtype_name)
+        eventtype::Entity::secure_find_by_name(org_id, evtype_name)
             .one(db)
             .await
     )?
@@ -259,10 +256,10 @@ async fn update_event_type(
     Extension(ref db): Extension<DatabaseConnection>,
     Path(evtype_name): Path<EventTypeName>,
     ValidatedJson(data): ValidatedJson<EventTypeUpdate>,
-    AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
+    permissions::Organization { org_id }: permissions::Organization,
 ) -> Result<(StatusCode, Json<EventTypeOut>)> {
     let evtype = ctx!(
-        eventtype::Entity::secure_find_by_name(permissions.org_id.clone(), evtype_name.clone())
+        eventtype::Entity::secure_find_by_name(org_id.clone(), evtype_name.clone())
             .one(db)
             .await
     )?;
@@ -278,7 +275,7 @@ async fn update_event_type(
         None => {
             let ret = ctx!(
                 eventtype::ActiveModel {
-                    org_id: Set(permissions.org_id.clone()),
+                    org_id: Set(org_id),
                     name: Set(evtype_name),
                     ..data.into()
                 }
@@ -295,10 +292,10 @@ async fn patch_event_type(
     Extension(ref db): Extension<DatabaseConnection>,
     Path(evtype_name): Path<EventTypeName>,
     ValidatedJson(data): ValidatedJson<EventTypePatch>,
-    AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
+    permissions::Organization { org_id }: permissions::Organization,
 ) -> Result<Json<EventTypeOut>> {
     let evtype = ctx!(
-        eventtype::Entity::secure_find_by_name(permissions.org_id.clone(), evtype_name)
+        eventtype::Entity::secure_find_by_name(org_id, evtype_name)
             .one(db)
             .await
     )?
@@ -314,10 +311,10 @@ async fn patch_event_type(
 async fn delete_event_type(
     Extension(ref db): Extension<DatabaseConnection>,
     Path(evtype_name): Path<EventTypeName>,
-    AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
+    permissions::Organization { org_id }: permissions::Organization,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
     let evtype = ctx!(
-        eventtype::Entity::secure_find_by_name(permissions.org_id, evtype_name)
+        eventtype::Entity::secure_find_by_name(org_id, evtype_name)
             .one(db)
             .await
     )?

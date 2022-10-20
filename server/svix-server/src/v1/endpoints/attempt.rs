@@ -3,7 +3,7 @@
 
 use crate::{
     core::{
-        security::AuthenticatedApplication,
+        permissions,
         types::{
             ApplicationIdOrUid, EndpointId, EndpointIdOrUid, EventChannel, EventTypeNameSet,
             MessageAttemptId, MessageAttemptTriggerType, MessageEndpointId, MessageId,
@@ -126,10 +126,7 @@ async fn list_attempted_messages(
         after,
     }): ValidatedQuery<ListAttemptedMessagesQueryParameters>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
-    AuthenticatedApplication {
-        permissions: _,
-        app,
-    }: AuthenticatedApplication,
+    permissions::Application { app }: permissions::Application,
 ) -> Result<Json<ListResponse<AttemptedMessageOut>>> {
     let PaginationLimit(limit) = pagination.limit;
     let endp = ctx!(
@@ -298,10 +295,7 @@ async fn list_attempts_by_endpoint(
         after,
     }): ValidatedQuery<ListAttemptsByEndpointQueryParameters>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
-    AuthenticatedApplication {
-        permissions: _,
-        app,
-    }: AuthenticatedApplication,
+    permissions::Application { app }: permissions::Application,
 ) -> Result<Json<ListResponse<MessageAttemptOut>>> {
     let PaginationLimit(limit) = pagination.limit;
     // Confirm endpoint ID belongs to the given application
@@ -373,10 +367,7 @@ async fn list_attempts_by_msg(
         after,
     }): ValidatedQuery<ListAttemptsByMsgQueryParameters>,
     Path((_app_id, msg_id)): Path<(ApplicationIdOrUid, MessageId)>,
-    AuthenticatedApplication {
-        permissions: _,
-        app,
-    }: AuthenticatedApplication,
+    permissions::Application { app }: permissions::Application,
 ) -> Result<Json<ListResponse<MessageAttemptOut>>> {
     let PaginationLimit(limit) = pagination.limit;
     // Confirm message ID belongs to the given application
@@ -466,10 +457,7 @@ async fn list_attempted_destinations(
     Extension(ref db): Extension<DatabaseConnection>,
     ValidatedQuery(mut pagination): ValidatedQuery<Pagination<EndpointId>>,
     Path((_app_id, msg_id)): Path<(ApplicationIdOrUid, MessageIdOrUid)>,
-    AuthenticatedApplication {
-        permissions: _,
-        app,
-    }: AuthenticatedApplication,
+    permissions::Application { app }: permissions::Application,
 ) -> Result<Json<ListResponse<MessageEndpointOut>>> {
     let PaginationLimit(limit) = pagination.limit;
     let iterator = pagination.iterator.take();
@@ -532,7 +520,7 @@ async fn list_attempts_for_endpoint(
     }): ValidatedQuery<ListAttemptsForEndpointQueryParameters>,
     list_filter: MessageListFetchOptions,
     Path((app_id, msg_id, endp_id)): Path<(ApplicationIdOrUid, MessageIdOrUid, EndpointIdOrUid)>,
-    auth_app: AuthenticatedApplication,
+    auth_app: permissions::Application,
 ) -> Result<Json<ListResponse<MessageAttemptOut>>> {
     list_messageattempts(
         extension,
@@ -574,10 +562,7 @@ async fn list_messageattempts(
     }): ValidatedQuery<AttemptListFetchOptions>,
     list_filter: MessageListFetchOptions,
     Path((_app_id, msg_id)): Path<(ApplicationIdOrUid, MessageIdOrUid)>,
-    AuthenticatedApplication {
-        permissions: _,
-        app,
-    }: AuthenticatedApplication,
+    permissions::Application { app }: permissions::Application,
 ) -> Result<Json<ListResponse<MessageAttemptOut>>> {
     let PaginationLimit(limit) = pagination.limit;
     let msg = ctx!(
@@ -641,10 +626,7 @@ async fn get_messageattempt(
         MessageIdOrUid,
         MessageAttemptId,
     )>,
-    AuthenticatedApplication {
-        permissions: _,
-        app,
-    }: AuthenticatedApplication,
+    permissions::Application { app }: permissions::Application,
 ) -> Result<Json<MessageAttemptOut>> {
     let msg = ctx!(
         message::Entity::secure_find_by_id_or_uid(app.id, msg_id)
@@ -667,10 +649,7 @@ async fn resend_webhook(
     Extension(ref db): Extension<DatabaseConnection>,
     Extension(queue_tx): Extension<TaskQueueProducer>,
     Path((_app_id, msg_id, endp_id)): Path<(ApplicationIdOrUid, MessageIdOrUid, EndpointIdOrUid)>,
-    AuthenticatedApplication {
-        permissions: _,
-        app,
-    }: AuthenticatedApplication,
+    permissions::Application { app }: permissions::Application,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
     let msg = ctx!(
         message::Entity::secure_find_by_id_or_uid(app.id.clone(), msg_id)
