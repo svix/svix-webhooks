@@ -118,14 +118,15 @@ pub async fn create_test_message(
         .await
 }
 
-pub fn event_type_in(name: &str, payload: serde_json::Value) -> Result<EventTypeIn> {
-    let schema = serde_json::from_value(payload).unwrap();
-
+pub fn event_type_in(
+    name: &str,
+    schema: impl Into<Option<serde_json::Value>>,
+) -> Result<EventTypeIn> {
     Ok(EventTypeIn {
         name: EventTypeName(name.to_owned()),
         description: "test-event-description".to_owned(),
         deleted: false,
-        schemas: Some(schema),
+        schemas: schema.into().map(|s| serde_json::from_value(s).unwrap()),
     })
 }
 
