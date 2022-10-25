@@ -1485,7 +1485,7 @@ async fn test_endpoint_filter_events() {
     let _et: EventTypeOut = client
         .post(
             "api/v1/event-type",
-            event_type_in("et1", serde_json::json!({"test": "value"})).unwrap(),
+            event_type_in("et1", None).unwrap(),
             StatusCode::CREATED,
         )
         .await
@@ -1672,8 +1672,8 @@ async fn test_msg_event_types_filter() {
     let receiver = TestReceiver::start(StatusCode::OK);
 
     for et in [
-        event_type_in("et1", serde_json::json!({"test": "value"})).unwrap(),
-        event_type_in("et2", serde_json::json!({"test": "value"})).unwrap(),
+        event_type_in("et1", None).unwrap(),
+        event_type_in("et2", None).unwrap(),
     ] {
         let _: EventTypeOut = client
             .post("api/v1/event-type", et, StatusCode::CREATED)

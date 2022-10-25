@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use std::collections::HashMap;
-
 use reqwest::StatusCode;
 
 use svix_server::{
@@ -27,7 +25,22 @@ async fn test_patch() {
     let et: EventTypeOut = client
         .post(
             "api/v1/event-type",
-            event_type_in("test-event-type", serde_json::json!({"test": "value"})).unwrap(),
+            event_type_in(
+                "test-event-type",
+                serde_json::json!({
+                    "1": {
+                        "type": "object",
+                        "title": "Longitude and Latitude Values",
+                        "description": "A geographical coordinate.",
+                        "required": ["latitude", "longitude"],
+                        "properties": {
+                        "latitude": {"type": "number", "minimum": -90, "maximum": 90},
+                        "longitude": {"type": "number", "minimum": -180, "maximum": 180},
+                        },
+                    }
+                }),
+            )
+            .unwrap(),
             StatusCode::CREATED,
         )
         .await
@@ -37,7 +50,7 @@ async fn test_patch() {
     let _: EventTypeOut = client
         .put(
             "api/v1/event-type/fake-id",
-            event_type_in("test-event-type", serde_json::json!({"test": "value"})).unwrap(),
+            event_type_in("test-event-type", None).unwrap(),
             StatusCode::CREATED,
         )
         .await
@@ -84,7 +97,7 @@ async fn test_patch() {
         .await
         .unwrap();
 
-    assert_eq!(out.schemas, Some(Schema(HashMap::new())));
+    assert_eq!(out.schemas, Some(Schema::default()));
 
     // Assert the other fields remain unchanged
     assert_eq!(out.deleted, et.deleted);
@@ -146,7 +159,7 @@ async fn test_event_type_create_read_list() {
     let et: EventTypeOut = client
         .post(
             "api/v1/event-type",
-            event_type_in("test-event-type", serde_json::json!({"test": "value"})).unwrap(),
+            event_type_in("test-event-type", None).unwrap(),
             StatusCode::CREATED,
         )
         .await
@@ -185,15 +198,28 @@ async fn test_list() {
     common_test_list::<EventTypeOut, EventTypeIn>(
         &client,
         "api/v1/event-type/",
-        |i| {
-            event_type_in(
-                &format!("test-event-type-{i}"),
-                serde_json::json!({"test": "value"}),
-            )
-            .unwrap()
-        },
+        |i| event_type_in(&format!("test-event-type-{i}"), None).unwrap(),
         true,
     )
     .await
     .unwrap();
+}
+
+#[tokio::test]
+async fn test_schema() {
+    let (client, _jh) = start_svix_server();
+    let _: serde_json::Value = client
+        .post(
+            "api/v1/event-type",
+            serde_json::json!({
+                            "name": "bad-schema",
+                            "description": "I have a bad schema",
+                            "schemas": {
+                                "1": {"readOnly": 15},
+                            },
+            }),
+            StatusCode::UNPROCESSABLE_ENTITY,
+        )
+        .await
+        .unwrap();
 }
