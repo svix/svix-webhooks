@@ -21,6 +21,7 @@ type EndpointIn struct {
 	Description *string `json:"description,omitempty"`
 	Disabled *bool `json:"disabled,omitempty"`
 	FilterTypes []string `json:"filterTypes,omitempty"`
+	Metadata map[string]string `json:"metadata,omitempty"`
 	RateLimit NullableInt32 `json:"rateLimit,omitempty"`
 	// The endpoint's verification secret. If `null` is passed, a secret is automatically generated. Format: `base64` encoded random bytes optionally prefixed with `whsec_`. Recommended size: 24.
 	Secret NullableString `json:"secret,omitempty"`
@@ -185,6 +186,39 @@ func (o *EndpointIn) HasFilterTypes() bool {
 // SetFilterTypes gets a reference to the given []string and assigns it to the FilterTypes field.
 func (o *EndpointIn) SetFilterTypes(v []string) {
 	o.FilterTypes = v
+}
+
+// GetMetadata returns the Metadata field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *EndpointIn) GetMetadata() map[string]string {
+	if o == nil  {
+		var ret map[string]string
+		return ret
+	}
+	return o.Metadata
+}
+
+// GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *EndpointIn) GetMetadataOk() (*map[string]string, bool) {
+	if o == nil || o.Metadata == nil {
+		return nil, false
+	}
+	return &o.Metadata, true
+}
+
+// HasMetadata returns a boolean if a field has been set.
+func (o *EndpointIn) HasMetadata() bool {
+	if o != nil && o.Metadata != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetMetadata gets a reference to the given map[string]string and assigns it to the Metadata field.
+func (o *EndpointIn) SetMetadata(v map[string]string) {
+	o.Metadata = v
 }
 
 // GetRateLimit returns the RateLimit field value if set, zero value otherwise (both if not set or set to explicit null).
@@ -374,6 +408,9 @@ func (o EndpointIn) MarshalJSON() ([]byte, error) {
 	}
 	if o.FilterTypes != nil {
 		toSerialize["filterTypes"] = o.FilterTypes
+	}
+	if o.Metadata != nil {
+		toSerialize["metadata"] = o.Metadata
 	}
 	if o.RateLimit.IsSet() {
 		toSerialize["rateLimit"] = o.RateLimit.Get()

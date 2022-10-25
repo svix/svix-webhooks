@@ -30,6 +30,7 @@ type SettingsIn struct {
 	EnableTransformations *bool `json:"enableTransformations,omitempty"`
 	EnforceHttps *bool `json:"enforceHttps,omitempty"`
 	EventCatalogPublished NullableBool `json:"eventCatalogPublished,omitempty"`
+	ReadOnly *bool `json:"readOnly,omitempty"`
 }
 
 // NewSettingsIn instantiates a new SettingsIn object
@@ -50,6 +51,8 @@ func NewSettingsIn() *SettingsIn {
 	this.EnforceHttps = &enforceHttps
 	var eventCatalogPublished bool = false
 	this.EventCatalogPublished = *NewNullableBool(&eventCatalogPublished)
+	var readOnly bool = false
+	this.ReadOnly = &readOnly
 	return &this
 }
 
@@ -70,6 +73,8 @@ func NewSettingsInWithDefaults() *SettingsIn {
 	this.EnforceHttps = &enforceHttps
 	var eventCatalogPublished bool = false
 	this.EventCatalogPublished = *NewNullableBool(&eventCatalogPublished)
+	var readOnly bool = false
+	this.ReadOnly = &readOnly
 	return &this
 }
 
@@ -581,6 +586,38 @@ func (o *SettingsIn) UnsetEventCatalogPublished() {
 	o.EventCatalogPublished.Unset()
 }
 
+// GetReadOnly returns the ReadOnly field value if set, zero value otherwise.
+func (o *SettingsIn) GetReadOnly() bool {
+	if o == nil || o.ReadOnly == nil {
+		var ret bool
+		return ret
+	}
+	return *o.ReadOnly
+}
+
+// GetReadOnlyOk returns a tuple with the ReadOnly field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *SettingsIn) GetReadOnlyOk() (*bool, bool) {
+	if o == nil || o.ReadOnly == nil {
+		return nil, false
+	}
+	return o.ReadOnly, true
+}
+
+// HasReadOnly returns a boolean if a field has been set.
+func (o *SettingsIn) HasReadOnly() bool {
+	if o != nil && o.ReadOnly != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetReadOnly gets a reference to the given bool and assigns it to the ReadOnly field.
+func (o *SettingsIn) SetReadOnly(v bool) {
+	o.ReadOnly = &v
+}
+
 func (o SettingsIn) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if o.ColorPaletteDark != nil {
@@ -624,6 +661,9 @@ func (o SettingsIn) MarshalJSON() ([]byte, error) {
 	}
 	if o.EventCatalogPublished.IsSet() {
 		toSerialize["eventCatalogPublished"] = o.EventCatalogPublished.Get()
+	}
+	if o.ReadOnly != nil {
+		toSerialize["readOnly"] = o.ReadOnly
 	}
 	return json.Marshal(toSerialize)
 }
