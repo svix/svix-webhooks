@@ -24,6 +24,7 @@ type MessageEndpointOut struct {
 	Disabled *bool `json:"disabled,omitempty"`
 	FilterTypes []string `json:"filterTypes,omitempty"`
 	Id string `json:"id"`
+	Metadata map[string]string `json:"metadata,omitempty"`
 	NextAttempt NullableTime `json:"nextAttempt,omitempty"`
 	RateLimit NullableInt32 `json:"rateLimit,omitempty"`
 	Status MessageStatus `json:"status"`
@@ -239,6 +240,39 @@ func (o *MessageEndpointOut) GetIdOk() (*string, bool) {
 // SetId sets field value
 func (o *MessageEndpointOut) SetId(v string) {
 	o.Id = v
+}
+
+// GetMetadata returns the Metadata field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *MessageEndpointOut) GetMetadata() map[string]string {
+	if o == nil  {
+		var ret map[string]string
+		return ret
+	}
+	return o.Metadata
+}
+
+// GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *MessageEndpointOut) GetMetadataOk() (*map[string]string, bool) {
+	if o == nil || o.Metadata == nil {
+		return nil, false
+	}
+	return &o.Metadata, true
+}
+
+// HasMetadata returns a boolean if a field has been set.
+func (o *MessageEndpointOut) HasMetadata() bool {
+	if o != nil && o.Metadata != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetMetadata gets a reference to the given map[string]string and assigns it to the Metadata field.
+func (o *MessageEndpointOut) SetMetadata(v map[string]string) {
+	o.Metadata = v
 }
 
 // GetNextAttempt returns the NextAttempt field value if set, zero value otherwise (both if not set or set to explicit null).
@@ -458,6 +492,9 @@ func (o MessageEndpointOut) MarshalJSON() ([]byte, error) {
 	}
 	if true {
 		toSerialize["id"] = o.Id
+	}
+	if o.Metadata != nil {
+		toSerialize["metadata"] = o.Metadata
 	}
 	if o.NextAttempt.IsSet() {
 		toSerialize["nextAttempt"] = o.NextAttempt.Get()

@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     cfg::Configuration,
-    core::security::{generate_app_token, AuthenticatedOrganizationWithApplication},
+    core::{permissions, security::generate_app_token},
     error::{HttpError, Result},
     v1::utils::api_not_implemented,
 };
@@ -16,9 +16,9 @@ pub struct DashboardAccessOut {
 
 async fn dashboard_access(
     Extension(cfg): Extension<Configuration>,
-    AuthenticatedOrganizationWithApplication { permissions, app }: AuthenticatedOrganizationWithApplication,
+    permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
 ) -> Result<Json<DashboardAccessOut>> {
-    let token = generate_app_token(&cfg.jwt_secret, permissions.org_id, app.id.clone())?;
+    let token = generate_app_token(&cfg.jwt_secret, app.org_id, app.id.clone())?;
 
     let login_key = serde_json::to_vec(&serde_json::json!({
         "appId": app.id,

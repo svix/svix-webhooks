@@ -19,6 +19,7 @@ import {
   EndpointHeadersOut,
   EndpointStats,
   RecoverIn,
+  ReplayIn,
   IntegrationApi,
   ListResponseIntegrationOut,
   IntegrationOut,
@@ -54,7 +55,7 @@ import * as base64 from "@stablelib/base64";
 import * as sha256 from "fast-sha256";
 
 const WEBHOOK_TOLERANCE_IN_SECONDS = 5 * 60; // 5 minutes
-const VERSION = "0.67.0";
+const VERSION = "0.68.1";
 
 class UserAgentMiddleware implements Middleware {
   public pre(context: RequestContext): Promise<RequestContext> {
@@ -301,6 +302,21 @@ class Endpoint {
       })
       .then(() => Promise.resolve());
   }
+  
+  public replay(
+    appId: string,
+    endpointId: string,
+    replayIn: ReplayIn,
+    options?: PostOptions
+  ): Promise<void> {
+    return this.api.replayMissingWebhooksApiV1AppAppIdEndpointEndpointIdReplayMissingPost({
+      appId,
+      endpointId,
+      replayIn,
+      ...options,
+    })
+    .then(() => Promise.resolve());
+  }
 
   public getHeaders(appId: string, endpointId: string): Promise<EndpointHeadersOut> {
     return this.api.getEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersGet({
@@ -538,7 +554,7 @@ class MessageAttempt {
       ...options,
     });
   }
-
+  
   public listAttemptedMessages(
     appId: string,
     endpointId: string,

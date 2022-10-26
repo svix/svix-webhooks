@@ -3,9 +3,10 @@
 
 use crate::{
     core::{
-        security::{AuthenticatedOrganization, Permissions},
+        permissions,
         types::{EventTypeName, RetrySchedule},
     },
+    ctx,
     db::models::eventtype,
     error::{HttpError, Result},
     v1::utils::{
@@ -40,7 +41,7 @@ pub struct EventTypeIn {
     pub description: String,
     #[serde(default, rename = "archived")]
     pub deleted: bool,
-    pub schemas: Option<serde_json::Value>,
+    pub schemas: Option<eventtype::Schema>,
 }
 
 // FIXME: This can and should be a derive macro
@@ -69,7 +70,7 @@ struct EventTypeUpdate {
     description: String,
     #[serde(default, rename = "archived")]
     deleted: bool,
-    schemas: Option<serde_json::Value>,
+    schemas: Option<eventtype::Schema>,
 }
 
 // FIXME: This can and should be a derive macro
@@ -104,7 +105,7 @@ struct EventTypePatch {
     deleted: UnrequiredField<bool>,
 
     #[serde(default, skip_serializing_if = "UnrequiredNullableField::is_absent")]
-    schemas: UnrequiredNullableField<serde_json::Value>,
+    schemas: UnrequiredNullableField<eventtype::Schema>,
 }
 
 impl ModelIn for EventTypePatch {
@@ -130,7 +131,7 @@ pub struct EventTypeOut {
     pub description: String,
     #[serde(rename = "archived")]
     pub deleted: bool,
-    pub schemas: Option<serde_json::Value>,
+    pub schemas: Option<eventtype::Schema>,
 
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
@@ -172,12 +173,12 @@ async fn list_event_types(
     Extension(ref db): Extension<DatabaseConnection>,
     pagination: ValidatedQuery<Pagination<EventTypeName>>,
     fetch_options: ValidatedQuery<ListFetchOptions>,
-    permissions: Permissions,
+    permissions::Organization { org_id }: permissions::Organization,
 ) -> Result<Json<ListResponse<EventTypeOut>>> {
     let PaginationLimit(limit) = pagination.limit;
     let iterator = pagination.iterator.clone();
 
-    let mut query = eventtype::Entity::secure_find(permissions.org_id)
+    let mut query = eventtype::Entity::secure_find(org_id)
         .order_by_asc(eventtype::Column::Name)
         .limit(limit + 1);
 
@@ -190,9 +191,7 @@ async fn list_event_types(
     }
 
     Ok(Json(EventTypeOut::list_response_no_prev(
-        query
-            .all(db)
-            .await?
+        ctx!(query.all(db).await)?
             .into_iter()
             .map(|x| {
                 if !fetch_options.with_content {
@@ -209,19 +208,20 @@ async fn list_event_types(
 async fn create_event_type(
     Extension(ref db): Extension<DatabaseConnection>,
     ValidatedJson(data): ValidatedJson<EventTypeIn>,
-    AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
+    permissions::Organization { org_id }: permissions::Organization,
 ) -> Result<(StatusCode, Json<EventTypeOut>)> {
-    let evtype =
-        eventtype::Entity::secure_find_by_name(permissions.org_id.clone(), data.name.to_owned())
+    let evtype = ctx!(
+        eventtype::Entity::secure_find_by_name(org_id.clone(), data.name.to_owned())
             .one(db)
-            .await?;
+            .await
+    )?;
     let ret = match evtype {
         Some(evtype) => {
             if evtype.deleted {
                 let mut evtype: eventtype::ActiveModel = evtype.into();
                 evtype.deleted = Set(false);
                 data.update_model(&mut evtype);
-                evtype.update(db).await?
+                ctx!(evtype.update(db).await)?
             } else {
                 return Err(HttpError::conflict(
                     Some("event_type_exists".to_owned()),
@@ -232,10 +232,10 @@ async fn create_event_type(
         }
         None => {
             let evtype = eventtype::ActiveModel {
-                org_id: Set(permissions.org_id.clone()),
+                org_id: Set(org_id),
                 ..data.into()
             };
-            evtype.insert(db).await?
+            ctx!(evtype.insert(db).await)?
         }
     };
     Ok((StatusCode::CREATED, Json(ret.into())))
@@ -244,12 +244,14 @@ async fn create_event_type(
 async fn get_event_type(
     Extension(ref db): Extension<DatabaseConnection>,
     Path(evtype_name): Path<EventTypeName>,
-    AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
+    permissions::Organization { org_id }: permissions::Organization,
 ) -> Result<Json<EventTypeOut>> {
-    let evtype = eventtype::Entity::secure_find_by_name(permissions.org_id, evtype_name)
-        .one(db)
-        .await?
-        .ok_or_else(|| HttpError::not_found(None, None))?;
+    let evtype = ctx!(
+        eventtype::Entity::secure_find_by_name(org_id, evtype_name)
+            .one(db)
+            .await
+    )?
+    .ok_or_else(|| HttpError::not_found(None, None))?;
     Ok(Json(evtype.into()))
 }
 
@@ -257,29 +259,32 @@ async fn update_event_type(
     Extension(ref db): Extension<DatabaseConnection>,
     Path(evtype_name): Path<EventTypeName>,
     ValidatedJson(data): ValidatedJson<EventTypeUpdate>,
-    AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
+    permissions::Organization { org_id }: permissions::Organization,
 ) -> Result<(StatusCode, Json<EventTypeOut>)> {
-    let evtype =
-        eventtype::Entity::secure_find_by_name(permissions.org_id.clone(), evtype_name.clone())
+    let evtype = ctx!(
+        eventtype::Entity::secure_find_by_name(org_id.clone(), evtype_name.clone())
             .one(db)
-            .await?;
+            .await
+    )?;
 
     match evtype {
         Some(evtype) => {
             let mut evtype: eventtype::ActiveModel = evtype.into();
             data.update_model(&mut evtype);
-            let ret = evtype.update(db).await?;
+            let ret = ctx!(evtype.update(db).await)?;
 
             Ok((StatusCode::OK, Json(ret.into())))
         }
         None => {
-            let ret = eventtype::ActiveModel {
-                org_id: Set(permissions.org_id.clone()),
-                name: Set(evtype_name),
-                ..data.into()
-            }
-            .insert(db)
-            .await?;
+            let ret = ctx!(
+                eventtype::ActiveModel {
+                    org_id: Set(org_id),
+                    name: Set(evtype_name),
+                    ..data.into()
+                }
+                .insert(db)
+                .await
+            )?;
 
             Ok((StatusCode::CREATED, Json(ret.into())))
         }
@@ -290,33 +295,37 @@ async fn patch_event_type(
     Extension(ref db): Extension<DatabaseConnection>,
     Path(evtype_name): Path<EventTypeName>,
     ValidatedJson(data): ValidatedJson<EventTypePatch>,
-    AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
+    permissions::Organization { org_id }: permissions::Organization,
 ) -> Result<Json<EventTypeOut>> {
-    let evtype = eventtype::Entity::secure_find_by_name(permissions.org_id.clone(), evtype_name)
-        .one(db)
-        .await?
-        .ok_or_else(|| HttpError::not_found(None, None))?;
+    let evtype = ctx!(
+        eventtype::Entity::secure_find_by_name(org_id, evtype_name)
+            .one(db)
+            .await
+    )?
+    .ok_or_else(|| HttpError::not_found(None, None))?;
 
     let mut evtype: eventtype::ActiveModel = evtype.into();
     data.update_model(&mut evtype);
 
-    let ret = evtype.update(db).await?;
+    let ret = ctx!(evtype.update(db).await)?;
     Ok(Json(ret.into()))
 }
 
 async fn delete_event_type(
     Extension(ref db): Extension<DatabaseConnection>,
     Path(evtype_name): Path<EventTypeName>,
-    AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
+    permissions::Organization { org_id }: permissions::Organization,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
-    let evtype = eventtype::Entity::secure_find_by_name(permissions.org_id, evtype_name)
-        .one(db)
-        .await?
-        .ok_or_else(|| HttpError::not_found(None, None))?;
+    let evtype = ctx!(
+        eventtype::Entity::secure_find_by_name(org_id, evtype_name)
+            .one(db)
+            .await
+    )?
+    .ok_or_else(|| HttpError::not_found(None, None))?;
 
     let mut evtype: eventtype::ActiveModel = evtype.into();
     evtype.deleted = Set(true);
-    evtype.update(db).await?;
+    ctx!(evtype.update(db).await)?;
     Ok((StatusCode::NO_CONTENT, Json(EmptyResponse {})))
 }
 
@@ -329,13 +338,15 @@ pub struct RetryScheduleInOut {
 async fn get_retry_schedule(
     Extension(ref db): Extension<DatabaseConnection>,
     Path(evtype_name): Path<EventTypeName>,
-    AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
+    permissions::Organization { org_id }: permissions::Organization,
 ) -> Result<Json<RetryScheduleInOut>> {
-    let evtype = eventtype::Entity::secure_find_by_name(permissions.org_id, evtype_name)
-        .one(db)
-        .await?
-        .ok_or_else(|| HttpError::not_found(None, None))
-        .unwrap();
+    let evtype = ctx!(
+        eventtype::Entity::secure_find_by_name(org_id, evtype_name)
+            .one(db)
+            .await
+    )?
+    .ok_or_else(|| HttpError::not_found(None, None))
+    .unwrap();
 
     let retry_schedule = RetryScheduleInOut {
         retry_schedule: evtype.retry_schedule,
@@ -348,16 +359,18 @@ async fn update_retry_schedule(
     Extension(ref db): Extension<DatabaseConnection>,
     Path(evtype_name): Path<EventTypeName>,
     ValidatedJson(data): ValidatedJson<RetryScheduleInOut>,
-    AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
+    permissions::Organization { org_id }: permissions::Organization,
 ) -> Result<Json<RetryScheduleInOut>> {
-    let evtype = eventtype::Entity::secure_find_by_name(permissions.org_id, evtype_name)
-        .one(db)
-        .await?
-        .ok_or_else(|| HttpError::not_found(None, None))?;
+    let evtype = ctx!(
+        eventtype::Entity::secure_find_by_name(org_id, evtype_name)
+            .one(db)
+            .await
+    )?
+    .ok_or_else(|| HttpError::not_found(None, None))?;
 
     let mut evtype: eventtype::ActiveModel = evtype.into();
     evtype.retry_schedule = Set(data.retry_schedule);
-    let evtype = evtype.update(db).await?;
+    let evtype = ctx!(evtype.update(db).await)?;
 
     let retry_schedule = RetryScheduleInOut {
         retry_schedule: evtype.retry_schedule,

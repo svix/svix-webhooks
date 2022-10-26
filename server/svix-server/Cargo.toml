@@ -1,6 +1,6 @@
 [package]
 name = "svix-server"
-version = "0.67.0"
+version = "0.68.1"
 license = "MIT"
 description = "Svix webhooks server"
 
@@ -63,6 +63,7 @@ futures = "0.3"
 redis_cluster_async = { git = "https://github.com/redis-rs/redis-cluster-async.git", rev = "e6fe168" }
 url = "2.2.2"
 rand = "0.8.5"
+jsonschema = "0.16.1"
 
 [dev-dependencies]
 anyhow = "1.0.56"

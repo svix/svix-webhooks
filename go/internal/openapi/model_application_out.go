@@ -19,6 +19,7 @@ import (
 type ApplicationOut struct {
 	CreatedAt time.Time `json:"createdAt"`
 	Id string `json:"id"`
+	Metadata map[string]string `json:"metadata,omitempty"`
 	Name string `json:"name"`
 	RateLimit NullableInt32 `json:"rateLimit,omitempty"`
 	// Optional unique identifier for the application
@@ -93,6 +94,39 @@ func (o *ApplicationOut) GetIdOk() (*string, bool) {
 // SetId sets field value
 func (o *ApplicationOut) SetId(v string) {
 	o.Id = v
+}
+
+// GetMetadata returns the Metadata field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *ApplicationOut) GetMetadata() map[string]string {
+	if o == nil  {
+		var ret map[string]string
+		return ret
+	}
+	return o.Metadata
+}
+
+// GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ApplicationOut) GetMetadataOk() (*map[string]string, bool) {
+	if o == nil || o.Metadata == nil {
+		return nil, false
+	}
+	return &o.Metadata, true
+}
+
+// HasMetadata returns a boolean if a field has been set.
+func (o *ApplicationOut) HasMetadata() bool {
+	if o != nil && o.Metadata != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetMetadata gets a reference to the given map[string]string and assigns it to the Metadata field.
+func (o *ApplicationOut) SetMetadata(v map[string]string) {
+	o.Metadata = v
 }
 
 // GetName returns the Name field value
@@ -234,6 +268,9 @@ func (o ApplicationOut) MarshalJSON() ([]byte, error) {
 	}
 	if true {
 		toSerialize["id"] = o.Id
+	}
+	if o.Metadata != nil {
+		toSerialize["metadata"] = o.Metadata
 	}
 	if true {
 		toSerialize["name"] = o.Name
