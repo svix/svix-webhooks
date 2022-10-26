@@ -3,6 +3,17 @@
 ## Next
 * 
 
+## Version 0.67.0
+* Server: include idempotency key in log spans.
+* Server: correct trace ID handling in tracing spans.
+
+## Version 0.66.0
+* Server: add unique IDs when tracing worker tasks.
+* Server: allow enabling extra tracing for db operations.
+* Server: ensure tracing spans are recorded for all log levels.
+* Server: reduce idempotency key lock time from 20s to 5s.
+* Libs: expose endpoint stats function.
+
 ## Version 0.65.1
 * Server: fix validation errors to be more informative.
 * Server: more strict message payload validation to match the libs.

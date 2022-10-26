@@ -90,7 +90,11 @@ impl IntoResponse for Error {
     fn into_response(self) -> Response {
         match self {
             Error::Http(s) => {
-                tracing::debug!("{:?}", &s);
+                if s.status.is_server_error() {
+                    tracing::error!("{:?}", &s);
+                } else {
+                    tracing::debug!("{:?}", &s);
+                }
                 s.into_response()
             }
             s => {
@@ -187,7 +191,7 @@ impl HttpError {
         }
     }
 
-    pub fn internal_server_errer(code: Option<String>, detail: Option<String>) -> Self {
+    pub fn internal_server_error(code: Option<String>, detail: Option<String>) -> Self {
         Self::new_standard(
             StatusCode::INTERNAL_SERVER_ERROR,
             code.unwrap_or_else(|| "server_error".to_owned()),

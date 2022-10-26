@@ -31,7 +31,7 @@ const fn expiry_default() -> Duration {
 
 /// Returns the default expiry period for the starting lock
 const fn expiry_starting() -> Duration {
-    Duration::from_secs(20)
+    Duration::from_secs(5)
 }
 
 /// Returns the duration to sleep before retrying to find a [`SerializedResponse::Finished`] in the
@@ -65,7 +65,7 @@ impl IdempotencyKey {
         hasher.update(url);
 
         let res = hasher.finalize();
-        IdempotencyKey(base64::encode(&res))
+        IdempotencyKey(base64::encode(res))
     }
 }
 

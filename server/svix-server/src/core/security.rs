@@ -33,7 +33,7 @@ pub fn management_org_id() -> OrganizationId {
 
 fn to_internal_server_error(x: impl Display) -> HttpError {
     tracing::error!("Error: {}", x);
-    HttpError::internal_server_errer(None, None)
+    HttpError::internal_server_error(None, None)
 }
 
 pub struct Permissions {
