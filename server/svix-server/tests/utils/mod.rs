@@ -226,17 +226,17 @@ pub fn get_default_test_config() -> ConfigurationInner {
     cfg.as_ref().clone()
 }
 
-pub fn start_svix_server() -> (TestClient, tokio::task::JoinHandle<()>) {
-    start_svix_server_with_cfg(&get_default_test_config())
+pub async fn start_svix_server() -> (TestClient, tokio::task::JoinHandle<()>) {
+    start_svix_server_with_cfg(&get_default_test_config()).await
 }
 
-pub fn start_svix_server_with_cfg(
+pub async fn start_svix_server_with_cfg(
     cfg: &ConfigurationInner,
 ) -> (TestClient, tokio::task::JoinHandle<()>) {
-    start_svix_server_with_cfg_and_org_id(cfg, OrganizationId::new(None, None))
+    start_svix_server_with_cfg_and_org_id(cfg, OrganizationId::new(None, None)).await
 }
 
-pub fn start_svix_server_with_cfg_and_org_id(
+pub async fn start_svix_server_with_cfg_and_org_id(
     cfg: &ConfigurationInner,
     org_id: OrganizationId,
 ) -> (TestClient, tokio::task::JoinHandle<()>) {

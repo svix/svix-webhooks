@@ -20,7 +20,7 @@ use utils::{
 
 #[tokio::test]
 async fn test_patch() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     let et: EventTypeOut = client
         .post(
@@ -154,7 +154,7 @@ async fn test_patch() {
 
 #[tokio::test]
 async fn test_event_type_create_read_list() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     let et: EventTypeOut = client
         .post(
@@ -193,7 +193,7 @@ async fn test_event_type_create_read_list() {
 
 #[tokio::test]
 async fn test_list() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     common_test_list::<EventTypeOut, EventTypeIn>(
         &client,
@@ -207,7 +207,7 @@ async fn test_list() {
 
 #[tokio::test]
 async fn test_schema() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
     let _: serde_json::Value = client
         .post(
             "api/v1/event-type",
