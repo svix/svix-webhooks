@@ -89,7 +89,7 @@ async fn delete_endpoint(client: &TestClient, app_id: &ApplicationId, ep_id: &st
 
 #[tokio::test]
 async fn test_patch() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     let app = create_test_app(&client, "v1EndpointPatchTestApp")
         .await
@@ -453,7 +453,7 @@ async fn test_patch() {
 
 #[tokio::test]
 async fn test_crud() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     const APP_NAME_1: &str = "v1EndpointCrudTestApp1";
     const APP_NAME_2: &str = "v1EndpointCrudTestApp2";
@@ -603,7 +603,7 @@ async fn test_crud() {
 
 #[tokio::test]
 async fn test_list() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     let app_id = create_test_app(&client, "App1").await.unwrap().id;
     common_test_list::<EndpointOut, EndpointIn>(
@@ -620,7 +620,7 @@ async fn test_list() {
 /// any application
 #[tokio::test]
 async fn test_uid() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     const APP_NAME_1: &str = "v1EndpointUidTestApp1";
     const APP_NAME_2: &str = "v1EndpointUidTestApp2";
@@ -724,7 +724,7 @@ async fn test_uid() {
 // Simply tests that upon rotating an endpoint secret that it differs from the prior one
 #[tokio::test]
 async fn test_endpoint_secret_get_and_rotation() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     const APP_NAME: &str = "v1EndpointSecretRotationTestApp";
     const EP_URI: &str = "http://v1EndpointSecretRotationTestEp.test";
@@ -786,7 +786,7 @@ async fn test_endpoint_secret_get_and_rotation() {
 
 #[tokio::test]
 async fn test_recovery_should_fail_if_start_time_too_old() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
@@ -821,7 +821,7 @@ async fn test_recovery_expected_retry_counts() {
     // total attempts for a failed message should be 1 (first attempt) + length of retry_schedule:
     let base_attempt_cnt = 1 + &cfg.retry_schedule.len();
 
-    let (client, _jh) = start_svix_server_with_cfg(&cfg);
+    let (client, _jh) = start_svix_server_with_cfg(&cfg).await;
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
@@ -873,7 +873,7 @@ async fn test_recovery_expected_retry_counts() {
 
 #[tokio::test]
 async fn test_endpoint_rotate_max() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
@@ -905,7 +905,7 @@ async fn test_endpoint_rotate_max() {
 
 #[tokio::test]
 async fn test_endpoint_rotate_signing_e2e() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
@@ -988,7 +988,7 @@ async fn test_endpoint_rotate_signing_e2e() {
 
 #[tokio::test]
 async fn test_endpoint_rotate_signing_symmetric_and_asymmetric() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
@@ -1086,7 +1086,7 @@ async fn test_endpoint_rotate_signing_symmetric_and_asymmetric() {
 async fn test_endpoint_secret_config() {
     let mut cfg = get_default_test_config();
     cfg.default_signature_type = DefaultSignatureType::Ed25519;
-    let (client, _jh) = start_svix_server_with_cfg(&cfg);
+    let (client, _jh) = start_svix_server_with_cfg(&cfg).await;
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
@@ -1140,7 +1140,7 @@ async fn test_endpoint_secret_config() {
 
 #[tokio::test]
 async fn test_custom_endpoint_secret() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
@@ -1211,7 +1211,7 @@ async fn test_custom_endpoint_secret() {
 async fn test_endpoint_secret_encryption() {
     let org_id = OrganizationId::new(None, None);
     let cfg = get_default_test_config();
-    let (client, _jh) = start_svix_server_with_cfg_and_org_id(&cfg, org_id.clone());
+    let (client, _jh) = start_svix_server_with_cfg_and_org_id(&cfg, org_id.clone()).await;
 
     #[derive(Deserialize)]
     pub struct EndpointSecretOutTest {
@@ -1242,7 +1242,7 @@ async fn test_endpoint_secret_encryption() {
     // Now add encryption and check the secret is still fine
     let mut cfg = get_default_test_config();
     cfg.encryption = Encryption::new([1; 32]);
-    let (client, _jh) = start_svix_server_with_cfg_and_org_id(&cfg, org_id.clone());
+    let (client, _jh) = start_svix_server_with_cfg_and_org_id(&cfg, org_id.clone()).await;
 
     let secret2 = client
         .get::<EndpointSecretOutTest>(
@@ -1280,7 +1280,7 @@ async fn test_endpoint_secret_encryption() {
 
     // Make sure we can't read it with the secret unset
     let cfg = get_default_test_config();
-    let (client, _jh) = start_svix_server_with_cfg_and_org_id(&cfg, org_id.clone());
+    let (client, _jh) = start_svix_server_with_cfg_and_org_id(&cfg, org_id.clone()).await;
     client
         .get::<IgnoredResponse>(
             &format!("api/v1/app/{}/endpoint/{}/secret/", app_id, ep.id),
@@ -1292,7 +1292,7 @@ async fn test_endpoint_secret_encryption() {
 
 #[tokio::test]
 async fn test_invalid_endpoint_secret() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
@@ -1324,7 +1324,7 @@ async fn test_invalid_endpoint_secret() {
 #[tokio::test]
 async fn test_legacy_endpoint_secret() {
     let cfg = get_default_test_config();
-    let (client, _jh) = start_svix_server_with_cfg(&cfg);
+    let (client, _jh) = start_svix_server_with_cfg(&cfg).await;
 
     let db = Arc::new(cfg);
     let db = svix_server::db::init_db(&db).await;
@@ -1383,7 +1383,7 @@ async fn test_legacy_endpoint_secret() {
 async fn test_endpoint_secret_encryption_in_database() {
     let mut cfg = get_default_test_config();
     cfg.encryption = Encryption::new([1; 32]);
-    let (client, _jh) = start_svix_server_with_cfg(&cfg);
+    let (client, _jh) = start_svix_server_with_cfg(&cfg).await;
 
     let db = Arc::new(cfg);
     let db = svix_server::db::init_db(&db).await;
@@ -1411,7 +1411,7 @@ async fn test_endpoint_secret_encryption_in_database() {
     let secret_encrypted: Vec<u8> = secret_encrypted.unwrap().try_get("", "key").unwrap();
 
     let cfg = get_default_test_config();
-    let (client, _jh) = start_svix_server_with_cfg(&cfg);
+    let (client, _jh) = start_svix_server_with_cfg(&cfg).await;
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
@@ -1441,7 +1441,7 @@ async fn test_endpoint_secret_encryption_in_database() {
 
 #[tokio::test]
 async fn test_endpoint_filter_events() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
@@ -1539,7 +1539,7 @@ async fn test_endpoint_filter_events() {
 
 #[tokio::test]
 async fn test_endpoint_filter_channels() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
@@ -1627,7 +1627,7 @@ async fn test_endpoint_filter_channels() {
 
 #[tokio::test]
 async fn test_rate_limit() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
@@ -1665,7 +1665,7 @@ async fn test_rate_limit() {
 
 #[tokio::test]
 async fn test_msg_event_types_filter() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
@@ -1736,7 +1736,7 @@ async fn test_msg_event_types_filter() {
 
 #[tokio::test]
 async fn test_msg_channels_filter() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
@@ -1796,7 +1796,7 @@ async fn test_msg_channels_filter() {
 
 #[tokio::test]
 async fn test_endpoint_headers_manipulation() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
@@ -1959,7 +1959,7 @@ async fn test_endpoint_headers_manipulation() {
 
 #[tokio::test]
 async fn test_endpoint_headers_sending() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
@@ -1998,7 +1998,7 @@ async fn test_endpoint_headers_sending() {
 
 #[tokio::test]
 async fn test_endpoint_header_key_capitalization() {
-    let (client, _jk) = start_svix_server();
+    let (client, _jk) = start_svix_server().await;
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
@@ -2045,7 +2045,7 @@ async fn test_endpoint_https_only() {
 
     // No https enforcement (default)
     let cfg = get_default_test_config();
-    let (client, _jh) = start_svix_server_with_cfg(&cfg);
+    let (client, _jh) = start_svix_server_with_cfg(&cfg).await;
 
     let app_id = create_test_app(&client, "App 1").await.unwrap().id;
 
@@ -2072,7 +2072,7 @@ async fn test_endpoint_https_only() {
     // Enforce https
     let mut cfg = get_default_test_config();
     cfg.endpoint_https_only = true;
-    let (client, _jh) = start_svix_server_with_cfg(&cfg);
+    let (client, _jh) = start_svix_server_with_cfg(&cfg).await;
 
     let app_id = create_test_app(&client, "App 1").await.unwrap().id;
 
