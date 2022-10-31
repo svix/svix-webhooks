@@ -7,12 +7,13 @@ mod secrets;
 
 use crate::{
     core::{
-        security::AuthenticatedApplication,
+        permissions,
         types::{
             ApplicationIdOrUid, BaseId, EndpointId, EndpointIdOrUid, EndpointUid, EventChannelSet,
             EventTypeNameSet, MessageEndpointId, MessageStatus,
         },
     },
+    ctx,
     db::models::messagedestination,
     error::HttpError,
     v1::utils::{
@@ -454,18 +455,17 @@ pub struct EndpointStatsQueryOut {
 async fn endpoint_stats(
     Extension(ref db): Extension<DatabaseConnection>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
-    AuthenticatedApplication {
-        permissions: _,
-        app,
-    }: AuthenticatedApplication,
+    permissions::Application { app }: permissions::Application,
 ) -> crate::error::Result<Json<EndpointStatsOut>> {
-    let endpoint = crate::db::models::endpoint::Entity::secure_find_by_id_or_uid(app.id, endp_id)
-        .one(db)
-        .await?
-        .ok_or_else(|| HttpError::not_found(None, None))?
-        .id;
+    let endpoint = ctx!(
+        crate::db::models::endpoint::Entity::secure_find_by_id_or_uid(app.id, endp_id)
+            .one(db)
+            .await
+    )?
+    .ok_or_else(|| HttpError::not_found(None, None))?
+    .id;
 
-    let query_out: Vec<EndpointStatsQueryOut> =
+    let query_out: Vec<EndpointStatsQueryOut> = ctx!(
         messagedestination::Entity::secure_find_by_endpoint(endpoint)
             .select_only()
             .column(messagedestination::Column::Status)
@@ -478,7 +478,8 @@ async fn endpoint_stats(
             )
             .into_model::<EndpointStatsQueryOut>()
             .all(db)
-            .await?;
+            .await
+    )?;
     let mut query_out = query_out
         .into_iter()
         .map(|EndpointStatsQueryOut { status, count }| (status, count))

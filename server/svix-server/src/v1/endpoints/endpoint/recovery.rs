@@ -10,12 +10,13 @@ use sea_orm::{DatabaseConnection, QuerySelect};
 use super::RecoverIn;
 use crate::{
     core::{
-        security::AuthenticatedApplication,
+        permissions,
         types::{
             ApplicationIdOrUid, BaseId, EndpointIdOrUid, MessageAttemptTriggerType,
             MessageEndpointId, MessageStatus,
         },
     },
+    ctx,
     db::models::{application, endpoint, messagedestination},
     error::{HttpError, Result, ValidationErrorItem},
     queue::{MessageTask, TaskQueueProducer},
@@ -45,7 +46,7 @@ async fn bulk_recover_failed_messages(
             query = query.filter(messagedestination::Column::Id.gt(iterator))
         }
 
-        let items = query.all(&db).await?;
+        let items = ctx!(query.all(&db).await)?;
         let cur_len = items.len() as u64;
         iterator = items.last().map(|x| x.id.clone());
 
@@ -77,10 +78,7 @@ pub(super) async fn recover_failed_webhooks(
     Extension(queue_tx): Extension<TaskQueueProducer>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
     ValidatedJson(data): ValidatedJson<RecoverIn>,
-    AuthenticatedApplication {
-        permissions: _,
-        app,
-    }: AuthenticatedApplication,
+    permissions::Application { app }: permissions::Application,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
     // Add five minutes so that people can easily just do `now() - two_weeks` without having to worry about clock sync
     let timeframe = chrono::Duration::days(14);
@@ -95,10 +93,12 @@ pub(super) async fn recover_failed_webhooks(
         .into());
     }
 
-    let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
-        .one(db)
-        .await?
-        .ok_or_else(|| HttpError::not_found(None, None))?;
+    let endp = ctx!(
+        endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
+            .one(db)
+            .await
+    )?
+    .ok_or_else(|| HttpError::not_found(None, None))?;
 
     let db = db.clone();
     let queue_tx = queue_tx.clone();

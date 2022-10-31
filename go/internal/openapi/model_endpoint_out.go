@@ -24,6 +24,7 @@ type EndpointOut struct {
 	Disabled *bool `json:"disabled,omitempty"`
 	FilterTypes []string `json:"filterTypes,omitempty"`
 	Id string `json:"id"`
+	Metadata map[string]string `json:"metadata,omitempty"`
 	RateLimit NullableInt32 `json:"rateLimit,omitempty"`
 	// Optional unique identifier for the endpoint
 	Uid NullableString `json:"uid,omitempty"`
@@ -240,6 +241,39 @@ func (o *EndpointOut) SetId(v string) {
 	o.Id = v
 }
 
+// GetMetadata returns the Metadata field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *EndpointOut) GetMetadata() map[string]string {
+	if o == nil  {
+		var ret map[string]string
+		return ret
+	}
+	return o.Metadata
+}
+
+// GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *EndpointOut) GetMetadataOk() (*map[string]string, bool) {
+	if o == nil || o.Metadata == nil {
+		return nil, false
+	}
+	return &o.Metadata, true
+}
+
+// HasMetadata returns a boolean if a field has been set.
+func (o *EndpointOut) HasMetadata() bool {
+	if o != nil && o.Metadata != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetMetadata gets a reference to the given map[string]string and assigns it to the Metadata field.
+func (o *EndpointOut) SetMetadata(v map[string]string) {
+	o.Metadata = v
+}
+
 // GetRateLimit returns the RateLimit field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *EndpointOut) GetRateLimit() int32 {
 	if o == nil || o.RateLimit.Get() == nil {
@@ -415,6 +449,9 @@ func (o EndpointOut) MarshalJSON() ([]byte, error) {
 	}
 	if true {
 		toSerialize["id"] = o.Id
+	}
+	if o.Metadata != nil {
+		toSerialize["metadata"] = o.Metadata
 	}
 	if o.RateLimit.IsSet() {
 		toSerialize["rateLimit"] = o.RateLimit.Get()

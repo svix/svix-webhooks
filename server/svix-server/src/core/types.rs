@@ -24,7 +24,7 @@ use std::ops::Deref;
 use svix_ksuid::*;
 use validator::{Validate, ValidationErrors};
 
-use crate::{cfg::DefaultSignatureType, v1::utils::validation_error};
+use crate::{cfg::DefaultSignatureType, err_generic, v1::utils::validation_error};
 
 use super::cryptography::{AsymmetricKey, AsymmetricKeyP256, Encryption};
 
@@ -94,6 +94,7 @@ macro_rules! enum_wrapper {
     };
 }
 
+#[macro_export]
 macro_rules! json_wrapper {
     ($name_id:ty) => {
         impl From<$name_id> for sea_orm::Value {
@@ -103,8 +104,12 @@ macro_rules! json_wrapper {
             }
         }
 
-        impl TryGetable for $name_id {
-            fn try_get(res: &QueryResult, pre: &str, col: &str) -> Result<Self, TryGetError> {
+        impl sea_orm::TryGetable for $name_id {
+            fn try_get(
+                res: &QueryResult,
+                pre: &str,
+                col: &str,
+            ) -> Result<Self, sea_orm::TryGetError> {
                 match Json::try_get(res, pre, col) {
                     Ok(v) => Ok(serde_json::from_value(v).expect("Error deserializing JSON")),
                     Err(e) => Err(e),
@@ -112,19 +117,19 @@ macro_rules! json_wrapper {
             }
         }
 
-        impl Nullable for $name_id {
+        impl sea_orm::sea_query::Nullable for $name_id {
             fn null() -> Value {
                 Value::Json(None)
             }
         }
 
-        impl ValueType for $name_id {
-            fn try_from(v: Value) -> Result<Self, ValueTypeErr> {
+        impl sea_orm::sea_query::ValueType for $name_id {
+            fn try_from(v: Value) -> Result<Self, sea_orm::sea_query::ValueTypeErr> {
                 match v {
                     Value::Json(Some(x)) => {
                         Ok(serde_json::from_value(*x).expect("Error deserializing JSON"))
                     }
-                    _ => Err(ValueTypeErr),
+                    _ => Err(sea_orm::sea_query::ValueTypeErr),
                 }
             }
 
@@ -132,8 +137,8 @@ macro_rules! json_wrapper {
                 stringify!($name_id).to_owned()
             }
 
-            fn column_type() -> ColumnType {
-                ColumnType::JsonBinary
+            fn column_type() -> sea_orm::sea_query::ColumnType {
+                sea_orm::sea_query::ColumnType::JsonBinary
             }
         }
     };
@@ -519,8 +524,8 @@ impl EndpointSecretMarker {
     fn from_u8(v: u8) -> crate::error::Result<Self> {
         let encrypted = (v & Self::ENCRYPTED_FLAG) != 0;
         let v = v & !Self::ENCRYPTED_FLAG;
-        let type_ = EndpointSecretType::try_from(v)
-            .map_err(|_| crate::error::Error::Generic("Invalid marker value".to_string()))?;
+        let type_ =
+            EndpointSecretType::try_from(v).map_err(|_| err_generic!("Invalid marker value"))?;
 
         Ok(Self { type_, encrypted })
     }
@@ -601,9 +606,7 @@ impl EndpointSecretInternal {
     fn from_vec(v: Vec<u8>) -> crate::error::Result<Self> {
         // Legacy had exact size
         match v.len() {
-            0..=Self::KEY_SIZE_MINUS_ONE => {
-                Err(crate::error::Error::Generic("Value too small".to_string()))
-            }
+            0..=Self::KEY_SIZE_MINUS_ONE => Err(err_generic!("Value too small")),
             Self::KEY_SIZE => Ok(Self {
                 marker: EndpointSecretMarker {
                     type_: EndpointSecretType::Hmac256,
@@ -671,9 +674,7 @@ impl EndpointSecretInternal {
             if encryption.enabled() {
                 encryption.decrypt(&self.key)?
             } else {
-                return Err(crate::error::Error::Generic(
-                    "main_secret unset, can't decrypt key".to_string(),
-                ));
+                return Err(err_generic!("main_secret unset, can't decrypt key"));
             }
         } else {
             self.key.to_vec()

@@ -22,7 +22,7 @@ use serde::{Deserialize, Serialize};
 use tower::Service;
 
 use super::cache::{kv_def, Cache, CacheBehavior, CacheKey, CacheValue};
-use crate::error::Error;
+use crate::{err_database, error::Error};
 
 /// Returns the default exipry period for cached responses
 const fn expiry_default() -> Duration {
@@ -31,7 +31,7 @@ const fn expiry_default() -> Duration {
 
 /// Returns the default expiry period for the starting lock
 const fn expiry_starting() -> Duration {
-    Duration::from_secs(20)
+    Duration::from_secs(5)
 }
 
 /// Returns the duration to sleep before retrying to find a [`SerializedResponse::Finished`] in the
@@ -65,7 +65,7 @@ impl IdempotencyKey {
         hasher.update(url);
 
         let res = hasher.finalize();
-        IdempotencyKey(base64::encode(&res))
+        IdempotencyKey(base64::encode(res))
     }
 }
 
@@ -286,7 +286,7 @@ async fn lock_loop(
             // Start value has expired
             Ok(None) => return Ok(None),
 
-            Err(e) => return Err(Error::Database(e.to_string())),
+            Err(e) => return Err(err_database!(e)),
         }
     }
 }

@@ -5,7 +5,7 @@ import com.svix.internal.Configuration;
 import com.svix.internal.auth.HttpBearerAuth;
 
 public final class Svix {
-	public static final String VERSION = "0.65.1";
+	public static final String VERSION = "0.68.1";
 	private final Application application;
 	private final Authentication authentication;
 	private final Endpoint endpoint;
@@ -19,7 +19,7 @@ public final class Svix {
 	}
 
 	public Svix(final String token, final SvixOptions options) {
-		ApiClient apiClient = Configuration.getDefaultApiClient();
+		ApiClient apiClient = new ApiClient();
 
 		String[] tokenParts = token.split("\\.");
 		String region = tokenParts[tokenParts.length - 1];
