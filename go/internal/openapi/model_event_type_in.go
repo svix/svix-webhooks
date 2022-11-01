@@ -21,6 +21,7 @@ type EventTypeIn struct {
 	Name string `json:"name"`
 	// The schema for the event type for a specific version as a JSON schema.
 	Schemas map[string]map[string]interface{} `json:"schemas,omitempty"`
+	SortKey NullableString `json:"sortKey,omitempty"`
 }
 
 // NewEventTypeIn instantiates a new EventTypeIn object
@@ -159,6 +160,48 @@ func (o *EventTypeIn) SetSchemas(v map[string]map[string]interface{}) {
 	o.Schemas = v
 }
 
+// GetSortKey returns the SortKey field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *EventTypeIn) GetSortKey() string {
+	if o == nil || o.SortKey.Get() == nil {
+		var ret string
+		return ret
+	}
+	return *o.SortKey.Get()
+}
+
+// GetSortKeyOk returns a tuple with the SortKey field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *EventTypeIn) GetSortKeyOk() (*string, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return o.SortKey.Get(), o.SortKey.IsSet()
+}
+
+// HasSortKey returns a boolean if a field has been set.
+func (o *EventTypeIn) HasSortKey() bool {
+	if o != nil && o.SortKey.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetSortKey gets a reference to the given NullableString and assigns it to the SortKey field.
+func (o *EventTypeIn) SetSortKey(v string) {
+	o.SortKey.Set(&v)
+}
+// SetSortKeyNil sets the value for SortKey to be an explicit nil
+func (o *EventTypeIn) SetSortKeyNil() {
+	o.SortKey.Set(nil)
+}
+
+// UnsetSortKey ensures that no value is present for SortKey, not even an explicit nil
+func (o *EventTypeIn) UnsetSortKey() {
+	o.SortKey.Unset()
+}
+
 func (o EventTypeIn) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if o.Archived != nil {
@@ -172,6 +215,9 @@ func (o EventTypeIn) MarshalJSON() ([]byte, error) {
 	}
 	if o.Schemas != nil {
 		toSerialize["schemas"] = o.Schemas
+	}
+	if o.SortKey.IsSet() {
+		toSerialize["sortKey"] = o.SortKey.Get()
 	}
 	return json.Marshal(toSerialize)
 }
