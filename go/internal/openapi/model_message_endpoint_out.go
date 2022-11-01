@@ -23,6 +23,7 @@ type MessageEndpointOut struct {
 	Description *string `json:"description,omitempty"`
 	Disabled *bool `json:"disabled,omitempty"`
 	FilterTypes []string `json:"filterTypes,omitempty"`
+	HasTransformation NullableString `json:"hasTransformation,omitempty"`
 	Id string `json:"id"`
 	Metadata map[string]string `json:"metadata,omitempty"`
 	NextAttempt NullableTime `json:"nextAttempt,omitempty"`
@@ -216,6 +217,48 @@ func (o *MessageEndpointOut) HasFilterTypes() bool {
 // SetFilterTypes gets a reference to the given []string and assigns it to the FilterTypes field.
 func (o *MessageEndpointOut) SetFilterTypes(v []string) {
 	o.FilterTypes = v
+}
+
+// GetHasTransformation returns the HasTransformation field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *MessageEndpointOut) GetHasTransformation() string {
+	if o == nil || o.HasTransformation.Get() == nil {
+		var ret string
+		return ret
+	}
+	return *o.HasTransformation.Get()
+}
+
+// GetHasTransformationOk returns a tuple with the HasTransformation field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *MessageEndpointOut) GetHasTransformationOk() (*string, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return o.HasTransformation.Get(), o.HasTransformation.IsSet()
+}
+
+// HasHasTransformation returns a boolean if a field has been set.
+func (o *MessageEndpointOut) HasHasTransformation() bool {
+	if o != nil && o.HasTransformation.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetHasTransformation gets a reference to the given NullableString and assigns it to the HasTransformation field.
+func (o *MessageEndpointOut) SetHasTransformation(v string) {
+	o.HasTransformation.Set(&v)
+}
+// SetHasTransformationNil sets the value for HasTransformation to be an explicit nil
+func (o *MessageEndpointOut) SetHasTransformationNil() {
+	o.HasTransformation.Set(nil)
+}
+
+// UnsetHasTransformation ensures that no value is present for HasTransformation, not even an explicit nil
+func (o *MessageEndpointOut) UnsetHasTransformation() {
+	o.HasTransformation.Unset()
 }
 
 // GetId returns the Id field value
@@ -489,6 +532,9 @@ func (o MessageEndpointOut) MarshalJSON() ([]byte, error) {
 	}
 	if o.FilterTypes != nil {
 		toSerialize["filterTypes"] = o.FilterTypes
+	}
+	if o.HasTransformation.IsSet() {
+		toSerialize["hasTransformation"] = o.HasTransformation.Get()
 	}
 	if true {
 		toSerialize["id"] = o.Id

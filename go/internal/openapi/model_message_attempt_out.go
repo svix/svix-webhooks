@@ -24,14 +24,16 @@ type MessageAttemptOut struct {
 	ResponseStatusCode int32 `json:"responseStatusCode"`
 	Status MessageStatus `json:"status"`
 	Timestamp time.Time `json:"timestamp"`
+	TransformationApplied NullableString `json:"transformation_applied,omitempty"`
 	TriggerType MessageAttemptTriggerType `json:"triggerType"`
+	Url string `json:"url"`
 }
 
 // NewMessageAttemptOut instantiates a new MessageAttemptOut object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewMessageAttemptOut(endpointId string, id string, msgId string, response string, responseStatusCode int32, status MessageStatus, timestamp time.Time, triggerType MessageAttemptTriggerType) *MessageAttemptOut {
+func NewMessageAttemptOut(endpointId string, id string, msgId string, response string, responseStatusCode int32, status MessageStatus, timestamp time.Time, triggerType MessageAttemptTriggerType, url string) *MessageAttemptOut {
 	this := MessageAttemptOut{}
 	this.EndpointId = endpointId
 	this.Id = id
@@ -41,6 +43,7 @@ func NewMessageAttemptOut(endpointId string, id string, msgId string, response s
 	this.Status = status
 	this.Timestamp = timestamp
 	this.TriggerType = triggerType
+	this.Url = url
 	return &this
 }
 
@@ -220,6 +223,48 @@ func (o *MessageAttemptOut) SetTimestamp(v time.Time) {
 	o.Timestamp = v
 }
 
+// GetTransformationApplied returns the TransformationApplied field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *MessageAttemptOut) GetTransformationApplied() string {
+	if o == nil || o.TransformationApplied.Get() == nil {
+		var ret string
+		return ret
+	}
+	return *o.TransformationApplied.Get()
+}
+
+// GetTransformationAppliedOk returns a tuple with the TransformationApplied field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *MessageAttemptOut) GetTransformationAppliedOk() (*string, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return o.TransformationApplied.Get(), o.TransformationApplied.IsSet()
+}
+
+// HasTransformationApplied returns a boolean if a field has been set.
+func (o *MessageAttemptOut) HasTransformationApplied() bool {
+	if o != nil && o.TransformationApplied.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetTransformationApplied gets a reference to the given NullableString and assigns it to the TransformationApplied field.
+func (o *MessageAttemptOut) SetTransformationApplied(v string) {
+	o.TransformationApplied.Set(&v)
+}
+// SetTransformationAppliedNil sets the value for TransformationApplied to be an explicit nil
+func (o *MessageAttemptOut) SetTransformationAppliedNil() {
+	o.TransformationApplied.Set(nil)
+}
+
+// UnsetTransformationApplied ensures that no value is present for TransformationApplied, not even an explicit nil
+func (o *MessageAttemptOut) UnsetTransformationApplied() {
+	o.TransformationApplied.Unset()
+}
+
 // GetTriggerType returns the TriggerType field value
 func (o *MessageAttemptOut) GetTriggerType() MessageAttemptTriggerType {
 	if o == nil {
@@ -242,6 +287,30 @@ func (o *MessageAttemptOut) GetTriggerTypeOk() (*MessageAttemptTriggerType, bool
 // SetTriggerType sets field value
 func (o *MessageAttemptOut) SetTriggerType(v MessageAttemptTriggerType) {
 	o.TriggerType = v
+}
+
+// GetUrl returns the Url field value
+func (o *MessageAttemptOut) GetUrl() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Url
+}
+
+// GetUrlOk returns a tuple with the Url field value
+// and a boolean to check if the value has been set.
+func (o *MessageAttemptOut) GetUrlOk() (*string, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.Url, true
+}
+
+// SetUrl sets field value
+func (o *MessageAttemptOut) SetUrl(v string) {
+	o.Url = v
 }
 
 func (o MessageAttemptOut) MarshalJSON() ([]byte, error) {
@@ -267,8 +336,14 @@ func (o MessageAttemptOut) MarshalJSON() ([]byte, error) {
 	if true {
 		toSerialize["timestamp"] = o.Timestamp
 	}
+	if o.TransformationApplied.IsSet() {
+		toSerialize["transformation_applied"] = o.TransformationApplied.Get()
+	}
 	if true {
 		toSerialize["triggerType"] = o.TriggerType
+	}
+	if true {
+		toSerialize["url"] = o.Url
 	}
 	return json.Marshal(toSerialize)
 }

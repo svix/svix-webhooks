@@ -807,6 +807,10 @@
                         "type": "array",
                         "uniqueItems": true
                     },
+                    "hasTransformation": {
+                        "title": "Hastransformation",
+                        "type": "boolean"
+                    },
                     "id": {
                         "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                         "title": "Id",
@@ -863,7 +867,8 @@
                     "version",
                     "id",
                     "createdAt",
-                    "updatedAt"
+                    "updatedAt",
+                    "hasTransformation"
                 ],
                 "title": "EndpointOut",
                 "type": "object"
@@ -2061,8 +2066,17 @@
                         "title": "Timestamp",
                         "type": "string"
                     },
+                    "transformation_applied": {
+                        "nullable": true,
+                        "title": "Transformation Applied",
+                        "type": "string"
+                    },
                     "triggerType": {
                         "$ref": "#/components/schemas/MessageAttemptTriggerType"
+                    },
+                    "url": {
+                        "title": "Url",
+                        "type": "string"
                     }
                 },
                 "required": [
@@ -2073,7 +2087,8 @@
                     "responseStatusCode",
                     "timestamp",
                     "status",
-                    "triggerType"
+                    "triggerType",
+                    "url"
                 ],
                 "title": "MessageAttemptEndpointOut",
                 "type": "object"
@@ -2327,8 +2342,17 @@
                         "title": "Timestamp",
                         "type": "string"
                     },
+                    "transformation_applied": {
+                        "nullable": true,
+                        "title": "Transformation Applied",
+                        "type": "string"
+                    },
                     "triggerType": {
                         "$ref": "#/components/schemas/MessageAttemptTriggerType"
+                    },
+                    "url": {
+                        "title": "Url",
+                        "type": "string"
                     }
                 },
                 "required": [
@@ -2339,7 +2363,8 @@
                     "responseStatusCode",
                     "timestamp",
                     "status",
-                    "triggerType"
+                    "triggerType",
+                    "url"
                 ],
                 "title": "MessageAttemptOut",
                 "type": "object"
@@ -2408,6 +2433,11 @@
                         "title": "Filtertypes",
                         "type": "array",
                         "uniqueItems": true
+                    },
+                    "hasTransformation": {
+                        "nullable": true,
+                        "title": "Hastransformation",
+                        "type": "string"
                     },
                     "id": {
                         "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",

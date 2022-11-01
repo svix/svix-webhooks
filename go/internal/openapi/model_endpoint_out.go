@@ -23,6 +23,7 @@ type EndpointOut struct {
 	Description *string `json:"description,omitempty"`
 	Disabled *bool `json:"disabled,omitempty"`
 	FilterTypes []string `json:"filterTypes,omitempty"`
+	HasTransformation bool `json:"hasTransformation"`
 	Id string `json:"id"`
 	Metadata map[string]string `json:"metadata,omitempty"`
 	RateLimit NullableInt32 `json:"rateLimit,omitempty"`
@@ -37,13 +38,14 @@ type EndpointOut struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEndpointOut(createdAt time.Time, id string, updatedAt time.Time, url string, version int32) *EndpointOut {
+func NewEndpointOut(createdAt time.Time, hasTransformation bool, id string, updatedAt time.Time, url string, version int32) *EndpointOut {
 	this := EndpointOut{}
 	this.CreatedAt = createdAt
 	var description string = ""
 	this.Description = &description
 	var disabled bool = false
 	this.Disabled = &disabled
+	this.HasTransformation = hasTransformation
 	this.Id = id
 	this.UpdatedAt = updatedAt
 	this.Url = url
@@ -215,6 +217,30 @@ func (o *EndpointOut) HasFilterTypes() bool {
 // SetFilterTypes gets a reference to the given []string and assigns it to the FilterTypes field.
 func (o *EndpointOut) SetFilterTypes(v []string) {
 	o.FilterTypes = v
+}
+
+// GetHasTransformation returns the HasTransformation field value
+func (o *EndpointOut) GetHasTransformation() bool {
+	if o == nil {
+		var ret bool
+		return ret
+	}
+
+	return o.HasTransformation
+}
+
+// GetHasTransformationOk returns a tuple with the HasTransformation field value
+// and a boolean to check if the value has been set.
+func (o *EndpointOut) GetHasTransformationOk() (*bool, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.HasTransformation, true
+}
+
+// SetHasTransformation sets field value
+func (o *EndpointOut) SetHasTransformation(v bool) {
+	o.HasTransformation = v
 }
 
 // GetId returns the Id field value
@@ -446,6 +472,9 @@ func (o EndpointOut) MarshalJSON() ([]byte, error) {
 	}
 	if o.FilterTypes != nil {
 		toSerialize["filterTypes"] = o.FilterTypes
+	}
+	if true {
+		toSerialize["hasTransformation"] = o.HasTransformation
 	}
 	if true {
 		toSerialize["id"] = o.Id
