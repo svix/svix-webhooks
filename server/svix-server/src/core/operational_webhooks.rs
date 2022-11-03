@@ -124,7 +124,7 @@ impl OperationalWebhookSenderInner {
             }),
         );
 
-        let payload = serde_json::to_value(&payload)
+        let payload = serde_json::to_value(payload)
             .map_err(|_| HttpError::internal_server_error(None, None))?;
 
         // Get the event type from the type field
