@@ -27,7 +27,7 @@ async fn dashboard_access(
     }))
     .map_err(|_| HttpError::internal_server_error(None, None))?;
 
-    let login_key = base64::encode(&login_key);
+    let login_key = base64::encode(login_key);
 
     // Included for API compatibility, but this URL will not be useful
     let url = format!("{}/login#key={}", &cfg.internal.app_portal_url, login_key);
