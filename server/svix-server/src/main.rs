@@ -9,6 +9,7 @@ use opentelemetry::runtime::Tokio;
 use opentelemetry_otlp::WithExportConfig;
 use std::process::exit;
 use svix_server::core::types::{EndpointSecretInternal, OrganizationId};
+use svix_server::db::wipe_org;
 use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::util::SubscriberInitExt;
 use validator::Validate;
@@ -63,6 +64,15 @@ enum Commands {
     /// Run database migrations and exit
     #[clap()]
     Migrate,
+
+    #[clap()]
+    Wipe {
+        #[clap(value_parser = org_id_parser)]
+        org_id: OrganizationId,
+
+        #[clap(long)]
+        yes_i_know_what_im_doing: bool,
+    },
 }
 
 #[derive(Subcommand)]
@@ -218,6 +228,18 @@ async fn main() {
                 exit(0);
             }
         },
+        Some(Commands::Wipe {
+            org_id,
+            yes_i_know_what_im_doing,
+        }) => {
+            if yes_i_know_what_im_doing {
+                wipe_org(&cfg, org_id).await;
+            } else {
+                println!("Please confirm you wish to wipe this organization with the `--yes-i-know-what-im-doing` flag");
+            }
+
+            exit(0);
+        }
         None => {}
     };
 
