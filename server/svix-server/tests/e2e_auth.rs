@@ -34,7 +34,7 @@ async fn dashboard_access(org_client: &TestClient, application_id: &ApplicationI
 /// Users with application-level tokens should only be allowed to read the information related to
 /// their one application. All other endpoints should error.
 async fn test_restricted_application_access() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     let app_id: ApplicationId = client
         .post::<_, ApplicationOut>(

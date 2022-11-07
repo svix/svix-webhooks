@@ -18,6 +18,7 @@ import (
 // ReplayIn struct for ReplayIn
 type ReplayIn struct {
 	Since time.Time `json:"since"`
+	Until NullableTime `json:"until,omitempty"`
 }
 
 // NewReplayIn instantiates a new ReplayIn object
@@ -62,10 +63,55 @@ func (o *ReplayIn) SetSince(v time.Time) {
 	o.Since = v
 }
 
+// GetUntil returns the Until field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *ReplayIn) GetUntil() time.Time {
+	if o == nil || o.Until.Get() == nil {
+		var ret time.Time
+		return ret
+	}
+	return *o.Until.Get()
+}
+
+// GetUntilOk returns a tuple with the Until field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ReplayIn) GetUntilOk() (*time.Time, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return o.Until.Get(), o.Until.IsSet()
+}
+
+// HasUntil returns a boolean if a field has been set.
+func (o *ReplayIn) HasUntil() bool {
+	if o != nil && o.Until.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetUntil gets a reference to the given NullableTime and assigns it to the Until field.
+func (o *ReplayIn) SetUntil(v time.Time) {
+	o.Until.Set(&v)
+}
+// SetUntilNil sets the value for Until to be an explicit nil
+func (o *ReplayIn) SetUntilNil() {
+	o.Until.Set(nil)
+}
+
+// UnsetUntil ensures that no value is present for Until, not even an explicit nil
+func (o *ReplayIn) UnsetUntil() {
+	o.Until.Unset()
+}
+
 func (o ReplayIn) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
 		toSerialize["since"] = o.Since
+	}
+	if o.Until.IsSet() {
+		toSerialize["until"] = o.Until.Get()
 	}
 	return json.Marshal(toSerialize)
 }

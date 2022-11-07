@@ -3,6 +3,13 @@
 ## Next
 * 
 
+## Version 0.69.0
+* Server: ensure QueueTasks are deleted after acknowledgement
+* Server: better handling of failures in streaming responses
+* Server: update event-type schemas validation to be stricter
+* Libs/Kotlin: support configuring retry schedule
+* Libs: fix metadata field in Go and Python
+
 ## Version 0.68.1
 * Server: update the event-type CRUD endpoints to be more strict about the schema type.
 * Server: fix typo in error messages for unimplemented errors.

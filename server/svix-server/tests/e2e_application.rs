@@ -19,7 +19,7 @@ use utils::{
 // operation could fail. This should probably be made into a macro if at all possible.
 #[tokio::test]
 async fn test_patch() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     let app: ApplicationOut = client
         .post(
@@ -149,7 +149,7 @@ async fn test_patch() {
 
 #[tokio::test]
 async fn test_crud() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     const APP_NAME_1_1: &str = "v1ApplicationCrudTest11";
     const APP_NAME_1_2: &str = "v1ApplicationCrudTest12";
@@ -255,7 +255,7 @@ async fn test_crud() {
 
 #[tokio::test]
 async fn test_list() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     common_test_list::<ApplicationOut, ApplicationIn>(
         &client,
@@ -269,7 +269,7 @@ async fn test_list() {
 
 #[tokio::test]
 async fn test_uid() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     let app: ApplicationOut = client
         .post(
@@ -462,8 +462,8 @@ async fn test_uid() {
 
 #[tokio::test]
 async fn test_uid_across_users() {
-    let (client, _jh) = start_svix_server();
-    let (client2, _jh2) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
+    let (client2, _jh2) = start_svix_server().await;
 
     // Make sure that uids aren't unique across different users
 
@@ -496,7 +496,7 @@ async fn test_uid_across_users() {
 
 #[tokio::test]
 async fn test_get_or_create() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     let app: ApplicationOut = client
         .post(
@@ -542,7 +542,7 @@ async fn test_get_or_create() {
 
 #[tokio::test]
 async fn test_idempotency() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     let cfg = svix_server::cfg::load().unwrap();
 

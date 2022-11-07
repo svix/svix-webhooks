@@ -29,7 +29,7 @@ use std::time::Duration;
 
 #[tokio::test]
 async fn test_list_attempted_messages() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
@@ -106,7 +106,7 @@ async fn test_list_attempted_messages() {
 
 #[tokio::test]
 async fn test_list_attempts_by_endpoint() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     let app_id = create_test_app(&client, "v1AttemptListAttemptsByEndpointTestApp")
         .await
@@ -190,7 +190,7 @@ async fn test_message_attempts() {
         .map(|_| Duration::from_millis(1))
         .collect();
 
-    let (client, _jh) = start_svix_server_with_cfg(&cfg);
+    let (client, _jh) = start_svix_server_with_cfg(&cfg).await;
 
     for (status_code, msg_status, attempt_count) in [
         // Success
@@ -272,7 +272,7 @@ async fn test_message_attempts_empty_retry_schedule() {
     let mut cfg = get_default_test_config();
     cfg.retry_schedule = vec![];
 
-    let (client, _jh) = start_svix_server_with_cfg(&cfg);
+    let (client, _jh) = start_svix_server_with_cfg(&cfg).await;
 
     let (status_code, msg_status, attempt_count) =
         (StatusCode::INTERNAL_SERVER_ERROR, MessageStatus::Fail, None);
@@ -312,7 +312,7 @@ async fn test_message_attempts_empty_retry_schedule() {
 
 #[tokio::test]
 async fn test_pagination_by_endpoint() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     // Setup six endpoints and six messages so there's a sufficient number to test pagination
     let app = create_test_app(&client, "app1").await.unwrap();
@@ -491,7 +491,7 @@ async fn test_pagination_by_endpoint() {
 
 #[tokio::test]
 async fn test_pagination_by_msg() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     // Setup six endpoints and six messages so there's a sufficient number to test pagination
     let app = create_test_app(&client, "app1").await.unwrap();
@@ -711,7 +711,7 @@ async fn test_pagination_by_msg() {
 
 #[tokio::test]
 async fn test_pagination_forward_and_back() {
-    let (client, _) = start_svix_server();
+    let (client, _) = start_svix_server().await;
 
     let app = create_test_app(&client, "test_app").await.unwrap();
 
