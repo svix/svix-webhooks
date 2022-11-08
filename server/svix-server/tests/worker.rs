@@ -78,7 +78,7 @@ async fn visit_reporting_receiver_route(
 // The worker has
 #[tokio::test]
 async fn test_no_redirects_policy() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
     let receiver = RedirectionVisitReportingReceiver::start(StatusCode::OK);
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
@@ -131,7 +131,7 @@ async fn test_endpoint_disable_on_repeated_failure() {
         cfg.retry_schedule = vec![];
         cfg.endpoint_failure_disable_after = Duration::from_secs(1);
 
-        let (client, _jh) = start_svix_server_with_cfg(&cfg);
+        let (client, _jh) = start_svix_server_with_cfg(&cfg).await;
 
         let app_id = create_test_app(&client, "app").await.unwrap().id;
         let ep_id = create_test_endpoint(&client, &app_id, "http://bad.url/")
@@ -181,7 +181,7 @@ async fn test_endpoint_disable_expiration_duration() {
         cfg.retry_schedule = vec![];
         cfg.endpoint_failure_disable_after = Duration::from_millis(250);
 
-        let (client, _jh) = start_svix_server_with_cfg(&cfg);
+        let (client, _jh) = start_svix_server_with_cfg(&cfg).await;
 
         let app_id = create_test_app(&client, "app").await.unwrap().id;
         let ep_id = create_test_endpoint(&client, &app_id, "http://bad.url/")
@@ -279,7 +279,7 @@ async fn test_endpoint_disable_on_sporadic_failure() {
         cfg.retry_schedule = vec![];
         cfg.endpoint_failure_disable_after = Duration::from_secs(1);
 
-        let (client, _jh) = start_svix_server_with_cfg(&cfg);
+        let (client, _jh) = start_svix_server_with_cfg(&cfg).await;
 
         let app_id = create_test_app(&client, "app").await.unwrap().id;
         let ep_id = create_test_endpoint(&client, &app_id, &receiver.base_uri)

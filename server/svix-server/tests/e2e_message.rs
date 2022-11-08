@@ -22,7 +22,7 @@ use utils::{
 
 #[tokio::test]
 async fn test_message_create_read_list() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     let app_id = create_test_app(&client, "v1MessageCRTestApp")
         .await
@@ -84,7 +84,7 @@ async fn test_message_create_read_list() {
 
 #[tokio::test]
 async fn test_message_create_read_list_with_content() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     let app_id = create_test_app(&client, "v1MessageCRTestApp")
         .await
@@ -177,7 +177,7 @@ async fn test_message_create_read_list_with_content() {
 
 #[tokio::test]
 async fn test_failed_message_gets_recorded() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     let app_id = create_test_app(&client, "v1MessageCRTestApp")
         .await
@@ -225,7 +225,7 @@ async fn test_failed_message_gets_recorded() {
 
 #[tokio::test]
 async fn test_mulitple_endpoints() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     let app_id = create_test_app(&client, "v1MessageCRTestApp")
         .await
@@ -297,7 +297,7 @@ async fn test_mulitple_endpoints() {
 
 #[tokio::test]
 async fn test_failed_message_gets_requeued() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     let app_id = create_test_app(&client, "v1MessageCRTestApp")
         .await
@@ -350,7 +350,7 @@ async fn test_failed_message_gets_requeued() {
 
 #[tokio::test]
 async fn test_payload_retention_period() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
     dotenv::dotenv().ok();
     let cfg = svix_server::cfg::load().expect("Error loading configuration");
     let pool = svix_server::db::init_db(&cfg).await;

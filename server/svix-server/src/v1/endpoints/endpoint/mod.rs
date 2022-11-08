@@ -400,7 +400,7 @@ impl From<EndpointHeaders> for EndpointHeadersOut {
 
         Self {
             headers: remaining,
-            sensitive: sens.into_iter().map(|(k, _)| k).collect(),
+            sensitive: sens.into_keys().collect(),
         }
     }
 }

@@ -2626,6 +2626,12 @@
                         "format": "date-time",
                         "title": "Since",
                         "type": "string"
+                    },
+                    "until": {
+                        "format": "date-time",
+                        "nullable": true,
+                        "title": "Until",
+                        "type": "string"
                     }
                 },
                 "required": [
@@ -2644,6 +2650,12 @@
                     "since": {
                         "format": "date-time",
                         "title": "Since",
+                        "type": "string"
+                    },
+                    "until": {
+                        "format": "date-time",
+                        "nullable": true,
+                        "title": "Until",
                         "type": "string"
                     }
                 },
@@ -6476,62 +6488,62 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const recoverOut = await svix.endpoint.recover('app_id', 'endpoint_id', {\n    since: new Date(\"2019-08-24T14:15:22Z\")\n});"
+                        "source": "const recoverOut = await svix.endpoint.recover('app_id', 'endpoint_id', {\n    since: new Date(\"2019-08-24T14:15:22Z\"),\n    until: new Date(\"2019-08-24T14:15:22Z\")\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const recoverOut = await svix.endpoint.recover('app_id', 'endpoint_id', {\n    since: new Date(\"2019-08-24T14:15:22Z\")\n});"
+                        "source": "const recoverOut = await svix.endpoint.recover('app_id', 'endpoint_id', {\n    since: new Date(\"2019-08-24T14:15:22Z\"),\n    until: new Date(\"2019-08-24T14:15:22Z\")\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "recover_out = svix.endpoint.recover('app_id', 'endpoint_id', RecoverIn(\n    since=datetime.datetime(2019, 8, 24, 14, 15, 22, timezone.utc)\n))"
+                        "source": "recover_out = svix.endpoint.recover('app_id', 'endpoint_id', RecoverIn(\n    since=datetime.datetime(2019, 8, 24, 14, 15, 22, timezone.utc),\n    until=datetime.datetime(2019, 8, 24, 14, 15, 22, timezone.utc)\n))"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "recover_out = await svix.endpoint.recover('app_id', 'endpoint_id', RecoverIn(\n    since=datetime.datetime(2019, 8, 24, 14, 15, 22, timezone.utc)\n))"
+                        "source": "recover_out = await svix.endpoint.recover('app_id', 'endpoint_id', RecoverIn(\n    since=datetime.datetime(2019, 8, 24, 14, 15, 22, timezone.utc),\n    until=datetime.datetime(2019, 8, 24, 14, 15, 22, timezone.utc)\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "recoverOut, err := svixClient.Endpoint.Recover(\"app_id\", \"endpoint_id\", &svix.RecoverIn{\n    Since: \"2019-08-24T14:15:22Z\"\n})"
+                        "source": "recoverOut, err := svixClient.Endpoint.Recover(\"app_id\", \"endpoint_id\", &svix.RecoverIn{\n    Since: \"2019-08-24T14:15:22Z\",\n    Until: \"2019-08-24T14:15:22Z\"\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val recoverOut = svix.endpoint.recover('app_id', 'endpoint_id', RecoverIn()\n    .since(\"2019-08-24T14:15:22Z\")\n)"
+                        "source": "val recoverOut = svix.endpoint.recover('app_id', 'endpoint_id', RecoverIn()\n    .since(\"2019-08-24T14:15:22Z\"),\n    .until(\"2019-08-24T14:15:22Z\")\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "RecoverOut recoverOut = svix.getEndpoint().recover('app_id', 'endpoint_id', new RecoverIn()\n    .since(\"2019-08-24T14:15:22Z\")\n)"
+                        "source": "RecoverOut recoverOut = svix.getEndpoint().recover('app_id', 'endpoint_id', new RecoverIn()\n    .since(\"2019-08-24T14:15:22Z\"),\n    .until(\"2019-08-24T14:15:22Z\")\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "recover_out = svix.endpoint.recover('app_id', 'endpoint_id', Svix::RecoverIn.new({\n    \"since\": \"2019-08-24T14:15:22Z\"\n}))"
+                        "source": "recover_out = svix.endpoint.recover('app_id', 'endpoint_id', Svix::RecoverIn.new({\n    \"since\": \"2019-08-24T14:15:22Z\",\n    \"until\": \"2019-08-24T14:15:22Z\"\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let recover_out = svix.endpoint().recover(\"app_id\", \"endpoint_id\", RecoverIn {\n    since: \"2019-08-24T14:15:22Z\".to_string()\n}).await?;"
+                        "source": "let recover_out = svix.endpoint().recover(\"app_id\", \"endpoint_id\", RecoverIn {\n    since: \"2019-08-24T14:15:22Z\".to_string(),\n    until: \"2019-08-24T14:15:22Z\".to_string()\n}).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var recoverOut = await svix.Endpoint.RecoverAsync(\"app_id\", \"endpoint_id\", new RecoverIn{\n    since: \"2019-08-24T14:15:22Z\"\n})"
+                        "source": "var recoverOut = await svix.Endpoint.RecoverAsync(\"app_id\", \"endpoint_id\", new RecoverIn{\n    since: \"2019-08-24T14:15:22Z\",\n    until: \"2019-08-24T14:15:22Z\"\n})"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix endpoint recover 'app_id' 'endpoint_id' '{\n    \"since\": \"2019-08-24T14:15:22Z\"\n}'"
+                        "source": "svix endpoint recover 'app_id' 'endpoint_id' '{\n    \"since\": \"2019-08-24T14:15:22Z\",\n    \"until\": \"2019-08-24T14:15:22Z\"\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"since\": \"2019-08-24T14:15:22Z\"\n}'"
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"since\": \"2019-08-24T14:15:22Z\",\n    \"until\": \"2019-08-24T14:15:22Z\"\n}'"
                     }
                 ]
             }
@@ -6677,7 +6689,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/replay-missing/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"since\": \"2019-08-24T14:15:22Z\"\n}'"
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/replay-missing/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"since\": \"2019-08-24T14:15:22Z\",\n    \"until\": \"2019-08-24T14:15:22Z\"\n}'"
                     }
                 ]
             }
@@ -11171,6 +11183,16 @@
                 "responses": {
                     "202": {
                         "description": "Successful Response"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad Request"
                     },
                     "401": {
                         "content": {
