@@ -67,14 +67,13 @@ pub async fn permissions_from_bearer<B: Send>(req: &mut RequestParts<B>) -> Resu
     let TypedHeader(Authorization(bearer)) =
         ctx!(TypedHeader::<Authorization<Bearer>>::from_request(req).await)?;
 
-    let claims = parse_bearer(cfg, &bearer)
+    let claims = parse_bearer(&cfg.jwt_secret, &bearer)
         .ok_or_else(|| HttpError::unauthorized(None, Some("Invalid token".to_string())))?;
     permissions_from_jwt(claims)
 }
 
-pub fn parse_bearer(cfg: &Configuration, bearer: &Bearer) -> Option<JWTClaims<CustomClaim>> {
-    cfg.jwt_secret
-        .key
+pub fn parse_bearer(key: &Keys, bearer: &Bearer) -> Option<JWTClaims<CustomClaim>> {
+    key.key
         .verify_token::<CustomClaim>(bearer.token(), None)
         .ok()
 }
