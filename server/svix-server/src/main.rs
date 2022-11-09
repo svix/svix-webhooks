@@ -5,20 +5,14 @@
 #![forbid(unsafe_code)]
 
 use dotenv::dotenv;
-use opentelemetry::runtime::Tokio;
-use opentelemetry_otlp::WithExportConfig;
 use std::process::exit;
 use svix_server::core::types::{EndpointSecretInternal, OrganizationId};
 use svix_server::db::wipe_org;
-use tracing_subscriber::layer::SubscriberExt;
-use tracing_subscriber::util::SubscriberInitExt;
 use validator::Validate;
 
 use svix_server::core::security::{default_org_id, generate_org_token};
 
-use svix_server::{cfg, db, run};
-
-const CRATE_NAME: &str = env!("CARGO_CRATE_NAME");
+use svix_server::{cfg, db, run, setup_tracing};
 
 use clap::{Parser, Subcommand};
 
@@ -106,75 +100,7 @@ async fn main() {
     let args = Args::parse();
     let cfg = cfg::load().expect("Error loading configuration");
 
-    if std::env::var_os("RUST_LOG").is_none() {
-        let level = cfg.log_level.to_string();
-        let mut var = vec![
-            format!("{crate}={level}", crate = CRATE_NAME),
-            format!("tower_http={level}"),
-        ];
-
-        if cfg.db_tracing {
-            var.push(format!("sqlx={level}"));
-        }
-
-        std::env::set_var("RUST_LOG", var.join(","));
-    }
-
-    let otel_layer = cfg.opentelemetry_address.as_ref().map(|addr| {
-        // Configure the OpenTelemetry tracing layer
-        opentelemetry::global::set_text_map_propagator(
-            opentelemetry::sdk::propagation::TraceContextPropagator::new(),
-        );
-
-        let exporter = opentelemetry_otlp::new_exporter()
-            .tonic()
-            .with_endpoint(addr);
-
-        let tracer = opentelemetry_otlp::new_pipeline()
-            .tracing()
-            .with_exporter(exporter)
-            .with_trace_config(
-                opentelemetry::sdk::trace::config()
-                    .with_sampler(
-                        cfg.opentelemetry_sample_ratio
-                            .map(opentelemetry::sdk::trace::Sampler::TraceIdRatioBased)
-                            .unwrap_or(opentelemetry::sdk::trace::Sampler::AlwaysOn),
-                    )
-                    .with_resource(opentelemetry::sdk::Resource::new(vec![
-                        opentelemetry::KeyValue::new("service.name", "svix_server"),
-                    ])),
-            )
-            .install_batch(Tokio)
-            .unwrap();
-        tracing_opentelemetry::layer().with_tracer(tracer)
-    });
-
-    // Then initialize logging with an additional layer priting to stdout. This additional layer is
-    // either formatted normally or in JSON format
-    match cfg.log_format {
-        cfg::LogFormat::Default => {
-            let stdout_layer = tracing_subscriber::fmt::layer();
-            tracing_subscriber::Registry::default()
-                .with(otel_layer)
-                .with(stdout_layer)
-                .with(tracing_subscriber::EnvFilter::from_default_env())
-                .init();
-        }
-        cfg::LogFormat::Json => {
-            let fmt = tracing_subscriber::fmt::format().json().flatten_event(true);
-            let json_fields = tracing_subscriber::fmt::format::JsonFields::new();
-
-            let stdout_layer = tracing_subscriber::fmt::layer()
-                .event_format(fmt)
-                .fmt_fields(json_fields);
-
-            tracing_subscriber::Registry::default()
-                .with(otel_layer)
-                .with(stdout_layer)
-                .with(tracing_subscriber::EnvFilter::from_default_env())
-                .init();
-        }
-    };
+    setup_tracing(&cfg);
 
     if let Some(wait_for_seconds) = args.wait_for {
         let mut wait_for = Vec::with_capacity(2);

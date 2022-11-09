@@ -7,6 +7,7 @@ TEST_COMMAND="cargo test --all --all-features --all-targets"
 # Common variables:
 export DATABASE_URL="postgresql://postgres:postgres@localhost:5432/postgres"
 export SVIX_JWT_SECRET="test value"
+export SVIX_LOG_LEVEL="trace"
 
 echo "*********** RUN 1 ***********"
 SVIX_QUEUE_TYPE="redis" \
