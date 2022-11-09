@@ -19,6 +19,7 @@ use svix_server::{
         security::generate_org_token,
         types::{BaseId, OrganizationId},
     },
+    setup_tracing,
 };
 
 use http::HeaderMap;
@@ -240,6 +241,8 @@ pub async fn start_svix_server_with_cfg_and_org_id(
     cfg: &ConfigurationInner,
     org_id: OrganizationId,
 ) -> (TestClient, tokio::task::JoinHandle<()>) {
+    setup_tracing(cfg);
+
     let cfg = Arc::new(cfg.clone());
 
     let token = generate_org_token(&cfg.jwt_secret, org_id).unwrap();
