@@ -4,6 +4,8 @@ from datetime import datetime
 
 from deprecated import deprecated
 
+from svix.internal.openapi_client.models.application_token_expire_in import ApplicationTokenExpireIn
+
 from .internal.openapi_client.api.application import (
     create_application_api_v1_app_post,
     delete_application_api_v1_app_app_id_delete,
@@ -12,6 +14,7 @@ from .internal.openapi_client.api.application import (
     update_application_api_v1_app_app_id_put,
 )
 from .internal.openapi_client.api.authentication import (
+    expire_all_api_v1_auth_app_app_id_expire_all_post,
     get_dashboard_access_api_v1_auth_dashboard_access_app_id_post,
     logout_api_v1_auth_logout_post,
 )
@@ -182,6 +185,13 @@ class AuthenticationAsync(ApiBase):
     async def logout(self, options: PostOptions = PostOptions()) -> None:
         return await logout_api_v1_auth_logout_post.asyncio(client=self._client, **options.to_dict())
 
+    async def expire_all(
+        self, app_id: str, expire_options: ApplicationTokenExpireIn, options: PostOptions = PostOptions()
+    ) -> None:
+        return await expire_all_api_v1_auth_app_app_id_expire_all_post.asyncio(
+            client=self._client, app_id=app_id, json_body=expire_options, **options.to_dict()
+        )
+
 
 class Authentication(ApiBase):
     def dashboard_access(self, app_id: str, options: PostOptions = PostOptions()) -> DashboardAccessOut:
@@ -191,6 +201,13 @@ class Authentication(ApiBase):
 
     def logout(self, options: PostOptions = PostOptions()) -> None:
         return logout_api_v1_auth_logout_post.sync(client=self._client, **options.to_dict())
+
+    def expire_all(
+        self, app_id: str, expire_options: ApplicationTokenExpireIn, options: PostOptions = PostOptions()
+    ) -> None:
+        return expire_all_api_v1_auth_app_app_id_expire_all_post.sync(
+            client=self._client, app_id=app_id, json_body=expire_options, **options.to_dict()
+        )
 
 
 class ApplicationAsync(ApiBase):

@@ -126,6 +126,21 @@
                 "title": "ApplicationStats",
                 "type": "object"
             },
+            "ApplicationTokenExpireIn": {
+                "properties": {
+                    "expiry": {
+                        "description": "How many seconds until the old key is expired.",
+                        "example": 60,
+                        "maximum": 259200.0,
+                        "minimum": 0.0,
+                        "nullable": true,
+                        "title": "Expiry",
+                        "type": "integer"
+                    }
+                },
+                "title": "ApplicationTokenExpireIn",
+                "type": "object"
+            },
             "AttemptStatisticsData": {
                 "properties": {
                     "failureCount": {
@@ -2742,7 +2757,6 @@
                     },
                     "eventCatalogPublished": {
                         "default": false,
-                        "nullable": true,
                         "title": "Eventcatalogpublished",
                         "type": "boolean"
                     },
@@ -2827,7 +2841,6 @@
                     },
                     "eventCatalogPublished": {
                         "default": false,
-                        "nullable": true,
                         "title": "Eventcatalogpublished",
                         "type": "boolean"
                     },
@@ -11466,6 +11479,186 @@
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/stats/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/auth/app/{app_id}/expire-all/": {
+            "post": {
+                "description": "Expire all of the tokens associated with a specific Application",
+                "operationId": "expire_all_api_v1_auth_app__app_id__expire_all__post",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "App Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "nullable": true,
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApplicationTokenExpireIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Expire All",
+                "tags": [
+                    "Authentication"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.authentication.expireAll('app_id', {\n    expiry: 60\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.authentication.expireAll('app_id', {\n    expiry: 60\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "svix.authentication.expire_all('app_id', ApplicationTokenExpireIn(\n    expiry=60\n))"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "await svix.authentication.expire_all('app_id', ApplicationTokenExpireIn(\n    expiry=60\n))"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "err := svixClient.Authentication.ExpireAll(\"app_id\", &svix.ApplicationTokenExpireIn{\n    Expiry: 60\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "svix.authentication.expireAll('app_id', ApplicationTokenExpireIn()\n    .expiry(60)\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "svix.getAuthentication().expireAll('app_id', new ApplicationTokenExpireIn()\n    .expiry(60)\n)"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "svix.authentication.expire_all('app_id', Svix::ApplicationTokenExpireIn.new({\n    \"expiry\": 60\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "svix.authentication().expire_all(\"app_id\", ApplicationTokenExpireIn {\n    expiry: 60\n}).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "await svix.Authentication.ExpireAllAsync(\"app_id\", new ApplicationTokenExpireIn{\n    expiry: 60\n})"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix authentication expire-all 'app_id' '{\n    \"expiry\": 60\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/auth/app/{app_id}/expire-all/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"expiry\": 60\n}'"
                     }
                 ]
             }
