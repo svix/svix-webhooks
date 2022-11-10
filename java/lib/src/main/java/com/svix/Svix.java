@@ -29,9 +29,10 @@ public final class Svix {
 			apiClient.setBasePath("https://api.eu.svix.com");
 		} else if (region.equals("in")) {
 			apiClient.setBasePath("https://api.in.svix.com");
+		} else {
+			apiClient.setBasePath(options.getServerUrl());
 		}
 
-		apiClient.setBasePath(options.getServerUrl());
 		apiClient.setUserAgent(String.format("svix-libs/%s/java", Svix.VERSION));
 
 		HttpBearerAuth httpBearer = (HttpBearerAuth) apiClient.getAuthentication("HTTPBearer");
