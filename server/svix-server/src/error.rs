@@ -15,8 +15,10 @@ use axum::Json;
 use axum::TypedHeader;
 use hyper::StatusCode;
 use sea_orm::DbErr;
+use sea_orm::RuntimeErr;
 use serde::Serialize;
 use serde_json::json;
+use sqlx::Error as SqlxError;
 
 /// A short-hand version of a [std::result::Result] that always returns an Svix [Error].
 pub type Result<T> = std::result::Result<T, Error>;
@@ -171,11 +173,23 @@ impl<T> Traceable<T> for Result<T> {
 impl<T> Traceable<T> for std::result::Result<T, DbErr> {
     fn trace(self, location: &'static str) -> Result<T> {
         self.map_err(|err| {
-            let typ = if let DbErr::Query(ref err_str) = err {
-                if err_str.contains("duplicate key value violates unique constraint") {
-                    ErrorType::Http(HttpError::conflict(None, None))
-                } else {
-                    ErrorType::Database(err.to_string())
+            let typ = if let DbErr::Query(runtime_error) = err {
+                match runtime_error {
+                    RuntimeErr::SqlxError(sqlx_err) => {
+                        if matches!(sqlx_err, SqlxError::RowNotFound) {
+                            HttpError::not_found(None, None).into()
+                        } else if sqlx_err
+                            .as_database_error()
+                            .and_then(|e| e.code())
+                            .filter(|code| code == "23505") // "duplicate key value violates unique constraint"
+                            .is_some()
+                        {
+                            HttpError::conflict(None, None).into()
+                        } else {
+                            ErrorType::Database(sqlx_err.to_string())
+                        }
+                    }
+                    RuntimeErr::Internal(err) => ErrorType::Database(err),
                 }
             } else {
                 ErrorType::Database(err.to_string())
@@ -253,6 +267,12 @@ impl fmt::Display for ErrorType {
             Self::Http(s) => s.fmt(f),
             Self::Cache(s) => s.fmt(f),
         }
+    }
+}
+
+impl From<HttpError> for ErrorType {
+    fn from(e: HttpError) -> Self {
+        Self::Http(e)
     }
 }
 
