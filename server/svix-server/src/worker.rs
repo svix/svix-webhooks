@@ -234,7 +234,7 @@ struct DispatchExtraIds<'a> {
     )
     level = "error"
 )]
-async fn dispatch(
+async fn dispatch_message_task(
     WorkerContext {
         task_id,
         cache,
@@ -543,7 +543,10 @@ fn bytes_to_string(bytes: bytes::Bytes) -> String {
 
 /// Manages preparation and execution of a QueueTask type
 #[tracing::instrument(skip_all, fields(task_id = worker_context.task_id), level = "error")]
-async fn process_task(worker_context: WorkerContext<'_>, queue_task: Arc<QueueTask>) -> Result<()> {
+async fn process_queue_task(
+    worker_context: WorkerContext<'_>,
+    queue_task: Arc<QueueTask>,
+) -> Result<()> {
     let WorkerContext { db, cache, .. }: WorkerContext<'_> = worker_context;
 
     if *queue_task == QueueTask::HealthCheck {
@@ -634,7 +637,7 @@ async fn process_task(worker_context: WorkerContext<'_>, queue_task: Arc<QueueTa
                 QueueTask::HealthCheck => unreachable!(),
             };
 
-            dispatch(
+            dispatch_message_task(
                 worker_context,
                 task,
                 DispatchExtraIds {
@@ -662,7 +665,7 @@ async fn process_task(worker_context: WorkerContext<'_>, queue_task: Arc<QueueTa
 }
 
 /// Listens on the message queue for new tasks
-pub async fn worker_loop(
+pub async fn queue_handler(
     cfg: &Configuration,
     pool: &DatabaseConnection,
     cache: Cache,
@@ -701,7 +704,7 @@ pub async fn worker_loop(
                             op_webhook_sender: &op_webhook_sender,
                         };
 
-                        if let Err(err) = process_task(worker_context, queue_task).await {
+                        if let Err(err) = process_queue_task(worker_context, queue_task).await {
                             tracing::error!("Error executing task: {}", err);
                             queue_tx
                                 .nack(delivery)

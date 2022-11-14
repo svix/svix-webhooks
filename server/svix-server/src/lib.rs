@@ -30,7 +30,7 @@ use crate::{
     },
     db::init_db,
     expired_message_cleaner::expired_message_cleaner_loop,
-    worker::worker_loop,
+    worker::queue_handler,
 };
 
 pub mod cfg;
@@ -172,7 +172,7 @@ pub async fn run_with_prefix(
         async {
             if with_worker {
                 tracing::debug!("Worker: Initializing");
-                worker_loop(&cfg, &pool, cache, queue_tx, queue_rx, op_webhook_sender).await
+                queue_handler(&cfg, &pool, cache, queue_tx, queue_rx, op_webhook_sender).await
             } else {
                 tracing::debug!("Worker: off");
                 Ok(())
