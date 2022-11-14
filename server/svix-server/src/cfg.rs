@@ -173,6 +173,16 @@ pub struct ConfigurationInner {
     /// Should this instance run the message worker
     pub worker_enabled: bool,
 
+    /// Whether to enable the queue health check, which will test that a message can
+    /// be published into the queue. Defaults to true.
+    pub queue_health_check_enabled: bool,
+    /// Whether to enable the cache health check, which will add a test key-value pair to
+    /// the cache. Defaults to true.
+    pub cache_health_check_enabled: bool,
+    /// Whether to enable the db health check, which runs a simple query
+    /// against the database. Defaults to true.
+    pub db_health_check_enabled: bool,
+
     #[serde(flatten)]
     pub internal: InternalConfig,
 }
