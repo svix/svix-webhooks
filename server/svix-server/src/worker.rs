@@ -174,16 +174,20 @@ fn generate_msg_headers(
     whitelabel_headers: bool,
     configured_headers: Option<&EndpointHeaders>,
     _endpoint_url: &str,
-) -> HeaderMap {
+) -> Result<HeaderMap> {
     let mut headers = HeaderMap::new();
-    let id = msg_id.0.parse().expect("Error parsing message id");
+    let id = msg_id
+        .0
+        .parse()
+        .map_err(|_| err_generic!("Error parsing message id".to_string()))?;
+
     let timestamp = timestamp
         .to_string()
         .parse()
-        .expect("Error parsing message timestamp");
+        .map_err(|_| err_generic!("Error parsing message timestamp".to_string()))?;
     let signatures_str = signatures
         .parse()
-        .expect("Error parsing message signatures");
+        .map_err(|_| err_generic!("Error parsing message signatures".to_string()))?;
     if whitelabel_headers {
         headers.insert("webhook-id", id);
         headers.insert("webhook-timestamp", timestamp);
@@ -204,7 +208,7 @@ fn generate_msg_headers(
         }
     }
 
-    headers
+    Ok(headers)
 }
 
 #[derive(Clone, Copy)]
@@ -216,7 +220,6 @@ struct WorkerContext<'a> {
     queue_tx: &'a TaskQueueProducer,
     op_webhook_sender: &'a OperationalWebhookSender,
 }
-
 struct DispatchExtraIds<'a> {
     org_id: &'a OrganizationId,
     app_uid: Option<&'a ApplicationUid>,
@@ -256,7 +259,8 @@ async fn dispatch_message_task(
     tracing::trace!("Dispatch: {} {}", &msg_task.msg_id, &endp.id);
 
     let now = Utc::now();
-    let body = serde_json::to_string(&payload).expect("Error parsing message body");
+    let body = serde_json::to_string(&payload)
+        .map_err(|e| err_generic!(format!("Error parsing message body: {}", e)))?;
     let headers = {
         let keys = endp.valid_signing_keys();
 
@@ -275,7 +279,7 @@ async fn dispatch_message_task(
             cfg.whitelabel_headers,
             endp.headers.as_ref(),
             &endp.url,
-        );
+        )?;
         headers.insert("user-agent", USER_AGENT.to_string().parse().unwrap());
         headers
     };
@@ -283,7 +287,7 @@ async fn dispatch_message_task(
     let client = reqwest::Client::builder()
         .redirect(reqwest::redirect::Policy::none())
         .build()
-        .expect("Invalid reqwest Client configuration");
+        .map_err(|e| err_generic!(format!("Invalid reqwest Client configuration: {}", e)))?;
     let res = client
         .post(&endp.url)
         .headers(headers)
@@ -570,7 +574,10 @@ async fn process_queue_task(
 
     let msg = ctx!(message::Entity::find_by_id(msg_id.clone()).one(db).await)?
         .ok_or_else(|| err_generic!("Unexpected: message doesn't exist {}", msg_id,))?;
-    let payload = msg.payload.as_ref().expect("Message payload is NULL");
+    let payload = msg
+        .payload
+        .as_ref()
+        .ok_or_else(|| err_generic!("Message payload is NULL".to_string()))?;
 
     let create_message_app = CreateMessageApp::layered_fetch(
         cache.clone(),
@@ -770,7 +777,8 @@ mod tests {
                 WHITELABEL_HEADERS,
                 None,
                 ENDPOINT_URL,
-            ),
+            )
+            .unwrap(),
             id,
         )
     }
@@ -803,7 +811,8 @@ mod tests {
             WHITELABEL_HEADERS,
             Some(&EndpointHeaders(headers)),
             ENDPOINT_URL,
-        );
+        )
+        .unwrap();
 
         assert_eq!(expected, actual);
     }
@@ -838,7 +847,8 @@ mod tests {
             WHITELABEL_HEADERS,
             None,
             ENDPOINT_URL,
-        );
+        )
+        .unwrap();
 
         assert_eq!(
             actual.get("svix-signature").unwrap(),
