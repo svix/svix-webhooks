@@ -256,7 +256,7 @@ async fn dispatch_message_task(
     payload: &Json,
     endp: CreateMessageEndpoint,
 ) -> Result<()> {
-    tracing::trace!("Dispatch: {} {}", &msg_task.msg_id, &endp.id);
+    tracing::trace!("Dispatch start");
 
     let now = Utc::now();
     let body = serde_json::to_string(&payload)
