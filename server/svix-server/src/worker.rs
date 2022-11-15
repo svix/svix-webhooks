@@ -284,18 +284,6 @@ async fn dispatch_message_task(
         headers
     };
 
-    let client = reqwest::Client::builder()
-        .redirect(reqwest::redirect::Policy::none())
-        .build()
-        .map_err(|e| err_generic!(format!("Invalid reqwest Client configuration: {}", e)))?;
-    let res = client
-        .post(&endp.url)
-        .headers(headers)
-        .timeout(Duration::from_secs(cfg.worker_request_timeout as u64))
-        .json(&payload)
-        .send()
-        .await;
-
     let msg_dest = ctx!(
         messagedestination::Entity::secure_find_by_msg(msg_task.msg_id.clone())
             .filter(messagedestination::Column::EndpId.eq(endp.id.clone()))
@@ -315,6 +303,18 @@ async fn dispatch_message_task(
         );
         return Ok(());
     }
+
+    let client = reqwest::Client::builder()
+        .redirect(reqwest::redirect::Policy::none())
+        .build()
+        .map_err(|e| err_generic!(format!("Invalid reqwest Client configuration: {}", e)))?;
+    let res = client
+        .post(&endp.url)
+        .headers(headers)
+        .timeout(Duration::from_secs(cfg.worker_request_timeout as u64))
+        .json(&payload)
+        .send()
+        .await;
 
     let attempt = messageattempt::ActiveModel {
         // Set both ID and created_at to the same timestamp
