@@ -706,13 +706,17 @@ pub async fn queue_handler(
 
                         if let Err(err) = process_queue_task(worker_context, queue_task).await {
                             tracing::error!("Error executing task: {}", err);
-                            queue_tx
-                                .nack(delivery)
-                                .await
-                                .expect("Error sending 'nack' to Redis after task execution error");
-                        } else {
-                            queue_tx.ack(delivery).await.expect(
-                                "Error sending 'ack' to Redis after successful task execution",
+
+                            if let Err(err) = queue_tx.nack(delivery).await {
+                                tracing::error!(
+                                    "Error sending 'nack' to Redis after task execution error: {}",
+                                    err
+                                );
+                            }
+                        } else if let Err(err) = queue_tx.ack(delivery).await {
+                            tracing::error!(
+                                "Error sending 'ack' to Redis after successful task execution: {}",
+                                err
                             );
                         }
                     });
