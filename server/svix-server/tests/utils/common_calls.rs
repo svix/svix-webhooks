@@ -9,7 +9,7 @@ use reqwest::StatusCode;
 
 use serde::{de::DeserializeOwned, Serialize};
 use svix_server::{
-    core::types::{ApplicationId, EventTypeName, MessageId},
+    core::types::{metadata::Metadata, ApplicationId, EventTypeName, MessageId},
     v1::{
         endpoints::{
             application::{ApplicationIn, ApplicationOut},
@@ -289,4 +289,8 @@ pub async fn get_msg_attempt_list_and_assert_count(
         Ok(list)
     })
     .await
+}
+
+pub fn metadata(s: &str) -> Metadata {
+    serde_json::from_str::<Metadata>(s).unwrap()
 }

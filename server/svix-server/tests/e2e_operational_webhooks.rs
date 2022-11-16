@@ -13,8 +13,8 @@ use svix_server::{
     core::{
         security::{generate_org_token, management_org_id},
         types::{
-            ApplicationId, ApplicationUid, BaseId, EndpointId, EndpointUid, MessageAttemptId,
-            MessageId, MessageUid, OrganizationId,
+            metadata::Metadata, ApplicationId, ApplicationUid, BaseId, EndpointId, EndpointUid,
+            MessageAttemptId, MessageId, MessageUid, OrganizationId,
         },
     },
     v1::endpoints::{
@@ -141,6 +141,7 @@ async fn test_endpoint_create_update_and_delete() {
                 name: "TestOperationalWebhookApplication".to_owned(),
                 rate_limit: None,
                 uid: Some(ApplicationUid(org_id.to_string())),
+                metadata: Metadata::default(),
             },
             StatusCode::CREATED,
         )
@@ -287,6 +288,7 @@ async fn test_message_attempt_operational_webhooks() {
                 name: "TestOperationalWebhookApplication".to_owned(),
                 rate_limit: None,
                 uid: Some(ApplicationUid(org_id.to_string())),
+                metadata: Metadata::default(),
             },
             StatusCode::CREATED,
         )
