@@ -16,6 +16,7 @@ use axum::TypedHeader;
 use hyper::StatusCode;
 use sea_orm::DbErr;
 use sea_orm::RuntimeErr;
+use sea_orm::TransactionError;
 use serde::Serialize;
 use serde_json::json;
 use sqlx::Error as SqlxError;
@@ -238,6 +239,15 @@ impl Traceable<TypedHeader<Authorization<Bearer>>>
 impl<T> Traceable<T> for std::result::Result<T, crate::core::cache::Error> {
     fn trace(self, location: &'static str) -> Result<T> {
         self.map_err(|e| Error::cache(e, location))
+    }
+}
+
+impl<T> Traceable<T> for std::result::Result<T, TransactionError<Error>> {
+    fn trace(self, location: &'static str) -> Result<T> {
+        self.map_err(|e| match e {
+            TransactionError::Connection(db_err) => Error::database(db_err, location),
+            TransactionError::Transaction(crate_err) => crate_err, // preserve the trace that comes from within the transaction
+        })
     }
 }
 

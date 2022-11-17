@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
+use crate::utils::common_calls::metadata;
 use reqwest::StatusCode;
-
 use svix_server::{
     cfg::CacheType, core::types::ApplicationUid, v1::endpoints::application::ApplicationIn,
     v1::endpoints::application::ApplicationOut,
@@ -61,13 +61,14 @@ async fn test_patch() {
     // Assert that no other field was changed
     assert_eq!(out.rate_limit, None);
     assert_eq!(out.uid, None);
+    assert_eq!(out.metadata, metadata("{}"));
 
     // Test that rate_limit may be set while the rest are omitted
     let _: ApplicationOut = client
         .patch(
             &format!("api/v1/app/{}/", app.id),
             serde_json::json! ({
-                "rateLimit": 1
+                "rateLimit": 1,
             }),
             StatusCode::OK,
         )
@@ -142,6 +143,31 @@ async fn test_patch() {
         .await
         .unwrap();
     assert_eq!(out.uid, None);
+    // Assert that no other field was changed
+    assert_eq!(out.name, "second_name".to_owned());
+    assert_eq!(out.rate_limit, None);
+
+    // Test that metadata may be changed while the rest are omitted
+    let _: ApplicationOut = client
+        .patch(
+            &format!("api/v1/app/{}/", app.id),
+            serde_json::json!({
+                "metadata": {
+                    "foo": "bar",
+                    "bizz": "baz",
+                },
+            }),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    // Assert the change was made
+    let out = client
+        .get::<ApplicationOut>(&format!("api/v1/app/{}/", app.id), StatusCode::OK)
+        .await
+        .unwrap();
+    assert_eq!(metadata(r#"{"foo": "bar", "bizz": "baz"}"#), out.metadata);
     // Assert that no other field was changed
     assert_eq!(out.name, "second_name".to_owned());
     assert_eq!(out.rate_limit, None);
@@ -251,6 +277,66 @@ async fn test_crud() {
         .get(&format!("api/v1/app/{}/", app_2.id), StatusCode::NOT_FOUND)
         .await
         .unwrap();
+
+    let app: ApplicationOut = client
+        .post(
+            "api/v1/app/",
+            serde_json::json!({
+                "name": "Apps all around",
+            }),
+            StatusCode::CREATED,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(app.metadata, metadata(r#"{}"#));
+
+    let updated: ApplicationOut = client
+        .patch(
+            &format!("api/v1/app/{}", app.id),
+            serde_json::json!({
+                "metadata": {
+                    "bizz": "bar"
+                },
+            }),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+    assert_eq!(updated.metadata, metadata(r#"{"bizz":"bar"}"#));
+
+    let new_app: ApplicationOut = client
+        .put(
+            "api/v1/app/one_upserted_boi",
+            serde_json::json!({
+                "name": "Apps for two",
+                "metadata": {
+                    "foo": "bar"
+                },
+            }),
+            StatusCode::CREATED,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(new_app.metadata, metadata(r#"{"foo":"bar"}"#));
+
+    let updated_metadata_app: ApplicationOut = client
+        .put(
+            &format!("api/v1/app/{}", new_app.id),
+            serde_json::json!({
+                "name": "New Name",
+                "metadata": {
+                    "new": "data"
+                },
+            }),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(updated_metadata_app.metadata, metadata(r#"{"new":"data"}"#));
+    assert_eq!(updated_metadata_app.name, "New Name");
 }
 
 #[tokio::test]
@@ -504,12 +590,26 @@ async fn test_get_or_create() {
             ApplicationIn {
                 name: "App 1".to_owned(),
                 uid: Some(ApplicationUid("app1".to_owned())),
+                metadata: metadata(
+                    r#"{
+                    "foo": "bar"
+                }"#,
+                ),
                 ..Default::default()
             },
             StatusCode::CREATED,
         )
         .await
         .unwrap();
+
+    assert_eq!(
+        app.metadata,
+        metadata(
+            r#"{
+        "foo": "bar"
+    }"#,
+        )
+    );
 
     let _: IgnoredResponse = client
         .post(
