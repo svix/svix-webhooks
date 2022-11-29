@@ -22,7 +22,6 @@ services:
       REDIS_NODES: "redis-cluster redis-cluster-node-0 redis-cluster-node-1 redis-cluster-node-2 redis-cluster-node-3 redis-cluster-node-4"
       REDIS_CLUSTER_CREATOR: "yes"
       REDIS_CLUSTER_REPLICAS: "1"
-      REDIS_CLUSTER_ANNOUNCE_PORT: "6380"
     ports:
       - "6380:6379"
     depends_on:
@@ -39,7 +38,6 @@ services:
     environment:
       ALLOW_EMPTY_PASSWORD: "yes"
       REDIS_NODES: "redis-cluster redis-cluster-node-0 redis-cluster-node-1 redis-cluster-node-2 redis-cluster-node-3 redis-cluster-node-4"
-      REDIS_CLUSTER_ANNOUNCE_PORT: "6381"
 
   redis-cluster-node-1:
     image: "bitnami/redis-cluster:6.2"
@@ -48,7 +46,6 @@ services:
     environment:
       ALLOW_EMPTY_PASSWORD: "yes"
       REDIS_NODES: "redis-cluster redis-cluster-node-0 redis-cluster-node-1 redis-cluster-node-2 redis-cluster-node-3 redis-cluster-node-4"
-      REDIS_CLUSTER_ANNOUNCE_PORT: "6382"
 
   redis-cluster-node-2:
     image: "bitnami/redis-cluster:6.2"
@@ -57,7 +54,6 @@ services:
     environment:
       ALLOW_EMPTY_PASSWORD: "yes"
       REDIS_NODES: "redis-cluster redis-cluster-node-0 redis-cluster-node-1 redis-cluster-node-2 redis-cluster-node-3 redis-cluster-node-4"
-      REDIS_CLUSTER_ANNOUNCE_PORT: "6383"
 
   redis-cluster-node-3:
     image: "bitnami/redis-cluster:6.2"
@@ -66,7 +62,6 @@ services:
     environment:
       ALLOW_EMPTY_PASSWORD: "yes"
       REDIS_NODES: "redis-cluster redis-cluster-node-0 redis-cluster-node-1 redis-cluster-node-2 redis-cluster-node-3 redis-cluster-node-4"
-      REDIS_CLUSTER_ANNOUNCE_PORT: "6384"
 
   redis-cluster-node-4:
     image: "bitnami/redis-cluster:6.2"
@@ -75,7 +70,6 @@ services:
     environment:
       ALLOW_EMPTY_PASSWORD: "yes"
       REDIS_NODES: "redis-cluster redis-cluster-node-0 redis-cluster-node-1 redis-cluster-node-2 redis-cluster-node-3 redis-cluster-node-4"
-      REDIS_CLUSTER_ANNOUNCE_PORT: "6385"
 
 volumes:
   postgres-data:
