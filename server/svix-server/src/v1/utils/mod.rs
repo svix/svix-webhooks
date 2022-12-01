@@ -161,6 +161,7 @@ pub struct EmptyResponse {}
 pub struct ListResponse<T: Clone> {
     pub data: Vec<T>,
     pub iterator: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub prev_iterator: Option<String>,
     pub done: bool,
 }
