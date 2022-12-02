@@ -393,10 +393,10 @@ impl EndpointHeadersOut {
 
 impl From<EndpointHeaders> for EndpointHeadersOut {
     fn from(hdr: EndpointHeaders) -> Self {
-        let (sens, remaining) = hdr
-            .0
-            .into_iter()
-            .partition(|(k, _)| Self::SENSITIVE_HEADERS.iter().any(|&x| x == k));
+        let (sens, remaining) = hdr.0.into_iter().partition(|(k, _)| {
+            let k = k.to_lowercase();
+            Self::SENSITIVE_HEADERS.iter().any(|&x| x == k)
+        });
 
         Self {
             headers: remaining,
@@ -537,9 +537,13 @@ pub fn router() -> Router {
 #[cfg(test)]
 mod tests {
 
-    use super::{validate_url, EndpointHeadersIn, EndpointHeadersPatchIn, EndpointIn};
+    use crate::core::types::EndpointHeaders;
+
+    use super::{
+        validate_url, EndpointHeadersIn, EndpointHeadersOut, EndpointHeadersPatchIn, EndpointIn,
+    };
     use serde_json::json;
-    use std::collections::HashMap;
+    use std::collections::{HashMap, HashSet};
     use validator::Validate;
 
     const URL_VALID: &str = "https://www.example.com";
@@ -627,6 +631,26 @@ mod tests {
         let valid: EndpointHeadersIn =
             serde_json::from_value(json!({ "headers": headers_valid })).unwrap();
         valid.validate().unwrap();
+    }
+
+    #[test]
+    fn test_endpoint_headers_sensitive() {
+        let headers = EndpointHeaders(HashMap::from([
+            ("foo".to_string(), "1".to_string()),
+            ("authorization".to_string(), "test".to_string()),
+            ("X-Auth-Token".to_string(), "test2".to_string()),
+        ]));
+
+        let headers_out: EndpointHeadersOut = headers.into();
+
+        assert_eq!(
+            headers_out.headers,
+            HashMap::from([("foo".to_string(), "1".to_string())])
+        );
+        assert_eq!(
+            headers_out.sensitive,
+            HashSet::from(["authorization".to_string(), "X-Auth-Token".to_string()])
+        );
     }
 
     #[test]
