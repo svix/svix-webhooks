@@ -35,7 +35,7 @@ log_format = "default"
 # always sending. If the OpenTelemetry address is not set, this will do nothing.
 # opentelemetry_sample_ratio = 1.0
 
-# Whether to enable the logging of the databses at the configured log level. This may be useful for
+# Whether to enable the logging of the databases at the configured log level. This may be useful for
 # analyzing their response times.
 db_tracing = false
 
