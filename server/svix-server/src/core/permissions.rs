@@ -1,6 +1,7 @@
 use axum::{
     async_trait,
-    extract::{FromRequest, Path, RequestParts},
+    extract::{FromRequestParts, Path},
+    http::request::Parts,
     Extension,
 };
 use sea_orm::DatabaseConnection;
@@ -32,14 +33,14 @@ impl Permissions {
 }
 
 #[async_trait]
-impl<B> FromRequest<B> for Organization
+impl<S> FromRequestParts<S> for Organization
 where
-    B: Send,
+    S: Send + Sync,
 {
     type Rejection = Error;
 
-    async fn from_request(req: &mut RequestParts<B>) -> Result<Self> {
-        let permissions = permissions_from_bearer(req).await?;
+    async fn from_request_parts(parts: &mut Parts, state: &S) -> Result<Self> {
+        let permissions = permissions_from_bearer(parts, state).await?;
 
         let org_id = match permissions.access_level {
             AccessLevel::Organization(org_id) => org_id,
@@ -55,18 +56,19 @@ pub struct Application {
 }
 
 #[async_trait]
-impl<B> FromRequest<B> for Application
+impl<S> FromRequestParts<S> for Application
 where
-    B: Send,
+    S: Send + Sync,
 {
     type Rejection = Error;
 
-    async fn from_request(req: &mut RequestParts<B>) -> Result<Self> {
-        let permissions = permissions_from_bearer(req).await?;
+    async fn from_request_parts(parts: &mut Parts, state: &S) -> Result<Self> {
+        let permissions = permissions_from_bearer(parts, state).await?;
 
         let Path(ApplicationPathParams { app_id }) =
-            ctx!(Path::<ApplicationPathParams>::from_request(req).await)?;
-        let Extension(ref db) = ctx!(Extension::<DatabaseConnection>::from_request(req).await)?;
+            ctx!(Path::<ApplicationPathParams>::from_request_parts(parts, state).await)?;
+        let Extension(ref db) =
+            ctx!(Extension::<DatabaseConnection>::from_request_parts(parts, state).await)?;
         let app = ctx!(
             application::Entity::secure_find_by_id_or_uid(permissions.org_id(), app_id.to_owned(),)
                 .one(db)
@@ -86,18 +88,19 @@ pub struct OrganizationWithApplication {
 }
 
 #[async_trait]
-impl<B> FromRequest<B> for OrganizationWithApplication
+impl<S> FromRequestParts<S> for OrganizationWithApplication
 where
-    B: Send,
+    S: Send + Sync,
 {
     type Rejection = Error;
 
-    async fn from_request(req: &mut RequestParts<B>) -> Result<Self> {
-        let Organization { org_id } = ctx!(Organization::from_request(req).await)?;
+    async fn from_request_parts(parts: &mut Parts, state: &S) -> Result<Self> {
+        let Organization { org_id } = ctx!(Organization::from_request_parts(parts, state).await)?;
 
         let Path(ApplicationPathParams { app_id }) =
-            ctx!(Path::<ApplicationPathParams>::from_request(req).await)?;
-        let Extension(ref db) = ctx!(Extension::<DatabaseConnection>::from_request(req).await)?;
+            ctx!(Path::<ApplicationPathParams>::from_request_parts(parts, state).await)?;
+        let Extension(ref db) =
+            ctx!(Extension::<DatabaseConnection>::from_request_parts(parts, state).await)?;
         let app = ctx!(
             application::Entity::secure_find_by_id_or_uid(org_id, app_id.to_owned(),)
                 .one(db)
@@ -114,18 +117,19 @@ pub struct ApplicationWithMetadata {
 }
 
 #[async_trait]
-impl<B> FromRequest<B> for ApplicationWithMetadata
+impl<S> FromRequestParts<S> for ApplicationWithMetadata
 where
-    B: Send,
+    S: Send + Sync,
 {
     type Rejection = Error;
 
-    async fn from_request(req: &mut RequestParts<B>) -> Result<Self> {
-        let permissions = permissions_from_bearer(req).await?;
+    async fn from_request_parts(parts: &mut Parts, state: &S) -> Result<Self> {
+        let permissions = permissions_from_bearer(parts, state).await?;
 
         let Path(ApplicationPathParams { app_id }) =
-            ctx!(Path::<ApplicationPathParams>::from_request(req).await)?;
-        let Extension(ref db) = ctx!(Extension::<DatabaseConnection>::from_request(req).await)?;
+            ctx!(Path::<ApplicationPathParams>::from_request_parts(parts, state).await)?;
+        let Extension(ref db) =
+            ctx!(Extension::<DatabaseConnection>::from_request_parts(parts, state).await)?;
         let (app, metadata) = ctx!(
             application::Model::fetch_with_metadata(db, permissions.org_id(), app_id.to_owned())
                 .await

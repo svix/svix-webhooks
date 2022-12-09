@@ -323,7 +323,7 @@ async fn test_patch() {
     // But first make an event type to set it to
     let _: EventTypeOut = client
         .post(
-            "api/v1/event-type",
+            "api/v1/event-type/",
             serde_json::json!({
                 "description": "a test event type",
                 "name": "test",
@@ -1484,7 +1484,7 @@ async fn test_endpoint_filter_events() {
 
     let _et: EventTypeOut = client
         .post(
-            "api/v1/event-type",
+            "api/v1/event-type/",
             event_type_in("et1", None).unwrap(),
             StatusCode::CREATED,
         )
@@ -1676,7 +1676,7 @@ async fn test_msg_event_types_filter() {
         event_type_in("et2", None).unwrap(),
     ] {
         let _: EventTypeOut = client
-            .post("api/v1/event-type", et, StatusCode::CREATED)
+            .post("api/v1/event-type/", et, StatusCode::CREATED)
             .await
             .unwrap();
     }
@@ -1784,7 +1784,7 @@ async fn test_msg_channels_filter() {
 
         let msg: MessageOut = client
             .get(
-                &format!("api/v1/app/{}/msg/{}", &app_id, &msg.id),
+                &format!("api/v1/app/{}/msg/{}/", &app_id, &msg.id),
                 StatusCode::OK,
             )
             .await
@@ -1813,7 +1813,7 @@ async fn test_endpoint_headers_manipulation() {
 
     let _: IgnoredResponse = client
         .patch(
-            &format!("api/v1/app/{}/endpoint/{}/headers", app_id, endp.id),
+            &format!("api/v1/app/{}/endpoint/{}/headers/", app_id, endp.id),
             patched_headers_in,
             StatusCode::NO_CONTENT,
         )
@@ -1822,7 +1822,7 @@ async fn test_endpoint_headers_manipulation() {
 
     let recvd_headers: EndpointHeadersOut = client
         .get(
-            &format!("api/v1/app/{}/endpoint/{}/headers", app_id, endp.id),
+            &format!("api/v1/app/{}/endpoint/{}/headers/", app_id, endp.id),
             StatusCode::OK,
         )
         .await
@@ -1847,7 +1847,7 @@ async fn test_endpoint_headers_manipulation() {
     ] {
         let _: IgnoredResponse = client
             .put(
-                &format!("api/v1/app/{}/endpoint/{}/headers", app_id, endp.id),
+                &format!("api/v1/app/{}/endpoint/{}/headers/", app_id, endp.id),
                 serde_json::json!({ "headers": { bad_hdr: "123"}}),
                 StatusCode::UNPROCESSABLE_ENTITY,
             )
@@ -1872,7 +1872,7 @@ async fn test_endpoint_headers_manipulation() {
     for hdrs in [&org_headers, &updated_headers] {
         let _: IgnoredResponse = client
             .put(
-                &format!("api/v1/app/{}/endpoint/{}/headers", app_id, endp.id),
+                &format!("api/v1/app/{}/endpoint/{}/headers/", app_id, endp.id),
                 hdrs,
                 StatusCode::NO_CONTENT,
             )
@@ -1881,7 +1881,7 @@ async fn test_endpoint_headers_manipulation() {
 
         let recvd_headers: EndpointHeadersOut = client
             .get(
-                &format!("api/v1/app/{}/endpoint/{}/headers", app_id, endp.id),
+                &format!("api/v1/app/{}/endpoint/{}/headers/", app_id, endp.id),
                 StatusCode::OK,
             )
             .await
@@ -1899,7 +1899,7 @@ async fn test_endpoint_headers_manipulation() {
 
     let _: IgnoredResponse = client
         .patch(
-            &format!("api/v1/app/{}/endpoint/{}/headers", app_id, endp.id),
+            &format!("api/v1/app/{}/endpoint/{}/headers/", app_id, endp.id),
             &patched_headers_in,
             StatusCode::NO_CONTENT,
         )
@@ -1908,7 +1908,7 @@ async fn test_endpoint_headers_manipulation() {
 
     let recvd_headers: EndpointHeadersOut = client
         .get(
-            &format!("api/v1/app/{}/endpoint/{}/headers", app_id, endp.id),
+            &format!("api/v1/app/{}/endpoint/{}/headers/", app_id, endp.id),
             StatusCode::OK,
         )
         .await
@@ -1931,7 +1931,7 @@ async fn test_endpoint_headers_manipulation() {
 
     let _: IgnoredResponse = client
         .put(
-            &format!("api/v1/app/{}/endpoint/{}/headers", app_id, endp.id),
+            &format!("api/v1/app/{}/endpoint/{}/headers/", app_id, endp.id),
             redacted_headers,
             StatusCode::NO_CONTENT,
         )
@@ -1940,7 +1940,7 @@ async fn test_endpoint_headers_manipulation() {
 
     let recvd_headers: EndpointHeadersOut = client
         .get(
-            &format!("api/v1/app/{}/endpoint/{}/headers", app_id, endp.id),
+            &format!("api/v1/app/{}/endpoint/{}/headers/", app_id, endp.id),
             StatusCode::OK,
         )
         .await
@@ -1978,7 +1978,7 @@ async fn test_endpoint_headers_sending() {
 
     let _: IgnoredResponse = client
         .put(
-            &format!("api/v1/app/{}/endpoint/{}/headers", app_id, endp.id),
+            &format!("api/v1/app/{}/endpoint/{}/headers/", app_id, endp.id),
             &headers,
             StatusCode::NO_CONTENT,
         )
@@ -2017,7 +2017,7 @@ async fn test_endpoint_header_key_capitalization() {
 
     let _: IgnoredResponse = client
         .put(
-            &format!("api/v1/app/{}/endpoint/{}/headers", app_id, endp.id),
+            &format!("api/v1/app/{}/endpoint/{}/headers/", app_id, endp.id),
             &headers,
             StatusCode::NO_CONTENT,
         )
@@ -2026,7 +2026,7 @@ async fn test_endpoint_header_key_capitalization() {
 
     let retrieved_headers: EndpointHeadersOut = client
         .get(
-            &format!("api/v1/app/{}/endpoint/{}/headers", app_id, endp.id),
+            &format!("api/v1/app/{}/endpoint/{}/headers/", app_id, endp.id),
             StatusCode::OK,
         )
         .await

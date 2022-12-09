@@ -697,30 +697,41 @@ async fn resend_webhook(
 }
 
 pub fn router() -> Router {
-    Router::new().nest(
-        "/app/:app_id/",
-        Router::new()
-            .nest(
-                "/msg/:msg_id",
-                Router::new()
-                    // NOTE: [`list_messageattempts`] is deprecated
-                    .route("/attempt/", get(list_messageattempts))
-                    .route("/attempt/:attempt_id/", get(get_messageattempt))
-                    .route("/endpoint/", get(list_attempted_destinations))
-                    .route("/endpoint/:endp_id/resend/", post(resend_webhook))
-                    // NOTE: [`list_attempts_for_endpoint`] is deprecated
-                    .route(
-                        "/endpoint/:endp_id/attempt/",
-                        get(list_attempts_for_endpoint),
-                    ),
-            )
-            .route("/endpoint/:endp_id/msg/", get(list_attempted_messages))
-            .route(
-                "/attempt/endpoint/:endp_id/",
-                get(list_attempts_by_endpoint),
-            )
-            .route("/attempt/msg/:msg_id/", get(list_attempts_by_msg)),
-    )
+    Router::new()
+        // NOTE: [`list_messageattempts`] is deprecated
+        .route(
+            "/app/:app_id/msg/:msg_id/attempt/",
+            get(list_messageattempts),
+        )
+        .route(
+            "/app/:app_id/msg/:msg_id/attempt/:attempt_id/",
+            get(get_messageattempt),
+        )
+        .route(
+            "/app/:app_id/msg/:msg_id/endpoint/",
+            get(list_attempted_destinations),
+        )
+        .route(
+            "/app/:app_id/msg/:msg_id/endpoint/:endp_id/resend/",
+            post(resend_webhook),
+        )
+        // NOTE: [`list_attempts_for_endpoint`] is deprecated
+        .route(
+            "/app/:app_id/msg/:msg_id/endpoint/:endp_id/attempt/",
+            get(list_attempts_for_endpoint),
+        )
+        .route(
+            "/app/:app_id/endpoint/:endp_id/msg/",
+            get(list_attempted_messages),
+        )
+        .route(
+            "/app/:app_id/attempt/endpoint/:endp_id/",
+            get(list_attempts_by_endpoint),
+        )
+        .route(
+            "/app/:app_id/attempt/msg/:msg_id/",
+            get(list_attempts_by_msg),
+        )
 }
 
 #[cfg(test)]

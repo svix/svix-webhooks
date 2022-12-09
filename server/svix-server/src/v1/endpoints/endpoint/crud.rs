@@ -60,8 +60,8 @@ pub(super) async fn create_endpoint(
     Extension(ref db): Extension<DatabaseConnection>,
     Extension(cfg): Extension<Configuration>,
     Extension(op_webhooks): Extension<OperationalWebhookSender>,
-    ValidatedJson(data): ValidatedJson<EndpointIn>,
     permissions::Application { app }: permissions::Application,
+    ValidatedJson(data): ValidatedJson<EndpointIn>,
 ) -> Result<(StatusCode, Json<EndpointOut>)> {
     if let Some(ref event_types_ids) = data.event_types_ids {
         validate_event_types(db, event_types_ids, &app.org_id).await?;
@@ -123,8 +123,8 @@ pub(super) async fn update_endpoint(
     Extension(cfg): Extension<Configuration>,
     Extension(op_webhooks): Extension<OperationalWebhookSender>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
-    ValidatedJson(data): ValidatedJson<EndpointIn>,
     permissions::Application { app }: permissions::Application,
+    ValidatedJson(data): ValidatedJson<EndpointIn>,
 ) -> Result<(StatusCode, Json<EndpointOut>)> {
     let endp = ctx!(
         endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
@@ -203,8 +203,8 @@ pub(super) async fn patch_endpoint(
     Extension(cfg): Extension<Configuration>,
     Extension(op_webhooks): Extension<OperationalWebhookSender>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
-    ValidatedJson(data): ValidatedJson<EndpointPatch>,
     permissions::Application { app }: permissions::Application,
+    ValidatedJson(data): ValidatedJson<EndpointPatch>,
 ) -> Result<Json<EndpointOut>> {
     let endp = ctx!(
         endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)

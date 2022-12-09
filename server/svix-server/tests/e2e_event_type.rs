@@ -24,7 +24,7 @@ async fn test_patch() {
 
     let et: EventTypeOut = client
         .post(
-            "api/v1/event-type",
+            "api/v1/event-type/",
             event_type_in(
                 "test-event-type",
                 serde_json::json!({
@@ -49,7 +49,7 @@ async fn test_patch() {
     // Test that PUT with invalid ID creates an event type
     let _: EventTypeOut = client
         .put(
-            "api/v1/event-type/fake-id",
+            "api/v1/event-type/fake-id/",
             event_type_in("test-event-type", None).unwrap(),
             StatusCode::CREATED,
         )
@@ -158,7 +158,7 @@ async fn test_event_type_create_read_list() {
 
     let et: EventTypeOut = client
         .post(
-            "api/v1/event-type",
+            "api/v1/event-type/",
             event_type_in("test-event-type", None).unwrap(),
             StatusCode::CREATED,
         )
@@ -181,7 +181,7 @@ async fn test_event_type_create_read_list() {
     assert!(list.data.contains(&et));
 
     let list: ListResponse<EventTypeOut> = client
-        .get("api/v1/event-type", StatusCode::OK)
+        .get("api/v1/event-type/", StatusCode::OK)
         .await
         .unwrap();
     assert_eq!(list.data.len(), 1);
@@ -210,7 +210,7 @@ async fn test_schema() {
     let (client, _jh) = start_svix_server().await;
     let _: serde_json::Value = client
         .post(
-            "api/v1/event-type",
+            "api/v1/event-type/",
             serde_json::json!({
                             "name": "bad-schema",
                             "description": "I have a bad schema",

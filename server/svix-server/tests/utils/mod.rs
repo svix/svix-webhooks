@@ -316,13 +316,13 @@ impl TestReceiver {
 }
 
 async fn test_receiver_route(
-    axum::Json(json): axum::Json<serde_json::Value>,
     axum::extract::Extension(ref tx): axum::extract::Extension<mpsc::Sender<serde_json::Value>>,
     axum::extract::Extension(ref header_tx): axum::extract::Extension<mpsc::Sender<HeaderMap>>,
     axum::extract::Extension(response_status_code): axum::extract::Extension<
         Arc<Mutex<ResponseStatusCode>>,
     >,
     headers: HeaderMap,
+    axum::Json(json): axum::Json<serde_json::Value>,
 ) -> axum::http::StatusCode {
     tx.send(json).await.unwrap();
     header_tx.send(headers).await.unwrap();

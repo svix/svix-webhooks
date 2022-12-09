@@ -56,8 +56,8 @@ pub(super) async fn rotate_endpoint_secret(
     Extension(ref db): Extension<DatabaseConnection>,
     Extension(cfg): Extension<Configuration>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
-    ValidatedJson(data): ValidatedJson<EndpointSecretRotateIn>,
     permissions::Application { app }: permissions::Application,
+    ValidatedJson(data): ValidatedJson<EndpointSecretRotateIn>,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
     let mut endp = ctx!(
         endpoint::Entity::secure_find_by_id_or_uid(app.id, endp_id)
