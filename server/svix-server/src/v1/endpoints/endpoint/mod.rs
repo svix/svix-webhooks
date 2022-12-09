@@ -494,44 +494,41 @@ async fn endpoint_stats(
 }
 
 pub fn router() -> Router {
-    Router::new().nest(
-        "/app/:app_id",
-        Router::new()
-            .route(
-                "/endpoint/",
-                post(crud::create_endpoint).get(crud::list_endpoints),
-            )
-            .route(
-                "/endpoint/:endp_id/",
-                get(crud::get_endpoint)
-                    .put(crud::update_endpoint)
-                    .patch(crud::patch_endpoint)
-                    .delete(crud::delete_endpoint),
-            )
-            .route(
-                "/endpoint/:endp_id/secret/",
-                get(secrets::get_endpoint_secret),
-            )
-            .route(
-                "/endpoint/:endp_id/secret/rotate/",
-                post(secrets::rotate_endpoint_secret),
-            )
-            .route("/endpoint/:endp_id/stats/", get(endpoint_stats))
-            .route(
-                "/endpoint/:endp_id/send-example/",
-                post(api_not_implemented),
-            )
-            .route(
-                "/endpoint/:endp_id/recover/",
-                post(recovery::recover_failed_webhooks),
-            )
-            .route(
-                "/endpoint/:endp_id/headers/",
-                get(headers::get_endpoint_headers)
-                    .patch(headers::patch_endpoint_headers)
-                    .put(headers::update_endpoint_headers),
-            ),
-    )
+    Router::new()
+        .route(
+            "/app/:app_id/endpoint/",
+            post(crud::create_endpoint).get(crud::list_endpoints),
+        )
+        .route(
+            "/app/:app_id/endpoint/:endp_id/",
+            get(crud::get_endpoint)
+                .put(crud::update_endpoint)
+                .patch(crud::patch_endpoint)
+                .delete(crud::delete_endpoint),
+        )
+        .route(
+            "/app/:app_id/endpoint/:endp_id/secret/",
+            get(secrets::get_endpoint_secret),
+        )
+        .route(
+            "/app/:app_id/endpoint/:endp_id/secret/rotate/",
+            post(secrets::rotate_endpoint_secret),
+        )
+        .route("/app/:app_id/endpoint/:endp_id/stats/", get(endpoint_stats))
+        .route(
+            "/app/:app_id/endpoint/:endp_id/send-example/",
+            post(api_not_implemented),
+        )
+        .route(
+            "/app/:app_id/endpoint/:endp_id/recover/",
+            post(recovery::recover_failed_webhooks),
+        )
+        .route(
+            "/app/:app_id/endpoint/:endp_id/headers/",
+            get(headers::get_endpoint_headers)
+                .patch(headers::patch_endpoint_headers)
+                .put(headers::update_endpoint_headers),
+        )
 }
 
 #[cfg(test)]

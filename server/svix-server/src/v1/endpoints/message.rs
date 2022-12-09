@@ -225,8 +225,8 @@ async fn create_message(
     ValidatedQuery(CreateMessageQueryParams { with_content }): ValidatedQuery<
         CreateMessageQueryParams,
     >,
-    ValidatedJson(data): ValidatedJson<MessageIn>,
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
+    ValidatedJson(data): ValidatedJson<MessageIn>,
 ) -> Result<(StatusCode, Json<MessageOut>)> {
     let create_message_app = CreateMessageApp::layered_fetch(
         cache,
@@ -299,12 +299,9 @@ async fn get_message(
 }
 
 pub fn router() -> Router {
-    Router::new().nest(
-        "/app/:app_id",
-        Router::new()
-            .route("/msg/", post(create_message).get(list_messages))
-            .route("/msg/:msg_id/", get(get_message)),
-    )
+    Router::new()
+        .route("/app/:app_id/msg/", post(create_message).get(list_messages))
+        .route("/app/:app_id/msg/:msg_id/", get(get_message))
 }
 
 #[cfg(test)]

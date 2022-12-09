@@ -214,9 +214,9 @@ pub struct CreateApplicationQuery {
 
 async fn create_application(
     Extension(ref db): Extension<DatabaseConnection>,
-    ValidatedJson(data): ValidatedJson<ApplicationIn>,
     query: ValidatedQuery<CreateApplicationQuery>,
     permissions::Organization { org_id }: permissions::Organization,
+    ValidatedJson(data): ValidatedJson<ApplicationIn>,
 ) -> Result<(StatusCode, Json<ApplicationOut>)> {
     if let Some(ref uid) = data.uid {
         if let Some((app, metadata)) = ctx!(
@@ -257,9 +257,9 @@ async fn get_application(
 
 async fn update_application(
     Extension(ref db): Extension<DatabaseConnection>,
-    ValidatedJson(data): ValidatedJson<ApplicationIn>,
     Path(app_id): Path<ApplicationIdOrUid>,
     permissions::Organization { org_id }: permissions::Organization,
+    ValidatedJson(data): ValidatedJson<ApplicationIn>,
 ) -> Result<(StatusCode, Json<ApplicationOut>)> {
     let (app, metadata, create_models) = if let Some((app, metadata)) =
         ctx!(application::Model::fetch_with_metadata(db, org_id.clone(), app_id).await)?
@@ -295,8 +295,8 @@ async fn update_application(
 
 async fn patch_application(
     Extension(ref db): Extension<DatabaseConnection>,
-    ValidatedJson(data): ValidatedJson<ApplicationPatch>,
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
+    ValidatedJson(data): ValidatedJson<ApplicationPatch>,
 ) -> Result<Json<ApplicationOut>> {
     let metadata = ctx!(app.fetch_or_create_metadata(db).await)?;
     let app: application::ActiveModel = app.into();

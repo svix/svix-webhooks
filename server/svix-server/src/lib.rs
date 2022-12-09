@@ -112,13 +112,14 @@ pub async fn run_with_prefix(
         cfg.operational_webhook_address.clone(),
     );
 
+    let svc_cache = cache.clone();
     // build our application with a route
     let app = Router::new()
         .nest("/api/v1", v1::router())
         .merge(docs::router())
         .layer(
-            ServiceBuilder::new().layer_fn(|service| IdempotencyService {
-                cache: cache.clone(),
+            ServiceBuilder::new().layer_fn(move |service| IdempotencyService {
+                cache: svc_cache.clone(),
                 service,
             }),
         )
@@ -172,7 +173,15 @@ pub async fn run_with_prefix(
         async {
             if with_worker {
                 tracing::debug!("Worker: Initializing");
-                worker_loop(&cfg, &pool, cache, queue_tx, queue_rx, op_webhook_sender).await
+                worker_loop(
+                    &cfg,
+                    &pool,
+                    cache.clone(),
+                    queue_tx,
+                    queue_rx,
+                    op_webhook_sender,
+                )
+                .await
             } else {
                 tracing::debug!("Worker: off");
                 Ok(())
