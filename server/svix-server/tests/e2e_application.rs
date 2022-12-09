@@ -293,7 +293,7 @@ async fn test_crud() {
 
     let updated: ApplicationOut = client
         .patch(
-            &format!("api/v1/app/{}", app.id),
+            &format!("api/v1/app/{}/", app.id),
             serde_json::json!({
                 "metadata": {
                     "bizz": "bar"
@@ -307,7 +307,7 @@ async fn test_crud() {
 
     let new_app: ApplicationOut = client
         .put(
-            "api/v1/app/one_upserted_boi",
+            "api/v1/app/one_upserted_boi/",
             serde_json::json!({
                 "name": "Apps for two",
                 "metadata": {
@@ -323,7 +323,7 @@ async fn test_crud() {
 
     let updated_metadata_app: ApplicationOut = client
         .put(
-            &format!("api/v1/app/{}", new_app.id),
+            &format!("api/v1/app/{}/", new_app.id),
             serde_json::json!({
                 "name": "New Name",
                 "metadata": {
