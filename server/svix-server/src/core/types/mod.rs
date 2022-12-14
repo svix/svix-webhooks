@@ -1208,7 +1208,7 @@ mod tests {
 
         // Valid long secret
         let long_sec = "TUdfVE5UMnZlci1TeWxOYXQtX1ZlTW1kLTRtMFdhYmEwanIxdHJvenRCbmlTQ2hFdzBnbHhFbWdFaTJLdzQwSA==";
-        let js = serde_json::json!({ "key": format!("whsec_{}", long_sec) });
+        let js = serde_json::json!({ "key": format!("whsec_{long_sec}") });
         let ep = serde_json::from_value::<EndpointSecretTestStruct>(js).unwrap();
         if let EndpointSecret::Symmetric(key) = ep.key {
             assert_eq!(base64::decode(long_sec).unwrap(), key);
@@ -1218,7 +1218,7 @@ mod tests {
 
         // Asymmetric key
         let asym_sec = "6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg==";
-        let js = serde_json::json!({ "key": format!("whsk_{}", asym_sec) });
+        let js = serde_json::json!({ "key": format!("whsk_{asym_sec}") });
         let ep = serde_json::from_value::<EndpointSecretTestStruct>(js).unwrap();
         if let EndpointSecret::Asymmetric(key) = ep.key {
             assert_eq!(base64::decode(asym_sec).unwrap(), key.0.sk.as_slice());

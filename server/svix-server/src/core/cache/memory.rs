@@ -119,7 +119,7 @@ mod tests {
     kv_def!(TestKeyA, TestValA);
     impl TestKeyA {
         fn new(id: String) -> TestKeyA {
-            TestKeyA(format!("SVIX_TEST_KEY_A_{}", id))
+            TestKeyA(format!("SVIX_TEST_KEY_A_{id}"))
         }
     }
 
@@ -128,7 +128,7 @@ mod tests {
     kv_def!(TestKeyB, TestValB);
     impl TestKeyB {
         fn new(id: String) -> TestKeyB {
-            TestKeyB(format!("SVIX_TEST_KEY_B_{}", id))
+            TestKeyB(format!("SVIX_TEST_KEY_B_{id}"))
         }
     }
 
@@ -137,7 +137,7 @@ mod tests {
     string_kv_def!(StringTestKey, StringTestVal);
     impl StringTestKey {
         fn new(id: String) -> StringTestKey {
-            StringTestKey(format!("SVIX_TEST_KEY_STRING_{}", id))
+            StringTestKey(format!("SVIX_TEST_KEY_STRING_{id}"))
         }
     }
 

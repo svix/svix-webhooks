@@ -264,7 +264,7 @@ fn validation_errors(
                     .flat_map(|(k, v)| {
                         // Add the list index to the location
                         let mut loc = loc.clone();
-                        loc.push(format!("[{}]", k));
+                        loc.push(format!("[{k}]"));
 
                         validation_errors(loc, *v)
                     })

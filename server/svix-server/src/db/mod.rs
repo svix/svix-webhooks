@@ -23,7 +23,7 @@ async fn connect(dsn: &str, max_pool_size: u16) -> sqlx::Pool<sqlx::Postgres> {
             .await
             .expect("Error connectiong to Postgres")
     } else {
-        panic!("db_dsn format not recognized. {}", dsn)
+        panic!("db_dsn format not recognized. {dsn}")
     }
 }
 
@@ -44,12 +44,7 @@ pub async fn wipe_org(cfg: &Configuration, org_id: OrganizationId) {
     let applications: Vec<application::Model> = application::Entity::secure_find(org_id.clone())
         .all(&db)
         .await
-        .unwrap_or_else(|_| {
-            panic!(
-                "Error fetching applications associated with org ID {}",
-                org_id
-            )
-        });
+        .unwrap_or_else(|_| panic!("Error fetching applications associated with org ID {org_id}"));
 
     for application in applications {
         let endpoints: Vec<endpoint::Model> = endpoint::Entity::secure_find(application.id.clone())
@@ -116,23 +111,13 @@ pub async fn wipe_org(cfg: &Configuration, org_id: OrganizationId) {
         .filter(application::Column::OrgId.eq(org_id.clone()))
         .exec(&db)
         .await
-        .unwrap_or_else(|_| {
-            panic!(
-                "Error deleting applications associated with org ID {}",
-                org_id
-            )
-        });
+        .unwrap_or_else(|_| panic!("Error deleting applications associated with org ID {org_id}"));
 
     let _: DeleteResult = eventtype::Entity::delete_many()
         .filter(eventtype::Column::OrgId.eq(org_id.clone()))
         .exec(&db)
         .await
-        .unwrap_or_else(|_| {
-            panic!(
-                "Error deleting event types associated with org ID {}",
-                org_id
-            )
-        });
+        .unwrap_or_else(|_| panic!("Error deleting event types associated with org ID {org_id}"));
 }
 
 #[macro_export]

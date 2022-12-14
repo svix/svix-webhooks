@@ -140,7 +140,7 @@ async fn main() {
             let org_id = org_id.unwrap_or_else(default_org_id);
             let token =
                 generate_org_token(&cfg.jwt_secret, org_id).expect("Error generating token");
-            println!("Token (Bearer): {}", token);
+            println!("Token (Bearer): {token}");
             exit(0);
         }
         Some(Commands::AsymmetricKey { command }) => match command {

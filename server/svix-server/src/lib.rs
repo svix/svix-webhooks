@@ -207,7 +207,7 @@ pub fn setup_tracing(cfg: &ConfigurationInner) {
     if std::env::var_os("RUST_LOG").is_none() {
         let level = cfg.log_level.to_string();
         let mut var = vec![
-            format!("{crate}={level}", crate = CRATE_NAME),
+            format!("{CRATE_NAME}={level}"),
             format!("tower_http={level}"),
         ];
 

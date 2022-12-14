@@ -87,7 +87,7 @@ pub fn permissions_from_jwt(claims: JWTClaims<CustomClaim>) -> Result<Permission
     let bad_token = |field: &str, id_type: &str| {
         HttpError::bad_request(
             Some("bad token".to_string()),
-            Some(format!("`{}` is not a valid {} id", field, id_type)),
+            Some(format!("`{field}` is not a valid {id_type} id")),
         )
     };
 
