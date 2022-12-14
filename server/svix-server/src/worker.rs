@@ -66,7 +66,7 @@ kv_def!(FailureCacheKey, FailureCacheValue, "SVIX_FAILURE_CACHE");
 
 impl FailureCacheKey {
     pub fn new(app_id: &ApplicationId, endp_id: &EndpointId) -> FailureCacheKey {
-        FailureCacheKey(format!("_{}_{}", app_id, endp_id))
+        FailureCacheKey(format!("_{app_id}_{endp_id}"))
     }
 }
 
@@ -151,7 +151,7 @@ fn sign_msg(
     msg_id: &MessageId,
     endpoint_signing_keys: &[&EndpointSecretInternal],
 ) -> String {
-    let to_sign = format!("{}.{}.{}", msg_id, timestamp, body);
+    let to_sign = format!("{msg_id}.{timestamp}.{body}");
     endpoint_signing_keys
         .iter()
         .map(|x| {
@@ -350,7 +350,7 @@ async fn dispatch(
                     tracing::warn!("Error reading response body: {}", err);
                     messageattempt::ActiveModel {
                         response_status_code: Set(status_code),
-                        response: Set(format!("failed to read response body: {}", err)),
+                        response: Set(format!("failed to read response body: {err}")),
                         status: Set(status),
                         ..attempt
                     }
@@ -860,7 +860,7 @@ mod tests {
             &[&test_key],
         );
 
-        let to_sign = format!("{}.{}.{}", msg_id, timestamp, body);
+        let to_sign = format!("{msg_id}.{timestamp}.{body}");
         assert!(signatures.starts_with("v1a,"));
         let sig: Signature = Signature::from_slice(
             base64::decode(&signatures["v1a,".len()..])

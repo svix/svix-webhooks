@@ -420,7 +420,7 @@ mod tests {
             tokio::time::sleep(wait).await;
         }
 
-        format!("{}", count)
+        format!("{count}")
     }
 
     #[tokio::test]

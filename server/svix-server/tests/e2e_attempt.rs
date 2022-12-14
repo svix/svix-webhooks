@@ -46,7 +46,7 @@ async fn test_list_attempted_messages() {
     endp2.uid = Some(EndpointUid("test".to_owned()));
     let endp_id_2 = client
         .post::<EndpointIn, EndpointOut>(
-            &format!("api/v1/app/{}/endpoint/", app_id),
+            &format!("api/v1/app/{app_id}/endpoint/"),
             endp2,
             StatusCode::CREATED,
         )
@@ -67,14 +67,14 @@ async fn test_list_attempted_messages() {
     run_with_retries(|| async {
         let list_1: ListResponse<AttemptedMessageOut> = client
             .get(
-                &format!("api/v1/app/{}/endpoint/{}/msg/", app_id, endp_id_1),
+                &format!("api/v1/app/{app_id}/endpoint/{endp_id_1}/msg/"),
                 StatusCode::OK,
             )
             .await
             .unwrap();
         let list_2: ListResponse<AttemptedMessageOut> = client
             .get(
-                &format!("api/v1/app/{}/endpoint/{}/msg/", app_id, endp_id_2),
+                &format!("api/v1/app/{app_id}/endpoint/{endp_id_2}/msg/"),
                 StatusCode::OK,
             )
             .await
@@ -140,7 +140,7 @@ async fn test_list_attempts_by_endpoint() {
         for endp_id in [endp_id_1.clone(), endp_id_2.clone()] {
             let list: ListResponse<MessageAttemptOut> = client
                 .get(
-                    &format!("api/v1/app/{}/attempt/endpoint/{}/", app_id, endp_id),
+                    &format!("api/v1/app/{app_id}/attempt/endpoint/{endp_id}/"),
                     StatusCode::OK,
                 )
                 .await
@@ -158,14 +158,14 @@ async fn test_list_attempts_by_endpoint() {
 
     let list_1: ListResponse<MessageAttemptOut> = client
         .get(
-            &format!("api/v1/app/{}/attempt/endpoint/{}/", app_id, endp_id_1),
+            &format!("api/v1/app/{app_id}/attempt/endpoint/{endp_id_1}/"),
             StatusCode::OK,
         )
         .await
         .unwrap();
     let list_2: ListResponse<MessageAttemptOut> = client
         .get(
-            &format!("api/v1/app/{}/attempt/endpoint/{}/", app_id, endp_id_2),
+            &format!("api/v1/app/{app_id}/attempt/endpoint/{endp_id_2}/"),
             StatusCode::OK,
         )
         .await
@@ -763,7 +763,7 @@ async fn test_pagination_forward_and_back() {
 
     while !done {
         let iter_suffix = if let Some(iter) = iterator {
-            format!("&iterator={}", iter)
+            format!("&iterator={iter}")
         } else {
             String::new()
         };
@@ -793,7 +793,7 @@ async fn test_pagination_forward_and_back() {
 
     while !done {
         let iter_suffix = if let Some(iter) = prev_iterator {
-            format!("&iterator={}", iter)
+            format!("&iterator={iter}")
         } else {
             String::new()
         };

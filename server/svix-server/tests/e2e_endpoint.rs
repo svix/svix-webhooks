@@ -58,7 +58,7 @@ async fn get_endpoint(
 ) -> Result<EndpointOut> {
     client
         .get(
-            &format!("api/v1/app/{}/endpoint/{}/", app_id, ep_id),
+            &format!("api/v1/app/{app_id}/endpoint/{ep_id}/"),
             StatusCode::OK,
         )
         .await
@@ -71,7 +71,7 @@ async fn get_endpoint_404(
 ) -> Result<IgnoredResponse> {
     client
         .get(
-            &format!("api/v1/app/{}/endpoint/{}/", app_id, ep_id),
+            &format!("api/v1/app/{app_id}/endpoint/{ep_id}/"),
             StatusCode::NOT_FOUND,
         )
         .await
@@ -80,7 +80,7 @@ async fn get_endpoint_404(
 async fn delete_endpoint(client: &TestClient, app_id: &ApplicationId, ep_id: &str) -> Result<()> {
     let _: IgnoredResponse = client
         .delete(
-            &format!("api/v1/app/{}/endpoint/{}/", app_id, ep_id),
+            &format!("api/v1/app/{app_id}/endpoint/{ep_id}/"),
             StatusCode::NO_CONTENT,
         )
         .await?;
@@ -100,7 +100,7 @@ async fn test_patch() {
         .unwrap()
         .id;
 
-    let url = format!("api/v1/app/{}/endpoint/{}/", app, ep);
+    let url = format!("api/v1/app/{app}/endpoint/{ep}/");
 
     // Test that the description may be set
     let _: EndpointOut = client
@@ -530,7 +530,7 @@ async fn test_crud() {
     let app_1_ep_1_id = app_1_ep_1.id;
     let app_1_ep_1: EndpointOut = client
         .put(
-            &format!("api/v1/app/{}/endpoint/{}/", app_1, app_1_ep_1_id),
+            &format!("api/v1/app/{app_1}/endpoint/{app_1_ep_1_id}/"),
             endpoint_in(EP_URI_APP_1_EP_1_VER_2),
             StatusCode::OK,
         )
@@ -541,7 +541,7 @@ async fn test_crud() {
     // Test that PUT with an invalid ID creates an endpoint
     let app_1_ep_3: EndpointOut = client
         .put(
-            &format!("api/v1/app/{}/endpoint/fake-id/", app_1),
+            &format!("api/v1/app/{app_1}/endpoint/fake-id/"),
             endpoint_in(EP_URI_APP_1_EP_1_VER_2),
             StatusCode::CREATED,
         )
@@ -648,7 +648,7 @@ async fn test_uid() {
 
     client
         .post::<_, IgnoredResponse>(
-            &format!("api/v1/app/{}/endpoint/", app_id),
+            &format!("api/v1/app/{app_id}/endpoint/"),
             ep_2,
             StatusCode::CONFLICT,
         )
@@ -799,7 +799,7 @@ async fn test_recovery_should_fail_if_start_time_too_old() {
 
     let _: serde_json::Value = client
         .post(
-            &format!("api/v1/app/{}/endpoint/{}/recover/", app_id, endp_id),
+            &format!("api/v1/app/{app_id}/endpoint/{endp_id}/recover/"),
             RecoverIn {
                 since: Utc::now() - chrono::Duration::weeks(3),
             },
@@ -848,7 +848,7 @@ async fn test_recovery_expected_retry_counts() {
     recover_webhooks(
         &client,
         after_msg,
-        &format!("api/v1/app/{}/endpoint/{}/recover/", app_id, endp_id),
+        &format!("api/v1/app/{app_id}/endpoint/{endp_id}/recover/"),
     )
     .await;
 
@@ -860,7 +860,7 @@ async fn test_recovery_expected_retry_counts() {
     recover_webhooks(
         &client,
         before_msg,
-        &format!("api/v1/app/{}/endpoint/{}/recover/", app_id, endp_id),
+        &format!("api/v1/app/{app_id}/endpoint/{endp_id}/recover/"),
     )
     .await;
 
@@ -885,7 +885,7 @@ async fn test_endpoint_rotate_max() {
     for _ in 0..ExpiringSigningKeys::MAX_OLD_KEYS {
         let _: IgnoredResponse = client
             .post(
-                &format!("api/v1/app/{}/endpoint/{}/secret/rotate/", app_id, endp_id),
+                &format!("api/v1/app/{app_id}/endpoint/{endp_id}/secret/rotate/"),
                 serde_json::json!({ "key": null }),
                 StatusCode::NO_CONTENT,
             )
@@ -895,7 +895,7 @@ async fn test_endpoint_rotate_max() {
 
     let _: IgnoredResponse = client
         .post(
-            &format!("api/v1/app/{}/endpoint/{}/secret/rotate/", app_id, endp_id),
+            &format!("api/v1/app/{app_id}/endpoint/{endp_id}/secret/rotate/"),
             serde_json::json!({ "key": null }),
             StatusCode::BAD_REQUEST,
         )
@@ -1311,7 +1311,7 @@ async fn test_invalid_endpoint_secret() {
 
         let _: IgnoredResponse = client
             .post(
-                &format!("api/v1/app/{}/endpoint/", app_id),
+                &format!("api/v1/app/{app_id}/endpoint/"),
                 ep_in,
                 StatusCode::UNPROCESSABLE_ENTITY,
             )
@@ -1466,7 +1466,7 @@ async fn test_endpoint_filter_events() {
 
     let _ep_with_empty_events: IgnoredResponse = client
         .post(
-            &format!("api/v1/app/{}/endpoint/", app_id),
+            &format!("api/v1/app/{app_id}/endpoint/"),
             ep_empty_events,
             StatusCode::UNPROCESSABLE_ENTITY,
         )
@@ -1475,7 +1475,7 @@ async fn test_endpoint_filter_events() {
 
     let _ep_with_nonexistent_event: IgnoredResponse = client
         .post(
-            &format!("api/v1/app/{}/endpoint/", app_id),
+            &format!("api/v1/app/{app_id}/endpoint/"),
             ep_with_events.to_owned(),
             StatusCode::UNPROCESSABLE_ENTITY,
         )
@@ -1493,7 +1493,7 @@ async fn test_endpoint_filter_events() {
 
     let ep_with_valid_event: EndpointOut = client
         .post(
-            &format!("api/v1/app/{}/endpoint/", app_id),
+            &format!("api/v1/app/{app_id}/endpoint/"),
             ep_with_events.to_owned(),
             StatusCode::CREATED,
         )
@@ -1565,7 +1565,7 @@ async fn test_endpoint_filter_channels() {
 
     let _ep_w_empty_channel: IgnoredResponse = client
         .post(
-            &format!("api/v1/app/{}/endpoint/", app_id),
+            &format!("api/v1/app/{app_id}/endpoint/"),
             ep_empty_channels,
             StatusCode::UNPROCESSABLE_ENTITY,
         )
@@ -1574,7 +1574,7 @@ async fn test_endpoint_filter_channels() {
 
     let ep_with_channel: EndpointOut = client
         .post(
-            &format!("api/v1/app/{}/endpoint/", app_id),
+            &format!("api/v1/app/{app_id}/endpoint/"),
             ep_with_channels.to_owned(),
             StatusCode::CREATED,
         )
@@ -2053,7 +2053,7 @@ async fn test_endpoint_https_only() {
 
     let _endpoint: EndpointOut = client
         .post(
-            &format!("api/v1/app/{}/endpoint/", app_id),
+            &format!("api/v1/app/{app_id}/endpoint/"),
             endpoint_in(https_url),
             StatusCode::CREATED,
         )
@@ -2062,7 +2062,7 @@ async fn test_endpoint_https_only() {
 
     let _endpoint: EndpointOut = client
         .post(
-            &format!("api/v1/app/{}/endpoint/", app_id),
+            &format!("api/v1/app/{app_id}/endpoint/"),
             endpoint_in(http_url),
             StatusCode::CREATED,
         )
@@ -2080,7 +2080,7 @@ async fn test_endpoint_https_only() {
 
     let _endpoint: EndpointOut = client
         .post(
-            &format!("api/v1/app/{}/endpoint/", app_id),
+            &format!("api/v1/app/{app_id}/endpoint/"),
             endpoint_in(https_url),
             StatusCode::CREATED,
         )
@@ -2089,7 +2089,7 @@ async fn test_endpoint_https_only() {
 
     let _: IgnoredResponse = client
         .post(
-            &format!("api/v1/app/{}/endpoint/", app_id),
+            &format!("api/v1/app/{app_id}/endpoint/"),
             endpoint_in(http_url),
             StatusCode::UNPROCESSABLE_ENTITY,
         )

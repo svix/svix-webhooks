@@ -35,7 +35,7 @@ pub struct TestClient {
 
 impl TestClient {
     pub fn set_auth_header(&mut self, auth_header: String) {
-        self.auth_header = format!("Bearer {}", auth_header);
+        self.auth_header = format!("Bearer {auth_header}");
     }
 }
 
@@ -55,7 +55,7 @@ impl TestClient {
     pub fn new(base_uri: String, auth_token: &str) -> TestClient {
         TestClient {
             base_uri,
-            auth_header: format!("Bearer {}", auth_token),
+            auth_header: format!("Bearer {auth_token}"),
             client: Client::new(),
         }
     }
@@ -116,7 +116,7 @@ impl TestClient {
                     .context("error receiving/parsing response")
             }
             Err(e) => {
-                println!("Unexpected request error: {:?}", e);
+                println!("Unexpected request error: {e:?}");
                 Err(e.into())
             }
         }
@@ -339,7 +339,7 @@ where
         if out.is_ok() {
             return out;
         } else if let Err(err) = out {
-            println!("Attempt {}: {}", attempt, err);
+            println!("Attempt {attempt}: {err}");
         }
 
         tokio::time::sleep(std::time::Duration::from_millis(50)).await;

@@ -317,7 +317,7 @@ async fn validate_event_types(
     } else {
         Err(HttpError::unprocessable_entity(vec![ValidationErrorItem {
             loc: vec!["body".to_owned(), "event_types_ids".to_owned()],
-            msg: format!("The following type names don't exist: {:?}", missing),
+            msg: format!("The following type names don't exist: {missing:?}"),
             ty: "value_error".to_owned(),
         }])
         .into())

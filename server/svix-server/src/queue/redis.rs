@@ -295,9 +295,9 @@ async fn new_pair_inner(
     delayed_queue_name: &'static str,
     delayed_lock: &'static str,
 ) -> (TaskQueueProducer, TaskQueueConsumer) {
-    let main_queue_name = format!("{}{}", queue_prefix, main_queue_name);
-    let delayed_queue_name = format!("{}{}", queue_prefix, delayed_queue_name);
-    let delayed_lock = format!("{}{}", queue_prefix, delayed_lock);
+    let main_queue_name = format!("{queue_prefix}{main_queue_name}");
+    let delayed_queue_name = format!("{queue_prefix}{delayed_queue_name}");
+    let delayed_lock = format!("{queue_prefix}{delayed_lock}");
 
     // Create the stream and consumer group for the MAIN queue should it not already exist. The
     // consumer is created automatically upon use so it does not have to be created here.
@@ -1064,7 +1064,7 @@ pub mod tests {
                         to_redis_key(&TaskQueueDelivery {
                             id: num.to_string(),
                             task: Arc::new(QueueTask::MessageV1(MessageTask {
-                                msg_id: MessageId(format!("TestMessageID{}", num)),
+                                msg_id: MessageId(format!("TestMessageID{num}")),
                                 app_id: ApplicationId("TestApplicationID".to_owned()),
                                 endpoint_id: EndpointId("TestEndpointID".to_owned()),
                                 trigger_type: MessageAttemptTriggerType::Manual,
@@ -1083,7 +1083,7 @@ pub mod tests {
                         to_redis_key(&TaskQueueDelivery {
                             id: num.to_string(),
                             task: Arc::new(QueueTask::MessageV1(MessageTask {
-                                msg_id: MessageId(format!("TestMessageID{}", num)),
+                                msg_id: MessageId(format!("TestMessageID{num}")),
                                 app_id: ApplicationId("TestApplicationID".to_owned()),
                                 endpoint_id: EndpointId("TestEndpointID".to_owned()),
                                 trigger_type: MessageAttemptTriggerType::Manual,
@@ -1145,7 +1145,7 @@ pub mod tests {
             assert_eq!(
                 &*recv.task,
                 &QueueTask::MessageV1(MessageTask {
-                    msg_id: MessageId(format!("TestMessageID{}", num)),
+                    msg_id: MessageId(format!("TestMessageID{num}")),
                     app_id: ApplicationId("TestApplicationID".to_owned()),
                     endpoint_id: EndpointId("TestEndpointID".to_owned()),
                     trigger_type: MessageAttemptTriggerType::Manual,
@@ -1159,7 +1159,7 @@ pub mod tests {
             assert_eq!(
                 &*recv.task,
                 &QueueTask::MessageV1(MessageTask {
-                    msg_id: MessageId(format!("TestMessageID{}", num)),
+                    msg_id: MessageId(format!("TestMessageID{num}")),
                     app_id: ApplicationId("TestApplicationID".to_owned()),
                     endpoint_id: EndpointId("TestEndpointID".to_owned()),
                     trigger_type: MessageAttemptTriggerType::Manual,
@@ -1173,7 +1173,7 @@ pub mod tests {
             assert_eq!(
                 &*recv.task,
                 &QueueTask::MessageV1(MessageTask {
-                    msg_id: MessageId(format!("TestMessageID{}", num)),
+                    msg_id: MessageId(format!("TestMessageID{num}")),
                     app_id: ApplicationId("TestApplicationID".to_owned()),
                     endpoint_id: EndpointId("TestEndpointID".to_owned()),
                     trigger_type: MessageAttemptTriggerType::Manual,

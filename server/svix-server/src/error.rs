@@ -410,7 +410,7 @@ impl fmt::Display for HttpError {
                     "status={} detail={}",
                     self.status,
                     serde_json::to_string(&detail)
-                        .unwrap_or_else(|e| format!("\"unserializable error for {}\"", e))
+                        .unwrap_or_else(|e| format!("\"unserializable error for {e}\""))
                 )
             }
         }
