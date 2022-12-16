@@ -232,8 +232,8 @@ async fn create_message(
         cache,
         db,
         Some(app.clone()),
-        app.id.clone(),
         app.org_id.clone(),
+        app.id.clone(),
         std::time::Duration::from_secs(30),
     )
     .await?
@@ -249,7 +249,7 @@ async fn create_message(
 
     let trigger_type = MessageAttemptTriggerType::Scheduled;
     if !create_message_app
-        .filtered_endpoints(trigger_type, &msg)
+        .filtered_endpoints(trigger_type, &msg.event_type, msg.channels.as_ref())
         .is_empty()
     {
         queue_tx
