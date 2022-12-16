@@ -573,8 +573,8 @@ async fn process_task(worker_context: WorkerContext<'_>, queue_task: Arc<QueueTa
         cache.clone(),
         db,
         None,
-        msg.app_id.clone(),
         msg.org_id.clone(),
+        msg.app_id.clone(),
         Duration::from_secs(30),
     )
     .await?
@@ -583,7 +583,7 @@ async fn process_task(worker_context: WorkerContext<'_>, queue_task: Arc<QueueTa
     let app_uid = create_message_app.uid.clone();
 
     let endpoints: Vec<CreateMessageEndpoint> = create_message_app
-        .filtered_endpoints(*trigger_type, &msg)
+        .filtered_endpoints(*trigger_type, &msg.event_type, msg.channels.as_ref())
         .iter()
         .filter(|endpoint| match &*queue_task {
             QueueTask::HealthCheck => unreachable!(),
