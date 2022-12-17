@@ -100,7 +100,7 @@ async fn test_message_create_read_list_with_content() {
 
     let msg_1_w_payload: MessageOut = client
         .post(
-            &format!("api/v1/app/{}/msg", &app_id),
+            &format!("api/v1/app/{}/msg/", &app_id),
             message_in(&app_id, msg_payload.clone()).unwrap(),
             StatusCode::ACCEPTED,
         )
@@ -156,7 +156,7 @@ async fn test_message_create_read_list_with_content() {
     }
 
     let list: ListResponse<MessageOut> = client
-        .get(&format!("api/v1/app/{}/msg", &app_id), StatusCode::OK)
+        .get(&format!("api/v1/app/{}/msg/", &app_id), StatusCode::OK)
         .await
         .unwrap();
     assert_eq!(list.data.len(), 2);
@@ -195,7 +195,7 @@ async fn test_failed_message_gets_recorded() {
 
     let msg_res: MessageOut = client
         .post(
-            &format!("api/v1/app/{}/msg", &app_id),
+            &format!("api/v1/app/{}/msg/", &app_id),
             message_in(&app_id, msg_payload.clone()).unwrap(),
             StatusCode::ACCEPTED,
         )
@@ -253,7 +253,7 @@ async fn test_mulitple_endpoints() {
 
     let msg_res: MessageOut = client
         .post(
-            &format!("api/v1/app/{}/msg", &app_id),
+            &format!("api/v1/app/{}/msg/", &app_id),
             message_in(&app_id, msg_payload.clone()).unwrap(),
             StatusCode::ACCEPTED,
         )
@@ -314,7 +314,7 @@ async fn test_failed_message_gets_requeued() {
 
     let msg_res: MessageOut = client
         .post(
-            &format!("api/v1/app/{}/msg", &app_id),
+            &format!("api/v1/app/{}/msg/", &app_id),
             message_in(&app_id, msg_payload.clone()).unwrap(),
             StatusCode::ACCEPTED,
         )

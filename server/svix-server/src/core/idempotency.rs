@@ -390,12 +390,12 @@ mod tests {
                     .serve(
                         Router::new()
                             .route("/", post(service_endpoint).get(service_endpoint))
-                            .layer(
-                                ServiceBuilder::new().layer_fn(|service| IdempotencyService {
+                            .layer(ServiceBuilder::new().layer_fn(move |service| {
+                                IdempotencyService {
                                     cache: cache.clone(),
                                     service,
-                                }),
-                            )
+                                }
+                            }))
                             .layer(Extension(count))
                             .layer(Extension(wait))
                             .into_make_service(),
@@ -420,7 +420,7 @@ mod tests {
             tokio::time::sleep(wait).await;
         }
 
-        format!("{}", count)
+        format!("{count}")
     }
 
     #[tokio::test]
@@ -591,12 +591,12 @@ mod tests {
                     .serve(
                         Router::new()
                             .route("/", post(empty_service_endpoint))
-                            .layer(
-                                ServiceBuilder::new().layer_fn(|service| IdempotencyService {
+                            .layer(ServiceBuilder::new().layer_fn(move |service| {
+                                IdempotencyService {
                                     cache: cache.clone(),
                                     service,
-                                }),
-                            )
+                                }
+                            }))
                             .layer(Extension(count))
                             .into_make_service(),
                     )

@@ -6,10 +6,11 @@ use std::{borrow::Cow, collections::HashSet, error::Error as StdError, ops::Dere
 use axum::{
     async_trait,
     body::HttpBody,
-    extract::{FromRequest, Query, RequestParts},
+    extract::{FromRequest, FromRequestParts, Query},
     BoxError,
 };
 use chrono::{DateTime, Utc};
+use http::{request::Parts, Request};
 use regex::Regex;
 use sea_orm::{ColumnTrait, QueryFilter, QueryOrder, QuerySelect};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
@@ -161,6 +162,7 @@ pub struct EmptyResponse {}
 pub struct ListResponse<T: Clone> {
     pub data: Vec<T>,
     pub iterator: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub prev_iterator: Option<String>,
     pub done: bool,
 }
@@ -262,7 +264,7 @@ fn validation_errors(
                     .flat_map(|(k, v)| {
                         // Add the list index to the location
                         let mut loc = loc.clone();
-                        loc.push(format!("[{}]", k));
+                        loc.push(format!("[{k}]"));
 
                         validation_errors(loc, *v)
                     })
@@ -276,17 +278,18 @@ fn validation_errors(
 pub struct ValidatedJson<T>(pub T);
 
 #[async_trait]
-impl<T, B> FromRequest<B> for ValidatedJson<T>
+impl<T, S, B> FromRequest<S, B> for ValidatedJson<T>
 where
     T: DeserializeOwned + Validate,
-    B: HttpBody + Send,
+    S: Send + Sync,
+    B: HttpBody + Send + 'static,
     B::Data: Send,
     B::Error: Into<BoxError>,
 {
     type Rejection = Error;
 
-    async fn from_request(req: &mut RequestParts<B>) -> Result<Self> {
-        let b = bytes::Bytes::from_request(req).await.map_err(|e| {
+    async fn from_request(req: Request<B>, state: &S) -> Result<Self> {
+        let b = bytes::Bytes::from_request(req, state).await.map_err(|e| {
             tracing::error!("Error reading body as bytes: {}", e);
             HttpError::internal_server_error(None, Some("Failed to read request body".to_owned()))
         })?;
@@ -324,17 +327,15 @@ where
 pub struct ValidatedQuery<T>(pub T);
 
 #[async_trait]
-impl<T, B> FromRequest<B> for ValidatedQuery<T>
+impl<T, S> FromRequestParts<S> for ValidatedQuery<T>
 where
     T: DeserializeOwned + Validate,
-    B: HttpBody + Send,
-    B::Data: Send,
-    B::Error: Into<BoxError>,
+    S: Send + Sync,
 {
     type Rejection = Error;
 
-    async fn from_request(req: &mut RequestParts<B>) -> Result<Self> {
-        let Query(value) = Query::<T>::from_request(req)
+    async fn from_request_parts(parts: &mut Parts, state: &S) -> Result<Self> {
+        let Query(value) = Query::<T>::from_request_parts(parts, state)
             .await
             .map_err(|err| HttpError::bad_request(None, Some(err.to_string())))?;
         value.validate().map_err(|e| {
@@ -360,15 +361,15 @@ pub struct MessageListFetchOptions {
 }
 
 #[async_trait]
-impl<B> FromRequest<B> for MessageListFetchOptions
+impl<S> FromRequestParts<S> for MessageListFetchOptions
 where
-    B: Send,
+    S: Send + Sync,
 {
     type Rejection = Error;
 
-    async fn from_request(req: &mut RequestParts<B>) -> Result<Self> {
+    async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self> {
         let pairs: Vec<(String, String)> =
-            serde_urlencoded::from_str(req.uri().query().unwrap_or_default())
+            serde_urlencoded::from_str(parts.uri.query().unwrap_or_default())
                 .map_err(|err| HttpError::bad_request(None, Some(err.to_string())))?;
 
         let mut before = None;

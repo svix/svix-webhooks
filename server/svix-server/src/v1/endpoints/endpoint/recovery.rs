@@ -77,8 +77,8 @@ pub(super) async fn recover_failed_webhooks(
     Extension(ref db): Extension<DatabaseConnection>,
     Extension(queue_tx): Extension<TaskQueueProducer>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
-    ValidatedJson(data): ValidatedJson<RecoverIn>,
     permissions::Application { app }: permissions::Application,
+    ValidatedJson(data): ValidatedJson<RecoverIn>,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
     // Add five minutes so that people can easily just do `now() - two_weeks` without having to worry about clock sync
     let timeframe = chrono::Duration::days(14);

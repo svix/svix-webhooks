@@ -17,7 +17,7 @@ use utils::{common_calls::application_in, start_svix_server, IgnoredResponse, Te
 async fn dashboard_access(org_client: &TestClient, application_id: &ApplicationId) -> TestClient {
     let resp: DashboardAccessOut = org_client
         .post(
-            &format!("api/v1/auth/dashboard-access/{}/", application_id),
+            &format!("api/v1/auth/dashboard-access/{application_id}/"),
             (),
             StatusCode::OK,
         )
@@ -68,14 +68,14 @@ async fn test_restricted_application_access() {
         .unwrap();
     let _: IgnoredResponse = client
         .put(
-            &format!("api/v1/app/{}", app_id),
+            &format!("api/v1/app/{app_id}/"),
             application_in("TEST_APP_NAME"),
             StatusCode::FORBIDDEN,
         )
         .await
         .unwrap();
     let _: IgnoredResponse = client
-        .delete(&format!("api/v1/app/{}", app_id), StatusCode::FORBIDDEN)
+        .delete(&format!("api/v1/app/{app_id}/"), StatusCode::FORBIDDEN)
         .await
         .unwrap();
     let _: IgnoredResponse = client
@@ -85,11 +85,11 @@ async fn test_restricted_application_access() {
 
     // READ should succeed when accessing the app_id the token is auhtorized for but no others
     let _: IgnoredResponse = client
-        .get(&format!("api/v1/app/{}", app_id_2), StatusCode::NOT_FOUND)
+        .get(&format!("api/v1/app/{app_id_2}/"), StatusCode::NOT_FOUND)
         .await
         .unwrap();
     let _: ApplicationOut = client
-        .get(&format!("api/v1/app/{}", app_id), StatusCode::OK)
+        .get(&format!("api/v1/app/{app_id}/"), StatusCode::OK)
         .await
         .unwrap();
 }

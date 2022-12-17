@@ -207,8 +207,8 @@ async fn list_event_types(
 
 async fn create_event_type(
     Extension(ref db): Extension<DatabaseConnection>,
-    ValidatedJson(data): ValidatedJson<EventTypeIn>,
     permissions::Organization { org_id }: permissions::Organization,
+    ValidatedJson(data): ValidatedJson<EventTypeIn>,
 ) -> Result<(StatusCode, Json<EventTypeOut>)> {
     let evtype = ctx!(
         eventtype::Entity::secure_find_by_name(org_id.clone(), data.name.to_owned())
@@ -258,8 +258,8 @@ async fn get_event_type(
 async fn update_event_type(
     Extension(ref db): Extension<DatabaseConnection>,
     Path(evtype_name): Path<EventTypeName>,
-    ValidatedJson(data): ValidatedJson<EventTypeUpdate>,
     permissions::Organization { org_id }: permissions::Organization,
+    ValidatedJson(data): ValidatedJson<EventTypeUpdate>,
 ) -> Result<(StatusCode, Json<EventTypeOut>)> {
     let evtype = ctx!(
         eventtype::Entity::secure_find_by_name(org_id.clone(), evtype_name.clone())
@@ -294,8 +294,8 @@ async fn update_event_type(
 async fn patch_event_type(
     Extension(ref db): Extension<DatabaseConnection>,
     Path(evtype_name): Path<EventTypeName>,
-    ValidatedJson(data): ValidatedJson<EventTypePatch>,
     permissions::Organization { org_id }: permissions::Organization,
+    ValidatedJson(data): ValidatedJson<EventTypePatch>,
 ) -> Result<Json<EventTypeOut>> {
     let evtype = ctx!(
         eventtype::Entity::secure_find_by_name(org_id, evtype_name)
@@ -358,8 +358,8 @@ async fn get_retry_schedule(
 async fn update_retry_schedule(
     Extension(ref db): Extension<DatabaseConnection>,
     Path(evtype_name): Path<EventTypeName>,
-    ValidatedJson(data): ValidatedJson<RetryScheduleInOut>,
     permissions::Organization { org_id }: permissions::Organization,
+    ValidatedJson(data): ValidatedJson<RetryScheduleInOut>,
 ) -> Result<Json<RetryScheduleInOut>> {
     let evtype = ctx!(
         eventtype::Entity::secure_find_by_name(org_id, evtype_name)

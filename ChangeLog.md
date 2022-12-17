@@ -3,6 +3,16 @@
 ## Next
 * 
 
+## Version 0.71.0
+* Server: Add metadata to application CRUD
+* Server: Update Rust, sea_orm, and other deps
+* Libs: Update OpenAPI spec
+
+## Version 0.70.0
+* Server: create subcommand for wiping an organization's data
+* Server: internal code improvements
+* Libs/Java: fix issue with automatic region detection not working
+
 ## Version 0.69.0
 * Server: ensure QueueTasks are deleted after acknowledgement
 * Server: better handling of failures in streaming responses

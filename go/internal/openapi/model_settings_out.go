@@ -29,7 +29,7 @@ type SettingsOut struct {
 	EnableIntegrationManagement *bool `json:"enableIntegrationManagement,omitempty"`
 	EnableTransformations *bool `json:"enableTransformations,omitempty"`
 	EnforceHttps *bool `json:"enforceHttps,omitempty"`
-	EventCatalogPublished NullableBool `json:"eventCatalogPublished,omitempty"`
+	EventCatalogPublished *bool `json:"eventCatalogPublished,omitempty"`
 	ReadOnly *bool `json:"readOnly,omitempty"`
 }
 
@@ -50,7 +50,7 @@ func NewSettingsOut() *SettingsOut {
 	var enforceHttps bool = true
 	this.EnforceHttps = &enforceHttps
 	var eventCatalogPublished bool = false
-	this.EventCatalogPublished = *NewNullableBool(&eventCatalogPublished)
+	this.EventCatalogPublished = &eventCatalogPublished
 	var readOnly bool = false
 	this.ReadOnly = &readOnly
 	return &this
@@ -72,7 +72,7 @@ func NewSettingsOutWithDefaults() *SettingsOut {
 	var enforceHttps bool = true
 	this.EnforceHttps = &enforceHttps
 	var eventCatalogPublished bool = false
-	this.EventCatalogPublished = *NewNullableBool(&eventCatalogPublished)
+	this.EventCatalogPublished = &eventCatalogPublished
 	var readOnly bool = false
 	this.ReadOnly = &readOnly
 	return &this
@@ -544,46 +544,36 @@ func (o *SettingsOut) SetEnforceHttps(v bool) {
 	o.EnforceHttps = &v
 }
 
-// GetEventCatalogPublished returns the EventCatalogPublished field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetEventCatalogPublished returns the EventCatalogPublished field value if set, zero value otherwise.
 func (o *SettingsOut) GetEventCatalogPublished() bool {
-	if o == nil || o.EventCatalogPublished.Get() == nil {
+	if o == nil || o.EventCatalogPublished == nil {
 		var ret bool
 		return ret
 	}
-	return *o.EventCatalogPublished.Get()
+	return *o.EventCatalogPublished
 }
 
 // GetEventCatalogPublishedOk returns a tuple with the EventCatalogPublished field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *SettingsOut) GetEventCatalogPublishedOk() (*bool, bool) {
-	if o == nil  {
+	if o == nil || o.EventCatalogPublished == nil {
 		return nil, false
 	}
-	return o.EventCatalogPublished.Get(), o.EventCatalogPublished.IsSet()
+	return o.EventCatalogPublished, true
 }
 
 // HasEventCatalogPublished returns a boolean if a field has been set.
 func (o *SettingsOut) HasEventCatalogPublished() bool {
-	if o != nil && o.EventCatalogPublished.IsSet() {
+	if o != nil && o.EventCatalogPublished != nil {
 		return true
 	}
 
 	return false
 }
 
-// SetEventCatalogPublished gets a reference to the given NullableBool and assigns it to the EventCatalogPublished field.
+// SetEventCatalogPublished gets a reference to the given bool and assigns it to the EventCatalogPublished field.
 func (o *SettingsOut) SetEventCatalogPublished(v bool) {
-	o.EventCatalogPublished.Set(&v)
-}
-// SetEventCatalogPublishedNil sets the value for EventCatalogPublished to be an explicit nil
-func (o *SettingsOut) SetEventCatalogPublishedNil() {
-	o.EventCatalogPublished.Set(nil)
-}
-
-// UnsetEventCatalogPublished ensures that no value is present for EventCatalogPublished, not even an explicit nil
-func (o *SettingsOut) UnsetEventCatalogPublished() {
-	o.EventCatalogPublished.Unset()
+	o.EventCatalogPublished = &v
 }
 
 // GetReadOnly returns the ReadOnly field value if set, zero value otherwise.
@@ -659,8 +649,8 @@ func (o SettingsOut) MarshalJSON() ([]byte, error) {
 	if o.EnforceHttps != nil {
 		toSerialize["enforceHttps"] = o.EnforceHttps
 	}
-	if o.EventCatalogPublished.IsSet() {
-		toSerialize["eventCatalogPublished"] = o.EventCatalogPublished.Get()
+	if o.EventCatalogPublished != nil {
+		toSerialize["eventCatalogPublished"] = o.EventCatalogPublished
 	}
 	if o.ReadOnly != nil {
 		toSerialize["readOnly"] = o.ReadOnly

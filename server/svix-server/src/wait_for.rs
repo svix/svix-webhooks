@@ -6,11 +6,11 @@ pub async fn wait_for_dsn(
     default_port: u16,
     wait_for_seconds: u64,
 ) {
-    let dsn = url::Url::parse(dsn).unwrap_or_else(|_| panic!("Invalid {} DSN", dependency_name));
+    let dsn = url::Url::parse(dsn).unwrap_or_else(|_| panic!("Invalid {dependency_name} DSN"));
 
     let host = dsn
         .host()
-        .unwrap_or_else(|| panic!("Expected {} host", dependency_name));
+        .unwrap_or_else(|| panic!("Expected {dependency_name} host"));
     let port = dsn.port().unwrap_or(default_port);
 
     let sleep = tokio::time::sleep(Duration::from_secs(wait_for_seconds));
@@ -27,7 +27,7 @@ pub async fn wait_for_dsn(
             }
 
             _ = &mut sleep => {
-                panic!("Waiting for host={} port={} timed out", host, port);
+                panic!("Waiting for host={host} port={port} timed out");
             }
         }
     }

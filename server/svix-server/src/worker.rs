@@ -67,7 +67,7 @@ kv_def!(FailureCacheKey, FailureCacheValue, "SVIX_FAILURE_CACHE");
 
 impl FailureCacheKey {
     pub fn new(app_id: &ApplicationId, endp_id: &EndpointId) -> FailureCacheKey {
-        FailureCacheKey(format!("_{}_{}", app_id, endp_id))
+        FailureCacheKey(format!("_{app_id}_{endp_id}"))
     }
 }
 
@@ -85,7 +85,7 @@ kv_def!(
 
 impl RetryScheduleCacheKey {
     pub fn new(org_id: &OrganizationId, event_type_name: &EventTypeName) -> RetryScheduleCacheKey {
-        RetryScheduleCacheKey(format!("_{}_{}", org_id, event_type_name))
+        RetryScheduleCacheKey(format!("_{org_id}_{event_type_name}"))
     }
 }
 
@@ -170,7 +170,7 @@ fn sign_msg(
     msg_id: &MessageId,
     endpoint_signing_keys: &[&EndpointSecretInternal],
 ) -> String {
-    let to_sign = format!("{}.{}.{}", msg_id, timestamp, body);
+    let to_sign = format!("{msg_id}.{timestamp}.{body}");
     endpoint_signing_keys
         .iter()
         .map(|x| {
@@ -386,7 +386,7 @@ async fn dispatch(
                     tracing::warn!("Error reading response body: {}", err);
                     messageattempt::ActiveModel {
                         response_status_code: Set(status_code),
-                        response: Set(format!("failed to read response body: {}", err)),
+                        response: Set(format!("failed to read response body: {err}")),
                         status: Set(status),
                         ..attempt
                     }
@@ -652,8 +652,8 @@ async fn process_task(worker_context: WorkerContext<'_>, queue_task: Arc<QueueTa
         cache.clone(),
         db,
         None,
-        msg.app_id.clone(),
         msg.org_id.clone(),
+        msg.app_id.clone(),
         Duration::from_secs(30),
     )
     .await?
@@ -662,7 +662,7 @@ async fn process_task(worker_context: WorkerContext<'_>, queue_task: Arc<QueueTa
     let app_uid = create_message_app.uid.clone();
 
     let endpoints: Vec<CreateMessageEndpoint> = create_message_app
-        .filtered_endpoints(*trigger_type, &msg)
+        .filtered_endpoints(*trigger_type, &msg.event_type, msg.channels.as_ref())
         .iter()
         .filter(|endpoint| match &*queue_task {
             QueueTask::HealthCheck => unreachable!(),
@@ -942,7 +942,7 @@ mod tests {
             &[&test_key],
         );
 
-        let to_sign = format!("{}.{}.{}", msg_id, timestamp, body);
+        let to_sign = format!("{msg_id}.{timestamp}.{body}");
         assert!(signatures.starts_with("v1a,"));
         let sig: Signature = Signature::from_slice(
             base64::decode(&signatures["v1a,".len()..])
@@ -970,7 +970,7 @@ mod tests {
             &[&test_key],
         );
 
-        let to_sign = format!("{}.{}.{}", msg_id, timestamp, body);
+        let to_sign = format!("{msg_id}.{timestamp}.{body}");
         let sig_arry: Vec<&str> = signatures.split(' ').collect();
         let v1b = sig_arry[0];
         assert!(v1b.starts_with("v1b,"));

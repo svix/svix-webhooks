@@ -29,7 +29,7 @@ async fn test_patch() {
 
     let et: EventTypeOut = client
         .post(
-            "api/v1/event-type",
+            "api/v1/event-type/",
             event_type_in(
                 "test-event-type",
                 serde_json::json!({
@@ -54,7 +54,7 @@ async fn test_patch() {
     // Test that PUT with invalid ID creates an event type
     let _: EventTypeOut = client
         .put(
-            "api/v1/event-type/fake-id",
+            "api/v1/event-type/fake-id/",
             event_type_in("test-event-type", None).unwrap(),
             StatusCode::CREATED,
         )
@@ -163,7 +163,7 @@ async fn test_event_type_create_read_list() {
 
     let et: EventTypeOut = client
         .post(
-            "api/v1/event-type",
+            "api/v1/event-type/",
             event_type_in("test-event-type", None).unwrap(),
             StatusCode::CREATED,
         )
@@ -186,7 +186,7 @@ async fn test_event_type_create_read_list() {
     assert!(list.data.contains(&et));
 
     let list: ListResponse<EventTypeOut> = client
-        .get("api/v1/event-type", StatusCode::OK)
+        .get("api/v1/event-type/", StatusCode::OK)
         .await
         .unwrap();
     assert_eq!(list.data.len(), 1);
@@ -218,7 +218,7 @@ async fn test_retry_schedule_crud() {
 
     let _: EventTypeOut = client
         .post(
-            "api/v1/event-type",
+            "api/v1/event-type/",
             event_type_in(event_type_name, None).unwrap(),
             StatusCode::CREATED,
         )
@@ -229,7 +229,7 @@ async fn test_retry_schedule_crud() {
 
     let rsi: RetryScheduleInOut = client
         .put(
-            &format!("api/v1/event-type/{}/retry-schedule/", event_type_name),
+            &format!("api/v1/event-type/{event_type_name}/retry-schedule/"),
             retry_schedule_payload,
             StatusCode::OK,
         )
@@ -238,7 +238,7 @@ async fn test_retry_schedule_crud() {
 
     let rso: RetryScheduleInOut = client
         .get(
-            &format!("api/v1/event-type/{}/retry-schedule", event_type_name),
+            &format!("api/v1/event-type/{event_type_name}/retry-schedule/"),
             StatusCode::OK,
         )
         .await
@@ -255,7 +255,7 @@ async fn test_retry_schedule_override() {
 
     let _: EventTypeOut = client
         .post(
-            "api/v1/event-type",
+            "api/v1/event-type/",
             event_type_in(event_type_name, None).unwrap(),
             StatusCode::CREATED,
         )
@@ -264,7 +264,7 @@ async fn test_retry_schedule_override() {
 
     let _: RetryScheduleInOut = client
         .put(
-            &format!("api/v1/event-type/{}/retry-schedule/", event_type_name),
+            &format!("api/v1/event-type/{event_type_name}/retry-schedule/"),
             serde_json::json!({ "retrySchedule": vec![1, 1, 1] }),
             StatusCode::OK,
         )
@@ -277,7 +277,7 @@ async fn test_retry_schedule_override() {
 
     let _: EndpointOut = client
         .post(
-            &format!("api/v1/app/{}/endpoint/", app_id),
+            &format!("api/v1/app/{app_id}/endpoint/"),
             serde_json::json!({
                 "url": bad_url.clone(),
                 "version": 1,
@@ -311,7 +311,7 @@ async fn test_schema() {
     let (client, _jh) = start_svix_server().await;
     let _: serde_json::Value = client
         .post(
-            "api/v1/event-type",
+            "api/v1/event-type/",
             serde_json::json!({
                             "name": "bad-schema",
                             "description": "I have a bad schema",

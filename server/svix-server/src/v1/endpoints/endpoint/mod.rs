@@ -393,10 +393,10 @@ impl EndpointHeadersOut {
 
 impl From<EndpointHeaders> for EndpointHeadersOut {
     fn from(hdr: EndpointHeaders) -> Self {
-        let (sens, remaining) = hdr
-            .0
-            .into_iter()
-            .partition(|(k, _)| Self::SENSITIVE_HEADERS.iter().any(|&x| x == k));
+        let (sens, remaining) = hdr.0.into_iter().partition(|(k, _)| {
+            let k = k.to_lowercase();
+            Self::SENSITIVE_HEADERS.iter().any(|&x| x == k)
+        });
 
         Self {
             headers: remaining,
@@ -494,52 +494,53 @@ async fn endpoint_stats(
 }
 
 pub fn router() -> Router {
-    Router::new().nest(
-        "/app/:app_id",
-        Router::new()
-            .route(
-                "/endpoint/",
-                post(crud::create_endpoint).get(crud::list_endpoints),
-            )
-            .route(
-                "/endpoint/:endp_id/",
-                get(crud::get_endpoint)
-                    .put(crud::update_endpoint)
-                    .patch(crud::patch_endpoint)
-                    .delete(crud::delete_endpoint),
-            )
-            .route(
-                "/endpoint/:endp_id/secret/",
-                get(secrets::get_endpoint_secret),
-            )
-            .route(
-                "/endpoint/:endp_id/secret/rotate/",
-                post(secrets::rotate_endpoint_secret),
-            )
-            .route("/endpoint/:endp_id/stats/", get(endpoint_stats))
-            .route(
-                "/endpoint/:endp_id/send-example/",
-                post(api_not_implemented),
-            )
-            .route(
-                "/endpoint/:endp_id/recover/",
-                post(recovery::recover_failed_webhooks),
-            )
-            .route(
-                "/endpoint/:endp_id/headers/",
-                get(headers::get_endpoint_headers)
-                    .patch(headers::patch_endpoint_headers)
-                    .put(headers::update_endpoint_headers),
-            ),
-    )
+    Router::new()
+        .route(
+            "/app/:app_id/endpoint/",
+            post(crud::create_endpoint).get(crud::list_endpoints),
+        )
+        .route(
+            "/app/:app_id/endpoint/:endp_id/",
+            get(crud::get_endpoint)
+                .put(crud::update_endpoint)
+                .patch(crud::patch_endpoint)
+                .delete(crud::delete_endpoint),
+        )
+        .route(
+            "/app/:app_id/endpoint/:endp_id/secret/",
+            get(secrets::get_endpoint_secret),
+        )
+        .route(
+            "/app/:app_id/endpoint/:endp_id/secret/rotate/",
+            post(secrets::rotate_endpoint_secret),
+        )
+        .route("/app/:app_id/endpoint/:endp_id/stats/", get(endpoint_stats))
+        .route(
+            "/app/:app_id/endpoint/:endp_id/send-example/",
+            post(api_not_implemented),
+        )
+        .route(
+            "/app/:app_id/endpoint/:endp_id/recover/",
+            post(recovery::recover_failed_webhooks),
+        )
+        .route(
+            "/app/:app_id/endpoint/:endp_id/headers/",
+            get(headers::get_endpoint_headers)
+                .patch(headers::patch_endpoint_headers)
+                .put(headers::update_endpoint_headers),
+        )
 }
 
 #[cfg(test)]
 mod tests {
 
-    use super::{validate_url, EndpointHeadersIn, EndpointHeadersPatchIn, EndpointIn};
+    use crate::core::types::EndpointHeaders;
+
+    use super::{
+        validate_url, EndpointHeadersIn, EndpointHeadersOut, EndpointHeadersPatchIn, EndpointIn,
+    };
     use serde_json::json;
-    use std::collections::HashMap;
+    use std::collections::{HashMap, HashSet};
     use validator::Validate;
 
     const URL_VALID: &str = "https://www.example.com";
@@ -627,6 +628,26 @@ mod tests {
         let valid: EndpointHeadersIn =
             serde_json::from_value(json!({ "headers": headers_valid })).unwrap();
         valid.validate().unwrap();
+    }
+
+    #[test]
+    fn test_endpoint_headers_sensitive() {
+        let headers = EndpointHeaders(HashMap::from([
+            ("foo".to_string(), "1".to_string()),
+            ("authorization".to_string(), "test".to_string()),
+            ("X-Auth-Token".to_string(), "test2".to_string()),
+        ]));
+
+        let headers_out: EndpointHeadersOut = headers.into();
+
+        assert_eq!(
+            headers_out.headers,
+            HashMap::from([("foo".to_string(), "1".to_string())])
+        );
+        assert_eq!(
+            headers_out.sensitive,
+            HashSet::from(["authorization".to_string(), "X-Auth-Token".to_string()])
+        );
     }
 
     #[test]

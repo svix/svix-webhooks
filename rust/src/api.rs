@@ -42,7 +42,7 @@ impl Svix {
         });
         let cfg = Configuration {
             base_path,
-            user_agent: Some(format!("svix-libs/{}/rust", CRATE_VERSION)),
+            user_agent: Some(format!("svix-libs/{CRATE_VERSION}/rust")),
             bearer_access_token: Some(token),
             ..Configuration::default()
         };

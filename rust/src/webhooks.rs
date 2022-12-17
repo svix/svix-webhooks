@@ -102,11 +102,11 @@ impl Webhook {
         payload: &[u8],
     ) -> Result<String, WebhookError> {
         let payload = std::str::from_utf8(payload).map_err(|_| WebhookError::InvalidPayload)?;
-        let to_sign = format!("{}.{}.{}", msg_id, timestamp, payload,);
+        let to_sign = format!("{msg_id}.{timestamp}.{payload}",);
         let signed = hmac_sha256::HMAC::mac(to_sign.as_bytes(), &self.key);
         let encoded = base64::encode(signed);
 
-        Ok(format!("{},{}", SIGNATURE_VERSION, encoded))
+        Ok(format!("{SIGNATURE_VERSION},{encoded}"))
     }
 
     fn get_header<'a>(

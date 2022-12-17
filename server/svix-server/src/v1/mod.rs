@@ -25,12 +25,8 @@ pub fn router() -> Router {
 
 #[cfg(debug_assertions)]
 mod development {
-    use axum::{
-        async_trait,
-        extract::{FromRequest, RequestParts},
-        routing::get,
-        Json, Router,
-    };
+    use axum::{async_trait, extract::FromRequestParts, routing::get, Json, Router};
+    use http::request::Parts;
 
     use crate::error::{Error, Result};
     use crate::v1::utils::EmptyResponse;
@@ -40,14 +36,14 @@ mod development {
     }
 
     #[async_trait]
-    impl<B> FromRequest<B> for EchoData
+    impl<S> FromRequestParts<S> for EchoData
     where
-        B: Send,
+        S: Send + Sync,
     {
         type Rejection = Error;
 
-        async fn from_request(req: &mut RequestParts<B>) -> Result<Self> {
-            let headers = format!("{:?}", req.headers());
+        async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self> {
+            let headers = format!("{:?}", parts.headers);
             Ok(EchoData { headers })
         }
     }

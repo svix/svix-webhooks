@@ -33,7 +33,7 @@ use axum::async_trait;
 
 use chrono::Utc;
 use redis::{
-    streams::{StreamClaimReply, StreamId, StreamPendingReply, StreamReadOptions, StreamReadReply},
+    streams::{StreamClaimReply, StreamId, StreamReadOptions, StreamReadReply},
     Cmd, FromRedisValue, RedisResult, RedisWrite, ToRedisArgs,
 };
 use tokio::time::sleep;
@@ -295,9 +295,9 @@ async fn new_pair_inner(
     delayed_queue_name: &'static str,
     delayed_lock: &'static str,
 ) -> (TaskQueueProducer, TaskQueueConsumer) {
-    let main_queue_name = format!("{}{}", queue_prefix, main_queue_name);
-    let delayed_queue_name = format!("{}{}", queue_prefix, delayed_queue_name);
-    let delayed_lock = format!("{}{}", queue_prefix, delayed_lock);
+    let main_queue_name = format!("{queue_prefix}{main_queue_name}");
+    let delayed_queue_name = format!("{queue_prefix}{delayed_queue_name}");
+    let delayed_lock = format!("{queue_prefix}{delayed_lock}");
 
     // Create the stream and consumer group for the MAIN queue should it not already exist. The
     // consumer is created automatically upon use so it does not have to be created here.
@@ -342,18 +342,6 @@ async fn new_pair_inner(
     let worker_pool = pool.clone();
     let mqn = main_queue_name.clone();
     let dqn = delayed_queue_name.clone();
-
-    // Clear stale [`QueueTask`]s once per startup (see #679 for context)
-    tokio::spawn({
-        let pool = pool.clone();
-        let main_queue_name = main_queue_name.clone();
-
-        async move {
-            if let Err(e) = clear_acked(pool, &main_queue_name).await {
-                tracing::error!("Error clearing ACKed queue items: {}", e);
-            }
-        }
-    });
 
     // Migrate v1 queues to v2 and v2 queues to v3 on a loop with exponential backoff.
     tokio::spawn({
@@ -601,46 +589,6 @@ impl TaskQueueReceive for RedisQueueConsumer {
     }
 }
 
-async fn clear_acked(pool: RedisPool, queue: &str) -> Result<()> {
-    let mut conn = ctx!(pool.get().await)?;
-
-    loop {
-        let xpending_resp: StreamPendingReply = ctx!(
-            conn.query_async(Cmd::xpending_count(queue, WORKERS_GROUP, "-", "+", 1))
-                .await
-        )?;
-
-        match xpending_resp {
-            StreamPendingReply::Empty => {}
-            StreamPendingReply::Data(resp) => {
-                // Get the smallest unACKed task that's been read, and know that any task with an ID
-                // less than that has already been ACKed
-                let min = resp.start_id;
-
-                // XTRIM with MINID trims all IDs *lower* than the given threshold, so it will not
-                // include the unACKed item in the pending entries list.
-                let mut cmd = redis::cmd("XTRIM");
-                cmd.arg(queue).arg("MINID").arg(min);
-
-                let _ = ctx!(conn.query_async(cmd).await)?;
-
-                return Ok(());
-            }
-        };
-
-        // If `XPENDING` returns an empty array, just loop every 30 seconds until it does return. It is
-        // likely that any high traffic server will have a non-empty return within a reasonable amount of
-        // time.
-        //
-        // With low traffic servers, it is assumed that the data use of stale tasks is a nonissue.
-        //
-        // While an empty array does mean that it is safe to delete all tasks at that point in time, as
-        // all have been ACKed, this may lead to data loss if there are additional servers running at the
-        // same time adding to the queue.
-        tokio::time::sleep(Duration::from_secs(30)).await;
-    }
-}
-
 async fn migrate_v2_to_v3_queues(pool: &mut PooledConnection<'_>) -> Result<()> {
     migrate_list_to_stream(pool, LEGACY_V2_MAIN, MAIN).await?;
     migrate_list_to_stream(pool, LEGACY_V2_PROCESSING, MAIN).await?;
@@ -741,10 +689,7 @@ pub mod tests {
     use std::{sync::Arc, time::Duration};
 
     use chrono::Utc;
-    use redis::{
-        streams::{StreamReadOptions, StreamReadReply},
-        Cmd,
-    };
+    use redis::{streams::StreamReadReply, Cmd};
 
     use super::{
         migrate_list, migrate_list_to_stream, migrate_sset, new_pair_inner, to_redis_key, Direction,
@@ -1066,72 +1011,6 @@ pub mod tests {
     }
 
     #[tokio::test]
-    async fn test_clearing_acked() {
-        let queue_name = "{test}_clearing_acked";
-
-        let cfg = crate::cfg::load().unwrap();
-        let pool = get_pool(cfg).await;
-
-        // Ensure the key is empty before running the test to avoid junk data
-        {
-            let mut conn = pool.get().await.unwrap();
-            let _: () = conn.query_async(Cmd::del(queue_name)).await.unwrap();
-        }
-
-        // Setup
-        {
-            let (p, mut c) = new_pair_inner(
-                pool.clone(),
-                Duration::from_secs(10),
-                "",
-                queue_name,
-                "{test}_clearing_acked_delayed",
-                "{test}_clearing_acked_delayed",
-            )
-            .await;
-
-            // Add three tasks
-            p.send(QueueTask::HealthCheck, None).await.unwrap();
-            p.send(QueueTask::HealthCheck, None).await.unwrap();
-            p.send(QueueTask::HealthCheck, None).await.unwrap();
-
-            // ACK one
-            let qt = c.receive_all().await.unwrap();
-            p.ack(qt.into_iter().next().unwrap()).await.unwrap();
-
-            // Leave the other two pending
-            let _ = c.receive_all().await.unwrap();
-            let _ = c.receive_all().await.unwrap();
-        }
-
-        // Create a new pair so the task runs
-        let (_, _) = new_pair_inner(
-            pool.clone(),
-            // High enough there's no chance the pending entries background task cleans things up
-            Duration::from_secs(10),
-            "",
-            queue_name,
-            "{test}_clearing_acked_delayed",
-            "{test}_clearing_acked_delayed",
-        )
-        .await;
-
-        tokio::time::sleep(Duration::from_millis(200)).await;
-
-        // Assert there are only two entries total in the stream
-        let mut conn = pool.get().await.unwrap();
-        let res: StreamReadReply = conn
-            .query_async(Cmd::xread_options(
-                &[queue_name],
-                &[0],
-                &StreamReadOptions::default().noack().count(5),
-            ))
-            .await
-            .unwrap();
-        assert_eq!(res.keys[0].ids.len(), 2);
-    }
-
-    #[tokio::test]
     async fn test_migrations() {
         let cfg = crate::cfg::load().unwrap();
         let pool = get_pool(cfg).await;
@@ -1185,7 +1064,7 @@ pub mod tests {
                         to_redis_key(&TaskQueueDelivery {
                             id: num.to_string(),
                             task: Arc::new(QueueTask::MessageV1(MessageTask {
-                                msg_id: MessageId(format!("TestMessageID{}", num)),
+                                msg_id: MessageId(format!("TestMessageID{num}")),
                                 app_id: ApplicationId("TestApplicationID".to_owned()),
                                 endpoint_id: EndpointId("TestEndpointID".to_owned()),
                                 trigger_type: MessageAttemptTriggerType::Manual,
@@ -1204,7 +1083,7 @@ pub mod tests {
                         to_redis_key(&TaskQueueDelivery {
                             id: num.to_string(),
                             task: Arc::new(QueueTask::MessageV1(MessageTask {
-                                msg_id: MessageId(format!("TestMessageID{}", num)),
+                                msg_id: MessageId(format!("TestMessageID{num}")),
                                 app_id: ApplicationId("TestApplicationID".to_owned()),
                                 endpoint_id: EndpointId("TestEndpointID".to_owned()),
                                 trigger_type: MessageAttemptTriggerType::Manual,
@@ -1266,7 +1145,7 @@ pub mod tests {
             assert_eq!(
                 &*recv.task,
                 &QueueTask::MessageV1(MessageTask {
-                    msg_id: MessageId(format!("TestMessageID{}", num)),
+                    msg_id: MessageId(format!("TestMessageID{num}")),
                     app_id: ApplicationId("TestApplicationID".to_owned()),
                     endpoint_id: EndpointId("TestEndpointID".to_owned()),
                     trigger_type: MessageAttemptTriggerType::Manual,
@@ -1280,7 +1159,7 @@ pub mod tests {
             assert_eq!(
                 &*recv.task,
                 &QueueTask::MessageV1(MessageTask {
-                    msg_id: MessageId(format!("TestMessageID{}", num)),
+                    msg_id: MessageId(format!("TestMessageID{num}")),
                     app_id: ApplicationId("TestApplicationID".to_owned()),
                     endpoint_id: EndpointId("TestEndpointID".to_owned()),
                     trigger_type: MessageAttemptTriggerType::Manual,
@@ -1294,7 +1173,7 @@ pub mod tests {
             assert_eq!(
                 &*recv.task,
                 &QueueTask::MessageV1(MessageTask {
-                    msg_id: MessageId(format!("TestMessageID{}", num)),
+                    msg_id: MessageId(format!("TestMessageID{num}")),
                     app_id: ApplicationId("TestApplicationID".to_owned()),
                     endpoint_id: EndpointId("TestEndpointID".to_owned()),
                     trigger_type: MessageAttemptTriggerType::Manual,
