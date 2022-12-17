@@ -218,7 +218,7 @@ async fn test_retry_schedule_crud() {
 
     let _: EventTypeOut = client
         .post(
-            "api/v1/event-type",
+            "api/v1/event-type/",
             event_type_in(event_type_name, None).unwrap(),
             StatusCode::CREATED,
         )
@@ -238,7 +238,7 @@ async fn test_retry_schedule_crud() {
 
     let rso: RetryScheduleInOut = client
         .get(
-            &format!("api/v1/event-type/{event_type_name}/retry-schedule"),
+            &format!("api/v1/event-type/{event_type_name}/retry-schedule/"),
             StatusCode::OK,
         )
         .await
@@ -255,7 +255,7 @@ async fn test_retry_schedule_override() {
 
     let _: EventTypeOut = client
         .post(
-            "api/v1/event-type",
+            "api/v1/event-type/",
             event_type_in(event_type_name, None).unwrap(),
             StatusCode::CREATED,
         )
