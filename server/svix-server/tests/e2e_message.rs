@@ -353,7 +353,7 @@ async fn test_payload_retention_period() {
     let (client, _jh) = start_svix_server().await;
     dotenv::dotenv().ok();
     let cfg = svix_server::cfg::load().expect("Error loading configuration");
-    let pool = svix_server::db::init_db(&cfg).await;
+    let pool = svix_server::db::init_db(&cfg);
 
     let app_id = create_test_app(&client, "v1MessageCRTestApp")
         .await

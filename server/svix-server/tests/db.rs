@@ -127,7 +127,7 @@ async fn test_wiping_organization() {
     wipe_org(&cfg, org_id_1.clone()).await;
 
     // Start asserting everything is gone for org_id_1, but not org_id_2
-    let db = svix_server::db::init_db(&cfg).await;
+    let db = svix_server::db::init_db(&cfg);
 
     for endp_id in endp_ids_1 {
         assert_eq!(count_message_attempts(&db, endp_id.clone()).await, 0);

@@ -14,32 +14,31 @@ use models::{application, endpoint, eventtype, message, messageattempt, messaged
 
 static MIGRATIONS: sqlx::migrate::Migrator = sqlx::migrate!();
 
-async fn connect(dsn: &str, max_pool_size: u16) -> sqlx::Pool<sqlx::Postgres> {
+fn connect(dsn: &str, max_pool_size: u16) -> sqlx::Pool<sqlx::Postgres> {
     tracing::debug!("DB: Initializing pool");
     if DbBackend::Postgres.is_prefix_of(dsn) {
         PgPoolOptions::new()
             .max_connections(max_pool_size.into())
-            .connect(dsn)
-            .await
+            .connect_lazy(dsn)
             .expect("Error connectiong to Postgres")
     } else {
         panic!("db_dsn format not recognized. {dsn}")
     }
 }
 
-pub async fn init_db(cfg: &Configuration) -> DatabaseConnection {
-    SqlxPostgresConnector::from_sqlx_postgres_pool(connect(&cfg.db_dsn, cfg.db_pool_max_size).await)
+pub fn init_db(cfg: &Configuration) -> DatabaseConnection {
+    SqlxPostgresConnector::from_sqlx_postgres_pool(connect(&cfg.db_dsn, cfg.db_pool_max_size))
 }
 
 pub async fn run_migrations(cfg: &Configuration) {
-    let db = connect(&cfg.db_dsn, cfg.db_pool_max_size).await;
+    let db = connect(&cfg.db_dsn, cfg.db_pool_max_size);
     MIGRATIONS.run(&db).await.unwrap();
 }
 
 /// Wipe an organization from existence in a way that ensures the operation can be tried again on
 /// failure.
 pub async fn wipe_org(cfg: &Configuration, org_id: OrganizationId) {
-    let db = init_db(cfg).await;
+    let db = init_db(cfg);
 
     let applications: Vec<application::Model> = application::Entity::secure_find(org_id.clone())
         .all(&db)

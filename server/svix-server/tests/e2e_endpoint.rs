@@ -1327,7 +1327,7 @@ async fn test_legacy_endpoint_secret() {
     let (client, _jh) = start_svix_server_with_cfg(&cfg).await;
 
     let db = Arc::new(cfg);
-    let db = svix_server::db::init_db(&db).await;
+    let db = svix_server::db::init_db(&db);
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
@@ -1386,7 +1386,7 @@ async fn test_endpoint_secret_encryption_in_database() {
     let (client, _jh) = start_svix_server_with_cfg(&cfg).await;
 
     let db = Arc::new(cfg);
-    let db = svix_server::db::init_db(&db).await;
+    let db = svix_server::db::init_db(&db);
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 

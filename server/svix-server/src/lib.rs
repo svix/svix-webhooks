@@ -88,7 +88,7 @@ pub async fn run_with_prefix(
     cfg: Configuration,
     listener: Option<TcpListener>,
 ) {
-    let pool = init_db(&cfg).await;
+    let pool = init_db(&cfg);
 
     tracing::debug!("Cache type: {:?}", cfg.cache_type);
     let cache = match cfg.cache_backend() {
