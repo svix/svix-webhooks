@@ -43,6 +43,7 @@ use crate::v1::utils::Pagination;
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ModelOut)]
 #[serde(rename_all = "camelCase")]
 pub struct MessageAttemptOut {
+    pub url: String,
     pub response: String,
     pub response_status_code: i16,
     pub status: MessageStatus,
@@ -60,6 +61,7 @@ pub struct MessageAttemptOut {
 impl From<messageattempt::Model> for MessageAttemptOut {
     fn from(model: messageattempt::Model) -> Self {
         Self {
+            url: model.url,
             response: model.response,
             response_status_code: model.response_status_code,
             status: model.status,
