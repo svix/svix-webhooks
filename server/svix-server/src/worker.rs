@@ -85,7 +85,7 @@ kv_def!(
 
 impl RetryScheduleCacheKey {
     pub fn new(org_id: &OrganizationId, event_type_name: &EventTypeName) -> RetryScheduleCacheKey {
-        RetryScheduleCacheKey(format!("_{}_{}", org_id, event_type_name))
+        RetryScheduleCacheKey(format!("_{org_id}_{event_type_name}"))
     }
 }
 
@@ -970,7 +970,7 @@ mod tests {
             &[&test_key],
         );
 
-        let to_sign = format!("{}.{}.{}", msg_id, timestamp, body);
+        let to_sign = format!("{msg_id}.{timestamp}.{body}");
         let sig_arry: Vec<&str> = signatures.split(' ').collect();
         let v1b = sig_arry[0];
         assert!(v1b.starts_with("v1b,"));

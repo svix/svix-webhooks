@@ -94,7 +94,7 @@ enum AsymmetricKeyCommands {
 
 fn signature_type_parser(s: &str) -> Result<DefaultSignatureType, String> {
     // XXX A bit hacky, but it's fine since an issue will just fail serde immediately after
-    let type_ = format!("\"{}\"", s);
+    let type_ = format!("\"{s}\"");
     serde_json::from_str(&type_).map_err(|x| x.to_string())
 }
 

@@ -229,7 +229,7 @@ async fn test_retry_schedule_crud() {
 
     let rsi: RetryScheduleInOut = client
         .put(
-            &format!("api/v1/event-type/{}/retry-schedule/", event_type_name),
+            &format!("api/v1/event-type/{event_type_name}/retry-schedule/"),
             retry_schedule_payload,
             StatusCode::OK,
         )
@@ -238,7 +238,7 @@ async fn test_retry_schedule_crud() {
 
     let rso: RetryScheduleInOut = client
         .get(
-            &format!("api/v1/event-type/{}/retry-schedule", event_type_name),
+            &format!("api/v1/event-type/{event_type_name}/retry-schedule"),
             StatusCode::OK,
         )
         .await
@@ -264,7 +264,7 @@ async fn test_retry_schedule_override() {
 
     let _: RetryScheduleInOut = client
         .put(
-            &format!("api/v1/event-type/{}/retry-schedule/", event_type_name),
+            &format!("api/v1/event-type/{event_type_name}/retry-schedule/"),
             serde_json::json!({ "retrySchedule": vec![1, 1, 1] }),
             StatusCode::OK,
         )
@@ -277,7 +277,7 @@ async fn test_retry_schedule_override() {
 
     let _: EndpointOut = client
         .post(
-            &format!("api/v1/app/{}/endpoint/", app_id),
+            &format!("api/v1/app/{app_id}/endpoint/"),
             serde_json::json!({
                 "url": bad_url.clone(),
                 "version": 1,
