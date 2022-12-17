@@ -44,6 +44,8 @@ pub enum Relation {
     Application,
     #[sea_orm(has_many = "super::messagedestination::Entity")]
     Messagedestination,
+    #[sea_orm(has_one = "super::endpointmetadata::Entity")]
+    Metadata,
 }
 
 impl Related<super::application::Entity> for Entity {
@@ -55,6 +57,12 @@ impl Related<super::application::Entity> for Entity {
 impl Related<super::messagedestination::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Messagedestination.def()
+    }
+}
+
+impl Related<super::endpointmetadata::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Metadata.def()
     }
 }
 

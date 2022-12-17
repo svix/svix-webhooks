@@ -29,7 +29,7 @@ pub enum Error {
     #[error("Redis pool error")]
     Pool(#[from] bb8::RunError<RedisError>),
 
-    #[error("Redis databse error")]
+    #[error("Redis database error")]
     Database(#[from] RedisError),
 
     #[error("input error: {0}")]

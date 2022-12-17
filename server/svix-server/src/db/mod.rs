@@ -14,25 +14,25 @@ use models::{application, endpoint, eventtype, message, messageattempt, messaged
 
 static MIGRATIONS: sqlx::migrate::Migrator = sqlx::migrate!();
 
-async fn connect(cfg: &Configuration) -> sqlx::Pool<sqlx::Postgres> {
+async fn connect(dsn: &str, max_pool_size: u16) -> sqlx::Pool<sqlx::Postgres> {
     tracing::debug!("DB: Initializing pool");
-    if DbBackend::Postgres.is_prefix_of(&cfg.db_dsn) {
+    if DbBackend::Postgres.is_prefix_of(dsn) {
         PgPoolOptions::new()
-            .max_connections(cfg.db_pool_max_size.into())
-            .connect(&cfg.db_dsn)
+            .max_connections(max_pool_size.into())
+            .connect(dsn)
             .await
             .expect("Error connectiong to Postgres")
     } else {
-        panic!("db_dsn format not recognized. {}", &cfg.db_dsn)
+        panic!("db_dsn format not recognized. {dsn}")
     }
 }
 
 pub async fn init_db(cfg: &Configuration) -> DatabaseConnection {
-    SqlxPostgresConnector::from_sqlx_postgres_pool(connect(cfg).await)
+    SqlxPostgresConnector::from_sqlx_postgres_pool(connect(&cfg.db_dsn, cfg.db_pool_max_size).await)
 }
 
 pub async fn run_migrations(cfg: &Configuration) {
-    let db = connect(cfg).await;
+    let db = connect(&cfg.db_dsn, cfg.db_pool_max_size).await;
     MIGRATIONS.run(&db).await.unwrap();
 }
 
@@ -44,12 +44,7 @@ pub async fn wipe_org(cfg: &Configuration, org_id: OrganizationId) {
     let applications: Vec<application::Model> = application::Entity::secure_find(org_id.clone())
         .all(&db)
         .await
-        .unwrap_or_else(|_| {
-            panic!(
-                "Error fetching applications associated with org ID {}",
-                org_id
-            )
-        });
+        .unwrap_or_else(|_| panic!("Error fetching applications associated with org ID {org_id}"));
 
     for application in applications {
         let endpoints: Vec<endpoint::Model> = endpoint::Entity::secure_find(application.id.clone())
@@ -116,21 +111,24 @@ pub async fn wipe_org(cfg: &Configuration, org_id: OrganizationId) {
         .filter(application::Column::OrgId.eq(org_id.clone()))
         .exec(&db)
         .await
-        .unwrap_or_else(|_| {
-            panic!(
-                "Error deleting applications associated with org ID {}",
-                org_id
-            )
-        });
+        .unwrap_or_else(|_| panic!("Error deleting applications associated with org ID {org_id}"));
 
     let _: DeleteResult = eventtype::Entity::delete_many()
         .filter(eventtype::Column::OrgId.eq(org_id.clone()))
         .exec(&db)
         .await
-        .unwrap_or_else(|_| {
-            panic!(
-                "Error deleting event types associated with org ID {}",
-                org_id
-            )
-        });
+        .unwrap_or_else(|_| panic!("Error deleting event types associated with org ID {org_id}"));
+}
+
+#[macro_export]
+/// Runs an async closure inside of a DB Transaction. The closure should return an [`error::Result<T>`]. If the closure returns an error for any reason, the transaction is rolled back.
+macro_rules! transaction {
+    ($db:expr, $do:expr) => {
+        $crate::ctx!(
+            sea_orm::TransactionTrait::transaction::<_, _, $crate::error::Error>($db, |txn| {
+                std::boxed::Box::pin({ $do(txn) })
+            })
+            .await
+        )
+    };
 }

@@ -6,7 +6,10 @@
 
 use axum::{extract::Extension, Router};
 
+use cfg::ConfigurationInner;
 use lazy_static::lazy_static;
+use opentelemetry::runtime::Tokio;
+use opentelemetry_otlp::WithExportConfig;
 use std::{
     net::TcpListener,
     sync::atomic::{AtomicBool, Ordering},
@@ -15,6 +18,7 @@ use std::{
 use tower::ServiceBuilder;
 use tower_http::cors::{AllowHeaders, Any, CorsLayer};
 use tower_http::trace::TraceLayer;
+use tracing_subscriber::{prelude::*, util::SubscriberInitExt};
 
 use crate::{
     cfg::{CacheBackend, Configuration},
@@ -38,6 +42,8 @@ pub mod queue;
 pub mod redis;
 pub mod v1;
 pub mod worker;
+
+const CRATE_NAME: &str = env!("CARGO_CRATE_NAME");
 
 lazy_static! {
     pub static ref SHUTTING_DOWN: AtomicBool = AtomicBool::new(false);
@@ -106,13 +112,14 @@ pub async fn run_with_prefix(
         cfg.operational_webhook_address.clone(),
     );
 
+    let svc_cache = cache.clone();
     // build our application with a route
     let app = Router::new()
         .nest("/api/v1", v1::router())
         .merge(docs::router())
         .layer(
-            ServiceBuilder::new().layer_fn(|service| IdempotencyService {
-                cache: cache.clone(),
+            ServiceBuilder::new().layer_fn(move |service| IdempotencyService {
+                cache: svc_cache.clone(),
                 service,
             }),
         )
@@ -166,7 +173,15 @@ pub async fn run_with_prefix(
         async {
             if with_worker {
                 tracing::debug!("Worker: Initializing");
-                worker_loop(&cfg, &pool, cache, queue_tx, queue_rx, op_webhook_sender).await
+                worker_loop(
+                    &cfg,
+                    &pool,
+                    cache.clone(),
+                    queue_tx,
+                    queue_rx,
+                    op_webhook_sender,
+                )
+                .await
             } else {
                 tracing::debug!("Worker: off");
                 Ok(())
@@ -186,6 +201,79 @@ pub async fn run_with_prefix(
     server.expect("Error initializing server");
     worker_loop.expect("Error initializing worker");
     expired_message_cleaner_loop.expect("Error initializing expired message cleaner")
+}
+
+pub fn setup_tracing(cfg: &ConfigurationInner) {
+    if std::env::var_os("RUST_LOG").is_none() {
+        let level = cfg.log_level.to_string();
+        let mut var = vec![
+            format!("{CRATE_NAME}={level}"),
+            format!("tower_http={level}"),
+        ];
+
+        if cfg.db_tracing {
+            var.push(format!("sqlx={level}"));
+        }
+
+        std::env::set_var("RUST_LOG", var.join(","));
+    }
+
+    let otel_layer = cfg.opentelemetry_address.as_ref().map(|addr| {
+        // Configure the OpenTelemetry tracing layer
+        opentelemetry::global::set_text_map_propagator(
+            opentelemetry::sdk::propagation::TraceContextPropagator::new(),
+        );
+
+        let exporter = opentelemetry_otlp::new_exporter()
+            .tonic()
+            .with_endpoint(addr);
+
+        let tracer = opentelemetry_otlp::new_pipeline()
+            .tracing()
+            .with_exporter(exporter)
+            .with_trace_config(
+                opentelemetry::sdk::trace::config()
+                    .with_sampler(
+                        cfg.opentelemetry_sample_ratio
+                            .map(opentelemetry::sdk::trace::Sampler::TraceIdRatioBased)
+                            .unwrap_or(opentelemetry::sdk::trace::Sampler::AlwaysOn),
+                    )
+                    .with_resource(opentelemetry::sdk::Resource::new(vec![
+                        opentelemetry::KeyValue::new("service.name", "svix_server"),
+                    ])),
+            )
+            .install_batch(Tokio)
+            .unwrap();
+        tracing_opentelemetry::layer().with_tracer(tracer)
+    });
+
+    // Then initialize logging with an additional layer priting to stdout. This additional layer is
+    // either formatted normally or in JSON format
+    // Fails if the subscriber was already initialized, which we can safely and silently ignore
+    let _ = match cfg.log_format {
+        cfg::LogFormat::Default => {
+            let stdout_layer = tracing_subscriber::fmt::layer();
+            tracing_subscriber::Registry::default()
+                .with(otel_layer)
+                .with(stdout_layer)
+                .with(tracing_subscriber::EnvFilter::from_default_env())
+                .try_init()
+        }
+        cfg::LogFormat::Json => {
+            let fmt = tracing_subscriber::fmt::format().json().flatten_event(true);
+            let json_fields = tracing_subscriber::fmt::format::JsonFields::new();
+
+            let stdout_layer = tracing_subscriber::fmt::layer()
+                .event_format(fmt)
+                .fmt_fields(json_fields);
+
+            tracing_subscriber::Registry::default()
+                .with(otel_layer)
+                .with(stdout_layer)
+                .with(tracing_subscriber::EnvFilter::from_default_env())
+                .try_init()
+        }
+    };
 }
 
 mod docs {

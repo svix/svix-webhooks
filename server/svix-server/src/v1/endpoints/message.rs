@@ -225,15 +225,15 @@ async fn create_message(
     ValidatedQuery(CreateMessageQueryParams { with_content }): ValidatedQuery<
         CreateMessageQueryParams,
     >,
-    ValidatedJson(data): ValidatedJson<MessageIn>,
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
+    ValidatedJson(data): ValidatedJson<MessageIn>,
 ) -> Result<(StatusCode, Json<MessageOut>)> {
     let create_message_app = CreateMessageApp::layered_fetch(
         cache,
         db,
         Some(app.clone()),
-        app.id.clone(),
         app.org_id.clone(),
+        app.id.clone(),
         std::time::Duration::from_secs(30),
     )
     .await?
@@ -249,7 +249,7 @@ async fn create_message(
 
     let trigger_type = MessageAttemptTriggerType::Scheduled;
     if !create_message_app
-        .filtered_endpoints(trigger_type, &msg)
+        .filtered_endpoints(trigger_type, &msg.event_type, msg.channels.as_ref())
         .is_empty()
     {
         queue_tx
@@ -299,12 +299,9 @@ async fn get_message(
 }
 
 pub fn router() -> Router {
-    Router::new().nest(
-        "/app/:app_id",
-        Router::new()
-            .route("/msg/", post(create_message).get(list_messages))
-            .route("/msg/:msg_id/", get(get_message)),
-    )
+    Router::new()
+        .route("/app/:app_id/msg/", post(create_message).get(list_messages))
+        .route("/app/:app_id/msg/:msg_id/", get(get_message))
 }
 
 #[cfg(test)]

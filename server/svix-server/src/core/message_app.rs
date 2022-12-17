@@ -18,10 +18,12 @@ use crate::{
         },
     },
     ctx,
-    db::models::{application, endpoint, message},
+    db::models::{application, endpoint},
     err_validation,
     error::{Error, Result},
 };
+
+use super::types::EventTypeName;
 
 /// The information cached during the creation of a message. Includes a [`Vec`] of all endpoints
 /// associated with the given application and organization ID.
@@ -68,11 +70,11 @@ impl CreateMessageApp {
         cache: Cache,
         pg: &DatabaseConnection,
         app: Option<application::Model>,
-        app_id: ApplicationId,
         org_id: OrganizationId,
+        app_id: ApplicationId,
         ttl: Duration,
     ) -> Result<Option<CreateMessageApp>> {
-        let cache_key = AppEndpointKey::new(org_id.clone(), app_id.clone());
+        let cache_key = AppEndpointKey::new(&org_id, &app_id);
 
         // First check Redis
         if let Ok(Some(cma)) = cache.get(&cache_key).await {
@@ -106,7 +108,8 @@ impl CreateMessageApp {
     pub fn filtered_endpoints(
         &self,
         trigger_type: MessageAttemptTriggerType,
-        msg: &message::Model,
+        event_type: &EventTypeName,
+        channels: Option<&EventChannelSet>,
     ) -> Vec<CreateMessageEndpoint> {
         self
         .endpoints
@@ -123,7 +126,7 @@ impl CreateMessageApp {
                         endpoint
                         .event_types_ids
                         .as_ref()
-                        .map(|x| x.0.contains(&msg.event_type))
+                        .map(|x| x.0.contains(event_type))
                         .unwrap_or(true)
                     &&
                         // If an endpoint has no channels accept all messages, otherwise only if their channels overlap.
@@ -131,7 +134,7 @@ impl CreateMessageApp {
                         endpoint
                         .channels
                         .as_ref()
-                        .map(|x| !x.0.is_disjoint(msg.channels.as_ref().map(|x| &x.0).unwrap_or(&HashSet::new())))
+                        .map(|x| !x.0.is_disjoint(channels.map(|x| &x.0).unwrap_or(&HashSet::new())))
                         .unwrap_or(true)
             ))})
         .cloned()
@@ -201,7 +204,7 @@ kv_def!(AppEndpointKey, CreateMessageApp);
 impl AppEndpointKey {
     // FIXME: Rewrite doc comment when AppEndpointValue members are known
     /// Returns a key for fetching all cached endpoints for a given organization and application.
-    pub fn new(org: OrganizationId, app: ApplicationId) -> AppEndpointKey {
+    pub fn new(org: &OrganizationId, app: &ApplicationId) -> AppEndpointKey {
         AppEndpointKey(format!("{}_APP_v3_{}_{}", Self::PREFIX_CACHE, org, app))
     }
 }
