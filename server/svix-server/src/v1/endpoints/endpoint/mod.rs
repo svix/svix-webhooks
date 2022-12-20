@@ -11,8 +11,9 @@ use crate::{
         cryptography::Encryption,
         permissions,
         types::{
-            ApplicationIdOrUid, BaseId, EndpointId, EndpointIdOrUid, EndpointSecretInternal,
-            EndpointUid, EventChannelSet, EventTypeNameSet, MessageEndpointId, MessageStatus,
+            metadata::Metadata, ApplicationIdOrUid, BaseId, EndpointId, EndpointIdOrUid,
+            EndpointSecretInternal, EndpointUid, EventChannelSet, EventTypeNameSet,
+            MessageEndpointId, MessageStatus,
         },
     },
     ctx,
@@ -162,6 +163,9 @@ pub struct EndpointIn {
     #[serde(rename = "secret")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub key: Option<EndpointSecret>,
+
+    #[serde(default)]
+    pub metadata: Metadata,
 }
 
 impl EndpointIn {
@@ -193,6 +197,7 @@ impl ModelIn for EndpointIn {
             event_types_ids,
             channels,
             key: _,
+            metadata: _,
         } = self;
 
         model.description = Set(description);
@@ -250,6 +255,10 @@ pub struct EndpointPatch {
     #[serde(rename = "secret")]
     #[serde(skip_serializing_if = "UnrequiredNullableField::is_absent")]
     pub key: UnrequiredNullableField<EndpointSecret>,
+
+    #[serde(default)]
+    #[serde(skip_serializing_if = "UnrequiredField::is_absent")]
+    pub metadata: UnrequiredField<Metadata>,
 }
 
 impl ModelIn for EndpointPatch {
@@ -266,6 +275,7 @@ impl ModelIn for EndpointPatch {
             event_types_ids,
             channels,
             key: _,
+            metadata: _,
         } = self;
 
         let map = |x: u16| -> i32 { x.into() };
@@ -317,9 +327,9 @@ fn validate_minimum_version_patch(
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ModelOut)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct EndpointOut {
+pub struct EndpointOutCommon {
     pub description: String,
     pub rate_limit: Option<u16>,
     /// Optional unique identifier for the endpoint
@@ -330,14 +340,11 @@ pub struct EndpointOut {
     #[serde(rename = "filterTypes")]
     pub event_types_ids: Option<EventTypeNameSet>,
     pub channels: Option<EventChannelSet>,
-
-    pub id: EndpointId,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
 
-// FIXME: This can and should be a derive macro
-impl From<endpoint::Model> for EndpointOut {
+impl From<endpoint::Model> for EndpointOutCommon {
     fn from(model: endpoint::Model) -> Self {
         Self {
             description: model.description,
@@ -348,10 +355,28 @@ impl From<endpoint::Model> for EndpointOut {
             disabled: model.disabled,
             event_types_ids: model.event_types_ids,
             channels: model.channels,
-
-            id: model.id,
             created_at: model.created_at.into(),
             updated_at: model.updated_at.into(),
+        }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ModelOut)]
+#[serde(rename_all = "camelCase")]
+pub struct EndpointOut {
+    #[serde(flatten)]
+    pub ep: EndpointOutCommon,
+    pub id: EndpointId,
+    pub metadata: Metadata,
+}
+
+// FIXME: This can and should be a derive macro
+impl From<(endpoint::Model, Metadata)> for EndpointOut {
+    fn from((endp, metadata): (endpoint::Model, Metadata)) -> Self {
+        Self {
+            id: endp.id.clone(),
+            ep: endp.into(),
+            metadata,
         }
     }
 }

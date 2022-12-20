@@ -434,20 +434,22 @@ async fn list_attempts_by_msg(
 #[serde(rename_all = "camelCase")]
 pub struct MessageEndpointOut {
     #[serde(flatten)]
-    endpoint: super::endpoint::EndpointOut,
+    endpoint: super::endpoint::EndpointOutCommon,
+    id: EndpointId,
     status: MessageStatus,
     next_attempt: Option<DateTime<Utc>>,
 }
 
 impl ModelOut for MessageEndpointOut {
     fn id_copy(&self) -> String {
-        self.endpoint.id.0.clone()
+        self.id.0.clone()
     }
 }
 
 impl MessageEndpointOut {
     fn from_dest_and_endp(dest: messagedestination::Model, endp: endpoint::Model) -> Self {
         MessageEndpointOut {
+            id: endp.id.clone(),
             endpoint: endp.into(),
             status: dest.status,
             next_attempt: dest.next_attempt.map(Into::into),

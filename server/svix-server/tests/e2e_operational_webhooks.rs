@@ -189,7 +189,7 @@ async fn test_endpoint_create_update_and_delete() {
             assert_eq!(app_id, regular_app.id);
             assert_eq!(app_uid, regular_app.uid);
             assert_eq!(endpoint_id, regular_endp.id);
-            assert_eq!(endpoint_uid, regular_endp.uid);
+            assert_eq!(endpoint_uid, regular_endp.ep.uid);
         }
         _ => panic!("Got wrong type"),
     };
@@ -229,7 +229,7 @@ async fn test_endpoint_create_update_and_delete() {
             assert_eq!(app_id, regular_app.id);
             assert_eq!(app_uid, regular_app.uid);
             assert_eq!(endpoint_id, regular_endp.id);
-            assert_eq!(endpoint_uid, regular_endp.uid);
+            assert_eq!(endpoint_uid, regular_endp.ep.uid);
         }
         _ => panic!("Got wrong type"),
     };
@@ -263,7 +263,7 @@ async fn test_endpoint_create_update_and_delete() {
             assert_eq!(app_id, regular_app.id);
             assert_eq!(app_uid, regular_app.uid);
             assert_eq!(endpoint_id, regular_endp.id);
-            assert_eq!(endpoint_uid, regular_endp.uid);
+            assert_eq!(endpoint_uid, regular_endp.ep.uid);
         }
         _ => panic!("Got wrong type"),
     };
@@ -337,7 +337,7 @@ async fn test_message_attempt_operational_webhooks() {
             assert_eq!(app_id, regular_app.id);
             assert_eq!(app_uid, regular_app.uid);
             assert_eq!(endpoint_id, regular_endp.id);
-            assert_eq!(endpoint_uid, regular_endp.uid);
+            assert_eq!(endpoint_uid, regular_endp.ep.uid);
         }
         _ => panic!("Got wrong type"),
     };

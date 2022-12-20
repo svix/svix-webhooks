@@ -160,7 +160,7 @@ async fn test_endpoint_disable_on_repeated_failure() {
                 .await
                 .unwrap();
 
-            if !ep.disabled {
+            if !ep.ep.disabled {
                 anyhow::bail!("Endpoint not disabled")
             } else {
                 Ok(())
@@ -212,7 +212,7 @@ async fn test_endpoint_disable_expiration_duration() {
             .await
             .unwrap();
 
-        assert!(!ep.disabled);
+        assert!(!ep.ep.disabled);
     }
 }
 
@@ -323,7 +323,7 @@ async fn test_endpoint_disable_on_sporadic_failure() {
             .await
             .unwrap();
 
-        assert!(!ep.disabled);
+        assert!(!ep.ep.disabled);
 
         receiver.jh.abort();
     }
