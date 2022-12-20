@@ -6,16 +6,18 @@ mod recovery;
 mod secrets;
 
 use crate::{
+    cfg::DefaultSignatureType,
     core::{
+        cryptography::Encryption,
         permissions,
         types::{
-            ApplicationIdOrUid, BaseId, EndpointId, EndpointIdOrUid, EndpointUid, EventChannelSet,
-            EventTypeNameSet, MessageEndpointId, MessageStatus,
+            ApplicationIdOrUid, BaseId, EndpointId, EndpointIdOrUid, EndpointSecretInternal,
+            EndpointUid, EventChannelSet, EventTypeNameSet, MessageEndpointId, MessageStatus,
         },
     },
     ctx,
     db::models::messagedestination,
-    error::HttpError,
+    error::{self, HttpError},
     v1::utils::{
         api_not_implemented,
         patch::{
@@ -45,6 +47,8 @@ use validator::{Validate, ValidationError};
 
 use crate::core::types::{EndpointHeaders, EndpointHeadersPatch, EndpointSecret};
 use crate::db::models::endpoint;
+
+use self::secrets::generate_secret;
 
 pub fn validate_event_types_ids(
     event_types_ids: &EventTypeNameSet,
@@ -158,6 +162,20 @@ pub struct EndpointIn {
     #[serde(rename = "secret")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub key: Option<EndpointSecret>,
+}
+
+impl EndpointIn {
+    pub fn key_take_or_generate(
+        &mut self,
+        encryption: &Encryption,
+        sig_type: &DefaultSignatureType,
+    ) -> error::Result<EndpointSecretInternal> {
+        if let Some(key) = self.key.take() {
+            EndpointSecretInternal::from_endpoint_secret(key, encryption)
+        } else {
+            generate_secret(encryption, sig_type)
+        }
+    }
 }
 
 // FIXME: This can and should be a derive macro
