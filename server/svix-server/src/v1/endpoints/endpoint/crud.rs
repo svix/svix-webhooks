@@ -92,12 +92,7 @@ pub(super) async fn create_endpoint(
     op_webhooks
         .send_operational_webhook(
             &app.org_id,
-            OperationalWebhook::EndpointCreated(EndpointEvent {
-                app_id: &ret.app_id,
-                app_uid: app.uid.as_ref(),
-                endpoint_id: &ret.id,
-                endpoint_uid: ret.uid.as_ref(),
-            }),
+            OperationalWebhook::EndpointCreated(EndpointEvent::new(app.uid.as_ref(), &ret)),
         )
         .await?;
 
@@ -148,12 +143,7 @@ pub(super) async fn update_endpoint(
             op_webhooks
                 .send_operational_webhook(
                     &app.org_id,
-                    OperationalWebhook::EndpointUpdated(EndpointEvent {
-                        app_id: &ret.app_id,
-                        app_uid: app_uid.as_ref(),
-                        endpoint_id: &ret.id,
-                        endpoint_uid: ret.uid.as_ref(),
-                    }),
+                    OperationalWebhook::EndpointUpdated(EndpointEvent::new(app_uid.as_ref(), &ret)),
                 )
                 .await?;
 
@@ -184,12 +174,7 @@ pub(super) async fn update_endpoint(
             op_webhooks
                 .send_operational_webhook(
                     &app.org_id,
-                    OperationalWebhook::EndpointCreated(EndpointEvent {
-                        app_id: &ret.app_id,
-                        app_uid: app_uid.as_ref(),
-                        endpoint_id: &ret.id,
-                        endpoint_uid: ret.uid.as_ref(),
-                    }),
+                    OperationalWebhook::EndpointCreated(EndpointEvent::new(app_uid.as_ref(), &ret)),
                 )
                 .await?;
 
@@ -229,12 +214,7 @@ pub(super) async fn patch_endpoint(
     op_webhooks
         .send_operational_webhook(
             &app.org_id,
-            OperationalWebhook::EndpointUpdated(EndpointEvent {
-                app_id: &ret.app_id,
-                app_uid: app_uid.as_ref(),
-                endpoint_id: &ret.id,
-                endpoint_uid: ret.uid.as_ref(),
-            }),
+            OperationalWebhook::EndpointUpdated(EndpointEvent::new(app_uid.as_ref(), &ret)),
         )
         .await?;
 

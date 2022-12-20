@@ -18,7 +18,7 @@ use super::{
     },
 };
 use crate::{
-    db::models::messageattempt,
+    db::models::{endpoint, messageattempt},
     error::{HttpError, Result},
 };
 
@@ -41,6 +41,17 @@ pub struct EndpointEvent<'a> {
     pub app_uid: Option<&'a ApplicationUid>,
     pub endpoint_id: &'a EndpointId,
     pub endpoint_uid: Option<&'a EndpointUid>,
+}
+
+impl<'a> EndpointEvent<'a> {
+    pub fn new(app_uid: Option<&'a ApplicationUid>, endp: &'a endpoint::Model) -> Self {
+        Self {
+            app_id: &endp.app_id,
+            app_uid,
+            endpoint_id: &endp.id,
+            endpoint_uid: endp.uid.as_ref(),
+        }
+    }
 }
 
 #[derive(Debug, Serialize)]
