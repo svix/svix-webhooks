@@ -9,15 +9,15 @@ use sea_orm::{entity::prelude::*, ActiveValue::Set, QueryOrder};
 use sea_orm::{ActiveModelTrait, DatabaseConnection, QuerySelect};
 use url::Url;
 
-use super::{secrets::generate_secret, EndpointIn, EndpointOut, EndpointPatch};
+use super::{EndpointIn, EndpointOut, EndpointPatch};
 use crate::{
     cfg::Configuration,
     core::{
         operational_webhooks::{EndpointEvent, OperationalWebhook, OperationalWebhookSender},
         permissions,
         types::{
-            ApplicationIdOrUid, EndpointId, EndpointIdOrUid, EndpointSecretInternal, EventTypeName,
-            EventTypeNameSet, OrganizationId,
+            ApplicationIdOrUid, EndpointId, EndpointIdOrUid, EventTypeName, EventTypeNameSet,
+            OrganizationId,
         },
     },
     ctx,
@@ -58,46 +58,28 @@ pub(super) async fn list_endpoints(
 
 pub(super) async fn create_endpoint(
     Extension(ref db): Extension<DatabaseConnection>,
-    Extension(cfg): Extension<Configuration>,
+    Extension(ref cfg): Extension<Configuration>,
     Extension(op_webhooks): Extension<OperationalWebhookSender>,
     permissions::Application { app }: permissions::Application,
-    ValidatedJson(data): ValidatedJson<EndpointIn>,
+    ValidatedJson(mut data): ValidatedJson<EndpointIn>,
 ) -> Result<(StatusCode, Json<EndpointOut>)> {
     if let Some(ref event_types_ids) = data.event_types_ids {
         validate_event_types(db, event_types_ids, &app.org_id).await?;
     }
     validate_endpoint_url(&data.url, cfg.endpoint_https_only)?;
 
-    let endp = if let Some(key) = data.key.clone().take() {
-        endpoint::ActiveModel {
-            app_id: Set(app.id),
-            key: Set(EndpointSecretInternal::from_endpoint_secret(
-                key,
-                &cfg.encryption,
-            )?),
-            ..data.into()
-        }
-    } else {
-        endpoint::ActiveModel {
-            app_id: Set(app.id),
-            key: Set(generate_secret(
-                &cfg.encryption,
-                &cfg.default_signature_type,
-            )?),
-            ..data.into()
-        }
+    let endp = endpoint::ActiveModel {
+        app_id: Set(app.id),
+        key: Set(data.key_take_or_generate(&cfg.encryption, &cfg.default_signature_type)?),
+        ..data.into()
     };
+
     let ret = ctx!(endp.insert(db).await)?;
 
     op_webhooks
         .send_operational_webhook(
             &app.org_id,
-            OperationalWebhook::EndpointCreated(EndpointEvent {
-                app_id: &ret.app_id,
-                app_uid: app.uid.as_ref(),
-                endpoint_id: &ret.id,
-                endpoint_uid: ret.uid.as_ref(),
-            }),
+            OperationalWebhook::EndpointCreated(EndpointEvent::new(app.uid.as_ref(), &ret)),
         )
         .await?;
 
@@ -124,7 +106,7 @@ pub(super) async fn update_endpoint(
     Extension(op_webhooks): Extension<OperationalWebhookSender>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
     permissions::Application { app }: permissions::Application,
-    ValidatedJson(data): ValidatedJson<EndpointIn>,
+    ValidatedJson(mut data): ValidatedJson<EndpointIn>,
 ) -> Result<(StatusCode, Json<EndpointOut>)> {
     let endp = ctx!(
         endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
@@ -148,33 +130,19 @@ pub(super) async fn update_endpoint(
             op_webhooks
                 .send_operational_webhook(
                     &app.org_id,
-                    OperationalWebhook::EndpointUpdated(EndpointEvent {
-                        app_id: &ret.app_id,
-                        app_uid: app_uid.as_ref(),
-                        endpoint_id: &ret.id,
-                        endpoint_uid: ret.uid.as_ref(),
-                    }),
+                    OperationalWebhook::EndpointUpdated(EndpointEvent::new(app_uid.as_ref(), &ret)),
                 )
                 .await?;
 
             Ok((StatusCode::OK, Json(ret.into())))
         }
         None => {
-            let key = match data.key.clone().take() {
-                Some(key) => Set(EndpointSecretInternal::from_endpoint_secret(
-                    key,
-                    &cfg.encryption,
-                )?),
-                None => Set(generate_secret(
-                    &cfg.encryption,
-                    &cfg.default_signature_type,
-                )?),
-            };
-
             let ret = ctx!(
                 endpoint::ActiveModel {
                     app_id: Set(app.id),
-                    key,
+                    key: Set(
+                        data.key_take_or_generate(&cfg.encryption, &cfg.default_signature_type)?
+                    ),
                     ..data.into()
                 }
                 .insert(db)
@@ -184,12 +152,7 @@ pub(super) async fn update_endpoint(
             op_webhooks
                 .send_operational_webhook(
                     &app.org_id,
-                    OperationalWebhook::EndpointCreated(EndpointEvent {
-                        app_id: &ret.app_id,
-                        app_uid: app_uid.as_ref(),
-                        endpoint_id: &ret.id,
-                        endpoint_uid: ret.uid.as_ref(),
-                    }),
+                    OperationalWebhook::EndpointCreated(EndpointEvent::new(app_uid.as_ref(), &ret)),
                 )
                 .await?;
 
@@ -229,12 +192,7 @@ pub(super) async fn patch_endpoint(
     op_webhooks
         .send_operational_webhook(
             &app.org_id,
-            OperationalWebhook::EndpointUpdated(EndpointEvent {
-                app_id: &ret.app_id,
-                app_uid: app_uid.as_ref(),
-                endpoint_id: &ret.id,
-                endpoint_uid: ret.uid.as_ref(),
-            }),
+            OperationalWebhook::EndpointUpdated(EndpointEvent::new(app_uid.as_ref(), &ret)),
         )
         .await?;
 
