@@ -12,7 +12,7 @@ use sea_orm::ActiveValue::Set;
 use sea_orm::{ConnectionTrait, TryIntoModel};
 
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
-#[sea_orm(table_name = "applicationmetadata")]
+#[sea_orm(table_name = "endpointmetadata")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: EndpointId,
