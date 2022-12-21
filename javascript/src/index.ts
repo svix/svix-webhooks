@@ -51,6 +51,7 @@ import {
 } from "./openapi/index";
 export * from "./openapi/models/all";
 export * from "./openapi/apis/exception";
+import { timingSafeEqual } from "./timing_safe_equal";
 import * as base64 from "@stablelib/base64";
 import * as sha256 from "fast-sha256";
 
@@ -302,20 +303,21 @@ class Endpoint {
       })
       .then(() => Promise.resolve());
   }
-  
+
   public replay(
     appId: string,
     endpointId: string,
     replayIn: ReplayIn,
     options?: PostOptions
   ): Promise<void> {
-    return this.api.replayMissingWebhooksApiV1AppAppIdEndpointEndpointIdReplayMissingPost({
-      appId,
-      endpointId,
-      replayIn,
-      ...options,
-    })
-    .then(() => Promise.resolve());
+    return this.api
+      .replayMissingWebhooksApiV1AppAppIdEndpointEndpointIdReplayMissingPost({
+        appId,
+        endpointId,
+        replayIn,
+        ...options,
+      })
+      .then(() => Promise.resolve());
   }
 
   public getHeaders(appId: string, endpointId: string): Promise<EndpointHeadersOut> {
@@ -554,7 +556,7 @@ class MessageAttempt {
       ...options,
     });
   }
-  
+
   public listAttemptedMessages(
     appId: string,
     endpointId: string,
@@ -681,13 +683,15 @@ export class Webhook {
     const expectedSignature = computedSignature.split(",")[1];
 
     const passedSignatures = msgSignature.split(" ");
+
+    const encoder = new globalThis.TextEncoder();
     for (const versionedSignature of passedSignatures) {
       const [version, signature] = versionedSignature.split(",");
       if (version !== "v1") {
         continue;
       }
 
-      if (signature === expectedSignature) {
+      if (timingSafeEqual(encoder.encode(signature), encoder.encode(expectedSignature))) {
         return JSON.parse(payload);
       }
     }
