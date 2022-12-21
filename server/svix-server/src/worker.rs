@@ -671,17 +671,12 @@ pub async fn worker_loop(
     op_webhook_sender: OperationalWebhookSender,
 ) -> Result<()> {
     loop {
+        if crate::SHUTTING_DOWN.load(Ordering::SeqCst) {
+            break;
+        }
+
         match queue_rx.receive_all().await {
             Ok(batch) => {
-                if crate::SHUTTING_DOWN.load(Ordering::SeqCst) {
-                    for delivery in batch {
-                        queue_tx.nack(delivery).await.expect(
-                            "Error sending 'nack' to Redis after receiving shutdown signal",
-                        );
-                    }
-                    break;
-                }
-
                 for delivery in batch {
                     let cfg = cfg.clone();
                     let pool = pool.clone();
