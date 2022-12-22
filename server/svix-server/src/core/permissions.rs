@@ -17,6 +17,24 @@ use super::{
     types::{ApplicationId, ApplicationIdOrUid, OrganizationId},
 };
 
+pub struct ReadAll {
+    pub org_id: OrganizationId,
+}
+
+#[async_trait]
+impl<S> FromRequestParts<S> for ReadAll
+where
+    S: Send + Sync,
+{
+    type Rejection = Error;
+
+    async fn from_request_parts(parts: &mut Parts, state: &S) -> Result<Self> {
+        let permissions = ctx!(permissions_from_bearer(parts, state).await)?;
+        let org_id = permissions.org_id();
+        Ok(Self { org_id })
+    }
+}
+
 pub struct Organization {
     pub org_id: OrganizationId,
 }

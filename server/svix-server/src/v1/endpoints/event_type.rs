@@ -170,7 +170,7 @@ async fn list_event_types(
     Extension(ref db): Extension<DatabaseConnection>,
     pagination: ValidatedQuery<Pagination<EventTypeName>>,
     fetch_options: ValidatedQuery<ListFetchOptions>,
-    permissions::Organization { org_id }: permissions::Organization,
+    permissions::ReadAll { org_id }: permissions::ReadAll,
 ) -> Result<Json<ListResponse<EventTypeOut>>> {
     let PaginationLimit(limit) = pagination.limit;
     let iterator = pagination.iterator.clone();
