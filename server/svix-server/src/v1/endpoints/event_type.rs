@@ -241,7 +241,7 @@ async fn create_event_type(
 async fn get_event_type(
     Extension(ref db): Extension<DatabaseConnection>,
     Path(evtype_name): Path<EventTypeName>,
-    permissions::Organization { org_id }: permissions::Organization,
+    permissions::ReadAll { org_id }: permissions::ReadAll,
 ) -> Result<Json<EventTypeOut>> {
     let evtype = ctx!(
         eventtype::Entity::secure_find_by_name(org_id, evtype_name)
