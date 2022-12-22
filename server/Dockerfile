@@ -48,4 +48,4 @@ CMD \
     if [ ! -z "$WAIT_FOR" ]; then \
         WAIT_FOR_ARG="--wait-for 15"; \
     fi ; \
-    svix-server --run-migrations $WAIT_FOR_ARG
+    exec svix-server --run-migrations $WAIT_FOR_ARG
