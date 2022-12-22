@@ -1,30 +1,30 @@
-use std::collections::HashSet;
+use std::{collections::HashSet, mem};
 
 use axum::{
     extract::{Extension, Path},
     Json,
 };
 use hyper::StatusCode;
-use sea_orm::{entity::prelude::*, ActiveValue::Set, QueryOrder};
+use sea_orm::{entity::prelude::*, ActiveValue::Set, QueryOrder, TransactionTrait};
 use sea_orm::{ActiveModelTrait, DatabaseConnection, QuerySelect};
 use url::Url;
 
-use super::{secrets::generate_secret, EndpointIn, EndpointOut, EndpointPatch};
+use super::{EndpointIn, EndpointOut, EndpointPatch};
 use crate::{
     cfg::Configuration,
     core::{
         operational_webhooks::{EndpointEvent, OperationalWebhook, OperationalWebhookSender},
         permissions,
         types::{
-            ApplicationIdOrUid, EndpointId, EndpointIdOrUid, EndpointSecretInternal, EventTypeName,
-            EventTypeNameSet, OrganizationId,
+            ApplicationIdOrUid, EndpointId, EndpointIdOrUid, EventTypeName, EventTypeNameSet,
+            OrganizationId,
         },
     },
     ctx,
-    db::models::{endpoint, eventtype},
+    db::models::{application, endpoint, endpointmetadata, eventtype},
     error::{HttpError, Result, ValidationErrorItem},
     v1::utils::{
-        patch::{UnrequiredField, UnrequiredNullableField},
+        patch::{patch_field_non_nullable, UnrequiredField, UnrequiredNullableField},
         EmptyResponse, ListResponse, ModelIn, ModelOut, Pagination, PaginationLimit, ValidatedJson,
         ValidatedQuery,
     },
@@ -47,18 +47,60 @@ pub(super) async fn list_endpoints(
         query = query.filter(endpoint::Column::Id.gt(iterator))
     }
 
+    let results = ctx!(
+        query
+            .find_also_related(endpointmetadata::Entity)
+            .all(db)
+            .await
+    )?
+    .into_iter()
+    .map(|(endp, metadata)| {
+        let metadata = metadata.map(|m| m.data).unwrap_or_default();
+        (endp, metadata).into()
+    })
+    .collect();
+
     Ok(Json(EndpointOut::list_response_no_prev(
-        ctx!(query.all(db).await)?
-            .into_iter()
-            .map(|x| x.into())
-            .collect(),
+        results,
         limit as usize,
     )))
 }
 
+async fn create_endp_from_data(
+    db: &DatabaseConnection,
+    cfg: &Configuration,
+    op_webhooks: &OperationalWebhookSender,
+    app: application::Model,
+    mut data: EndpointIn,
+) -> Result<(endpoint::Model, endpointmetadata::Model)> {
+    let key = data.key_take_or_generate(&cfg.encryption, &cfg.default_signature_type)?;
+
+    let mut endp = endpoint::ActiveModel::new(app.id, key);
+    let metadata =
+        endpointmetadata::ActiveModel::new(endp.id.clone().unwrap(), mem::take(&mut data.metadata));
+    data.update_model(&mut endp);
+
+    let (endp, metadata) = {
+        let txn = ctx!(db.begin().await)?;
+        let endp = ctx!(endp.insert(&txn).await)?;
+        let metadata = ctx!(metadata.upsert_or_delete(&txn).await)?;
+        ctx!(txn.commit().await)?;
+        (endp, metadata)
+    };
+
+    op_webhooks
+        .send_operational_webhook(
+            &app.org_id,
+            OperationalWebhook::EndpointCreated(EndpointEvent::new(app.uid.as_ref(), &endp)),
+        )
+        .await?;
+
+    Ok((endp, metadata))
+}
+
 pub(super) async fn create_endpoint(
     Extension(ref db): Extension<DatabaseConnection>,
-    Extension(cfg): Extension<Configuration>,
+    Extension(ref cfg): Extension<Configuration>,
     Extension(op_webhooks): Extension<OperationalWebhookSender>,
     permissions::Application { app }: permissions::Application,
     ValidatedJson(data): ValidatedJson<EndpointIn>,
@@ -68,40 +110,9 @@ pub(super) async fn create_endpoint(
     }
     validate_endpoint_url(&data.url, cfg.endpoint_https_only)?;
 
-    let endp = if let Some(key) = data.key.clone().take() {
-        endpoint::ActiveModel {
-            app_id: Set(app.id),
-            key: Set(EndpointSecretInternal::from_endpoint_secret(
-                key,
-                &cfg.encryption,
-            )?),
-            ..data.into()
-        }
-    } else {
-        endpoint::ActiveModel {
-            app_id: Set(app.id),
-            key: Set(generate_secret(
-                &cfg.encryption,
-                &cfg.default_signature_type,
-            )?),
-            ..data.into()
-        }
-    };
-    let ret = ctx!(endp.insert(db).await)?;
+    let (endp, metadata) = ctx!(create_endp_from_data(db, cfg, &op_webhooks, app, data).await)?;
 
-    op_webhooks
-        .send_operational_webhook(
-            &app.org_id,
-            OperationalWebhook::EndpointCreated(EndpointEvent {
-                app_id: &ret.app_id,
-                app_uid: app.uid.as_ref(),
-                endpoint_id: &ret.id,
-                endpoint_uid: ret.uid.as_ref(),
-            }),
-        )
-        .await?;
-
-    Ok((StatusCode::CREATED, Json(ret.into())))
+    Ok((StatusCode::CREATED, Json((endp, metadata.data).into())))
 }
 
 pub(super) async fn get_endpoint(
@@ -109,110 +120,81 @@ pub(super) async fn get_endpoint(
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<EndpointOut>> {
-    let endp = ctx!(
+    let (endp, metadata) = ctx!(
         endpoint::Entity::secure_find_by_id_or_uid(app.id, endp_id)
+            .find_also_related(endpointmetadata::Entity)
             .one(db)
             .await
     )?
     .ok_or_else(|| HttpError::not_found(None, None))?;
-    Ok(Json(endp.into()))
+
+    let metadata = metadata.map(|m| m.data).unwrap_or_default();
+
+    Ok(Json((endp, metadata).into()))
+}
+
+async fn update_endp_from_data(
+    db: &DatabaseConnection,
+    op_webhooks: &OperationalWebhookSender,
+    app: application::Model,
+    endp: endpoint::ActiveModel,
+    metadata: endpointmetadata::ActiveModel,
+) -> Result<(endpoint::Model, endpointmetadata::Model)> {
+    let (endp, metadata) = {
+        let txn = ctx!(db.begin().await)?;
+        let endp = ctx!(endp.update(&txn).await)?;
+        let metadata = ctx!(metadata.upsert_or_delete(&txn).await)?;
+        ctx!(txn.commit().await)?;
+        (endp, metadata)
+    };
+
+    let app_uid = app.uid;
+    op_webhooks
+        .send_operational_webhook(
+            &app.org_id,
+            OperationalWebhook::EndpointUpdated(EndpointEvent::new(app_uid.as_ref(), &endp)),
+        )
+        .await?;
+
+    Ok((endp, metadata))
 }
 
 pub(super) async fn update_endpoint(
     Extension(ref db): Extension<DatabaseConnection>,
-    Extension(cfg): Extension<Configuration>,
-    Extension(op_webhooks): Extension<OperationalWebhookSender>,
+    Extension(ref cfg): Extension<Configuration>,
+    Extension(ref op_webhooks): Extension<OperationalWebhookSender>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
     permissions::Application { app }: permissions::Application,
-    ValidatedJson(data): ValidatedJson<EndpointIn>,
+    ValidatedJson(mut data): ValidatedJson<EndpointIn>,
 ) -> Result<(StatusCode, Json<EndpointOut>)> {
-    let endp = ctx!(
-        endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
-            .one(db)
-            .await
-    )?;
-
     if let Some(ref event_types_ids) = data.event_types_ids {
         validate_event_types(db, event_types_ids, &app.org_id).await?;
     }
     validate_endpoint_url(&data.url, cfg.endpoint_https_only)?;
 
-    let app_uid = app.uid;
+    let models =
+        ctx!(endpoint::ActiveModel::fetch_with_metadata(db, app.id.clone(), endp_id).await)?;
 
-    match endp {
-        Some(endp) => {
-            let mut endp: endpoint::ActiveModel = endp.into();
-            data.update_model(&mut endp);
-            let ret = ctx!(endp.update(db).await)?;
-
-            op_webhooks
-                .send_operational_webhook(
-                    &app.org_id,
-                    OperationalWebhook::EndpointUpdated(EndpointEvent {
-                        app_id: &ret.app_id,
-                        app_uid: app_uid.as_ref(),
-                        endpoint_id: &ret.id,
-                        endpoint_uid: ret.uid.as_ref(),
-                    }),
-                )
-                .await?;
-
-            Ok((StatusCode::OK, Json(ret.into())))
-        }
-        None => {
-            let key = match data.key.clone().take() {
-                Some(key) => Set(EndpointSecretInternal::from_endpoint_secret(
-                    key,
-                    &cfg.encryption,
-                )?),
-                None => Set(generate_secret(
-                    &cfg.encryption,
-                    &cfg.default_signature_type,
-                )?),
-            };
-
-            let ret = ctx!(
-                endpoint::ActiveModel {
-                    app_id: Set(app.id),
-                    key,
-                    ..data.into()
-                }
-                .insert(db)
-                .await
-            )?;
-
-            op_webhooks
-                .send_operational_webhook(
-                    &app.org_id,
-                    OperationalWebhook::EndpointCreated(EndpointEvent {
-                        app_id: &ret.app_id,
-                        app_uid: app_uid.as_ref(),
-                        endpoint_id: &ret.id,
-                        endpoint_uid: ret.uid.as_ref(),
-                    }),
-                )
-                .await?;
-
-            Ok((StatusCode::CREATED, Json(ret.into())))
-        }
+    if let Some((mut endp, mut metadata)) = models {
+        metadata.data = Set(mem::take(&mut data.metadata));
+        data.update_model(&mut endp);
+        let (endp, metadata) =
+            ctx!(update_endp_from_data(db, op_webhooks, app, endp, metadata).await)?;
+        Ok((StatusCode::OK, Json((endp, metadata.data).into())))
+    } else {
+        let (endp, metadata) = ctx!(create_endp_from_data(db, cfg, op_webhooks, app, data).await)?;
+        Ok((StatusCode::CREATED, Json((endp, metadata.data).into())))
     }
 }
 
 pub(super) async fn patch_endpoint(
     Extension(ref db): Extension<DatabaseConnection>,
     Extension(cfg): Extension<Configuration>,
-    Extension(op_webhooks): Extension<OperationalWebhookSender>,
+    Extension(ref op_webhooks): Extension<OperationalWebhookSender>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
     permissions::Application { app }: permissions::Application,
     ValidatedJson(data): ValidatedJson<EndpointPatch>,
 ) -> Result<Json<EndpointOut>> {
-    let endp = ctx!(
-        endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
-            .one(db)
-            .await
-    )?
-    .ok_or_else(|| HttpError::not_found(None, None))?;
-
     if let UnrequiredNullableField::Some(ref event_types_ids) = data.event_types_ids {
         validate_event_types(db, event_types_ids, &app.org_id).await?;
     }
@@ -220,25 +202,18 @@ pub(super) async fn patch_endpoint(
         validate_endpoint_url(url, cfg.endpoint_https_only)?;
     }
 
-    let mut endp: endpoint::ActiveModel = endp.into();
-    data.update_model(&mut endp);
+    let (mut endp, mut metadata) =
+        ctx!(endpoint::ActiveModel::fetch_with_metadata(db, app.id.clone(), endp_id).await)?
+            .ok_or_else(|| HttpError::not_found(None, None))?;
 
-    let ret = ctx!(endp.update(db).await)?;
+    let mut patch_data = data; // need to alias so we can use data for `patch_field_non_nullable!`
 
-    let app_uid = app.uid;
-    op_webhooks
-        .send_operational_webhook(
-            &app.org_id,
-            OperationalWebhook::EndpointUpdated(EndpointEvent {
-                app_id: &ret.app_id,
-                app_uid: app_uid.as_ref(),
-                endpoint_id: &ret.id,
-                endpoint_uid: ret.uid.as_ref(),
-            }),
-        )
-        .await?;
+    let data = mem::take(&mut patch_data.metadata);
+    patch_field_non_nullable!(metadata, data);
+    patch_data.update_model(&mut endp);
+    let (endp, metadata) = ctx!(update_endp_from_data(db, op_webhooks, app, endp, metadata).await)?;
 
-    Ok(Json(ret.into()))
+    Ok(Json((endp, metadata.data).into()))
 }
 
 pub(super) async fn delete_endpoint(
