@@ -5,7 +5,7 @@ import com.svix.internal.Configuration;
 import com.svix.internal.auth.HttpBearerAuth;
 
 public final class Svix {
-	public static final String VERSION = "0.65.1";
+	public static final String VERSION = "0.72.0";
 	private final Application application;
 	private final Authentication authentication;
 	private final Endpoint endpoint;
@@ -19,7 +19,7 @@ public final class Svix {
 	}
 
 	public Svix(final String token, final SvixOptions options) {
-		ApiClient apiClient = Configuration.getDefaultApiClient();
+		ApiClient apiClient = new ApiClient();
 
 		String[] tokenParts = token.split("\\.");
 		String region = tokenParts[tokenParts.length - 1];
@@ -29,9 +29,10 @@ public final class Svix {
 			apiClient.setBasePath("https://api.eu.svix.com");
 		} else if (region.equals("in")) {
 			apiClient.setBasePath("https://api.in.svix.com");
+		} else {
+			apiClient.setBasePath(options.getServerUrl());
 		}
 
-		apiClient.setBasePath(options.getServerUrl());
 		apiClient.setUserAgent(String.format("svix-libs/%s/java", Svix.VERSION));
 
 		HttpBearerAuth httpBearer = (HttpBearerAuth) apiClient.getAuthentication("HTTPBearer");

@@ -42,12 +42,9 @@ async fn test_many_queue_consumers_inner(prefix: &str, delay: Option<Duration>) 
         let pool = get_pool(cfg.clone()).await;
         let mut conn = pool.get().await.unwrap();
 
-        conn.query_async::<()>(redis::Cmd::del(&format!(
-            "{}{{queue}}_svix_v3_main",
-            prefix
-        )))
-        .await
-        .unwrap();
+        conn.query_async::<()>(redis::Cmd::del(&format!("{prefix}{{queue}}_svix_v3_main")))
+            .await
+            .unwrap();
     }
 
     // Make 20 producers and 20 consumers using the same configuration
@@ -115,7 +112,7 @@ async fn test_many_queue_consumers_inner(prefix: &str, delay: Option<Duration>) 
         out.append(&mut jh_out);
 
         if read < 5 {
-            panic!("Consumer starved, only read {} messages", read);
+            panic!("Consumer starved, only read {read} messages");
         }
     }
 

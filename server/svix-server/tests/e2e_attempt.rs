@@ -29,7 +29,7 @@ use std::time::Duration;
 
 #[tokio::test]
 async fn test_list_attempted_messages() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
@@ -46,7 +46,7 @@ async fn test_list_attempted_messages() {
     endp2.uid = Some(EndpointUid("test".to_owned()));
     let endp_id_2 = client
         .post::<EndpointIn, EndpointOut>(
-            &format!("api/v1/app/{}/endpoint/", app_id),
+            &format!("api/v1/app/{app_id}/endpoint/"),
             endp2,
             StatusCode::CREATED,
         )
@@ -67,14 +67,14 @@ async fn test_list_attempted_messages() {
     run_with_retries(|| async {
         let list_1: ListResponse<AttemptedMessageOut> = client
             .get(
-                &format!("api/v1/app/{}/endpoint/{}/msg/", app_id, endp_id_1),
+                &format!("api/v1/app/{app_id}/endpoint/{endp_id_1}/msg/"),
                 StatusCode::OK,
             )
             .await
             .unwrap();
         let list_2: ListResponse<AttemptedMessageOut> = client
             .get(
-                &format!("api/v1/app/{}/endpoint/{}/msg/", app_id, endp_id_2),
+                &format!("api/v1/app/{app_id}/endpoint/{endp_id_2}/msg/"),
                 StatusCode::OK,
             )
             .await
@@ -106,7 +106,7 @@ async fn test_list_attempted_messages() {
 
 #[tokio::test]
 async fn test_list_attempts_by_endpoint() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     let app_id = create_test_app(&client, "v1AttemptListAttemptsByEndpointTestApp")
         .await
@@ -140,7 +140,7 @@ async fn test_list_attempts_by_endpoint() {
         for endp_id in [endp_id_1.clone(), endp_id_2.clone()] {
             let list: ListResponse<MessageAttemptOut> = client
                 .get(
-                    &format!("api/v1/app/{}/attempt/endpoint/{}/", app_id, endp_id),
+                    &format!("api/v1/app/{app_id}/attempt/endpoint/{endp_id}/"),
                     StatusCode::OK,
                 )
                 .await
@@ -158,14 +158,14 @@ async fn test_list_attempts_by_endpoint() {
 
     let list_1: ListResponse<MessageAttemptOut> = client
         .get(
-            &format!("api/v1/app/{}/attempt/endpoint/{}/", app_id, endp_id_1),
+            &format!("api/v1/app/{app_id}/attempt/endpoint/{endp_id_1}/"),
             StatusCode::OK,
         )
         .await
         .unwrap();
     let list_2: ListResponse<MessageAttemptOut> = client
         .get(
-            &format!("api/v1/app/{}/attempt/endpoint/{}/", app_id, endp_id_2),
+            &format!("api/v1/app/{app_id}/attempt/endpoint/{endp_id_2}/"),
             StatusCode::OK,
         )
         .await
@@ -190,7 +190,7 @@ async fn test_message_attempts() {
         .map(|_| Duration::from_millis(1))
         .collect();
 
-    let (client, _jh) = start_svix_server_with_cfg(&cfg);
+    let (client, _jh) = start_svix_server_with_cfg(&cfg).await;
 
     for (status_code, msg_status, attempt_count) in [
         // Success
@@ -272,7 +272,7 @@ async fn test_message_attempts_empty_retry_schedule() {
     let mut cfg = get_default_test_config();
     cfg.retry_schedule = vec![];
 
-    let (client, _jh) = start_svix_server_with_cfg(&cfg);
+    let (client, _jh) = start_svix_server_with_cfg(&cfg).await;
 
     let (status_code, msg_status, attempt_count) =
         (StatusCode::INTERNAL_SERVER_ERROR, MessageStatus::Fail, None);
@@ -312,7 +312,7 @@ async fn test_message_attempts_empty_retry_schedule() {
 
 #[tokio::test]
 async fn test_pagination_by_endpoint() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     // Setup six endpoints and six messages so there's a sufficient number to test pagination
     let app = create_test_app(&client, "app1").await.unwrap();
@@ -491,7 +491,7 @@ async fn test_pagination_by_endpoint() {
 
 #[tokio::test]
 async fn test_pagination_by_msg() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     // Setup six endpoints and six messages so there's a sufficient number to test pagination
     let app = create_test_app(&client, "app1").await.unwrap();
@@ -711,7 +711,7 @@ async fn test_pagination_by_msg() {
 
 #[tokio::test]
 async fn test_pagination_forward_and_back() {
-    let (client, _) = start_svix_server();
+    let (client, _) = start_svix_server().await;
 
     let app = create_test_app(&client, "test_app").await.unwrap();
 
@@ -763,7 +763,7 @@ async fn test_pagination_forward_and_back() {
 
     while !done {
         let iter_suffix = if let Some(iter) = iterator {
-            format!("&iterator={}", iter)
+            format!("&iterator={iter}")
         } else {
             String::new()
         };
@@ -793,7 +793,7 @@ async fn test_pagination_forward_and_back() {
 
     while !done {
         let iter_suffix = if let Some(iter) = prev_iterator {
-            format!("&iterator={}", iter)
+            format!("&iterator={iter}")
         } else {
             String::new()
         };

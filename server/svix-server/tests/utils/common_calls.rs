@@ -9,7 +9,7 @@ use reqwest::StatusCode;
 
 use serde::{de::DeserializeOwned, Serialize};
 use svix_server::{
-    core::types::{ApplicationId, EventTypeName, MessageId},
+    core::types::{metadata::Metadata, ApplicationId, EventTypeName, MessageId},
     v1::{
         endpoints::{
             application::{ApplicationIn, ApplicationOut},
@@ -41,7 +41,7 @@ pub async fn create_test_app(client: &TestClient, name: &str) -> Result<Applicat
 
 pub async fn delete_test_app(client: &TestClient, id: ApplicationId) -> Result<IgnoredResponse> {
     client
-        .delete(&format!("api/v1/app/{}/", id), StatusCode::NO_CONTENT)
+        .delete(&format!("api/v1/app/{id}/"), StatusCode::NO_CONTENT)
         .await
 }
 
@@ -70,7 +70,7 @@ pub async fn post_endpoint(
 ) -> Result<EndpointOut> {
     client
         .post(
-            &format!("api/v1/app/{}/endpoint/", app_id),
+            &format!("api/v1/app/{app_id}/endpoint/"),
             ep,
             StatusCode::CREATED,
         )
@@ -85,7 +85,7 @@ pub async fn put_endpoint(
 ) -> Result<EndpointOut> {
     client
         .put(
-            &format!("api/v1/app/{}/endpoint/{}/", app_id, ep_id),
+            &format!("api/v1/app/{app_id}/endpoint/{ep_id}/"),
             ep,
             StatusCode::OK,
         )
@@ -118,12 +118,15 @@ pub async fn create_test_message(
         .await
 }
 
-pub fn event_type_in<T: Serialize>(name: &str, payload: T) -> Result<EventTypeIn> {
+pub fn event_type_in(
+    name: &str,
+    schema: impl Into<Option<serde_json::Value>>,
+) -> Result<EventTypeIn> {
     Ok(EventTypeIn {
         name: EventTypeName(name.to_owned()),
         description: "test-event-description".to_owned(),
         deleted: false,
-        schemas: Some(serde_json::to_value(payload)?),
+        schemas: schema.into().map(|s| serde_json::from_value(s).unwrap()),
     })
 }
 
@@ -173,7 +176,7 @@ pub async fn common_test_list<
 
     // Limit results
     let list = client
-        .get::<ListResponse<ModelOut>>(&format!("{}?limit=1", path), StatusCode::OK)
+        .get::<ListResponse<ModelOut>>(&format!("{path}?limit=1"), StatusCode::OK)
         .await
         .unwrap();
 
@@ -181,7 +184,7 @@ pub async fn common_test_list<
     assert!(!list.done);
 
     let list = client
-        .get::<ListResponse<ModelOut>>(&format!("{}?limit=50", path), StatusCode::OK)
+        .get::<ListResponse<ModelOut>>(&format!("{path}?limit=50"), StatusCode::OK)
         .await
         .unwrap();
 
@@ -189,7 +192,7 @@ pub async fn common_test_list<
     assert!(list.done);
 
     let list = client
-        .get::<ListResponse<ModelOut>>(&format!("{}?limit=10", path), StatusCode::OK)
+        .get::<ListResponse<ModelOut>>(&format!("{path}?limit=10"), StatusCode::OK)
         .await
         .unwrap();
 
@@ -197,7 +200,7 @@ pub async fn common_test_list<
     assert!(list.done);
 
     let list = client
-        .get::<ListResponse<ModelOut>>(&format!("{}?limit=6", path), StatusCode::OK)
+        .get::<ListResponse<ModelOut>>(&format!("{path}?limit=6"), StatusCode::OK)
         .await
         .unwrap();
 
@@ -217,7 +220,7 @@ pub async fn common_test_list<
 
     let _list = client
         .get::<IgnoredResponse>(
-            &format!("{}?limit=6&iterator=BAD-$$$ITERATOR", path),
+            &format!("{path}?limit=6&iterator=BAD-$$$ITERATOR"),
             StatusCode::UNPROCESSABLE_ENTITY,
         )
         .await
@@ -236,13 +239,13 @@ pub async fn common_test_list<
     // to 250
     if client
         .get::<IgnoredResponse>(
-            &format!("{}?limit=300", path),
+            &format!("{path}?limit=300"),
             StatusCode::UNPROCESSABLE_ENTITY,
         )
         .await
         .is_ok()
         || client
-            .get::<ListResponse<ModelOut>>(&format!("{}?limit=300", path), StatusCode::OK)
+            .get::<ListResponse<ModelOut>>(&format!("{path}?limit=300"), StatusCode::OK)
             .await
             .unwrap()
             .data
@@ -271,7 +274,7 @@ pub async fn get_msg_attempt_list_and_assert_count(
     run_with_retries(|| async {
         let list: ListResponse<MessageAttemptOut> = client
             .get(
-                &format!("api/v1/app/{}/attempt/msg/{}/", app_id, msg_id),
+                &format!("api/v1/app/{app_id}/attempt/msg/{msg_id}/"),
                 StatusCode::OK,
             )
             .await?;
@@ -286,4 +289,8 @@ pub async fn get_msg_attempt_list_and_assert_count(
         Ok(list)
     })
     .await
+}
+
+pub fn metadata(s: &str) -> Metadata {
+    serde_json::from_str::<Metadata>(s).unwrap()
 }

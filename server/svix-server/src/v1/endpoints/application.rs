@@ -3,14 +3,13 @@
 
 use crate::{
     core::{
-        security::{
-            AuthenticatedApplication, AuthenticatedOrganization,
-            AuthenticatedOrganizationWithApplication,
-        },
-        types::{ApplicationId, ApplicationIdOrUid, ApplicationUid},
+        permissions,
+        types::{metadata::Metadata, ApplicationId, ApplicationIdOrUid, ApplicationUid},
     },
-    db::models::application,
+    ctx,
+    db::models::{application, applicationmetadata},
     error::{HttpError, Result},
+    transaction,
     v1::utils::{
         patch::{
             patch_field_non_nullable, patch_field_nullable, UnrequiredField,
@@ -28,13 +27,13 @@ use axum::{
 };
 use chrono::{DateTime, Utc};
 use hyper::StatusCode;
-use sea_orm::{entity::prelude::*, ActiveValue::Set, QueryOrder};
-use sea_orm::{ActiveModelTrait, DatabaseConnection, QuerySelect};
+use sea_orm::ActiveValue::Set;
+use sea_orm::{ActiveModelTrait, DatabaseConnection};
 use serde::{Deserialize, Serialize};
-use svix_server_derive::{ModelIn, ModelOut};
+use svix_server_derive::ModelOut;
 use validator::{Validate, ValidationError};
 
-#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Validate, ModelIn)]
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Validate)]
 #[serde(rename_all = "camelCase")]
 pub struct ApplicationIn {
     #[validate(
@@ -50,26 +49,31 @@ pub struct ApplicationIn {
     #[validate]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub uid: Option<ApplicationUid>,
+
+    #[serde(default)]
+    pub metadata: Metadata,
 }
 
 // FIXME: This can and should be a derive macro
 impl ModelIn for ApplicationIn {
-    type ActiveModel = application::ActiveModel;
+    type ActiveModel = (application::ActiveModel, applicationmetadata::ActiveModel);
 
-    fn update_model(self, model: &mut Self::ActiveModel) {
+    fn update_model(self, (app, app_metadata): &mut Self::ActiveModel) {
         let ApplicationIn {
             name,
             rate_limit,
             uid,
+            metadata,
         } = self;
 
-        model.name = Set(name);
-        model.rate_limit = Set(rate_limit.map(|x| x.into()));
-        model.uid = Set(uid);
+        app.name = Set(name);
+        app.rate_limit = Set(rate_limit.map(|x| x.into()));
+        app.uid = Set(uid);
+        app_metadata.data = Set(metadata);
     }
 }
 
-#[derive(Deserialize, ModelIn, Serialize, Validate)]
+#[derive(Deserialize, Serialize, Validate)]
 #[serde(rename_all = "camelCase")]
 pub struct ApplicationPatch {
     #[serde(default, skip_serializing_if = "UnrequiredField::is_absent")]
@@ -86,24 +90,30 @@ pub struct ApplicationPatch {
     #[serde(default, skip_serializing_if = "UnrequiredNullableField::is_absent")]
     #[validate]
     pub uid: UnrequiredNullableField<ApplicationUid>,
+
+    #[serde(default, skip_serializing_if = "UnrequiredField::is_absent")]
+    pub metadata: UnrequiredField<Metadata>,
 }
 
 impl ModelIn for ApplicationPatch {
-    type ActiveModel = application::ActiveModel;
+    type ActiveModel = (application::ActiveModel, applicationmetadata::ActiveModel);
 
-    fn update_model(self, model: &mut Self::ActiveModel) {
+    fn update_model(self, (app, app_metadata): &mut Self::ActiveModel) {
         let ApplicationPatch {
             name,
             rate_limit,
             uid,
+            metadata,
         } = self;
 
         // `model`'s version of `rate_limit` is an i32, while `self`'s is a u16.
         let rate_limit_map = |x: u16| -> i32 { x.into() };
+        let data = metadata;
 
-        patch_field_non_nullable!(model, name);
-        patch_field_nullable!(model, rate_limit, rate_limit_map);
-        patch_field_nullable!(model, uid);
+        patch_field_non_nullable!(app, name);
+        patch_field_nullable!(app, rate_limit, rate_limit_map);
+        patch_field_nullable!(app, uid);
+        patch_field_non_nullable!(app_metadata, data);
     }
 }
 
@@ -156,19 +166,19 @@ pub struct ApplicationOut {
     pub id: ApplicationId,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
+    pub metadata: Metadata,
 }
 
-// FIXME: This can and should be a derive macro
-impl From<application::Model> for ApplicationOut {
-    fn from(model: application::Model) -> Self {
+impl From<(application::Model, applicationmetadata::Model)> for ApplicationOut {
+    fn from((app, metadata): (application::Model, applicationmetadata::Model)) -> Self {
         Self {
-            uid: model.uid,
-            name: model.name,
-            rate_limit: model.rate_limit.map(|x| x as u16),
-
-            id: model.id,
-            created_at: model.created_at.into(),
-            updated_at: model.updated_at.into(),
+            uid: app.uid,
+            name: app.name,
+            rate_limit: app.rate_limit.map(|x| x as u16),
+            id: app.id,
+            created_at: app.created_at.into(),
+            updated_at: app.updated_at.into(),
+            metadata: metadata.metadata(),
         }
     }
 }
@@ -176,21 +186,18 @@ impl From<application::Model> for ApplicationOut {
 async fn list_applications(
     Extension(ref db): Extension<DatabaseConnection>,
     pagination: ValidatedQuery<Pagination<ApplicationId>>,
-    AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
+    permissions::Organization { org_id }: permissions::Organization,
 ) -> Result<Json<ListResponse<ApplicationOut>>> {
     let PaginationLimit(limit) = pagination.limit;
     let iterator = pagination.iterator.clone();
 
-    let mut query = application::Entity::secure_find(permissions.org_id)
-        .order_by_asc(application::Column::Id)
-        .limit(limit + 1);
+    let apps =
+        ctx!(application::Model::fetch_many_with_metadata(db, org_id, limit + 1, iterator).await)?;
 
-    if let Some(iterator) = iterator {
-        query = query.filter(application::Column::Id.gt(iterator))
-    }
+    let results = apps.map(ApplicationOut::from).collect();
 
     Ok(Json(ApplicationOut::list_response_no_prev(
-        query.all(db).await?.into_iter().map(|x| x.into()).collect(),
+        results,
         limit as usize,
     )))
 }
@@ -207,98 +214,114 @@ pub struct CreateApplicationQuery {
 
 async fn create_application(
     Extension(ref db): Extension<DatabaseConnection>,
-    ValidatedJson(data): ValidatedJson<ApplicationIn>,
     query: ValidatedQuery<CreateApplicationQuery>,
-    AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
+    permissions::Organization { org_id }: permissions::Organization,
+    ValidatedJson(data): ValidatedJson<ApplicationIn>,
 ) -> Result<(StatusCode, Json<ApplicationOut>)> {
-    if query.get_if_exists {
-        if let Some(ref uid) = data.uid {
-            let app = application::Entity::secure_find(permissions.org_id.clone())
-                .filter(application::Column::Uid.eq(uid.to_owned()))
-                .one(db)
-                .await?;
-            if let Some(ret) = app {
-                return Ok((StatusCode::OK, Json(ret.into())));
+    if let Some(ref uid) = data.uid {
+        if let Some((app, metadata)) = ctx!(
+            application::Model::fetch_with_metadata(db, org_id.clone(), uid.clone().into()).await
+        )? {
+            if query.get_if_exists {
+                return Ok((StatusCode::OK, Json((app, metadata).into())));
             }
-        }
+            return Err(HttpError::conflict(
+                None,
+                Some("An application with that id or uid already exists".into()),
+            )
+            .into());
+        };
     }
 
-    let app = application::ActiveModel {
-        org_id: Set(permissions.org_id.clone()),
-        ..data.into()
-    };
-    let ret = app.insert(db).await?;
-    Ok((StatusCode::CREATED, Json(ret.into())))
+    let app = application::ActiveModel::new(org_id.clone());
+    let metadata = applicationmetadata::ActiveModel::new(app.id.clone().unwrap(), None);
+
+    let mut model = (app, metadata);
+    data.update_model(&mut model);
+    let (app, metadata) = model;
+
+    let (app, metadata) = transaction!(db, |txn| async move {
+        let app_result = ctx!(app.insert(txn).await)?;
+        let metadata = ctx!(metadata.upsert_or_delete(txn).await)?;
+        Ok((app_result, metadata))
+    })?;
+
+    Ok((StatusCode::CREATED, Json((app, metadata).into())))
 }
 
 async fn get_application(
-    Extension(ref db): Extension<DatabaseConnection>,
-    AuthenticatedApplication { app, permissions }: AuthenticatedApplication,
+    permissions::ApplicationWithMetadata { app, metadata }: permissions::ApplicationWithMetadata,
 ) -> Result<Json<ApplicationOut>> {
-    let app = application::Entity::secure_find_by_id(permissions.org_id, app.id)
-        .one(db)
-        .await?
-        .ok_or_else(|| HttpError::not_found(None, None))?;
-    Ok(Json(app.into()))
+    Ok(Json((app, metadata).into()))
 }
 
 async fn update_application(
     Extension(ref db): Extension<DatabaseConnection>,
-    ValidatedJson(data): ValidatedJson<ApplicationIn>,
     Path(app_id): Path<ApplicationIdOrUid>,
-    AuthenticatedOrganization { permissions }: AuthenticatedOrganization,
+    permissions::Organization { org_id }: permissions::Organization,
+    ValidatedJson(data): ValidatedJson<ApplicationIn>,
 ) -> Result<(StatusCode, Json<ApplicationOut>)> {
-    let app = application::Entity::secure_find_by_id_or_uid(permissions.org_id.clone(), app_id)
-        .one(db)
-        .await?;
+    let (app, metadata, create_models) = if let Some((app, metadata)) =
+        ctx!(application::Model::fetch_with_metadata(db, org_id.clone(), app_id).await)?
+    {
+        (app.into(), metadata.into(), false)
+    } else {
+        let app = application::ActiveModel::new(org_id);
+        let metadata = applicationmetadata::ActiveModel::new(app.id.clone().unwrap(), None);
+        (app, metadata, true)
+    };
 
-    match app {
-        Some(app) => {
-            let mut app: application::ActiveModel = app.into();
-            data.update_model(&mut app);
-            let ret = app.update(db).await?;
+    let mut models = (app, metadata);
+    data.update_model(&mut models);
+    let (app, metadata) = models;
 
-            Ok((StatusCode::OK, Json(ret.into())))
-        }
-        None => {
-            let ret = application::ActiveModel {
-                org_id: Set(permissions.org_id.clone()),
-                ..data.into()
-            }
-            .insert(db)
-            .await?;
+    let (app, metadata) = transaction!(db, |txn| async move {
+        let app = if create_models {
+            ctx!(app.insert(txn).await)?
+        } else {
+            ctx!(app.update(txn).await)?
+        };
+        let metadata = ctx!(metadata.upsert_or_delete(txn).await)?;
+        Ok((app, metadata))
+    })?;
 
-            Ok((StatusCode::CREATED, Json(ret.into())))
-        }
-    }
+    let status = if create_models {
+        StatusCode::CREATED
+    } else {
+        StatusCode::OK
+    };
+    Ok((status, Json((app, metadata).into())))
 }
 
 async fn patch_application(
     Extension(ref db): Extension<DatabaseConnection>,
+    permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
     ValidatedJson(data): ValidatedJson<ApplicationPatch>,
-    AuthenticatedOrganizationWithApplication {
-        permissions: _,
-        app,
-    }: AuthenticatedOrganizationWithApplication,
 ) -> Result<Json<ApplicationOut>> {
-    let mut app: application::ActiveModel = app.into();
-    data.update_model(&mut app);
+    let metadata = ctx!(app.fetch_or_create_metadata(db).await)?;
+    let app: application::ActiveModel = app.into();
 
-    let ret = app.update(db).await?;
-    Ok(Json(ret.into()))
+    let mut model = (app, metadata);
+    data.update_model(&mut model);
+    let (app, metadata) = model;
+
+    let (app, metadata) = transaction!(db, |txn| async move {
+        let app = ctx!(app.update(txn).await)?;
+        let metadata = ctx!(metadata.upsert_or_delete(txn).await)?;
+        Ok((app, metadata))
+    })?;
+
+    Ok(Json((app, metadata).into()))
 }
 
 async fn delete_application(
     Extension(ref db): Extension<DatabaseConnection>,
-    AuthenticatedOrganizationWithApplication {
-        permissions: _,
-        app,
-    }: AuthenticatedOrganizationWithApplication,
+    permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
     let mut app: application::ActiveModel = app.into();
     app.deleted = Set(true);
     app.uid = Set(None); // We don't want deleted UIDs to clash
-    app.update(db).await?;
+    ctx!(app.update(db).await)?;
     Ok((StatusCode::NO_CONTENT, Json(EmptyResponse {})))
 }
 

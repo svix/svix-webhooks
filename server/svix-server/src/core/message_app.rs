@@ -17,9 +17,13 @@ use crate::{
             OrganizationId,
         },
     },
-    db::models::{application, endpoint, message},
+    ctx,
+    db::models::{application, endpoint},
+    err_validation,
     error::{Error, Result},
 };
+
+use super::types::EventTypeName;
 
 /// The information cached during the creation of a message. Includes a [`Vec`] of all endpoints
 /// associated with the given application and organization ID.
@@ -40,9 +44,7 @@ impl CreateMessageApp {
         db: &DatabaseTransaction,
         app: application::Model,
     ) -> Result<CreateMessageApp> {
-        let endpoints = endpoint::Entity::secure_find(app.id.clone())
-            .all(db)
-            .await?
+        let endpoints = ctx!(endpoint::Entity::secure_find(app.id.clone()).all(db).await)?
             .into_iter()
             .map(TryInto::try_into)
             .collect::<Result<Vec<_>>>()?;
@@ -55,9 +57,7 @@ impl CreateMessageApp {
                 .rate_limit
                 .map(|v| v.try_into())
                 .transpose()
-                .map_err(|_| {
-                    Error::Validation("Application rate limit out of bounds".to_owned())
-                })?,
+                .map_err(|_| err_validation!("Application rate limit out of bounds"))?,
             endpoints,
             deleted: app.deleted,
         })
@@ -70,11 +70,11 @@ impl CreateMessageApp {
         cache: Cache,
         pg: &DatabaseConnection,
         app: Option<application::Model>,
-        app_id: ApplicationId,
         org_id: OrganizationId,
+        app_id: ApplicationId,
         ttl: Duration,
     ) -> Result<Option<CreateMessageApp>> {
-        let cache_key = AppEndpointKey::new(org_id.clone(), app_id.clone());
+        let cache_key = AppEndpointKey::new(&org_id, &app_id);
 
         // First check Redis
         if let Ok(Some(cma)) = cache.get(&cache_key).await {
@@ -82,14 +82,15 @@ impl CreateMessageApp {
         }
 
         // Then check PostgreSQL
-        let db = pg.begin().await?;
+        let db = ctx!(pg.begin().await)?;
         // Fetch the [`application::Model`] either given or from the ID
         let app = if let Some(app) = app {
             app
-        } else if let Some(app) = application::Entity::secure_find_by_id(org_id, app_id)
-            .one(&db)
-            .await?
-        {
+        } else if let Some(app) = ctx!(
+            application::Entity::secure_find_by_id(org_id, app_id)
+                .one(&db)
+                .await
+        )? {
             app
         } else {
             return Ok(None);
@@ -107,7 +108,8 @@ impl CreateMessageApp {
     pub fn filtered_endpoints(
         &self,
         trigger_type: MessageAttemptTriggerType,
-        msg: &message::Model,
+        event_type: &EventTypeName,
+        channels: Option<&EventChannelSet>,
     ) -> Vec<CreateMessageEndpoint> {
         self
         .endpoints
@@ -124,7 +126,7 @@ impl CreateMessageApp {
                         endpoint
                         .event_types_ids
                         .as_ref()
-                        .map(|x| x.0.contains(&msg.event_type))
+                        .map(|x| x.0.contains(event_type))
                         .unwrap_or(true)
                     &&
                         // If an endpoint has no channels accept all messages, otherwise only if their channels overlap.
@@ -132,7 +134,7 @@ impl CreateMessageApp {
                         endpoint
                         .channels
                         .as_ref()
-                        .map(|x| !x.0.is_disjoint(msg.channels.as_ref().map(|x| &x.0).unwrap_or(&HashSet::new())))
+                        .map(|x| !x.0.is_disjoint(channels.map(|x| &x.0).unwrap_or(&HashSet::new())))
                         .unwrap_or(true)
             ))})
         .cloned()
@@ -189,7 +191,7 @@ impl TryFrom<endpoint::Model> for CreateMessageEndpoint {
                 .rate_limit
                 .map(|v| v.try_into())
                 .transpose()
-                .map_err(|_| Error::Validation("Endpoint rate limit out of bounds".to_owned()))?,
+                .map_err(|_| err_validation!("Endpoint rate limit out of bounds"))?,
             first_failure_at: m.first_failure_at,
             headers: m.headers,
             disabled: m.disabled,
@@ -202,7 +204,7 @@ kv_def!(AppEndpointKey, CreateMessageApp);
 impl AppEndpointKey {
     // FIXME: Rewrite doc comment when AppEndpointValue members are known
     /// Returns a key for fetching all cached endpoints for a given organization and application.
-    pub fn new(org: OrganizationId, app: ApplicationId) -> AppEndpointKey {
+    pub fn new(org: &OrganizationId, app: &ApplicationId) -> AppEndpointKey {
         AppEndpointKey(format!("{}_APP_v3_{}_{}", Self::PREFIX_CACHE, org, app))
     }
 }

@@ -1,6 +1,6 @@
 {
   "name": "svix",
-  "version": "0.65.1",
+  "version": "0.72.0",
   "description": "Svix API client",
   "author": "svix",
   "repository": "https://github.com/svix/svix-libs",
@@ -35,6 +35,7 @@
     "url-parse": "^1.4.3"
   },
   "devDependencies": {
+    "@stablelib/utf8": "^1.0.1",
     "@types/jest": "^26.0.23",
     "@typescript-eslint/eslint-plugin": "^4.15.2",
     "@typescript-eslint/parser": "^4.15.2",

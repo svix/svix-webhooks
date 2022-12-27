@@ -8,9 +8,10 @@ use sea_orm::{ActiveModelTrait, DatabaseConnection};
 use super::{EndpointHeadersIn, EndpointHeadersOut, EndpointHeadersPatchIn};
 use crate::{
     core::{
-        security::AuthenticatedApplication,
+        permissions,
         types::{ApplicationIdOrUid, EndpointIdOrUid},
     },
+    ctx,
     db::models::endpoint,
     error::{HttpError, Result},
     v1::utils::{EmptyResponse, ModelIn, ValidatedJson},
@@ -19,15 +20,14 @@ use crate::{
 pub(super) async fn get_endpoint_headers(
     Extension(ref db): Extension<DatabaseConnection>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
-    AuthenticatedApplication {
-        permissions: _,
-        app,
-    }: AuthenticatedApplication,
+    permissions::Application { app }: permissions::Application,
 ) -> Result<Json<EndpointHeadersOut>> {
-    let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id, endp_id)
-        .one(db)
-        .await?
-        .ok_or_else(|| HttpError::not_found(None, None))?;
+    let endp = ctx!(
+        endpoint::Entity::secure_find_by_id_or_uid(app.id, endp_id)
+            .one(db)
+            .await
+    )?
+    .ok_or_else(|| HttpError::not_found(None, None))?;
 
     match endp.headers {
         Some(h) => Ok(Json(h.into())),
@@ -38,20 +38,19 @@ pub(super) async fn get_endpoint_headers(
 pub(super) async fn update_endpoint_headers(
     Extension(ref db): Extension<DatabaseConnection>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
+    permissions::Application { app }: permissions::Application,
     ValidatedJson(data): ValidatedJson<EndpointHeadersIn>,
-    AuthenticatedApplication {
-        permissions: _,
-        app,
-    }: AuthenticatedApplication,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
-    let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
-        .one(db)
-        .await?
-        .ok_or_else(|| HttpError::not_found(None, None))?;
+    let endp = ctx!(
+        endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
+            .one(db)
+            .await
+    )?
+    .ok_or_else(|| HttpError::not_found(None, None))?;
 
     let mut endp: endpoint::ActiveModel = endp.into();
     data.update_model(&mut endp);
-    endp.update(db).await?;
+    ctx!(endp.update(db).await)?;
 
     Ok((StatusCode::NO_CONTENT, Json(EmptyResponse {})))
 }
@@ -59,20 +58,19 @@ pub(super) async fn update_endpoint_headers(
 pub(super) async fn patch_endpoint_headers(
     Extension(ref db): Extension<DatabaseConnection>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
+    permissions::Application { app }: permissions::Application,
     ValidatedJson(data): ValidatedJson<EndpointHeadersPatchIn>,
-    AuthenticatedApplication {
-        permissions: _,
-        app,
-    }: AuthenticatedApplication,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
-    let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
-        .one(db)
-        .await?
-        .ok_or_else(|| HttpError::not_found(None, None))?;
+    let endp = ctx!(
+        endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
+            .one(db)
+            .await
+    )?
+    .ok_or_else(|| HttpError::not_found(None, None))?;
 
     let mut endp: endpoint::ActiveModel = endp.into();
     data.update_model(&mut endp);
-    endp.update(db).await?;
+    ctx!(endp.update(db).await)?;
 
     Ok((StatusCode::NO_CONTENT, Json(EmptyResponse {})))
 }

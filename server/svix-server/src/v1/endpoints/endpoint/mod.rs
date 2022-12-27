@@ -6,15 +6,19 @@ mod recovery;
 mod secrets;
 
 use crate::{
+    cfg::DefaultSignatureType,
     core::{
-        security::AuthenticatedApplication,
+        cryptography::Encryption,
+        permissions,
         types::{
-            ApplicationIdOrUid, BaseId, EndpointId, EndpointIdOrUid, EndpointUid, EventChannelSet,
-            EventTypeNameSet, MessageEndpointId, MessageStatus,
+            metadata::Metadata, ApplicationIdOrUid, BaseId, EndpointId, EndpointIdOrUid,
+            EndpointSecretInternal, EndpointUid, EventChannelSet, EventTypeNameSet,
+            MessageEndpointId, MessageStatus,
         },
     },
+    ctx,
     db::models::messagedestination,
-    error::HttpError,
+    error::{self, HttpError},
     v1::utils::{
         api_not_implemented,
         patch::{
@@ -44,6 +48,8 @@ use validator::{Validate, ValidationError};
 
 use crate::core::types::{EndpointHeaders, EndpointHeadersPatch, EndpointSecret};
 use crate::db::models::endpoint;
+
+use self::secrets::generate_secret;
 
 pub fn validate_event_types_ids(
     event_types_ids: &EventTypeNameSet,
@@ -157,6 +163,23 @@ pub struct EndpointIn {
     #[serde(rename = "secret")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub key: Option<EndpointSecret>,
+
+    #[serde(default)]
+    pub metadata: Metadata,
+}
+
+impl EndpointIn {
+    pub fn key_take_or_generate(
+        &mut self,
+        encryption: &Encryption,
+        sig_type: &DefaultSignatureType,
+    ) -> error::Result<EndpointSecretInternal> {
+        if let Some(key) = self.key.take() {
+            EndpointSecretInternal::from_endpoint_secret(key, encryption)
+        } else {
+            generate_secret(encryption, sig_type)
+        }
+    }
 }
 
 // FIXME: This can and should be a derive macro
@@ -174,6 +197,7 @@ impl ModelIn for EndpointIn {
             event_types_ids,
             channels,
             key: _,
+            metadata: _,
         } = self;
 
         model.description = Set(description);
@@ -231,6 +255,10 @@ pub struct EndpointPatch {
     #[serde(rename = "secret")]
     #[serde(skip_serializing_if = "UnrequiredNullableField::is_absent")]
     pub key: UnrequiredNullableField<EndpointSecret>,
+
+    #[serde(default)]
+    #[serde(skip_serializing_if = "UnrequiredField::is_absent")]
+    pub metadata: UnrequiredField<Metadata>,
 }
 
 impl ModelIn for EndpointPatch {
@@ -247,6 +275,7 @@ impl ModelIn for EndpointPatch {
             event_types_ids,
             channels,
             key: _,
+            metadata: _,
         } = self;
 
         let map = |x: u16| -> i32 { x.into() };
@@ -298,9 +327,9 @@ fn validate_minimum_version_patch(
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ModelOut)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct EndpointOut {
+pub struct EndpointOutCommon {
     pub description: String,
     pub rate_limit: Option<u16>,
     /// Optional unique identifier for the endpoint
@@ -311,14 +340,11 @@ pub struct EndpointOut {
     #[serde(rename = "filterTypes")]
     pub event_types_ids: Option<EventTypeNameSet>,
     pub channels: Option<EventChannelSet>,
-
-    pub id: EndpointId,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
 
-// FIXME: This can and should be a derive macro
-impl From<endpoint::Model> for EndpointOut {
+impl From<endpoint::Model> for EndpointOutCommon {
     fn from(model: endpoint::Model) -> Self {
         Self {
             description: model.description,
@@ -329,10 +355,28 @@ impl From<endpoint::Model> for EndpointOut {
             disabled: model.disabled,
             event_types_ids: model.event_types_ids,
             channels: model.channels,
-
-            id: model.id,
             created_at: model.created_at.into(),
             updated_at: model.updated_at.into(),
+        }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ModelOut)]
+#[serde(rename_all = "camelCase")]
+pub struct EndpointOut {
+    #[serde(flatten)]
+    pub ep: EndpointOutCommon,
+    pub id: EndpointId,
+    pub metadata: Metadata,
+}
+
+// FIXME: This can and should be a derive macro
+impl From<(endpoint::Model, Metadata)> for EndpointOut {
+    fn from((endp, metadata): (endpoint::Model, Metadata)) -> Self {
+        Self {
+            id: endp.id.clone(),
+            ep: endp.into(),
+            metadata,
         }
     }
 }
@@ -392,14 +436,14 @@ impl EndpointHeadersOut {
 
 impl From<EndpointHeaders> for EndpointHeadersOut {
     fn from(hdr: EndpointHeaders) -> Self {
-        let (sens, remaining) = hdr
-            .0
-            .into_iter()
-            .partition(|(k, _)| Self::SENSITIVE_HEADERS.iter().any(|&x| x == k));
+        let (sens, remaining) = hdr.0.into_iter().partition(|(k, _)| {
+            let k = k.to_lowercase();
+            Self::SENSITIVE_HEADERS.iter().any(|&x| x == k)
+        });
 
         Self {
             headers: remaining,
-            sensitive: sens.into_iter().map(|(k, _)| k).collect(),
+            sensitive: sens.into_keys().collect(),
         }
     }
 }
@@ -454,18 +498,17 @@ pub struct EndpointStatsQueryOut {
 async fn endpoint_stats(
     Extension(ref db): Extension<DatabaseConnection>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
-    AuthenticatedApplication {
-        permissions: _,
-        app,
-    }: AuthenticatedApplication,
+    permissions::Application { app }: permissions::Application,
 ) -> crate::error::Result<Json<EndpointStatsOut>> {
-    let endpoint = crate::db::models::endpoint::Entity::secure_find_by_id_or_uid(app.id, endp_id)
-        .one(db)
-        .await?
-        .ok_or_else(|| HttpError::not_found(None, None))?
-        .id;
+    let endpoint = ctx!(
+        crate::db::models::endpoint::Entity::secure_find_by_id_or_uid(app.id, endp_id)
+            .one(db)
+            .await
+    )?
+    .ok_or_else(|| HttpError::not_found(None, None))?
+    .id;
 
-    let query_out: Vec<EndpointStatsQueryOut> =
+    let query_out: Vec<EndpointStatsQueryOut> = ctx!(
         messagedestination::Entity::secure_find_by_endpoint(endpoint)
             .select_only()
             .column(messagedestination::Column::Status)
@@ -478,7 +521,8 @@ async fn endpoint_stats(
             )
             .into_model::<EndpointStatsQueryOut>()
             .all(db)
-            .await?;
+            .await
+    )?;
     let mut query_out = query_out
         .into_iter()
         .map(|EndpointStatsQueryOut { status, count }| (status, count))
@@ -493,52 +537,53 @@ async fn endpoint_stats(
 }
 
 pub fn router() -> Router {
-    Router::new().nest(
-        "/app/:app_id",
-        Router::new()
-            .route(
-                "/endpoint/",
-                post(crud::create_endpoint).get(crud::list_endpoints),
-            )
-            .route(
-                "/endpoint/:endp_id/",
-                get(crud::get_endpoint)
-                    .put(crud::update_endpoint)
-                    .patch(crud::patch_endpoint)
-                    .delete(crud::delete_endpoint),
-            )
-            .route(
-                "/endpoint/:endp_id/secret/",
-                get(secrets::get_endpoint_secret),
-            )
-            .route(
-                "/endpoint/:endp_id/secret/rotate/",
-                post(secrets::rotate_endpoint_secret),
-            )
-            .route("/endpoint/:endp_id/stats/", get(endpoint_stats))
-            .route(
-                "/endpoint/:endp_id/send-example/",
-                post(api_not_implemented),
-            )
-            .route(
-                "/endpoint/:endp_id/recover/",
-                post(recovery::recover_failed_webhooks),
-            )
-            .route(
-                "/endpoint/:endp_id/headers/",
-                get(headers::get_endpoint_headers)
-                    .patch(headers::patch_endpoint_headers)
-                    .put(headers::update_endpoint_headers),
-            ),
-    )
+    Router::new()
+        .route(
+            "/app/:app_id/endpoint/",
+            post(crud::create_endpoint).get(crud::list_endpoints),
+        )
+        .route(
+            "/app/:app_id/endpoint/:endp_id/",
+            get(crud::get_endpoint)
+                .put(crud::update_endpoint)
+                .patch(crud::patch_endpoint)
+                .delete(crud::delete_endpoint),
+        )
+        .route(
+            "/app/:app_id/endpoint/:endp_id/secret/",
+            get(secrets::get_endpoint_secret),
+        )
+        .route(
+            "/app/:app_id/endpoint/:endp_id/secret/rotate/",
+            post(secrets::rotate_endpoint_secret),
+        )
+        .route("/app/:app_id/endpoint/:endp_id/stats/", get(endpoint_stats))
+        .route(
+            "/app/:app_id/endpoint/:endp_id/send-example/",
+            post(api_not_implemented),
+        )
+        .route(
+            "/app/:app_id/endpoint/:endp_id/recover/",
+            post(recovery::recover_failed_webhooks),
+        )
+        .route(
+            "/app/:app_id/endpoint/:endp_id/headers/",
+            get(headers::get_endpoint_headers)
+                .patch(headers::patch_endpoint_headers)
+                .put(headers::update_endpoint_headers),
+        )
 }
 
 #[cfg(test)]
 mod tests {
 
-    use super::{validate_url, EndpointHeadersIn, EndpointHeadersPatchIn, EndpointIn};
+    use crate::core::types::EndpointHeaders;
+
+    use super::{
+        validate_url, EndpointHeadersIn, EndpointHeadersOut, EndpointHeadersPatchIn, EndpointIn,
+    };
     use serde_json::json;
-    use std::collections::HashMap;
+    use std::collections::{HashMap, HashSet};
     use validator::Validate;
 
     const URL_VALID: &str = "https://www.example.com";
@@ -626,6 +671,26 @@ mod tests {
         let valid: EndpointHeadersIn =
             serde_json::from_value(json!({ "headers": headers_valid })).unwrap();
         valid.validate().unwrap();
+    }
+
+    #[test]
+    fn test_endpoint_headers_sensitive() {
+        let headers = EndpointHeaders(HashMap::from([
+            ("foo".to_string(), "1".to_string()),
+            ("authorization".to_string(), "test".to_string()),
+            ("X-Auth-Token".to_string(), "test2".to_string()),
+        ]));
+
+        let headers_out: EndpointHeadersOut = headers.into();
+
+        assert_eq!(
+            headers_out.headers,
+            HashMap::from([("foo".to_string(), "1".to_string())])
+        );
+        assert_eq!(
+            headers_out.sensitive,
+            HashSet::from(["authorization".to_string(), "X-Auth-Token".to_string()])
+        );
     }
 
     #[test]

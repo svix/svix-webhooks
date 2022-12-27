@@ -5,9 +5,13 @@ use crate::core::types::{
     ApplicationId, BaseId, EndpointHeaders, EndpointId, EndpointIdOrUid, EndpointSecretInternal,
     EndpointUid, EventChannelSet, EventTypeNameSet, ExpiringSigningKeys,
 };
+use crate::{ctx, error};
 use chrono::Utc;
 use sea_orm::ActiveValue::Set;
 use sea_orm::{entity::prelude::*, Condition};
+use sea_orm::{ConnectionTrait, IntoActiveModel};
+
+use super::endpointmetadata;
 
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(table_name = "endpoint")]
@@ -44,6 +48,8 @@ pub enum Relation {
     Application,
     #[sea_orm(has_many = "super::messagedestination::Entity")]
     Messagedestination,
+    #[sea_orm(has_one = "super::endpointmetadata::Entity")]
+    Metadata,
 }
 
 impl Related<super::application::Entity> for Entity {
@@ -58,21 +64,53 @@ impl Related<super::messagedestination::Entity> for Entity {
     }
 }
 
+impl Related<super::endpointmetadata::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Metadata.def()
+    }
+}
+
 impl ActiveModelBehavior for ActiveModel {
-    fn new() -> Self {
+    fn before_save(mut self, _insert: bool) -> Result<Self, DbErr> {
+        self.updated_at = Set(Utc::now().into());
+        Ok(self)
+    }
+}
+
+impl ActiveModel {
+    pub fn new(app_id: ApplicationId, key: EndpointSecretInternal) -> Self {
         let timestamp = Utc::now();
         Self {
             id: Set(EndpointId::new(timestamp.into(), None)),
+            app_id: Set(app_id),
             created_at: Set(timestamp.into()),
             updated_at: Set(timestamp.into()),
             deleted: Set(false),
+            key: Set(key),
             ..ActiveModelTrait::default()
         }
     }
 
-    fn before_save(mut self, _insert: bool) -> Result<Self, DbErr> {
-        self.updated_at = Set(Utc::now().into());
-        Ok(self)
+    pub async fn fetch_with_metadata(
+        db: &impl ConnectionTrait,
+        app_id: ApplicationId,
+        endp_id: EndpointIdOrUid,
+    ) -> error::Result<Option<(Self, endpointmetadata::ActiveModel)>> {
+        let (endp, metadata) = match ctx!(
+            Entity::secure_find_by_id_or_uid(app_id, endp_id)
+                .find_also_related(endpointmetadata::Entity)
+                .one(db)
+                .await
+        )? {
+            Some(models) => models,
+            None => return Ok(None),
+        };
+
+        let metadata = metadata
+            .map(IntoActiveModel::into_active_model)
+            .unwrap_or_else(|| endpointmetadata::ActiveModel::new(endp.id.clone(), None));
+
+        Ok(Some((endp.into_active_model(), metadata)))
     }
 }
 

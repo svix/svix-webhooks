@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
+use crate::utils::common_calls::metadata;
 use reqwest::StatusCode;
-
 use svix_server::{
     cfg::CacheType, core::types::ApplicationUid, v1::endpoints::application::ApplicationIn,
     v1::endpoints::application::ApplicationOut,
@@ -19,7 +19,7 @@ use utils::{
 // operation could fail. This should probably be made into a macro if at all possible.
 #[tokio::test]
 async fn test_patch() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     let app: ApplicationOut = client
         .post(
@@ -61,13 +61,14 @@ async fn test_patch() {
     // Assert that no other field was changed
     assert_eq!(out.rate_limit, None);
     assert_eq!(out.uid, None);
+    assert_eq!(out.metadata, metadata("{}"));
 
     // Test that rate_limit may be set while the rest are omitted
     let _: ApplicationOut = client
         .patch(
             &format!("api/v1/app/{}/", app.id),
             serde_json::json! ({
-                "rateLimit": 1
+                "rateLimit": 1,
             }),
             StatusCode::OK,
         )
@@ -145,11 +146,36 @@ async fn test_patch() {
     // Assert that no other field was changed
     assert_eq!(out.name, "second_name".to_owned());
     assert_eq!(out.rate_limit, None);
+
+    // Test that metadata may be changed while the rest are omitted
+    let _: ApplicationOut = client
+        .patch(
+            &format!("api/v1/app/{}/", app.id),
+            serde_json::json!({
+                "metadata": {
+                    "foo": "bar",
+                    "bizz": "baz",
+                },
+            }),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    // Assert the change was made
+    let out = client
+        .get::<ApplicationOut>(&format!("api/v1/app/{}/", app.id), StatusCode::OK)
+        .await
+        .unwrap();
+    assert_eq!(metadata(r#"{"foo": "bar", "bizz": "baz"}"#), out.metadata);
+    // Assert that no other field was changed
+    assert_eq!(out.name, "second_name".to_owned());
+    assert_eq!(out.rate_limit, None);
 }
 
 #[tokio::test]
 async fn test_crud() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     const APP_NAME_1_1: &str = "v1ApplicationCrudTest11";
     const APP_NAME_1_2: &str = "v1ApplicationCrudTest12";
@@ -198,7 +224,7 @@ async fn test_crud() {
     let app_1_id = app_1.id;
     let app_1: ApplicationOut = client
         .put(
-            &format!("api/v1/app/{}/", app_1_id),
+            &format!("api/v1/app/{app_1_id}/"),
             application_in(APP_NAME_1_2),
             StatusCode::OK,
         )
@@ -208,7 +234,7 @@ async fn test_crud() {
     let app_2_id = app_2.id;
     let app_2: ApplicationOut = client
         .put(
-            &format!("api/v1/app/{}/", app_2_id),
+            &format!("api/v1/app/{app_2_id}/"),
             application_in(APP_NAME_2_2),
             StatusCode::OK,
         )
@@ -218,7 +244,7 @@ async fn test_crud() {
     // CONFIRM UPDATE
     assert_eq!(
         client
-            .get::<ApplicationOut>(&format!("api/v1/app/{}/", app_1_id), StatusCode::OK,)
+            .get::<ApplicationOut>(&format!("api/v1/app/{app_1_id}/"), StatusCode::OK,)
             .await
             .unwrap(),
         app_1
@@ -226,7 +252,7 @@ async fn test_crud() {
 
     assert_eq!(
         client
-            .get::<ApplicationOut>(&format!("api/v1/app/{}/", app_2_id), StatusCode::OK,)
+            .get::<ApplicationOut>(&format!("api/v1/app/{app_2_id}/"), StatusCode::OK,)
             .await
             .unwrap(),
         app_2
@@ -251,11 +277,71 @@ async fn test_crud() {
         .get(&format!("api/v1/app/{}/", app_2.id), StatusCode::NOT_FOUND)
         .await
         .unwrap();
+
+    let app: ApplicationOut = client
+        .post(
+            "api/v1/app/",
+            serde_json::json!({
+                "name": "Apps all around",
+            }),
+            StatusCode::CREATED,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(app.metadata, metadata(r#"{}"#));
+
+    let updated: ApplicationOut = client
+        .patch(
+            &format!("api/v1/app/{}/", app.id),
+            serde_json::json!({
+                "metadata": {
+                    "bizz": "bar"
+                },
+            }),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+    assert_eq!(updated.metadata, metadata(r#"{"bizz":"bar"}"#));
+
+    let new_app: ApplicationOut = client
+        .put(
+            "api/v1/app/one_upserted_boi/",
+            serde_json::json!({
+                "name": "Apps for two",
+                "metadata": {
+                    "foo": "bar"
+                },
+            }),
+            StatusCode::CREATED,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(new_app.metadata, metadata(r#"{"foo":"bar"}"#));
+
+    let updated_metadata_app: ApplicationOut = client
+        .put(
+            &format!("api/v1/app/{}/", new_app.id),
+            serde_json::json!({
+                "name": "New Name",
+                "metadata": {
+                    "new": "data"
+                },
+            }),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(updated_metadata_app.metadata, metadata(r#"{"new":"data"}"#));
+    assert_eq!(updated_metadata_app.name, "New Name");
 }
 
 #[tokio::test]
 async fn test_list() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     common_test_list::<ApplicationOut, ApplicationIn>(
         &client,
@@ -269,7 +355,7 @@ async fn test_list() {
 
 #[tokio::test]
 async fn test_uid() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     let app: ApplicationOut = client
         .post(
@@ -462,8 +548,8 @@ async fn test_uid() {
 
 #[tokio::test]
 async fn test_uid_across_users() {
-    let (client, _jh) = start_svix_server();
-    let (client2, _jh2) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
+    let (client2, _jh2) = start_svix_server().await;
 
     // Make sure that uids aren't unique across different users
 
@@ -496,7 +582,7 @@ async fn test_uid_across_users() {
 
 #[tokio::test]
 async fn test_get_or_create() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     let app: ApplicationOut = client
         .post(
@@ -504,12 +590,26 @@ async fn test_get_or_create() {
             ApplicationIn {
                 name: "App 1".to_owned(),
                 uid: Some(ApplicationUid("app1".to_owned())),
+                metadata: metadata(
+                    r#"{
+                    "foo": "bar"
+                }"#,
+                ),
                 ..Default::default()
             },
             StatusCode::CREATED,
         )
         .await
         .unwrap();
+
+    assert_eq!(
+        app.metadata,
+        metadata(
+            r#"{
+        "foo": "bar"
+    }"#,
+        )
+    );
 
     let _: IgnoredResponse = client
         .post(
@@ -542,7 +642,7 @@ async fn test_get_or_create() {
 
 #[tokio::test]
 async fn test_idempotency() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
 
     let cfg = svix_server::cfg::load().unwrap();
 

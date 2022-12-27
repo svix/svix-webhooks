@@ -1,10 +1,17 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use crate::core::types::{BaseId, EventTypeId, EventTypeName, OrganizationId};
+use crate::{
+    core::types::{BaseId, EventTypeId, EventTypeName, OrganizationId, RetrySchedule},
+    json_wrapper,
+};
+use std::collections::HashMap;
+
 use chrono::Utc;
+use jsonschema::{Draft, JSONSchema};
 use sea_orm::entity::prelude::*;
 use sea_orm::ActiveValue::Set;
+use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(table_name = "eventtype")]
@@ -16,8 +23,9 @@ pub struct Model {
     pub org_id: OrganizationId,
     pub description: String,
     pub deleted: bool,
-    pub schemas: Option<Json>,
+    pub schemas: Option<Schema>,
     pub name: EventTypeName,
+    pub retry_schedule: Option<RetrySchedule>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter)]
@@ -54,5 +62,34 @@ impl Entity {
 
     pub fn secure_find_by_name(org_id: OrganizationId, name: EventTypeName) -> Select<Entity> {
         Self::secure_find(org_id).filter(Column::Name.eq(name))
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Default)]
+pub struct Schema(HashMap<String, Json>);
+json_wrapper!(Schema);
+
+impl<'de> Deserialize<'de> for Schema {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let inner: HashMap<String, Json> = Deserialize::deserialize(deserializer)?;
+
+        // JSONSchema doesn't implement (De)Serialize, so we have to
+        // manually enforce the values are valid JSON schemas
+
+        let mut opts = JSONSchema::options();
+        opts.with_draft(Draft::Draft7);
+
+        if let Some(error) = inner
+            .values()
+            .filter_map(|schema| opts.compile(schema).err())
+            .next()
+        {
+            return Err(serde::de::Error::custom(error));
+        }
+
+        Ok(Self(inner))
     }
 }

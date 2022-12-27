@@ -11,6 +11,10 @@ services:
       SVIX_DB_DSN: "postgresql://postgres:postgres@pgbouncer/postgres"
     ports:
       - "8071:8071"
+    depends_on:
+    - pgbouncer
+    - redis
+
   postgres:
     image: postgres:13.4
     volumes:
@@ -30,6 +34,9 @@ services:
       DB_USER: "postgres"
       DB_PASSWORD: "postgres"
       MAX_CLIENT_CONN: 500
+    depends_on:
+    - postgres
+
   redis:
     image: "redis:6.2-alpine"
     # Enable persistence

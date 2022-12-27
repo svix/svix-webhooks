@@ -85,6 +85,8 @@ import kotlin.random.Random
 
     var accessToken: String? = null
     var userAgent: String? = null
+    var initialRetryDelayMillis = 50L
+    var numRetries: Int = 3
 
     /**
      * Guess Content-Type header from the given file (defaults to "application/octet-stream").
@@ -336,8 +338,7 @@ import kotlin.random.Random
 
         var response = client.newCall(request).execute()
 
-        var sleepTime = 50L
-        val numRetries = 3
+        var sleepTime = initialRetryDelayMillis
         var retryCount = 0
         for (i in 0 until numRetries-1) {
             if (response.isSuccessful || response.code < 500) {

@@ -13,12 +13,13 @@ use crate::{
     cfg::{Configuration, DefaultSignatureType},
     core::{
         cryptography::Encryption,
-        security::AuthenticatedApplication,
+        permissions,
         types::{
             ApplicationIdOrUid, EndpointIdOrUid, EndpointSecretInternal, ExpiringSigningKey,
             ExpiringSigningKeys,
         },
     },
+    ctx,
     db::models::endpoint,
     error::{HttpError, Result},
     v1::utils::{EmptyResponse, ValidatedJson},
@@ -35,15 +36,14 @@ pub(super) async fn get_endpoint_secret(
     Extension(ref db): Extension<DatabaseConnection>,
     Extension(cfg): Extension<Configuration>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
-    AuthenticatedApplication {
-        permissions: _,
-        app,
-    }: AuthenticatedApplication,
+    permissions::Application { app }: permissions::Application,
 ) -> Result<Json<EndpointSecretOut>> {
-    let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id, endp_id)
-        .one(db)
-        .await?
-        .ok_or_else(|| HttpError::not_found(None, None))?;
+    let endp = ctx!(
+        endpoint::Entity::secure_find_by_id_or_uid(app.id, endp_id)
+            .one(db)
+            .await
+    )?
+    .ok_or_else(|| HttpError::not_found(None, None))?;
     Ok(Json(EndpointSecretOut {
         key: endp.key.into_endpoint_secret(&cfg.encryption)?,
     }))
@@ -53,16 +53,15 @@ pub(super) async fn rotate_endpoint_secret(
     Extension(ref db): Extension<DatabaseConnection>,
     Extension(cfg): Extension<Configuration>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
+    permissions::Application { app }: permissions::Application,
     ValidatedJson(data): ValidatedJson<EndpointSecretRotateIn>,
-    AuthenticatedApplication {
-        permissions: _,
-        app,
-    }: AuthenticatedApplication,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
-    let mut endp = endpoint::Entity::secure_find_by_id_or_uid(app.id, endp_id)
-        .one(db)
-        .await?
-        .ok_or_else(|| HttpError::not_found(None, None))?;
+    let mut endp = ctx!(
+        endpoint::Entity::secure_find_by_id_or_uid(app.id, endp_id)
+            .one(db)
+            .await
+    )?
+    .ok_or_else(|| HttpError::not_found(None, None))?;
 
     let now = Utc::now();
     let last_key = ExpiringSigningKey {
@@ -104,7 +103,7 @@ pub(super) async fn rotate_endpoint_secret(
         ))),
         ..endp.into()
     };
-    endp.update(db).await?;
+    ctx!(endp.update(db).await)?;
 
     Ok((StatusCode::NO_CONTENT, Json(EmptyResponse {})))
 }

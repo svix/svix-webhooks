@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 use std::collections::{HashMap, HashSet};
+use std::time::Duration;
 
 use chrono::{DateTime, Utc};
 use lazy_static::lazy_static;
@@ -13,17 +14,15 @@ use p256::ecdsa::{
 use rand::Rng;
 
 use regex::Regex;
-use sea_orm::{
-    entity::prelude::*,
-    sea_query::{ColumnType, Nullable, ValueType, ValueTypeErr},
-    TryFromU64, TryGetError, TryGetable,
-};
+
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 use svix_ksuid::*;
 use validator::{Validate, ValidationErrors};
 
-use crate::{cfg::DefaultSignatureType, v1::utils::validation_error};
+use crate::{cfg::DefaultSignatureType, err_generic, v1::utils::validation_error};
+
+pub mod metadata;
 
 use super::cryptography::{AsymmetricKey, AsymmetricKeyP256, Encryption};
 
@@ -52,33 +51,41 @@ macro_rules! enum_wrapper {
             }
         }
 
-        impl From<$name_id> for sea_orm::Value {
+        impl From<$name_id> for sea_orm::entity::prelude::Value {
             fn from(v: $name_id) -> Self {
                 Self::SmallInt(Some(v.into()))
             }
         }
 
-        impl TryGetable for $name_id {
-            fn try_get(res: &QueryResult, pre: &str, col: &str) -> Result<Self, TryGetError> {
+        impl sea_orm::TryGetable for $name_id {
+            fn try_get(
+                res: &sea_orm::QueryResult,
+                pre: &str,
+                col: &str,
+            ) -> Result<Self, sea_orm::TryGetError> {
                 match i16::try_get(res, pre, col) {
-                    // We are using null as a placeholder error for invalid values
-                    Ok(v) => v.try_into().map_err(|_| TryGetError::Null),
+                    // We are using null as a placeholder error for invalid sea_orm::Values
+                    Ok(v) => v
+                        .try_into()
+                        .map_err(|_| sea_orm::TryGetError::Null("invalid sea_orm_value".into())),
                     Err(e) => Err(e),
                 }
             }
         }
 
-        impl Nullable for $name_id {
-            fn null() -> Value {
-                Value::SmallInt(None)
+        impl sea_orm::sea_query::Nullable for $name_id {
+            fn null() -> sea_orm::Value {
+                sea_orm::Value::SmallInt(None)
             }
         }
 
-        impl ValueType for $name_id {
-            fn try_from(v: Value) -> Result<Self, ValueTypeErr> {
+        impl sea_orm::sea_query::ValueType for $name_id {
+            fn try_from(v: sea_orm::Value) -> Result<Self, sea_orm::sea_query::ValueTypeErr> {
                 match v {
-                    Value::SmallInt(Some(x)) => x.try_into().map_err(|_| ValueTypeErr),
-                    _ => Err(ValueTypeErr),
+                    sea_orm::Value::SmallInt(Some(x)) => {
+                        x.try_into().map_err(|_| sea_orm::sea_query::ValueTypeErr)
+                    }
+                    _ => Err(sea_orm::sea_query::ValueTypeErr),
                 }
             }
 
@@ -86,44 +93,53 @@ macro_rules! enum_wrapper {
                 stringify!($name_id).to_owned()
             }
 
-            fn column_type() -> ColumnType {
+            fn column_type() -> sea_orm::sea_query::ColumnType {
                 i16::column_type()
+            }
+
+            fn array_type() -> sea_orm::sea_query::ArrayType {
+                i16::array_type()
             }
         }
     };
 }
 
+#[macro_export]
 macro_rules! json_wrapper {
     ($name_id:ty) => {
-        impl From<$name_id> for sea_orm::Value {
+        impl From<$name_id> for sea_orm::entity::prelude::Value {
             fn from(v: $name_id) -> Self {
                 let v = serde_json::to_value(v).expect("Error serializing JSON");
                 Self::Json(Some(Box::new(v)))
             }
         }
 
-        impl TryGetable for $name_id {
-            fn try_get(res: &QueryResult, pre: &str, col: &str) -> Result<Self, TryGetError> {
-                match Json::try_get(res, pre, col) {
+        impl sea_orm::TryGetable for $name_id {
+            fn try_get(
+                res: &sea_orm::QueryResult,
+                pre: &str,
+                col: &str,
+            ) -> Result<Self, sea_orm::TryGetError> {
+                match sea_orm::prelude::Json::try_get(res, pre, col) {
                     Ok(v) => Ok(serde_json::from_value(v).expect("Error deserializing JSON")),
                     Err(e) => Err(e),
                 }
             }
         }
 
-        impl Nullable for $name_id {
-            fn null() -> Value {
-                Value::Json(None)
+        impl sea_orm::sea_query::Nullable for $name_id {
+            fn null() -> sea_orm::Value {
+                sea_orm::Value::Json(None)
             }
         }
 
-        impl ValueType for $name_id {
-            fn try_from(v: Value) -> Result<Self, ValueTypeErr> {
+        impl sea_orm::sea_query::ValueType for $name_id {
+            fn try_from(v: sea_orm::Value) -> Result<Self, sea_orm::sea_query::ValueTypeErr> {
                 match v {
-                    Value::Json(Some(x)) => {
+                    sea_orm::Value::Json(Some(x)) => {
                         Ok(serde_json::from_value(*x).expect("Error deserializing JSON"))
                     }
-                    _ => Err(ValueTypeErr),
+                    _ => Err(sea_orm::sea_query::ValueTypeErr),
                 }
             }
 
@@ -131,8 +147,12 @@ macro_rules! json_wrapper {
                 stringify!($name_id).to_owned()
             }
 
-            fn column_type() -> ColumnType {
-                ColumnType::JsonBinary
+            fn column_type() -> sea_orm::sea_query::ColumnType {
+                sea_orm::sea_query::ColumnType::JsonBinary
+            }
+
+            fn array_type() -> sea_orm::sea_query::ArrayType {
+                sea_orm::sea_query::ArrayType::Json
             }
         }
     };
@@ -246,8 +266,12 @@ macro_rules! string_wrapper {
             }
         }
 
-        impl TryGetable for $name_id {
-            fn try_get(res: &QueryResult, pre: &str, col: &str) -> Result<Self, TryGetError> {
+        impl sea_orm::TryGetable for $name_id {
+            fn try_get(
+                res: &sea_orm::QueryResult,
+                pre: &str,
+                col: &str,
+            ) -> Result<Self, sea_orm::TryGetError> {
                 match String::try_get(res, pre, col) {
                     Ok(v) => Ok($name_id(v)),
                     Err(e) => Err(e),
@@ -255,17 +279,17 @@ macro_rules! string_wrapper {
             }
         }
 
-        impl Nullable for $name_id {
-            fn null() -> Value {
-                Value::String(None)
+        impl sea_orm::sea_query::Nullable for $name_id {
+            fn null() -> sea_orm::Value {
+                sea_orm::Value::String(None)
             }
         }
 
-        impl ValueType for $name_id {
-            fn try_from(v: Value) -> Result<Self, ValueTypeErr> {
+        impl sea_orm::sea_query::ValueType for $name_id {
+            fn try_from(v: sea_orm::Value) -> Result<Self, sea_orm::sea_query::ValueTypeErr> {
                 match v {
-                    Value::String(Some(x)) => Ok($name_id(*x)),
-                    _ => Err(ValueTypeErr),
+                    sea_orm::Value::String(Some(x)) => Ok($name_id(*x)),
+                    _ => Err(sea_orm::sea_query::ValueTypeErr),
                 }
             }
 
@@ -273,8 +297,12 @@ macro_rules! string_wrapper {
                 stringify!($name_id).to_owned()
             }
 
-            fn column_type() -> ColumnType {
+            fn column_type() -> sea_orm::sea_query::ColumnType {
                 String::column_type()
+            }
+
+            fn array_type() -> sea_orm::sea_query::ArrayType {
+                String::array_type()
             }
         }
 
@@ -305,11 +333,10 @@ macro_rules! create_id_type {
             }
         }
 
-        impl TryFromU64 for $name_id {
-            fn try_from_u64(_: u64) -> Result<Self, DbErr> {
-                Err(DbErr::Exec(format!(
-                    "{} cannot be converted from u64",
-                    stringify!($type)
+        impl sea_orm::TryFromU64 for $name_id {
+            fn try_from_u64(_: u64) -> Result<Self, sea_orm::DbErr> {
+                Err(sea_orm::DbErr::Exec(sea_orm::error::RuntimeErr::Internal(
+                    format!("{} cannot be converted from u64", stringify!($type)),
                 )))
             }
         }
@@ -427,6 +454,32 @@ impl Validate for EventTypeNameSet {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct RetrySchedule(pub Vec<Duration>);
+json_wrapper!(RetrySchedule);
+
+impl Serialize for RetrySchedule {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let buf: Vec<u64> = self.0.iter().map(|x| x.as_secs()).collect();
+        buf.serialize(serializer)
+    }
+}
+
+impl<'de> Deserialize<'de> for RetrySchedule {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let buf: Vec<u64> = Vec::deserialize(deserializer)?;
+        Ok(RetrySchedule(
+            buf.into_iter().map(Duration::from_secs).collect(),
+        ))
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ExpiringSigningKeys(pub Vec<ExpiringSigningKey>);
 json_wrapper!(ExpiringSigningKeys);
@@ -492,8 +545,8 @@ impl EndpointSecretMarker {
     fn from_u8(v: u8) -> crate::error::Result<Self> {
         let encrypted = (v & Self::ENCRYPTED_FLAG) != 0;
         let v = v & !Self::ENCRYPTED_FLAG;
-        let type_ = EndpointSecretType::try_from(v)
-            .map_err(|_| crate::error::Error::Generic("Invalid marker value".to_string()))?;
+        let type_ =
+            EndpointSecretType::try_from(v).map_err(|_| err_generic!("Invalid marker value"))?;
 
         Ok(Self { type_, encrypted })
     }
@@ -574,9 +627,7 @@ impl EndpointSecretInternal {
     fn from_vec(v: Vec<u8>) -> crate::error::Result<Self> {
         // Legacy had exact size
         match v.len() {
-            0..=Self::KEY_SIZE_MINUS_ONE => {
-                Err(crate::error::Error::Generic("Value too small".to_string()))
-            }
+            0..=Self::KEY_SIZE_MINUS_ONE => Err(err_generic!("Value too small")),
             Self::KEY_SIZE => Ok(Self {
                 marker: EndpointSecretMarker {
                     type_: EndpointSecretType::Hmac256,
@@ -644,9 +695,7 @@ impl EndpointSecretInternal {
             if encryption.enabled() {
                 encryption.decrypt(&self.key)?
             } else {
-                return Err(crate::error::Error::Generic(
-                    "main_secret unset, can't decrypt key".to_string(),
-                ));
+                return Err(err_generic!("main_secret unset, can't decrypt key"));
             }
         } else {
             self.key.to_vec()
@@ -703,27 +752,33 @@ impl From<EndpointSecretInternal> for sea_orm::Value {
     }
 }
 
-impl TryGetable for EndpointSecretInternal {
-    fn try_get(res: &QueryResult, pre: &str, col: &str) -> Result<Self, TryGetError> {
+impl sea_orm::TryGetable for EndpointSecretInternal {
+    fn try_get(
+        res: &sea_orm::QueryResult,
+        pre: &str,
+        col: &str,
+    ) -> Result<Self, sea_orm::TryGetError> {
         match Vec::<u8>::try_get(res, pre, col) {
             Ok(v) => EndpointSecretInternal::from_vec(v)
-                .map_err(|x| TryGetError::DbErr(DbErr::Type(x.to_string()))),
+                .map_err(|x| sea_orm::TryGetError::DbErr(sea_orm::DbErr::Type(x.to_string()))),
             Err(e) => Err(e),
         }
     }
 }
 
-impl Nullable for EndpointSecretInternal {
-    fn null() -> Value {
-        Value::Bytes(None)
+impl sea_orm::sea_query::Nullable for EndpointSecretInternal {
+    fn null() -> sea_orm::Value {
+        sea_orm::Value::Bytes(None)
     }
 }
 
-impl ValueType for EndpointSecretInternal {
-    fn try_from(v: Value) -> Result<Self, ValueTypeErr> {
+impl sea_orm::sea_query::ValueType for EndpointSecretInternal {
+    fn try_from(v: sea_orm::Value) -> Result<Self, sea_orm::sea_query::ValueTypeErr> {
         match v {
-            Value::Bytes(Some(x)) => EndpointSecretInternal::from_vec(*x).map_err(|_| ValueTypeErr),
-            _ => Err(ValueTypeErr),
+            sea_orm::Value::Bytes(Some(x)) => {
+                EndpointSecretInternal::from_vec(*x).map_err(|_| sea_orm::sea_query::ValueTypeErr)
+            }
+            _ => Err(sea_orm::sea_query::ValueTypeErr),
         }
     }
 
@@ -731,8 +786,12 @@ impl ValueType for EndpointSecretInternal {
         stringify!(EndpointSecretInternal).to_owned()
     }
 
-    fn column_type() -> ColumnType {
-        ColumnType::Binary(None)
+    fn column_type() -> sea_orm::sea_query::ColumnType {
+        sea_orm::sea_query::ColumnType::Binary(sea_orm::sea_query::BlobSize::Blob(None))
+    }
+
+    fn array_type() -> sea_orm::sea_query::ArrayType {
+        sea_orm::sea_query::ArrayType::Bytes
     }
 }
 
@@ -1250,7 +1309,7 @@ mod tests {
 
         // Valid long secret
         let long_sec = "TUdfVE5UMnZlci1TeWxOYXQtX1ZlTW1kLTRtMFdhYmEwanIxdHJvenRCbmlTQ2hFdzBnbHhFbWdFaTJLdzQwSA==";
-        let js = serde_json::json!({ "key": format!("whsec_{}", long_sec) });
+        let js = serde_json::json!({ "key": format!("whsec_{long_sec}") });
         let ep = serde_json::from_value::<EndpointSecretTestStruct>(js).unwrap();
         if let EndpointSecret::Symmetric(key) = ep.key {
             assert_eq!(base64::decode(long_sec).unwrap(), key);
@@ -1260,7 +1319,7 @@ mod tests {
 
         // Asymmetric key
         let asym_sec = "6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg==";
-        let js = serde_json::json!({ "key": format!("whsk_{}", asym_sec) });
+        let js = serde_json::json!({ "key": format!("whsk_{asym_sec}") });
         let ep = serde_json::from_value::<EndpointSecretTestStruct>(js).unwrap();
         if let EndpointSecret::Asymmetric(key) = ep.key {
             assert_eq!(base64::decode(asym_sec).unwrap(), key.0.sk.as_slice());

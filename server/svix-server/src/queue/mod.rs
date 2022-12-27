@@ -11,7 +11,7 @@ use crate::{
         run_with_retries::run_with_retries,
         types::{ApplicationId, EndpointId, MessageAttemptTriggerType, MessageId},
     },
-    error::{Error, Result},
+    error::{Error, ErrorType, Result},
 };
 
 pub mod memory;
@@ -24,7 +24,7 @@ const RETRY_SCHEDULE: &[Duration] = &[
 ];
 
 fn should_retry(err: &Error) -> bool {
-    matches!(err, Error::Queue(_))
+    matches!(err.typ, ErrorType::Queue(_))
 }
 
 pub async fn new_pair(
@@ -173,11 +173,13 @@ trait TaskQueueSend: Sync + Send {
 
     async fn ack(&self, delivery: &TaskQueueDelivery) -> Result<()>;
 
-    /// By default NACKing a [`TaskQueueDelivery`] simply reinserts it in the back of the queue without
-    /// any delay.
+    /// By default NACKing a [`TaskQueueDelivery`] simply reinserts it in the back of the queue
+    /// without any delay. Additionally it `ack`s the orignal, now duplicated task, such as to
+    /// avoid memory leaks in persistent implementations of the queue.
     async fn nack(&self, delivery: &TaskQueueDelivery) -> Result<()> {
         tracing::debug!("nack {}", delivery.id);
-        self.send(delivery.task.clone(), None).await
+        self.send(delivery.task.clone(), None).await?;
+        self.ack(delivery).await
     }
 }
 

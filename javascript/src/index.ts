@@ -19,6 +19,7 @@ import {
   EndpointHeadersOut,
   EndpointStats,
   RecoverIn,
+  ReplayIn,
   IntegrationApi,
   ListResponseIntegrationOut,
   IntegrationOut,
@@ -50,11 +51,12 @@ import {
 } from "./openapi/index";
 export * from "./openapi/models/all";
 export * from "./openapi/apis/exception";
+import { timingSafeEqual } from "./timing_safe_equal";
 import * as base64 from "@stablelib/base64";
 import * as sha256 from "fast-sha256";
 
 const WEBHOOK_TOLERANCE_IN_SECONDS = 5 * 60; // 5 minutes
-const VERSION = "0.65.1";
+const VERSION = "0.72.0";
 
 class UserAgentMiddleware implements Middleware {
   public pre(context: RequestContext): Promise<RequestContext> {
@@ -297,6 +299,22 @@ class Endpoint {
         appId,
         endpointId,
         recoverIn,
+        ...options,
+      })
+      .then(() => Promise.resolve());
+  }
+
+  public replay(
+    appId: string,
+    endpointId: string,
+    replayIn: ReplayIn,
+    options?: PostOptions
+  ): Promise<void> {
+    return this.api
+      .replayMissingWebhooksApiV1AppAppIdEndpointEndpointIdReplayMissingPost({
+        appId,
+        endpointId,
+        replayIn,
         ...options,
       })
       .then(() => Promise.resolve());
@@ -665,13 +683,15 @@ export class Webhook {
     const expectedSignature = computedSignature.split(",")[1];
 
     const passedSignatures = msgSignature.split(" ");
+
+    const encoder = new globalThis.TextEncoder();
     for (const versionedSignature of passedSignatures) {
       const [version, signature] = versionedSignature.split(",");
       if (version !== "v1") {
         continue;
       }
 
-      if (signature === expectedSignature) {
+      if (timingSafeEqual(encoder.encode(signature), encoder.encode(expectedSignature))) {
         return JSON.parse(payload);
       }
     }

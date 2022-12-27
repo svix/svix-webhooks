@@ -13,8 +13,8 @@ use svix_server::{
     core::{
         security::{generate_org_token, management_org_id},
         types::{
-            ApplicationId, ApplicationUid, BaseId, EndpointId, EndpointUid, MessageAttemptId,
-            MessageId, MessageUid, OrganizationId,
+            metadata::Metadata, ApplicationId, ApplicationUid, BaseId, EndpointId, EndpointUid,
+            MessageAttemptId, MessageId, MessageUid, OrganizationId,
         },
     },
     v1::endpoints::{
@@ -141,6 +141,7 @@ async fn test_endpoint_create_update_and_delete() {
                 name: "TestOperationalWebhookApplication".to_owned(),
                 rate_limit: None,
                 uid: Some(ApplicationUid(org_id.to_string())),
+                metadata: Metadata::default(),
             },
             StatusCode::CREATED,
         )
@@ -188,7 +189,7 @@ async fn test_endpoint_create_update_and_delete() {
             assert_eq!(app_id, regular_app.id);
             assert_eq!(app_uid, regular_app.uid);
             assert_eq!(endpoint_id, regular_endp.id);
-            assert_eq!(endpoint_uid, regular_endp.uid);
+            assert_eq!(endpoint_uid, regular_endp.ep.uid);
         }
         _ => panic!("Got wrong type"),
     };
@@ -228,7 +229,7 @@ async fn test_endpoint_create_update_and_delete() {
             assert_eq!(app_id, regular_app.id);
             assert_eq!(app_uid, regular_app.uid);
             assert_eq!(endpoint_id, regular_endp.id);
-            assert_eq!(endpoint_uid, regular_endp.uid);
+            assert_eq!(endpoint_uid, regular_endp.ep.uid);
         }
         _ => panic!("Got wrong type"),
     };
@@ -262,7 +263,7 @@ async fn test_endpoint_create_update_and_delete() {
             assert_eq!(app_id, regular_app.id);
             assert_eq!(app_uid, regular_app.uid);
             assert_eq!(endpoint_id, regular_endp.id);
-            assert_eq!(endpoint_uid, regular_endp.uid);
+            assert_eq!(endpoint_uid, regular_endp.ep.uid);
         }
         _ => panic!("Got wrong type"),
     };
@@ -287,6 +288,7 @@ async fn test_message_attempt_operational_webhooks() {
                 name: "TestOperationalWebhookApplication".to_owned(),
                 rate_limit: None,
                 uid: Some(ApplicationUid(org_id.to_string())),
+                metadata: Metadata::default(),
             },
             StatusCode::CREATED,
         )
@@ -335,7 +337,7 @@ async fn test_message_attempt_operational_webhooks() {
             assert_eq!(app_id, regular_app.id);
             assert_eq!(app_uid, regular_app.uid);
             assert_eq!(endpoint_id, regular_endp.id);
-            assert_eq!(endpoint_uid, regular_endp.uid);
+            assert_eq!(endpoint_uid, regular_endp.ep.uid);
         }
         _ => panic!("Got wrong type"),
     };

@@ -11,7 +11,6 @@ use opentelemetry::trace::TraceContextExt;
 use svix_ksuid::{KsuidLike, KsuidMs};
 use tower_http::{
     classify::ServerErrorsFailureClass,
-    request_id::RequestId,
     trace::{MakeSpan, OnFailure, OnResponse},
 };
 use tracing::field::Empty;
@@ -60,9 +59,17 @@ impl<B> MakeSpan<B> for AxumOtelSpanCreator {
             .unwrap_or_default();
 
         let request_id = request
-            .extensions()
-            .get::<RequestId>()
-            .and_then(|id| id.header_value().to_str().map(ToOwned::to_owned).ok())
+            .headers()
+            .get("x-request-id")
+            .and_then(|id| id.to_str().map(ToOwned::to_owned).ok())
+            // If `x-requst-id` isn't set, check `svix-req-id`. If the `svix-req-id` isn't a
+            // valid `str`, or it isn't set, then fallback to a random [`KsuidMs`]
+            .or_else(|| {
+                request
+                    .headers()
+                    .get("svix-req-id")
+                    .and_then(|v| v.to_str().map(ToOwned::to_owned).ok())
+            })
             .unwrap_or_else(|| KsuidMs::new(None, None).to_string());
 
         let remote_context = opentelemetry::global::get_text_map_propagator(|p| {
@@ -81,7 +88,7 @@ impl<B> MakeSpan<B> for AxumOtelSpanCreator {
             Version::HTTP_11 => "1.1".into(),
             Version::HTTP_2 => "2.0".into(),
             Version::HTTP_3 => "3.0".into(),
-            other => format!("{:?}", other).into(),
+            other => format!("{other:?}").into(),
         };
 
         let method: Cow<'static, str> = match request.method() {
@@ -96,7 +103,12 @@ impl<B> MakeSpan<B> for AxumOtelSpanCreator {
             other => other.to_string().into(),
         };
 
-        let span = tracing::info_span!(
+        let idempotency_key = request
+            .headers()
+            .get("idempotency-key")
+            .and_then(|v| v.to_str().ok());
+
+        let span = tracing::error_span!(
             "HTTP request",
             grpc.code = Empty,
             http.client_ip = %client_ip,
@@ -112,7 +124,12 @@ impl<B> MakeSpan<B> for AxumOtelSpanCreator {
             otel.status_code = Empty,
             request_id = %request_id,
             trace_id = %trace_id,
+            idempotency_key = tracing::field::Empty,
         );
+
+        if let Some(key) = idempotency_key {
+            span.record("idempotency_key", key);
+        }
 
         span.set_parent(remote_context);
 
@@ -132,7 +149,7 @@ impl<B> OnResponse<B> for AxumOtelOnResponse {
     ) {
         let status = response.status().as_u16().to_string();
         span.record("http.status_code", &tracing::field::display(status));
-        span.record("otel.status_code", &"OK");
+        span.record("otel.status_code", "OK");
 
         tracing::debug!(
             "finished processing request latency={} ms status={}",
@@ -154,7 +171,7 @@ impl OnFailure<ServerErrorsFailureClass> for AxumOtelOnFailure {
     ) {
         match failure_classification {
             ServerErrorsFailureClass::StatusCode(status) if status.is_server_error() => {
-                span.record("otel.status_code", &"ERROR");
+                span.record("otel.status_code", "ERROR");
             }
             _ => {}
         }

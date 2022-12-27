@@ -10,6 +10,8 @@ class Authentication internal constructor(token: String, options: SvixOptions) {
     init {
         api.accessToken = token
         api.userAgent = options.getUA()
+        options.initialRetryDelayMillis?.let { api.initialRetryDelayMillis = it }
+        options.numRetries?.let { api.numRetries = it }
     }
 
     suspend fun dashboardAccess(appId: String, options: PostOptions = PostOptions()): DashboardAccessOut {

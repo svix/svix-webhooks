@@ -78,7 +78,7 @@ async fn visit_reporting_receiver_route(
 // The worker has
 #[tokio::test]
 async fn test_no_redirects_policy() {
-    let (client, _jh) = start_svix_server();
+    let (client, _jh) = start_svix_server().await;
     let receiver = RedirectionVisitReportingReceiver::start(StatusCode::OK);
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
@@ -95,7 +95,7 @@ async fn test_no_redirects_policy() {
     run_with_retries(|| async {
         let attempts: ListResponse<MessageAttemptOut> = client
             .get(
-                &format!("api/v1/app/{}/attempt/msg/{}/", app_id, msg_id),
+                &format!("api/v1/app/{app_id}/attempt/msg/{msg_id}/"),
                 StatusCode::OK,
             )
             .await
@@ -131,7 +131,7 @@ async fn test_endpoint_disable_on_repeated_failure() {
         cfg.retry_schedule = vec![];
         cfg.endpoint_failure_disable_after = Duration::from_secs(1);
 
-        let (client, _jh) = start_svix_server_with_cfg(&cfg);
+        let (client, _jh) = start_svix_server_with_cfg(&cfg).await;
 
         let app_id = create_test_app(&client, "app").await.unwrap().id;
         let ep_id = create_test_endpoint(&client, &app_id, "http://bad.url/")
@@ -154,13 +154,13 @@ async fn test_endpoint_disable_on_repeated_failure() {
         run_with_retries(|| async {
             let ep: EndpointOut = client
                 .get(
-                    &format!("api/v1/app/{}/endpoint/{}/", app_id, ep_id),
+                    &format!("api/v1/app/{app_id}/endpoint/{ep_id}/"),
                     StatusCode::OK,
                 )
                 .await
                 .unwrap();
 
-            if !ep.disabled {
+            if !ep.ep.disabled {
                 anyhow::bail!("Endpoint not disabled")
             } else {
                 Ok(())
@@ -181,7 +181,7 @@ async fn test_endpoint_disable_expiration_duration() {
         cfg.retry_schedule = vec![];
         cfg.endpoint_failure_disable_after = Duration::from_millis(250);
 
-        let (client, _jh) = start_svix_server_with_cfg(&cfg);
+        let (client, _jh) = start_svix_server_with_cfg(&cfg).await;
 
         let app_id = create_test_app(&client, "app").await.unwrap().id;
         let ep_id = create_test_endpoint(&client, &app_id, "http://bad.url/")
@@ -206,13 +206,13 @@ async fn test_endpoint_disable_expiration_duration() {
         tokio::time::sleep(Duration::from_millis(500)).await;
         let ep: EndpointOut = client
             .get(
-                &format!("api/v1/app/{}/endpoint/{}/", app_id, ep_id),
+                &format!("api/v1/app/{app_id}/endpoint/{ep_id}/"),
                 StatusCode::OK,
             )
             .await
             .unwrap();
 
-        assert!(!ep.disabled);
+        assert!(!ep.ep.disabled);
     }
 }
 
@@ -279,7 +279,7 @@ async fn test_endpoint_disable_on_sporadic_failure() {
         cfg.retry_schedule = vec![];
         cfg.endpoint_failure_disable_after = Duration::from_secs(1);
 
-        let (client, _jh) = start_svix_server_with_cfg(&cfg);
+        let (client, _jh) = start_svix_server_with_cfg(&cfg).await;
 
         let app_id = create_test_app(&client, "app").await.unwrap().id;
         let ep_id = create_test_endpoint(&client, &app_id, &receiver.base_uri)
@@ -317,13 +317,13 @@ async fn test_endpoint_disable_on_sporadic_failure() {
         tokio::time::sleep(Duration::from_millis(500)).await;
         let ep: EndpointOut = client
             .get(
-                &format!("api/v1/app/{}/endpoint/{}/", app_id, ep_id),
+                &format!("api/v1/app/{app_id}/endpoint/{ep_id}/"),
                 StatusCode::OK,
             )
             .await
             .unwrap();
 
-        assert!(!ep.disabled);
+        assert!(!ep.ep.disabled);
 
         receiver.jh.abort();
     }

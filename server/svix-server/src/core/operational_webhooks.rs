@@ -18,7 +18,7 @@ use super::{
     },
 };
 use crate::{
-    db::models::messageattempt,
+    db::models::{endpoint, messageattempt},
     error::{HttpError, Result},
 };
 
@@ -41,6 +41,17 @@ pub struct EndpointEvent<'a> {
     pub app_uid: Option<&'a ApplicationUid>,
     pub endpoint_id: &'a EndpointId,
     pub endpoint_uid: Option<&'a EndpointUid>,
+}
+
+impl<'a> EndpointEvent<'a> {
+    pub fn new(app_uid: Option<&'a ApplicationUid>, endp: &'a endpoint::Model) -> Self {
+        Self {
+            app_id: &endp.app_id,
+            app_uid,
+            endpoint_id: &endp.id,
+            endpoint_uid: endp.uid.as_ref(),
+        }
+    }
 }
 
 #[derive(Debug, Serialize)]
@@ -124,15 +135,15 @@ impl OperationalWebhookSenderInner {
             }),
         );
 
-        let payload = serde_json::to_value(&payload)
-            .map_err(|_| HttpError::internal_server_errer(None, None))?;
+        let payload = serde_json::to_value(payload)
+            .map_err(|_| HttpError::internal_server_error(None, None))?;
 
         // Get the event type from the type field
         let event_type: String = payload
             .get("type")
-            .ok_or_else(|| HttpError::internal_server_errer(None, None))?
+            .ok_or_else(|| HttpError::internal_server_error(None, None))?
             .as_str()
-            .ok_or_else(|| HttpError::internal_server_errer(None, None))?
+            .ok_or_else(|| HttpError::internal_server_error(None, None))?
             .to_string();
 
         let recipient_org_id = recipient_org_id.to_string();

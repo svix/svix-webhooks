@@ -5,20 +5,15 @@
 #![forbid(unsafe_code)]
 
 use dotenv::dotenv;
-use opentelemetry::runtime::Tokio;
-use opentelemetry_otlp::WithExportConfig;
 use std::process::exit;
 use svix_server::cfg::DefaultSignatureType;
 use svix_server::core::types::{EndpointSecretInternal, EndpointSecretType, OrganizationId};
-use tracing_subscriber::layer::SubscriberExt;
-use tracing_subscriber::util::SubscriberInitExt;
+use svix_server::db::wipe_org;
 use validator::Validate;
 
 use svix_server::core::security::{default_org_id, generate_org_token};
 
-use svix_server::{cfg, db, run};
-
-const CRATE_NAME: &str = env!("CARGO_CRATE_NAME");
+use svix_server::{cfg, db, run, setup_tracing};
 
 use clap::{Parser, Subcommand};
 
@@ -64,6 +59,15 @@ enum Commands {
     /// Run database migrations and exit
     #[clap()]
     Migrate,
+
+    #[clap()]
+    Wipe {
+        #[clap(value_parser = org_id_parser)]
+        org_id: OrganizationId,
+
+        #[clap(long)]
+        yes_i_know_what_im_doing: bool,
+    },
 }
 
 #[derive(Subcommand)]
@@ -90,7 +94,7 @@ enum AsymmetricKeyCommands {
 
 fn signature_type_parser(s: &str) -> Result<DefaultSignatureType, String> {
     // XXX A bit hacky, but it's fine since an issue will just fail serde immediately after
-    let type_ = format!("\"{}\"", s);
+    let type_ = format!("\"{s}\"");
     serde_json::from_str(&type_).map_err(|x| x.to_string())
 }
 
@@ -107,72 +111,7 @@ async fn main() {
     let args = Args::parse();
     let cfg = cfg::load().expect("Error loading configuration");
 
-    if std::env::var_os("RUST_LOG").is_none() {
-        std::env::set_var(
-            "RUST_LOG",
-            format!(
-                "{crate}={level},tower_http={level}",
-                crate = CRATE_NAME,
-                level = cfg.log_level.to_string()
-            ),
-        );
-    }
-
-    let otel_layer = cfg.opentelemetry_address.as_ref().map(|addr| {
-        // Configure the OpenTelemetry tracing layer
-        opentelemetry::global::set_text_map_propagator(
-            opentelemetry::sdk::propagation::TraceContextPropagator::new(),
-        );
-
-        let exporter = opentelemetry_otlp::new_exporter()
-            .tonic()
-            .with_endpoint(addr);
-
-        let tracer = opentelemetry_otlp::new_pipeline()
-            .tracing()
-            .with_exporter(exporter)
-            .with_trace_config(
-                opentelemetry::sdk::trace::config()
-                    .with_sampler(
-                        cfg.opentelemetry_sample_ratio
-                            .map(opentelemetry::sdk::trace::Sampler::TraceIdRatioBased)
-                            .unwrap_or(opentelemetry::sdk::trace::Sampler::AlwaysOn),
-                    )
-                    .with_resource(opentelemetry::sdk::Resource::new(vec![
-                        opentelemetry::KeyValue::new("service.name", "svix_server"),
-                    ])),
-            )
-            .install_batch(Tokio)
-            .unwrap();
-        tracing_opentelemetry::layer().with_tracer(tracer)
-    });
-
-    // Then initialize logging with an additional layer priting to stdout. This additional layer is
-    // either formatted normally or in JSON format
-    match cfg.log_format {
-        cfg::LogFormat::Default => {
-            let stdout_layer = tracing_subscriber::fmt::layer();
-            tracing_subscriber::Registry::default()
-                .with(otel_layer)
-                .with(stdout_layer)
-                .with(tracing_subscriber::EnvFilter::from_default_env())
-                .init();
-        }
-        cfg::LogFormat::Json => {
-            let fmt = tracing_subscriber::fmt::format().json().flatten_event(true);
-            let json_fields = tracing_subscriber::fmt::format::JsonFields::new();
-
-            let stdout_layer = tracing_subscriber::fmt::layer()
-                .event_format(fmt)
-                .fmt_fields(json_fields);
-
-            tracing_subscriber::Registry::default()
-                .with(otel_layer)
-                .with(stdout_layer)
-                .with(tracing_subscriber::EnvFilter::from_default_env())
-                .init();
-        }
-    };
+    setup_tracing(&cfg);
 
     if let Some(wait_for_seconds) = args.wait_for {
         let mut wait_for = Vec::with_capacity(2);
@@ -212,7 +151,7 @@ async fn main() {
             let org_id = org_id.unwrap_or_else(default_org_id);
             let token =
                 generate_org_token(&cfg.jwt_secret, org_id).expect("Error generating token");
-            println!("Token (Bearer): {}", token);
+            println!("Token (Bearer): {token}");
             exit(0);
         }
         Some(Commands::AsymmetricKey { command }) => match command {
@@ -232,6 +171,18 @@ async fn main() {
                 exit(0);
             }
         },
+        Some(Commands::Wipe {
+            org_id,
+            yes_i_know_what_im_doing,
+        }) => {
+            if yes_i_know_what_im_doing {
+                wipe_org(&cfg, org_id).await;
+            } else {
+                println!("Please confirm you wish to wipe this organization with the `--yes-i-know-what-im-doing` flag");
+            }
+
+            exit(0);
+        }
         None => {}
     };
 

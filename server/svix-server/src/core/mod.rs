@@ -7,6 +7,7 @@ pub mod idempotency;
 pub mod message_app;
 pub mod operational_webhooks;
 pub mod otel_spans;
+pub mod permissions;
 pub mod run_with_retries;
 pub mod security;
 pub mod types;
