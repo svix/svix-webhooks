@@ -3,6 +3,10 @@
 ## Next
 * 
 
+## Version 0.73.0
+* Server: fix issue with potentially incorrect signatures for very small payloads.
+* Server: fix Docker image to use `exec` so that svix-server will accept container process signals.
+
 ## Version 0.72.0
 * Server: add metadata field to Endpoint endpoints
 * Server: add missing msg id index causing some queries to be slow
