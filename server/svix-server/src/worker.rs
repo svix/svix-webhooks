@@ -286,13 +286,12 @@ async fn dispatch(
         msg_uid,
         event_type_name,
     }: DispatchExtraIds<'_>,
-    payload: &Json,
+    body: String,
     endp: CreateMessageEndpoint,
 ) -> Result<()> {
     tracing::trace!("Dispatch: {} {}", &msg_task.msg_id, &endp.id);
 
     let now = Utc::now();
-    let body = serde_json::to_string(&payload).expect("Error parsing message body");
     let headers = {
         let keys = endp.valid_signing_keys();
 
@@ -313,6 +312,7 @@ async fn dispatch(
             &endp.url,
         );
         headers.insert("user-agent", USER_AGENT.to_string().parse().unwrap());
+        headers.insert("content-type", "application/json".parse().unwrap());
         headers
     };
 
@@ -324,7 +324,7 @@ async fn dispatch(
         .post(&endp.url)
         .headers(headers)
         .timeout(Duration::from_secs(cfg.worker_request_timeout as u64))
-        .json(&payload)
+        .body(body)
         .send()
         .await;
 
@@ -713,6 +713,8 @@ async fn process_task(worker_context: WorkerContext<'_>, queue_task: Arc<QueueTa
                 QueueTask::HealthCheck => unreachable!(),
             };
 
+            let body = serde_json::to_string(&payload).expect("Error parsing message body");
+
             dispatch(
                 worker_context,
                 task,
@@ -722,7 +724,7 @@ async fn process_task(worker_context: WorkerContext<'_>, queue_task: Arc<QueueTa
                     msg_uid: msg_uid.as_ref(),
                     event_type_name: &msg.event_type,
                 },
-                payload,
+                body,
                 endpoint,
             )
         })
