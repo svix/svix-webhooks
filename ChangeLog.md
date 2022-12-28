@@ -3,6 +3,19 @@
 ## Next
 * 
 
+## Version 0.72.0
+* Server: add metadata field to Endpoint endpoints
+* Server: add missing msg id index causing some queries to be slow
+* Server: make sensitive header detection in the `headers` API case insensitive
+* Server: omit prevIterator from responses when `null`
+* Server: fix string collation for some fields in the db (improves performance)
+* Server: expose attempted URL on MessageAttemptOut
+* Server: fix graceful server shutdown even when connection to queue is lost
+* Server: fix listing and getting event-types permission regression (give app tokens access)
+* Server: various code cleanups
+* Server: update axum to 0.6
+* JavaScript: make signature comparison constant time (thanks @arjunyel)
+
 ## Version 0.71.0
 * Server: Add metadata to application CRUD
 * Server: Update Rust, sea_orm, and other deps
