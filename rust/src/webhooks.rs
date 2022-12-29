@@ -46,8 +46,8 @@ const TOLERANCE_IN_SECONDS: i64 = 5 * 60;
 const SIGNATURE_VERSION: &str = "v1";
 
 impl Webhook {
-    pub fn new(secret: String) -> Result<Self, WebhookError> {
-        let secret = secret.strip_prefix(PREFIX).unwrap_or(&secret);
+    pub fn new(secret: &str) -> Result<Self, WebhookError> {
+        let secret = secret.strip_prefix(PREFIX).unwrap_or(secret);
         let key = base64::decode(secret)?;
 
         Ok(Webhook { key })
@@ -177,7 +177,7 @@ mod tests {
 
     #[test]
     fn test_sign() {
-        let wh = Webhook::new("whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD".to_owned()).unwrap();
+        let wh = Webhook::new("whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD").unwrap();
         assert_eq!(
             "v1,tZ1I4/hDygAJgO5TYxiSd6Sd0kDW6hPenDe+bTa3Kkw=".to_owned(),
             wh.sign(
@@ -194,7 +194,7 @@ mod tests {
         let secret = "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD".to_owned();
         let msg_id = "msg_27UH4WbU6Z5A5EzD8u03UvzRbpk";
         let payload = br#"{"email":"test@example.com","username":"test_user"}"#;
-        let wh = Webhook::new(secret).unwrap();
+        let wh = Webhook::new(&secret).unwrap();
 
         let signature = wh
             .sign(msg_id, OffsetDateTime::now_utc().unix_timestamp(), payload)
@@ -212,7 +212,7 @@ mod tests {
         let secret = "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD".to_owned();
         let msg_id = "msg_27UH4WbU6Z5A5EzD8u03UvzRbpk";
         let payload = br#"{"email":"test@example.com","username":"test_user"}"#;
-        let wh = Webhook::new(secret).unwrap();
+        let wh = Webhook::new(&secret).unwrap();
 
         let signature = "v1,R3PTzyfHASBKHH98a7yexTwaJ4yNIcGhFQc1yuN+BPU=".to_owned();
         for headers in [
@@ -228,7 +228,7 @@ mod tests {
         let secret = "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD".to_owned();
         let msg_id = "msg_27UH4WbU6Z5A5EzD8u03UvzRbpk";
         let payload = br#"{"email":"test@example.com","username":"test_user"}"#;
-        let wh = Webhook::new(secret).unwrap();
+        let wh = Webhook::new(&secret).unwrap();
 
         let signature = wh
             .sign(msg_id, OffsetDateTime::now_utc().unix_timestamp(), payload)
@@ -253,7 +253,7 @@ mod tests {
         let secret = "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD".to_owned();
         let msg_id = "msg_27UH4WbU6Z5A5EzD8u03UvzRbpk";
         let payload = br#"{"email":"test@example.com","username":"test_user"}"#;
-        let wh = Webhook::new(secret).unwrap();
+        let wh = Webhook::new(&secret).unwrap();
 
         let signature = wh
             .sign(msg_id, OffsetDateTime::now_utc().unix_timestamp(), payload)
@@ -277,7 +277,7 @@ mod tests {
         let secret = "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD".to_owned();
         let msg_id = "msg_27UH4WbU6Z5A5EzD8u03UvzRbpk";
         let payload = br#"{"email":"test@example.com","username":"test_user"}"#;
-        let wh = Webhook::new(secret).unwrap();
+        let wh = Webhook::new(&secret).unwrap();
 
         let missing_sig = format!(
             "{} {} {}",
@@ -296,7 +296,7 @@ mod tests {
         let secret = "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD".to_owned();
         let msg_id = "msg_27UH4WbU6Z5A5EzD8u03UvzRbpk";
         let payload = br#"{"email":"test@example.com","username":"test_user"}"#;
-        let wh = Webhook::new(secret).unwrap();
+        let wh = Webhook::new(&secret).unwrap();
 
         let signature = wh
             .sign(msg_id, OffsetDateTime::now_utc().unix_timestamp(), payload)
