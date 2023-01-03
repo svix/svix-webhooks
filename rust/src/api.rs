@@ -592,10 +592,10 @@ impl<'a> Integration<'a> {
 
 #[derive(Default)]
 pub struct EventTypeListOptions {
-    iterator: Option<String>,
-    limit: Option<i32>,
-    with_content: Option<bool>,
-    include_archived: Option<bool>,
+    pub iterator: Option<String>,
+    pub limit: Option<i32>,
+    pub with_content: Option<bool>,
+    pub include_archived: Option<bool>,
 }
 
 pub struct EventType<'a> {
@@ -695,15 +695,15 @@ impl<'a> EventType<'a> {
 
 #[derive(Default)]
 pub struct MessageListOptions {
-    iterator: Option<String>,
-    limit: Option<i32>,
-    event_types: Option<Vec<String>>,
+    pub iterator: Option<String>,
+    pub limit: Option<i32>,
+    pub event_types: Option<Vec<String>>,
     // FIXME: make before and after actual dates
     /// RFC3339 date string
-    before: Option<String>,
+    pub before: Option<String>,
     /// RFC3339 date string
-    after: Option<String>,
-    channel: Option<String>,
+    pub after: Option<String>,
+    pub channel: Option<String>,
 }
 
 pub struct Message<'a> {
@@ -778,17 +778,17 @@ impl<'a> Message<'a> {
 
 #[derive(Default)]
 pub struct MessageAttemptListOptions {
-    iterator: Option<String>,
-    limit: Option<i32>,
-    event_types: Option<Vec<String>>,
+    pub iterator: Option<String>,
+    pub limit: Option<i32>,
+    pub event_types: Option<Vec<String>>,
     // FIXME: make before and after actual dates
     /// RFC3339 date string
-    before: Option<String>,
+    pub before: Option<String>,
     /// RFC3339 date string
-    after: Option<String>,
-    channel: Option<String>,
-    status: Option<MessageStatus>,
-    status_code_class: Option<StatusCodeClass>,
+    pub after: Option<String>,
+    pub channel: Option<String>,
+    pub status: Option<MessageStatus>,
+    pub status_code_class: Option<StatusCodeClass>,
 }
 
 pub struct MessageAttempt<'a> {
