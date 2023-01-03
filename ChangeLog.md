@@ -3,6 +3,10 @@
 ## Next
 * 
 
+## Version 0.73.1
+* Libs/Rust: make `ListOptions` and `PostOptions` fields public
+* Libs/Rust: fix Webhook verification to accept &str
+
 ## Version 0.73.0
 * Server: fix issue with potentially incorrect signatures for very small payloads.
 * Server: fix Docker image to use `exec` so that svix-server will accept container process signals.

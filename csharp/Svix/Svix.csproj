@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net5.0;netstandard2.0</TargetFrameworks>
     <PackageId>Svix</PackageId>
-    <Version>0.73.0</Version>
+    <Version>0.73.1</Version>
     <Authors>Svix</Authors>
     <Company>Svix</Company>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
