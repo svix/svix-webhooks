@@ -3,6 +3,9 @@
 ## Next
 * 
 
+## Version 0.74.1
+* Libs/Rust: make all `*Options` and fields public (missing from previous release)
+
 ## Version 0.74.0
 * Libs/Rust: make `ListOptions` and `PostOptions` fields public
 * Libs/Rust: fix Webhook verification to accept &str
