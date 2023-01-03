@@ -81,7 +81,7 @@ impl Svix {
 
 #[derive(Default)]
 pub struct PostOptions {
-    idempotency_key: Option<String>,
+    pub idempotency_key: Option<String>,
 }
 
 pub struct Authentication<'a> {
@@ -123,8 +123,8 @@ impl<'a> Authentication<'a> {
 
 #[derive(Default)]
 pub struct ListOptions {
-    iterator: Option<String>,
-    limit: Option<i32>,
+    pub iterator: Option<String>,
+    pub limit: Option<i32>,
 }
 
 pub type ApplicationListOptions = ListOptions;
