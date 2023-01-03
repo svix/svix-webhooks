@@ -96,37 +96,26 @@ fn validate_channels_endpoint_unrequired_nullable(
     }
 }
 
-pub fn validate_url(val: &str) -> std::result::Result<(), ValidationError> {
-    match Url::parse(val) {
-        Ok(url) => {
-            let scheme = url.scheme();
-            if scheme == "https" || scheme == "http" {
-                Ok(())
-            } else {
-                Err(validation_error(
-                    Some("url"),
-                    Some("Endpoint URL schemes must be http or https"),
-                ))
-            }
-        }
-
-        Err(_) => Err(validation_error(
+pub fn validate_url(url: &Url) -> std::result::Result<(), ValidationError> {
+    let scheme = url.scheme();
+    if scheme == "https" || scheme == "http" {
+        Ok(())
+    } else {
+        Err(validation_error(
             Some("url"),
-            Some("Endpoint URLs must be valid"),
-        )),
+            Some("Endpoint URL schemes must be http or https"),
+        ))
     }
 }
 
-fn validate_url_unrequired(
-    val: &UnrequiredField<String>,
-) -> std::result::Result<(), ValidationError> {
+fn validate_url_unrequired(val: &UnrequiredField<Url>) -> std::result::Result<(), ValidationError> {
     match val {
         UnrequiredField::Absent => Ok(()),
         UnrequiredField::Some(val) => validate_url(val),
     }
 }
 
-#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Validate, ModelIn)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Validate, ModelIn)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointIn {
     #[serde(default)]
@@ -141,8 +130,9 @@ pub struct EndpointIn {
     #[validate]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub uid: Option<EndpointUid>,
+
     #[validate(custom = "validate_url")]
-    pub url: String,
+    pub url: Url,
     #[validate(range(min = 1, message = "Endpoint versions must be at least one"))]
     pub version: u16,
     #[serde(default)]
@@ -203,7 +193,7 @@ impl ModelIn for EndpointIn {
         model.description = Set(description);
         model.rate_limit = Set(rate_limit.map(|x| x.into()));
         model.uid = Set(uid);
-        model.url = Set(url);
+        model.url = Set(url.into());
         model.version = Set(version.into());
         model.disabled = Set(disabled);
         model.event_types_ids = Set(event_types_ids);
@@ -229,7 +219,7 @@ pub struct EndpointPatch {
 
     #[validate(custom = "validate_url_unrequired")]
     #[serde(default)]
-    pub url: UnrequiredField<String>,
+    pub url: UnrequiredField<Url>,
 
     #[validate(custom = "validate_minimum_version_patch")]
     #[serde(default)]
@@ -279,6 +269,7 @@ impl ModelIn for EndpointPatch {
         } = self;
 
         let map = |x: u16| -> i32 { x.into() };
+        let url = url.map(String::from);
 
         patch_field_non_nullable!(model, description);
         patch_field_nullable!(model, rate_limit, map);
@@ -582,6 +573,7 @@ mod tests {
     use super::{
         validate_url, EndpointHeadersIn, EndpointHeadersOut, EndpointHeadersPatchIn, EndpointIn,
     };
+    use reqwest::Url;
     use serde_json::json;
     use std::collections::{HashMap, HashSet};
     use validator::Validate;
@@ -609,7 +601,8 @@ mod tests {
 
         let invalid_2: EndpointIn = serde_json::from_value(json!({
              "version": VERSION_VALID,
-             "url": URL_INVALID
+             "url": URL_VALID,
+             "channels": EVENT_CHANNELS_INVALID
         }))
         .unwrap();
 
@@ -634,16 +627,13 @@ mod tests {
         }))
         .unwrap();
 
-        let invalid_6: EndpointIn = serde_json::from_value(json!({
+        let invalid_6: Result<EndpointIn, _> = serde_json::from_value(json!({
              "version": VERSION_VALID,
-             "url": URL_VALID,
-             "channels": EVENT_CHANNELS_INVALID
-        }))
-        .unwrap();
+             "url": URL_INVALID
+        }));
+        assert!(invalid_6.is_err());
 
-        for e in [
-            invalid_1, invalid_2, invalid_3, invalid_4, invalid_5, invalid_6,
-        ] {
+        for e in [invalid_1, invalid_2, invalid_3, invalid_4, invalid_5] {
             assert!(e.validate().is_err());
         }
 
@@ -709,15 +699,14 @@ mod tests {
 
     #[test]
     fn test_url_validation() {
-        let valid_https = "https://test.url";
-        let valid_http = "http://test.url";
-        let invalid_scheme = "anythingelse://test.url";
+        let valid_https = Url::parse("https://test.url").unwrap();
+        let valid_http = Url::parse("http://test.url").unwrap();
+        let invalid_scheme = Url::parse("anythingelse://test.url").unwrap();
         let invalid_format = "http://[:::1]";
 
-        assert!(validate_url(valid_https).is_ok());
-        assert!(validate_url(valid_http).is_ok());
-        assert!(validate_url(invalid_scheme).is_err());
-        assert!(validate_url(invalid_format).is_err());
+        assert!(validate_url(&valid_https).is_ok());
+        assert!(validate_url(&valid_http).is_ok());
+        assert!(validate_url(&invalid_scheme).is_err());
 
         let valid_https: EndpointIn =
             serde_json::from_value(json!({"url": valid_https, "version": 1})).unwrap();
@@ -725,12 +714,12 @@ mod tests {
             serde_json::from_value(json!({"url": valid_http, "version": 1})).unwrap();
         let invalid_scheme: EndpointIn =
             serde_json::from_value(json!({"url": invalid_scheme, "version": 1})).unwrap();
-        let invalid_format: EndpointIn =
-            serde_json::from_value(json!({"url": invalid_format, "version": 1})).unwrap();
+        let invalid_format: Result<EndpointIn, _> =
+            serde_json::from_value(json!({"url": invalid_format, "version": 1}));
 
         assert!(valid_https.validate().is_ok());
         assert!(valid_http.validate().is_ok());
         assert!(invalid_scheme.validate().is_err());
-        assert!(invalid_format.validate().is_err());
+        assert!(invalid_format.is_err());
     }
 }

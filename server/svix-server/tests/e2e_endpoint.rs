@@ -1,11 +1,11 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use crate::utils::common_calls::metadata;
+use crate::utils::common_calls::{default_test_endpoint, metadata};
 use anyhow::Result;
 use chrono::Utc;
 use ed25519_compact::Signature;
-use reqwest::StatusCode;
+use reqwest::{StatusCode, Url};
 use sea_orm::{ConnectionTrait, DatabaseBackend, QueryResult, Statement};
 use std::sync::Arc;
 use std::{
@@ -123,7 +123,7 @@ async fn test_patch() {
     // Assert that no other changes were made
     assert_eq!(out.ep.rate_limit, None);
     assert_eq!(out.ep.uid, None);
-    assert_eq!(out.ep.url, "http://bad.url".to_owned());
+    assert_eq!(out.ep.url, "http://bad.url/".to_owned());
     assert_eq!(out.ep.version, 1);
     assert!(!out.ep.disabled);
     assert_eq!(out.ep.event_types_ids, None);
@@ -150,7 +150,7 @@ async fn test_patch() {
     // Assert that no other changes were made
     assert_eq!(out.ep.description, "test".to_owned());
     assert_eq!(out.ep.uid, None);
-    assert_eq!(out.ep.url, "http://bad.url".to_owned());
+    assert_eq!(out.ep.url, "http://bad.url/".to_owned());
     assert_eq!(out.ep.version, 1);
     assert!(!out.ep.disabled);
     assert_eq!(out.ep.event_types_ids, None);
@@ -177,7 +177,7 @@ async fn test_patch() {
     // Assert that no other changes were made
     assert_eq!(out.ep.description, "test".to_owned());
     assert_eq!(out.ep.uid, None);
-    assert_eq!(out.ep.url, "http://bad.url".to_owned());
+    assert_eq!(out.ep.url, "http://bad.url/".to_owned());
     assert_eq!(out.ep.version, 1);
     assert!(!out.ep.disabled);
     assert_eq!(out.ep.event_types_ids, None);
@@ -204,7 +204,7 @@ async fn test_patch() {
     // Assert that no other changes were made
     assert_eq!(out.ep.description, "test".to_owned());
     assert_eq!(out.ep.rate_limit, None);
-    assert_eq!(out.ep.url, "http://bad.url".to_owned());
+    assert_eq!(out.ep.url, "http://bad.url/".to_owned());
     assert_eq!(out.ep.version, 1);
     assert!(!out.ep.disabled);
     assert_eq!(out.ep.event_types_ids, None);
@@ -231,7 +231,7 @@ async fn test_patch() {
     // Assert that no other changes were made
     assert_eq!(out.ep.description, "test".to_owned());
     assert_eq!(out.ep.rate_limit, None);
-    assert_eq!(out.ep.url, "http://bad.url".to_owned());
+    assert_eq!(out.ep.url, "http://bad.url/".to_owned());
     assert_eq!(out.ep.version, 1);
     assert!(!out.ep.disabled);
     assert_eq!(out.ep.event_types_ids, None);
@@ -254,7 +254,7 @@ async fn test_patch() {
         .get::<EndpointOut>(&url, StatusCode::OK)
         .await
         .unwrap();
-    assert_eq!(out.ep.url, "http://bad.url2".to_owned());
+    assert_eq!(out.ep.url, "http://bad.url2/".to_owned());
     // Assert that no other changes were made
     assert_eq!(out.ep.description, "test".to_owned());
     assert_eq!(out.ep.rate_limit, None);
@@ -286,7 +286,7 @@ async fn test_patch() {
     assert_eq!(out.ep.description, "test".to_owned());
     assert_eq!(out.ep.rate_limit, None);
     assert_eq!(out.ep.uid, None);
-    assert_eq!(out.ep.url, "http://bad.url2".to_owned());
+    assert_eq!(out.ep.url, "http://bad.url2/".to_owned());
     assert!(!out.ep.disabled);
     assert_eq!(out.ep.event_types_ids, None);
     assert_eq!(out.ep.channels, None);
@@ -313,7 +313,7 @@ async fn test_patch() {
     assert_eq!(out.ep.description, "test".to_owned());
     assert_eq!(out.ep.rate_limit, None);
     assert_eq!(out.ep.uid, None);
-    assert_eq!(out.ep.url, "http://bad.url2".to_owned());
+    assert_eq!(out.ep.url, "http://bad.url2/".to_owned());
     assert_eq!(out.ep.version, 2);
     assert_eq!(out.ep.event_types_ids, None);
     assert_eq!(out.ep.channels, None);
@@ -359,7 +359,7 @@ async fn test_patch() {
     assert_eq!(out.ep.description, "test".to_owned());
     assert_eq!(out.ep.rate_limit, None);
     assert_eq!(out.ep.uid, None);
-    assert_eq!(out.ep.url, "http://bad.url2".to_owned());
+    assert_eq!(out.ep.url, "http://bad.url2/".to_owned());
     assert_eq!(out.ep.version, 2);
     assert!(out.ep.disabled);
     assert_eq!(out.ep.channels, None);
@@ -386,7 +386,7 @@ async fn test_patch() {
     assert_eq!(out.ep.description, "test".to_owned());
     assert_eq!(out.ep.rate_limit, None);
     assert_eq!(out.ep.uid, None);
-    assert_eq!(out.ep.url, "http://bad.url2".to_owned());
+    assert_eq!(out.ep.url, "http://bad.url2/".to_owned());
     assert_eq!(out.ep.version, 2);
     assert!(out.ep.disabled);
     assert_eq!(out.ep.channels, None);
@@ -418,7 +418,7 @@ async fn test_patch() {
     assert_eq!(out.ep.description, "test".to_owned());
     assert_eq!(out.ep.rate_limit, None);
     assert_eq!(out.ep.uid, None);
-    assert_eq!(out.ep.url, "http://bad.url2".to_owned());
+    assert_eq!(out.ep.url, "http://bad.url2/".to_owned());
     assert_eq!(out.ep.version, 2);
     assert!(out.ep.disabled);
     assert_eq!(out.ep.event_types_ids, None);
@@ -445,7 +445,7 @@ async fn test_patch() {
     assert_eq!(out.ep.description, "test".to_owned());
     assert_eq!(out.ep.rate_limit, None);
     assert_eq!(out.ep.uid, None);
-    assert_eq!(out.ep.url, "http://bad.url2".to_owned());
+    assert_eq!(out.ep.url, "http://bad.url2/".to_owned());
     assert_eq!(out.ep.version, 2);
     assert!(out.ep.disabled);
     assert_eq!(out.ep.event_types_ids, None);
@@ -458,11 +458,11 @@ async fn test_crud() {
     const APP_NAME_1: &str = "v1EndpointCrudTestApp1";
     const APP_NAME_2: &str = "v1EndpointCrudTestApp2";
 
-    const EP_URI_APP_1_EP_1_VER_1: &str = "http://v1EndpointCrudTestApp1Ep1Ver1.test";
-    const EP_URI_APP_1_EP_1_VER_2: &str = "http://v1EndpointCrudTestApp1Ep1Ver2.test";
-    const EP_URI_APP_1_EP_2: &str = "http://v1EndpointCrudTestApp1Ep2.test";
-    const EP_URI_APP_2_EP_1: &str = "http://v1EndpointCrudTestApp2Ep1.test";
-    const EP_URI_APP_2_EP_2: &str = "http://v1EndpointCrudTestApp2Ep2.test";
+    const EP_URI_APP_1_EP_1_VER_1: &str = "http://v1EndpointCrudTestApp1Ep1Ver1.test/foo";
+    const EP_URI_APP_1_EP_1_VER_2: &str = "http://v1EndpointCrudTestApp1Ep1Ver2.test/";
+    const EP_URI_APP_1_EP_2: &str = "http://v1EndpointCrudTestApp1Ep2.test/";
+    const EP_URI_APP_2_EP_1: &str = "http://v1EndpointCrudTestApp2Ep1.test/";
+    const EP_URI_APP_2_EP_2: &str = "http://v1EndpointCrudTestApp2Ep2.test/";
 
     let app_1 = create_test_app(&client, APP_NAME_1).await.unwrap().id;
     let app_2 = create_test_app(&client, APP_NAME_2).await.unwrap().id;
@@ -471,25 +471,25 @@ async fn test_crud() {
     let app_1_ep_1 = create_test_endpoint(&client, &app_1, EP_URI_APP_1_EP_1_VER_1)
         .await
         .unwrap();
-    assert_eq!(app_1_ep_1.ep.url, EP_URI_APP_1_EP_1_VER_1);
+    assert_eq!(app_1_ep_1.ep.url, EP_URI_APP_1_EP_1_VER_1.to_lowercase());
     assert_eq!(app_1_ep_1.ep.version, 1);
 
     let app_1_ep_2 = create_test_endpoint(&client, &app_1, EP_URI_APP_1_EP_2)
         .await
         .unwrap();
-    assert_eq!(app_1_ep_2.ep.url, EP_URI_APP_1_EP_2);
+    assert_eq!(app_1_ep_2.ep.url, EP_URI_APP_1_EP_2.to_lowercase());
     assert_eq!(app_1_ep_2.ep.version, 1);
 
     let app_2_ep_1 = create_test_endpoint(&client, &app_2, EP_URI_APP_2_EP_1)
         .await
         .unwrap();
-    assert_eq!(app_2_ep_1.ep.url, EP_URI_APP_2_EP_1);
+    assert_eq!(app_2_ep_1.ep.url, EP_URI_APP_2_EP_1.to_lowercase());
     assert_eq!(app_2_ep_1.ep.version, 1);
 
     let app_2_ep_2 = create_test_endpoint(&client, &app_2, EP_URI_APP_2_EP_2)
         .await
         .unwrap();
-    assert_eq!(app_2_ep_2.ep.url, EP_URI_APP_2_EP_2);
+    assert_eq!(app_2_ep_2.ep.url, EP_URI_APP_2_EP_2.to_lowercase());
     assert_eq!(app_2_ep_2.ep.version, 1);
 
     // READ
@@ -536,7 +536,7 @@ async fn test_crud() {
         )
         .await
         .unwrap();
-    assert_eq!(app_1_ep_1.ep.url, EP_URI_APP_1_EP_1_VER_2);
+    assert_eq!(app_1_ep_1.ep.url, EP_URI_APP_1_EP_1_VER_2.to_lowercase());
 
     // CONFIRM UPDATE
     assert_eq!(
@@ -1030,10 +1030,9 @@ async fn test_endpoint_rotate_signing_symmetric_and_asymmetric() {
     let secret_3 = EndpointSecret::Symmetric(base64::decode("TUdfVE5UMnZlci1TeWxOYXQtX1ZlTW1kLTRtMFdhYmEwanIxdHJvenRCbmlTQ2hFdzBnbHhFbWdFaTJLdzQwSA==").unwrap());
 
     let ep_in = EndpointIn {
-        url: receiver.endpoint.clone(),
-        version: 1,
+        url: Url::parse(&receiver.endpoint).unwrap(),
         key: Some(secret_1.clone()),
-        ..Default::default()
+        ..default_test_endpoint()
     };
 
     let endp = post_endpoint(&client, &app_id, ep_in.clone())
@@ -1116,11 +1115,7 @@ async fn test_endpoint_secret_config() {
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
-    let ep_in = EndpointIn {
-        url: "http://www.example.com".to_owned(),
-        version: 1,
-        ..Default::default()
-    };
+    let ep_in = default_test_endpoint();
 
     let ep = post_endpoint(&client, &app_id, ep_in.clone())
         .await
@@ -1184,10 +1179,8 @@ async fn test_custom_endpoint_secret() {
     );
 
     let mut ep_in = EndpointIn {
-        url: "http://www.example.com".to_owned(),
-        version: 1,
         key: Some(secret_1.clone()),
-        ..Default::default()
+        ..default_test_endpoint()
     };
 
     let endp_1 = post_endpoint(&client, &app_id, ep_in.clone())
@@ -1246,11 +1239,7 @@ async fn test_endpoint_secret_encryption() {
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
-    let ep_in = EndpointIn {
-        url: "http://www.example.com".to_owned(),
-        version: 1,
-        ..Default::default()
-    };
+    let ep_in = default_test_endpoint();
 
     let ep = post_endpoint(&client, &app_id, ep_in.clone())
         .await
@@ -1365,10 +1354,8 @@ async fn test_legacy_endpoint_secret() {
     let secret_1 = EndpointSecret::Symmetric(raw_key.clone());
 
     let ep_in = EndpointIn {
-        url: "http://www.example.com".to_owned(),
-        version: 1,
         key: Some(secret_throwaway.clone()),
-        ..Default::default()
+        ..default_test_endpoint()
     };
 
     let endp_1 = post_endpoint(&client, &app_id, ep_in.clone())
@@ -1416,11 +1403,7 @@ async fn test_endpoint_secret_encryption_in_database() {
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
-    let ep_in = EndpointIn {
-        url: "http://www.example.com".to_owned(),
-        version: 1,
-        ..Default::default()
-    };
+    let ep_in = default_test_endpoint();
 
     let ep = post_endpoint(&client, &app_id, ep_in.clone())
         .await
@@ -1441,11 +1424,7 @@ async fn test_endpoint_secret_encryption_in_database() {
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
-    let ep_in = EndpointIn {
-        url: "http://www.example.com".to_owned(),
-        version: 1,
-        ..Default::default()
-    };
+    let ep_in = default_test_endpoint();
 
     let ep = post_endpoint(&client, &app_id, ep_in.clone())
         .await
@@ -1658,10 +1637,8 @@ async fn test_rate_limit() {
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
     let ep_in = EndpointIn {
-        url: "http://www.example.com".to_owned(),
-        version: 1,
         rate_limit: Some(100),
-        ..Default::default()
+        ..default_test_endpoint()
     };
 
     let endp = post_endpoint(&client, &app_id, ep_in.clone())
@@ -1721,10 +1698,9 @@ async fn test_msg_event_types_filter() {
             &client,
             &app_id,
             EndpointIn {
-                url: receiver.endpoint.to_owned(),
-                version: 1,
+                url: Url::parse(&receiver.endpoint).unwrap(),
                 event_types_ids: event_types,
-                ..Default::default()
+                ..default_test_endpoint()
             },
         )
         .await
@@ -1766,7 +1742,7 @@ async fn test_msg_channels_filter() {
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
-    let receiver = TestReceiver::start(StatusCode::OK);
+    let _receiver = TestReceiver::start(StatusCode::OK);
 
     let ec = EventChannelSet(HashSet::from([EventChannel("tag1".to_owned())]));
 
@@ -1775,10 +1751,8 @@ async fn test_msg_channels_filter() {
             &client,
             &app_id,
             EndpointIn {
-                url: receiver.endpoint.to_owned(),
-                version: 1,
                 channels,
-                ..Default::default()
+                ..default_test_endpoint()
             },
         )
         .await

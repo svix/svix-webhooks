@@ -6,6 +6,7 @@ use std::{net::TcpListener, sync::Arc, time::Duration};
 use chrono::{DateTime, Utc};
 use http::StatusCode;
 
+use reqwest::Url;
 use serde::Deserialize;
 use svix_ksuid::KsuidLike;
 use svix_server::{
@@ -28,6 +29,8 @@ use utils::{
     common_calls::{create_test_app, create_test_endpoint, create_test_message},
     get_default_test_config, IgnoredResponse, TestClient, TestReceiver,
 };
+
+use crate::utils::common_calls::default_test_endpoint;
 
 /// Sent when an endpoint has been automatically disabled after continuous failures.
 #[derive(Debug, Deserialize)]
@@ -155,9 +158,8 @@ async fn test_endpoint_create_update_and_delete() {
             &format!("api/v1/app/{}/endpoint/", op_webhook_app.id),
             EndpointIn {
                 description: "TestOperationalWebhookEndpoint".to_owned(),
-                url: receiver.endpoint.clone(),
-                version: 1,
-                ..Default::default()
+                url: Url::parse(&receiver.endpoint).unwrap(),
+                ..default_test_endpoint()
             },
             StatusCode::CREATED,
         )
@@ -203,9 +205,9 @@ async fn test_endpoint_create_update_and_delete() {
             ),
             EndpointIn {
                 description: "Updated description".to_owned(),
-                url: receiver.endpoint,
+                url: Url::parse(&receiver.endpoint).unwrap(),
                 version: 2,
-                ..Default::default()
+                ..default_test_endpoint()
             },
             StatusCode::OK,
         )
@@ -302,9 +304,8 @@ async fn test_message_attempt_operational_webhooks() {
             &format!("api/v1/app/{}/endpoint/", op_webhook_app.id),
             EndpointIn {
                 description: "TestOperationalWebhookEndpoint".to_owned(),
-                url: receiver.endpoint.clone(),
-                version: 1,
-                ..Default::default()
+                url: Url::parse(&receiver.endpoint).unwrap(),
+                ..default_test_endpoint()
             },
             StatusCode::CREATED,
         )

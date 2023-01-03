@@ -5,7 +5,7 @@ use std::time::Duration;
 
 use anyhow::Result;
 use chrono::{DateTime, Utc};
-use reqwest::StatusCode;
+use reqwest::{StatusCode, Url};
 
 use serde::{de::DeserializeOwned, Serialize};
 use svix_server::{
@@ -47,11 +47,25 @@ pub async fn delete_test_app(client: &TestClient, id: ApplicationId) -> Result<I
 
 // Endpoint
 
+pub fn default_test_endpoint() -> EndpointIn {
+    EndpointIn {
+        description: Default::default(),
+        rate_limit: Default::default(),
+        uid: Default::default(),
+        url: Url::parse("http://example.com").unwrap(),
+        version: 1,
+        disabled: Default::default(),
+        event_types_ids: Default::default(),
+        channels: Default::default(),
+        key: Default::default(),
+        metadata: Default::default(),
+    }
+}
+
 pub fn endpoint_in(url: &str) -> EndpointIn {
     EndpointIn {
-        url: url.to_owned(),
-        version: 1,
-        ..Default::default()
+        url: Url::parse(url).unwrap(),
+        ..default_test_endpoint()
     }
 }
 
