@@ -299,32 +299,20 @@ async fn validate_event_types(
     }
 }
 
-fn validate_endpoint_url(url: &str, https_only: bool) -> Result<()> {
+fn validate_endpoint_url(url: &Url, https_only: bool) -> Result<()> {
     if !https_only {
         return Ok(());
     }
 
-    match Url::parse(url) {
-        Ok(url) => {
-            let scheme = url.scheme();
-            if scheme == "https" {
-                Ok(())
-            } else {
-                Err(HttpError::unprocessable_entity(vec![ValidationErrorItem {
-                    loc: vec!["body".to_owned(), "url".to_owned()],
-                    msg: "Endpoint URL schemes must be https when endpoint_https_only is set."
-                        .to_owned(),
-                    ty: "value_error".to_owned(),
-                }])
-                .into())
-            }
-        }
-
-        Err(_) => Err(HttpError::unprocessable_entity(vec![ValidationErrorItem {
+    let scheme = url.scheme();
+    if scheme == "https" {
+        Ok(())
+    } else {
+        Err(HttpError::unprocessable_entity(vec![ValidationErrorItem {
             loc: vec!["body".to_owned(), "url".to_owned()],
-            msg: "Endpoint URLs must be valid".to_owned(),
+            msg: "Endpoint URL schemes must be https when endpoint_https_only is set.".to_owned(),
             ty: "value_error".to_owned(),
         }])
-        .into()),
+        .into())
     }
 }
