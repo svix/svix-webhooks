@@ -242,10 +242,10 @@ pub(super) async fn delete_endpoint(
         .send_operational_webhook(
             &app.org_id,
             OperationalWebhook::EndpointDeleted(EndpointEvent {
-                app_id: &app.id,
-                app_uid: app.uid.as_ref(),
-                endpoint_id: &endpoint_id,
-                endpoint_uid: endpoint_uid.as_ref(),
+                app_id: app.id,
+                app_uid: app.uid,
+                endpoint_id,
+                endpoint_uid,
             }),
         )
         .await?;

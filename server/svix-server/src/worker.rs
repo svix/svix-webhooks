@@ -428,12 +428,12 @@ async fn dispatch(
                         .send_operational_webhook(
                             org_id,
                             OperationalWebhook::MessageAttemptFailing(MessageAttemptEvent {
-                                app_id: &msg_task.app_id,
-                                app_uid,
-                                endpoint_id: &msg_task.endpoint_id,
-                                msg_id: &msg_task.msg_id,
-                                msg_event_id: msg_uid,
-                                last_attempt: (&attempt).into(),
+                                app_id: msg_task.app_id.clone(),
+                                app_uid: app_uid.cloned(),
+                                endpoint_id: msg_task.endpoint_id.clone(),
+                                msg_id: msg_task.msg_id.clone(),
+                                msg_event_id: msg_uid.cloned(),
+                                last_attempt: attempt.into(),
                             }),
                         )
                         .await?;
@@ -467,12 +467,12 @@ async fn dispatch(
                     .send_operational_webhook(
                         org_id,
                         OperationalWebhook::MessageAttemptExhausted(MessageAttemptEvent {
-                            app_id: &msg_task.app_id,
-                            app_uid,
-                            endpoint_id: &msg_task.endpoint_id,
-                            msg_id: &msg_task.msg_id,
-                            msg_event_id: msg_uid,
-                            last_attempt: (&attempt).into(),
+                            app_id: msg_task.app_id.clone(),
+                            app_uid: app_uid.cloned(),
+                            endpoint_id: msg_task.endpoint_id.clone(),
+                            msg_id: msg_task.msg_id,
+                            msg_event_id: msg_uid.cloned(),
+                            last_attempt: attempt.into(),
                         }),
                     )
                     .await?;
@@ -493,9 +493,9 @@ async fn dispatch(
                             .send_operational_webhook(
                                 org_id,
                                 OperationalWebhook::EndpointDisabled(EndpointDisabledEvent {
-                                    app_id: &msg_task.app_id,
-                                    app_uid,
-                                    endpoint_id: &msg_task.endpoint_id,
+                                    app_id: msg_task.app_id.clone(),
+                                    app_uid: app_uid.cloned(),
+                                    endpoint_id: msg_task.endpoint_id.clone(),
                                     // TODO:
                                     endpoint_uid: None,
                                     fail_since: first_failure_at,
