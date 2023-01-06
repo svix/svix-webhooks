@@ -17,16 +17,12 @@ use std::{
 };
 use tower::ServiceBuilder;
 use tower_http::cors::{AllowHeaders, Any, CorsLayer};
-use tower_http::trace::TraceLayer;
 use tracing_subscriber::{prelude::*, util::SubscriberInitExt};
 
 use crate::{
     cfg::{CacheBackend, Configuration},
     core::{
-        cache,
-        idempotency::IdempotencyService,
-        operational_webhooks::OperationalWebhookSenderInner,
-        otel_spans::{AxumOtelOnFailure, AxumOtelOnResponse, AxumOtelSpanCreator},
+        cache, idempotency::IdempotencyService, operational_webhooks::OperationalWebhookSenderInner,
     },
     db::init_db,
     expired_message_cleaner::expired_message_cleaner_loop,
@@ -129,12 +125,6 @@ pub async fn run_with_prefix(
                 .allow_methods(Any)
                 .allow_headers(AllowHeaders::mirror_request())
                 .max_age(Duration::from_secs(600)),
-        )
-        .layer(
-            TraceLayer::new_for_http()
-                .make_span_with(AxumOtelSpanCreator)
-                .on_response(AxumOtelOnResponse)
-                .on_failure(AxumOtelOnFailure),
         )
         .layer(Extension(pool.clone()))
         .layer(Extension(queue_tx.clone()))
