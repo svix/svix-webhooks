@@ -2,6 +2,9 @@
 // SPDX-License-Identifier: MIT
 
 use axum::Router;
+use tower_http::trace::TraceLayer;
+
+use crate::core::otel_spans::{AxumOtelOnFailure, AxumOtelOnResponse, AxumOtelSpanCreator};
 
 pub mod endpoints;
 pub mod utils;
@@ -14,7 +17,13 @@ pub fn router() -> Router {
         .merge(endpoints::endpoint::router())
         .merge(endpoints::event_type::router())
         .merge(endpoints::message::router())
-        .merge(endpoints::attempt::router());
+        .merge(endpoints::attempt::router())
+        .layer(
+            TraceLayer::new_for_http()
+                .make_span_with(AxumOtelSpanCreator)
+                .on_response(AxumOtelOnResponse)
+                .on_failure(AxumOtelOnFailure),
+        );
 
     #[cfg(debug_assertions)]
     if cfg!(debug_assertions) {
