@@ -23,7 +23,7 @@ clap = { version = "3.2.1", features = ["derive"] }
 axum = { version = "0.6.1", features = ["headers"] }
 base64 = "0.13.0"
 hyper = { version = "0.14.16", features = ["full"] }
-tokio = { version = "1.15.0", features = ["full"] }
+tokio = { version = "1.23.1", features = ["full"] }
 tower = "0.4.11"
 tower-http = { version = "0.3.4", features = ["trace", "cors", "request-id"] }
 serde = { version = "1.0.133", features = ["derive"] }
