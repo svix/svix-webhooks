@@ -48,6 +48,7 @@ import {
   Middleware,
   RequestContext,
   ResponseContext,
+  ApplicationTokenExpireIn,
 } from "./openapi/index";
 export * from "./openapi/models/all";
 export * from "./openapi/apis/exception";
@@ -141,6 +142,18 @@ class Authentication {
 
   public logout(options?: PostOptions): Promise<void> {
     return this.api.logoutApiV1AuthLogoutPost({ ...options });
+  }
+
+  public expireAll(
+    appId: string,
+    expireOptions: ApplicationTokenExpireIn,
+    options?: PostOptions
+  ): Promise<void> {
+    return this.api.expireAllApiV1AuthAppAppIdExpireAllPost({
+      appId,
+      applicationTokenExpireIn: expireOptions,
+      ...options,
+    });
   }
 }
 

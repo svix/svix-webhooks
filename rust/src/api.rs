@@ -119,6 +119,26 @@ impl<'a> Authentication<'a> {
         )
         .await?)
     }
+
+    pub async fn expire_all(
+        &self,
+        app_id: String,
+        expire_options: crate::models::ApplicationTokenExpireIn,
+        options: Option<PostOptions>,
+    ) -> Result<()> {
+        let options = options.unwrap_or_default();
+        Ok(
+            authentication_api::expire_all_api_v1_auth_app_app_id_expire_all_post(
+                self.cfg,
+                authentication_api::ExpireAllApiV1AuthAppAppIdExpireAllPostParams {
+                    app_id,
+                    application_token_expire_in: expire_options,
+                    idempotency_key: options.idempotency_key,
+                },
+            )
+            .await?,
+        )
+    }
 }
 
 #[derive(Default)]
