@@ -79,6 +79,9 @@ cache_type = "memory"
 # If true, headers are prefixed with `Webhook-`, otherwise with `Svix-` (default).
 whitelabel_headers = false
 
+# If value is configured, headers are prefixed with custom configured prefix value, otherwise with `Webhook-` (default).
+whitelabel_header_prefix = "Custom-"
+
 # If true, only allow https endpoints, otherwise also allow http.
 endpoint_https_only = false
 

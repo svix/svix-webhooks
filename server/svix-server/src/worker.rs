@@ -172,6 +172,7 @@ fn generate_msg_headers(
     msg_id: &MessageId,
     signatures: String,
     whitelabel_headers: bool,
+    whitelabel_header_prefix: String,
     configured_headers: Option<&EndpointHeaders>,
     _endpoint_url: &str,
 ) -> HeaderMap {
@@ -185,9 +186,10 @@ fn generate_msg_headers(
         .parse()
         .expect("Error parsing message signatures");
     if whitelabel_headers {
-        headers.insert("webhook-id", id);
-        headers.insert("webhook-timestamp", timestamp);
-        headers.insert("webhook-signature", signatures_str);
+        let webhook_prefix = if whitelabel_header_prefix.is_empty() { "webhook-" } else { whitelabel_header_prefix };
+        headers.insert(format!("{webhook_prefix}id"), id);
+        headers.insert(format!("{webhook_prefix}timestamp"), timestamp);
+        headers.insert(format!("{webhook_prefix}signature"), signatures_str);
     } else {
         headers.insert("svix-id", id);
         headers.insert("svix-timestamp", timestamp);
@@ -272,6 +274,7 @@ async fn dispatch(
             &msg_task.msg_id,
             signatures,
             cfg.whitelabel_headers,
+            cfg.whitelabel_header_prefix,
             endp.headers.as_ref(),
             &endp.url,
         );
@@ -735,6 +738,7 @@ mod tests {
     // [`generate_msg_headers`] tests
     const TIMESTAMP: i64 = 1;
     const WHITELABEL_HEADERS: bool = false;
+    const WHITELABEL_HEADER_PREFIX: &str = "custom-"
     const BODY: &str = "{\"test\": \"body\"}";
     const ENDPOINT_SIGNING_KEYS: &[&EndpointSecretInternal] = &[];
     const ENDPOINT_URL: &str = "http://localhost:8071";
@@ -758,6 +762,7 @@ mod tests {
                 &id,
                 signatures,
                 WHITELABEL_HEADERS,
+                WHITELABEL_HEADER_PREFIX,
                 None,
                 ENDPOINT_URL,
             ),
@@ -791,6 +796,7 @@ mod tests {
             &id,
             signatures,
             WHITELABEL_HEADERS,
+            WHITELABEL_HEADER_PREFIX,
             Some(&EndpointHeaders(headers)),
             ENDPOINT_URL,
         );
@@ -826,6 +832,7 @@ mod tests {
             &test_message_id,
             signatures,
             WHITELABEL_HEADERS,
+            WHITELABEL_HEADER_PREFIX,
             None,
             ENDPOINT_URL,
         );
