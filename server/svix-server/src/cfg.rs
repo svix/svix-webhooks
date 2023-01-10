@@ -7,6 +7,7 @@ use figment::{
     providers::{Env, Format, Toml},
     Figment,
 };
+use ipnet::IpNet;
 use std::time::Duration;
 
 use crate::{core::cryptography::Encryption, core::security::Keys, error::Result};
@@ -172,6 +173,14 @@ pub struct ConfigurationInner {
     pub api_enabled: bool,
     /// Should this instance run the message worker
     pub worker_enabled: bool,
+
+    /// Subnets to whitelist for outbound webhooks. Note that allowing endpoints in private IP space
+    /// is a security risk and should only be allowed if you are using the service internally or for
+    /// testing purposes. Should be specified in CIDR notation, e.g., `[127.0.0.1/32, 172.17.0.0/16, 192.168.0.0/16]`
+    pub whitelist_subnets: Option<Arc<Vec<IpNet>>>,
+
+    /// Maximum number of concurrent worker tasks to spawn (0 is unlimited)
+    pub worker_max_tasks: u16,
 
     #[serde(flatten)]
     pub internal: InternalConfig,

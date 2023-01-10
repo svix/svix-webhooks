@@ -23,6 +23,8 @@ use serde::Serialize;
 use serde_json::json;
 use sqlx::Error as SqlxError;
 
+use crate::core::webhook_http_client;
+
 /// A short-hand version of a [std::result::Result] that always returns an Svix [Error].
 pub type Result<T> = std::result::Result<T, Error>;
 
@@ -150,6 +152,13 @@ macro_rules! err_queue {
 }
 
 #[macro_export]
+macro_rules! err_cache {
+    ($s:expr) => {
+        $crate::error::Error::cache($s, $crate::location!())
+    };
+}
+
+#[macro_export]
 macro_rules! err_validation {
     ($s:expr) => {
         $crate::error::Error::validation($s, $crate::location!())
@@ -271,6 +280,8 @@ pub enum ErrorType {
     Http(HttpError),
     /// Cache error
     Cache(String),
+    /// Timeout error
+    Timeout(String),
 }
 
 impl fmt::Display for ErrorType {
@@ -282,6 +293,7 @@ impl fmt::Display for ErrorType {
             Self::Validation(s) => s.fmt(f),
             Self::Http(s) => s.fmt(f),
             Self::Cache(s) => s.fmt(f),
+            Self::Timeout(s) => s.fmt(f),
         }
     }
 }
@@ -319,7 +331,7 @@ pub struct ValidationErrorItem {
 
 #[derive(Debug, Clone)]
 pub struct HttpError {
-    status: StatusCode,
+    pub status: StatusCode,
     body: HttpErrorBody,
 }
 
@@ -426,5 +438,20 @@ impl fmt::Display for HttpError {
 impl IntoResponse for HttpError {
     fn into_response(self) -> Response {
         (self.status, Json(self.body)).into_response()
+    }
+}
+
+impl From<ErrorType> for Error {
+    fn from(typ: ErrorType) -> Self {
+        Self { trace: vec![], typ }
+    }
+}
+
+impl From<crate::core::webhook_http_client::Error> for Error {
+    fn from(err: webhook_http_client::Error) -> Error {
+        match err {
+            webhook_http_client::Error::TimedOut => ErrorType::Timeout(err.to_string()).into(),
+            _ => err_generic!(err.to_string()),
+        }
     }
 }
