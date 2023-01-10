@@ -348,7 +348,7 @@ where
 mod tests {
     use std::{net::TcpListener, sync::Arc};
 
-    use axum::{extract::Extension, routing::post, Router, Server};
+    use axum::{extract::State, routing::post, Router, Server};
     use http::StatusCode;
     use reqwest::Client;
     use tokio::{sync::Mutex, task::JoinHandle};
@@ -361,6 +361,12 @@ mod tests {
         types::{BaseId, OrganizationId},
     };
 
+    #[derive(Clone)]
+    struct TestAppState {
+        count: Arc<Mutex<u16>>,
+        wait: Option<std::time::Duration>,
+    }
+
     /// Starts a basic Axum server with one endpoint which counts the number of times the endpoint
     /// has been polled from. This will be nested in the [`IdempotencyService`] such that, providing
     /// a key may result in the count not increasing and a prior result being displayed.
@@ -372,7 +378,7 @@ mod tests {
     /// that points to the count of the server such that its internal state may be monitored.
     async fn start_service(
         wait: Option<std::time::Duration>,
-    ) -> (JoinHandle<()>, String, Arc<Mutex<usize>>) {
+    ) -> (JoinHandle<()>, String, Arc<Mutex<u16>>) {
         dotenv::dotenv().ok();
 
         let cache = cache::memory::new();
@@ -396,8 +402,7 @@ mod tests {
                                     service,
                                 }
                             }))
-                            .layer(Extension(count))
-                            .layer(Extension(wait))
+                            .with_state(TestAppState { count, wait })
                             .into_make_service(),
                     )
                     .await
@@ -409,10 +414,7 @@ mod tests {
     }
 
     /// Only to be used via [`start_service`] -- this is the actual endpoint implementation
-    async fn service_endpoint(
-        Extension(count): Extension<Arc<Mutex<usize>>>,
-        Extension(wait): Extension<Option<std::time::Duration>>,
-    ) -> String {
+    async fn service_endpoint(State(TestAppState { wait, count }): State<TestAppState>) -> String {
         let mut count = count.lock().await;
         *count += 1;
 
@@ -597,7 +599,7 @@ mod tests {
                                     service,
                                 }
                             }))
-                            .layer(Extension(count))
+                            .with_state(TestAppState { count, wait: None })
                             .into_make_service(),
                     )
                     .await
@@ -609,7 +611,9 @@ mod tests {
     }
 
     /// Only to be used via [`start_empty_service`] -- this is the actual endpoint implementation
-    async fn empty_service_endpoint(Extension(count): Extension<Arc<Mutex<u16>>>) -> StatusCode {
+    async fn empty_service_endpoint(
+        State(TestAppState { count, .. }): State<TestAppState>,
+    ) -> StatusCode {
         let mut count = count.lock().await;
         *count += 1;
 

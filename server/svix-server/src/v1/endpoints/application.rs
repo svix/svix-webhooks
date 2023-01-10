@@ -19,16 +19,17 @@ use crate::{
         validation_error, EmptyResponse, ListResponse, ModelIn, ModelOut, Pagination,
         PaginationLimit, ValidatedJson, ValidatedQuery,
     },
+    AppState,
 };
 use axum::{
-    extract::{Extension, Path},
+    extract::{Path, State},
     routing::{get, post},
     Json, Router,
 };
 use chrono::{DateTime, Utc};
 use hyper::StatusCode;
+use sea_orm::ActiveModelTrait;
 use sea_orm::ActiveValue::Set;
-use sea_orm::{ActiveModelTrait, DatabaseConnection};
 use serde::{Deserialize, Serialize};
 use svix_server_derive::ModelOut;
 use validator::{Validate, ValidationError};
@@ -184,7 +185,7 @@ impl From<(application::Model, applicationmetadata::Model)> for ApplicationOut {
 }
 
 async fn list_applications(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     pagination: ValidatedQuery<Pagination<ApplicationId>>,
     permissions::Organization { org_id }: permissions::Organization,
 ) -> Result<Json<ListResponse<ApplicationOut>>> {
@@ -213,7 +214,7 @@ pub struct CreateApplicationQuery {
 }
 
 async fn create_application(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     query: ValidatedQuery<CreateApplicationQuery>,
     permissions::Organization { org_id }: permissions::Organization,
     ValidatedJson(data): ValidatedJson<ApplicationIn>,
@@ -256,7 +257,7 @@ async fn get_application(
 }
 
 async fn update_application(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     Path(app_id): Path<ApplicationIdOrUid>,
     permissions::Organization { org_id }: permissions::Organization,
     ValidatedJson(data): ValidatedJson<ApplicationIn>,
@@ -294,7 +295,7 @@ async fn update_application(
 }
 
 async fn patch_application(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
     ValidatedJson(data): ValidatedJson<ApplicationPatch>,
 ) -> Result<Json<ApplicationOut>> {
@@ -315,7 +316,7 @@ async fn patch_application(
 }
 
 async fn delete_application(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
     let mut app: application::ActiveModel = app.into();
@@ -325,7 +326,7 @@ async fn delete_application(
     Ok((StatusCode::NO_CONTENT, Json(EmptyResponse {})))
 }
 
-pub fn router() -> Router {
+pub fn router() -> Router<AppState> {
     Router::new()
         .route("/app/", post(create_application).get(list_applications))
         .route(

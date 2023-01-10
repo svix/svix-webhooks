@@ -4,7 +4,7 @@
 use std::fmt::Debug;
 
 use axum::{
-    extract::{Extension, FromRequestParts, TypedHeader},
+    extract::{FromRequestParts, TypedHeader},
     headers::{authorization::Bearer, Authorization},
 };
 
@@ -14,9 +14,9 @@ use jwt_simple::prelude::*;
 use validator::Validate;
 
 use crate::{
-    cfg::Configuration,
     ctx,
     error::{HttpError, Result},
+    AppState,
 };
 
 use super::types::{ApplicationId, OrganizationId};
@@ -62,17 +62,11 @@ pub struct CustomClaim {
     pub organization: Option<String>,
 }
 
-pub async fn permissions_from_bearer<S: Send + Sync>(
-    parts: &mut Parts,
-    state: &S,
-) -> Result<Permissions> {
-    let Extension(ref cfg) =
-        ctx!(Extension::<Configuration>::from_request_parts(parts, state).await)?;
-
+pub async fn permissions_from_bearer(parts: &mut Parts, state: &AppState) -> Result<Permissions> {
     let TypedHeader(Authorization(bearer)) =
         ctx!(TypedHeader::<Authorization<Bearer>>::from_request_parts(parts, state).await)?;
 
-    let claims = parse_bearer(&cfg.jwt_secret, &bearer)
+    let claims = parse_bearer(&state.cfg.jwt_secret, &bearer)
         .ok_or_else(|| HttpError::unauthorized(None, Some("Invalid token".to_string())))?;
     permissions_from_jwt(claims)
 }

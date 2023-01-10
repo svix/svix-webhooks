@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 use crate::{
-    cache::Cache,
     core::{
         message_app::CreateMessageApp,
         permissions,
@@ -13,23 +12,24 @@ use crate::{
     },
     ctx, err_generic,
     error::{HttpError, Result},
-    queue::{MessageTaskBatch, TaskQueueProducer},
+    queue::MessageTaskBatch,
     v1::utils::{
         apply_pagination, iterator_from_before_or_after, validation_error, ListResponse,
         MessageListFetchOptions, ModelIn, ModelOut, PaginationLimit, ReversibleIterator,
         ValidatedJson, ValidatedQuery,
     },
+    AppState,
 };
 use axum::{
-    extract::{Extension, Path},
+    extract::{Path, State},
     routing::{get, post},
     Json, Router,
 };
 use chrono::{DateTime, Duration, Utc};
 use hyper::StatusCode;
 use sea_orm::entity::prelude::*;
+use sea_orm::ActiveModelTrait;
 use sea_orm::{sea_query::Expr, ActiveValue::Set};
-use sea_orm::{ActiveModelTrait, DatabaseConnection};
 use serde::{Deserialize, Serialize};
 
 use svix_server_derive::{ModelIn, ModelOut};
@@ -165,7 +165,7 @@ pub struct ListMessagesQueryParams {
 }
 
 async fn list_messages(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<MessageId>>>,
     ValidatedQuery(ListMessagesQueryParams {
         channel,
@@ -219,9 +219,12 @@ pub struct CreateMessageQueryParams {
 }
 
 async fn create_message(
-    Extension(ref db): Extension<DatabaseConnection>,
-    Extension(queue_tx): Extension<TaskQueueProducer>,
-    Extension(cache): Extension<Cache>,
+    State(AppState {
+        ref db,
+        queue_tx,
+        cache,
+        ..
+    }): State<AppState>,
     ValidatedQuery(CreateMessageQueryParams { with_content }): ValidatedQuery<
         CreateMessageQueryParams,
     >,
@@ -279,7 +282,7 @@ pub struct GetMessageQueryParams {
     with_content: bool,
 }
 async fn get_message(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     Path((_app_id, msg_id)): Path<(ApplicationIdOrUid, MessageIdOrUid)>,
     ValidatedQuery(GetMessageQueryParams { with_content }): ValidatedQuery<GetMessageQueryParams>,
     permissions::Application { app }: permissions::Application,
@@ -298,7 +301,7 @@ async fn get_message(
     Ok(Json(msg_out))
 }
 
-pub fn router() -> Router {
+pub fn router() -> Router<AppState> {
     Router::new()
         .route("/app/:app_id/msg/", post(create_message).get(list_messages))
         .route("/app/:app_id/msg/:msg_id/", get(get_message))

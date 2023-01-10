@@ -4,13 +4,16 @@
 use axum::Router;
 use tower_http::trace::TraceLayer;
 
-use crate::core::otel_spans::{AxumOtelOnFailure, AxumOtelOnResponse, AxumOtelSpanCreator};
+use crate::{
+    core::otel_spans::{AxumOtelOnFailure, AxumOtelOnResponse, AxumOtelSpanCreator},
+    AppState,
+};
 
 pub mod endpoints;
 pub mod utils;
 
-pub fn router() -> Router {
-    let ret = Router::new()
+pub fn router() -> Router<AppState> {
+    let ret: Router<AppState> = Router::new()
         .merge(endpoints::health::router())
         .merge(endpoints::auth::router())
         .merge(endpoints::application::router())
@@ -39,6 +42,7 @@ mod development {
 
     use crate::error::{Error, Result};
     use crate::v1::utils::EmptyResponse;
+    use crate::AppState;
 
     struct EchoData {
         pub headers: String,
@@ -65,7 +69,7 @@ mod development {
         Ok(Json(EmptyResponse {}))
     }
 
-    pub fn router() -> Router {
+    pub fn router() -> Router<AppState> {
         Router::new().route("/development/echo/", get(echo).post(echo))
     }
 }

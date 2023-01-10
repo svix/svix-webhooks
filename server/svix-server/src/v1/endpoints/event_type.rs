@@ -16,16 +16,17 @@ use crate::{
         ListResponse, ModelIn, ModelOut, Pagination, PaginationLimit, ValidatedJson,
         ValidatedQuery,
     },
+    AppState,
 };
 use axum::{
-    extract::{Extension, Path},
+    extract::{Path, State},
     routing::{get, post},
     Json, Router,
 };
 use chrono::{DateTime, Utc};
 use hyper::StatusCode;
 use sea_orm::{entity::prelude::*, ActiveValue::Set, QueryOrder};
-use sea_orm::{ActiveModelTrait, DatabaseConnection, QuerySelect};
+use sea_orm::{ActiveModelTrait, QuerySelect};
 use serde::{Deserialize, Serialize};
 use svix_server_derive::{ModelIn, ModelOut};
 use validator::Validate;
@@ -167,7 +168,7 @@ pub struct ListFetchOptions {
 }
 
 async fn list_event_types(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     pagination: ValidatedQuery<Pagination<EventTypeName>>,
     fetch_options: ValidatedQuery<ListFetchOptions>,
     permissions::ReadAll { org_id }: permissions::ReadAll,
@@ -203,7 +204,7 @@ async fn list_event_types(
 }
 
 async fn create_event_type(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     permissions::Organization { org_id }: permissions::Organization,
     ValidatedJson(data): ValidatedJson<EventTypeIn>,
 ) -> Result<(StatusCode, Json<EventTypeOut>)> {
@@ -239,7 +240,7 @@ async fn create_event_type(
 }
 
 async fn get_event_type(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     Path(evtype_name): Path<EventTypeName>,
     permissions::ReadAll { org_id }: permissions::ReadAll,
 ) -> Result<Json<EventTypeOut>> {
@@ -253,7 +254,7 @@ async fn get_event_type(
 }
 
 async fn update_event_type(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     Path(evtype_name): Path<EventTypeName>,
     permissions::Organization { org_id }: permissions::Organization,
     ValidatedJson(data): ValidatedJson<EventTypeUpdate>,
@@ -289,7 +290,7 @@ async fn update_event_type(
 }
 
 async fn patch_event_type(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     Path(evtype_name): Path<EventTypeName>,
     permissions::Organization { org_id }: permissions::Organization,
     ValidatedJson(data): ValidatedJson<EventTypePatch>,
@@ -309,7 +310,7 @@ async fn patch_event_type(
 }
 
 async fn delete_event_type(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     Path(evtype_name): Path<EventTypeName>,
     permissions::Organization { org_id }: permissions::Organization,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
@@ -326,7 +327,7 @@ async fn delete_event_type(
     Ok((StatusCode::NO_CONTENT, Json(EmptyResponse {})))
 }
 
-pub fn router() -> Router {
+pub fn router() -> Router<AppState> {
     Router::new()
         .route(
             "/event-type/",
