@@ -14,7 +14,7 @@ use crate::{
     db::models::{endpoint, message, messagedestination},
     err_database,
     error::{Error, HttpError, Result},
-    queue::{MessageTask, TaskQueueProducer},
+    queue::MessageTask,
     v1::{
         endpoints::message::MessageOut,
         utils::{
@@ -22,9 +22,10 @@ use crate::{
             MessageListFetchOptions, ModelOut, PaginationLimit, ReversibleIterator, ValidatedQuery,
         },
     },
+    AppState,
 };
 use axum::{
-    extract::{Extension, Path},
+    extract::{Path, State},
     routing::{get, post},
     Json, Router,
 };
@@ -119,7 +120,7 @@ pub struct ListAttemptedMessagesQueryParameters {
 
 /// Fetches a list of [`AttemptedMessageOut`]s associated with a given app and endpoint.
 async fn list_attempted_messages(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<MessageId>>>,
     ValidatedQuery(ListAttemptedMessagesQueryParameters {
         channel,
@@ -286,7 +287,7 @@ fn list_attempts_by_endpoint_or_message_filters(
 
 /// Fetches a list of [`MessageAttemptOut`]s for a given endpoint ID
 async fn list_attempts_by_endpoint(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<MessageAttemptId>>>,
     ValidatedQuery(ListAttemptsByEndpointQueryParameters {
         status,
@@ -357,7 +358,7 @@ pub struct ListAttemptsByMsgQueryParameters {
 
 /// Fetches a list of [`MessageAttemptOut`]s for a given message ID
 async fn list_attempts_by_msg(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<MessageAttemptId>>>,
     ValidatedQuery(ListAttemptsByMsgQueryParameters {
         status,
@@ -458,7 +459,7 @@ impl MessageEndpointOut {
 }
 
 async fn list_attempted_destinations(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     ValidatedQuery(mut pagination): ValidatedQuery<Pagination<EndpointId>>,
     Path((_app_id, msg_id)): Path<(ApplicationIdOrUid, MessageIdOrUid)>,
     permissions::Application { app }: permissions::Application,
@@ -514,7 +515,7 @@ pub struct ListAttemptsForEndpointQueryParameters {
 }
 
 async fn list_attempts_for_endpoint(
-    extension: Extension<DatabaseConnection>,
+    state: State<AppState>,
     pagination: ValidatedQuery<Pagination<ReversibleIterator<MessageAttemptId>>>,
     ValidatedQuery(ListAttemptsForEndpointQueryParameters {
         channel,
@@ -527,7 +528,7 @@ async fn list_attempts_for_endpoint(
     auth_app: permissions::Application,
 ) -> Result<Json<ListResponse<MessageAttemptOut>>> {
     list_messageattempts(
-        extension,
+        state,
         pagination,
         ValidatedQuery(AttemptListFetchOptions {
             endpoint_id: Some(endp_id),
@@ -555,7 +556,7 @@ pub struct AttemptListFetchOptions {
 }
 
 async fn list_messageattempts(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<MessageAttemptId>>>,
     ValidatedQuery(AttemptListFetchOptions {
         endpoint_id,
@@ -624,7 +625,7 @@ async fn list_messageattempts(
 }
 
 async fn get_messageattempt(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     Path((_app_id, msg_id, attempt_id)): Path<(
         ApplicationIdOrUid,
         MessageIdOrUid,
@@ -650,8 +651,9 @@ async fn get_messageattempt(
 }
 
 async fn resend_webhook(
-    Extension(ref db): Extension<DatabaseConnection>,
-    Extension(queue_tx): Extension<TaskQueueProducer>,
+    State(AppState {
+        ref db, queue_tx, ..
+    }): State<AppState>,
     Path((_app_id, msg_id, endp_id)): Path<(ApplicationIdOrUid, MessageIdOrUid, EndpointIdOrUid)>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
@@ -700,7 +702,7 @@ async fn resend_webhook(
     Ok((StatusCode::ACCEPTED, Json(EmptyResponse {})))
 }
 
-pub fn router() -> Router {
+pub fn router() -> Router<AppState> {
     Router::new()
         // NOTE: [`list_messageattempts`] is deprecated
         .route(

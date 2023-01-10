@@ -4,12 +4,15 @@
 #![warn(clippy::all)]
 #![forbid(unsafe_code)]
 
-use axum::{extract::Extension, Router};
+use axum::Router;
 
+use crate::core::cache::Cache;
 use cfg::ConfigurationInner;
 use lazy_static::lazy_static;
 use opentelemetry::runtime::Tokio;
 use opentelemetry_otlp::WithExportConfig;
+use queue::TaskQueueProducer;
+use sea_orm::DatabaseConnection;
 use std::{
     net::TcpListener,
     sync::atomic::{AtomicBool, Ordering},
@@ -22,7 +25,9 @@ use tracing_subscriber::{prelude::*, util::SubscriberInitExt};
 use crate::{
     cfg::{CacheBackend, Configuration},
     core::{
-        cache, idempotency::IdempotencyService, operational_webhooks::OperationalWebhookSenderInner,
+        cache,
+        idempotency::IdempotencyService,
+        operational_webhooks::{OperationalWebhookSender, OperationalWebhookSenderInner},
     },
     db::init_db,
     expired_message_cleaner::expired_message_cleaner_loop,
@@ -77,6 +82,15 @@ pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
     run_with_prefix(None, cfg, listener).await
 }
 
+#[derive(Clone)]
+pub struct AppState {
+    db: DatabaseConnection,
+    queue_tx: TaskQueueProducer,
+    cfg: Configuration,
+    cache: Cache,
+    op_webhooks: OperationalWebhookSender,
+}
+
 // Made public for the purpose of E2E testing in which a queue prefix is necessary to avoid tests
 // consuming from each others' queues
 pub async fn run_with_prefix(
@@ -110,8 +124,16 @@ pub async fn run_with_prefix(
 
     let svc_cache = cache.clone();
     // build our application with a route
+    let app_state = AppState {
+        db: pool.clone(),
+        queue_tx: queue_tx.clone(),
+        cfg: cfg.clone(),
+        cache: cache.clone(),
+        op_webhooks: op_webhook_sender.clone(),
+    };
+    let v1_router = v1::router().with_state::<()>(app_state);
     let app = Router::new()
-        .nest("/api/v1", v1::router())
+        .nest("/api/v1", v1_router)
         .merge(docs::router())
         .layer(
             ServiceBuilder::new().layer_fn(move |service| IdempotencyService {
@@ -125,12 +147,7 @@ pub async fn run_with_prefix(
                 .allow_methods(Any)
                 .allow_headers(AllowHeaders::mirror_request())
                 .max_age(Duration::from_secs(600)),
-        )
-        .layer(Extension(pool.clone()))
-        .layer(Extension(queue_tx.clone()))
-        .layer(Extension(cfg.clone()))
-        .layer(Extension(cache.clone()))
-        .layer(Extension(op_webhook_sender.clone()));
+        );
 
     let with_api = cfg.api_enabled;
     let with_worker = cfg.worker_enabled;

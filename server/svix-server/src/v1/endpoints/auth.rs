@@ -1,11 +1,11 @@
-use axum::{routing::post, Extension, Json, Router};
+use axum::{extract::State, routing::post, Json, Router};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    cfg::Configuration,
     core::{permissions, security::generate_app_token},
     error::{HttpError, Result},
     v1::utils::api_not_implemented,
+    AppState,
 };
 
 #[derive(Deserialize, Serialize)]
@@ -15,7 +15,7 @@ pub struct DashboardAccessOut {
 }
 
 async fn dashboard_access(
-    Extension(cfg): Extension<Configuration>,
+    State(AppState { cfg, .. }): State<AppState>,
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
 ) -> Result<Json<DashboardAccessOut>> {
     let token = generate_app_token(&cfg.jwt_secret, app.org_id, app.id.clone())?;
@@ -35,7 +35,7 @@ async fn dashboard_access(
     Ok(Json(DashboardAccessOut { url, token }))
 }
 
-pub fn router() -> Router {
+pub fn router() -> Router<AppState> {
     Router::new()
         .route("/auth/dashboard-access/:app_id/", post(dashboard_access))
         .route("/auth/logout/", post(api_not_implemented))

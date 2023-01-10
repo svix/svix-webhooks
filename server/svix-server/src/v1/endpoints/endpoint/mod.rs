@@ -28,17 +28,16 @@ use crate::{
         validate_no_control_characters, validate_no_control_characters_unrequired,
         validation_error, ModelIn,
     },
+    AppState,
 };
 
 use axum::{
-    extract::{Extension, Path},
+    extract::{Path, State},
     routing::{get, post},
     Json, Router,
 };
 use chrono::{DateTime, Utc};
-use sea_orm::{
-    ActiveValue::Set, ColumnTrait, DatabaseConnection, FromQueryResult, QueryFilter, QuerySelect,
-};
+use sea_orm::{ActiveValue::Set, ColumnTrait, FromQueryResult, QueryFilter, QuerySelect};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, collections::HashSet};
 use url::Url;
@@ -487,7 +486,7 @@ pub struct EndpointStatsQueryOut {
 }
 
 async fn endpoint_stats(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
     permissions::Application { app }: permissions::Application,
 ) -> crate::error::Result<Json<EndpointStatsOut>> {
@@ -527,7 +526,7 @@ async fn endpoint_stats(
     }))
 }
 
-pub fn router() -> Router {
+pub fn router() -> Router<AppState> {
     Router::new()
         .route(
             "/app/:app_id/endpoint/",

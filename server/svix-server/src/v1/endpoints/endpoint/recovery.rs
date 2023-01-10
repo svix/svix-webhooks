@@ -1,5 +1,5 @@
 use axum::{
-    extract::{Extension, Path},
+    extract::{Path, State},
     Json,
 };
 use chrono::{DateTime, Utc};
@@ -21,6 +21,7 @@ use crate::{
     error::{HttpError, Result, ValidationErrorItem},
     queue::{MessageTask, TaskQueueProducer},
     v1::utils::{EmptyResponse, ValidatedJson},
+    AppState,
 };
 
 async fn bulk_recover_failed_messages(
@@ -74,8 +75,9 @@ async fn bulk_recover_failed_messages(
 }
 
 pub(super) async fn recover_failed_webhooks(
-    Extension(ref db): Extension<DatabaseConnection>,
-    Extension(queue_tx): Extension<TaskQueueProducer>,
+    State(AppState {
+        ref db, queue_tx, ..
+    }): State<AppState>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
     permissions::Application { app }: permissions::Application,
     ValidatedJson(data): ValidatedJson<RecoverIn>,

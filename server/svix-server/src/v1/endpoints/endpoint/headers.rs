@@ -1,9 +1,9 @@
 use axum::{
-    extract::{Extension, Path},
+    extract::{Path, State},
     Json,
 };
 use hyper::StatusCode;
-use sea_orm::{ActiveModelTrait, DatabaseConnection};
+use sea_orm::ActiveModelTrait;
 
 use super::{EndpointHeadersIn, EndpointHeadersOut, EndpointHeadersPatchIn};
 use crate::{
@@ -15,10 +15,11 @@ use crate::{
     db::models::endpoint,
     error::{HttpError, Result},
     v1::utils::{EmptyResponse, ModelIn, ValidatedJson},
+    AppState,
 };
 
 pub(super) async fn get_endpoint_headers(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<EndpointHeadersOut>> {
@@ -36,7 +37,7 @@ pub(super) async fn get_endpoint_headers(
 }
 
 pub(super) async fn update_endpoint_headers(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
     permissions::Application { app }: permissions::Application,
     ValidatedJson(data): ValidatedJson<EndpointHeadersIn>,
@@ -56,7 +57,7 @@ pub(super) async fn update_endpoint_headers(
 }
 
 pub(super) async fn patch_endpoint_headers(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
     permissions::Application { app }: permissions::Application,
     ValidatedJson(data): ValidatedJson<EndpointHeadersPatchIn>,
