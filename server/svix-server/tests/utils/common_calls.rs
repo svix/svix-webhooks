@@ -9,7 +9,7 @@ use reqwest::{StatusCode, Url};
 
 use serde::{de::DeserializeOwned, Serialize};
 use svix_server::{
-    core::types::{metadata::Metadata, ApplicationId, EventTypeName, MessageId},
+    core::types::{metadata::Metadata, ApplicationId, MessageId},
     v1::{
         endpoints::{
             application::{ApplicationIn, ApplicationOut},
@@ -110,7 +110,7 @@ pub async fn put_endpoint(
 
 pub fn message_in<T: Serialize>(event_type: &str, payload: T) -> Result<MessageIn> {
     Ok(MessageIn {
-        event_type: EventTypeName(event_type.to_owned()),
+        event_type: event_type.into(),
         payload: serde_json::to_value(payload)?,
         payload_retention_period: 5,
         channels: None,
@@ -137,7 +137,7 @@ pub fn event_type_in(
     schema: impl Into<Option<serde_json::Value>>,
 ) -> Result<EventTypeIn> {
     Ok(EventTypeIn {
-        name: EventTypeName(name.to_owned()),
+        name: name.into(),
         description: "test-event-description".to_owned(),
         deleted: false,
         schemas: schema.into().map(|s| serde_json::from_value(s).unwrap()),

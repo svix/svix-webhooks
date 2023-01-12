@@ -1,7 +1,10 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use std::{borrow::Cow, collections::HashSet, error::Error as StdError, ops::Deref, str::FromStr};
+use std::{
+    borrow::Cow, collections::HashSet, error::Error as StdError, ops::Deref, str::FromStr,
+    sync::Arc,
+};
 
 use axum::{
     async_trait,
@@ -198,14 +201,14 @@ fn list_response_inner<T: ModelOut>(
 
     ListResponse {
         data,
-        iterator,
+        iterator: iterator.map(|arc| Arc::try_unwrap(arc).unwrap_or_else(|arc| (*arc).clone())),
         prev_iterator,
         done,
     }
 }
 
 pub trait ModelOut: Clone {
-    fn id_copy(&self) -> String;
+    fn id_copy(&self) -> Arc<String>;
 
     fn list_response(data: Vec<Self>, limit: usize, is_prev_iter: bool) -> ListResponse<Self> {
         list_response_inner(data, limit, is_prev_iter, true)
@@ -376,7 +379,7 @@ where
         let mut event_types = EventTypeNameSet(HashSet::<EventTypeName>::new());
         for (key, value) in pairs {
             if key == "event_types" {
-                event_types.0.insert(EventTypeName(value));
+                event_types.0.insert(value.into());
             } else if key == "before" {
                 before = Some(DateTime::<Utc>::from_str(&value).map_err(|_| {
                     HttpError::unprocessable_entity(vec![ValidationErrorItem {
@@ -530,17 +533,15 @@ mod tests {
         assert_eq!(
             serde_json::from_value::<TestPaginationDeserializationStruct>(a).unwrap(),
             TestPaginationDeserializationStruct {
-                iterator: super::ReversibleIterator::Normal(crate::core::types::MessageId(
-                    "msg_274DTsX0wVTSLvo91QopQgZrjDV".to_owned()
-                ))
+                iterator: super::ReversibleIterator::Normal(
+                    "msg_274DTsX0wVTSLvo91QopQgZrjDV".into()
+                )
             }
         );
         assert_eq!(
             serde_json::from_value::<TestPaginationDeserializationStruct>(b).unwrap(),
             TestPaginationDeserializationStruct {
-                iterator: super::ReversibleIterator::Prev(crate::core::types::MessageId(
-                    "msg_274DTsX0wVTSLvo91QopQgZrjDV".to_owned()
-                ))
+                iterator: super::ReversibleIterator::Prev("msg_274DTsX0wVTSLvo91QopQgZrjDV".into())
             }
         );
     }

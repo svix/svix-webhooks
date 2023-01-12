@@ -22,8 +22,8 @@ use svix_server::{
         cryptography::{AsymmetricKey, Encryption},
         types::{
             ApplicationId, EndpointHeaders, EndpointHeadersPatch, EndpointSecret,
-            EndpointSecretInternal, EndpointUid, EventChannel, EventChannelSet, EventTypeName,
-            EventTypeNameSet, ExpiringSigningKeys,
+            EndpointSecretInternal, EndpointUid, EventChannelSet, EventTypeNameSet,
+            ExpiringSigningKeys,
         },
     },
     v1::{
@@ -200,7 +200,7 @@ async fn test_patch() {
         .get::<EndpointOut>(&url, StatusCode::OK)
         .await
         .unwrap();
-    assert_eq!(out.ep.uid, Some(EndpointUid("some".to_owned())));
+    assert_eq!(out.ep.uid, Some("some".into()));
     // Assert that no other changes were made
     assert_eq!(out.ep.description, "test".to_owned());
     assert_eq!(out.ep.rate_limit, None);
@@ -351,9 +351,7 @@ async fn test_patch() {
         .unwrap();
     assert_eq!(
         out.ep.event_types_ids,
-        Some(EventTypeNameSet(HashSet::from([EventTypeName(
-            "test".to_owned()
-        )])))
+        Some(EventTypeNameSet(HashSet::from([("test".into())])))
     );
     // Assert that no other changes were made
     assert_eq!(out.ep.description, "test".to_owned());
@@ -410,9 +408,7 @@ async fn test_patch() {
         .unwrap();
     assert_eq!(
         out.ep.channels,
-        Some(EventChannelSet(HashSet::from([EventChannel(
-            "test".to_owned()
-        )])))
+        Some(EventChannelSet(HashSet::from([("test".into())])))
     );
     // Assert that no other changes were made
     assert_eq!(out.ep.description, "test".to_owned());
@@ -662,7 +658,7 @@ async fn test_uid() {
     // Double Create -- on creation, it should return an error if identical UIDs are used for
     // endpoints in the same app
     let app_id = create_test_app(&client, APP_NAME_1).await.unwrap().id;
-    let uid = EndpointUid(DUPLICATE_UID.to_owned());
+    let uid: EndpointUid = DUPLICATE_UID.into();
 
     let mut ep_1 = endpoint_in(EP_URI_APP_1_EP_1);
     ep_1.uid = Some(uid.clone());
@@ -1467,7 +1463,7 @@ async fn test_endpoint_filter_events() {
         "version": 1
     });
 
-    let expected_et = EventTypeNameSet(HashSet::from([EventTypeName("et1".to_owned())]));
+    let expected_et = EventTypeNameSet(HashSet::from([("et1".into())]));
 
     let _ep_with_empty_events: IgnoredResponse = client
         .post(
@@ -1566,7 +1562,7 @@ async fn test_endpoint_filter_channels() {
         "version": 1
     });
 
-    let expected_ec = EventChannelSet(HashSet::from([EventChannel("tag1".to_owned())]));
+    let expected_ec = EventChannelSet(HashSet::from([("tag1".into())]));
 
     let _ep_w_empty_channel: IgnoredResponse = client
         .post(
@@ -1685,12 +1681,10 @@ async fn test_msg_event_types_filter() {
     }
 
     for event_types in [
-        Some(EventTypeNameSet(HashSet::from([EventTypeName(
-            "et1".to_owned(),
-        )]))),
+        Some(EventTypeNameSet(HashSet::from([("et1".into())]))),
         Some(EventTypeNameSet(HashSet::from([
-            EventTypeName("et1".to_owned()),
-            EventTypeName("et2".to_owned()),
+            ("et1".into()),
+            ("et2".into()),
         ]))),
         None,
     ] {
@@ -1708,10 +1702,7 @@ async fn test_msg_event_types_filter() {
     }
 
     // Number of attempts should match based on event-types registered to endpoints
-    for (event_name, expected_count) in [
-        (EventTypeName("et1".to_owned()), 3),
-        (EventTypeName("et2".to_owned()), 2),
-    ] {
+    for (event_name, expected_count) in [(("et1".into()), 3), (("et2".into()), 2)] {
         let msg: MessageOut = client
             .post(
                 &format!("api/v1/app/{}/msg/", &app_id),
@@ -1744,7 +1735,7 @@ async fn test_msg_channels_filter() {
 
     let _receiver = TestReceiver::start(StatusCode::OK);
 
-    let ec = EventChannelSet(HashSet::from([EventChannel("tag1".to_owned())]));
+    let ec = EventChannelSet(HashSet::from([("tag1".into())]));
 
     for channels in [Some(ec.clone()), None] {
         let _endp = post_endpoint(
@@ -1765,7 +1756,7 @@ async fn test_msg_channels_filter() {
                 &format!("api/v1/app/{}/msg/", &app_id),
                 MessageIn {
                     channels: channels.clone(),
-                    event_type: EventTypeName("et1".to_owned()),
+                    event_type: ("et1".into()),
                     payload: serde_json::json!({}),
                     uid: None,
                     payload_retention_period: 5,

@@ -4,7 +4,7 @@
 use reqwest::StatusCode;
 
 use svix_server::{
-    core::types::{EndpointUid, MessageStatus},
+    core::types::MessageStatus,
     v1::{
         endpoints::{
             attempt::{AttemptedMessageOut, MessageAttemptOut},
@@ -43,7 +43,7 @@ async fn test_list_attempted_messages() {
 
     // Let's have an endponit with a UID too
     let mut endp2 = endpoint_in(&receiver_2.endpoint);
-    endp2.uid = Some(EndpointUid("test".to_owned()));
+    endp2.uid = Some("test".into());
     let endp_id_2 = client
         .post::<EndpointIn, EndpointOut>(
             &format!("api/v1/app/{app_id}/endpoint/"),

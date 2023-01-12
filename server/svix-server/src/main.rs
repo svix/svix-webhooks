@@ -88,7 +88,7 @@ enum AsymmetricKeyCommands {
 }
 
 fn org_id_parser(s: &str) -> Result<OrganizationId, String> {
-    let ret = OrganizationId(s.to_owned());
+    let ret: OrganizationId = s.into();
     ret.validate().map_err(|x| x.to_string())?;
     Ok(ret)
 }

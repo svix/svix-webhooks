@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
+use std::sync::Arc;
+
 use crate::{
     core::{
         permissions,
@@ -89,7 +91,7 @@ pub struct AttemptedMessageOut {
 }
 
 impl ModelOut for AttemptedMessageOut {
-    fn id_copy(&self) -> String {
+    fn id_copy(&self) -> Arc<String> {
         self.msg.id.0.clone()
     }
 }
@@ -442,7 +444,7 @@ pub struct MessageEndpointOut {
 }
 
 impl ModelOut for MessageEndpointOut {
-    fn id_copy(&self) -> String {
+    fn id_copy(&self) -> Arc<String> {
         self.id.0.clone()
     }
 }

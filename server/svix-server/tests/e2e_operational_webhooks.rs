@@ -143,7 +143,7 @@ async fn test_endpoint_create_update_and_delete() {
             ApplicationIn {
                 name: "TestOperationalWebhookApplication".to_owned(),
                 rate_limit: None,
-                uid: Some(ApplicationUid(org_id.to_string())),
+                uid: Some(ApplicationUid(org_id.0)),
                 metadata: Metadata::default(),
             },
             StatusCode::CREATED,
@@ -289,7 +289,7 @@ async fn test_message_attempt_operational_webhooks() {
             ApplicationIn {
                 name: "TestOperationalWebhookApplication".to_owned(),
                 rate_limit: None,
-                uid: Some(ApplicationUid(org_id.to_string())),
+                uid: Some(ApplicationUid(org_id.0)),
                 metadata: Metadata::default(),
             },
             StatusCode::CREATED,

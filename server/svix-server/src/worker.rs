@@ -809,7 +809,7 @@ mod tests {
             &Encryption::new_noop(),
         )
         .unwrap();
-        let test_message_id = MessageId("msg_p5jXN8AQM9LWM0D4loKWxJek".to_owned());
+        let test_message_id: MessageId = "msg_p5jXN8AQM9LWM0D4loKWxJek".into();
 
         let expected_signature_str = "v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE=";
 
@@ -847,7 +847,7 @@ mod tests {
             &Encryption::new_noop(),
         )
         .unwrap();
-        let msg_id = MessageId("msg_p5jXN8AQM9LWM0D4loKWxJek".to_owned());
+        let msg_id: MessageId = "msg_p5jXN8AQM9LWM0D4loKWxJek".into();
 
         let signatures = sign_msg(
             &Encryption::new_noop(),

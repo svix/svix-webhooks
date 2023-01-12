@@ -4,7 +4,7 @@
 use crate::utils::common_calls::metadata;
 use reqwest::StatusCode;
 use svix_server::{
-    cfg::CacheType, core::types::ApplicationUid, v1::endpoints::application::ApplicationIn,
+    cfg::CacheType, v1::endpoints::application::ApplicationIn,
     v1::endpoints::application::ApplicationOut,
 };
 
@@ -122,7 +122,7 @@ async fn test_patch() {
         .get::<ApplicationOut>(&format!("api/v1/app/{}/", app.id), StatusCode::OK)
         .await
         .unwrap();
-    assert_eq!(out.uid, Some(ApplicationUid("test_uid".to_owned())));
+    assert_eq!(out.uid, Some("test_uid".into()));
     // Assert that no other field was changed
     assert_eq!(out.name, "second_name".to_owned());
     assert_eq!(out.rate_limit, None);
@@ -362,7 +362,7 @@ async fn test_uid() {
             "api/v1/app/",
             ApplicationIn {
                 name: "App 1".to_owned(),
-                uid: Some(ApplicationUid("app1".to_owned())),
+                uid: Some("app1".into()),
                 ..Default::default()
             },
             StatusCode::CREATED,
@@ -378,7 +378,7 @@ async fn test_uid() {
             "api/v1/app/",
             ApplicationIn {
                 name: "App 1".to_owned(),
-                uid: Some(ApplicationUid("app1".to_owned())),
+                uid: Some("app1".into()),
                 ..Default::default()
             },
             StatusCode::CONFLICT,
@@ -404,7 +404,7 @@ async fn test_uid() {
             &format!("api/v1/app/{}/", app2.id),
             ApplicationIn {
                 name: "App 2".to_owned(),
-                uid: Some(ApplicationUid("app1".to_owned())),
+                uid: Some("app1".into()),
                 ..Default::default()
             },
             StatusCode::CONFLICT,
@@ -418,7 +418,7 @@ async fn test_uid() {
             "api/v1/app/",
             ApplicationIn {
                 name: "App 2".to_owned(),
-                uid: Some(ApplicationUid("app2".to_owned())),
+                uid: Some("app2".into()),
                 ..Default::default()
             },
             StatusCode::CREATED,
@@ -431,7 +431,7 @@ async fn test_uid() {
             &format!("api/v1/app/{}/", app2.id),
             ApplicationIn {
                 name: "App 2".to_owned(),
-                uid: Some(ApplicationUid("app1".to_owned())),
+                uid: Some("app1".into()),
                 ..Default::default()
             },
             StatusCode::CONFLICT,
@@ -451,7 +451,7 @@ async fn test_uid() {
             &format!("api/v1/app/{}/", app2.id),
             ApplicationIn {
                 name: "App 2".to_owned(),
-                uid: Some(ApplicationUid("app1".to_owned())),
+                uid: Some("app1".into()),
                 ..Default::default()
             },
             StatusCode::OK,
@@ -473,7 +473,7 @@ async fn test_uid() {
             "api/v1/app/",
             ApplicationIn {
                 name: "App 1".to_owned(),
-                uid: Some(ApplicationUid("app1".to_owned())),
+                uid: Some("app1".into()),
                 ..Default::default()
             },
             StatusCode::CREATED,
@@ -487,7 +487,7 @@ async fn test_uid() {
             &format!("api/v1/app/{}/", app.id),
             ApplicationIn {
                 name: "App 1".to_owned(),
-                uid: Some(ApplicationUid("app1".to_owned())),
+                uid: Some("app1".into()),
                 ..Default::default()
             },
             StatusCode::OK,
@@ -501,7 +501,7 @@ async fn test_uid() {
             &format!("api/v1/app/{}/", app.id),
             ApplicationIn {
                 name: "App 1".to_owned(),
-                uid: Some(ApplicationUid("app3".to_owned())),
+                uid: Some("app3".into()),
                 ..Default::default()
             },
             StatusCode::OK,
@@ -516,7 +516,7 @@ async fn test_uid() {
 
     assert_eq!(app.id, app2.id);
     assert_eq!(app.uid, app2.uid);
-    assert_eq!(app2.uid.unwrap().0, "app3");
+    assert_eq!(app2.uid.unwrap(), "app3".into());
 
     // Remove the uid
     let app: ApplicationOut = client
@@ -558,7 +558,7 @@ async fn test_uid_across_users() {
             "api/v1/app/",
             ApplicationIn {
                 name: "App 1".to_owned(),
-                uid: Some(ApplicationUid("app1".to_owned())),
+                uid: Some("app1".into()),
                 ..Default::default()
             },
             StatusCode::CREATED,
@@ -571,7 +571,7 @@ async fn test_uid_across_users() {
             "api/v1/app/",
             ApplicationIn {
                 name: "App 1".to_owned(),
-                uid: Some(ApplicationUid("app1".to_owned())),
+                uid: Some("app1".into()),
                 ..Default::default()
             },
             StatusCode::CREATED,
@@ -589,7 +589,7 @@ async fn test_get_or_create() {
             "api/v1/app/",
             ApplicationIn {
                 name: "App 1".to_owned(),
-                uid: Some(ApplicationUid("app1".to_owned())),
+                uid: Some("app1".into()),
                 metadata: metadata(
                     r#"{
                     "foo": "bar"
@@ -616,7 +616,7 @@ async fn test_get_or_create() {
             "api/v1/app/",
             ApplicationIn {
                 name: "App 1".to_owned(),
-                uid: Some(ApplicationUid("app1".to_owned())),
+                uid: Some("app1".into()),
                 ..Default::default()
             },
             StatusCode::CONFLICT,
@@ -629,7 +629,7 @@ async fn test_get_or_create() {
             "api/v1/app/?get_if_exists=true",
             ApplicationIn {
                 name: "App 1 - SLIGHTLY DIFFERENT, BUT WON'T BE PERSISTED".to_owned(),
-                uid: Some(ApplicationUid("app1".to_owned())),
+                uid: Some("app1".into()),
                 ..Default::default()
             },
             StatusCode::OK,

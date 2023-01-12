@@ -43,7 +43,7 @@ pub fn derive_model_out(input: proc_macro::TokenStream) -> proc_macro::TokenStre
         // We want to use name as the id in this case
         quote! {
             impl #impl_generics crate::v1::utils::ModelOut for #name #ty_generics #where_clause {
-                fn id_copy(&self) -> String {
+                fn id_copy(&self) -> std::sync::Arc<String> {
                     self.name.0.clone()
                 }
             }
@@ -51,7 +51,7 @@ pub fn derive_model_out(input: proc_macro::TokenStream) -> proc_macro::TokenStre
     } else {
         quote! {
             impl #impl_generics crate::v1::utils::ModelOut for #name #ty_generics #where_clause {
-                fn id_copy(&self) -> String {
+                fn id_copy(&self) -> std::sync::Arc<String> {
                     self.id.0.clone()
                 }
             }

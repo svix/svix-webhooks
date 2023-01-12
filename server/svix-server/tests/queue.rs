@@ -8,7 +8,7 @@ use std::{str::FromStr, time::Duration};
 
 use svix_server::{
     cfg::{CacheType, Configuration},
-    core::types::{ApplicationId, EndpointId, MessageAttemptTriggerType, MessageId},
+    core::types::MessageAttemptTriggerType,
     queue::{
         new_pair, MessageTask, QueueTask, TaskQueueConsumer, TaskQueueDelivery, TaskQueueProducer,
     },
@@ -59,9 +59,9 @@ async fn test_many_queue_consumers_inner(prefix: &str, delay: Option<Duration>) 
         for num in 1..=50 {
             p.send(
                 QueueTask::MessageV1(MessageTask {
-                    msg_id: MessageId(format!("{}", index * 50 + num)),
-                    app_id: ApplicationId("TestApplicationId".to_owned()),
-                    endpoint_id: EndpointId("TestEndpointId".to_owned()),
+                    msg_id: (format!("{}", index * 50 + num).into()),
+                    app_id: ("TestApplicationId".into()),
+                    endpoint_id: ("TestEndpointId".into()),
                     trigger_type: MessageAttemptTriggerType::Manual,
                     attempt_count: 0,
                 }),

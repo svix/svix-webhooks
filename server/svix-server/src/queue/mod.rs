@@ -203,9 +203,9 @@ mod tests {
     /// Creates a [`MessageTask`] with filler information and the given MessageId inner String
     fn mock_message(message_id: String) -> QueueTask {
         MessageTask::new_task(
-            MessageId(message_id),
-            ApplicationId("TestEndpointID".to_owned()),
-            EndpointId("TestEndpointID".to_owned()),
+            message_id.into(),
+            "TestEndpointID".into(),
+            "TestEndpointID".into(),
             MessageAttemptTriggerType::Scheduled,
         )
     }

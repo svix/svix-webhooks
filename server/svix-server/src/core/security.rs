@@ -23,12 +23,12 @@ use super::types::{ApplicationId, OrganizationId};
 
 /// The default org_id we use (useful for generating JWTs when testing).
 pub fn default_org_id() -> OrganizationId {
-    OrganizationId("org_23rb8YdGqMT0qIzpgGwdXfHirMu".to_owned())
+    "org_23rb8YdGqMT0qIzpgGwdXfHirMu".into()
 }
 
 /// The default org_id we use (useful for generating JWTs when testing).
 pub fn management_org_id() -> OrganizationId {
-    OrganizationId("org_00000000000SvixManagement00".to_owned())
+    "org_00000000000SvixManagement00".into()
 }
 
 pub enum AccessLevel {
@@ -87,13 +87,13 @@ pub fn permissions_from_jwt(claims: JWTClaims<CustomClaim>) -> Result<Permission
 
     // If there is an `org` field then it is an Application authentication
     if let Some(org_id) = claims.custom.organization {
-        let org_id = OrganizationId(org_id);
+        let org_id: OrganizationId = org_id.into();
         org_id
             .validate()
             .map_err(|_| bad_token("org", "organization"))?;
 
         if let Some(app_id) = claims.subject {
-            let app_id = ApplicationId(app_id);
+            let app_id: ApplicationId = app_id.into();
             app_id
                 .validate()
                 .map_err(|_| bad_token("sub", "application"))?;
@@ -110,7 +110,7 @@ pub fn permissions_from_jwt(claims: JWTClaims<CustomClaim>) -> Result<Permission
     }
     // Otherwise it's an Organization authentication
     else if let Some(org_id) = claims.subject {
-        let org_id = OrganizationId(org_id);
+        let org_id: OrganizationId = org_id.into();
         org_id.validate().map_err(|_| {
             HttpError::bad_request(
                 Some("bad_token".to_string()),
@@ -155,7 +155,7 @@ pub fn generate_app_token(
 ) -> Result<String> {
     let claims = Claims::with_custom_claims(
         CustomClaim {
-            organization: Some(org_id.0),
+            organization: Some(org_id.into()),
         },
         Duration::from_hours(24 * 28),
     )

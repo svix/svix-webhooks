@@ -252,7 +252,7 @@ macro_rules! create_id_type {
             type Output = Self;
 
             fn new(dt: Option<DateTime<Utc>>, payload: Option<&[u8]>) -> Self::Output {
-                Self(Self::generate_(dt, payload))
+                Self(Self::generate_(dt, payload).into())
             }
         }
 
@@ -267,12 +267,6 @@ macro_rules! create_id_type {
                 Err(sea_orm::DbErr::Exec(sea_orm::error::RuntimeErr::Internal(
                     format!("{} cannot be converted from u64", stringify!($type)),
                 )))
-            }
-        }
-
-        impl From<String> for $name_id {
-            fn from(s: String) -> Self {
-                $name_id(s)
             }
         }
     };
@@ -298,7 +292,7 @@ macro_rules! create_all_id_types {
 
         impl From<$name_uid> for $name_id_or_uid {
             fn from(v: $name_uid) -> Self {
-                Self(v.0)
+                Self(v.0.to_string())
             }
         }
 
@@ -308,13 +302,13 @@ macro_rules! create_all_id_types {
 
         impl From<$name_id_or_uid> for $name_uid {
             fn from(v: $name_id_or_uid) -> Self {
-                Self(v.0)
+                Self(v.0.into())
             }
         }
 
         impl From<$name_id_or_uid> for $name_id {
             fn from(v: $name_id_or_uid) -> Self {
-                Self(v.0)
+                Self(v.0.into())
             }
         }
 
@@ -960,33 +954,33 @@ mod tests {
     use super::*;
     use crate::core::types::{EventChannel, EventTypeName};
 
-    use std::collections::HashMap;
+    use std::{collections::HashMap, sync::Arc};
     use validator::Validate;
 
     #[test]
     fn test_id_validation() {
-        let app_id = ApplicationId("app_24NVKcPqNLXKu3xQhJnw8fSumZK".to_owned());
+        let app_id: ApplicationId = "app_24NVKcPqNLXKu3xQhJnw8fSumZK".into();
         app_id.validate().unwrap();
 
-        let app_id = ApplicationId("badprefix_24NVKcPqNLXKu3xQhJnw8fSumZK".to_owned());
+        let app_id: ApplicationId = "badprefix_24NVKcPqNLXKu3xQhJnw8fSumZK".into();
         assert!(app_id.validate().is_err());
 
-        let app_uid = ApplicationUid("app_24NVKcPqNLXKu3xQhJnw8fSumZK".to_owned());
+        let app_uid: ApplicationUid = "app_24NVKcPqNLXKu3xQhJnw8fSumZK".into();
         assert!(app_uid.validate().is_err());
 
-        let app_uid = ApplicationUid("24NVKcPqNLXKu3xQhJnw8fSumZK".to_owned());
+        let app_uid: ApplicationUid = "24NVKcPqNLXKu3xQhJnw8fSumZK".into();
         app_uid.validate().unwrap();
 
         // With a space
-        let app_uid = ApplicationUid("24NVKcPqNLXKu3 ".to_owned());
+        let app_uid: ApplicationUid = "24NVKcPqNLXKu3 ".into();
         assert!(app_uid.validate().is_err());
 
         // Check all allowed
-        let app_uid = ApplicationUid("azAZ09-_.".to_owned());
+        let app_uid: ApplicationUid = "azAZ09-_.".into();
         app_uid.validate().unwrap();
 
         // Check length
-        let long_str: String = "X".repeat(300);
+        let long_str: Arc<String> = Arc::new("X".repeat(300));
         let app_id = ApplicationUid(long_str.clone());
         assert!(app_id.validate().is_err());
         let app_uid = ApplicationUid(long_str);
@@ -996,32 +990,32 @@ mod tests {
     #[test]
     fn test_event_names_validation() {
         // With a space
-        let evt_name = EventTypeName("event ".to_owned());
+        let evt_name: EventTypeName = "event ".into();
         assert!(evt_name.validate().is_err());
 
         // Check all allowed
-        let evt_name = EventTypeName("azAZ09-_.".to_owned());
+        let evt_name: EventTypeName = "azAZ09-_.".into();
         evt_name.validate().unwrap();
 
         // Check length
         let long_str: String = "X".repeat(300);
-        let evt_name = EventTypeName(long_str);
+        let evt_name = EventTypeName(long_str.into());
         assert!(evt_name.validate().is_err());
     }
 
     #[test]
     fn test_event_channel_validation() {
         // With a space
-        let evt_name = EventChannel("event ".to_owned());
+        let evt_name: EventChannel = "event ".into();
         assert!(evt_name.validate().is_err());
 
         // Check all allowed
-        let evt_name = EventChannel("azAZ09-_.".to_owned());
+        let evt_name: EventChannel = "azAZ09-_.".into();
         evt_name.validate().unwrap();
 
         // Check length
         let long_str: String = "X".repeat(300);
-        let evt_name = EventChannel(long_str);
+        let evt_name = EventChannel(long_str.into());
         assert!(evt_name.validate().is_err());
     }
 

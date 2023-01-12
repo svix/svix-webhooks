@@ -697,7 +697,7 @@ pub mod tests {
 
     use crate::{
         cfg::{CacheType, Configuration},
-        core::types::{ApplicationId, EndpointId, MessageAttemptTriggerType, MessageId},
+        core::types::MessageAttemptTriggerType,
         queue::{MessageTask, QueueTask, TaskQueueConsumer, TaskQueueDelivery, TaskQueueProducer},
         redis::{PoolLike, PooledConnectionLike, RedisPool},
     };
@@ -815,9 +815,9 @@ pub mod tests {
         flush_stale_queue_items(p.clone(), &mut c).await;
 
         let mt = QueueTask::MessageV1(MessageTask {
-            msg_id: MessageId("test".to_owned()),
-            app_id: ApplicationId("test".to_owned()),
-            endpoint_id: EndpointId("test".to_owned()),
+            msg_id: "test".into(),
+            app_id: "test".into(),
+            endpoint_id: "test".into(),
             trigger_type: MessageAttemptTriggerType::Manual,
             attempt_count: 0,
         });
@@ -890,9 +890,9 @@ pub mod tests {
         .await;
 
         let mt = QueueTask::MessageV1(MessageTask {
-            msg_id: MessageId("test2".to_owned()),
-            app_id: ApplicationId("test2".to_owned()),
-            endpoint_id: EndpointId("test2".to_owned()),
+            msg_id: "test2".into(),
+            app_id: "test2".into(),
+            endpoint_id: "test2".into(),
             trigger_type: MessageAttemptTriggerType::Manual,
             attempt_count: 0,
         });
@@ -939,9 +939,9 @@ pub mod tests {
         flush_stale_queue_items(p.clone(), &mut c).await;
 
         let mt = QueueTask::MessageV1(MessageTask {
-            msg_id: MessageId("test".to_owned()),
-            app_id: ApplicationId("test".to_owned()),
-            endpoint_id: EndpointId("test".to_owned()),
+            msg_id: "test".into(),
+            app_id: "test".into(),
+            endpoint_id: "test".into(),
             trigger_type: MessageAttemptTriggerType::Manual,
             attempt_count: 0,
         });
@@ -982,16 +982,16 @@ pub mod tests {
         flush_stale_queue_items(p.clone(), &mut c).await;
 
         let mt1 = QueueTask::MessageV1(MessageTask {
-            msg_id: MessageId("test1".to_owned()),
-            app_id: ApplicationId("test1".to_owned()),
-            endpoint_id: EndpointId("test1".to_owned()),
+            msg_id: "test1".into(),
+            app_id: "test1".into(),
+            endpoint_id: "test1".into(),
             trigger_type: MessageAttemptTriggerType::Scheduled,
             attempt_count: 0,
         });
         let mt2 = QueueTask::MessageV1(MessageTask {
-            msg_id: MessageId("test2".to_owned()),
-            app_id: ApplicationId("test2".to_owned()),
-            endpoint_id: EndpointId("test2".to_owned()),
+            msg_id: "test2".into(),
+            app_id: "test2".into(),
+            endpoint_id: "test2".into(),
             trigger_type: MessageAttemptTriggerType::Manual,
             attempt_count: 0,
         });
@@ -1064,9 +1064,9 @@ pub mod tests {
                         to_redis_key(&TaskQueueDelivery {
                             id: num.to_string(),
                             task: Arc::new(QueueTask::MessageV1(MessageTask {
-                                msg_id: MessageId(format!("TestMessageID{num}")),
-                                app_id: ApplicationId("TestApplicationID".to_owned()),
-                                endpoint_id: EndpointId("TestEndpointID".to_owned()),
+                                msg_id: format!("TestMessageID{num}").into(),
+                                app_id: "TestApplicationID".into(),
+                                endpoint_id: "TestEndpointID".into(),
                                 trigger_type: MessageAttemptTriggerType::Manual,
                                 attempt_count: 0,
                             })),
@@ -1083,9 +1083,9 @@ pub mod tests {
                         to_redis_key(&TaskQueueDelivery {
                             id: num.to_string(),
                             task: Arc::new(QueueTask::MessageV1(MessageTask {
-                                msg_id: MessageId(format!("TestMessageID{num}")),
-                                app_id: ApplicationId("TestApplicationID".to_owned()),
-                                endpoint_id: EndpointId("TestEndpointID".to_owned()),
+                                msg_id: format!("TestMessageID{num}").into(),
+                                app_id: "TestApplicationID".into(),
+                                endpoint_id: "TestEndpointID".into(),
                                 trigger_type: MessageAttemptTriggerType::Manual,
                                 attempt_count: 0,
                             })),
@@ -1145,9 +1145,9 @@ pub mod tests {
             assert_eq!(
                 &*recv.task,
                 &QueueTask::MessageV1(MessageTask {
-                    msg_id: MessageId(format!("TestMessageID{num}")),
-                    app_id: ApplicationId("TestApplicationID".to_owned()),
-                    endpoint_id: EndpointId("TestEndpointID".to_owned()),
+                    msg_id: (format!("TestMessageID{num}")).into(),
+                    app_id: ("TestApplicationID").into(),
+                    endpoint_id: ("TestEndpointID").into(),
                     trigger_type: MessageAttemptTriggerType::Manual,
                     attempt_count: 0,
                 })
@@ -1159,9 +1159,9 @@ pub mod tests {
             assert_eq!(
                 &*recv.task,
                 &QueueTask::MessageV1(MessageTask {
-                    msg_id: MessageId(format!("TestMessageID{num}")),
-                    app_id: ApplicationId("TestApplicationID".to_owned()),
-                    endpoint_id: EndpointId("TestEndpointID".to_owned()),
+                    msg_id: (format!("TestMessageID{num}").into()),
+                    app_id: ("TestApplicationID".into()),
+                    endpoint_id: ("TestEndpointID".into()),
                     trigger_type: MessageAttemptTriggerType::Manual,
                     attempt_count: 0,
                 })
@@ -1173,9 +1173,9 @@ pub mod tests {
             assert_eq!(
                 &*recv.task,
                 &QueueTask::MessageV1(MessageTask {
-                    msg_id: MessageId(format!("TestMessageID{num}")),
-                    app_id: ApplicationId("TestApplicationID".to_owned()),
-                    endpoint_id: EndpointId("TestEndpointID".to_owned()),
+                    msg_id: (format!("TestMessageID{num}").into()),
+                    app_id: ("TestApplicationID".into()),
+                    endpoint_id: ("TestEndpointID".into()),
                     trigger_type: MessageAttemptTriggerType::Manual,
                     attempt_count: 0,
                 })
