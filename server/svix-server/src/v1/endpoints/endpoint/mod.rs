@@ -20,7 +20,7 @@ use crate::{
     db::models::messagedestination,
     error::{self, HttpError},
     v1::utils::{
-        api_not_implemented,
+        api_not_implemented, openapi_tag,
         patch::{
             patch_field_non_nullable, patch_field_nullable, UnrequiredField,
             UnrequiredNullableField,
@@ -31,12 +31,16 @@ use crate::{
     AppState,
 };
 
+use aide::axum::{
+    routing::{get, post},
+    ApiRouter,
+};
 use axum::{
     extract::{Path, State},
-    routing::{get, post},
-    Json, Router,
+    Json,
 };
 use chrono::{DateTime, Utc};
+use schemars::JsonSchema;
 use sea_orm::{ActiveValue::Set, ColumnTrait, FromQueryResult, QueryFilter, QuerySelect};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, collections::HashSet};
@@ -114,7 +118,7 @@ fn validate_url_unrequired(val: &UnrequiredField<Url>) -> std::result::Result<()
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Validate, ModelIn)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Validate, ModelIn, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointIn {
     #[serde(default)]
@@ -200,7 +204,7 @@ impl ModelIn for EndpointIn {
     }
 }
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize, Validate, ModelIn)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, Validate, ModelIn, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointPatch {
     #[serde(default)]
@@ -317,7 +321,7 @@ fn validate_minimum_version_patch(
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointOutCommon {
     pub description: String,
@@ -351,7 +355,7 @@ impl From<endpoint::Model> for EndpointOutCommon {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ModelOut)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ModelOut, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointOut {
     #[serde(flatten)]
@@ -371,7 +375,7 @@ impl From<(endpoint::Model, Metadata)> for EndpointOut {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Validate, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Validate, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointSecretRotateIn {
     #[validate]
@@ -379,19 +383,19 @@ pub struct EndpointSecretRotateIn {
     key: Option<EndpointSecret>,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointSecretOut {
     pub key: EndpointSecret,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Validate, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Validate, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct RecoverIn {
     pub since: DateTime<Utc>,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Validate, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Validate, Deserialize, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointHeadersIn {
     #[validate]
@@ -407,7 +411,7 @@ impl ModelIn for EndpointHeadersIn {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointHeadersOut {
     pub headers: HashMap<String, String>,
@@ -438,7 +442,7 @@ impl From<EndpointHeaders> for EndpointHeadersOut {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Validate, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Validate, Deserialize, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointHeadersPatchIn {
     #[validate]
@@ -471,7 +475,7 @@ impl ModelIn for EndpointHeadersPatchIn {
     }
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, JsonSchema)]
 pub struct EndpointStatsOut {
     success: i64,
     pending: i64,
@@ -526,41 +530,52 @@ async fn endpoint_stats(
     }))
 }
 
-pub fn router() -> Router<AppState> {
-    Router::new()
-        .route(
+pub fn router() -> ApiRouter<AppState> {
+    ApiRouter::new()
+        .api_route_with(
             "/app/:app_id/endpoint/",
             post(crud::create_endpoint).get(crud::list_endpoints),
+            openapi_tag("Endpoint"),
         )
-        .route(
-            "/app/:app_id/endpoint/:endp_id/",
+        .api_route_with(
+            "/app/:app_id/endpoint/:endpoint_id/",
             get(crud::get_endpoint)
                 .put(crud::update_endpoint)
                 .patch(crud::patch_endpoint)
                 .delete(crud::delete_endpoint),
+            openapi_tag("Endpoint"),
         )
-        .route(
-            "/app/:app_id/endpoint/:endp_id/secret/",
+        .api_route_with(
+            "/app/:app_id/endpoint/:endpoint_id/secret/",
             get(secrets::get_endpoint_secret),
+            openapi_tag("Endpoint"),
         )
-        .route(
-            "/app/:app_id/endpoint/:endp_id/secret/rotate/",
+        .api_route_with(
+            "/app/:app_id/endpoint/:endpoint_id/secret/rotate/",
             post(secrets::rotate_endpoint_secret),
+            openapi_tag("Endpoint"),
         )
-        .route("/app/:app_id/endpoint/:endp_id/stats/", get(endpoint_stats))
-        .route(
-            "/app/:app_id/endpoint/:endp_id/send-example/",
+        .api_route_with(
+            "/app/:app_id/endpoint/:endpoint_id/stats/",
+            get(endpoint_stats),
+            openapi_tag("Endpoint"),
+        )
+        .api_route_with(
+            "/app/:app_id/endpoint/:endpoint_id/send-example/",
             post(api_not_implemented),
+            openapi_tag("Endpoint"),
         )
-        .route(
-            "/app/:app_id/endpoint/:endp_id/recover/",
+        .api_route_with(
+            "/app/:app_id/endpoint/:endpoint_id/recover/",
             post(recovery::recover_failed_webhooks),
+            openapi_tag("Endpoint"),
         )
-        .route(
-            "/app/:app_id/endpoint/:endp_id/headers/",
+        .api_route_with(
+            "/app/:app_id/endpoint/:endpoint_id/headers/",
             get(headers::get_endpoint_headers)
                 .patch(headers::patch_endpoint_headers)
                 .put(headers::update_endpoint_headers),
+            openapi_tag("Endpoint"),
         )
 }
 

@@ -4,6 +4,7 @@
 use std::error;
 use std::fmt;
 
+use aide::OperationOutput;
 use axum::extract::rejection::ExtensionRejection;
 use axum::extract::rejection::PathRejection;
 use axum::extract::rejection::TypedHeaderRejection;
@@ -14,6 +15,7 @@ use axum::response::Response;
 use axum::Json;
 use axum::TypedHeader;
 use hyper::StatusCode;
+use schemars::JsonSchema;
 use sea_orm::DbErr;
 use sea_orm::RuntimeErr;
 use sea_orm::TransactionError;
@@ -107,6 +109,10 @@ impl IntoResponse for Error {
             }
         }
     }
+}
+
+impl OperationOutput for Error {
+    type Inner = Self;
 }
 
 /// Returns a [&'static str] of the file.rs:<line_number>.
@@ -293,7 +299,7 @@ pub enum HttpErrorBody {
     Validation { detail: Vec<ValidationErrorItem> },
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, PartialEq, Eq, JsonSchema)]
 /// Validation errors have their own schema to provide context for invalid requests eg. mismatched
 /// types and out of bounds values. There may be any number of these per 422 UNPROCESSABLE ENTITY
 /// error.

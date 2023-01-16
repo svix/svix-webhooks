@@ -7,7 +7,7 @@ use crate::{
     db::models::eventtype,
     error::{HttpError, Result},
     v1::utils::{
-        api_not_implemented,
+        api_not_implemented, openapi_tag,
         patch::{
             patch_field_non_nullable, patch_field_nullable, UnrequiredField,
             UnrequiredNullableField,
@@ -18,20 +18,24 @@ use crate::{
     },
     AppState,
 };
+use aide::axum::{
+    routing::{get, post},
+    ApiRouter,
+};
 use axum::{
     extract::{Path, State},
-    routing::{get, post},
-    Json, Router,
+    Json,
 };
 use chrono::{DateTime, Utc};
 use hyper::StatusCode;
+use schemars::JsonSchema;
 use sea_orm::{entity::prelude::*, ActiveValue::Set, QueryOrder};
 use sea_orm::{ActiveModelTrait, QuerySelect};
 use serde::{Deserialize, Serialize};
 use svix_server_derive::{ModelIn, ModelOut};
 use validator::Validate;
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Validate, ModelIn)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Validate, ModelIn, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EventTypeIn {
     pub name: EventTypeName,
@@ -61,7 +65,7 @@ impl ModelIn for EventTypeIn {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Deserialize, Validate, ModelIn)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Validate, ModelIn, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 struct EventTypeUpdate {
     #[validate(custom = "validate_no_control_characters")]
@@ -88,7 +92,7 @@ impl ModelIn for EventTypeUpdate {
     }
 }
 
-#[derive(Deserialize, ModelIn, Serialize, Validate)]
+#[derive(Deserialize, ModelIn, Serialize, Validate, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 struct EventTypePatch {
     #[serde(default, skip_serializing_if = "UnrequiredField::is_absent")]
@@ -122,7 +126,7 @@ impl ModelIn for EventTypePatch {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ModelOut)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ModelOut, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EventTypeOut {
     pub name: EventTypeName,
@@ -159,7 +163,7 @@ impl From<eventtype::Model> for EventTypeOut {
     }
 }
 
-#[derive(Debug, Deserialize, Validate)]
+#[derive(Debug, Deserialize, Validate, JsonSchema)]
 pub struct ListFetchOptions {
     #[serde(default)]
     pub include_archived: bool,
@@ -327,22 +331,25 @@ async fn delete_event_type(
     Ok((StatusCode::NO_CONTENT, Json(EmptyResponse {})))
 }
 
-pub fn router() -> Router<AppState> {
-    Router::new()
-        .route(
+pub fn router() -> ApiRouter<AppState> {
+    ApiRouter::new()
+        .api_route_with(
             "/event-type/",
             post(create_event_type).get(list_event_types),
+            openapi_tag("Event Type"),
         )
-        .route(
+        .api_route_with(
             "/event-type/:event_type_name/",
             get(get_event_type)
                 .put(update_event_type)
                 .patch(patch_event_type)
                 .delete(delete_event_type),
+            openapi_tag("Event Type"),
         )
-        .route(
+        .api_route_with(
             "/event-type/schema/generate-example/",
             post(api_not_implemented),
+            openapi_tag("Event Type"),
         )
 }
 

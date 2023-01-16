@@ -3,6 +3,7 @@
 
 use std::{borrow::Cow, collections::HashSet, error::Error as StdError, ops::Deref, str::FromStr};
 
+use aide::{transform::TransformPathItem, OperationInput, OperationIo};
 use axum::{
     async_trait,
     body::HttpBody,
@@ -12,6 +13,7 @@ use axum::{
 use chrono::{DateTime, Utc};
 use http::{request::Parts, Request};
 use regex::Regex;
+use schemars::JsonSchema;
 use sea_orm::{ColumnTrait, QueryFilter, QueryOrder, QuerySelect};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
@@ -35,8 +37,8 @@ const PAGINATION_LIMIT_CAP_LIMIT: u64 = 250;
 // figure at some point
 const PAGINATION_LIMIT_ERROR: &str = "Given limit must not exceed 250";
 
-#[derive(Debug, Deserialize, Validate)]
-pub struct Pagination<T: Validate> {
+#[derive(Debug, Deserialize, Validate, JsonSchema)]
+pub struct Pagination<T: Validate + JsonSchema> {
     #[validate]
     #[serde(default = "default_limit")]
     pub limit: PaginationLimit,
@@ -44,7 +46,7 @@ pub struct Pagination<T: Validate> {
     pub iterator: Option<T>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, JsonSchema)]
 pub struct PaginationLimit(pub u64);
 
 impl<'de> Deserialize<'de> for PaginationLimit {
@@ -114,6 +116,16 @@ impl<T: Validate> Validate for ReversibleIterator<T> {
     }
 }
 
+impl<T: Validate + JsonSchema> JsonSchema for ReversibleIterator<T> {
+    fn schema_name() -> String {
+        format!("ReversibleIterator_{}", T::schema_name())
+    }
+
+    fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
+        T::json_schema(gen)
+    }
+}
+
 /// For use in creating a [`ReversibleIterator`] from `before` and `after` timestamps should one not
 /// already be present
 pub fn iterator_from_before_or_after<I: BaseId<Output = I> + Validate>(
@@ -157,7 +169,7 @@ pub fn apply_pagination<
 #[derive(Serialize)]
 pub struct EmptyResponse {}
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct ListResponse<T: Clone> {
     pub data: Vec<T>,
@@ -274,7 +286,8 @@ fn validation_errors(
         .collect()
 }
 
-#[derive(Debug, Clone, Copy, Default)]
+#[derive(Debug, Clone, Copy, Default, OperationIo)]
+#[aide(input_with = "axum::extract::Json<T>", json_schema)]
 pub struct ValidatedJson<T>(pub T);
 
 #[async_trait]
@@ -353,6 +366,12 @@ impl<T> Deref for ValidatedQuery<T> {
     }
 }
 
+impl<T: JsonSchema> OperationInput for ValidatedQuery<T> {
+    fn operation_input(ctx: &mut aide::gen::GenContext, operation: &mut aide::openapi::Operation) {
+        axum::extract::Query::<T>::operation_input(ctx, operation)
+    }
+}
+
 /// This struct is slower than Query. Only use this if we need to pass arrays.
 #[derive(Debug)]
 pub struct MessageListFetchOptions {
@@ -399,6 +418,8 @@ where
     }
 }
 
+impl OperationInput for MessageListFetchOptions {}
+
 pub async fn api_not_implemented() -> Result<()> {
     Err(HttpError::not_implemented(None, None).into())
 }
@@ -421,6 +442,10 @@ pub fn validate_no_control_characters_unrequired(
         UnrequiredField::Absent => Ok(()),
         UnrequiredField::Some(str) => validate_no_control_characters(str),
     }
+}
+
+pub fn openapi_tag(tag: &'static str) -> impl FnOnce(TransformPathItem) -> TransformPathItem {
+    |op| op.tag(tag)
 }
 
 #[cfg(test)]

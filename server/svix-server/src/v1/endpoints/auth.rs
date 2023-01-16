@@ -1,14 +1,16 @@
-use axum::{extract::State, routing::post, Json, Router};
+use aide::axum::{routing::post, ApiRouter};
+use axum::{extract::State, Json};
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
     core::{permissions, security::generate_app_token},
     error::{HttpError, Result},
-    v1::utils::api_not_implemented,
+    v1::utils::{api_not_implemented, openapi_tag},
     AppState,
 };
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, JsonSchema)]
 pub struct DashboardAccessOut {
     pub url: String,
     pub token: String,
@@ -35,8 +37,16 @@ async fn dashboard_access(
     Ok(Json(DashboardAccessOut { url, token }))
 }
 
-pub fn router() -> Router<AppState> {
-    Router::new()
-        .route("/auth/dashboard-access/:app_id/", post(dashboard_access))
-        .route("/auth/logout/", post(api_not_implemented))
+pub fn router() -> ApiRouter<AppState> {
+    ApiRouter::new()
+        .api_route_with(
+            "/auth/dashboard-access/:app_id/",
+            post(dashboard_access),
+            openapi_tag("Authentication"),
+        )
+        .api_route_with(
+            "/auth/logout/",
+            post(api_not_implemented),
+            openapi_tag("Authentication"),
+        )
 }

@@ -9,6 +9,7 @@ use crate::{
 };
 use chrono::Utc;
 use jsonschema::{Draft, JSONSchema};
+use schemars::JsonSchema;
 use sea_orm::entity::prelude::*;
 use sea_orm::ActiveValue::Set;
 use serde::{Deserialize, Serialize};
@@ -64,7 +65,7 @@ impl Entity {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Default)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Default, JsonSchema)]
 pub struct Schema(HashMap<String, Json>);
 json_wrapper!(Schema);
 

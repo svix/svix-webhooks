@@ -10,6 +10,7 @@ use rand::Rng;
 
 use regex::Regex;
 
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 use svix_ksuid::*;
@@ -244,7 +245,7 @@ pub trait BaseUid: Deref<Target = String> {
 
 macro_rules! string_wrapper {
     ($name_id:ident) => {
-        #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
+        #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize, JsonSchema)]
         pub struct $name_id(pub String);
 
         impl Deref for $name_id {
@@ -369,7 +370,7 @@ macro_rules! create_all_id_types {
         }
 
         // Id or uid
-        #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+        #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
         pub struct $name_id_or_uid(pub String);
 
         impl From<$name_id_or_uid> for $name_uid {
@@ -423,7 +424,7 @@ impl Validate for EventChannel {
     }
 }
 
-#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub struct EventChannelSet(pub HashSet<EventChannel>);
 json_wrapper!(EventChannelSet);
 
@@ -436,7 +437,7 @@ impl Validate for EventChannelSet {
     }
 }
 
-#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub struct EventTypeNameSet(pub HashSet<EventTypeName>);
 json_wrapper!(EventTypeNameSet);
 
@@ -865,6 +866,24 @@ impl Validate for EndpointSecret {
     }
 }
 
+impl JsonSchema for EndpointSecret {
+    fn schema_name() -> String {
+        "EndpointSecret".to_string()
+    }
+
+    fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
+        const KEY_PATTERN: &str = "^(whsec_)?[a-zA-Z0-9+/=]{32,100}$";
+        let mut schema = String::json_schema(gen);
+        if let schemars::schema::Schema::Object(ref mut obj) = schema {
+            obj.string = Some(Box::new(schemars::schema::StringValidation {
+                pattern: Some(KEY_PATTERN.to_string()),
+                ..Default::default()
+            }));
+        }
+        schema
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ExpiringSigningKey {
     #[serde(rename = "signingKey")]
@@ -926,7 +945,7 @@ fn validate_header_key(k: &str, errors: &mut ValidationErrors) {
     })
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Default)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Default, JsonSchema)]
 pub struct EndpointHeaders(pub HashMap<String, String>);
 json_wrapper!(EndpointHeaders);
 
@@ -961,7 +980,7 @@ impl Validate for EndpointHeaders {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Default)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Default, JsonSchema)]
 pub struct EndpointHeadersPatch(pub HashMap<String, Option<String>>);
 json_wrapper!(EndpointHeadersPatch);
 
@@ -991,14 +1010,14 @@ impl Validate for EndpointHeadersPatch {
 }
 
 #[repr(i16)]
-#[derive(Clone, Debug, Copy, PartialEq, Eq, IntoPrimitive, TryFromPrimitive)]
+#[derive(Clone, Debug, Copy, PartialEq, Eq, IntoPrimitive, TryFromPrimitive, JsonSchema)]
 pub enum MessageAttemptTriggerType {
     Scheduled = 0,
     Manual = 1,
 }
 
 #[repr(i16)]
-#[derive(Clone, Debug, Copy, PartialEq, IntoPrimitive, TryFromPrimitive, Hash, Eq)]
+#[derive(Clone, Debug, Copy, PartialEq, IntoPrimitive, TryFromPrimitive, Hash, Eq, JsonSchema)]
 pub enum MessageStatus {
     Success = 0,
     Pending = 1,
@@ -1007,7 +1026,7 @@ pub enum MessageStatus {
 }
 
 #[repr(i16)]
-#[derive(Clone, Debug, Copy, PartialEq, Eq, IntoPrimitive, TryFromPrimitive)]
+#[derive(Clone, Debug, Copy, PartialEq, Eq, IntoPrimitive, TryFromPrimitive, JsonSchema)]
 pub enum StatusCodeClass {
     CodeNone = 0,
     Code1xx = 100,
