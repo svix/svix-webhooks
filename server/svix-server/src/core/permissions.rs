@@ -1,3 +1,4 @@
+use aide::OperationInput;
 use axum::{
     async_trait,
     extract::{FromRequestParts, Path},
@@ -31,9 +32,13 @@ impl FromRequestParts<AppState> for ReadAll {
     }
 }
 
+impl OperationInput for ReadAll {}
+
 pub struct Organization {
     pub org_id: OrganizationId,
 }
+
+impl OperationInput for Organization {}
 
 impl Permissions {
     fn check_app_is_permitted(&self, app_id: &ApplicationId) -> Result<()> {
@@ -88,10 +93,14 @@ impl FromRequestParts<AppState> for Application {
     }
 }
 
+impl OperationInput for Application {}
+
 // Organization level privileges, with the requested application
 pub struct OrganizationWithApplication {
     pub app: application::Model,
 }
+
+impl OperationInput for OrganizationWithApplication {}
 
 #[async_trait]
 impl FromRequestParts<AppState> for OrganizationWithApplication {
@@ -116,6 +125,8 @@ pub struct ApplicationWithMetadata {
     pub app: application::Model,
     pub metadata: applicationmetadata::Model,
 }
+
+impl OperationInput for ApplicationWithMetadata {}
 
 #[async_trait]
 impl FromRequestParts<AppState> for ApplicationWithMetadata {

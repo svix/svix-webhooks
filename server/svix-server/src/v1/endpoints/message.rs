@@ -14,19 +14,23 @@ use crate::{
     error::{HttpError, Result},
     queue::MessageTaskBatch,
     v1::utils::{
-        apply_pagination, iterator_from_before_or_after, validation_error, ListResponse,
-        MessageListFetchOptions, ModelIn, ModelOut, PaginationLimit, ReversibleIterator,
-        ValidatedJson, ValidatedQuery,
+        apply_pagination, iterator_from_before_or_after, openapi_tag, validation_error,
+        ListResponse, MessageListFetchOptions, ModelIn, ModelOut, PaginationLimit,
+        ReversibleIterator, ValidatedJson, ValidatedQuery,
     },
     AppState,
 };
+use aide::axum::{
+    routing::{get, post},
+    ApiRouter,
+};
 use axum::{
     extract::{Path, State},
-    routing::{get, post},
-    Json, Router,
+    Json,
 };
 use chrono::{DateTime, Duration, Utc};
 use hyper::StatusCode;
+use schemars::JsonSchema;
 use sea_orm::entity::prelude::*;
 use sea_orm::ActiveModelTrait;
 use sea_orm::{sea_query::Expr, ActiveValue::Set};
@@ -64,7 +68,7 @@ pub fn validate_message_in_payload(
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Validate, ModelIn)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Validate, ModelIn, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct MessageIn {
     #[validate]
@@ -107,7 +111,7 @@ impl ModelIn for MessageIn {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ModelOut)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ModelOut, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct MessageOut {
     #[serde(rename = "eventId")]
@@ -154,7 +158,7 @@ fn default_90() -> i64 {
     90
 }
 
-#[derive(Clone, Debug, Deserialize, Validate)]
+#[derive(Clone, Debug, Deserialize, Validate, JsonSchema)]
 pub struct ListMessagesQueryParams {
     #[validate]
     channel: Option<EventChannel>,
@@ -212,7 +216,7 @@ async fn list_messages(
     Ok(Json(MessageOut::list_response(out, limit as usize, false)))
 }
 
-#[derive(Debug, Deserialize, Validate)]
+#[derive(Debug, Deserialize, Validate, JsonSchema)]
 pub struct CreateMessageQueryParams {
     #[serde(default = "default_true")]
     with_content: bool,
@@ -276,7 +280,7 @@ async fn create_message(
     Ok((StatusCode::ACCEPTED, Json(msg_out)))
 }
 
-#[derive(Debug, Deserialize, Validate)]
+#[derive(Debug, Deserialize, Validate, JsonSchema)]
 pub struct GetMessageQueryParams {
     #[serde(default = "default_true")]
     with_content: bool,
@@ -301,10 +305,18 @@ async fn get_message(
     Ok(Json(msg_out))
 }
 
-pub fn router() -> Router<AppState> {
-    Router::new()
-        .route("/app/:app_id/msg/", post(create_message).get(list_messages))
-        .route("/app/:app_id/msg/:msg_id/", get(get_message))
+pub fn router() -> ApiRouter<AppState> {
+    ApiRouter::new()
+        .api_route_with(
+            "/app/:app_id/msg/",
+            post(create_message).get(list_messages),
+            openapi_tag("Message"),
+        )
+        .api_route_with(
+            "/app/:app_id/msg/:msg_id/",
+            get(get_message),
+            openapi_tag("Message"),
+        )
 }
 
 #[cfg(test)]

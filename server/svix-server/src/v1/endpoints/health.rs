@@ -3,7 +3,8 @@
 
 use std::time::Duration;
 
-use axum::{extract::State, http::StatusCode, routing::get, Json, Router};
+use aide::axum::ApiRouter;
+use axum::{extract::State, http::StatusCode, routing::get, Json};
 use sea_orm::{query::Statement, ConnectionTrait, DatabaseBackend};
 use serde::{Deserialize, Serialize};
 
@@ -121,8 +122,8 @@ async fn health(
     )
 }
 
-pub fn router() -> Router<AppState> {
-    Router::new()
+pub fn router() -> ApiRouter<AppState> {
+    ApiRouter::new()
         .route("/health/ping/", get(ping).head(ping))
         .route("/health/", get(health).head(health))
 }

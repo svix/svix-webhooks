@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use axum::Router;
+use aide::axum::ApiRouter;
 use tower_http::trace::TraceLayer;
 
 use crate::{
@@ -12,8 +12,8 @@ use crate::{
 pub mod endpoints;
 pub mod utils;
 
-pub fn router() -> Router<AppState> {
-    let ret: Router<AppState> = Router::new()
+pub fn router() -> ApiRouter<AppState> {
+    let ret: ApiRouter<AppState> = ApiRouter::new()
         .merge(endpoints::health::router())
         .merge(endpoints::auth::router())
         .merge(endpoints::application::router())
@@ -30,7 +30,8 @@ pub fn router() -> Router<AppState> {
 
     #[cfg(debug_assertions)]
     if cfg!(debug_assertions) {
-        return ret.merge(development::router());
+        let dev_router: ApiRouter<AppState> = development::router().into();
+        return ret.merge(dev_router);
     }
     ret
 }
