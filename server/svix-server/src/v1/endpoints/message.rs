@@ -236,7 +236,7 @@ async fn create_message(
     ValidatedJson(data): ValidatedJson<MessageIn>,
 ) -> Result<(StatusCode, Json<MessageOut>)> {
     let create_message_app = CreateMessageApp::layered_fetch(
-        cache,
+        &cache,
         db,
         Some(app.clone()),
         app.org_id.clone(),
