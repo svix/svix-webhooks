@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: MIT
 
 use crate::{
-    core::{permissions, types::EventTypeName},
+    core::{
+        permissions,
+        types::{EventTypeName, FeatureFlag},
+    },
     ctx,
     db::models::eventtype,
     error::{HttpError, Result},
@@ -44,6 +47,8 @@ pub struct EventTypeIn {
     #[serde(default, rename = "archived")]
     pub deleted: bool,
     pub schemas: Option<eventtype::Schema>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub feature_flag: Option<FeatureFlag>,
 }
 
 // FIXME: This can and should be a derive macro
@@ -56,12 +61,14 @@ impl ModelIn for EventTypeIn {
             description,
             deleted,
             schemas,
+            feature_flag,
         } = self;
 
         model.name = Set(name);
         model.description = Set(description);
         model.deleted = Set(deleted);
         model.schemas = Set(schemas);
+        model.feature_flag = Set(feature_flag);
     }
 }
 
@@ -73,6 +80,8 @@ struct EventTypeUpdate {
     #[serde(default, rename = "archived")]
     deleted: bool,
     schemas: Option<eventtype::Schema>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    feature_flag: Option<FeatureFlag>,
 }
 
 // FIXME: This can and should be a derive macro
@@ -84,11 +93,13 @@ impl ModelIn for EventTypeUpdate {
             description,
             deleted,
             schemas,
+            feature_flag,
         } = self;
 
         model.description = Set(description);
         model.deleted = Set(deleted);
         model.schemas = Set(schemas);
+        model.feature_flag = Set(feature_flag);
     }
 }
 
@@ -108,6 +119,9 @@ struct EventTypePatch {
 
     #[serde(default, skip_serializing_if = "UnrequiredNullableField::is_absent")]
     schemas: UnrequiredNullableField<eventtype::Schema>,
+
+    #[serde(default, skip_serializing_if = "UnrequiredNullableField::is_absent")]
+    feature_flag: UnrequiredNullableField<FeatureFlag>,
 }
 
 impl ModelIn for EventTypePatch {
@@ -118,11 +132,13 @@ impl ModelIn for EventTypePatch {
             description,
             deleted,
             schemas,
+            feature_flag,
         } = self;
 
         patch_field_non_nullable!(model, description);
         patch_field_non_nullable!(model, deleted);
         patch_field_nullable!(model, schemas);
+        patch_field_nullable!(model, feature_flag);
     }
 }
 
@@ -137,6 +153,7 @@ pub struct EventTypeOut {
 
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
+    pub feature_flag: Option<FeatureFlag>,
 }
 
 impl EventTypeOut {
@@ -156,6 +173,7 @@ impl From<eventtype::Model> for EventTypeOut {
             description: model.description,
             deleted: model.deleted,
             schemas: model.schemas,
+            feature_flag: model.feature_flag,
 
             created_at: model.created_at.into(),
             updated_at: model.updated_at.into(),
@@ -175,7 +193,11 @@ async fn list_event_types(
     State(AppState { ref db, .. }): State<AppState>,
     pagination: ValidatedQuery<Pagination<EventTypeName>>,
     fetch_options: ValidatedQuery<ListFetchOptions>,
-    permissions::ReadAll { org_id }: permissions::ReadAll,
+    permissions::ReadAll {
+        org_id,
+        feature_flags,
+        ..
+    }: permissions::ReadAll,
 ) -> Result<Json<ListResponse<EventTypeOut>>> {
     let PaginationLimit(limit) = pagination.limit;
     let iterator = pagination.iterator.clone();
@@ -190,6 +212,10 @@ async fn list_event_types(
 
     if let Some(iterator) = iterator {
         query = query.filter(eventtype::Column::Name.gt(iterator));
+    }
+
+    if let permissions::AllowedFeatureFlags::Some(flags) = feature_flags {
+        query = query.filter(eventtype::Column::FeatureFlag.is_in(flags.into_iter()));
     }
 
     Ok(Json(EventTypeOut::list_response_no_prev(
@@ -246,14 +272,18 @@ async fn create_event_type(
 async fn get_event_type(
     State(AppState { ref db, .. }): State<AppState>,
     Path(evtype_name): Path<EventTypeName>,
-    permissions::ReadAll { org_id }: permissions::ReadAll,
+    permissions::ReadAll {
+        org_id,
+        feature_flags,
+        ..
+    }: permissions::ReadAll,
 ) -> Result<Json<EventTypeOut>> {
-    let evtype = ctx!(
-        eventtype::Entity::secure_find_by_name(org_id, evtype_name)
-            .one(db)
-            .await
-    )?
-    .ok_or_else(|| HttpError::not_found(None, None))?;
+    let mut query = eventtype::Entity::secure_find_by_name(org_id, evtype_name);
+    if let permissions::AllowedFeatureFlags::Some(flags) = feature_flags {
+        query = query.filter(eventtype::Column::FeatureFlag.is_in(flags.into_iter()));
+    }
+    let evtype = ctx!(query.one(db).await)?.ok_or_else(|| HttpError::not_found(None, None))?;
+
     Ok(Json(evtype.into()))
 }
 

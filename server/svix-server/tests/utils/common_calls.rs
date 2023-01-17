@@ -8,12 +8,14 @@ use chrono::{DateTime, Utc};
 use reqwest::{StatusCode, Url};
 
 use serde::{de::DeserializeOwned, Serialize};
+use svix::api::DashboardAccessOut;
 use svix_server::{
-    core::types::{metadata::Metadata, ApplicationId, EventTypeName, MessageId},
+    core::types::{metadata::Metadata, ApplicationId, EventTypeName, FeatureFlagSet, MessageId},
     v1::{
         endpoints::{
             application::{ApplicationIn, ApplicationOut},
             attempt::MessageAttemptOut,
+            auth::DashboardAccessIn,
             endpoint::{EndpointIn, EndpointOut, RecoverIn},
             event_type::EventTypeIn,
             message::{MessageIn, MessageOut},
@@ -141,6 +143,7 @@ pub fn event_type_in(
         description: "test-event-description".to_owned(),
         deleted: false,
         schemas: schema.into().map(|s| serde_json::from_value(s).unwrap()),
+        feature_flag: None,
     })
 }
 
@@ -307,4 +310,26 @@ pub async fn get_msg_attempt_list_and_assert_count(
 
 pub fn metadata(s: &str) -> Metadata {
     serde_json::from_str::<Metadata>(s).unwrap()
+}
+
+/// Accesses the dashboard-access endpoint and returns a new [`TestClient`] with an auth header set
+/// to the returned token.
+pub async fn dashboard_access(
+    org_client: &TestClient,
+    application_id: &ApplicationId,
+    feature_flags: FeatureFlagSet,
+) -> TestClient {
+    let resp: DashboardAccessOut = org_client
+        .post(
+            &format!("api/v1/auth/dashboard-access/{application_id}/"),
+            DashboardAccessIn { feature_flags },
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    let mut app_client = org_client.clone();
+    app_client.set_auth_header(resp.token);
+
+    app_client
 }
