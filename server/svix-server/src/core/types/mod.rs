@@ -949,34 +949,46 @@ fn validate_header_key(k: &str, errors: &mut ValidationErrors) {
 pub struct EndpointHeaders(pub HashMap<String, String>);
 json_wrapper!(EndpointHeaders);
 
+const HEADER_MAX_LENGTH: usize = 4096;
+
 impl<'de> Deserialize<'de> for EndpointHeaders {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
     {
-        HashMap::deserialize(deserializer)
-            .map(|x: HashMap<String, String>| x.into_iter().collect())
-            .map(EndpointHeaders)
+        let headers: HashMap<String, String> = HashMap::deserialize(deserializer)?;
+
+        validate_header_map(&headers).map_err(serde::de::Error::custom)?;
+
+        Ok(EndpointHeaders(headers))
     }
 }
 
-impl Validate for EndpointHeaders {
-    fn validate(&self) -> std::result::Result<(), ValidationErrors> {
-        let mut errors = ValidationErrors::new();
-        self.0.iter().for_each(|(k, v)| {
-            validate_header_key(k, &mut errors);
-            if let Err(_e) = http::header::HeaderValue::try_from(v) {
-                errors.add(
-                    ALL_ERROR,
-                    validation_error(Some("header"), Some("Invalid Header Value.")),
-                );
-            }
-        });
-        if errors.is_empty() {
-            Ok(())
-        } else {
-            Err(errors)
+fn validate_header_map(
+    headers: &HashMap<String, String>,
+) -> std::result::Result<(), ValidationErrors> {
+    let mut errors = ValidationErrors::new();
+    for (k, v) in headers {
+        validate_header_key(k, &mut errors);
+
+        if let Err(_e) = http::header::HeaderValue::try_from(v) {
+            errors.add(
+                ALL_ERROR,
+                validation_error(Some("header"), Some("Invalid Header Value.")),
+            );
         }
+
+        if v.len() > HEADER_MAX_LENGTH {
+            errors.add(
+                ALL_ERROR,
+                validation_error(Some("header"), Some("Maximum header length is 4096 bytes")),
+            );
+        }
+    }
+    if errors.is_empty() {
+        Ok(())
+    } else {
+        Err(errors)
     }
 }
 
@@ -1117,29 +1129,29 @@ mod tests {
             ("also-valid".to_owned(), "true".to_owned()),
         ]);
         let endpoint_headers = EndpointHeaders(hdr_map);
-        endpoint_headers.validate().unwrap();
+        validate_header_map(&endpoint_headers.0).unwrap();
 
         let hdr_map = HashMap::from([
             ("invalid?".to_owned(), "true".to_owned()),
             ("valid".to_owned(), "true".to_owned()),
         ]);
         let endpoint_headers = EndpointHeaders(hdr_map);
-        assert!(endpoint_headers.validate().is_err());
+        assert!(validate_header_map(&endpoint_headers.0).is_err());
 
         let hdr_map = HashMap::from([
             ("invalid\0".to_owned(), "true".to_owned()),
             ("valid".to_owned(), "true".to_owned()),
         ]);
         let endpoint_headers = EndpointHeaders(hdr_map);
-        assert!(endpoint_headers.validate().is_err());
+        assert!(validate_header_map(&endpoint_headers.0).is_err());
 
         let hdr_map = HashMap::from([("User-Agent".to_string(), "true".to_owned())]);
         let endpoint_headers = EndpointHeaders(hdr_map);
-        assert!(endpoint_headers.validate().is_err());
+        assert!(validate_header_map(&endpoint_headers.0).is_err());
 
         let hdr_map = HashMap::from([("X-Amz-".to_string(), "true".to_owned())]);
         let endpoint_headers = EndpointHeaders(hdr_map);
-        assert!(endpoint_headers.validate().is_err());
+        assert!(validate_header_map(&endpoint_headers.0).is_err());
     }
 
     #[test]

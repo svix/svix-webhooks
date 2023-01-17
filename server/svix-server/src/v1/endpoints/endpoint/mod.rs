@@ -398,7 +398,6 @@ pub struct RecoverIn {
 #[derive(Clone, Debug, PartialEq, Eq, Validate, Deserialize, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointHeadersIn {
-    #[validate]
     pub headers: EndpointHeaders,
 }
 
@@ -584,9 +583,7 @@ mod tests {
 
     use crate::core::types::EndpointHeaders;
 
-    use super::{
-        validate_url, EndpointHeadersIn, EndpointHeadersOut, EndpointHeadersPatchIn, EndpointIn,
-    };
+    use super::{validate_url, EndpointHeadersOut, EndpointHeadersPatchIn, EndpointIn};
     use reqwest::Url;
     use serde_json::json;
     use std::collections::{HashMap, HashSet};
@@ -660,20 +657,6 @@ mod tests {
              "channels": EVENT_CHANNELS_VALID
         }))
         .unwrap();
-        valid.validate().unwrap();
-    }
-
-    #[test]
-    fn test_endpoint_headers_in_validation() {
-        let headers_valid = HashMap::from([("x-valid", "1")]);
-        let headers_invalid = HashMap::from([("x-invalid???", "1")]);
-
-        let invalid: EndpointHeadersIn =
-            serde_json::from_value(json!({ "headers": headers_invalid })).unwrap();
-        assert!(invalid.validate().is_err());
-
-        let valid: EndpointHeadersIn =
-            serde_json::from_value(json!({ "headers": headers_valid })).unwrap();
         valid.validate().unwrap();
     }
 
