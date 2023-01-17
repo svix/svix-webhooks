@@ -14,11 +14,12 @@ use crate::{
 
 use super::{
     security::{permissions_from_bearer, AccessLevel, Permissions},
-    types::{ApplicationId, ApplicationIdOrUid, OrganizationId},
+    types::{ApplicationId, ApplicationIdOrUid, FeatureFlagSet, OrganizationId},
 };
 
 pub struct ReadAll {
     pub org_id: OrganizationId,
+    pub feature_flags: AllowedFeatureFlags,
 }
 
 #[async_trait]
@@ -28,7 +29,14 @@ impl FromRequestParts<AppState> for ReadAll {
     async fn from_request_parts(parts: &mut Parts, state: &AppState) -> Result<Self> {
         let permissions = ctx!(permissions_from_bearer(parts, state).await)?;
         let org_id = permissions.org_id();
-        Ok(Self { org_id })
+        let feature_flags = match permissions.access_level {
+            AccessLevel::Organization(_) => AllowedFeatureFlags::All,
+            AccessLevel::Application(_, _) => AllowedFeatureFlags::Some(permissions.feature_flags),
+        };
+        Ok(Self {
+            org_id,
+            feature_flags,
+        })
     }
 }
 
@@ -156,4 +164,13 @@ impl FromRequestParts<AppState> for ApplicationWithMetadata {
 #[derive(serde::Deserialize)]
 struct ApplicationPathParams {
     app_id: ApplicationIdOrUid,
+}
+
+/// Denotes what features gated by feature flags the requester has access to.
+pub enum AllowedFeatureFlags {
+    /// Requester has access to all features regardless of flags. No checking
+    /// of feature flags should be done for this request.
+    All,
+    /// Requester has access to a limited set of features. The set may be empty.
+    Some(FeatureFlagSet),
 }

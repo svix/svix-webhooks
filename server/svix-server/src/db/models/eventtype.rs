@@ -4,7 +4,7 @@
 use std::collections::HashMap;
 
 use crate::{
-    core::types::{BaseId, EventTypeId, EventTypeName, OrganizationId},
+    core::types::{BaseId, EventTypeId, EventTypeName, FeatureFlag, OrganizationId},
     json_wrapper,
 };
 use chrono::Utc;
@@ -26,6 +26,7 @@ pub struct Model {
     pub deleted: bool,
     pub schemas: Option<Schema>,
     pub name: EventTypeName,
+    pub feature_flag: Option<FeatureFlag>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter)]

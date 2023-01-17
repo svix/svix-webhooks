@@ -2,11 +2,12 @@ use aide::axum::{routing::post, ApiRouter};
 use axum::{extract::State, Json};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use validator::Validate;
 
 use crate::{
-    core::{permissions, security::generate_app_token},
+    core::{permissions, security::generate_app_token, types::FeatureFlagSet},
     error::{HttpError, Result},
-    v1::utils::{api_not_implemented, openapi_tag},
+    v1::utils::{api_not_implemented, openapi_tag, ValidatedJson},
     AppState,
 };
 
@@ -16,11 +17,24 @@ pub struct DashboardAccessOut {
     pub token: String,
 }
 
+#[derive(Deserialize, Serialize, Validate, JsonSchema)]
+pub struct DashboardAccessIn {
+    /// The set of feature flags the created token will have access to.
+    #[serde(default, skip_serializing_if = "FeatureFlagSet::is_empty")]
+    pub feature_flags: FeatureFlagSet,
+}
+
 async fn dashboard_access(
     State(AppState { cfg, .. }): State<AppState>,
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
+    ValidatedJson(data): ValidatedJson<DashboardAccessIn>,
 ) -> Result<Json<DashboardAccessOut>> {
-    let token = generate_app_token(&cfg.jwt_secret, app.org_id, app.id.clone())?;
+    let token = generate_app_token(
+        &cfg.jwt_secret,
+        app.org_id,
+        app.id.clone(),
+        data.feature_flags,
+    )?;
 
     let login_key = serde_json::to_vec(&serde_json::json!({
         "appId": app.id,

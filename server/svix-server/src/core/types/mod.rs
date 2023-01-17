@@ -248,6 +248,12 @@ macro_rules! string_wrapper {
         #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize, JsonSchema)]
         pub struct $name_id(pub String);
 
+        string_wrapper_impl!($name_id);
+    };
+}
+
+macro_rules! string_wrapper_impl {
+    ($name_id:ident) => {
         impl Deref for $name_id {
             type Target = String;
 
@@ -1039,6 +1045,25 @@ pub enum StatusCodeClass {
 enum_wrapper!(MessageAttemptTriggerType);
 enum_wrapper!(MessageStatus);
 enum_wrapper!(StatusCodeClass);
+
+#[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, JsonSchema)]
+pub struct FeatureFlag(pub String);
+
+string_wrapper_impl!(FeatureFlag);
+
+impl<'de> Deserialize<'de> for FeatureFlag {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        String::deserialize(deserializer).and_then(|s| {
+            validate_limited_str(&s).map_err(serde::de::Error::custom)?;
+            Ok(FeatureFlag(s))
+        })
+    }
+}
+
+pub type FeatureFlagSet = HashSet<FeatureFlag>;
 
 #[cfg(test)]
 mod tests {
