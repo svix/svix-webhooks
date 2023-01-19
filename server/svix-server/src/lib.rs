@@ -206,9 +206,11 @@ pub async fn run_with_prefix(
     cfg: Configuration,
     listener: Option<TcpListener>,
 ) {
+    tracing::debug!("DB: Initializing pool");
     let pool = init_db(&cfg).await;
+    tracing::debug!("DB: Started");
 
-    tracing::debug!("Cache type: {:?}", cfg.cache_type);
+    tracing::debug!("Cache: Initializing {:?}", cfg.cache_type);
     let cache = match cfg.cache_backend() {
         CacheBackend::None => cache::none::new(),
         CacheBackend::Memory => cache::memory::new(),
@@ -221,9 +223,11 @@ pub async fn run_with_prefix(
             cache::redis::new(mgr)
         }
     };
+    tracing::debug!("Cache: Started");
 
-    tracing::debug!("Queue type: {:?}", cfg.queue_type);
+    tracing::debug!("Queue: Initializing {:?}", cfg.queue_type);
     let (queue_tx, queue_rx) = queue::new_pair(&cfg, prefix.as_deref()).await;
+    tracing::debug!("Queue: Started");
 
     let op_webhook_sender = OperationalWebhookSenderInner::new(
         cfg.jwt_secret.clone(),
@@ -297,7 +301,7 @@ pub async fn run_with_prefix(
         },
         async {
             if with_worker {
-                tracing::debug!("Worker: Initializing");
+                tracing::debug!("Worker: Started");
                 queue_handler(
                     &cfg,
                     cache.clone(),
@@ -314,7 +318,7 @@ pub async fn run_with_prefix(
         },
         async {
             if with_worker {
-                tracing::debug!("Expired message cleaner: Initializing");
+                tracing::debug!("Expired message cleaner: Started");
                 expired_message_cleaner_loop(&pool).await
             } else {
                 tracing::debug!("Expired message cleaner: off");
