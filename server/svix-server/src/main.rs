@@ -124,8 +124,9 @@ async fn main() {
     }
 
     if args.run_migrations {
+        tracing::debug!("Migrations: Running");
         db::run_migrations(&cfg).await;
-        tracing::debug!("Migrations: success");
+        tracing::debug!("Migrations: Success");
     }
 
     match args.command {
