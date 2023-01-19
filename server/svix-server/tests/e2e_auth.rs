@@ -75,3 +75,28 @@ async fn test_restricted_application_access() {
         .await
         .unwrap();
 }
+
+#[tokio::test]
+async fn test_dashboard_access_without_body() {
+    let (client, _jh) = start_svix_server().await;
+
+    let app_id: ApplicationId = client
+        .post::<_, ApplicationOut>(
+            "api/v1/app/",
+            application_in("TEST_APP_NAME"),
+            StatusCode::CREATED,
+        )
+        .await
+        .unwrap()
+        .id;
+
+    // We just need to ensure we get an OK response without a body.
+    let _: IgnoredResponse = client
+        .post(
+            &format!("api/v1/auth/dashboard-access/{app_id}/"),
+            (),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+}

@@ -27,14 +27,10 @@ pub struct DashboardAccessIn {
 async fn dashboard_access(
     State(AppState { cfg, .. }): State<AppState>,
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
-    ValidatedJson(data): ValidatedJson<DashboardAccessIn>,
+    data: Option<ValidatedJson<DashboardAccessIn>>,
 ) -> Result<Json<DashboardAccessOut>> {
-    let token = generate_app_token(
-        &cfg.jwt_secret,
-        app.org_id,
-        app.id.clone(),
-        data.feature_flags,
-    )?;
+    let feature_flags = data.map(|data| data.0.feature_flags).unwrap_or_default();
+    let token = generate_app_token(&cfg.jwt_secret, app.org_id, app.id.clone(), feature_flags)?;
 
     let login_key = serde_json::to_vec(&serde_json::json!({
         "appId": app.id,
