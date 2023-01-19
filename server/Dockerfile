@@ -36,6 +36,11 @@ RUN set -ex ; \
         mkdir -p /home/appuser ;\
         chown -R appuser: /home/appuser
 
+RUN apt-get update ;\
+    apt-get install --no-install-recommends -y ca-certificates=20210119; \
+    update-ca-certificates; \
+    rm -rf /var/lib/apt/lists/*
+
 USER appuser
 EXPOSE 8080
 
