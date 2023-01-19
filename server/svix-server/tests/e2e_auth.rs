@@ -8,7 +8,7 @@ use svix_server::{core::types::ApplicationId, v1::endpoints::application::Applic
 
 mod utils;
 use utils::{
-    common_calls::{application_in, dashboard_access},
+    common_calls::{app_portal_access, application_in},
     start_svix_server, IgnoredResponse,
 };
 
@@ -37,7 +37,7 @@ async fn test_restricted_application_access() {
         .unwrap()
         .id;
 
-    let client = dashboard_access(&client, &app_id, Default::default()).await;
+    let client = app_portal_access(&client, &app_id, Default::default()).await;
 
     // CREATE, UPDATE, DELETE, and LIST ops
     let _: IgnoredResponse = client
@@ -72,6 +72,31 @@ async fn test_restricted_application_access() {
         .unwrap();
     let _: ApplicationOut = client
         .get(&format!("api/v1/app/{app_id}/"), StatusCode::OK)
+        .await
+        .unwrap();
+}
+
+#[tokio::test]
+async fn test_dashboard_access_without_body() {
+    let (client, _jh) = start_svix_server().await;
+
+    let app_id: ApplicationId = client
+        .post::<_, ApplicationOut>(
+            "api/v1/app/",
+            application_in("TEST_APP_NAME"),
+            StatusCode::CREATED,
+        )
+        .await
+        .unwrap()
+        .id;
+
+    // We just need to ensure we get an OK response without a body.
+    let _: IgnoredResponse = client
+        .post(
+            &format!("api/v1/auth/dashboard-access/{app_id}/"),
+            (),
+            StatusCode::OK,
+        )
         .await
         .unwrap();
 }

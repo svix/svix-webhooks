@@ -15,7 +15,7 @@ use svix_server::{
         endpoints::{
             application::{ApplicationIn, ApplicationOut},
             attempt::MessageAttemptOut,
-            auth::DashboardAccessIn,
+            auth::AppPortalAccessIn,
             endpoint::{EndpointIn, EndpointOut, RecoverIn},
             event_type::EventTypeIn,
             message::{MessageIn, MessageOut},
@@ -314,15 +314,15 @@ pub fn metadata(s: &str) -> Metadata {
 
 /// Accesses the dashboard-access endpoint and returns a new [`TestClient`] with an auth header set
 /// to the returned token.
-pub async fn dashboard_access(
+pub async fn app_portal_access(
     org_client: &TestClient,
     application_id: &ApplicationId,
     feature_flags: FeatureFlagSet,
 ) -> TestClient {
     let resp: DashboardAccessOut = org_client
         .post(
-            &format!("api/v1/auth/dashboard-access/{application_id}/"),
-            DashboardAccessIn { feature_flags },
+            &format!("api/v1/auth/app-portal-access/{application_id}/"),
+            AppPortalAccessIn { feature_flags },
             StatusCode::OK,
         )
         .await

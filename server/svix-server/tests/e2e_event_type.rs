@@ -20,7 +20,7 @@ use svix_server::{
 mod utils;
 
 use utils::{
-    common_calls::{application_in, common_test_list, dashboard_access, event_type_in},
+    common_calls::{app_portal_access, application_in, common_test_list, event_type_in},
     start_svix_server, IgnoredResponse,
 };
 
@@ -239,13 +239,13 @@ async fn test_event_type_feature_flags() {
         .id;
 
     // Client with no feature flags set
-    let client1 = dashboard_access(&client, &app, FeatureFlagSet::default()).await;
+    let client1 = app_portal_access(&client, &app, FeatureFlagSet::default()).await;
     // Client with a different set of feature flags than needed
-    let client2 = dashboard_access(&client, &app, other_features).await;
+    let client2 = app_portal_access(&client, &app, other_features).await;
     // Client with the right flag, plus extras
-    let client3 = dashboard_access(&client, &app, union.clone()).await;
+    let client3 = app_portal_access(&client, &app, union.clone()).await;
     // Client with only the right flag
-    let client4 = dashboard_access(&client, &app, features.clone()).await;
+    let client4 = app_portal_access(&client, &app, features.clone()).await;
 
     // Clients which don't have the right flag shouldn't see it
     let list: ListResponse<EventTypeOut> = client1
