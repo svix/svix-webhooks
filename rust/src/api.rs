@@ -25,6 +25,7 @@ pub struct SvixOptions {
     pub server_url: Option<String>,
 }
 
+#[derive(Clone)]
 pub struct Svix {
     cfg: Configuration,
 }
