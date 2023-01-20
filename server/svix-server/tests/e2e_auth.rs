@@ -8,7 +8,7 @@ use svix_server::{core::types::ApplicationId, v1::endpoints::application::Applic
 
 mod utils;
 use utils::{
-    common_calls::{application_in, dashboard_access},
+    common_calls::{app_portal_access, application_in},
     start_svix_server, IgnoredResponse,
 };
 
@@ -37,7 +37,7 @@ async fn test_restricted_application_access() {
         .unwrap()
         .id;
 
-    let client = dashboard_access(&client, &app_id, Default::default()).await;
+    let client = app_portal_access(&client, &app_id, Default::default()).await;
 
     // CREATE, UPDATE, DELETE, and LIST ops
     let _: IgnoredResponse = client
