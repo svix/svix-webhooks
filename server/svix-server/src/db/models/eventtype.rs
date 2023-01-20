@@ -4,7 +4,9 @@
 use std::collections::HashMap;
 
 use crate::{
-    core::types::{BaseId, EventTypeId, EventTypeName, FeatureFlag, OrganizationId},
+    core::types::{
+        BaseId, EventTypeId, EventTypeName, FeatureFlag, FeatureFlagSet, OrganizationId,
+    },
     json_wrapper,
 };
 use chrono::Utc;
@@ -63,6 +65,14 @@ impl Entity {
 
     pub fn secure_find_by_name(org_id: OrganizationId, name: EventTypeName) -> Select<Entity> {
         Self::secure_find(org_id).filter(Column::Name.eq(name))
+    }
+
+    pub fn filter_feature_flags(query: Select<Self>, flags: FeatureFlagSet) -> Select<Self> {
+        query.filter(
+            sea_orm::Condition::any()
+                .add(Column::FeatureFlag.is_in(flags.into_iter()))
+                .add(Column::FeatureFlag.is_null()),
+        )
     }
 }
 

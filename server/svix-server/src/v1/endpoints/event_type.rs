@@ -215,7 +215,7 @@ async fn list_event_types(
     }
 
     if let permissions::AllowedFeatureFlags::Some(flags) = feature_flags {
-        query = query.filter(eventtype::Column::FeatureFlag.is_in(flags.into_iter()));
+        query = eventtype::Entity::filter_feature_flags(query, flags);
     }
 
     Ok(Json(EventTypeOut::list_response_no_prev(
@@ -280,7 +280,7 @@ async fn get_event_type(
 ) -> Result<Json<EventTypeOut>> {
     let mut query = eventtype::Entity::secure_find_by_name(org_id, evtype_name);
     if let permissions::AllowedFeatureFlags::Some(flags) = feature_flags {
-        query = query.filter(eventtype::Column::FeatureFlag.is_in(flags.into_iter()));
+        query = eventtype::Entity::filter_feature_flags(query, flags);
     }
     let evtype = ctx!(query.one(db).await)?.ok_or_else(|| HttpError::not_found(None, None))?;
 
