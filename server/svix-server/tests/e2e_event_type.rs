@@ -217,11 +217,26 @@ async fn test_event_type_feature_flags() {
         .post(
             "api/v1/event-type/",
             EventTypeIn {
-                name: EventTypeName("foo-event".to_owned()),
+                name: EventTypeName("event-type-with-flag".to_owned()),
                 description: "test-event-description".to_owned(),
                 deleted: false,
                 schemas: None,
                 feature_flag: Some(feature),
+            },
+            StatusCode::CREATED,
+        )
+        .await
+        .unwrap();
+
+    let _: EventTypeOut = client
+        .post(
+            "api/v1/event-type/",
+            EventTypeIn {
+                name: EventTypeName("no-flag-event".to_owned()),
+                description: "test-event-description".to_owned(),
+                deleted: false,
+                schemas: None,
+                feature_flag: None,
             },
             StatusCode::CREATED,
         )
@@ -238,50 +253,38 @@ async fn test_event_type_feature_flags() {
         .unwrap()
         .id;
 
-    // Client with no feature flags set
-    let client1 = app_portal_access(&client, &app, FeatureFlagSet::default()).await;
-    // Client with a different set of feature flags than needed
-    let client2 = app_portal_access(&client, &app, other_features).await;
-    // Client with the right flag, plus extras
-    let client3 = app_portal_access(&client, &app, union.clone()).await;
-    // Client with only the right flag
-    let client4 = app_portal_access(&client, &app, features.clone()).await;
-
-    // Clients which don't have the right flag shouldn't see it
-    let list: ListResponse<EventTypeOut> = client1
-        .get("api/v1/event-type/", StatusCode::OK)
-        .await
-        .unwrap();
-    assert_eq!(list.data.len(), 0);
     let path = format!("api/v1/event-type/{}/", et.name);
-    let _: IgnoredResponse = client1.get(&path, StatusCode::NOT_FOUND).await.unwrap();
 
-    let list: ListResponse<EventTypeOut> = client2
-        .get("api/v1/event-type/", StatusCode::OK)
-        .await
-        .unwrap();
-    assert_eq!(list.data.len(), 0);
-    let path = format!("api/v1/event-type/{}/", et.name);
-    let _: IgnoredResponse = client2.get(&path, StatusCode::NOT_FOUND).await.unwrap();
+    for (flag_set, should_see) in [
+        (FeatureFlagSet::default(), false),
+        (other_features, false),
+        (union.clone(), true),
+        (features.clone(), true),
+    ] {
+        let client = app_portal_access(&client, &app, flag_set).await;
 
-    // Clients with the right flags set should see the event type
-    let list: ListResponse<EventTypeOut> = client3
-        .get("api/v1/event-type/", StatusCode::OK)
-        .await
-        .unwrap();
-    assert_eq!(list.data.len(), 1);
-    assert!(list.data.contains(&et));
-    let got_et: EventTypeOut = client3.get(&path, StatusCode::OK).await.unwrap();
-    assert_eq!(et, got_et);
+        let list: ListResponse<EventTypeOut> = client
+            .get("api/v1/event-type/", StatusCode::OK)
+            .await
+            .unwrap();
 
-    let list: ListResponse<EventTypeOut> = client4
-        .get("api/v1/event-type/", StatusCode::OK)
-        .await
-        .unwrap();
-    assert_eq!(list.data.len(), 1);
-    assert!(list.data.contains(&et));
-    let got_et: EventTypeOut = client3.get(&path, StatusCode::OK).await.unwrap();
-    assert_eq!(et, got_et);
+        if should_see {
+            // If the client is expected to see both event types it should be able to retrieve it
+            let got_et: EventTypeOut = client.get(&path, StatusCode::OK).await.unwrap();
+            assert_eq!(et, got_et);
+
+            // ... and see it in the list.
+            assert_eq!(list.data.len(), 2);
+            assert!(list.data.contains(&et));
+        } else {
+            // If the client is not supposed to see it it shouldn't be able to retrieve it
+            let _: IgnoredResponse = client.get(&path, StatusCode::NOT_FOUND).await.unwrap();
+
+            // ... and it shouldn't be in the list.
+            assert_eq!(list.data.len(), 1);
+            assert!(!list.data.contains(&et));
+        };
+    }
 }
 
 #[tokio::test]
