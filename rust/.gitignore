@@ -3,6 +3,3 @@
 Cargo.lock
 
 /.openapi-generator/
-
-/src/apis/
-/src/models/
