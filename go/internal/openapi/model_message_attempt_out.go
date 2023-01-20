@@ -25,13 +25,14 @@ type MessageAttemptOut struct {
 	Status MessageStatus `json:"status"`
 	Timestamp time.Time `json:"timestamp"`
 	TriggerType MessageAttemptTriggerType `json:"triggerType"`
+	Url string `json:"url"`
 }
 
 // NewMessageAttemptOut instantiates a new MessageAttemptOut object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewMessageAttemptOut(endpointId string, id string, msgId string, response string, responseStatusCode int32, status MessageStatus, timestamp time.Time, triggerType MessageAttemptTriggerType) *MessageAttemptOut {
+func NewMessageAttemptOut(endpointId string, id string, msgId string, response string, responseStatusCode int32, status MessageStatus, timestamp time.Time, triggerType MessageAttemptTriggerType, url string) *MessageAttemptOut {
 	this := MessageAttemptOut{}
 	this.EndpointId = endpointId
 	this.Id = id
@@ -41,6 +42,7 @@ func NewMessageAttemptOut(endpointId string, id string, msgId string, response s
 	this.Status = status
 	this.Timestamp = timestamp
 	this.TriggerType = triggerType
+	this.Url = url
 	return &this
 }
 
@@ -244,6 +246,30 @@ func (o *MessageAttemptOut) SetTriggerType(v MessageAttemptTriggerType) {
 	o.TriggerType = v
 }
 
+// GetUrl returns the Url field value
+func (o *MessageAttemptOut) GetUrl() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Url
+}
+
+// GetUrlOk returns a tuple with the Url field value
+// and a boolean to check if the value has been set.
+func (o *MessageAttemptOut) GetUrlOk() (*string, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.Url, true
+}
+
+// SetUrl sets field value
+func (o *MessageAttemptOut) SetUrl(v string) {
+	o.Url = v
+}
+
 func (o MessageAttemptOut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
@@ -269,6 +295,9 @@ func (o MessageAttemptOut) MarshalJSON() ([]byte, error) {
 	}
 	if true {
 		toSerialize["triggerType"] = o.TriggerType
+	}
+	if true {
+		toSerialize["url"] = o.Url
 	}
 	return json.Marshal(toSerialize)
 }

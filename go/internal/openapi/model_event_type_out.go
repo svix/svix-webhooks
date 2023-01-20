@@ -20,6 +20,7 @@ type EventTypeOut struct {
 	Archived *bool `json:"archived,omitempty"`
 	CreatedAt time.Time `json:"createdAt"`
 	Description string `json:"description"`
+	FeatureFlag NullableString `json:"featureFlag,omitempty"`
 	Name string `json:"name"`
 	// The schema for the event type for a specific version as a JSON schema.
 	Schemas map[string]map[string]interface{} `json:"schemas,omitempty"`
@@ -131,6 +132,48 @@ func (o *EventTypeOut) SetDescription(v string) {
 	o.Description = v
 }
 
+// GetFeatureFlag returns the FeatureFlag field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *EventTypeOut) GetFeatureFlag() string {
+	if o == nil || o.FeatureFlag.Get() == nil {
+		var ret string
+		return ret
+	}
+	return *o.FeatureFlag.Get()
+}
+
+// GetFeatureFlagOk returns a tuple with the FeatureFlag field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *EventTypeOut) GetFeatureFlagOk() (*string, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return o.FeatureFlag.Get(), o.FeatureFlag.IsSet()
+}
+
+// HasFeatureFlag returns a boolean if a field has been set.
+func (o *EventTypeOut) HasFeatureFlag() bool {
+	if o != nil && o.FeatureFlag.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetFeatureFlag gets a reference to the given NullableString and assigns it to the FeatureFlag field.
+func (o *EventTypeOut) SetFeatureFlag(v string) {
+	o.FeatureFlag.Set(&v)
+}
+// SetFeatureFlagNil sets the value for FeatureFlag to be an explicit nil
+func (o *EventTypeOut) SetFeatureFlagNil() {
+	o.FeatureFlag.Set(nil)
+}
+
+// UnsetFeatureFlag ensures that no value is present for FeatureFlag, not even an explicit nil
+func (o *EventTypeOut) UnsetFeatureFlag() {
+	o.FeatureFlag.Unset()
+}
+
 // GetName returns the Name field value
 func (o *EventTypeOut) GetName() string {
 	if o == nil {
@@ -222,6 +265,9 @@ func (o EventTypeOut) MarshalJSON() ([]byte, error) {
 	}
 	if true {
 		toSerialize["description"] = o.Description
+	}
+	if o.FeatureFlag.IsSet() {
+		toSerialize["featureFlag"] = o.FeatureFlag.Get()
 	}
 	if true {
 		toSerialize["name"] = o.Name
