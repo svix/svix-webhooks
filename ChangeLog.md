@@ -3,6 +3,18 @@
 ## Next
 * 
 
+## Version 0.75.0
+* Server: add built in SSRF support (no need for an external proxy)
+* Server: many worker improvements (see #704 for details)
+* Server: fix Span HTTP Routes
+* Server: update deps
+* Server: add Length limit validation to EndpointHeader value
+* Server: add missing root CAs to default docker image
+* Server: add updated app-portal-access API endpoint (to replace the deprecated dashboard-access)
+* Server: add feature flag gating to event types
+* Libs/Rust: Enable TLS support in `reqwest` by default
+* Libs: support the new feature flag gating of event types
+
 ## Version 0.74.1
 * Libs/Rust: make all `*Options` and fields public (missing from previous release)
 
