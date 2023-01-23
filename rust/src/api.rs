@@ -4,6 +4,10 @@ use crate::apis::{
     message_api, message_attempt_api,
 };
 use crate::error::Result;
+use crate::models::{
+    AppPortalAccessIn, AppPortalAccessOut, IntegrationIn, IntegrationKeyOut, IntegrationOut,
+    IntegrationUpdate, ListResponseIntegrationOut,
+};
 pub use crate::models::{
     ApplicationIn, ApplicationOut, DashboardAccessOut, EndpointHeadersIn, EndpointHeadersOut,
     EndpointHeadersPatchIn, EndpointIn, EndpointOut, EndpointSecretOut, EndpointSecretRotateIn,
@@ -12,9 +16,6 @@ pub use crate::models::{
     ListResponseEventTypeOut, ListResponseMessageAttemptEndpointOut, ListResponseMessageAttemptOut,
     ListResponseMessageEndpointOut, ListResponseMessageOut, MessageAttemptOut, MessageIn,
     MessageOut, MessageStatus, RecoverIn, StatusCodeClass,
-};
-use crate::models::{
-    IntegrationIn, IntegrationKeyOut, IntegrationOut, IntegrationUpdate, ListResponseIntegrationOut,
 };
 
 const CRATE_VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -104,6 +105,26 @@ impl<'a> Authentication<'a> {
                 self.cfg,
                 authentication_api::GetDashboardAccessApiV1AuthDashboardAccessAppIdPostParams {
                     app_id,
+                    idempotency_key: options.idempotency_key,
+                },
+            )
+            .await?,
+        )
+    }
+
+    pub async fn app_portal_access(
+        &self,
+        app_id: String,
+        app_portal_access_in: AppPortalAccessIn,
+        options: Option<PostOptions>,
+    ) -> Result<AppPortalAccessOut> {
+        let options = options.unwrap_or_default();
+        Ok(
+            authentication_api::get_app_portal_access_api_v1_auth_app_portal_access_app_id_post(
+                self.cfg,
+                authentication_api::GetAppPortalAccessApiV1AuthAppPortalAccessAppIdPostParams {
+                    app_id,
+                    app_portal_access_in,
                     idempotency_key: options.idempotency_key,
                 },
             )

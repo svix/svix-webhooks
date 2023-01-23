@@ -48,6 +48,8 @@ import {
   Middleware,
   RequestContext,
   ResponseContext,
+  AppPortalAccessOut,
+  AppPortalAccessIn,
 } from "./openapi/index";
 export * from "./openapi/models/all";
 export * from "./openapi/apis/exception";
@@ -127,6 +129,18 @@ class Authentication {
 
   public constructor(config: Configuration) {
     this.api = new AuthenticationApi(config);
+  }
+
+  public appPortalAccess(
+    appId: string,
+    appPortalAccessIn: AppPortalAccessIn,
+    options?: PostOptions
+  ): Promise<AppPortalAccessOut> {
+    return this.api.getAppPortalAccessApiV1AuthAppPortalAccessAppIdPost({
+      appId,
+      appPortalAccessIn,
+      ...options,
+    });
   }
 
   public dashboardAccess(
