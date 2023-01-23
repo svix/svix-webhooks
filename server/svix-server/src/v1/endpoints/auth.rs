@@ -18,6 +18,7 @@ pub struct DashboardAccessOut {
 }
 
 #[derive(Deserialize, Serialize, Validate, JsonSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct AppPortalAccessIn {
     /// The set of feature flags the created token will have access to.
     #[serde(default, skip_serializing_if = "FeatureFlagSet::is_empty")]
