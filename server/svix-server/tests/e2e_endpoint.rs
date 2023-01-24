@@ -3,20 +3,27 @@
 
 use crate::utils::common_calls::{default_test_endpoint, metadata};
 use anyhow::Result;
-use chrono::Utc;
+use chrono::{DateTime, Utc};
 use ed25519_compact::Signature;
 use reqwest::{StatusCode, Url};
-use sea_orm::{ConnectionTrait, DatabaseBackend, QueryResult, Statement};
+use sea_orm::{
+    ActiveModelBehavior, ActiveModelTrait, ConnectionTrait, DatabaseBackend, QueryResult, Set,
+    Statement,
+};
 use std::sync::Arc;
 use std::{
     collections::{HashMap, HashSet},
     time::Duration,
 };
+use svix_server::db::models::{message, messagedestination};
+use svix_server::v1::endpoints::endpoint::EndpointStatsOut;
 
 use serde::Deserialize;
 use svix::webhooks::Webhook;
 use svix_server::cfg::DefaultSignatureType;
-use svix_server::core::types::{BaseId, OrganizationId};
+use svix_server::core::types::{
+    BaseId, EndpointId, MessageEndpointId, MessageId, MessageStatus, OrganizationId,
+};
 use svix_server::{
     core::{
         cryptography::{AsymmetricKey, Encryption},
@@ -1330,6 +1337,147 @@ async fn test_invalid_endpoint_secret() {
             .await
             .unwrap();
     }
+}
+
+fn new_message_dest_at_time(
+    timestamp: DateTime<Utc>,
+    status: MessageStatus,
+    endp_id: &EndpointId,
+    msg_id: &MessageId,
+) -> messagedestination::ActiveModel {
+    messagedestination::ActiveModel {
+        endp_id: Set(endp_id.clone()),
+        msg_id: Set(msg_id.clone()),
+        id: Set(MessageEndpointId::new(timestamp.into(), None)),
+        status: Set(status),
+        created_at: Set(timestamp.into()),
+        updated_at: Set(timestamp.into()),
+        ..ActiveModelTrait::default()
+    }
+}
+
+#[tokio::test]
+async fn test_endpoint_stats() {
+    let (client, _jh) = start_svix_server().await;
+
+    let app_id = create_test_app(&client, "app1").await.unwrap().id;
+
+    let endp_id = create_test_endpoint(&client, &app_id, "https://gabagool.deli")
+        .await
+        .unwrap()
+        .id;
+
+    let stats: EndpointStatsOut = client
+        .get(
+            &format!("api/v1/app/{app_id}/endpoint/{endp_id}/stats/"),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(stats.fail, 0);
+    assert_eq!(stats.success, 0);
+    assert_eq!(stats.pending, 0);
+    assert_eq!(stats.sending, 0);
+
+    let last_msg_time = {
+        // Create the relevant Stats records manually, otherwise
+        // it's difficult to test exact state of messagedestinations.
+
+        let cfg = get_default_test_config();
+        let db = Arc::new(cfg);
+        let db = svix_server::db::init_db(&db).await;
+
+        let now = Utc::now();
+
+        let msg = message::ActiveModel {
+            app_id: Set(app_id.clone()),
+            org_id: Set(OrganizationId::new(None, None)),
+            expiration: Set(Utc::now().into()),
+            event_type: Set(EventTypeName("test.ing".into())),
+            created_at: Set((now - chrono::Duration::minutes(65)).into()),
+            id: Set(MessageId::new(
+                (now - chrono::Duration::minutes(65)).into(),
+                None,
+            )),
+            ..message::ActiveModel::new()
+        }
+        .insert(&db)
+        .await
+        .unwrap();
+
+        new_message_dest_at_time(
+            now - chrono::Duration::minutes(60),
+            MessageStatus::Pending,
+            &endp_id,
+            &msg.id,
+        )
+        .insert(&db)
+        .await
+        .unwrap();
+
+        new_message_dest_at_time(
+            now - chrono::Duration::minutes(45),
+            MessageStatus::Pending,
+            &endp_id,
+            &msg.id,
+        )
+        .insert(&db)
+        .await
+        .unwrap();
+
+        new_message_dest_at_time(
+            now - chrono::Duration::minutes(30),
+            MessageStatus::Sending,
+            &endp_id,
+            &msg.id,
+        )
+        .insert(&db)
+        .await
+        .unwrap()
+        .created_at
+    };
+
+    let stats: EndpointStatsOut = client
+        .get(
+            &format!("api/v1/app/{app_id}/endpoint/{endp_id}/stats/"),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(stats.fail, 0);
+    assert_eq!(stats.success, 0);
+    assert_eq!(stats.pending, 2);
+    assert_eq!(stats.sending, 1);
+
+    let stats_filtered: EndpointStatsOut = client
+        .get(
+            &format!(
+                "api/v1/app/{app_id}/endpoint/{endp_id}/stats/?since={}&until={}",
+                urlencoding::encode(&last_msg_time.to_rfc3339()),
+                urlencoding::encode(&Utc::now().to_rfc3339()),
+            ),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(stats_filtered.fail, 0);
+    assert_eq!(stats_filtered.success, 0);
+    assert_eq!(stats_filtered.pending, 0);
+    assert_eq!(stats_filtered.sending, 1);
+
+    let _: IgnoredResponse = client
+        .get(
+            &format!(
+                "api/v1/app/{app_id}/endpoint/{endp_id}/stats/?since={}",
+                urlencoding::encode(&(Utc::now() - chrono::Duration::days(29)).to_rfc3339()),
+            ),
+            StatusCode::BAD_REQUEST,
+        )
+        .await
+        .unwrap();
 }
 
 /// We used to store the secret in the DB without a type marker, check loading those still works
