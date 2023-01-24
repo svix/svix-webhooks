@@ -76,7 +76,14 @@ pub async fn permissions_from_bearer(parts: &mut Parts, state: &AppState) -> Res
 
     let claims = parse_bearer(&state.cfg.jwt_secret, &bearer)
         .ok_or_else(|| HttpError::unauthorized(None, Some("Invalid token".to_string())))?;
-    permissions_from_jwt(claims)
+    let perms = permissions_from_jwt(claims)?;
+
+    tracing::Span::current().record("org_id", perms.org_id().to_string());
+    if let Some(app_id) = perms.app_id() {
+        tracing::Span::current().record("app_id", app_id.to_string());
+    }
+
+    Ok(perms)
 }
 
 pub fn parse_bearer(key: &Keys, bearer: &Bearer) -> Option<JWTClaims<CustomClaim>> {
