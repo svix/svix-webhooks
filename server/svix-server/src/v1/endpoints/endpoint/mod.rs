@@ -36,10 +36,10 @@ use aide::axum::{
     ApiRouter,
 };
 use axum::{
-    extract::{Path, State},
+    extract::{Path, Query, State},
     Json,
 };
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, Duration, Utc};
 use schemars::JsonSchema;
 use sea_orm::{ActiveValue::Set, ColumnTrait, FromQueryResult, QueryFilter, QuerySelect};
 use serde::{Deserialize, Serialize};
@@ -474,12 +474,48 @@ impl ModelIn for EndpointHeadersPatchIn {
     }
 }
 
+#[derive(Deserialize, JsonSchema)]
+struct EndpointStatsRange {
+    since: Option<DateTime<Utc>>,
+    until: Option<DateTime<Utc>>,
+}
+
+impl EndpointStatsRange {
+    fn validate_unwrap_or_default(self) -> error::Result<(DateTime<Utc>, DateTime<Utc>)> {
+        let until = self.until.unwrap_or_else(Utc::now);
+
+        if until > Utc::now() {
+            return Err(HttpError::bad_request(
+                Some("invalid_range".into()),
+                Some("'until' cannot be in the future".into()),
+            )
+            .into());
+        }
+
+        let since = self.since.unwrap_or(until - Duration::days(28));
+
+        // Add five minutes so that people can easily just do `now() - 28 days`
+        // without having to worry about clock sync
+        if until - since > (Duration::days(28) + Duration::minutes(5)) {
+            return Err(HttpError::bad_request(
+                Some("invalid_range".into()),
+                Some(format!(
+                    "'since' cannot be more than 28 days prior to {until}"
+                )),
+            )
+            .into());
+        }
+
+        Ok((since, until))
+    }
+}
+
 #[derive(Deserialize, Serialize, JsonSchema)]
 pub struct EndpointStatsOut {
-    success: i64,
-    pending: i64,
-    sending: i64,
-    fail: i64,
+    pub success: i64,
+    pub pending: i64,
+    pub sending: i64,
+    pub fail: i64,
 }
 
 #[derive(Debug, FromQueryResult)]
@@ -491,8 +527,11 @@ pub struct EndpointStatsQueryOut {
 async fn endpoint_stats(
     State(AppState { ref db, .. }): State<AppState>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
+    Query(range): Query<EndpointStatsRange>,
     permissions::Application { app }: permissions::Application,
-) -> crate::error::Result<Json<EndpointStatsOut>> {
+) -> error::Result<Json<EndpointStatsOut>> {
+    let (since, until) = range.validate_unwrap_or_default()?;
+
     let endpoint = ctx!(
         crate::db::models::endpoint::Entity::secure_find_by_id_or_uid(app.id, endp_id)
             .one(db)
@@ -507,11 +546,8 @@ async fn endpoint_stats(
             .column(messagedestination::Column::Status)
             .column_as(messagedestination::Column::Status.count(), "count")
             .group_by(messagedestination::Column::Status)
-            .filter(
-                messagedestination::Column::Id.gte(MessageEndpointId::start_id(
-                    chrono::Utc::now() - chrono::Duration::days(28),
-                )),
-            )
+            .filter(messagedestination::Column::Id.gte(MessageEndpointId::start_id(since)),)
+            .filter(messagedestination::Column::Id.lte(MessageEndpointId::start_id(until)),)
             .into_model::<EndpointStatsQueryOut>()
             .all(db)
             .await
