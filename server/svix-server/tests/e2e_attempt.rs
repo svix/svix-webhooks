@@ -185,10 +185,7 @@ async fn test_list_attempts_by_endpoint() {
 #[tokio::test]
 async fn test_message_attempts() {
     let mut cfg = get_default_test_config();
-    cfg.retry_schedule = (0..2)
-        .into_iter()
-        .map(|_| Duration::from_millis(1))
-        .collect();
+    cfg.retry_schedule = (0..2).map(|_| Duration::from_millis(1)).collect();
 
     let (client, _jh) = start_svix_server_with_cfg(&cfg).await;
 

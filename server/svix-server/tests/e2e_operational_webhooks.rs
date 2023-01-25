@@ -275,10 +275,7 @@ async fn test_endpoint_create_update_and_delete() {
 async fn test_message_attempt_operational_webhooks() {
     let mut cfg = get_default_test_config();
 
-    cfg.retry_schedule = (0..5)
-        .into_iter()
-        .map(|_| Duration::from_millis(1))
-        .collect();
+    cfg.retry_schedule = (0..5).map(|_| Duration::from_millis(1)).collect();
 
     let (client_regular, client_op, org_id, _jh) = start_svix_server_with_operational_webhooks(cfg);
 

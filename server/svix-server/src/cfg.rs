@@ -54,7 +54,6 @@ where
         }
         RetryScheduleDeserializer::Legacy(buf) => Ok(buf
             .split(',')
-            .into_iter()
             .filter_map(|x| {
                 let x = x.trim();
                 if x.is_empty() {

@@ -839,10 +839,7 @@ async fn test_recovery_should_fail_if_start_time_too_old() {
 async fn test_recovery_expected_retry_counts() {
     let mut cfg = get_default_test_config();
 
-    cfg.retry_schedule = (0..2)
-        .into_iter()
-        .map(|_| Duration::from_millis(1))
-        .collect();
+    cfg.retry_schedule = (0..2).map(|_| Duration::from_millis(1)).collect();
 
     // total attempts for a failed message should be 1 (first attempt) + length of retry_schedule:
     let base_attempt_cnt = 1 + &cfg.retry_schedule.len();
