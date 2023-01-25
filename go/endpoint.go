@@ -14,10 +14,11 @@ type (
 	EndpointSecretOut       openapi.EndpointSecretOut
 	EndpointSecretRotateIn  openapi.EndpointSecretRotateIn
 	RecoverIn               openapi.RecoverIn
+	ReplayIn                openapi.ReplayIn
 	EndpointHeadersIn       openapi.EndpointHeadersIn
 	EndpointHeadersPatchIn  openapi.EndpointHeadersPatchIn
 	EndpointHeadersOut      openapi.EndpointHeadersOut
-	EndpointStats			openapi.EndpointStats
+	EndpointStats           openapi.EndpointStats
 )
 
 type Endpoint struct {
@@ -180,4 +181,28 @@ func (e *Endpoint) GetStats(appId string, endpointId string) (*EndpointStats, er
 	}
 	ret := EndpointStats(out)
 	return &ret, nil
+}
+
+func (e *Endpoint) Replay(appId string, endpointId string, replayIn *ReplayIn) error {
+	return e.ReplayWithOptions(appId, endpointId, replayIn, nil)
+}
+
+func (e *Endpoint) ReplayWithOptions(
+	appId string,
+	endpointId string,
+	replayIn *ReplayIn,
+	options *PostOptions,
+) error {
+	req := e.api.EndpointApi.ReplayMissingWebhooksApiV1AppAppIdEndpointEndpointIdReplayMissingPost(context.Background(), appId, endpointId)
+	req.ReplayIn(openapi.ReplayIn(*replayIn))
+	if options != nil {
+		if options.IdempotencyKey != nil {
+			req = req.IdempotencyKey(*options.IdempotencyKey)
+		}
+	}
+	_, res, err := req.Execute()
+	if err != nil {
+		return wrapError(err, res)
+	}
+	return nil
 }

@@ -6,7 +6,7 @@ use crate::apis::{
 use crate::error::Result;
 use crate::models::{
     AppPortalAccessIn, AppPortalAccessOut, IntegrationIn, IntegrationKeyOut, IntegrationOut,
-    IntegrationUpdate, ListResponseIntegrationOut,
+    IntegrationUpdate, ListResponseIntegrationOut, ReplayIn,
 };
 pub use crate::models::{
     ApplicationIn, ApplicationOut, DashboardAccessOut, EndpointHeadersIn, EndpointHeadersOut,
@@ -478,6 +478,27 @@ impl<'a> Endpoint<'a> {
             )
             .await?,
         )
+    }
+
+    pub async fn replay_missing(
+        &self,
+        app_id: String,
+        endpoint_id: String,
+        replay_in: ReplayIn,
+        options: Option<PostOptions>,
+    ) -> Result<()> {
+        let PostOptions { idempotency_key } = options.unwrap_or_default();
+        endpoint_api::replay_missing_webhooks_api_v1_app_app_id_endpoint_endpoint_id_replay_missing_post(
+            self.cfg,
+            endpoint_api::ReplayMissingWebhooksApiV1AppAppIdEndpointEndpointIdReplayMissingPostParams{
+                app_id,
+                endpoint_id,
+                replay_in,
+                idempotency_key,
+            },
+        )
+        .await?;
+        Ok(())
     }
 }
 

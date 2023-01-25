@@ -12,6 +12,7 @@ import com.svix.models.EndpointSecretOut;
 import com.svix.models.EndpointSecretRotateIn;
 import com.svix.models.ListResponseEndpointOut;
 import com.svix.models.RecoverIn;
+import com.svix.models.ReplayIn;
 import com.svix.models.EndpointStats;
 
 public final class Endpoint {
@@ -124,6 +125,18 @@ public final class Endpoint {
 	public EndpointStats getStats(final String appId, final String endpointId) throws ApiException {
 		try {
 			return api.getEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGet(endpointId, appId, null);
+		} catch (com.svix.internal.ApiException e) {
+			throw Utils.wrapInternalApiException(e);
+		}
+	}
+
+	public void replay(final String appId, final String endpointId, final ReplayIn replayIn) throws ApiException {
+		this.replay(appId, endpointId, replayIn, new PostOptions());
+	}
+
+	public void replay(final String appId, final String endpointId, final ReplayIn replayIn, final PostOptions options) throws ApiException {
+		try {
+			api.replayMissingWebhooksApiV1AppAppIdEndpointEndpointIdReplayMissingPostWithHttpInfo(appId, endpointId, replayIn, options.getIdempotencyKey());
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
