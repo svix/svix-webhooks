@@ -358,7 +358,7 @@ namespace Svix
                     recover,
                     idempotencyKey);
 
-                return lResponse.StatusCode == HttpStatusCode.NoContent;
+                return lResponse.StatusCode == HttpStatusCode.Accepted;
             }
             catch (ApiException e)
             {
@@ -383,7 +383,7 @@ namespace Svix
                     idempotencyKey,
                     cancellationToken);
 
-                return lResponse.StatusCode == HttpStatusCode.NoContent;
+                return lResponse.StatusCode == HttpStatusCode.Accepted;
             }
             catch (ApiException e)
             {
