@@ -4,12 +4,18 @@
 #![warn(clippy::all)]
 #![forbid(unsafe_code)]
 
-use axum::{extract::Extension, Router};
+use aide::{
+    axum::ApiRouter,
+    openapi::{self, OpenApi},
+};
 
+use crate::core::cache::Cache;
 use cfg::ConfigurationInner;
 use lazy_static::lazy_static;
 use opentelemetry::runtime::Tokio;
 use opentelemetry_otlp::WithExportConfig;
+use queue::TaskQueueProducer;
+use sea_orm::DatabaseConnection;
 use std::{
     net::TcpListener,
     sync::atomic::{AtomicBool, Ordering},
@@ -17,7 +23,6 @@ use std::{
 };
 use tower::ServiceBuilder;
 use tower_http::cors::{AllowHeaders, Any, CorsLayer};
-use tower_http::trace::TraceLayer;
 use tracing_subscriber::{prelude::*, util::SubscriberInitExt};
 
 use crate::{
@@ -25,12 +30,11 @@ use crate::{
     core::{
         cache,
         idempotency::IdempotencyService,
-        operational_webhooks::OperationalWebhookSenderInner,
-        otel_spans::{AxumOtelOnFailure, AxumOtelOnResponse, AxumOtelSpanCreator},
+        operational_webhooks::{OperationalWebhookSender, OperationalWebhookSenderInner},
     },
     db::init_db,
     expired_message_cleaner::expired_message_cleaner_loop,
-    worker::worker_loop,
+    worker::queue_handler,
 };
 
 pub mod cfg;
@@ -81,6 +85,120 @@ pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
     run_with_prefix(None, cfg, listener).await
 }
 
+pub fn initialize_openapi() -> OpenApi {
+    aide::gen::on_error(|error| {
+        tracing::error!("Aide generation error: {error}");
+    });
+    // Extract schemas to `#/components/schemas/` instead of using inline schemas.
+    aide::gen::extract_schemas(true);
+    // Have aide attempt to infer the `Content-Type` of responses based on the
+    // handlers' return types.
+    aide::gen::infer_responses(true);
+
+    aide::gen::in_context(|ctx| {
+        ctx.schema = schemars::gen::SchemaGenerator::new(
+            schemars::gen::SchemaSettings::draft07().with(|s| {
+                // HACK: These are set by the `extract_schemas` call above, but
+                // reinitializing the schema generator here means we are
+                // overwriting it. Hopefully, in the future we can set schema
+                // generator options without overwriting settings set by aide
+                // internally.
+                s.inline_subschemas = false;
+                s.definitions_path = "#/components/schemas/".into();
+
+                // Schemars generates an `anyOf` for `Option<T>` by default. This changes that
+                // to instead simply mark them as nullable.
+                s.option_nullable = true;
+                s.option_add_null_type = false;
+            }),
+        );
+    });
+
+    let tag_groups = serde_json::json![[
+        {
+            "name": "General",
+            "tags": ["Application", "Event Type"]
+        },
+        {
+            "name": "Application specific",
+            "tags": ["Authentication", "Endpoint", "Message", "Message Attempt", "Integration"]
+        },
+        {
+            "name": "Utility",
+            "tags": ["Health"]
+        },
+        {
+            "name": "Webhooks",
+            "tags": ["Webhooks"]
+        }
+    ]];
+
+    OpenApi {
+        info: openapi::Info {
+            title: "Svix API".to_owned(),
+            version: "1.4".to_owned(),
+            extensions: indexmap::indexmap! {
+                "x-logo".to_string() => serde_json::json!({
+                    "url": "https://www.svix.com/static/img/brand-padded.svg",
+                    "altText": "Svix Logo",
+                }),
+            },
+            ..Default::default()
+        },
+        tags: vec![
+            openapi::Tag {
+                name: "Application".to_owned(),
+                ..openapi::Tag::default()
+            },
+            openapi::Tag {
+                name: "Message".to_owned(),
+                ..openapi::Tag::default()
+            },
+            openapi::Tag {
+                name: "Message Attempt".to_owned(),
+                ..openapi::Tag::default()
+            },
+            openapi::Tag {
+                name: "Endpoint".to_owned(),
+                ..openapi::Tag::default()
+            },
+            openapi::Tag {
+                name: "Integration".to_owned(),
+                ..openapi::Tag::default()
+            },
+            openapi::Tag {
+                name: "Event Type".to_owned(),
+                ..openapi::Tag::default()
+            },
+            openapi::Tag {
+                name: "Authentication".to_owned(),
+                ..openapi::Tag::default()
+            },
+            openapi::Tag {
+                name: "Health".to_owned(),
+                ..openapi::Tag::default()
+            },
+            openapi::Tag {
+                name: "Webhooks".to_owned(),
+                ..openapi::Tag::default()
+            },
+        ],
+        extensions: indexmap::indexmap! {
+            "x-tagGroups".to_owned() => tag_groups,
+        },
+        ..Default::default()
+    }
+}
+
+#[derive(Clone)]
+pub struct AppState {
+    db: DatabaseConnection,
+    queue_tx: TaskQueueProducer,
+    cfg: Configuration,
+    cache: Cache,
+    op_webhooks: OperationalWebhookSender,
+}
+
 // Made public for the purpose of E2E testing in which a queue prefix is necessary to avoid tests
 // consuming from each others' queues
 pub async fn run_with_prefix(
@@ -88,9 +206,11 @@ pub async fn run_with_prefix(
     cfg: Configuration,
     listener: Option<TcpListener>,
 ) {
+    tracing::debug!("DB: Initializing pool");
     let pool = init_db(&cfg).await;
+    tracing::debug!("DB: Started");
 
-    tracing::debug!("Cache type: {:?}", cfg.cache_type);
+    tracing::debug!("Cache: Initializing {:?}", cfg.cache_type);
     let cache = match cfg.cache_backend() {
         CacheBackend::None => cache::none::new(),
         CacheBackend::Memory => cache::memory::new(),
@@ -103,20 +223,40 @@ pub async fn run_with_prefix(
             cache::redis::new(mgr)
         }
     };
+    tracing::debug!("Cache: Started");
 
-    tracing::debug!("Queue type: {:?}", cfg.queue_type);
+    tracing::debug!("Queue: Initializing {:?}", cfg.queue_type);
     let (queue_tx, queue_rx) = queue::new_pair(&cfg, prefix.as_deref()).await;
+    tracing::debug!("Queue: Started");
 
     let op_webhook_sender = OperationalWebhookSenderInner::new(
         cfg.jwt_secret.clone(),
         cfg.operational_webhook_address.clone(),
     );
 
+    // OpenAPI/aide must be initialized before any routers are constructed
+    // because its initialization sets generation-global settings which are
+    // needed at router-construction time.
+    let mut openapi = initialize_openapi();
+
     let svc_cache = cache.clone();
     // build our application with a route
-    let app = Router::new()
-        .nest("/api/v1", v1::router())
-        .merge(docs::router())
+    let app_state = AppState {
+        db: pool.clone(),
+        queue_tx: queue_tx.clone(),
+        cfg: cfg.clone(),
+        cache: cache.clone(),
+        op_webhooks: op_webhook_sender.clone(),
+    };
+    let v1_router = v1::router().with_state::<()>(app_state);
+
+    // Initialize all routes which need to be part of OpenAPI first.
+    let app = ApiRouter::new()
+        .nest_api_service("/api/v1", v1_router)
+        .finish_api(&mut openapi);
+    let docs_router = docs::router(openapi);
+    let app = app
+        .merge(docs_router)
         .layer(
             ServiceBuilder::new().layer_fn(move |service| IdempotencyService {
                 cache: svc_cache.clone(),
@@ -129,18 +269,7 @@ pub async fn run_with_prefix(
                 .allow_methods(Any)
                 .allow_headers(AllowHeaders::mirror_request())
                 .max_age(Duration::from_secs(600)),
-        )
-        .layer(
-            TraceLayer::new_for_http()
-                .make_span_with(AxumOtelSpanCreator)
-                .on_response(AxumOtelOnResponse)
-                .on_failure(AxumOtelOnFailure),
-        )
-        .layer(Extension(pool.clone()))
-        .layer(Extension(queue_tx.clone()))
-        .layer(Extension(cfg.clone()))
-        .layer(Extension(cache.clone()))
-        .layer(Extension(op_webhook_sender.clone()));
+        );
 
     let with_api = cfg.api_enabled;
     let with_worker = cfg.worker_enabled;
@@ -172,11 +301,11 @@ pub async fn run_with_prefix(
         },
         async {
             if with_worker {
-                tracing::debug!("Worker: Initializing");
-                worker_loop(
+                tracing::debug!("Worker: Started");
+                queue_handler(
                     &cfg,
-                    &pool,
                     cache.clone(),
+                    pool.clone(),
                     queue_tx,
                     queue_rx,
                     op_webhook_sender,
@@ -189,7 +318,7 @@ pub async fn run_with_prefix(
         },
         async {
             if with_worker {
-                tracing::debug!("Expired message cleaner: Initializing");
+                tracing::debug!("Expired message cleaner: Started");
                 expired_message_cleaner_loop(&pool).await
             } else {
                 tracing::debug!("Expired message cleaner: off");
@@ -277,17 +406,21 @@ pub fn setup_tracing(cfg: &ConfigurationInner) {
 }
 
 mod docs {
+    use aide::{axum::ApiRouter, openapi::OpenApi};
     use axum::{
         response::{Html, IntoResponse, Redirect},
         routing::get,
-        Json, Router,
+        Json,
     };
 
-    pub fn router() -> Router {
-        Router::new()
+    // TODO: switch to generated docs instead of hardcoded JSON once generated
+    // is comparable/better than hardcoded one.
+    pub fn router(_docs: OpenApi) -> ApiRouter {
+        ApiRouter::new()
             .route("/", get(|| async { Redirect::temporary("/docs") }))
             .route("/docs", get(get_docs))
             .route("/api/v1/openapi.json", get(get_openapi_json))
+            .with_state(_docs)
     }
 
     async fn get_docs() -> Html<&'static str> {

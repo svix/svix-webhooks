@@ -48,6 +48,8 @@ import {
   Middleware,
   RequestContext,
   ResponseContext,
+  AppPortalAccessOut,
+  AppPortalAccessIn,
 } from "./openapi/index";
 export * from "./openapi/models/all";
 export * from "./openapi/apis/exception";
@@ -56,7 +58,7 @@ import * as base64 from "@stablelib/base64";
 import * as sha256 from "fast-sha256";
 
 const WEBHOOK_TOLERANCE_IN_SECONDS = 5 * 60; // 5 minutes
-const VERSION = "0.72.0";
+const VERSION = "0.75.0";
 
 class UserAgentMiddleware implements Middleware {
   public pre(context: RequestContext): Promise<RequestContext> {
@@ -127,6 +129,18 @@ class Authentication {
 
   public constructor(config: Configuration) {
     this.api = new AuthenticationApi(config);
+  }
+
+  public appPortalAccess(
+    appId: string,
+    appPortalAccessIn: AppPortalAccessIn,
+    options?: PostOptions
+  ): Promise<AppPortalAccessOut> {
+    return this.api.getAppPortalAccessApiV1AuthAppPortalAccessAppIdPost({
+      appId,
+      appPortalAccessIn,
+      ...options,
+    });
   }
 
   public dashboardAccess(

@@ -20,7 +20,7 @@ use crate::{
     db::models::messagedestination,
     error::{self, HttpError},
     v1::utils::{
-        api_not_implemented,
+        api_not_implemented, openapi_tag,
         patch::{
             patch_field_non_nullable, patch_field_nullable, UnrequiredField,
             UnrequiredNullableField,
@@ -28,17 +28,20 @@ use crate::{
         validate_no_control_characters, validate_no_control_characters_unrequired,
         validation_error, ModelIn,
     },
+    AppState,
 };
 
-use axum::{
-    extract::{Extension, Path},
+use aide::axum::{
     routing::{get, post},
-    Json, Router,
+    ApiRouter,
 };
-use chrono::{DateTime, Utc};
-use sea_orm::{
-    ActiveValue::Set, ColumnTrait, DatabaseConnection, FromQueryResult, QueryFilter, QuerySelect,
+use axum::{
+    extract::{Path, Query, State},
+    Json,
 };
+use chrono::{DateTime, Duration, Utc};
+use schemars::JsonSchema;
+use sea_orm::{ActiveValue::Set, ColumnTrait, FromQueryResult, QueryFilter, QuerySelect};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, collections::HashSet};
 use url::Url;
@@ -96,37 +99,26 @@ fn validate_channels_endpoint_unrequired_nullable(
     }
 }
 
-pub fn validate_url(val: &str) -> std::result::Result<(), ValidationError> {
-    match Url::parse(val) {
-        Ok(url) => {
-            let scheme = url.scheme();
-            if scheme == "https" || scheme == "http" {
-                Ok(())
-            } else {
-                Err(validation_error(
-                    Some("url"),
-                    Some("Endpoint URL schemes must be http or https"),
-                ))
-            }
-        }
-
-        Err(_) => Err(validation_error(
+pub fn validate_url(url: &Url) -> std::result::Result<(), ValidationError> {
+    let scheme = url.scheme();
+    if scheme == "https" || scheme == "http" {
+        Ok(())
+    } else {
+        Err(validation_error(
             Some("url"),
-            Some("Endpoint URLs must be valid"),
-        )),
+            Some("Endpoint URL schemes must be http or https"),
+        ))
     }
 }
 
-fn validate_url_unrequired(
-    val: &UnrequiredField<String>,
-) -> std::result::Result<(), ValidationError> {
+fn validate_url_unrequired(val: &UnrequiredField<Url>) -> std::result::Result<(), ValidationError> {
     match val {
         UnrequiredField::Absent => Ok(()),
         UnrequiredField::Some(val) => validate_url(val),
     }
 }
 
-#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Validate, ModelIn)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Validate, ModelIn, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointIn {
     #[serde(default)]
@@ -141,8 +133,9 @@ pub struct EndpointIn {
     #[validate]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub uid: Option<EndpointUid>,
+
     #[validate(custom = "validate_url")]
-    pub url: String,
+    pub url: Url,
     #[validate(range(min = 1, message = "Endpoint versions must be at least one"))]
     pub version: u16,
     #[serde(default)]
@@ -203,7 +196,7 @@ impl ModelIn for EndpointIn {
         model.description = Set(description);
         model.rate_limit = Set(rate_limit.map(|x| x.into()));
         model.uid = Set(uid);
-        model.url = Set(url);
+        model.url = Set(url.into());
         model.version = Set(version.into());
         model.disabled = Set(disabled);
         model.event_types_ids = Set(event_types_ids);
@@ -211,7 +204,7 @@ impl ModelIn for EndpointIn {
     }
 }
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize, Validate, ModelIn)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, Validate, ModelIn, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointPatch {
     #[serde(default)]
@@ -229,7 +222,7 @@ pub struct EndpointPatch {
 
     #[validate(custom = "validate_url_unrequired")]
     #[serde(default)]
-    pub url: UnrequiredField<String>,
+    pub url: UnrequiredField<Url>,
 
     #[validate(custom = "validate_minimum_version_patch")]
     #[serde(default)]
@@ -279,6 +272,7 @@ impl ModelIn for EndpointPatch {
         } = self;
 
         let map = |x: u16| -> i32 { x.into() };
+        let url = url.map(String::from);
 
         patch_field_non_nullable!(model, description);
         patch_field_nullable!(model, rate_limit, map);
@@ -327,7 +321,7 @@ fn validate_minimum_version_patch(
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointOutCommon {
     pub description: String,
@@ -361,7 +355,7 @@ impl From<endpoint::Model> for EndpointOutCommon {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ModelOut)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ModelOut, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointOut {
     #[serde(flatten)]
@@ -381,7 +375,7 @@ impl From<(endpoint::Model, Metadata)> for EndpointOut {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Validate, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Validate, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointSecretRotateIn {
     #[validate]
@@ -389,22 +383,21 @@ pub struct EndpointSecretRotateIn {
     key: Option<EndpointSecret>,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointSecretOut {
     pub key: EndpointSecret,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Validate, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Validate, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct RecoverIn {
     pub since: DateTime<Utc>,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Validate, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Validate, Deserialize, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointHeadersIn {
-    #[validate]
     pub headers: EndpointHeaders,
 }
 
@@ -417,7 +410,7 @@ impl ModelIn for EndpointHeadersIn {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointHeadersOut {
     pub headers: HashMap<String, String>,
@@ -448,7 +441,7 @@ impl From<EndpointHeaders> for EndpointHeadersOut {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Validate, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Validate, Deserialize, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointHeadersPatchIn {
     #[validate]
@@ -481,12 +474,48 @@ impl ModelIn for EndpointHeadersPatchIn {
     }
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, JsonSchema)]
+struct EndpointStatsRange {
+    since: Option<DateTime<Utc>>,
+    until: Option<DateTime<Utc>>,
+}
+
+impl EndpointStatsRange {
+    fn validate_unwrap_or_default(self) -> error::Result<(DateTime<Utc>, DateTime<Utc>)> {
+        let until = self.until.unwrap_or_else(Utc::now);
+
+        if until > Utc::now() {
+            return Err(HttpError::bad_request(
+                Some("invalid_range".into()),
+                Some("'until' cannot be in the future".into()),
+            )
+            .into());
+        }
+
+        let since = self.since.unwrap_or(until - Duration::days(28));
+
+        // Add five minutes so that people can easily just do `now() - 28 days`
+        // without having to worry about clock sync
+        if until - since > (Duration::days(28) + Duration::minutes(5)) {
+            return Err(HttpError::bad_request(
+                Some("invalid_range".into()),
+                Some(format!(
+                    "'since' cannot be more than 28 days prior to {until}"
+                )),
+            )
+            .into());
+        }
+
+        Ok((since, until))
+    }
+}
+
+#[derive(Deserialize, Serialize, JsonSchema)]
 pub struct EndpointStatsOut {
-    success: i64,
-    pending: i64,
-    sending: i64,
-    fail: i64,
+    pub success: i64,
+    pub pending: i64,
+    pub sending: i64,
+    pub fail: i64,
 }
 
 #[derive(Debug, FromQueryResult)]
@@ -496,10 +525,13 @@ pub struct EndpointStatsQueryOut {
 }
 
 async fn endpoint_stats(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
+    Query(range): Query<EndpointStatsRange>,
     permissions::Application { app }: permissions::Application,
-) -> crate::error::Result<Json<EndpointStatsOut>> {
+) -> error::Result<Json<EndpointStatsOut>> {
+    let (since, until) = range.validate_unwrap_or_default()?;
+
     let endpoint = ctx!(
         crate::db::models::endpoint::Entity::secure_find_by_id_or_uid(app.id, endp_id)
             .one(db)
@@ -514,11 +546,8 @@ async fn endpoint_stats(
             .column(messagedestination::Column::Status)
             .column_as(messagedestination::Column::Status.count(), "count")
             .group_by(messagedestination::Column::Status)
-            .filter(
-                messagedestination::Column::Id.gte(MessageEndpointId::start_id(
-                    chrono::Utc::now() - chrono::Duration::days(28),
-                )),
-            )
+            .filter(messagedestination::Column::Id.gte(MessageEndpointId::start_id(since)),)
+            .filter(messagedestination::Column::Id.lte(MessageEndpointId::start_id(until)),)
             .into_model::<EndpointStatsQueryOut>()
             .all(db)
             .await
@@ -536,41 +565,52 @@ async fn endpoint_stats(
     }))
 }
 
-pub fn router() -> Router {
-    Router::new()
-        .route(
+pub fn router() -> ApiRouter<AppState> {
+    ApiRouter::new()
+        .api_route_with(
             "/app/:app_id/endpoint/",
             post(crud::create_endpoint).get(crud::list_endpoints),
+            openapi_tag("Endpoint"),
         )
-        .route(
-            "/app/:app_id/endpoint/:endp_id/",
+        .api_route_with(
+            "/app/:app_id/endpoint/:endpoint_id/",
             get(crud::get_endpoint)
                 .put(crud::update_endpoint)
                 .patch(crud::patch_endpoint)
                 .delete(crud::delete_endpoint),
+            openapi_tag("Endpoint"),
         )
-        .route(
-            "/app/:app_id/endpoint/:endp_id/secret/",
+        .api_route_with(
+            "/app/:app_id/endpoint/:endpoint_id/secret/",
             get(secrets::get_endpoint_secret),
+            openapi_tag("Endpoint"),
         )
-        .route(
-            "/app/:app_id/endpoint/:endp_id/secret/rotate/",
+        .api_route_with(
+            "/app/:app_id/endpoint/:endpoint_id/secret/rotate/",
             post(secrets::rotate_endpoint_secret),
+            openapi_tag("Endpoint"),
         )
-        .route("/app/:app_id/endpoint/:endp_id/stats/", get(endpoint_stats))
-        .route(
-            "/app/:app_id/endpoint/:endp_id/send-example/",
+        .api_route_with(
+            "/app/:app_id/endpoint/:endpoint_id/stats/",
+            get(endpoint_stats),
+            openapi_tag("Endpoint"),
+        )
+        .api_route_with(
+            "/app/:app_id/endpoint/:endpoint_id/send-example/",
             post(api_not_implemented),
+            openapi_tag("Endpoint"),
         )
-        .route(
-            "/app/:app_id/endpoint/:endp_id/recover/",
+        .api_route_with(
+            "/app/:app_id/endpoint/:endpoint_id/recover/",
             post(recovery::recover_failed_webhooks),
+            openapi_tag("Endpoint"),
         )
-        .route(
-            "/app/:app_id/endpoint/:endp_id/headers/",
+        .api_route_with(
+            "/app/:app_id/endpoint/:endpoint_id/headers/",
             get(headers::get_endpoint_headers)
                 .patch(headers::patch_endpoint_headers)
                 .put(headers::update_endpoint_headers),
+            openapi_tag("Endpoint"),
         )
 }
 
@@ -579,9 +619,8 @@ mod tests {
 
     use crate::core::types::EndpointHeaders;
 
-    use super::{
-        validate_url, EndpointHeadersIn, EndpointHeadersOut, EndpointHeadersPatchIn, EndpointIn,
-    };
+    use super::{validate_url, EndpointHeadersOut, EndpointHeadersPatchIn, EndpointIn};
+    use reqwest::Url;
     use serde_json::json;
     use std::collections::{HashMap, HashSet};
     use validator::Validate;
@@ -609,7 +648,8 @@ mod tests {
 
         let invalid_2: EndpointIn = serde_json::from_value(json!({
              "version": VERSION_VALID,
-             "url": URL_INVALID
+             "url": URL_VALID,
+             "channels": EVENT_CHANNELS_INVALID
         }))
         .unwrap();
 
@@ -634,16 +674,13 @@ mod tests {
         }))
         .unwrap();
 
-        let invalid_6: EndpointIn = serde_json::from_value(json!({
+        let invalid_6: Result<EndpointIn, _> = serde_json::from_value(json!({
              "version": VERSION_VALID,
-             "url": URL_VALID,
-             "channels": EVENT_CHANNELS_INVALID
-        }))
-        .unwrap();
+             "url": URL_INVALID
+        }));
+        assert!(invalid_6.is_err());
 
-        for e in [
-            invalid_1, invalid_2, invalid_3, invalid_4, invalid_5, invalid_6,
-        ] {
+        for e in [invalid_1, invalid_2, invalid_3, invalid_4, invalid_5] {
             assert!(e.validate().is_err());
         }
 
@@ -656,20 +693,6 @@ mod tests {
              "channels": EVENT_CHANNELS_VALID
         }))
         .unwrap();
-        valid.validate().unwrap();
-    }
-
-    #[test]
-    fn test_endpoint_headers_in_validation() {
-        let headers_valid = HashMap::from([("x-valid", "1")]);
-        let headers_invalid = HashMap::from([("x-invalid???", "1")]);
-
-        let invalid: EndpointHeadersIn =
-            serde_json::from_value(json!({ "headers": headers_invalid })).unwrap();
-        assert!(invalid.validate().is_err());
-
-        let valid: EndpointHeadersIn =
-            serde_json::from_value(json!({ "headers": headers_valid })).unwrap();
         valid.validate().unwrap();
     }
 
@@ -709,15 +732,14 @@ mod tests {
 
     #[test]
     fn test_url_validation() {
-        let valid_https = "https://test.url";
-        let valid_http = "http://test.url";
-        let invalid_scheme = "anythingelse://test.url";
+        let valid_https = Url::parse("https://test.url").unwrap();
+        let valid_http = Url::parse("http://test.url").unwrap();
+        let invalid_scheme = Url::parse("anythingelse://test.url").unwrap();
         let invalid_format = "http://[:::1]";
 
-        assert!(validate_url(valid_https).is_ok());
-        assert!(validate_url(valid_http).is_ok());
-        assert!(validate_url(invalid_scheme).is_err());
-        assert!(validate_url(invalid_format).is_err());
+        assert!(validate_url(&valid_https).is_ok());
+        assert!(validate_url(&valid_http).is_ok());
+        assert!(validate_url(&invalid_scheme).is_err());
 
         let valid_https: EndpointIn =
             serde_json::from_value(json!({"url": valid_https, "version": 1})).unwrap();
@@ -725,12 +747,12 @@ mod tests {
             serde_json::from_value(json!({"url": valid_http, "version": 1})).unwrap();
         let invalid_scheme: EndpointIn =
             serde_json::from_value(json!({"url": invalid_scheme, "version": 1})).unwrap();
-        let invalid_format: EndpointIn =
-            serde_json::from_value(json!({"url": invalid_format, "version": 1})).unwrap();
+        let invalid_format: Result<EndpointIn, _> =
+            serde_json::from_value(json!({"url": invalid_format, "version": 1}));
 
         assert!(valid_https.validate().is_ok());
         assert!(valid_http.validate().is_ok());
         assert!(invalid_scheme.validate().is_err());
-        assert!(invalid_format.validate().is_err());
+        assert!(invalid_format.is_err());
     }
 }

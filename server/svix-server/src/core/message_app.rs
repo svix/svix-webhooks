@@ -67,7 +67,7 @@ impl CreateMessageApp {
     /// exists or from PostgreSQL otherwise. If the RedisCache is Some, but does not contain the
     /// requisite information, fetch it from PostgreSQL and insert the data into the cache.
     pub async fn layered_fetch(
-        cache: Cache,
+        cache: &Cache,
         pg: &DatabaseConnection,
         app: Option<application::Model>,
         org_id: OrganizationId,

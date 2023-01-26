@@ -4,7 +4,7 @@
 use std::fmt::Debug;
 
 use axum::{
-    extract::{Extension, FromRequestParts, TypedHeader},
+    extract::{FromRequestParts, TypedHeader},
     headers::{authorization::Bearer, Authorization},
 };
 
@@ -14,12 +14,12 @@ use jwt_simple::prelude::*;
 use validator::Validate;
 
 use crate::{
-    cfg::Configuration,
     ctx,
     error::{HttpError, Result},
+    AppState,
 };
 
-use super::types::{ApplicationId, OrganizationId};
+use super::types::{ApplicationId, FeatureFlagSet, OrganizationId};
 
 /// The default org_id we use (useful for generating JWTs when testing).
 pub fn default_org_id() -> OrganizationId {
@@ -38,6 +38,7 @@ pub enum AccessLevel {
 
 pub struct Permissions {
     pub access_level: AccessLevel,
+    pub feature_flags: FeatureFlagSet,
 }
 
 impl Permissions {
@@ -60,21 +61,29 @@ impl Permissions {
 pub struct CustomClaim {
     #[serde(rename = "org", default, skip_serializing_if = "Option::is_none")]
     pub organization: Option<String>,
+
+    #[serde(
+        rename = "feature_flags",
+        default,
+        skip_serializing_if = "FeatureFlagSet::is_empty"
+    )]
+    pub feature_flags: FeatureFlagSet,
 }
 
-pub async fn permissions_from_bearer<S: Send + Sync>(
-    parts: &mut Parts,
-    state: &S,
-) -> Result<Permissions> {
-    let Extension(ref cfg) =
-        ctx!(Extension::<Configuration>::from_request_parts(parts, state).await)?;
-
+pub async fn permissions_from_bearer(parts: &mut Parts, state: &AppState) -> Result<Permissions> {
     let TypedHeader(Authorization(bearer)) =
         ctx!(TypedHeader::<Authorization<Bearer>>::from_request_parts(parts, state).await)?;
 
-    let claims = parse_bearer(&cfg.jwt_secret, &bearer)
+    let claims = parse_bearer(&state.cfg.jwt_secret, &bearer)
         .ok_or_else(|| HttpError::unauthorized(None, Some("Invalid token".to_string())))?;
-    permissions_from_jwt(claims)
+    let perms = permissions_from_jwt(claims)?;
+
+    tracing::Span::current().record("org_id", perms.org_id().to_string());
+    if let Some(app_id) = perms.app_id() {
+        tracing::Span::current().record("app_id", app_id.to_string());
+    }
+
+    Ok(perms)
 }
 
 pub fn parse_bearer(key: &Keys, bearer: &Bearer) -> Option<JWTClaims<CustomClaim>> {
@@ -106,6 +115,7 @@ pub fn permissions_from_jwt(claims: JWTClaims<CustomClaim>) -> Result<Permission
 
             Ok(Permissions {
                 access_level: AccessLevel::Application(org_id, app_id),
+                feature_flags: claims.custom.feature_flags,
             })
         } else {
             Err(
@@ -125,6 +135,7 @@ pub fn permissions_from_jwt(claims: JWTClaims<CustomClaim>) -> Result<Permission
         })?;
         Ok(Permissions {
             access_level: AccessLevel::Organization(org_id),
+            feature_flags: claims.custom.feature_flags,
         })
     } else {
         Err(
@@ -138,7 +149,10 @@ const JWT_ISSUER: &str = env!("CARGO_PKG_NAME");
 
 pub fn generate_org_token(keys: &Keys, org_id: OrganizationId) -> Result<String> {
     let claims = Claims::with_custom_claims(
-        CustomClaim { organization: None },
+        CustomClaim {
+            organization: None,
+            feature_flags: Default::default(),
+        },
         Duration::from_hours(24 * 365 * 10),
     )
     .with_issuer(JWT_ISSUER)
@@ -147,10 +161,15 @@ pub fn generate_org_token(keys: &Keys, org_id: OrganizationId) -> Result<String>
 }
 
 pub fn generate_management_token(keys: &Keys) -> Result<String> {
-    let claims =
-        Claims::with_custom_claims(CustomClaim { organization: None }, Duration::from_mins(10))
-            .with_issuer(JWT_ISSUER)
-            .with_subject(management_org_id());
+    let claims = Claims::with_custom_claims(
+        CustomClaim {
+            organization: None,
+            feature_flags: Default::default(),
+        },
+        Duration::from_mins(10),
+    )
+    .with_issuer(JWT_ISSUER)
+    .with_subject(management_org_id());
     Ok(keys.key.authenticate(claims).unwrap())
 }
 
@@ -158,10 +177,12 @@ pub fn generate_app_token(
     keys: &Keys,
     org_id: OrganizationId,
     app_id: ApplicationId,
+    feature_flags: FeatureFlagSet,
 ) -> Result<String> {
     let claims = Claims::with_custom_claims(
         CustomClaim {
             organization: Some(org_id.0),
+            feature_flags,
         },
         Duration::from_hours(24 * 28),
     )

@@ -1,24 +1,37 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use axum::Router;
+use aide::axum::ApiRouter;
+use tower_http::trace::TraceLayer;
+
+use crate::{
+    core::otel_spans::{AxumOtelOnFailure, AxumOtelOnResponse, AxumOtelSpanCreator},
+    AppState,
+};
 
 pub mod endpoints;
 pub mod utils;
 
-pub fn router() -> Router {
-    let ret = Router::new()
+pub fn router() -> ApiRouter<AppState> {
+    let ret: ApiRouter<AppState> = ApiRouter::new()
         .merge(endpoints::health::router())
         .merge(endpoints::auth::router())
         .merge(endpoints::application::router())
         .merge(endpoints::endpoint::router())
         .merge(endpoints::event_type::router())
         .merge(endpoints::message::router())
-        .merge(endpoints::attempt::router());
+        .merge(endpoints::attempt::router())
+        .layer(
+            TraceLayer::new_for_http()
+                .make_span_with(AxumOtelSpanCreator)
+                .on_response(AxumOtelOnResponse)
+                .on_failure(AxumOtelOnFailure),
+        );
 
     #[cfg(debug_assertions)]
     if cfg!(debug_assertions) {
-        return ret.merge(development::router());
+        let dev_router: ApiRouter<AppState> = development::router().into();
+        return ret.merge(dev_router);
     }
     ret
 }
@@ -30,6 +43,7 @@ mod development {
 
     use crate::error::{Error, Result};
     use crate::v1::utils::EmptyResponse;
+    use crate::AppState;
 
     struct EchoData {
         pub headers: String,
@@ -56,7 +70,7 @@ mod development {
         Ok(Json(EmptyResponse {}))
     }
 
-    pub fn router() -> Router {
+    pub fn router() -> Router<AppState> {
         Router::new().route("/development/echo/", get(echo).post(echo))
     }
 }

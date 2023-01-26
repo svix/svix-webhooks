@@ -8,6 +8,7 @@ TEST_COMMAND="cargo test --all --all-features --all-targets"
 export DATABASE_URL="postgresql://postgres:postgres@localhost:5432/postgres"
 export SVIX_JWT_SECRET="test value"
 export SVIX_LOG_LEVEL="info"
+export SVIX_WHITELIST_SUBNETS="[127.0.0.1/32]"
 
 echo "*********** RUN 1 ***********"
 SVIX_QUEUE_TYPE="redis" \

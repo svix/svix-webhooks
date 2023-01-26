@@ -1,7 +1,7 @@
 use std::{collections::HashSet, mem};
 
 use axum::{
-    extract::{Extension, Path},
+    extract::{Path, State},
     Json,
 };
 use hyper::StatusCode;
@@ -28,11 +28,12 @@ use crate::{
         EmptyResponse, ListResponse, ModelIn, ModelOut, Pagination, PaginationLimit, ValidatedJson,
         ValidatedQuery,
     },
+    AppState,
 };
 use hack::EventTypeNameResult;
 
 pub(super) async fn list_endpoints(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     pagination: ValidatedQuery<Pagination<EndpointId>>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<ListResponse<EndpointOut>>> {
@@ -99,9 +100,12 @@ async fn create_endp_from_data(
 }
 
 pub(super) async fn create_endpoint(
-    Extension(ref db): Extension<DatabaseConnection>,
-    Extension(ref cfg): Extension<Configuration>,
-    Extension(op_webhooks): Extension<OperationalWebhookSender>,
+    State(AppState {
+        ref db,
+        ref cfg,
+        op_webhooks,
+        ..
+    }): State<AppState>,
     permissions::Application { app }: permissions::Application,
     ValidatedJson(data): ValidatedJson<EndpointIn>,
 ) -> Result<(StatusCode, Json<EndpointOut>)> {
@@ -116,7 +120,7 @@ pub(super) async fn create_endpoint(
 }
 
 pub(super) async fn get_endpoint(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<EndpointOut>> {
@@ -160,9 +164,12 @@ async fn update_endp_from_data(
 }
 
 pub(super) async fn update_endpoint(
-    Extension(ref db): Extension<DatabaseConnection>,
-    Extension(ref cfg): Extension<Configuration>,
-    Extension(ref op_webhooks): Extension<OperationalWebhookSender>,
+    State(AppState {
+        ref db,
+        ref cfg,
+        ref op_webhooks,
+        ..
+    }): State<AppState>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
     permissions::Application { app }: permissions::Application,
     ValidatedJson(mut data): ValidatedJson<EndpointIn>,
@@ -188,9 +195,12 @@ pub(super) async fn update_endpoint(
 }
 
 pub(super) async fn patch_endpoint(
-    Extension(ref db): Extension<DatabaseConnection>,
-    Extension(cfg): Extension<Configuration>,
-    Extension(ref op_webhooks): Extension<OperationalWebhookSender>,
+    State(AppState {
+        ref db,
+        cfg,
+        ref op_webhooks,
+        ..
+    }): State<AppState>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
     permissions::Application { app }: permissions::Application,
     ValidatedJson(data): ValidatedJson<EndpointPatch>,
@@ -217,8 +227,11 @@ pub(super) async fn patch_endpoint(
 }
 
 pub(super) async fn delete_endpoint(
-    Extension(ref db): Extension<DatabaseConnection>,
-    Extension(op_webhooks): Extension<OperationalWebhookSender>,
+    State(AppState {
+        ref db,
+        ref op_webhooks,
+        ..
+    }): State<AppState>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
@@ -242,10 +255,10 @@ pub(super) async fn delete_endpoint(
         .send_operational_webhook(
             &app.org_id,
             OperationalWebhook::EndpointDeleted(EndpointEvent {
-                app_id: &app.id,
-                app_uid: app.uid.as_ref(),
-                endpoint_id: &endpoint_id,
-                endpoint_uid: endpoint_uid.as_ref(),
+                app_id: app.id,
+                app_uid: app.uid,
+                endpoint_id,
+                endpoint_uid,
             }),
         )
         .await?;
@@ -299,32 +312,20 @@ async fn validate_event_types(
     }
 }
 
-fn validate_endpoint_url(url: &str, https_only: bool) -> Result<()> {
+fn validate_endpoint_url(url: &Url, https_only: bool) -> Result<()> {
     if !https_only {
         return Ok(());
     }
 
-    match Url::parse(url) {
-        Ok(url) => {
-            let scheme = url.scheme();
-            if scheme == "https" {
-                Ok(())
-            } else {
-                Err(HttpError::unprocessable_entity(vec![ValidationErrorItem {
-                    loc: vec!["body".to_owned(), "url".to_owned()],
-                    msg: "Endpoint URL schemes must be https when endpoint_https_only is set."
-                        .to_owned(),
-                    ty: "value_error".to_owned(),
-                }])
-                .into())
-            }
-        }
-
-        Err(_) => Err(HttpError::unprocessable_entity(vec![ValidationErrorItem {
+    let scheme = url.scheme();
+    if scheme == "https" {
+        Ok(())
+    } else {
+        Err(HttpError::unprocessable_entity(vec![ValidationErrorItem {
             loc: vec!["body".to_owned(), "url".to_owned()],
-            msg: "Endpoint URLs must be valid".to_owned(),
+            msg: "Endpoint URL schemes must be https when endpoint_https_only is set.".to_owned(),
             ty: "value_error".to_owned(),
         }])
-        .into()),
+        .into())
     }
 }

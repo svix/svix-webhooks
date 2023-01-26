@@ -1,16 +1,16 @@
 use axum::{
-    extract::{Extension, Path},
+    extract::{Path, State},
     Json,
 };
 use chrono::{Duration, Utc};
 use hyper::StatusCode;
+use sea_orm::ActiveModelTrait;
 use sea_orm::ActiveValue::Set;
-use sea_orm::{ActiveModelTrait, DatabaseConnection};
 use std::iter;
 
 use super::{EndpointSecretOut, EndpointSecretRotateIn};
 use crate::{
-    cfg::{Configuration, DefaultSignatureType},
+    cfg::DefaultSignatureType,
     core::{
         cryptography::Encryption,
         permissions,
@@ -23,6 +23,7 @@ use crate::{
     db::models::endpoint,
     error::{HttpError, Result},
     v1::utils::{EmptyResponse, ValidatedJson},
+    AppState,
 };
 
 pub(super) fn generate_secret(
@@ -33,8 +34,7 @@ pub(super) fn generate_secret(
 }
 
 pub(super) async fn get_endpoint_secret(
-    Extension(ref db): Extension<DatabaseConnection>,
-    Extension(cfg): Extension<Configuration>,
+    State(AppState { ref db, cfg, .. }): State<AppState>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<EndpointSecretOut>> {
@@ -50,8 +50,7 @@ pub(super) async fn get_endpoint_secret(
 }
 
 pub(super) async fn rotate_endpoint_secret(
-    Extension(ref db): Extension<DatabaseConnection>,
-    Extension(cfg): Extension<Configuration>,
+    State(AppState { ref db, cfg, .. }): State<AppState>,
     Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
     permissions::Application { app }: permissions::Application,
     ValidatedJson(data): ValidatedJson<EndpointSecretRotateIn>,
