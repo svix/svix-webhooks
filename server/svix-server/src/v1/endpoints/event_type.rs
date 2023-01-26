@@ -4,13 +4,13 @@
 use crate::{
     core::{
         permissions,
-        types::{EventTypeName, RetrySchedule},
+        types::{EventTypeName, FeatureFlag, RetrySchedule},
     },
     ctx,
     db::models::eventtype,
     error::{HttpError, Result},
     v1::utils::{
-        api_not_implemented,
+        api_not_implemented, openapi_tag,
         patch::{
             patch_field_non_nullable, patch_field_nullable, UnrequiredField,
             UnrequiredNullableField,
@@ -19,21 +19,26 @@ use crate::{
         ListResponse, ModelIn, ModelOut, Pagination, PaginationLimit, ValidatedJson,
         ValidatedQuery,
     },
+    AppState,
+};
+use aide::axum::{
+    routing::{get, post},
+    ApiRouter,
 };
 use axum::{
-    extract::{Extension, Path},
-    routing::{get, post},
-    Json, Router,
+    extract::{Path, State},
+    Json,
 };
 use chrono::{DateTime, Utc};
 use hyper::StatusCode;
+use schemars::JsonSchema;
 use sea_orm::{entity::prelude::*, ActiveValue::Set, QueryOrder};
-use sea_orm::{ActiveModelTrait, DatabaseConnection, QuerySelect};
+use sea_orm::{ActiveModelTrait, QuerySelect};
 use serde::{Deserialize, Serialize};
 use svix_server_derive::{ModelIn, ModelOut};
 use validator::Validate;
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Validate, ModelIn)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Validate, ModelIn, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EventTypeIn {
     pub name: EventTypeName,
@@ -42,6 +47,8 @@ pub struct EventTypeIn {
     #[serde(default, rename = "archived")]
     pub deleted: bool,
     pub schemas: Option<eventtype::Schema>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub feature_flag: Option<FeatureFlag>,
 }
 
 // FIXME: This can and should be a derive macro
@@ -54,16 +61,18 @@ impl ModelIn for EventTypeIn {
             description,
             deleted,
             schemas,
+            feature_flag,
         } = self;
 
         model.name = Set(name);
         model.description = Set(description);
         model.deleted = Set(deleted);
         model.schemas = Set(schemas);
+        model.feature_flag = Set(feature_flag);
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Deserialize, Validate, ModelIn)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Validate, ModelIn, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 struct EventTypeUpdate {
     #[validate(custom = "validate_no_control_characters")]
@@ -71,6 +80,8 @@ struct EventTypeUpdate {
     #[serde(default, rename = "archived")]
     deleted: bool,
     schemas: Option<eventtype::Schema>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    feature_flag: Option<FeatureFlag>,
 }
 
 // FIXME: This can and should be a derive macro
@@ -82,15 +93,17 @@ impl ModelIn for EventTypeUpdate {
             description,
             deleted,
             schemas,
+            feature_flag,
         } = self;
 
         model.description = Set(description);
         model.deleted = Set(deleted);
         model.schemas = Set(schemas);
+        model.feature_flag = Set(feature_flag);
     }
 }
 
-#[derive(Deserialize, ModelIn, Serialize, Validate)]
+#[derive(Deserialize, ModelIn, Serialize, Validate, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 struct EventTypePatch {
     #[serde(default, skip_serializing_if = "UnrequiredField::is_absent")]
@@ -106,6 +119,9 @@ struct EventTypePatch {
 
     #[serde(default, skip_serializing_if = "UnrequiredNullableField::is_absent")]
     schemas: UnrequiredNullableField<eventtype::Schema>,
+
+    #[serde(default, skip_serializing_if = "UnrequiredNullableField::is_absent")]
+    feature_flag: UnrequiredNullableField<FeatureFlag>,
 }
 
 impl ModelIn for EventTypePatch {
@@ -116,15 +132,17 @@ impl ModelIn for EventTypePatch {
             description,
             deleted,
             schemas,
+            feature_flag,
         } = self;
 
         patch_field_non_nullable!(model, description);
         patch_field_non_nullable!(model, deleted);
         patch_field_nullable!(model, schemas);
+        patch_field_nullable!(model, feature_flag);
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ModelOut)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ModelOut, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EventTypeOut {
     pub name: EventTypeName,
@@ -135,6 +153,7 @@ pub struct EventTypeOut {
 
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
+    pub feature_flag: Option<FeatureFlag>,
 }
 
 impl EventTypeOut {
@@ -154,6 +173,7 @@ impl From<eventtype::Model> for EventTypeOut {
             description: model.description,
             deleted: model.deleted,
             schemas: model.schemas,
+            feature_flag: model.feature_flag,
 
             created_at: model.created_at.into(),
             updated_at: model.updated_at.into(),
@@ -161,7 +181,7 @@ impl From<eventtype::Model> for EventTypeOut {
     }
 }
 
-#[derive(Debug, Deserialize, Validate)]
+#[derive(Debug, Deserialize, Validate, JsonSchema)]
 pub struct ListFetchOptions {
     #[serde(default)]
     pub include_archived: bool,
@@ -170,10 +190,14 @@ pub struct ListFetchOptions {
 }
 
 async fn list_event_types(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     pagination: ValidatedQuery<Pagination<EventTypeName>>,
     fetch_options: ValidatedQuery<ListFetchOptions>,
-    permissions::ReadAll { org_id }: permissions::ReadAll,
+    permissions::ReadAll {
+        org_id,
+        feature_flags,
+        ..
+    }: permissions::ReadAll,
 ) -> Result<Json<ListResponse<EventTypeOut>>> {
     let PaginationLimit(limit) = pagination.limit;
     let iterator = pagination.iterator.clone();
@@ -188,6 +212,10 @@ async fn list_event_types(
 
     if let Some(iterator) = iterator {
         query = query.filter(eventtype::Column::Name.gt(iterator));
+    }
+
+    if let permissions::AllowedFeatureFlags::Some(flags) = feature_flags {
+        query = eventtype::Entity::filter_feature_flags(query, flags);
     }
 
     Ok(Json(EventTypeOut::list_response_no_prev(
@@ -206,7 +234,7 @@ async fn list_event_types(
 }
 
 async fn create_event_type(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     permissions::Organization { org_id }: permissions::Organization,
     ValidatedJson(data): ValidatedJson<EventTypeIn>,
 ) -> Result<(StatusCode, Json<EventTypeOut>)> {
@@ -242,21 +270,25 @@ async fn create_event_type(
 }
 
 async fn get_event_type(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     Path(evtype_name): Path<EventTypeName>,
-    permissions::ReadAll { org_id }: permissions::ReadAll,
+    permissions::ReadAll {
+        org_id,
+        feature_flags,
+        ..
+    }: permissions::ReadAll,
 ) -> Result<Json<EventTypeOut>> {
-    let evtype = ctx!(
-        eventtype::Entity::secure_find_by_name(org_id, evtype_name)
-            .one(db)
-            .await
-    )?
-    .ok_or_else(|| HttpError::not_found(None, None))?;
+    let mut query = eventtype::Entity::secure_find_by_name(org_id, evtype_name);
+    if let permissions::AllowedFeatureFlags::Some(flags) = feature_flags {
+        query = eventtype::Entity::filter_feature_flags(query, flags);
+    }
+    let evtype = ctx!(query.one(db).await)?.ok_or_else(|| HttpError::not_found(None, None))?;
+
     Ok(Json(evtype.into()))
 }
 
 async fn update_event_type(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     Path(evtype_name): Path<EventTypeName>,
     permissions::Organization { org_id }: permissions::Organization,
     ValidatedJson(data): ValidatedJson<EventTypeUpdate>,
@@ -292,7 +324,7 @@ async fn update_event_type(
 }
 
 async fn patch_event_type(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     Path(evtype_name): Path<EventTypeName>,
     permissions::Organization { org_id }: permissions::Organization,
     ValidatedJson(data): ValidatedJson<EventTypePatch>,
@@ -312,7 +344,7 @@ async fn patch_event_type(
 }
 
 async fn delete_event_type(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     Path(evtype_name): Path<EventTypeName>,
     permissions::Organization { org_id }: permissions::Organization,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
@@ -329,14 +361,14 @@ async fn delete_event_type(
     Ok((StatusCode::NO_CONTENT, Json(EmptyResponse {})))
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Validate)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Validate, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct RetryScheduleInOut {
     retry_schedule: Option<RetrySchedule>,
 }
 
 async fn get_retry_schedule(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     Path(evtype_name): Path<EventTypeName>,
     permissions::Organization { org_id }: permissions::Organization,
 ) -> Result<Json<RetryScheduleInOut>> {
@@ -356,7 +388,7 @@ async fn get_retry_schedule(
 }
 
 async fn update_retry_schedule(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     Path(evtype_name): Path<EventTypeName>,
     permissions::Organization { org_id }: permissions::Organization,
     ValidatedJson(data): ValidatedJson<RetryScheduleInOut>,
@@ -379,26 +411,30 @@ async fn update_retry_schedule(
     Ok(Json(retry_schedule))
 }
 
-pub fn router() -> Router {
-    Router::new()
-        .route(
+pub fn router() -> ApiRouter<AppState> {
+    ApiRouter::new()
+        .api_route_with(
             "/event-type/",
             post(create_event_type).get(list_event_types),
+            openapi_tag("Event Type"),
         )
-        .route(
+        .api_route_with(
             "/event-type/:event_type_name/",
             get(get_event_type)
                 .put(update_event_type)
                 .patch(patch_event_type)
                 .delete(delete_event_type),
+            openapi_tag("Event Type"),
         )
-        .route(
+        .api_route_with(
             "/event-type/:event_type_name/retry-schedule/",
             get(get_retry_schedule).put(update_retry_schedule),
+            openapi_tag("Event Type"),
         )
-        .route(
+        .api_route_with(
             "/event-type/schema/generate-example/",
             post(api_not_implemented),
+            openapi_tag("Event Type"),
         )
 }
 

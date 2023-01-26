@@ -2,13 +2,17 @@
 // SPDX-License-Identifier: MIT
 
 use crate::{
-    core::types::{BaseId, EventTypeId, EventTypeName, OrganizationId, RetrySchedule},
+    core::types::{
+        BaseId, EventTypeId, EventTypeName, FeatureFlag, FeatureFlagSet, OrganizationId,
+        RetrySchedule,
+    },
     json_wrapper,
 };
 use std::collections::HashMap;
 
 use chrono::Utc;
 use jsonschema::{Draft, JSONSchema};
+use schemars::JsonSchema;
 use sea_orm::entity::prelude::*;
 use sea_orm::ActiveValue::Set;
 use serde::{Deserialize, Serialize};
@@ -26,6 +30,7 @@ pub struct Model {
     pub schemas: Option<Schema>,
     pub name: EventTypeName,
     pub retry_schedule: Option<RetrySchedule>,
+    pub feature_flag: Option<FeatureFlag>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter)]
@@ -63,9 +68,17 @@ impl Entity {
     pub fn secure_find_by_name(org_id: OrganizationId, name: EventTypeName) -> Select<Entity> {
         Self::secure_find(org_id).filter(Column::Name.eq(name))
     }
+
+    pub fn filter_feature_flags(query: Select<Self>, flags: FeatureFlagSet) -> Select<Self> {
+        query.filter(
+            sea_orm::Condition::any()
+                .add(Column::FeatureFlag.is_in(flags.into_iter()))
+                .add(Column::FeatureFlag.is_null()),
+        )
+    }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Default)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Default, JsonSchema)]
 pub struct Schema(HashMap<String, Json>);
 json_wrapper!(Schema);
 

@@ -10,7 +10,31 @@ type Authentication struct {
 	api *openapi.APIClient
 }
 
-type DashboardAccessOut openapi.DashboardAccessOut
+type (
+	AppPortalAccessIn  openapi.AppPortalAccessIn
+	AppPortalAccessOut openapi.AppPortalAccessOut
+	DashboardAccessOut openapi.DashboardAccessOut
+)
+
+func (a *Authentication) AppPortalAccess(appId string, appPortalAccessIn *AppPortalAccessIn) (*AppPortalAccessOut, error) {
+	return a.AppPortalAccessWithOptions(appId, appPortalAccessIn, nil)
+}
+
+func (a *Authentication) AppPortalAccessWithOptions(appId string, appPortalAccessIn *AppPortalAccessIn, options *PostOptions) (*AppPortalAccessOut, error) {
+	req := a.api.AuthenticationApi.GetAppPortalAccessApiV1AuthAppPortalAccessAppIdPost(context.Background(), appId)
+	req = req.AppPortalAccessIn(openapi.AppPortalAccessIn(*appPortalAccessIn))
+	if options != nil {
+		if options.IdempotencyKey != nil {
+			req = req.IdempotencyKey(*options.IdempotencyKey)
+		}
+	}
+	out, res, err := req.Execute()
+	if err != nil {
+		return nil, wrapError(err, res)
+	}
+	ret := AppPortalAccessOut(out)
+	return &ret, nil
+}
 
 func (a *Authentication) DashboardAccess(appId string) (*DashboardAccessOut, error) {
 	return a.DashboardAccessWithOptions(appId, nil)

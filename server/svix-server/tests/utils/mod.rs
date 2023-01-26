@@ -267,6 +267,13 @@ pub struct TestReceiver {
 }
 
 #[derive(Clone)]
+pub struct TestAppState {
+    tx: mpsc::Sender<serde_json::Value>,
+    header_tx: mpsc::Sender<HeaderMap>,
+    response_status_code: Arc<Mutex<ResponseStatusCode>>,
+}
+
+#[derive(Clone)]
 pub struct ResponseStatusCode {
     pub status_code: axum::http::StatusCode,
 }
@@ -288,9 +295,11 @@ impl TestReceiver {
                 "/",
                 axum::routing::post(test_receiver_route).get(test_receiver_route),
             )
-            .layer(axum::extract::Extension(tx))
-            .layer(axum::extract::Extension(header_tx))
-            .layer(axum::extract::Extension(response_status_code.clone()))
+            .with_state(TestAppState {
+                tx,
+                header_tx,
+                response_status_code: response_status_code.clone(),
+            })
             .into_make_service();
 
         let jh = tokio::spawn(async move {
@@ -316,11 +325,11 @@ impl TestReceiver {
 }
 
 async fn test_receiver_route(
-    axum::extract::Extension(ref tx): axum::extract::Extension<mpsc::Sender<serde_json::Value>>,
-    axum::extract::Extension(ref header_tx): axum::extract::Extension<mpsc::Sender<HeaderMap>>,
-    axum::extract::Extension(response_status_code): axum::extract::Extension<
-        Arc<Mutex<ResponseStatusCode>>,
-    >,
+    axum::extract::State(TestAppState {
+        tx,
+        header_tx,
+        response_status_code,
+    }): axum::extract::State<TestAppState>,
     headers: HeaderMap,
     axum::Json(json): axum::Json<serde_json::Value>,
 ) -> axum::http::StatusCode {

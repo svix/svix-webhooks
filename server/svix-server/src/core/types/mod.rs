@@ -15,6 +15,7 @@ use rand::Rng;
 
 use regex::Regex;
 
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 use svix_ksuid::*;
@@ -249,9 +250,15 @@ pub trait BaseUid: Deref<Target = String> {
 
 macro_rules! string_wrapper {
     ($name_id:ident) => {
-        #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
+        #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize, JsonSchema)]
         pub struct $name_id(pub String);
 
+        string_wrapper_impl!($name_id);
+    };
+}
+
+macro_rules! string_wrapper_impl {
+    ($name_id:ident) => {
         impl Deref for $name_id {
             type Target = String;
 
@@ -374,7 +381,7 @@ macro_rules! create_all_id_types {
         }
 
         // Id or uid
-        #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+        #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
         pub struct $name_id_or_uid(pub String);
 
         impl From<$name_id_or_uid> for $name_uid {
@@ -428,7 +435,7 @@ impl Validate for EventChannel {
     }
 }
 
-#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub struct EventChannelSet(pub HashSet<EventChannel>);
 json_wrapper!(EventChannelSet);
 
@@ -441,7 +448,7 @@ impl Validate for EventChannelSet {
     }
 }
 
-#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub struct EventTypeNameSet(pub HashSet<EventTypeName>);
 json_wrapper!(EventTypeNameSet);
 
@@ -454,7 +461,7 @@ impl Validate for EventTypeNameSet {
     }
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, JsonSchema)]
 pub struct RetrySchedule(pub Vec<Duration>);
 json_wrapper!(RetrySchedule);
 
@@ -966,6 +973,24 @@ impl Validate for EndpointSecret {
     }
 }
 
+impl JsonSchema for EndpointSecret {
+    fn schema_name() -> String {
+        "EndpointSecret".to_string()
+    }
+
+    fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
+        const KEY_PATTERN: &str = "^(whsec_)?[a-zA-Z0-9+/=]{32,100}$";
+        let mut schema = String::json_schema(gen);
+        if let schemars::schema::Schema::Object(ref mut obj) = schema {
+            obj.string = Some(Box::new(schemars::schema::StringValidation {
+                pattern: Some(KEY_PATTERN.to_string()),
+                ..Default::default()
+            }));
+        }
+        schema
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ExpiringSigningKey {
     #[serde(rename = "signingKey")]
@@ -1027,42 +1052,54 @@ fn validate_header_key(k: &str, errors: &mut ValidationErrors) {
     })
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Default)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Default, JsonSchema)]
 pub struct EndpointHeaders(pub HashMap<String, String>);
 json_wrapper!(EndpointHeaders);
+
+const HEADER_MAX_LENGTH: usize = 4096;
 
 impl<'de> Deserialize<'de> for EndpointHeaders {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
     {
-        HashMap::deserialize(deserializer)
-            .map(|x: HashMap<String, String>| x.into_iter().collect())
-            .map(EndpointHeaders)
+        let headers: HashMap<String, String> = HashMap::deserialize(deserializer)?;
+
+        validate_header_map(&headers).map_err(serde::de::Error::custom)?;
+
+        Ok(EndpointHeaders(headers))
     }
 }
 
-impl Validate for EndpointHeaders {
-    fn validate(&self) -> std::result::Result<(), ValidationErrors> {
-        let mut errors = ValidationErrors::new();
-        self.0.iter().for_each(|(k, v)| {
-            validate_header_key(k, &mut errors);
-            if let Err(_e) = http::header::HeaderValue::try_from(v) {
-                errors.add(
-                    ALL_ERROR,
-                    validation_error(Some("header"), Some("Invalid Header Value.")),
-                );
-            }
-        });
-        if errors.is_empty() {
-            Ok(())
-        } else {
-            Err(errors)
+fn validate_header_map(
+    headers: &HashMap<String, String>,
+) -> std::result::Result<(), ValidationErrors> {
+    let mut errors = ValidationErrors::new();
+    for (k, v) in headers {
+        validate_header_key(k, &mut errors);
+
+        if let Err(_e) = http::header::HeaderValue::try_from(v) {
+            errors.add(
+                ALL_ERROR,
+                validation_error(Some("header"), Some("Invalid Header Value.")),
+            );
+        }
+
+        if v.len() > HEADER_MAX_LENGTH {
+            errors.add(
+                ALL_ERROR,
+                validation_error(Some("header"), Some("Maximum header length is 4096 bytes")),
+            );
         }
     }
+    if errors.is_empty() {
+        Ok(())
+    } else {
+        Err(errors)
+    }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Default)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Default, JsonSchema)]
 pub struct EndpointHeadersPatch(pub HashMap<String, Option<String>>);
 json_wrapper!(EndpointHeadersPatch);
 
@@ -1092,14 +1129,14 @@ impl Validate for EndpointHeadersPatch {
 }
 
 #[repr(i16)]
-#[derive(Clone, Debug, Copy, PartialEq, Eq, IntoPrimitive, TryFromPrimitive)]
+#[derive(Clone, Debug, Copy, PartialEq, Eq, IntoPrimitive, TryFromPrimitive, JsonSchema)]
 pub enum MessageAttemptTriggerType {
     Scheduled = 0,
     Manual = 1,
 }
 
 #[repr(i16)]
-#[derive(Clone, Debug, Copy, PartialEq, IntoPrimitive, TryFromPrimitive, Hash, Eq)]
+#[derive(Clone, Debug, Copy, PartialEq, IntoPrimitive, TryFromPrimitive, Hash, Eq, JsonSchema)]
 pub enum MessageStatus {
     Success = 0,
     Pending = 1,
@@ -1108,7 +1145,7 @@ pub enum MessageStatus {
 }
 
 #[repr(i16)]
-#[derive(Clone, Debug, Copy, PartialEq, Eq, IntoPrimitive, TryFromPrimitive)]
+#[derive(Clone, Debug, Copy, PartialEq, Eq, IntoPrimitive, TryFromPrimitive, JsonSchema)]
 pub enum StatusCodeClass {
     CodeNone = 0,
     Code1xx = 100,
@@ -1121,6 +1158,25 @@ pub enum StatusCodeClass {
 enum_wrapper!(MessageAttemptTriggerType);
 enum_wrapper!(MessageStatus);
 enum_wrapper!(StatusCodeClass);
+
+#[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, JsonSchema)]
+pub struct FeatureFlag(pub String);
+
+string_wrapper_impl!(FeatureFlag);
+
+impl<'de> Deserialize<'de> for FeatureFlag {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        String::deserialize(deserializer).and_then(|s| {
+            validate_limited_str(&s).map_err(serde::de::Error::custom)?;
+            Ok(FeatureFlag(s))
+        })
+    }
+}
+
+pub type FeatureFlagSet = HashSet<FeatureFlag>;
 
 #[cfg(test)]
 mod tests {
@@ -1199,29 +1255,29 @@ mod tests {
             ("also-valid".to_owned(), "true".to_owned()),
         ]);
         let endpoint_headers = EndpointHeaders(hdr_map);
-        endpoint_headers.validate().unwrap();
+        validate_header_map(&endpoint_headers.0).unwrap();
 
         let hdr_map = HashMap::from([
             ("invalid?".to_owned(), "true".to_owned()),
             ("valid".to_owned(), "true".to_owned()),
         ]);
         let endpoint_headers = EndpointHeaders(hdr_map);
-        assert!(endpoint_headers.validate().is_err());
+        assert!(validate_header_map(&endpoint_headers.0).is_err());
 
         let hdr_map = HashMap::from([
             ("invalid\0".to_owned(), "true".to_owned()),
             ("valid".to_owned(), "true".to_owned()),
         ]);
         let endpoint_headers = EndpointHeaders(hdr_map);
-        assert!(endpoint_headers.validate().is_err());
+        assert!(validate_header_map(&endpoint_headers.0).is_err());
 
         let hdr_map = HashMap::from([("User-Agent".to_string(), "true".to_owned())]);
         let endpoint_headers = EndpointHeaders(hdr_map);
-        assert!(endpoint_headers.validate().is_err());
+        assert!(validate_header_map(&endpoint_headers.0).is_err());
 
         let hdr_map = HashMap::from([("X-Amz-".to_string(), "true".to_owned())]);
         let endpoint_headers = EndpointHeaders(hdr_map);
-        assert!(endpoint_headers.validate().is_err());
+        assert!(validate_header_map(&endpoint_headers.0).is_err());
     }
 
     #[test]

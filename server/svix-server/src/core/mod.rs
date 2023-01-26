@@ -11,6 +11,7 @@ pub mod permissions;
 pub mod run_with_retries;
 pub mod security;
 pub mod types;
+pub mod webhook_http_client;
 
 #[cfg(test)]
 mod tests {

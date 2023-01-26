@@ -205,6 +205,195 @@ func (a *AuthenticationApiService) ExpireAllApiV1AuthAppAppIdExpireAllPostExecut
 	return localVarHTTPResponse, nil
 }
 
+type ApiGetAppPortalAccessApiV1AuthAppPortalAccessAppIdPostRequest struct {
+	ctx _context.Context
+	ApiService *AuthenticationApiService
+	appId string
+	appPortalAccessIn *AppPortalAccessIn
+	idempotencyKey *string
+}
+
+func (r ApiGetAppPortalAccessApiV1AuthAppPortalAccessAppIdPostRequest) AppPortalAccessIn(appPortalAccessIn AppPortalAccessIn) ApiGetAppPortalAccessApiV1AuthAppPortalAccessAppIdPostRequest {
+	r.appPortalAccessIn = &appPortalAccessIn
+	return r
+}
+func (r ApiGetAppPortalAccessApiV1AuthAppPortalAccessAppIdPostRequest) IdempotencyKey(idempotencyKey string) ApiGetAppPortalAccessApiV1AuthAppPortalAccessAppIdPostRequest {
+	r.idempotencyKey = &idempotencyKey
+	return r
+}
+
+func (r ApiGetAppPortalAccessApiV1AuthAppPortalAccessAppIdPostRequest) Execute() (AppPortalAccessOut, *_nethttp.Response, error) {
+	return r.ApiService.GetAppPortalAccessApiV1AuthAppPortalAccessAppIdPostExecute(r)
+}
+
+/*
+ * GetAppPortalAccessApiV1AuthAppPortalAccessAppIdPost Get Consumer App Portal Access
+ * Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
+ * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ * @param appId
+ * @return ApiGetAppPortalAccessApiV1AuthAppPortalAccessAppIdPostRequest
+ */
+func (a *AuthenticationApiService) GetAppPortalAccessApiV1AuthAppPortalAccessAppIdPost(ctx _context.Context, appId string) ApiGetAppPortalAccessApiV1AuthAppPortalAccessAppIdPostRequest {
+	return ApiGetAppPortalAccessApiV1AuthAppPortalAccessAppIdPostRequest{
+		ApiService: a,
+		ctx: ctx,
+		appId: appId,
+	}
+}
+
+/*
+ * Execute executes the request
+ * @return AppPortalAccessOut
+ */
+func (a *AuthenticationApiService) GetAppPortalAccessApiV1AuthAppPortalAccessAppIdPostExecute(r ApiGetAppPortalAccessApiV1AuthAppPortalAccessAppIdPostRequest) (AppPortalAccessOut, *_nethttp.Response, error) {
+	var (
+		localVarHTTPMethod   = _nethttp.MethodPost
+		localVarPostBody     interface{}
+		localVarFormFileName string
+		localVarFileName     string
+		localVarFileBytes    []byte
+		localVarReturnValue  AppPortalAccessOut
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AuthenticationApiService.GetAppPortalAccessApiV1AuthAppPortalAccessAppIdPost")
+	if err != nil {
+		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/api/v1/auth/app-portal-access/{app_id}/"
+	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := _neturl.Values{}
+	localVarFormParams := _neturl.Values{}
+	if strlen(r.appId) < 1 {
+		return localVarReturnValue, nil, reportError("appId must have at least 1 elements")
+	}
+	if strlen(r.appId) > 256 {
+		return localVarReturnValue, nil, reportError("appId must have less than 256 elements")
+	}
+	if r.appPortalAccessIn == nil {
+		return localVarReturnValue, nil, reportError("appPortalAccessIn is required and must be specified")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
+	}
+	// body params
+	localVarPostBody = r.appPortalAccessIn
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := _ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = _ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 401 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 403 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 404 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 409 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 422 {
+			var v HTTPValidationError
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
 type ApiGetDashboardAccessApiV1AuthDashboardAccessAppIdPostRequest struct {
 	ctx _context.Context
 	ApiService *AuthenticationApiService
@@ -223,7 +412,9 @@ func (r ApiGetDashboardAccessApiV1AuthDashboardAccessAppIdPostRequest) Execute()
 
 /*
  * GetDashboardAccessApiV1AuthDashboardAccessAppIdPost Get Consumer App Portal Access
- * Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
+ * DEPRECATED: Please use `app-portal-access` instead.
+
+Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param appId
  * @return ApiGetDashboardAccessApiV1AuthDashboardAccessAppIdPostRequest

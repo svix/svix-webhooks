@@ -4,6 +4,7 @@
 use std::error;
 use std::fmt;
 
+use aide::OperationOutput;
 use axum::extract::rejection::ExtensionRejection;
 use axum::extract::rejection::PathRejection;
 use axum::extract::rejection::TypedHeaderRejection;
@@ -14,12 +15,15 @@ use axum::response::Response;
 use axum::Json;
 use axum::TypedHeader;
 use hyper::StatusCode;
+use schemars::JsonSchema;
 use sea_orm::DbErr;
 use sea_orm::RuntimeErr;
 use sea_orm::TransactionError;
 use serde::Serialize;
 use serde_json::json;
 use sqlx::Error as SqlxError;
+
+use crate::core::webhook_http_client;
 
 /// A short-hand version of a [std::result::Result] that always returns an Svix [Error].
 pub type Result<T> = std::result::Result<T, Error>;
@@ -109,6 +113,10 @@ impl IntoResponse for Error {
     }
 }
 
+impl OperationOutput for Error {
+    type Inner = Self;
+}
+
 /// Returns a [&'static str] of the file.rs:<line_number>.
 #[macro_export]
 macro_rules! location {
@@ -140,6 +148,13 @@ macro_rules! err_database {
 macro_rules! err_queue {
     ($s:expr) => {
         $crate::error::Error::queue($s, $crate::location!())
+    };
+}
+
+#[macro_export]
+macro_rules! err_cache {
+    ($s:expr) => {
+        $crate::error::Error::cache($s, $crate::location!())
     };
 }
 
@@ -265,6 +280,8 @@ pub enum ErrorType {
     Http(HttpError),
     /// Cache error
     Cache(String),
+    /// Timeout error
+    Timeout(String),
 }
 
 impl fmt::Display for ErrorType {
@@ -276,6 +293,7 @@ impl fmt::Display for ErrorType {
             Self::Validation(s) => s.fmt(f),
             Self::Http(s) => s.fmt(f),
             Self::Cache(s) => s.fmt(f),
+            Self::Timeout(s) => s.fmt(f),
         }
     }
 }
@@ -293,7 +311,7 @@ pub enum HttpErrorBody {
     Validation { detail: Vec<ValidationErrorItem> },
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, PartialEq, Eq, JsonSchema)]
 /// Validation errors have their own schema to provide context for invalid requests eg. mismatched
 /// types and out of bounds values. There may be any number of these per 422 UNPROCESSABLE ENTITY
 /// error.
@@ -313,7 +331,7 @@ pub struct ValidationErrorItem {
 
 #[derive(Debug, Clone)]
 pub struct HttpError {
-    status: StatusCode,
+    pub status: StatusCode,
     body: HttpErrorBody,
 }
 
@@ -420,5 +438,20 @@ impl fmt::Display for HttpError {
 impl IntoResponse for HttpError {
     fn into_response(self) -> Response {
         (self.status, Json(self.body)).into_response()
+    }
+}
+
+impl From<ErrorType> for Error {
+    fn from(typ: ErrorType) -> Self {
+        Self { trace: vec![], typ }
+    }
+}
+
+impl From<crate::core::webhook_http_client::Error> for Error {
+    fn from(err: webhook_http_client::Error) -> Error {
+        match err {
+            webhook_http_client::Error::TimedOut => ErrorType::Timeout(err.to_string()).into(),
+            _ => err_generic!(err.to_string()),
+        }
     }
 }

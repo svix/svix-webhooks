@@ -11,6 +11,7 @@ use crate::{
     error::{HttpError, Result},
     transaction,
     v1::utils::{
+        openapi_tag,
         patch::{
             patch_field_non_nullable, patch_field_nullable, UnrequiredField,
             UnrequiredNullableField,
@@ -19,21 +20,26 @@ use crate::{
         validation_error, EmptyResponse, ListResponse, ModelIn, ModelOut, Pagination,
         PaginationLimit, ValidatedJson, ValidatedQuery,
     },
+    AppState,
+};
+use aide::axum::{
+    routing::{get, post},
+    ApiRouter,
 };
 use axum::{
-    extract::{Extension, Path},
-    routing::{get, post},
-    Json, Router,
+    extract::{Path, State},
+    Json,
 };
 use chrono::{DateTime, Utc};
 use hyper::StatusCode;
+use schemars::JsonSchema;
+use sea_orm::ActiveModelTrait;
 use sea_orm::ActiveValue::Set;
-use sea_orm::{ActiveModelTrait, DatabaseConnection};
 use serde::{Deserialize, Serialize};
 use svix_server_derive::ModelOut;
 use validator::{Validate, ValidationError};
 
-#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Validate)]
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Validate, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct ApplicationIn {
     #[validate(
@@ -73,7 +79,7 @@ impl ModelIn for ApplicationIn {
     }
 }
 
-#[derive(Deserialize, Serialize, Validate)]
+#[derive(Deserialize, Serialize, Validate, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct ApplicationPatch {
     #[serde(default, skip_serializing_if = "UnrequiredField::is_absent")]
@@ -153,7 +159,7 @@ fn validate_rate_limit_patch(
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ModelOut)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ModelOut, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct ApplicationOut {
     // FIXME: Do we want to use serde(flatten) or just duplicate the keys?
@@ -184,7 +190,7 @@ impl From<(application::Model, applicationmetadata::Model)> for ApplicationOut {
 }
 
 async fn list_applications(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     pagination: ValidatedQuery<Pagination<ApplicationId>>,
     permissions::Organization { org_id }: permissions::Organization,
 ) -> Result<Json<ListResponse<ApplicationOut>>> {
@@ -206,14 +212,14 @@ fn default_as_false() -> bool {
     false
 }
 
-#[derive(Debug, Deserialize, Validate)]
+#[derive(Debug, Deserialize, Validate, JsonSchema)]
 pub struct CreateApplicationQuery {
     #[serde(default = "default_as_false")]
     get_if_exists: bool,
 }
 
 async fn create_application(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     query: ValidatedQuery<CreateApplicationQuery>,
     permissions::Organization { org_id }: permissions::Organization,
     ValidatedJson(data): ValidatedJson<ApplicationIn>,
@@ -256,7 +262,7 @@ async fn get_application(
 }
 
 async fn update_application(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     Path(app_id): Path<ApplicationIdOrUid>,
     permissions::Organization { org_id }: permissions::Organization,
     ValidatedJson(data): ValidatedJson<ApplicationIn>,
@@ -294,7 +300,7 @@ async fn update_application(
 }
 
 async fn patch_application(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
     ValidatedJson(data): ValidatedJson<ApplicationPatch>,
 ) -> Result<Json<ApplicationOut>> {
@@ -315,7 +321,7 @@ async fn patch_application(
 }
 
 async fn delete_application(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
     let mut app: application::ActiveModel = app.into();
@@ -325,15 +331,20 @@ async fn delete_application(
     Ok((StatusCode::NO_CONTENT, Json(EmptyResponse {})))
 }
 
-pub fn router() -> Router {
-    Router::new()
-        .route("/app/", post(create_application).get(list_applications))
-        .route(
+pub fn router() -> ApiRouter<AppState> {
+    ApiRouter::new()
+        .api_route_with(
+            "/app/",
+            post(create_application).get(list_applications),
+            openapi_tag("Application"),
+        )
+        .api_route_with(
             "/app/:app_id/",
             get(get_application)
                 .put(update_application)
                 .patch(patch_application)
                 .delete(delete_application),
+            openapi_tag("Application"),
         )
 }
 

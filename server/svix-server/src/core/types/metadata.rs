@@ -1,11 +1,12 @@
 use std::collections::HashMap;
 
 use crate::json_wrapper;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 pub const MAX_METADATA_SIZE: usize = 4096;
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Default)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Default, JsonSchema)]
 pub struct Metadata(HashMap<String, String>);
 
 json_wrapper!(Metadata);

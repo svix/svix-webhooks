@@ -125,6 +125,8 @@ impl<B> MakeSpan<B> for AxumOtelSpanCreator {
             request_id = %request_id,
             trace_id = %trace_id,
             idempotency_key = tracing::field::Empty,
+            org_id = tracing::field::Empty,
+            app_id = tracing::field::Empty,
         );
 
         if let Some(key) = idempotency_key {

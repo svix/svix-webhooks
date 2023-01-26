@@ -3,6 +3,7 @@ use std::{sync::Arc, time::Duration};
 use axum::async_trait;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
+use strum::Display;
 use svix_ksuid::*;
 
 use crate::{
@@ -93,7 +94,7 @@ impl MessageTaskBatch {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Display)]
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "type")]
 pub enum QueueTask {

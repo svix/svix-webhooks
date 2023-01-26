@@ -16,13 +16,22 @@ pub async fn wait_for_dsn(
     let sleep = tokio::time::sleep(Duration::from_secs(wait_for_seconds));
     tokio::pin!(sleep);
 
+    const ATTEMPT_TIMEOUT: Duration = Duration::from_secs(3);
+    const RETRY_WAIT: Duration = Duration::from_millis(500);
+
     loop {
         tokio::select! {
-            res = tokio::net::TcpStream::connect((host.to_string(), port)) => {
-                if res.is_err() {
-                    continue;
-                } else {
-                    break;
+            // Attempt the connection with a timeout
+            res = tokio::time::timeout(ATTEMPT_TIMEOUT, tokio::net::TcpStream::connect((host.to_string(), port))) => {
+                match res {
+                    // Connection attempt succeeded
+                    Ok(Ok(_)) => break,
+                    // Connection failed before the timeout was reached _or_ timed out
+                    Ok(Err(_)) | Err(_) => {
+                        tracing::debug!("{dependency_name} connection attempt failed, retrying in {RETRY_WAIT:?}...");
+                        tokio::time::sleep(RETRY_WAIT).await;
+                        continue;
+                    },
                 }
             }
 

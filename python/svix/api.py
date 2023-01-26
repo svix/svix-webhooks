@@ -12,6 +12,7 @@ from .internal.openapi_client.api.application import (
     update_application_api_v1_app_app_id_put,
 )
 from .internal.openapi_client.api.authentication import (
+    get_app_portal_access_api_v1_auth_app_portal_access_app_id_post,
     get_dashboard_access_api_v1_auth_dashboard_access_app_id_post,
     logout_api_v1_auth_logout_post,
 )
@@ -60,6 +61,8 @@ from .internal.openapi_client.api.message_attempt import (
     resend_webhook_api_v1_app_app_id_msg_msg_id_endpoint_endpoint_id_resend_post,
 )
 from .internal.openapi_client.client import AuthenticatedClient
+from .internal.openapi_client.models.app_portal_access_in import AppPortalAccessIn
+from .internal.openapi_client.models.app_portal_access_out import AppPortalAccessOut
 from .internal.openapi_client.models.application_in import ApplicationIn
 from .internal.openapi_client.models.application_out import ApplicationOut
 from .internal.openapi_client.models.dashboard_access_out import DashboardAccessOut
@@ -174,6 +177,13 @@ class ApiBase:
 
 
 class AuthenticationAsync(ApiBase):
+    async def app_portal_access(
+        self, app_id: str, app_portal_access_in: AppPortalAccessIn, options: PostOptions = PostOptions()
+    ) -> AppPortalAccessOut:
+        return await get_app_portal_access_api_v1_auth_app_portal_access_app_id_post.asyncio(
+            client=self._client, app_id=app_id, json_body=app_portal_access_in, **options.to_dict()
+        )
+
     async def dashboard_access(self, app_id: str, options: PostOptions = PostOptions()) -> DashboardAccessOut:
         return await get_dashboard_access_api_v1_auth_dashboard_access_app_id_post.asyncio(
             client=self._client, app_id=app_id, **options.to_dict()
@@ -184,6 +194,13 @@ class AuthenticationAsync(ApiBase):
 
 
 class Authentication(ApiBase):
+    def app_portal_access(
+        self, app_id: str, app_portal_access_in: AppPortalAccessIn, options: PostOptions = PostOptions()
+    ) -> AppPortalAccessOut:
+        return get_app_portal_access_api_v1_auth_app_portal_access_app_id_post.sync(
+            client=self._client, app_id=app_id, json_body=app_portal_access_in, **options.to_dict()
+        )
+
     def dashboard_access(self, app_id: str, options: PostOptions = PostOptions()) -> DashboardAccessOut:
         return get_dashboard_access_api_v1_auth_dashboard_access_app_id_post.sync(
             client=self._client, app_id=app_id, **options.to_dict()

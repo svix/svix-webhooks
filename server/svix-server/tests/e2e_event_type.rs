@@ -1,14 +1,20 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
+use std::collections::HashSet;
+
 use reqwest::StatusCode;
 
 use svix_server::{
+    core::types::{ApplicationId, EventTypeName, FeatureFlag, FeatureFlagSet},
     db::models::eventtype::Schema,
     v1::{
-        endpoints::endpoint::EndpointOut,
-        endpoints::event_type::{EventTypeIn, EventTypeOut, RetryScheduleInOut},
-        endpoints::message::MessageOut,
+        endpoints::{
+            application::ApplicationOut,
+            endpoint::EndpointOut,
+            event_type::{EventTypeIn, EventTypeOut, RetryScheduleInOut},
+            message::MessageOut,
+        },
         utils::ListResponse,
     },
 };
@@ -17,10 +23,10 @@ mod utils;
 
 use utils::{
     common_calls::{
-        common_test_list, create_test_app, event_type_in, get_msg_attempt_list_and_assert_count,
-        message_in,
+        app_portal_access, application_in, common_test_list, create_test_app, event_type_in,
+        get_msg_attempt_list_and_assert_count, message_in,
     },
-    start_svix_server,
+    start_svix_server, IgnoredResponse,
 };
 
 #[tokio::test]
@@ -194,6 +200,96 @@ async fn test_event_type_create_read_list() {
         schemas: None,
         ..et
     }));
+}
+
+#[tokio::test]
+async fn test_event_type_feature_flags() {
+    let (client, _jh) = start_svix_server().await;
+
+    let feature = FeatureFlag("foo-feature".into());
+    let another_feature = FeatureFlag("bar-feature".into());
+    let (features, other_features, union) = {
+        let mut s1 = HashSet::new();
+        s1.insert(feature.clone());
+        let mut s2 = HashSet::new();
+        s2.insert(another_feature);
+        let union: FeatureFlagSet = s1.union(&s2).cloned().collect();
+
+        (s1, s2, union)
+    };
+
+    let et: EventTypeOut = client
+        .post(
+            "api/v1/event-type/",
+            EventTypeIn {
+                name: EventTypeName("event-type-with-flag".to_owned()),
+                description: "test-event-description".to_owned(),
+                deleted: false,
+                schemas: None,
+                feature_flag: Some(feature),
+            },
+            StatusCode::CREATED,
+        )
+        .await
+        .unwrap();
+
+    let _: EventTypeOut = client
+        .post(
+            "api/v1/event-type/",
+            EventTypeIn {
+                name: EventTypeName("no-flag-event".to_owned()),
+                description: "test-event-description".to_owned(),
+                deleted: false,
+                schemas: None,
+                feature_flag: None,
+            },
+            StatusCode::CREATED,
+        )
+        .await
+        .unwrap();
+
+    let app: ApplicationId = client
+        .post::<_, ApplicationOut>(
+            "api/v1/app/",
+            application_in("TEST_APP_NAME"),
+            StatusCode::CREATED,
+        )
+        .await
+        .unwrap()
+        .id;
+
+    let path = format!("api/v1/event-type/{}/", et.name);
+
+    for (flag_set, should_see) in [
+        (FeatureFlagSet::default(), false),
+        (other_features, false),
+        (union.clone(), true),
+        (features.clone(), true),
+    ] {
+        let client = app_portal_access(&client, &app, flag_set).await;
+
+        let list: ListResponse<EventTypeOut> = client
+            .get("api/v1/event-type/", StatusCode::OK)
+            .await
+            .unwrap();
+
+        if should_see {
+            // If the client is expected to see both event types it should be able to retrieve it
+            let got_et: EventTypeOut = client.get(&path, StatusCode::OK).await.unwrap();
+            assert_eq!(et, got_et);
+
+            // ... and see it in the list.
+            assert_eq!(list.data.len(), 2);
+            assert!(list.data.contains(&et));
+        } else {
+            // If the client is not supposed to see it it shouldn't be able to retrieve it
+            let _: IgnoredResponse = client.get(&path, StatusCode::NOT_FOUND).await.unwrap();
+
+            // ... and it shouldn't be in the list.
+            assert_eq!(list.data.len(), 1);
+            assert!(!list.data.contains(&et));
+        };
+    }
 }
 
 #[tokio::test]

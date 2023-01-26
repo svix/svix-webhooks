@@ -3,6 +3,7 @@
 
 //! Module defining utilites for PATCH requests focused mostly around non-required field types.
 
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
@@ -177,6 +178,34 @@ where
             )),
             UnrequiredField::Some(v) => v.serialize(serializer),
         }
+    }
+}
+
+impl<T: JsonSchema> JsonSchema for UnrequiredField<T> {
+    fn is_referenceable() -> bool {
+        false
+    }
+
+    fn schema_name() -> String {
+        format!("Unrequired_{}", T::schema_name())
+    }
+
+    fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
+        Option::<T>::json_schema(gen)
+    }
+}
+
+impl<T: JsonSchema> JsonSchema for UnrequiredNullableField<T> {
+    fn is_referenceable() -> bool {
+        false
+    }
+
+    fn schema_name() -> String {
+        format!("UnrequiredNullable_{}", T::schema_name())
+    }
+
+    fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
+        Option::<T>::json_schema(gen)
     }
 }
 

@@ -25,47 +25,47 @@ use crate::{
 /// Sent when an endpoint has been automatically disabled after continuous failures.
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct EndpointDisabledEvent<'a> {
-    pub app_id: &'a ApplicationId,
-    pub app_uid: Option<&'a ApplicationUid>,
-    pub endpoint_id: &'a EndpointId,
-    pub endpoint_uid: Option<&'a EndpointUid>,
+pub struct EndpointDisabledEvent {
+    pub app_id: ApplicationId,
+    pub app_uid: Option<ApplicationUid>,
+    pub endpoint_id: EndpointId,
+    pub endpoint_uid: Option<EndpointUid>,
     pub fail_since: DateTime<Utc>,
 }
 
 /// Sent when an endpoint is created, updated, or deleted
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct EndpointEvent<'a> {
-    pub app_id: &'a ApplicationId,
-    pub app_uid: Option<&'a ApplicationUid>,
-    pub endpoint_id: &'a EndpointId,
-    pub endpoint_uid: Option<&'a EndpointUid>,
+pub struct EndpointEvent {
+    pub app_id: ApplicationId,
+    pub app_uid: Option<ApplicationUid>,
+    pub endpoint_id: EndpointId,
+    pub endpoint_uid: Option<EndpointUid>,
 }
 
-impl<'a> EndpointEvent<'a> {
-    pub fn new(app_uid: Option<&'a ApplicationUid>, endp: &'a endpoint::Model) -> Self {
+impl EndpointEvent {
+    pub fn new(app_uid: Option<&ApplicationUid>, endp: &endpoint::Model) -> Self {
         Self {
-            app_id: &endp.app_id,
-            app_uid,
-            endpoint_id: &endp.id,
-            endpoint_uid: endp.uid.as_ref(),
+            app_id: endp.app_id.clone(),
+            app_uid: app_uid.cloned(),
+            endpoint_id: endp.id.clone(),
+            endpoint_uid: endp.uid.clone(),
         }
     }
 }
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct MessageAttempetLast<'a> {
-    pub id: &'a MessageAttemptId,
+pub struct MessageAttempetLast {
+    pub id: MessageAttemptId,
     pub response_status_code: i16,
     pub timestamp: DateTime<Utc>,
 }
 
-impl<'a> From<&'a messageattempt::Model> for MessageAttempetLast<'a> {
-    fn from(attempt: &'a messageattempt::Model) -> Self {
+impl From<messageattempt::Model> for MessageAttempetLast {
+    fn from(attempt: messageattempt::Model) -> Self {
         Self {
-            id: &attempt.id,
+            id: attempt.id,
             response_status_code: attempt.response_status_code,
             timestamp: attempt.created_at.into(),
         }
@@ -77,30 +77,30 @@ impl<'a> From<&'a messageattempt::Model> for MessageAttempetLast<'a> {
 /// event.
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct MessageAttemptEvent<'a> {
-    pub app_id: &'a ApplicationId,
-    pub app_uid: Option<&'a ApplicationUid>,
-    pub msg_id: &'a MessageId,
-    pub msg_event_id: Option<&'a MessageUid>,
-    pub endpoint_id: &'a EndpointId,
-    pub last_attempt: MessageAttempetLast<'a>,
+pub struct MessageAttemptEvent {
+    pub app_id: ApplicationId,
+    pub app_uid: Option<ApplicationUid>,
+    pub msg_id: MessageId,
+    pub msg_event_id: Option<MessageUid>,
+    pub endpoint_id: EndpointId,
+    pub last_attempt: MessageAttempetLast,
 }
 
 #[derive(Debug, Serialize)]
 #[serde(tag = "type", content = "data")]
-pub enum OperationalWebhook<'a> {
+pub enum OperationalWebhook {
     #[serde(rename = "endpoint.disabled")]
-    EndpointDisabled(EndpointDisabledEvent<'a>),
+    EndpointDisabled(EndpointDisabledEvent),
     #[serde(rename = "endpoint.created")]
-    EndpointCreated(EndpointEvent<'a>),
+    EndpointCreated(EndpointEvent),
     #[serde(rename = "endpoint.updated")]
-    EndpointUpdated(EndpointEvent<'a>),
+    EndpointUpdated(EndpointEvent),
     #[serde(rename = "endpoint.deleted")]
-    EndpointDeleted(EndpointEvent<'a>),
+    EndpointDeleted(EndpointEvent),
     #[serde(rename = "message.attempt.exhausted")]
-    MessageAttemptExhausted(MessageAttemptEvent<'a>),
+    MessageAttemptExhausted(MessageAttemptEvent),
     #[serde(rename = "message.attempt.failing")]
-    MessageAttemptFailing(MessageAttemptEvent<'a>),
+    MessageAttemptFailing(MessageAttemptEvent),
 }
 
 pub type OperationalWebhookSender = Arc<OperationalWebhookSenderInner>;
@@ -118,7 +118,7 @@ impl OperationalWebhookSenderInner {
     pub async fn send_operational_webhook(
         &self,
         recipient_org_id: &OrganizationId,
-        payload: OperationalWebhook<'_>,
+        payload: OperationalWebhook,
     ) -> Result<()> {
         let url = match self.url.as_ref() {
             Some(url) => url,

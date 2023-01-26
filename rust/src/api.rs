@@ -4,6 +4,10 @@ use crate::apis::{
     message_api, message_attempt_api,
 };
 use crate::error::Result;
+use crate::models::{
+    AppPortalAccessIn, AppPortalAccessOut, IntegrationIn, IntegrationKeyOut, IntegrationOut,
+    IntegrationUpdate, ListResponseIntegrationOut,
+};
 pub use crate::models::{
     ApplicationIn, ApplicationOut, DashboardAccessOut, EndpointHeadersIn, EndpointHeadersOut,
     EndpointHeadersPatchIn, EndpointIn, EndpointOut, EndpointSecretOut, EndpointSecretRotateIn,
@@ -12,9 +16,6 @@ pub use crate::models::{
     ListResponseEventTypeOut, ListResponseMessageAttemptEndpointOut, ListResponseMessageAttemptOut,
     ListResponseMessageEndpointOut, ListResponseMessageOut, MessageAttemptOut, MessageIn,
     MessageOut, MessageStatus, RecoverIn, StatusCodeClass,
-};
-use crate::models::{
-    IntegrationIn, IntegrationKeyOut, IntegrationOut, IntegrationUpdate, ListResponseIntegrationOut,
 };
 
 const CRATE_VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -81,7 +82,7 @@ impl Svix {
 
 #[derive(Default)]
 pub struct PostOptions {
-    idempotency_key: Option<String>,
+    pub idempotency_key: Option<String>,
 }
 
 pub struct Authentication<'a> {
@@ -111,6 +112,26 @@ impl<'a> Authentication<'a> {
         )
     }
 
+    pub async fn app_portal_access(
+        &self,
+        app_id: String,
+        app_portal_access_in: AppPortalAccessIn,
+        options: Option<PostOptions>,
+    ) -> Result<AppPortalAccessOut> {
+        let options = options.unwrap_or_default();
+        Ok(
+            authentication_api::get_app_portal_access_api_v1_auth_app_portal_access_app_id_post(
+                self.cfg,
+                authentication_api::GetAppPortalAccessApiV1AuthAppPortalAccessAppIdPostParams {
+                    app_id,
+                    app_portal_access_in,
+                    idempotency_key: options.idempotency_key,
+                },
+            )
+            .await?,
+        )
+    }
+
     pub async fn logout(&self, options: Option<PostOptions>) -> Result<()> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
         Ok(authentication_api::logout_api_v1_auth_logout_post(
@@ -123,8 +144,8 @@ impl<'a> Authentication<'a> {
 
 #[derive(Default)]
 pub struct ListOptions {
-    iterator: Option<String>,
-    limit: Option<i32>,
+    pub iterator: Option<String>,
+    pub limit: Option<i32>,
 }
 
 pub type ApplicationListOptions = ListOptions;
@@ -592,10 +613,10 @@ impl<'a> Integration<'a> {
 
 #[derive(Default)]
 pub struct EventTypeListOptions {
-    iterator: Option<String>,
-    limit: Option<i32>,
-    with_content: Option<bool>,
-    include_archived: Option<bool>,
+    pub iterator: Option<String>,
+    pub limit: Option<i32>,
+    pub with_content: Option<bool>,
+    pub include_archived: Option<bool>,
 }
 
 pub struct EventType<'a> {
@@ -695,15 +716,15 @@ impl<'a> EventType<'a> {
 
 #[derive(Default)]
 pub struct MessageListOptions {
-    iterator: Option<String>,
-    limit: Option<i32>,
-    event_types: Option<Vec<String>>,
+    pub iterator: Option<String>,
+    pub limit: Option<i32>,
+    pub event_types: Option<Vec<String>>,
     // FIXME: make before and after actual dates
     /// RFC3339 date string
-    before: Option<String>,
+    pub before: Option<String>,
     /// RFC3339 date string
-    after: Option<String>,
-    channel: Option<String>,
+    pub after: Option<String>,
+    pub channel: Option<String>,
 }
 
 pub struct Message<'a> {
@@ -778,17 +799,17 @@ impl<'a> Message<'a> {
 
 #[derive(Default)]
 pub struct MessageAttemptListOptions {
-    iterator: Option<String>,
-    limit: Option<i32>,
-    event_types: Option<Vec<String>>,
+    pub iterator: Option<String>,
+    pub limit: Option<i32>,
+    pub event_types: Option<Vec<String>>,
     // FIXME: make before and after actual dates
     /// RFC3339 date string
-    before: Option<String>,
+    pub before: Option<String>,
     /// RFC3339 date string
-    after: Option<String>,
-    channel: Option<String>,
-    status: Option<MessageStatus>,
-    status_code_class: Option<StatusCodeClass>,
+    pub after: Option<String>,
+    pub channel: Option<String>,
+    pub status: Option<MessageStatus>,
+    pub status_code_class: Option<StatusCodeClass>,
 }
 
 pub struct MessageAttempt<'a> {

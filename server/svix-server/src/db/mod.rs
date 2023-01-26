@@ -15,7 +15,6 @@ use models::{application, endpoint, eventtype, message, messageattempt, messaged
 static MIGRATIONS: sqlx::migrate::Migrator = sqlx::migrate!();
 
 async fn connect(dsn: &str, max_pool_size: u16) -> sqlx::Pool<sqlx::Postgres> {
-    tracing::debug!("DB: Initializing pool");
     if DbBackend::Postgres.is_prefix_of(dsn) {
         PgPoolOptions::new()
             .max_connections(max_pool_size.into())

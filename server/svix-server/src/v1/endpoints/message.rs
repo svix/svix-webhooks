@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 use crate::{
-    cache::Cache,
     core::{
         message_app::CreateMessageApp,
         permissions,
@@ -13,23 +12,28 @@ use crate::{
     },
     ctx, err_generic,
     error::{HttpError, Result},
-    queue::{MessageTaskBatch, TaskQueueProducer},
+    queue::MessageTaskBatch,
     v1::utils::{
-        apply_pagination, iterator_from_before_or_after, validation_error, ListResponse,
-        MessageListFetchOptions, ModelIn, ModelOut, PaginationLimit, ReversibleIterator,
-        ValidatedJson, ValidatedQuery,
+        apply_pagination, iterator_from_before_or_after, openapi_tag, validation_error,
+        ListResponse, MessageListFetchOptions, ModelIn, ModelOut, PaginationLimit,
+        ReversibleIterator, ValidatedJson, ValidatedQuery,
     },
+    AppState,
+};
+use aide::axum::{
+    routing::{get, post},
+    ApiRouter,
 };
 use axum::{
-    extract::{Extension, Path},
-    routing::{get, post},
-    Json, Router,
+    extract::{Path, State},
+    Json,
 };
 use chrono::{DateTime, Duration, Utc};
 use hyper::StatusCode;
+use schemars::JsonSchema;
 use sea_orm::entity::prelude::*;
+use sea_orm::ActiveModelTrait;
 use sea_orm::{sea_query::Expr, ActiveValue::Set};
-use sea_orm::{ActiveModelTrait, DatabaseConnection};
 use serde::{Deserialize, Serialize};
 
 use svix_server_derive::{ModelIn, ModelOut};
@@ -64,7 +68,7 @@ pub fn validate_message_in_payload(
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Validate, ModelIn)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Validate, ModelIn, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct MessageIn {
     #[validate]
@@ -107,7 +111,7 @@ impl ModelIn for MessageIn {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ModelOut)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ModelOut, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct MessageOut {
     #[serde(rename = "eventId")]
@@ -154,7 +158,7 @@ fn default_90() -> i64 {
     90
 }
 
-#[derive(Clone, Debug, Deserialize, Validate)]
+#[derive(Clone, Debug, Deserialize, Validate, JsonSchema)]
 pub struct ListMessagesQueryParams {
     #[validate]
     channel: Option<EventChannel>,
@@ -165,7 +169,7 @@ pub struct ListMessagesQueryParams {
 }
 
 async fn list_messages(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<MessageId>>>,
     ValidatedQuery(ListMessagesQueryParams {
         channel,
@@ -212,16 +216,19 @@ async fn list_messages(
     Ok(Json(MessageOut::list_response(out, limit as usize, false)))
 }
 
-#[derive(Debug, Deserialize, Validate)]
+#[derive(Debug, Deserialize, Validate, JsonSchema)]
 pub struct CreateMessageQueryParams {
     #[serde(default = "default_true")]
     with_content: bool,
 }
 
 async fn create_message(
-    Extension(ref db): Extension<DatabaseConnection>,
-    Extension(queue_tx): Extension<TaskQueueProducer>,
-    Extension(cache): Extension<Cache>,
+    State(AppState {
+        ref db,
+        queue_tx,
+        cache,
+        ..
+    }): State<AppState>,
     ValidatedQuery(CreateMessageQueryParams { with_content }): ValidatedQuery<
         CreateMessageQueryParams,
     >,
@@ -229,7 +236,7 @@ async fn create_message(
     ValidatedJson(data): ValidatedJson<MessageIn>,
 ) -> Result<(StatusCode, Json<MessageOut>)> {
     let create_message_app = CreateMessageApp::layered_fetch(
-        cache,
+        &cache,
         db,
         Some(app.clone()),
         app.org_id.clone(),
@@ -273,13 +280,13 @@ async fn create_message(
     Ok((StatusCode::ACCEPTED, Json(msg_out)))
 }
 
-#[derive(Debug, Deserialize, Validate)]
+#[derive(Debug, Deserialize, Validate, JsonSchema)]
 pub struct GetMessageQueryParams {
     #[serde(default = "default_true")]
     with_content: bool,
 }
 async fn get_message(
-    Extension(ref db): Extension<DatabaseConnection>,
+    State(AppState { ref db, .. }): State<AppState>,
     Path((_app_id, msg_id)): Path<(ApplicationIdOrUid, MessageIdOrUid)>,
     ValidatedQuery(GetMessageQueryParams { with_content }): ValidatedQuery<GetMessageQueryParams>,
     permissions::Application { app }: permissions::Application,
@@ -298,10 +305,18 @@ async fn get_message(
     Ok(Json(msg_out))
 }
 
-pub fn router() -> Router {
-    Router::new()
-        .route("/app/:app_id/msg/", post(create_message).get(list_messages))
-        .route("/app/:app_id/msg/:msg_id/", get(get_message))
+pub fn router() -> ApiRouter<AppState> {
+    ApiRouter::new()
+        .api_route_with(
+            "/app/:app_id/msg/",
+            post(create_message).get(list_messages),
+            openapi_tag("Message"),
+        )
+        .api_route_with(
+            "/app/:app_id/msg/:msg_id/",
+            get(get_message),
+            openapi_tag("Message"),
+        )
 }
 
 #[cfg(test)]
