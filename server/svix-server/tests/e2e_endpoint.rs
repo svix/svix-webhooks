@@ -1887,7 +1887,7 @@ async fn test_msg_channels_filter() {
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
-    let _receiver = TestReceiver::start(StatusCode::OK);
+    let receiver = TestReceiver::start(StatusCode::OK);
 
     let ec = EventChannelSet(HashSet::from([EventChannel("tag1".to_owned())]));
 
@@ -1897,6 +1897,7 @@ async fn test_msg_channels_filter() {
             &app_id,
             EndpointIn {
                 channels,
+                url: Url::parse(&receiver.endpoint).unwrap(),
                 ..default_test_endpoint()
             },
         )
@@ -1919,8 +1920,6 @@ async fn test_msg_channels_filter() {
             )
             .await
             .unwrap();
-
-        tokio::time::sleep(Duration::from_millis(100)).await;
 
         let _list =
             get_msg_attempt_list_and_assert_count(&client, &app_id, &msg.id, expected_count)

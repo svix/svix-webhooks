@@ -26,7 +26,7 @@ use crate::{
     AppState,
 };
 use aide::axum::{
-    routing::{get, post},
+    routing::{delete, get, post},
     ApiRouter,
 };
 use axum::{
@@ -37,7 +37,10 @@ use chrono::{DateTime, Utc};
 
 use hyper::StatusCode;
 use schemars::JsonSchema;
-use sea_orm::{entity::prelude::*, sea_query::Expr, DatabaseConnection, QueryOrder, QuerySelect};
+use sea_orm::{
+    entity::prelude::*, sea_query::Expr, DatabaseConnection, IntoActiveModel, QueryOrder,
+    QuerySelect,
+};
 use serde::{Deserialize, Serialize};
 
 use svix_server_derive::ModelOut;
@@ -707,6 +710,37 @@ async fn resend_webhook(
     Ok((StatusCode::ACCEPTED, Json(EmptyResponse {})))
 }
 
+async fn expunge_attempt_content(
+    State(AppState { ref db, .. }): State<AppState>,
+    Path((_app_id, msg_id, attempt_id)): Path<(
+        ApplicationIdOrUid,
+        MessageIdOrUid,
+        MessageAttemptId,
+    )>,
+    permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
+) -> Result<StatusCode> {
+    let msg = ctx!(
+        message::Entity::secure_find_by_id_or_uid(app.id, msg_id)
+            .one(db)
+            .await
+    )?
+    .ok_or_else(|| HttpError::not_found(None, Some("Message not found".to_string())))?;
+
+    let mut attempt = ctx!(
+        messageattempt::Entity::secure_find_by_msg(msg.id)
+            .filter(messageattempt::Column::Id.eq(attempt_id))
+            .one(db)
+            .await
+    )?
+    .ok_or_else(|| HttpError::not_found(None, Some("Message attempt not found".to_string())))?
+    .into_active_model();
+
+    attempt.response = sea_orm::Set("EXPUNGED".to_string());
+    ctx!(attempt.update(db).await)?;
+
+    Ok(StatusCode::NO_CONTENT)
+}
+
 pub fn router() -> ApiRouter<AppState> {
     ApiRouter::new()
         // NOTE: [`list_messageattempts`] is deprecated
@@ -718,6 +752,11 @@ pub fn router() -> ApiRouter<AppState> {
         .api_route_with(
             "/app/:app_id/msg/:msg_id/attempt/:attempt_id/",
             get(get_messageattempt),
+            openapi_tag("Message Attempt"),
+        )
+        .api_route_with(
+            "/app/:app_id/msg/:msg_id/attempt/:attempt_id/content/",
+            delete(expunge_attempt_content),
             openapi_tag("Message Attempt"),
         )
         .api_route_with(
