@@ -71,6 +71,8 @@ impl WebhookClient {
         ));
         connector.enforce_http(false);
 
+        // Openssl is required here -- in practice, rustls does not support many
+        // ciphers that we encounter on a regular basis:
         let ssl = SslConnector::builder(SslMethod::tls()).expect("SslConnector build failed");
         let https = HttpsConnector::with_connector(NonLocalConnector { connector }, ssl)
             .expect("HttpsConnector build failed");
