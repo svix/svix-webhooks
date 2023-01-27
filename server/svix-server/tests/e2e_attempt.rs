@@ -22,10 +22,71 @@ use utils::{
         get_msg_attempt_list_and_assert_count,
     },
     get_default_test_config, run_with_retries, start_svix_server, start_svix_server_with_cfg,
-    TestReceiver,
+    IgnoredResponse, TestReceiver,
 };
 
 use std::time::Duration;
+
+#[tokio::test]
+async fn test_expunge_attempt_response_body() {
+    let (client, _jh) = start_svix_server().await;
+
+    let app_id = create_test_app(&client, "app1").await.unwrap().id;
+
+    let sensitive_response_json = serde_json::json!({"sensitive":"data"});
+    let mut receiver = TestReceiver::start_with_body(
+        axum::http::StatusCode::OK,
+        axum::Json(sensitive_response_json.clone()),
+    );
+
+    let endpoint_id = create_test_endpoint(&client, &app_id, &receiver.endpoint)
+        .await
+        .unwrap()
+        .id;
+
+    let msg_id = create_test_message(&client, &app_id, serde_json::json!({"test": "data1"}))
+        .await
+        .unwrap()
+        .id;
+
+    receiver.data_recv.recv().await;
+
+    let attempt = run_with_retries(|| async {
+        let attempts: ListResponse<MessageAttemptOut> = client
+            .get(
+                &format!("api/v1/app/{app_id}/attempt/endpoint/{endpoint_id}/"),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
+        assert_eq!(1, attempts.data.len());
+        Ok(attempts.data[0].clone())
+    })
+    .await
+    .unwrap();
+
+    let attempt_response: serde_json::Value = serde_json::from_str(&attempt.response).unwrap();
+    assert_eq!(sensitive_response_json, attempt_response);
+
+    let attempt_id = &attempt.id;
+    let _: IgnoredResponse = client
+        .delete(
+            &format!("api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/content/"),
+            StatusCode::NO_CONTENT,
+        )
+        .await
+        .unwrap();
+
+    let attempt: MessageAttemptOut = client
+        .get(
+            &format!("api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/"),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!("EXPUNGED", &attempt.response);
+}
 
 #[tokio::test]
 async fn test_list_attempted_messages() {

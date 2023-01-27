@@ -17,7 +17,7 @@ mod utils;
 
 use utils::{
     common_calls::{create_test_app, create_test_endpoint, message_in},
-    run_with_retries, start_svix_server, TestReceiver,
+    run_with_retries, start_svix_server, IgnoredResponse, TestReceiver,
 };
 
 #[tokio::test]
@@ -390,4 +390,50 @@ async fn test_payload_retention_period() {
         .unwrap();
 
     assert_eq!(message.unwrap().payload, None);
+}
+
+#[tokio::test]
+async fn test_expunge_message_payload() {
+    let (client, _jh) = start_svix_server().await;
+
+    let app_id = create_test_app(&client, "testApp").await.unwrap().id;
+
+    let payload = serde_json::json!({"sensitive": "data"});
+    let msg: MessageOut = client
+        .post(
+            &format!("api/v1/app/{}/msg/", &app_id),
+            message_in(&app_id, payload.clone()).unwrap(),
+            StatusCode::ACCEPTED,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(msg.payload, payload);
+
+    let msg = client
+        .get::<MessageOut>(
+            &format!("api/v1/app/{}/msg/{}/", &app_id, &msg.id),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+    assert_eq!(msg.payload, payload);
+
+    let _: IgnoredResponse = client
+        .delete(
+            &format!("api/v1/app/{}/msg/{}/content/", &app_id, &msg.id),
+            StatusCode::NO_CONTENT,
+        )
+        .await
+        .unwrap();
+
+    let msg = client
+        .get::<MessageOut>(
+            &format!("api/v1/app/{}/msg/{}/", &app_id, &msg.id),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(msg.payload, serde_json::json!({"expired": true}));
 }

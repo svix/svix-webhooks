@@ -8,6 +8,7 @@ use std::{
 };
 
 use anyhow::{Context, Result};
+use axum::response::IntoResponse;
 use reqwest::{Client, RequestBuilder, StatusCode};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use tokio::sync::mpsc;
@@ -258,6 +259,7 @@ pub async fn start_svix_server_with_cfg_and_org_id(
     (TestClient::new(base_uri, &token), jh)
 }
 
+#[derive(Debug)]
 pub struct TestReceiver {
     pub endpoint: String,
     pub jh: tokio::task::JoinHandle<()>,
@@ -267,19 +269,27 @@ pub struct TestReceiver {
 }
 
 #[derive(Clone)]
-pub struct TestAppState {
+pub struct TestAppState<T: IntoResponse + Clone> {
     tx: mpsc::Sender<serde_json::Value>,
     header_tx: mpsc::Sender<HeaderMap>,
     response_status_code: Arc<Mutex<ResponseStatusCode>>,
+    response_body: T,
 }
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct ResponseStatusCode {
     pub status_code: axum::http::StatusCode,
 }
 
 impl TestReceiver {
     pub fn start(resp_with: axum::http::StatusCode) -> Self {
+        Self::start_with_body(resp_with, ())
+    }
+
+    pub fn start_with_body<T>(resp_with: axum::http::StatusCode, body: T) -> Self
+    where
+        T: IntoResponse + Clone + Send + Sync + 'static,
+    {
         let listener = TcpListener::bind("127.0.0.1:0").unwrap();
         let endpoint = format!("http://{}/", listener.local_addr().unwrap());
 
@@ -299,6 +309,7 @@ impl TestReceiver {
                 tx,
                 header_tx,
                 response_status_code: response_status_code.clone(),
+                response_body: body,
             })
             .into_make_service();
 
@@ -324,18 +335,22 @@ impl TestReceiver {
     }
 }
 
-async fn test_receiver_route(
+async fn test_receiver_route<T: IntoResponse + Clone>(
     axum::extract::State(TestAppState {
         tx,
         header_tx,
         response_status_code,
-    }): axum::extract::State<TestAppState>,
+        response_body,
+    }): axum::extract::State<TestAppState<T>>,
     headers: HeaderMap,
     axum::Json(json): axum::Json<serde_json::Value>,
-) -> axum::http::StatusCode {
+) -> (axum::http::StatusCode, impl IntoResponse) {
     tx.send(json).await.unwrap();
     header_tx.send(headers).await.unwrap();
-    response_status_code.lock().unwrap().status_code
+    (
+        response_status_code.lock().unwrap().status_code,
+        response_body,
+    )
 }
 
 pub async fn run_with_retries<O, F, C>(f: C) -> Result<O>

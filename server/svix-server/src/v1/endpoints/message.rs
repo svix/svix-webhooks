@@ -21,7 +21,7 @@ use crate::{
     AppState,
 };
 use aide::axum::{
-    routing::{get, post},
+    routing::{delete, get, post},
     ApiRouter,
 };
 use axum::{
@@ -31,8 +31,8 @@ use axum::{
 use chrono::{DateTime, Duration, Utc};
 use hyper::StatusCode;
 use schemars::JsonSchema;
-use sea_orm::entity::prelude::*;
 use sea_orm::ActiveModelTrait;
+use sea_orm::{entity::prelude::*, IntoActiveModel};
 use sea_orm::{sea_query::Expr, ActiveValue::Set};
 use serde::{Deserialize, Serialize};
 
@@ -305,6 +305,25 @@ async fn get_message(
     Ok(Json(msg_out))
 }
 
+async fn expunge_message_content(
+    State(AppState { ref db, .. }): State<AppState>,
+    Path((_app_id, msg_id)): Path<(ApplicationIdOrUid, MessageIdOrUid)>,
+    permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
+) -> Result<StatusCode> {
+    let mut msg = ctx!(
+        message::Entity::secure_find_by_id_or_uid(app.id, msg_id)
+            .one(db)
+            .await
+    )?
+    .ok_or_else(|| HttpError::not_found(None, None))?
+    .into_active_model();
+
+    msg.payload = Set(None);
+    ctx!(msg.update(db).await)?;
+
+    Ok(StatusCode::NO_CONTENT)
+}
+
 pub fn router() -> ApiRouter<AppState> {
     ApiRouter::new()
         .api_route_with(
@@ -315,6 +334,11 @@ pub fn router() -> ApiRouter<AppState> {
         .api_route_with(
             "/app/:app_id/msg/:msg_id/",
             get(get_message),
+            openapi_tag("Message"),
+        )
+        .api_route_with(
+            "/app/:app_id/msg/:msg_id/content/",
+            delete(expunge_message_content),
             openapi_tag("Message"),
         )
 }
