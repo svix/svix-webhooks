@@ -584,5 +584,54 @@ namespace Svix
                 return null;
             }
         }
+
+        public bool Replay(string appId, string endpointId, ReplayIn replayIn,
+            string idempotencyKey = default)
+        {
+            try
+            {
+                var response = _endpointApi.ReplayMissingWebhooksApiV1AppAppIdEndpointEndpointIdReplayMissingPostWithHttpInfo(
+                    appId,
+                    endpointId,
+                    replayIn,
+                    idempotencyKey);
+
+                return response.StatusCode == HttpStatusCode.Accepted;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(Replay)} failed");
+
+                if (Throw)
+                    throw;
+
+                return false;
+            }
+        }
+
+        public async Task<bool> ReplayAsync(string appId, string endpointId, ReplayIn replayIn,
+            string idempotencyKey = default, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var response = await _endpointApi.ReplayMissingWebhooksApiV1AppAppIdEndpointEndpointIdReplayMissingPostWithHttpInfoAsync(
+                    appId,
+                    endpointId,
+                    replayIn,
+                    idempotencyKey,
+                    cancellationToken);
+
+                return response.StatusCode == HttpStatusCode.Accepted;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(ReplayAsync)} failed");
+
+                if (Throw)
+                    throw;
+
+                return false;
+            }
+        }
     }
 }

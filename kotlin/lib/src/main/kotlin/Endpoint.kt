@@ -13,6 +13,7 @@ import com.svix.kotlin.models.EndpointStats
 import com.svix.kotlin.models.EndpointUpdate
 import com.svix.kotlin.models.ListResponseEndpointOut
 import com.svix.kotlin.models.RecoverIn
+import com.svix.kotlin.models.ReplayIn
 
 class Endpoint internal constructor(token: String, options: SvixOptions) {
     val api = EndpointApi(options.serverUrl)
@@ -189,6 +190,24 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
                 endpointId,
                 appId,
                 null
+            )
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
+
+    suspend fun replay(
+        appId: String,
+        endpointId: String,
+        replayIn: ReplayIn,
+        options: PostOptions = PostOptions()
+    ) {
+        try {
+            api.replayMissingWebhooksApiV1AppAppIdEndpointEndpointIdReplayMissingPost(
+                appId,
+                endpointId,
+                replayIn,
+                options.idempotencyKey
             )
         } catch (e: Exception) {
             throw ApiException.wrap(e)
