@@ -148,7 +148,6 @@ pub struct CreateMessageEndpoint {
     pub id: EndpointId,
     pub url: String,
     pub key: EndpointSecretInternal,
-    pub old_signing_keys: Option<ExpiringSigningKeys>,
     pub event_types_ids: Option<EventTypeNameSet>,
     pub channels: Option<EventChannelSet>,
     pub rate_limit: Option<u16>,
@@ -157,6 +156,8 @@ pub struct CreateMessageEndpoint {
     pub headers: Option<EndpointHeaders>,
     pub disabled: bool,
     pub deleted: bool,
+    // outside of this module, valid_signing_keys should be used instead
+    old_signing_keys: Option<ExpiringSigningKeys>,
 }
 
 impl CreateMessageEndpoint {
