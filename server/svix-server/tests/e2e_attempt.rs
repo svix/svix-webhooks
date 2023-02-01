@@ -525,9 +525,9 @@ async fn test_pagination_by_endpoint() {
             )
             .await
             .unwrap();
-        assert_eq!(first_three_by_time.data.len(), 3);
+        assert_eq!(first_three_by_time.data.len(), 4);
         assert_eq!(
-            &all_attempts.data[0..3],
+            &all_attempts.data[0..=3],
             first_three_by_time.data.as_slice()
         );
 
