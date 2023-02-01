@@ -143,7 +143,7 @@ pub fn iterator_from_before_or_after<I: BaseId<Output = I> + Validate>(
     iterator.or_else(|| {
         before
             .map(|time| ReversibleIterator::Normal(I::start_id(time)))
-            .or_else(|| after.map(|time| ReversibleIterator::Prev(I::end_id(time))))
+            .or_else(|| after.map(|time| ReversibleIterator::Prev(I::start_id(time))))
     })
 }
 
