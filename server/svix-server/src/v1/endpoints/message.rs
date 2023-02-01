@@ -6,8 +6,8 @@ use crate::{
         message_app::CreateMessageApp,
         permissions,
         types::{
-            ApplicationIdOrUid, EventChannel, EventChannelSet, EventTypeName, EventTypeNameSet,
-            MessageAttemptTriggerType, MessageId, MessageIdOrUid, MessageUid,
+            EventChannel, EventChannelSet, EventTypeName, EventTypeNameSet,
+            MessageAttemptTriggerType, MessageId, MessageUid,
         },
     },
     ctx, err_generic,
@@ -15,8 +15,8 @@ use crate::{
     queue::MessageTaskBatch,
     v1::utils::{
         apply_pagination, iterator_from_before_or_after, openapi_tag, validation_error,
-        ListResponse, MessageListFetchOptions, ModelIn, ModelOut, PaginationLimit,
-        ReversibleIterator, ValidatedJson, ValidatedQuery,
+        ApplicationMsgPath, ListResponse, MessageListFetchOptions, ModelIn, ModelOut,
+        PaginationLimit, ReversibleIterator, ValidatedJson, ValidatedQuery,
     },
     AppState,
 };
@@ -287,7 +287,7 @@ pub struct GetMessageQueryParams {
 }
 async fn get_message(
     State(AppState { ref db, .. }): State<AppState>,
-    Path((_app_id, msg_id)): Path<(ApplicationIdOrUid, MessageIdOrUid)>,
+    Path(ApplicationMsgPath { msg_id, .. }): Path<ApplicationMsgPath>,
     ValidatedQuery(GetMessageQueryParams { with_content }): ValidatedQuery<GetMessageQueryParams>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<MessageOut>> {
@@ -307,7 +307,7 @@ async fn get_message(
 
 async fn expunge_message_content(
     State(AppState { ref db, .. }): State<AppState>,
-    Path((_app_id, msg_id)): Path<(ApplicationIdOrUid, MessageIdOrUid)>,
+    Path(ApplicationMsgPath { msg_id, .. }): Path<ApplicationMsgPath>,
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
 ) -> Result<StatusCode> {
     let mut msg = ctx!(

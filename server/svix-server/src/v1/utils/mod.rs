@@ -27,7 +27,10 @@ use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use validator::{Validate, ValidationError};
 
 use crate::{
-    core::types::{BaseId, EventTypeName, EventTypeNameSet},
+    core::types::{
+        ApplicationIdOrUid, BaseId, EndpointIdOrUid, EventTypeName, EventTypeNameSet,
+        MessageAttemptId, MessageIdOrUid,
+    },
     error::{Error, HttpError, Result, ValidationErrorItem},
 };
 
@@ -460,6 +463,42 @@ pub fn get_unix_timestamp() -> u64 {
         .duration_since(UNIX_EPOCH)
         .unwrap()
         .as_secs()
+}
+
+#[derive(Deserialize, JsonSchema)]
+pub struct ApplicationPath {
+    pub app_id: ApplicationIdOrUid,
+}
+
+#[derive(Deserialize, JsonSchema)]
+pub struct ApplicationEndpointPath {
+    pub app_id: ApplicationIdOrUid,
+    pub endpoint_id: EndpointIdOrUid,
+}
+
+#[derive(Deserialize, JsonSchema)]
+pub struct ApplicationMsgPath {
+    pub app_id: ApplicationIdOrUid,
+    pub msg_id: MessageIdOrUid,
+}
+
+#[derive(Deserialize, JsonSchema)]
+pub struct ApplicationMsgEndpointPath {
+    pub app_id: ApplicationIdOrUid,
+    pub msg_id: MessageIdOrUid,
+    pub endpoint_id: EndpointIdOrUid,
+}
+
+#[derive(Deserialize, JsonSchema)]
+pub struct ApplicationMsgAttemptPath {
+    pub app_id: ApplicationIdOrUid,
+    pub msg_id: MessageIdOrUid,
+    pub attempt_id: MessageAttemptId,
+}
+
+#[derive(Clone, Deserialize, JsonSchema)]
+pub struct EventTypeNamePath {
+    pub event_type_name: EventTypeName,
 }
 
 #[cfg(test)]

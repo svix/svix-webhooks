@@ -11,9 +11,8 @@ use crate::{
         cryptography::Encryption,
         permissions,
         types::{
-            metadata::Metadata, ApplicationIdOrUid, BaseId, EndpointId, EndpointIdOrUid,
-            EndpointSecretInternal, EndpointUid, EventChannelSet, EventTypeNameSet,
-            MessageEndpointId, MessageStatus,
+            metadata::Metadata, BaseId, EndpointId, EndpointSecretInternal, EndpointUid,
+            EventChannelSet, EventTypeNameSet, MessageEndpointId, MessageStatus,
         },
     },
     ctx,
@@ -26,7 +25,7 @@ use crate::{
             UnrequiredNullableField,
         },
         validate_no_control_characters, validate_no_control_characters_unrequired,
-        validation_error, ModelIn,
+        validation_error, ApplicationEndpointPath, ModelIn,
     },
     AppState,
 };
@@ -526,14 +525,14 @@ pub struct EndpointStatsQueryOut {
 
 async fn endpoint_stats(
     State(AppState { ref db, .. }): State<AppState>,
-    Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
+    Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     Query(range): Query<EndpointStatsRange>,
     permissions::Application { app }: permissions::Application,
 ) -> error::Result<Json<EndpointStatsOut>> {
     let (since, until) = range.validate_unwrap_or_default()?;
 
     let endpoint = ctx!(
-        crate::db::models::endpoint::Entity::secure_find_by_id_or_uid(app.id, endp_id)
+        crate::db::models::endpoint::Entity::secure_find_by_id_or_uid(app.id, endpoint_id)
             .one(db)
             .await
     )?
