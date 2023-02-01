@@ -303,9 +303,14 @@ async fn validate_event_types(
     if missing.is_empty() {
         Ok(())
     } else {
+        let missing = missing
+            .into_iter()
+            .map(|x| &(x.0[..]))
+            .collect::<Vec<&str>>()
+            .join(", ");
         Err(HttpError::unprocessable_entity(vec![ValidationErrorItem {
-            loc: vec!["body".to_owned(), "event_types_ids".to_owned()],
-            msg: format!("The following type names don't exist: {missing:?}"),
+            loc: vec!["body".to_owned(), "filterTypes".to_owned()],
+            msg: format!("The following event types don't exist: {missing}"),
             ty: "value_error".to_owned(),
         }])
         .into())
