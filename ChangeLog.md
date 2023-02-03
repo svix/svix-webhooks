@@ -3,6 +3,18 @@
 ## Next
 * 
 
+## Version 0.76.0
+* Server: add org_id and app_id to main tracing span
+* Server: make `wait_for` timeout early and retry
+* Server: add since/until query params to endpoint stats
+* Server: add endpoints to expunge payload and response
+* Server: clarify error message and documentation around filtered IP addresses
+* Server: fix error message with endpoint filter types validation
+* Server: fix `?after=<time>` ID Parsing in paginated endpoints
+* Libs: add endpoints to expunge payload and response
+* Libs: add replay missing messages functions
+* Libs: add transformations APIs
+
 ## Version 0.75.0
 * Server: add built in SSRF support (no need for an external proxy)
 * Server: many worker improvements (see #704 for details)
