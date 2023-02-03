@@ -29,6 +29,188 @@ var (
 // MessageAttemptApiService MessageAttemptApi service
 type MessageAttemptApiService service
 
+type ApiExpungeAttemptContentApiV1AppAppIdMsgMsgIdAttemptAttemptIdContentDeleteRequest struct {
+	ctx _context.Context
+	ApiService *MessageAttemptApiService
+	attemptId string
+	msgId string
+	appId string
+	idempotencyKey *string
+}
+
+func (r ApiExpungeAttemptContentApiV1AppAppIdMsgMsgIdAttemptAttemptIdContentDeleteRequest) IdempotencyKey(idempotencyKey string) ApiExpungeAttemptContentApiV1AppAppIdMsgMsgIdAttemptAttemptIdContentDeleteRequest {
+	r.idempotencyKey = &idempotencyKey
+	return r
+}
+
+func (r ApiExpungeAttemptContentApiV1AppAppIdMsgMsgIdAttemptAttemptIdContentDeleteRequest) Execute() (*_nethttp.Response, error) {
+	return r.ApiService.ExpungeAttemptContentApiV1AppAppIdMsgMsgIdAttemptAttemptIdContentDeleteExecute(r)
+}
+
+/*
+ * ExpungeAttemptContentApiV1AppAppIdMsgMsgIdAttemptAttemptIdContentDelete Delete attempt response body
+ * Deletes the given attempt's repsonse body. Useful when an endpoint accidentally returned sensitive content.
+ * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ * @param attemptId
+ * @param msgId
+ * @param appId
+ * @return ApiExpungeAttemptContentApiV1AppAppIdMsgMsgIdAttemptAttemptIdContentDeleteRequest
+ */
+func (a *MessageAttemptApiService) ExpungeAttemptContentApiV1AppAppIdMsgMsgIdAttemptAttemptIdContentDelete(ctx _context.Context, attemptId string, msgId string, appId string) ApiExpungeAttemptContentApiV1AppAppIdMsgMsgIdAttemptAttemptIdContentDeleteRequest {
+	return ApiExpungeAttemptContentApiV1AppAppIdMsgMsgIdAttemptAttemptIdContentDeleteRequest{
+		ApiService: a,
+		ctx: ctx,
+		attemptId: attemptId,
+		msgId: msgId,
+		appId: appId,
+	}
+}
+
+/*
+ * Execute executes the request
+ */
+func (a *MessageAttemptApiService) ExpungeAttemptContentApiV1AppAppIdMsgMsgIdAttemptAttemptIdContentDeleteExecute(r ApiExpungeAttemptContentApiV1AppAppIdMsgMsgIdAttemptAttemptIdContentDeleteRequest) (*_nethttp.Response, error) {
+	var (
+		localVarHTTPMethod   = _nethttp.MethodDelete
+		localVarPostBody     interface{}
+		localVarFormFileName string
+		localVarFileName     string
+		localVarFileBytes    []byte
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MessageAttemptApiService.ExpungeAttemptContentApiV1AppAppIdMsgMsgIdAttemptAttemptIdContentDelete")
+	if err != nil {
+		return nil, GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/content/"
+	localVarPath = strings.Replace(localVarPath, "{"+"attempt_id"+"}", _neturl.PathEscape(parameterToString(r.attemptId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"msg_id"+"}", _neturl.PathEscape(parameterToString(r.msgId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := _neturl.Values{}
+	localVarFormParams := _neturl.Values{}
+	if strlen(r.msgId) < 1 {
+		return nil, reportError("msgId must have at least 1 elements")
+	}
+	if strlen(r.msgId) > 256 {
+		return nil, reportError("msgId must have less than 256 elements")
+	}
+	if strlen(r.appId) < 1 {
+		return nil, reportError("appId must have at least 1 elements")
+	}
+	if strlen(r.appId) > 256 {
+		return nil, reportError("appId must have less than 256 elements")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarHTTPResponse, err
+	}
+
+	localVarBody, err := _ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = _ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 401 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 403 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 404 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 409 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 422 {
+			var v HTTPValidationError
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+		}
+		return localVarHTTPResponse, newErr
+	}
+
+	return localVarHTTPResponse, nil
+}
+
 type ApiGetAttemptApiV1AppAppIdMsgMsgIdAttemptAttemptIdGetRequest struct {
 	ctx _context.Context
 	ApiService *MessageAttemptApiService

@@ -411,7 +411,7 @@ func (r ApiGetDashboardAccessApiV1AuthDashboardAccessAppIdPostRequest) Execute()
 }
 
 /*
- * GetDashboardAccessApiV1AuthDashboardAccessAppIdPost Get Consumer App Portal Access
+ * GetDashboardAccessApiV1AuthDashboardAccessAppIdPost Get Dashboard Access
  * DEPRECATED: Please use `app-portal-access` instead.
 
 Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.

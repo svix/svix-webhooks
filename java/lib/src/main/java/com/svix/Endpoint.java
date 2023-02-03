@@ -10,6 +10,8 @@ import com.svix.models.EndpointOut;
 import com.svix.models.EndpointUpdate;
 import com.svix.models.EndpointSecretOut;
 import com.svix.models.EndpointSecretRotateIn;
+import com.svix.models.EndpointTransformationIn;
+import com.svix.models.EndpointTransformationOut;
 import com.svix.models.ListResponseEndpointOut;
 import com.svix.models.RecoverIn;
 import com.svix.models.ReplayIn;
@@ -137,6 +139,22 @@ public final class Endpoint {
 	public void replay(final String appId, final String endpointId, final ReplayIn replayIn, final PostOptions options) throws ApiException {
 		try {
 			api.replayMissingWebhooksApiV1AppAppIdEndpointEndpointIdReplayMissingPostWithHttpInfo(appId, endpointId, replayIn, options.getIdempotencyKey());
+		} catch (com.svix.internal.ApiException e) {
+			throw Utils.wrapInternalApiException(e);
+		}
+	}
+
+	public EndpointTransformationOut transformationGet(final String appId, final String endpointId) throws ApiException {
+		try {
+			return api.getEndpointTransformationApiV1AppAppIdEndpointEndpointIdTransformationGet(endpointId, appId, null);
+		} catch (com.svix.internal.ApiException e) {
+			throw Utils.wrapInternalApiException(e);
+		}
+	}
+
+	public void transformationPartialUpdate(final String appId, final String endpointId, final EndpointTransformationIn transformationIn) throws ApiException {
+		try {
+			api.setEndpointTransformationApiV1AppAppIdEndpointEndpointIdTransformationPatch(appId, endpointId, transformationIn, null);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}

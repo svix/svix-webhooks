@@ -16,7 +16,7 @@ import (
 
 // AppPortalAccessIn struct for AppPortalAccessIn
 type AppPortalAccessIn struct {
-	FeatureFlags []string `json:"featureFlags,omitempty"`
+	FeatureFlags *[]string `json:"featureFlags,omitempty"`
 }
 
 // NewAppPortalAccessIn instantiates a new AppPortalAccessIn object
@@ -36,23 +36,22 @@ func NewAppPortalAccessInWithDefaults() *AppPortalAccessIn {
 	return &this
 }
 
-// GetFeatureFlags returns the FeatureFlags field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetFeatureFlags returns the FeatureFlags field value if set, zero value otherwise.
 func (o *AppPortalAccessIn) GetFeatureFlags() []string {
-	if o == nil  {
+	if o == nil || o.FeatureFlags == nil {
 		var ret []string
 		return ret
 	}
-	return o.FeatureFlags
+	return *o.FeatureFlags
 }
 
 // GetFeatureFlagsOk returns a tuple with the FeatureFlags field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *AppPortalAccessIn) GetFeatureFlagsOk() (*[]string, bool) {
 	if o == nil || o.FeatureFlags == nil {
 		return nil, false
 	}
-	return &o.FeatureFlags, true
+	return o.FeatureFlags, true
 }
 
 // HasFeatureFlags returns a boolean if a field has been set.
@@ -66,7 +65,7 @@ func (o *AppPortalAccessIn) HasFeatureFlags() bool {
 
 // SetFeatureFlags gets a reference to the given []string and assigns it to the FeatureFlags field.
 func (o *AppPortalAccessIn) SetFeatureFlags(v []string) {
-	o.FeatureFlags = v
+	o.FeatureFlags = &v
 }
 
 func (o AppPortalAccessIn) MarshalJSON() ([]byte, error) {

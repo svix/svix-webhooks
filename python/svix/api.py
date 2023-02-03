@@ -23,11 +23,13 @@ from .internal.openapi_client.api.endpoint import (
     get_endpoint_headers_api_v1_app_app_id_endpoint_endpoint_id_headers_get,
     get_endpoint_secret_api_v1_app_app_id_endpoint_endpoint_id_secret_get,
     get_endpoint_stats_api_v1_app_app_id_endpoint_endpoint_id_stats_get,
+    get_endpoint_transformation_api_v1_app_app_id_endpoint_endpoint_id_transformation_get,
     list_endpoints_api_v1_app_app_id_endpoint_get,
     patch_endpoint_headers_api_v1_app_app_id_endpoint_endpoint_id_headers_patch,
     recover_failed_webhooks_api_v1_app_app_id_endpoint_endpoint_id_recover_post,
     replay_missing_webhooks_api_v1_app_app_id_endpoint_endpoint_id_replay_missing_post,
     rotate_endpoint_secret_api_v1_app_app_id_endpoint_endpoint_id_secret_rotate_post,
+    set_endpoint_transformation_api_v1_app_app_id_endpoint_endpoint_id_transformation_patch,
     update_endpoint_api_v1_app_app_id_endpoint_endpoint_id_put,
     update_endpoint_headers_api_v1_app_app_id_endpoint_endpoint_id_headers_put,
 )
@@ -76,6 +78,8 @@ from .internal.openapi_client.models.endpoint_out import EndpointOut
 from .internal.openapi_client.models.endpoint_secret_out import EndpointSecretOut
 from .internal.openapi_client.models.endpoint_secret_rotate_in import EndpointSecretRotateIn
 from .internal.openapi_client.models.endpoint_stats import EndpointStats
+from .internal.openapi_client.models.endpoint_transformation_in import EndpointTransformationIn
+from .internal.openapi_client.models.endpoint_transformation_out import EndpointTransformationOut
 from .internal.openapi_client.models.endpoint_update import EndpointUpdate
 from .internal.openapi_client.models.event_type_in import EventTypeIn
 from .internal.openapi_client.models.event_type_out import EventTypeOut
@@ -366,6 +370,21 @@ class EndpointAsync(ApiBase):
             client=self._client, app_id=app_id, endpoint_id=endpoint_id, json_body=replay_in, **options.to_dict()
         )
 
+    async def transformations_get(self, app_id: str, endpoint_id: str) -> EndpointTransformationOut:
+        return await get_endpoint_transformation_api_v1_app_app_id_endpoint_endpoint_id_transformation_get.asyncio(
+            client=self._client, app_id=app_id, endpoint_id=endpoint_id
+        )
+
+    async def transformation_partial_update(
+        self, app_id: str, endpoint_id: str, endpoint_transformation_in: EndpointTransformationIn
+    ) -> None:
+        await set_endpoint_transformation_api_v1_app_app_id_endpoint_endpoint_id_transformation_patch.asyncio(
+            client=self._client,
+            app_id=app_id,
+            endpoint_id=endpoint_id,
+            json_body=endpoint_transformation_in,
+        )
+
 
 class Endpoint(ApiBase):
     def list(self, app_id: str, options: EndpointListOptions = EndpointListOptions()) -> ListResponseEndpointOut:
@@ -471,6 +490,21 @@ class Endpoint(ApiBase):
     ) -> ReplayOut:
         return replay_missing_webhooks_api_v1_app_app_id_endpoint_endpoint_id_replay_missing_post.sync(
             client=self._client, app_id=app_id, endpoint_id=endpoint_id, json_body=replay_in, **options.to_dict()
+        )
+
+    def transformations_get(self, app_id: str, endpoint_id: str) -> EndpointTransformationOut:
+        return get_endpoint_transformation_api_v1_app_app_id_endpoint_endpoint_id_transformation_get.sync(
+            client=self._client, app_id=app_id, endpoint_id=endpoint_id
+        )
+
+    def transformation_partial_update(
+        self, app_id: str, endpoint_id: str, endpoint_transformation_in: EndpointTransformationIn
+    ) -> None:
+        set_endpoint_transformation_api_v1_app_app_id_endpoint_endpoint_id_transformation_patch.sync(
+            client=self._client,
+            app_id=app_id,
+            endpoint_id=endpoint_id,
+            json_body=endpoint_transformation_in,
         )
 
 
