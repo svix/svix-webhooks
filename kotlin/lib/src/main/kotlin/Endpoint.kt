@@ -10,6 +10,8 @@ import com.svix.kotlin.models.EndpointOut
 import com.svix.kotlin.models.EndpointSecretOut
 import com.svix.kotlin.models.EndpointSecretRotateIn
 import com.svix.kotlin.models.EndpointStats
+import com.svix.kotlin.models.EndpointTransformationIn
+import com.svix.kotlin.models.EndpointTransformationOut
 import com.svix.kotlin.models.EndpointUpdate
 import com.svix.kotlin.models.ListResponseEndpointOut
 import com.svix.kotlin.models.RecoverIn
@@ -208,6 +210,31 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
                 endpointId,
                 replayIn,
                 options.idempotencyKey
+            )
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
+
+    suspend fun transformationGet(appId: String, endpointId: String): EndpointTransformationOut {
+        try {
+            return api.getEndpointTransformationApiV1AppAppIdEndpointEndpointIdTransformationGet(
+                endpointId,
+                appId,
+                null
+            )
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
+
+    suspend fun transformationPartialUpdate(appId: String, endpointId: String, endpointTransformationIn: EndpointTransformationIn) {
+        try {
+            api.setEndpointTransformationApiV1AppAppIdEndpointEndpointIdTransformationPatch(
+                endpointId,
+                appId,
+                endpointTransformationIn,
+                null
             )
         } catch (e: Exception) {
             throw ApiException.wrap(e)

@@ -633,5 +633,97 @@ namespace Svix
                 return false;
             }
         }
+
+        public EndpointTransformationOut TransformationGet(string appId, string endpointId, string idempotencyKey = default)
+        {
+            try
+            {
+                var lTransformation = _endpointApi.GetEndpointTransformationApiV1AppAppIdEndpointEndpointIdTransformationGet(
+                    appId,
+                    endpointId,
+                    idempotencyKey);
+
+                return lTransformation;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(TransformationGet)} failed");
+
+                if (Throw)
+                    throw;
+
+                return null;
+            }
+        }
+
+        public async Task<EndpointTransformationOut> TransformationGetAsync(string appId, string endpointId, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var lTransformation = await _endpointApi.GetEndpointTransformationApiV1AppAppIdEndpointEndpointIdTransformationGetAsync(
+                    appId,
+                    endpointId,
+                    idempotencyKey,
+                    cancellationToken);
+
+                return lTransformation;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(TransformationGetAsync)} failed");
+
+                if (Throw)
+                    throw;
+
+                return null;
+            }
+        }
+
+        public bool TransformationPartialUpdate(string appId, string endpointId, EndpointTransformationIn endpointTransformationIn, string idempotencyKey = default)
+        {
+            try
+            {
+                var response = _endpointApi.SetEndpointTransformationApiV1AppAppIdEndpointEndpointIdTransformationPatchWithHttpInfo(
+                    appId,
+                    endpointId,
+                    endpointTransformationIn,
+                    idempotencyKey);
+
+                return response.StatusCode == HttpStatusCode.NoContent;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(TransformationGet)} failed");
+
+                if (Throw)
+                    throw;
+
+                return false;
+            }
+        }
+
+        public async Task<bool> TransformationPartialUpdateAsync(string appId, string endpointId, EndpointTransformationIn endpointTransformationIn, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var response = await _endpointApi.SetEndpointTransformationApiV1AppAppIdEndpointEndpointIdTransformationPatchWithHttpInfoAsync(
+                    appId,
+                    endpointId,
+                    endpointTransformationIn,
+                    idempotencyKey,
+                    cancellationToken);
+
+                return response.StatusCode == HttpStatusCode.NoContent;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(TransformationPartialUpdateAsync)} failed");
+
+                if (Throw)
+                    throw;
+
+                return false;
+            }
+        }
     }
 }

@@ -14,6 +14,8 @@ import {
   EndpointUpdate,
   EndpointSecretOut,
   EndpointSecretRotateIn,
+  EndpointTransformationIn,
+  EndpointTransformationOut,
   EndpointHeadersIn,
   EndpointHeadersPatchIn,
   EndpointHeadersOut,
@@ -370,6 +372,25 @@ class Endpoint {
       appId,
       endpointId,
     });
+  }
+
+  public transformationGet(
+    appId: string,
+    endpointId: string
+  ): Promise<EndpointTransformationOut> {
+    return this.api.getEndpointTransformationApiV1AppAppIdEndpointEndpointIdTransformationGet(
+      { endpointId, appId }
+    );
+  }
+
+  public transformationPartialUpdate(
+    appId: string,
+    endpointId: string,
+    endpointTransformationIn: EndpointTransformationIn
+  ): Promise<void> {
+    return this.api.setEndpointTransformationApiV1AppAppIdEndpointEndpointIdTransformationPatch(
+      { appId, endpointId, endpointTransformationIn }
+    );
   }
 }
 

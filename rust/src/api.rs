@@ -5,8 +5,9 @@ use crate::apis::{
 };
 use crate::error::Result;
 use crate::models::{
-    AppPortalAccessIn, AppPortalAccessOut, IntegrationIn, IntegrationKeyOut, IntegrationOut,
-    IntegrationUpdate, ListResponseIntegrationOut, ReplayIn,
+    AppPortalAccessIn, AppPortalAccessOut, EndpointTransformationIn, EndpointTransformationOut,
+    IntegrationIn, IntegrationKeyOut, IntegrationOut, IntegrationUpdate,
+    ListResponseIntegrationOut, ReplayIn,
 };
 pub use crate::models::{
     ApplicationIn, ApplicationOut, DashboardAccessOut, EndpointHeadersIn, EndpointHeadersOut,
@@ -498,6 +499,37 @@ impl<'a> Endpoint<'a> {
             },
         )
         .await?;
+        Ok(())
+    }
+
+    pub async fn transformation_get(
+        &self,
+        app_id: String,
+        endpoint_id: String,
+    ) -> Result<EndpointTransformationOut> {
+        Ok(endpoint_api::get_endpoint_transformation_api_v1_app_app_id_endpoint_endpoint_id_transformation_get(
+            self.cfg,
+            endpoint_api::GetEndpointTransformationApiV1AppAppIdEndpointEndpointIdTransformationGetParams {
+                app_id,
+                endpoint_id,
+                idempotency_key: None,
+            }
+        )
+        .await?)
+    }
+
+    pub async fn transformation_partial_update(
+        &self,
+        app_id: String,
+        endpoint_id: String,
+        endpoint_transformation_in: EndpointTransformationIn,
+    ) -> Result<()> {
+        endpoint_api::set_endpoint_transformation_api_v1_app_app_id_endpoint_endpoint_id_transformation_patch(self.cfg, endpoint_api::SetEndpointTransformationApiV1AppAppIdEndpointEndpointIdTransformationPatchParams {
+            app_id,
+            endpoint_id,
+            endpoint_transformation_in,
+            idempotency_key: None,
+        }).await?;
         Ok(())
     }
 }

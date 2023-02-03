@@ -4,13 +4,14 @@
             "AppPortalAccessIn": {
                 "properties": {
                     "featureFlags": {
+                        "default": [],
+                        "example": [],
                         "items": {
                             "example": "cool-new-feature",
                             "maxLength": 256,
                             "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "type": "string"
                         },
-                        "nullable": true,
                         "title": "Featureflags",
                         "type": "array",
                         "uniqueItems": true
@@ -7730,57 +7731,57 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const endpointTransformationOut = await svix.endpoint.get('app_id', 'endpoint_id');"
+                        "source": "const endpointTransformationOut = await svix.endpoint.transformationGet('app_id', 'endpoint_id');"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const endpointTransformationOut = await svix.endpoint.get('app_id', 'endpoint_id');"
+                        "source": "const endpointTransformationOut = await svix.endpoint.transformationGet('app_id', 'endpoint_id');"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "endpoint_transformation_out = svix.endpoint.get('app_id', 'endpoint_id')"
+                        "source": "endpoint_transformation_out = svix.endpoint.transformation_get('app_id', 'endpoint_id')"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "endpoint_transformation_out = await svix.endpoint.get('app_id', 'endpoint_id')"
+                        "source": "endpoint_transformation_out = await svix.endpoint.transformation_get('app_id', 'endpoint_id')"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "endpointTransformationOut, err := svixClient.Endpoint.Get(\"app_id\", \"endpoint_id\")"
+                        "source": "endpointTransformationOut, err := svixClient.Endpoint.TransformationGet(\"app_id\", \"endpoint_id\")"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val endpointTransformationOut = svix.endpoint.get('app_id', 'endpoint_id')"
+                        "source": "val endpointTransformationOut = svix.endpoint.transformationGet('app_id', 'endpoint_id')"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "EndpointTransformationOut endpointTransformationOut = svix.getEndpoint().get('app_id', 'endpoint_id')"
+                        "source": "EndpointTransformationOut endpointTransformationOut = svix.getEndpoint().transformationGet('app_id', 'endpoint_id')"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "endpoint_transformation_out = svix.endpoint.get('app_id', 'endpoint_id')"
+                        "source": "endpoint_transformation_out = svix.endpoint.transformation_get('app_id', 'endpoint_id')"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let endpoint_transformation_out = svix.endpoint().get(\"app_id\", \"endpoint_id\").await?;"
+                        "source": "let endpoint_transformation_out = svix.endpoint().transformation_get(\"app_id\", \"endpoint_id\").await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var endpointTransformationOut = await svix.Endpoint.GetAsync(\"app_id\", \"endpoint_id\")"
+                        "source": "var endpointTransformationOut = await svix.Endpoint.TransformationGetAsync(\"app_id\", \"endpoint_id\")"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix endpoint get 'app_id' 'endpoint_id'"
+                        "source": "svix endpoint transformation-get 'app_id' 'endpoint_id'"
                     },
                     {
                         "label": "cURL",
@@ -7922,57 +7923,57 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "await svix.endpoint.set('app_id', 'endpoint_id', {\n    code: None,\n    enabled: None\n});"
+                        "source": "await svix.endpoint.transformationPartialUpdate('app_id', 'endpoint_id', {\n    code: None,\n    enabled: None\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "await svix.endpoint.set('app_id', 'endpoint_id', {\n    code: None,\n    enabled: None\n});"
+                        "source": "await svix.endpoint.transformationPartialUpdate('app_id', 'endpoint_id', {\n    code: None,\n    enabled: None\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "svix.endpoint.set('app_id', 'endpoint_id', EndpointTransformationIn(\n    code=None,\n    enabled=None\n))"
+                        "source": "svix.endpoint.transformation_partial_update('app_id', 'endpoint_id', EndpointTransformationIn(\n    code=None,\n    enabled=None\n))"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "await svix.endpoint.set('app_id', 'endpoint_id', EndpointTransformationIn(\n    code=None,\n    enabled=None\n))"
+                        "source": "await svix.endpoint.transformation_partial_update('app_id', 'endpoint_id', EndpointTransformationIn(\n    code=None,\n    enabled=None\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "err := svixClient.Endpoint.Set(\"app_id\", \"endpoint_id\", &svix.EndpointTransformationIn{\n    Code: None,\n    Enabled: None\n})"
+                        "source": "err := svixClient.Endpoint.TransformationPartialUpdate(\"app_id\", \"endpoint_id\", &svix.EndpointTransformationIn{\n    Code: None,\n    Enabled: None\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "svix.endpoint.set('app_id', 'endpoint_id', EndpointTransformationIn()\n    .code(None),\n    .enabled(None)\n)"
+                        "source": "svix.endpoint.transformationPartialUpdate('app_id', 'endpoint_id', EndpointTransformationIn()\n    .code(None),\n    .enabled(None)\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "svix.getEndpoint().set('app_id', 'endpoint_id', new EndpointTransformationIn()\n    .code(None),\n    .enabled(None)\n)"
+                        "source": "svix.getEndpoint().transformationPartialUpdate('app_id', 'endpoint_id', new EndpointTransformationIn()\n    .code(None),\n    .enabled(None)\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "svix.endpoint.set('app_id', 'endpoint_id', Svix::EndpointTransformationIn.new({\n    \"code\": null,\n    \"enabled\": null\n}))"
+                        "source": "svix.endpoint.transformation_partial_update('app_id', 'endpoint_id', Svix::EndpointTransformationIn.new({\n    \"code\": null,\n    \"enabled\": null\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "svix.endpoint().set(\"app_id\", \"endpoint_id\", EndpointTransformationIn {\n    code: None,\n    enabled: None\n}).await?;"
+                        "source": "svix.endpoint().transformation_partial_update(\"app_id\", \"endpoint_id\", EndpointTransformationIn {\n    code: None,\n    enabled: None\n}).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "await svix.Endpoint.SetAsync(\"app_id\", \"endpoint_id\", new EndpointTransformationIn{\n    code: None,\n    enabled: None\n})"
+                        "source": "await svix.Endpoint.TransformationPartialUpdateAsync(\"app_id\", \"endpoint_id\", new EndpointTransformationIn{\n    code: None,\n    enabled: None\n})"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix endpoint set 'app_id' 'endpoint_id' '{\n    \"code\": null,\n    \"enabled\": null\n}'"
+                        "source": "svix endpoint transformation-partial-update 'app_id' 'endpoint_id' '{\n    \"code\": null,\n    \"enabled\": null\n}'"
                     },
                     {
                         "label": "cURL",
@@ -10646,6 +10647,145 @@
                 ]
             }
         },
+        "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/content/": {
+            "delete": {
+                "description": "Deletes the given attempt's repsonse body. Useful when an endpoint accidentally returned sensitive content.",
+                "operationId": "expunge_attempt_content_api_v1_app__app_id__msg__msg_id__attempt__attempt_id__content__delete",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "attempt_id",
+                        "required": true,
+                        "schema": {
+                            "example": "atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "title": "Attempt Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "name": "msg_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The message's ID or eventID",
+                            "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "Msg Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "App Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "nullable": true,
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Delete attempt response body",
+                "tags": [
+                    "Message Attempt"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'DELETE' \\\n  'https://api.svix.com/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/content/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            }
+        },
         "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/headers/": {
             "get": {
                 "description": "Calculate and return headers used on a given message attempt",
@@ -10843,6 +10983,135 @@
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/headers/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/app/{app_id}/msg/{msg_id}/content/": {
+            "delete": {
+                "description": "Delete the given message's payload. Useful in cases when a message was accidentally sent with sensitive content.\n\nThe message can't be replayed or resent once its payload has been deleted or expired.",
+                "operationId": "expunge_message_payload_api_v1_app__app_id__msg__msg_id__content__delete",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "msg_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The message's ID or eventID",
+                            "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "Msg Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The application's ID or UID",
+                            "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "title": "App Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "nullable": true,
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Delete message payload",
+                "tags": [
+                    "Message"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'DELETE' \\\n  'https://api.svix.com/api/v1/app/{app_id}/msg/{msg_id}/content/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -11715,62 +11984,62 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const appPortalAccessOut = await svix.authentication.appPortalAccess('app_id', {\n    featureFlags: None\n});"
+                        "source": "const appPortalAccessOut = await svix.authentication.appPortalAccess('app_id', {\n    featureFlags: [    ]\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const appPortalAccessOut = await svix.authentication.appPortalAccess('app_id', {\n    featureFlags: None\n});"
+                        "source": "const appPortalAccessOut = await svix.authentication.appPortalAccess('app_id', {\n    featureFlags: [    ]\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "app_portal_access_out = svix.authentication.app_portal_access('app_id', AppPortalAccessIn(\n    feature_flags=None\n))"
+                        "source": "app_portal_access_out = svix.authentication.app_portal_access('app_id', AppPortalAccessIn(\n    feature_flags=[]\n))"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "app_portal_access_out = await svix.authentication.app_portal_access('app_id', AppPortalAccessIn(\n    feature_flags=None\n))"
+                        "source": "app_portal_access_out = await svix.authentication.app_portal_access('app_id', AppPortalAccessIn(\n    feature_flags=[]\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "appPortalAccessOut, err := svixClient.Authentication.AppPortalAccess(\"app_id\", &svix.AppPortalAccessIn{\n    FeatureFlags: None\n})"
+                        "source": "appPortalAccessOut, err := svixClient.Authentication.AppPortalAccess(\"app_id\", &svix.AppPortalAccessIn{\n    FeatureFlags: [...]string{}\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val appPortalAccessOut = svix.authentication.appPortalAccess('app_id', AppPortalAccessIn()\n    .featureFlags(None)\n)"
+                        "source": "val appPortalAccessOut = svix.authentication.appPortalAccess('app_id', AppPortalAccessIn()\n    .featureFlags(arrayOf())\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "AppPortalAccessOut appPortalAccessOut = svix.getAuthentication().appPortalAccess('app_id', new AppPortalAccessIn()\n    .featureFlags(None)\n)"
+                        "source": "AppPortalAccessOut appPortalAccessOut = svix.getAuthentication().appPortalAccess('app_id', new AppPortalAccessIn()\n    .featureFlags(new String[]{})\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "app_portal_access_out = svix.authentication.app_portal_access('app_id', Svix::AppPortalAccessIn.new({\n    \"feature_flags\": null\n}))"
+                        "source": "app_portal_access_out = svix.authentication.app_portal_access('app_id', Svix::AppPortalAccessIn.new({\n    \"feature_flags\": []\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let app_portal_access_out = svix.authentication().app_portal_access(\"app_id\", AppPortalAccessIn {\n    feature_flags: None\n}).await?;"
+                        "source": "let app_portal_access_out = svix.authentication().app_portal_access(\"app_id\", AppPortalAccessIn {\n    feature_flags: Some(vec![])\n}).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var appPortalAccessOut = await svix.Authentication.AppPortalAccessAsync(\"app_id\", new AppPortalAccessIn{\n    featureFlags: None\n})"
+                        "source": "var appPortalAccessOut = await svix.Authentication.AppPortalAccessAsync(\"app_id\", new AppPortalAccessIn{\n    featureFlags: new string[] {}\n})"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix authentication app-portal-access 'app_id' '{\n    \"featureFlags\": null\n}'"
+                        "source": "svix authentication app-portal-access 'app_id' '{\n    \"featureFlags\": []\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/auth/app-portal-access/{app_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"featureFlags\": null\n}'"
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/auth/app-portal-access/{app_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"featureFlags\": []\n}'"
                     }
                 ]
             }
@@ -12065,7 +12334,7 @@
                         "HTTPBearer": []
                     }
                 ],
-                "summary": "Get Consumer App Portal Access",
+                "summary": "Get Dashboard Access",
                 "tags": [
                     "Authentication"
                 ],

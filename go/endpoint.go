@@ -7,18 +7,20 @@ import (
 )
 
 type (
-	ListResponseEndpointOut openapi.ListResponseEndpointOut
-	EndpointIn              openapi.EndpointIn
-	EndpointUpdate          openapi.EndpointUpdate
-	EndpointOut             openapi.EndpointOut
-	EndpointSecretOut       openapi.EndpointSecretOut
-	EndpointSecretRotateIn  openapi.EndpointSecretRotateIn
-	RecoverIn               openapi.RecoverIn
-	ReplayIn                openapi.ReplayIn
-	EndpointHeadersIn       openapi.EndpointHeadersIn
-	EndpointHeadersPatchIn  openapi.EndpointHeadersPatchIn
-	EndpointHeadersOut      openapi.EndpointHeadersOut
-	EndpointStats           openapi.EndpointStats
+	ListResponseEndpointOut   openapi.ListResponseEndpointOut
+	EndpointIn                openapi.EndpointIn
+	EndpointUpdate            openapi.EndpointUpdate
+	EndpointOut               openapi.EndpointOut
+	EndpointSecretOut         openapi.EndpointSecretOut
+	EndpointSecretRotateIn    openapi.EndpointSecretRotateIn
+	EndpointTransformationIn  openapi.EndpointTransformationIn
+	RecoverIn                 openapi.RecoverIn
+	ReplayIn                  openapi.ReplayIn
+	EndpointHeadersIn         openapi.EndpointHeadersIn
+	EndpointHeadersPatchIn    openapi.EndpointHeadersPatchIn
+	EndpointHeadersOut        openapi.EndpointHeadersOut
+	EndpointStats             openapi.EndpointStats
+	EndpointTransformationOut openapi.EndpointTransformationOut
 )
 
 type Endpoint struct {
@@ -204,5 +206,29 @@ func (e *Endpoint) ReplayWithOptions(
 	if err != nil {
 		return wrapError(err, res)
 	}
+	return nil
+}
+
+func (e *Endpoint) TransformationGet(appId string, endpointId string) (*EndpointTransformationOut, error) {
+	req := e.api.EndpointApi.GetEndpointTransformationApiV1AppAppIdEndpointEndpointIdTransformationGet(context.Background(), endpointId, appId)
+
+	out, res, err := req.Execute()
+	if err != nil {
+		return nil, wrapError(err, res)
+	}
+
+	ret := EndpointTransformationOut(out)
+	return &ret, nil
+}
+
+func (e *Endpoint) TransformatioPartialUpdate(appId string, endpointId string, transformation *EndpointTransformationIn) error {
+	req := e.api.EndpointApi.SetEndpointTransformationApiV1AppAppIdEndpointEndpointIdTransformationPatch(context.Background(), appId, endpointId)
+	req.EndpointTransformationIn(openapi.EndpointTransformationIn(*transformation))
+
+	res, err := req.Execute()
+	if err != nil {
+		return wrapError(err, res)
+	}
+
 	return nil
 }
