@@ -7,24 +7,21 @@ use sea_orm::ActiveModelTrait;
 
 use super::{EndpointHeadersIn, EndpointHeadersOut, EndpointHeadersPatchIn};
 use crate::{
-    core::{
-        permissions,
-        types::{ApplicationIdOrUid, EndpointIdOrUid},
-    },
+    core::permissions,
     ctx,
     db::models::endpoint,
     error::{HttpError, Result},
-    v1::utils::{EmptyResponse, ModelIn, ValidatedJson},
+    v1::utils::{ApplicationEndpointPath, EmptyResponse, ModelIn, ValidatedJson},
     AppState,
 };
 
 pub(super) async fn get_endpoint_headers(
     State(AppState { ref db, .. }): State<AppState>,
-    Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
+    Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<EndpointHeadersOut>> {
     let endp = ctx!(
-        endpoint::Entity::secure_find_by_id_or_uid(app.id, endp_id)
+        endpoint::Entity::secure_find_by_id_or_uid(app.id, endpoint_id)
             .one(db)
             .await
     )?
@@ -38,12 +35,12 @@ pub(super) async fn get_endpoint_headers(
 
 pub(super) async fn update_endpoint_headers(
     State(AppState { ref db, .. }): State<AppState>,
-    Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
+    Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
     ValidatedJson(data): ValidatedJson<EndpointHeadersIn>,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
     let endp = ctx!(
-        endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
+        endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endpoint_id)
             .one(db)
             .await
     )?
@@ -58,12 +55,12 @@ pub(super) async fn update_endpoint_headers(
 
 pub(super) async fn patch_endpoint_headers(
     State(AppState { ref db, .. }): State<AppState>,
-    Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
+    Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
     ValidatedJson(data): ValidatedJson<EndpointHeadersPatchIn>,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
     let endp = ctx!(
-        endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
+        endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endpoint_id)
             .one(db)
             .await
     )?

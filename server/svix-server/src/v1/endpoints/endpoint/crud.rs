@@ -15,18 +15,15 @@ use crate::{
     core::{
         operational_webhooks::{EndpointEvent, OperationalWebhook, OperationalWebhookSender},
         permissions,
-        types::{
-            ApplicationIdOrUid, EndpointId, EndpointIdOrUid, EventTypeName, EventTypeNameSet,
-            OrganizationId,
-        },
+        types::{EndpointId, EventTypeName, EventTypeNameSet, OrganizationId},
     },
     ctx,
     db::models::{application, endpoint, endpointmetadata, eventtype},
     error::{HttpError, Result, ValidationErrorItem},
     v1::utils::{
         patch::{patch_field_non_nullable, UnrequiredField, UnrequiredNullableField},
-        EmptyResponse, ListResponse, ModelIn, ModelOut, Pagination, PaginationLimit, ValidatedJson,
-        ValidatedQuery,
+        ApplicationEndpointPath, EmptyResponse, ListResponse, ModelIn, ModelOut, Pagination,
+        PaginationLimit, ValidatedJson, ValidatedQuery,
     },
     AppState,
 };
@@ -121,11 +118,11 @@ pub(super) async fn create_endpoint(
 
 pub(super) async fn get_endpoint(
     State(AppState { ref db, .. }): State<AppState>,
-    Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
+    Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<EndpointOut>> {
     let (endp, metadata) = ctx!(
-        endpoint::Entity::secure_find_by_id_or_uid(app.id, endp_id)
+        endpoint::Entity::secure_find_by_id_or_uid(app.id, endpoint_id)
             .find_also_related(endpointmetadata::Entity)
             .one(db)
             .await
@@ -170,7 +167,7 @@ pub(super) async fn update_endpoint(
         ref op_webhooks,
         ..
     }): State<AppState>,
-    Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
+    Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
     ValidatedJson(mut data): ValidatedJson<EndpointIn>,
 ) -> Result<(StatusCode, Json<EndpointOut>)> {
@@ -180,7 +177,7 @@ pub(super) async fn update_endpoint(
     validate_endpoint_url(&data.url, cfg.endpoint_https_only)?;
 
     let models =
-        ctx!(endpoint::ActiveModel::fetch_with_metadata(db, app.id.clone(), endp_id).await)?;
+        ctx!(endpoint::ActiveModel::fetch_with_metadata(db, app.id.clone(), endpoint_id).await)?;
 
     if let Some((mut endp, mut metadata)) = models {
         metadata.data = Set(mem::take(&mut data.metadata));
@@ -201,7 +198,7 @@ pub(super) async fn patch_endpoint(
         ref op_webhooks,
         ..
     }): State<AppState>,
-    Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
+    Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
     ValidatedJson(data): ValidatedJson<EndpointPatch>,
 ) -> Result<Json<EndpointOut>> {
@@ -213,7 +210,7 @@ pub(super) async fn patch_endpoint(
     }
 
     let (mut endp, mut metadata) =
-        ctx!(endpoint::ActiveModel::fetch_with_metadata(db, app.id.clone(), endp_id).await)?
+        ctx!(endpoint::ActiveModel::fetch_with_metadata(db, app.id.clone(), endpoint_id).await)?
             .ok_or_else(|| HttpError::not_found(None, None))?;
 
     let mut patch_data = data; // need to alias so we can use data for `patch_field_non_nullable!`
@@ -232,11 +229,11 @@ pub(super) async fn delete_endpoint(
         ref op_webhooks,
         ..
     }): State<AppState>,
-    Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
+    Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
     let endp = ctx!(
-        endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
+        endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endpoint_id)
             .one(db)
             .await
     )?

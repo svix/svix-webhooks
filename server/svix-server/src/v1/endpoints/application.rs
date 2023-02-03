@@ -4,7 +4,7 @@
 use crate::{
     core::{
         permissions,
-        types::{metadata::Metadata, ApplicationId, ApplicationIdOrUid, ApplicationUid},
+        types::{metadata::Metadata, ApplicationId, ApplicationUid},
     },
     ctx,
     db::models::{application, applicationmetadata},
@@ -17,8 +17,8 @@ use crate::{
             UnrequiredNullableField,
         },
         validate_no_control_characters, validate_no_control_characters_unrequired,
-        validation_error, EmptyResponse, ListResponse, ModelIn, ModelOut, Pagination,
-        PaginationLimit, ValidatedJson, ValidatedQuery,
+        validation_error, ApplicationPath, EmptyResponse, ListResponse, ModelIn, ModelOut,
+        Pagination, PaginationLimit, ValidatedJson, ValidatedQuery,
     },
     AppState,
 };
@@ -263,7 +263,7 @@ async fn get_application(
 
 async fn update_application(
     State(AppState { ref db, .. }): State<AppState>,
-    Path(app_id): Path<ApplicationIdOrUid>,
+    Path(ApplicationPath { app_id }): Path<ApplicationPath>,
     permissions::Organization { org_id }: permissions::Organization,
     ValidatedJson(data): ValidatedJson<ApplicationIn>,
 ) -> Result<(StatusCode, Json<ApplicationOut>)> {

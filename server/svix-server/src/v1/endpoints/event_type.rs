@@ -16,8 +16,8 @@ use crate::{
             UnrequiredNullableField,
         },
         validate_no_control_characters, validate_no_control_characters_unrequired, EmptyResponse,
-        ListResponse, ModelIn, ModelOut, Pagination, PaginationLimit, ValidatedJson,
-        ValidatedQuery,
+        EventTypeNamePath, ListResponse, ModelIn, ModelOut, Pagination, PaginationLimit,
+        ValidatedJson, ValidatedQuery,
     },
     AppState,
 };
@@ -271,14 +271,14 @@ async fn create_event_type(
 
 async fn get_event_type(
     State(AppState { ref db, .. }): State<AppState>,
-    Path(evtype_name): Path<EventTypeName>,
+    Path(EventTypeNamePath { event_type_name }): Path<EventTypeNamePath>,
     permissions::ReadAll {
         org_id,
         feature_flags,
         ..
     }: permissions::ReadAll,
 ) -> Result<Json<EventTypeOut>> {
-    let mut query = eventtype::Entity::secure_find_by_name(org_id, evtype_name);
+    let mut query = eventtype::Entity::secure_find_by_name(org_id, event_type_name);
     if let permissions::AllowedFeatureFlags::Some(flags) = feature_flags {
         query = eventtype::Entity::filter_feature_flags(query, flags);
     }
@@ -289,12 +289,12 @@ async fn get_event_type(
 
 async fn update_event_type(
     State(AppState { ref db, .. }): State<AppState>,
-    Path(evtype_name): Path<EventTypeName>,
+    Path(EventTypeNamePath { event_type_name }): Path<EventTypeNamePath>,
     permissions::Organization { org_id }: permissions::Organization,
     ValidatedJson(data): ValidatedJson<EventTypeUpdate>,
 ) -> Result<(StatusCode, Json<EventTypeOut>)> {
     let evtype = ctx!(
-        eventtype::Entity::secure_find_by_name(org_id.clone(), evtype_name.clone())
+        eventtype::Entity::secure_find_by_name(org_id.clone(), event_type_name.clone())
             .one(db)
             .await
     )?;
@@ -311,7 +311,7 @@ async fn update_event_type(
             let ret = ctx!(
                 eventtype::ActiveModel {
                     org_id: Set(org_id),
-                    name: Set(evtype_name),
+                    name: Set(event_type_name),
                     ..data.into()
                 }
                 .insert(db)
@@ -325,12 +325,12 @@ async fn update_event_type(
 
 async fn patch_event_type(
     State(AppState { ref db, .. }): State<AppState>,
-    Path(evtype_name): Path<EventTypeName>,
+    Path(EventTypeNamePath { event_type_name }): Path<EventTypeNamePath>,
     permissions::Organization { org_id }: permissions::Organization,
     ValidatedJson(data): ValidatedJson<EventTypePatch>,
 ) -> Result<Json<EventTypeOut>> {
     let evtype = ctx!(
-        eventtype::Entity::secure_find_by_name(org_id, evtype_name)
+        eventtype::Entity::secure_find_by_name(org_id, event_type_name)
             .one(db)
             .await
     )?
@@ -345,11 +345,11 @@ async fn patch_event_type(
 
 async fn delete_event_type(
     State(AppState { ref db, .. }): State<AppState>,
-    Path(evtype_name): Path<EventTypeName>,
+    Path(EventTypeNamePath { event_type_name }): Path<EventTypeNamePath>,
     permissions::Organization { org_id }: permissions::Organization,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
     let evtype = ctx!(
-        eventtype::Entity::secure_find_by_name(org_id, evtype_name)
+        eventtype::Entity::secure_find_by_name(org_id, event_type_name)
             .one(db)
             .await
     )?

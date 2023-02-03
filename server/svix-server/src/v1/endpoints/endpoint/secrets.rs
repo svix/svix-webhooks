@@ -14,15 +14,12 @@ use crate::{
     core::{
         cryptography::Encryption,
         permissions,
-        types::{
-            ApplicationIdOrUid, EndpointIdOrUid, EndpointSecretInternal, ExpiringSigningKey,
-            ExpiringSigningKeys,
-        },
+        types::{EndpointSecretInternal, ExpiringSigningKey, ExpiringSigningKeys},
     },
     ctx,
     db::models::endpoint,
     error::{HttpError, Result},
-    v1::utils::{EmptyResponse, ValidatedJson},
+    v1::utils::{ApplicationEndpointPath, EmptyResponse, ValidatedJson},
     AppState,
 };
 
@@ -38,11 +35,11 @@ pub(super) fn generate_secret(
 
 pub(super) async fn get_endpoint_secret(
     State(AppState { ref db, cfg, .. }): State<AppState>,
-    Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
+    Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<EndpointSecretOut>> {
     let endp = ctx!(
-        endpoint::Entity::secure_find_by_id_or_uid(app.id, endp_id)
+        endpoint::Entity::secure_find_by_id_or_uid(app.id, endpoint_id)
             .one(db)
             .await
     )?
@@ -54,12 +51,12 @@ pub(super) async fn get_endpoint_secret(
 
 pub(super) async fn rotate_endpoint_secret(
     State(AppState { ref db, cfg, .. }): State<AppState>,
-    Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
+    Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
     ValidatedJson(data): ValidatedJson<EndpointSecretRotateIn>,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
     let mut endp = ctx!(
-        endpoint::Entity::secure_find_by_id_or_uid(app.id, endp_id)
+        endpoint::Entity::secure_find_by_id_or_uid(app.id, endpoint_id)
             .one(db)
             .await
     )?

@@ -11,16 +11,13 @@ use super::RecoverIn;
 use crate::{
     core::{
         permissions,
-        types::{
-            ApplicationIdOrUid, BaseId, EndpointIdOrUid, MessageAttemptTriggerType,
-            MessageEndpointId, MessageStatus,
-        },
+        types::{BaseId, MessageAttemptTriggerType, MessageEndpointId, MessageStatus},
     },
     ctx,
     db::models::{application, endpoint, messagedestination},
     error::{HttpError, Result, ValidationErrorItem},
     queue::{MessageTask, TaskQueueProducer},
-    v1::utils::{EmptyResponse, ValidatedJson},
+    v1::utils::{ApplicationEndpointPath, EmptyResponse, ValidatedJson},
     AppState,
 };
 
@@ -78,7 +75,7 @@ pub(super) async fn recover_failed_webhooks(
     State(AppState {
         ref db, queue_tx, ..
     }): State<AppState>,
-    Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
+    Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
     ValidatedJson(data): ValidatedJson<RecoverIn>,
 ) -> Result<(StatusCode, Json<EmptyResponse>)> {
@@ -96,7 +93,7 @@ pub(super) async fn recover_failed_webhooks(
     }
 
     let endp = ctx!(
-        endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
+        endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endpoint_id)
             .one(db)
             .await
     )?
