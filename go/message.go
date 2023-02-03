@@ -85,3 +85,9 @@ func (m *Message) Get(appId string, msgId string) (*MessageOut, error) {
 	ret := MessageOut(out)
 	return &ret, nil
 }
+
+func (m *Message) ExpungeContent(appId string, msgId string) error {
+	req := m.api.MessageApi.ExpungeMessagePayloadApiV1AppAppIdMsgMsgIdContentDelete(context.Background(), msgId, appId)
+	res, err := req.Execute()
+	return wrapError(err, res)
+}

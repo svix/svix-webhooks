@@ -51,10 +51,12 @@ from .internal.openapi_client.api.integration import (
 )
 from .internal.openapi_client.api.message import (
     create_message_api_v1_app_app_id_msg_post,
+    expunge_message_payload_api_v1_app_app_id_msg_msg_id_content_delete,
     get_message_api_v1_app_app_id_msg_msg_id_get,
     list_messages_api_v1_app_app_id_msg_get,
 )
 from .internal.openapi_client.api.message_attempt import (
+    expunge_attempt_content_api_v1_app_app_id_msg_msg_id_attempt_attempt_id_content_delete,
     get_attempt_api_v1_app_app_id_msg_msg_id_attempt_attempt_id_get,
     list_attempted_destinations_api_v1_app_app_id_msg_msg_id_endpoint_get,
     list_attempted_messages_api_v1_app_app_id_endpoint_endpoint_id_msg_get,
@@ -716,6 +718,13 @@ class MessageAsync(ApiBase):
             msg_id=msg_id,
         )
 
+    async def expunge_content(self, app_id: str, msg_id: str) -> None:
+        return await expunge_message_payload_api_v1_app_app_id_msg_msg_id_content_delete.asyncio(
+            client=self._client,
+            app_id=app_id,
+            msg_id=msg_id,
+        )
+
 
 class Message(ApiBase):
     def list(self, app_id: str, options: MessageListOptions = MessageListOptions()) -> ListResponseMessageOut:
@@ -738,6 +747,13 @@ class Message(ApiBase):
 
     def get(self, app_id: str, msg_id: str) -> MessageOut:
         return get_message_api_v1_app_app_id_msg_msg_id_get.sync(
+            client=self._client,
+            app_id=app_id,
+            msg_id=msg_id,
+        )
+
+    def expunge_content(self, app_id: str, msg_id: str) -> None:
+        return expunge_message_payload_api_v1_app_app_id_msg_msg_id_content_delete.sync(
             client=self._client,
             app_id=app_id,
             msg_id=msg_id,
@@ -809,6 +825,19 @@ class MessageAttemptAsync(ApiBase):
             msg_id=msg_id,
             endpoint_id=endpoint_id,
             **options.to_dict(),
+        )
+
+    async def expunge_content(
+        self,
+        app_id: str,
+        msg_id: str,
+        attempt_id: str,
+    ) -> None:
+        return await expunge_attempt_content_api_v1_app_app_id_msg_msg_id_attempt_attempt_id_content_delete.asyncio(
+            client=self._client,
+            app_id=app_id,
+            msg_id=msg_id,
+            attempt_id=attempt_id,
         )
 
 
@@ -883,6 +912,19 @@ class MessageAttempt(ApiBase):
             msg_id=msg_id,
             endpoint_id=endpoint_id,
             **options.to_dict(),
+        )
+
+    def expunge_content(
+        self,
+        app_id: str,
+        msg_id: str,
+        attempt_id: str,
+    ) -> None:
+        return expunge_attempt_content_api_v1_app_app_id_msg_msg_id_attempt_attempt_id_content_delete.sync(
+            client=self._client,
+            app_id=app_id,
+            msg_id=msg_id,
+            attempt_id=attempt_id,
         )
 
 

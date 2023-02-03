@@ -215,3 +215,9 @@ func (m *MessageAttempt) ListAttemptsForEndpoint(appId string, msgId string, end
 	ret := ListResponseMessageAttemptEndpointOut(out)
 	return &ret, nil
 }
+
+func (m *MessageAttempt) ExpungeContent(appId string, msgId string, attemptId string) error {
+	req := m.api.MessageAttemptApi.ExpungeAttemptContentApiV1AppAppIdMsgMsgIdAttemptAttemptIdContentDelete(context.Background(), attemptId, msgId, appId)
+	res, err := req.Execute()
+	return wrapError(err, res)
+}

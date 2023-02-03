@@ -848,6 +848,20 @@ impl<'a> Message<'a> {
         )
         .await?)
     }
+
+    pub async fn expunge_content(&self, app_id: String, msg_id: String) -> Result<()> {
+        Ok(
+            message_api::expunge_message_payload_api_v1_app_app_id_msg_msg_id_content_delete(
+                self.cfg,
+                message_api::ExpungeMessagePayloadApiV1AppAppIdMsgMsgIdContentDeleteParams {
+                    msg_id,
+                    app_id,
+                    idempotency_key: None,
+                },
+            )
+            .await?,
+        )
+    }
 }
 
 #[derive(Default)]
@@ -1074,6 +1088,26 @@ impl<'a> MessageAttempt<'a> {
                 },
             )
             .await?,
+        )
+    }
+
+    pub async fn expunge_content(
+        &self,
+        app_id: String,
+        msg_id: String,
+        attempt_id: String,
+    ) -> Result<()> {
+        Ok(
+            message_attempt_api::expunge_attempt_content_api_v1_app_app_id_msg_msg_id_attempt_attempt_id_content_delete(
+                self.cfg,
+                message_attempt_api::ExpungeAttemptContentApiV1AppAppIdMsgMsgIdAttemptAttemptIdContentDeleteParams {
+                    app_id,
+                    msg_id,
+                    attempt_id,
+                    idempotency_key: None,
+                },
+            )
+            .await?
         )
     }
 }
