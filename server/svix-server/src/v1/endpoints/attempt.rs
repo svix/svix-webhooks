@@ -276,9 +276,9 @@ fn list_attempts_by_endpoint_or_message_filters(
     if event_types.is_some() || channel.is_some() {
         query = query.join_rev(
             sea_orm::JoinType::InnerJoin,
-            messageattempt::Entity::belongs_to(message::Entity)
-                .from(messageattempt::Column::MsgId)
-                .to(message::Column::Id)
+            message::Entity::belongs_to(messageattempt::Entity)
+                .from(message::Column::Id)
+                .to(messageattempt::Column::MsgId)
                 .into(),
         );
 
@@ -287,7 +287,11 @@ fn list_attempts_by_endpoint_or_message_filters(
         }
 
         if let Some(channel) = channel {
-            query = query.filter(Expr::cust_with_values("channels ?? ?", vec![channel]));
+            // sea_orm evaluates the '$1' relative to the # of params in `Expr::cust_with_values`,
+            // NOT relative to the total number of params in the final query like you might expect.
+            // As such, this won't break if more $N params are added in earler/later
+            // `.filter` calls.
+            query = query.filter(Expr::cust_with_values("channels @> $1", [channel.jsonb()]));
         }
     }
 
