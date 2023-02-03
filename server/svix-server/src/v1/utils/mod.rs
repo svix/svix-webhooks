@@ -3,10 +3,8 @@
 
 use std::{
     borrow::Cow,
-    collections::HashSet,
     error::Error as StdError,
     ops::Deref,
-    str::FromStr,
     time::{SystemTime, UNIX_EPOCH},
 };
 
@@ -14,11 +12,12 @@ use aide::{transform::TransformPathItem, OperationInput, OperationIo};
 use axum::{
     async_trait,
     body::HttpBody,
-    extract::{FromRequest, FromRequestParts, Query},
+    extract::{FromRequest, FromRequestParts},
     BoxError,
 };
 use chrono::{DateTime, Utc};
 use http::{request::Parts, Request};
+use itertools::Itertools;
 use regex::Regex;
 use schemars::JsonSchema;
 use sea_orm::{ColumnTrait, QueryFilter, QueryOrder, QuerySelect};
@@ -357,14 +356,18 @@ where
 {
     type Rejection = Error;
 
-    async fn from_request_parts(parts: &mut Parts, state: &S) -> Result<Self> {
-        let Query(value) = Query::<T>::from_request_parts(parts, state)
-            .await
+    async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self> {
+        let query = normalize_array_query(parts.uri.query().unwrap_or_default());
+
+        // Exactly how axum::Query is parsed, except using the normalized query
+        let value: T = serde_urlencoded::from_str(&query)
             .map_err(|err| HttpError::bad_request(None, Some(err.to_string())))?;
+
         value.validate().map_err(|e| {
             HttpError::unprocessable_entity(validation_errors(vec!["query".to_owned()], e))
         })?;
-        Ok(ValidatedQuery(value))
+
+        Ok(Self(value))
     }
 }
 
@@ -382,50 +385,10 @@ impl<T: JsonSchema> OperationInput for ValidatedQuery<T> {
     }
 }
 
-/// This struct is slower than Query. Only use this if we need to pass arrays.
-#[derive(Debug)]
+#[derive(Debug, Validate)]
 pub struct MessageListFetchOptions {
     pub event_types: Option<EventTypeNameSet>,
     pub before: Option<DateTime<Utc>>,
-}
-
-#[async_trait]
-impl<S> FromRequestParts<S> for MessageListFetchOptions
-where
-    S: Send + Sync,
-{
-    type Rejection = Error;
-
-    async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self> {
-        let pairs: Vec<(String, String)> =
-            serde_urlencoded::from_str(parts.uri.query().unwrap_or_default())
-                .map_err(|err| HttpError::bad_request(None, Some(err.to_string())))?;
-
-        let mut before = None;
-        let mut event_types = EventTypeNameSet(HashSet::<EventTypeName>::new());
-        for (key, value) in pairs {
-            if key == "event_types" {
-                event_types.0.insert(EventTypeName(value));
-            } else if key == "before" {
-                before = Some(DateTime::<Utc>::from_str(&value).map_err(|_| {
-                    HttpError::unprocessable_entity(vec![ValidationErrorItem {
-                        loc: vec!["query".to_owned(), "before".to_owned()],
-                        msg: "Unable to parse before".to_owned(),
-                        ty: "value_error".to_owned(),
-                    }])
-                })?);
-            }
-        }
-        let event_types = if event_types.0.is_empty() {
-            None
-        } else {
-            Some(event_types)
-        };
-        Ok(MessageListFetchOptions {
-            event_types,
-            before,
-        })
-    }
 }
 
 impl OperationInput for MessageListFetchOptions {}
@@ -500,12 +463,43 @@ pub struct ApplicationMsgAttemptPath {
 pub struct EventTypeNamePath {
     pub event_type_name: EventTypeName,
 }
+fn normalize_array_query(query: &str) -> Cow<str> {
+    let pairs = form_urlencoded::parse(query.as_bytes());
+
+    let counts = pairs.map(|(k, _val)| k).counts();
+
+    // If none of the query params are arrays, or all the array params use `[]`,
+    // there's no need to normalize anything
+    if counts
+        .iter()
+        .all(|(k, &count)| count <= 1 || k.ends_with("[]"))
+    {
+        return Cow::Borrowed(query);
+    }
+
+    let normalized_query = pairs
+        .map(|(mut k, v)| {
+            let is_array = *counts.get(&k).unwrap() > 1;
+
+            if is_array && !k.ends_with("[]") {
+                k = Cow::Owned(format!("{k}[]"));
+            }
+
+            format!("{k}={v}")
+        })
+        .join("&");
+
+    Cow::Owned(normalized_query)
+}
 
 #[cfg(test)]
 mod tests {
     use validator::Validate;
 
-    use super::{default_limit, validate_no_control_characters, validation_errors, Pagination};
+    use super::{
+        default_limit, normalize_array_query, validate_no_control_characters, validation_errors,
+        Pagination,
+    };
     use crate::core::types::ApplicationUid;
     use crate::error::ValidationErrorItem;
     use serde_json::json;
@@ -630,5 +624,26 @@ mod tests {
 
         assert!(validate_no_control_characters(a).is_ok());
         assert!(validate_no_control_characters(b).is_err());
+    }
+
+    #[test]
+    fn test_normalize_array_query() {
+        let tests = vec!["foo=bar", "foo[]=1&biz=bazz&foo[]=2", "nums[]=1&nums[]=2"];
+
+        for query in tests {
+            assert_eq!(query, normalize_array_query(query));
+        }
+
+        let tests = vec![
+            ("foo=1&foo=3", "foo[]=1&foo[]=3"),
+            (
+                "nums=1&words=one&nums=2&words=2",
+                "nums[]=1&words[]=one&nums[]=2&words[]=2",
+            ),
+        ];
+
+        for (query, normalized) in tests {
+            assert_eq!(normalized, normalize_array_query(query));
+        }
     }
 }

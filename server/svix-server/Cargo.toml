@@ -73,6 +73,8 @@ ipnet = { version = "2.5", features = ["serde"] }
 urlencoding = "2.1.2"
 strum_macros = "0.24"
 strum = { version = "0.24", features = ["derive"] }
+form_urlencoded = "1.0.1"
+itertools = "0.10.5"
 
 [dev-dependencies]
 anyhow = "1.0.56"

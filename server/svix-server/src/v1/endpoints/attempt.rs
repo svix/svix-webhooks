@@ -20,8 +20,8 @@ use crate::{
         utils::{
             apply_pagination, iterator_from_before_or_after, openapi_tag, ApplicationEndpointPath,
             ApplicationMsgAttemptPath, ApplicationMsgEndpointPath, ApplicationMsgPath,
-            EmptyResponse, ListResponse, MessageListFetchOptions, ModelOut, PaginationLimit,
-            ReversibleIterator, ValidatedQuery,
+            EmptyResponse, ListResponse, ModelOut, PaginationLimit, ReversibleIterator,
+            ValidatedQuery,
         },
     },
     AppState,
@@ -515,6 +515,7 @@ async fn list_attempted_destinations(
 pub struct ListAttemptsForEndpointQueryParameters {
     #[validate]
     pub channel: Option<EventChannel>,
+    pub event_types: Option<EventTypeNameSet>,
     pub status: Option<MessageStatus>,
     pub before: Option<DateTime<Utc>>,
     pub after: Option<DateTime<Utc>>,
@@ -525,16 +526,18 @@ async fn list_attempts_for_endpoint(
     pagination: ValidatedQuery<Pagination<ReversibleIterator<MessageAttemptId>>>,
     ValidatedQuery(ListAttemptsForEndpointQueryParameters {
         channel,
+        event_types,
         status,
         before,
         after,
     }): ValidatedQuery<ListAttemptsForEndpointQueryParameters>,
-    list_filter: MessageListFetchOptions,
+
     Path(ApplicationMsgEndpointPath {
         app_id,
         msg_id,
         endpoint_id,
     }): Path<ApplicationMsgEndpointPath>,
+
     auth_app: permissions::Application,
 ) -> Result<Json<ListResponse<MessageAttemptOut>>> {
     list_messageattempts(
@@ -543,11 +546,11 @@ async fn list_attempts_for_endpoint(
         ValidatedQuery(AttemptListFetchOptions {
             endpoint_id: Some(endpoint_id),
             channel,
+            event_types,
             status,
             before,
             after,
         }),
-        list_filter,
         Path(ApplicationMsgPath { app_id, msg_id }),
         auth_app,
     )
@@ -560,6 +563,7 @@ pub struct AttemptListFetchOptions {
     pub endpoint_id: Option<EndpointIdOrUid>,
     #[validate]
     pub channel: Option<EventChannel>,
+    pub event_types: Option<EventTypeNameSet>,
     pub status: Option<MessageStatus>,
     pub before: Option<DateTime<Utc>>,
     pub after: Option<DateTime<Utc>>,
@@ -571,12 +575,13 @@ async fn list_messageattempts(
     ValidatedQuery(AttemptListFetchOptions {
         endpoint_id,
         channel,
+        event_types,
         status,
         before,
         after,
     }): ValidatedQuery<AttemptListFetchOptions>,
-    list_filter: MessageListFetchOptions,
     Path(ApplicationMsgPath { msg_id, .. }): Path<ApplicationMsgPath>,
+
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<ListResponse<MessageAttemptOut>>> {
     let PaginationLimit(limit) = pagination.limit;
@@ -607,7 +612,7 @@ async fn list_messageattempts(
         query = query.filter(Expr::cust_with_values("channels ?? ?", vec![channel]));
     }
 
-    if let Some(EventTypeNameSet(event_types)) = list_filter.event_types {
+    if let Some(EventTypeNameSet(event_types)) = event_types {
         query = query.filter(message::Column::EventType.is_in(event_types));
     }
 

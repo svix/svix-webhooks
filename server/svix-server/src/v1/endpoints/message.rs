@@ -15,8 +15,8 @@ use crate::{
     queue::MessageTaskBatch,
     v1::utils::{
         apply_pagination, iterator_from_before_or_after, openapi_tag, validation_error,
-        ApplicationMsgPath, ListResponse, MessageListFetchOptions, ModelIn, ModelOut,
-        PaginationLimit, ReversibleIterator, ValidatedJson, ValidatedQuery,
+        ApplicationMsgPath, ListResponse, ModelIn, ModelOut, PaginationLimit, ReversibleIterator,
+        ValidatedJson, ValidatedQuery,
     },
     AppState,
 };
@@ -164,7 +164,8 @@ pub struct ListMessagesQueryParams {
     channel: Option<EventChannel>,
     #[serde(default = "default_true")]
     with_content: bool,
-
+    event_types: Option<EventTypeNameSet>,
+    before: Option<DateTime<Utc>>,
     after: Option<DateTime<Utc>>,
 }
 
@@ -174,16 +175,17 @@ async fn list_messages(
     ValidatedQuery(ListMessagesQueryParams {
         channel,
         with_content,
+        event_types,
+        before,
         after,
     }): ValidatedQuery<ListMessagesQueryParams>,
-    list_filter: MessageListFetchOptions,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<ListResponse<MessageOut>>> {
     let PaginationLimit(limit) = pagination.limit;
 
     let mut query = message::Entity::secure_find(app.id);
 
-    if let Some(EventTypeNameSet(event_types)) = list_filter.event_types {
+    if let Some(EventTypeNameSet(event_types)) = event_types {
         query = query.filter(message::Column::EventType.is_in(event_types));
     }
 
@@ -191,7 +193,7 @@ async fn list_messages(
         query = query.filter(Expr::cust_with_values("channels ?? ?", vec![channel]));
     }
 
-    let iterator = iterator_from_before_or_after(pagination.iterator, list_filter.before, after);
+    let iterator = iterator_from_before_or_after(pagination.iterator, before, after);
     let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
 
     let query = apply_pagination(query, message::Column::Id, limit, iterator);
