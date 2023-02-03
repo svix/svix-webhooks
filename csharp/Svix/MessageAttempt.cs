@@ -487,5 +487,52 @@ namespace Svix
                 return false;
             }
         }
+
+        public bool ExpungeContent(string appId, string messageId, string attemptId, string idempotencyKey = default)
+        {
+            try
+            {
+                var lResponse = _messageAttemptApi.ExpungeAttemptContentApiV1AppAppIdMsgMsgIdAttemptAttemptIdContentDeleteWithHttpInfo(
+                    attemptId,
+                    messageId,
+                    appId,
+                    idempotencyKey);
+
+                return lResponse.StatusCode == HttpStatusCode.NoContent;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(ExpungeContent)} failed");
+
+                if (Throw)
+                    throw;
+
+                return false;
+            }
+        }
+
+        public async Task<bool> ExpungeContentAsync(string appId, string messageId, string attemptId, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var lResponse = await _messageAttemptApi.ExpungeAttemptContentApiV1AppAppIdMsgMsgIdAttemptAttemptIdContentDeleteWithHttpInfoAsync(
+                    attemptId,
+                    messageId,
+                    appId,
+                    idempotencyKey,
+                    cancellationToken);
+
+                return lResponse.StatusCode == HttpStatusCode.NoContent;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(ExpungeContentAsync)} failed");
+
+                if (Throw)
+                    throw;
+
+                return false;
+            }
+        }
     }
 }

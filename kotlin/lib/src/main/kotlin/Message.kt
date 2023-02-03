@@ -48,4 +48,12 @@ class Message internal constructor(token: String, options: SvixOptions) {
             throw ApiException.wrap(e)
         }
     }
+
+    suspend fun expungeContent(msgId: String, appId: String) {
+        try {
+            return api.expungeMessagePayloadApiV1AppAppIdMsgMsgIdContentDelete(msgId, appId, null)
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
 }

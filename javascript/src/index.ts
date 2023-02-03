@@ -522,6 +522,10 @@ class Message {
   public get(appId: string, msgId: string): Promise<MessageOut> {
     return this.api.getMessageApiV1AppAppIdMsgMsgIdGet({ msgId, appId });
   }
+
+  public expungeContent(appId: string, msgId: string): Promise<void> {
+    return this.api.expungeMessagePayloadApiV1AppAppIdMsgMsgIdContentDelete({ appId, msgId });
+  }
 }
 
 class MessageAttempt {
@@ -625,6 +629,16 @@ class MessageAttempt {
     return this.api.listAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGet(
       { appId, msgId, endpointId, ...options }
     );
+  }
+
+  public expungeContent(
+    appId: string,
+    msgId: string,
+    attemptId: string
+  ): Promise<void> {
+    return this.api.expungeAttemptContentApiV1AppAppIdMsgMsgIdAttemptAttemptIdContentDelete({
+      appId, msgId, attemptId
+    })
   }
 }
 

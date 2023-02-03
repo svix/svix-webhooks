@@ -130,4 +130,17 @@ public final class MessageAttempt {
 				throw Utils.wrapInternalApiException(e);
 			}
 	}
+
+	public void expungeContent(final String appId, final String msgId, final String attemptId) throws ApiException {
+		try {
+			api.expungeAttemptContentApiV1AppAppIdMsgMsgIdAttemptAttemptIdContentDelete(
+				attemptId,
+				msgId,
+				appId,
+				null
+			);
+		} catch (com.svix.internal.ApiException e) {
+			throw Utils.wrapInternalApiException(e);
+		}
+	}
 }
