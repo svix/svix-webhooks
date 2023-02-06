@@ -6,7 +6,6 @@ use std::{
     collections::HashSet,
     error::Error as StdError,
     ops::Deref,
-    str::FromStr,
     time::{SystemTime, UNIX_EPOCH},
 };
 
@@ -382,53 +381,44 @@ impl<T: JsonSchema> OperationInput for ValidatedQuery<T> {
     }
 }
 
-/// This struct is slower than Query. Only use this if we need to pass arrays.
-#[derive(Debug)]
-pub struct MessageListFetchOptions {
-    pub event_types: Option<EventTypeNameSet>,
-    pub before: Option<DateTime<Utc>>,
-}
+// A special wrapper to handle query parameter lists. serde_qs and serde_urlencode can't
+// handle url query param arrays as flexibly as we need to support in our API
+pub struct EventTypesQuery(pub Option<EventTypeNameSet>);
 
 #[async_trait]
-impl<S> FromRequestParts<S> for MessageListFetchOptions
+impl<S> FromRequestParts<S> for EventTypesQuery
 where
     S: Send + Sync,
 {
     type Rejection = Error;
 
     async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self> {
-        let pairs: Vec<(String, String)> =
-            serde_urlencoded::from_str(parts.uri.query().unwrap_or_default())
-                .map_err(|err| HttpError::bad_request(None, Some(err.to_string())))?;
+        let pairs = form_urlencoded::parse(parts.uri.query().unwrap_or_default().as_bytes());
 
-        let mut before = None;
-        let mut event_types = EventTypeNameSet(HashSet::<EventTypeName>::new());
-        for (key, value) in pairs {
-            if key == "event_types" {
-                event_types.0.insert(EventTypeName(value));
-            } else if key == "before" {
-                before = Some(DateTime::<Utc>::from_str(&value).map_err(|_| {
-                    HttpError::unprocessable_entity(vec![ValidationErrorItem {
-                        loc: vec!["query".to_owned(), "before".to_owned()],
-                        msg: "Unable to parse before".to_owned(),
-                        ty: "value_error".to_owned(),
-                    }])
-                })?);
-            }
-        }
-        let event_types = if event_types.0.is_empty() {
-            None
+        let event_types: HashSet<EventTypeName> = pairs
+            .filter_map(|(key, value)| {
+                // want to handle both `?event_types=`, `?event_types[]=`, and `?event_types[1]=`
+                if key == "event_types" || (key.starts_with("event_types[") && key.ends_with(']')) {
+                    Some(EventTypeName(value.into_owned()))
+                } else {
+                    None
+                }
+            })
+            .collect();
+
+        if event_types.is_empty() {
+            Ok(Self(None))
         } else {
-            Some(event_types)
-        };
-        Ok(MessageListFetchOptions {
-            event_types,
-            before,
-        })
+            let event_types = EventTypeNameSet(event_types);
+            event_types.validate().map_err(|e| {
+                HttpError::unprocessable_entity(validation_errors(vec!["query".to_owned()], e))
+            })?;
+            Ok(Self(Some(event_types)))
+        }
     }
 }
 
-impl OperationInput for MessageListFetchOptions {}
+impl OperationInput for EventTypesQuery {}
 
 pub async fn api_not_implemented() -> Result<()> {
     Err(HttpError::not_implemented(None, None).into())

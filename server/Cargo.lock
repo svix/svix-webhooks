@@ -3323,6 +3323,7 @@ dependencies = [
  "ed25519-compact",
  "enum_dispatch",
  "figment",
+ "form_urlencoded",
  "futures",
  "hmac-sha256",
  "http",
