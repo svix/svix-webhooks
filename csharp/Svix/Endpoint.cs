@@ -585,7 +585,7 @@ namespace Svix
             }
         }
 
-        public bool Replay(string appId, string endpointId, ReplayIn replayIn,
+        public bool ReplayMissing(string appId, string endpointId, ReplayIn replayIn,
             string idempotencyKey = default)
         {
             try
@@ -600,7 +600,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(Replay)} failed");
+                Logger?.LogError(e, $"{nameof(ReplayMissing)} failed");
 
                 if (Throw)
                     throw;
@@ -609,7 +609,7 @@ namespace Svix
             }
         }
 
-        public async Task<bool> ReplayAsync(string appId, string endpointId, ReplayIn replayIn,
+        public async Task<bool> ReplayMissingAsync(string appId, string endpointId, ReplayIn replayIn,
             string idempotencyKey = default, CancellationToken cancellationToken = default)
         {
             try
@@ -625,7 +625,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(ReplayAsync)} failed");
+                Logger?.LogError(e, $"{nameof(ReplayMissingAsync)} failed");
 
                 if (Throw)
                     throw;

@@ -320,7 +320,7 @@ class Endpoint {
       .then(() => Promise.resolve());
   }
 
-  public replay(
+  public replayMissing(
     appId: string,
     endpointId: string,
     replayIn: ReplayIn,

@@ -132,11 +132,11 @@ public final class Endpoint {
 		}
 	}
 
-	public void replay(final String appId, final String endpointId, final ReplayIn replayIn) throws ApiException {
-		this.replay(appId, endpointId, replayIn, new PostOptions());
+	public void replayMissing(final String appId, final String endpointId, final ReplayIn replayIn) throws ApiException {
+		this.replayMissing(appId, endpointId, replayIn, new PostOptions());
 	}
 
-	public void replay(final String appId, final String endpointId, final ReplayIn replayIn, final PostOptions options) throws ApiException {
+	public void replayMissing(final String appId, final String endpointId, final ReplayIn replayIn, final PostOptions options) throws ApiException {
 		try {
 			api.replayMissingWebhooksApiV1AppAppIdEndpointEndpointIdReplayMissingPostWithHttpInfo(appId, endpointId, replayIn, options.getIdempotencyKey());
 		} catch (com.svix.internal.ApiException e) {

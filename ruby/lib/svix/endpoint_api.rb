@@ -55,7 +55,7 @@ module Svix
       return @api.get_endpoint_stats_api_v1_app_app_id_endpoint_endpoint_id_stats_get(endpoint_id app_id)
     end
 
-    def replay(app_id, endpoint_id, replay_in, options = {})
+    def replay_missing(app_id, endpoint_id, replay_in, options = {})
       @api.replay_missing_webhooks_api_v1_app_app_id_endpoint_endpoint_id_replay_missing_post(app_id, endpoint_id, replay_in, options)
       nil
     end
