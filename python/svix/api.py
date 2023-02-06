@@ -365,7 +365,7 @@ class EndpointAsync(ApiBase):
             json_body=endpoint_headers_in,
         )
 
-    async def replay(
+    async def replay_missing(
         self, app_id: str, endpoint_id: str, replay_in: ReplayIn, options: PostOptions = PostOptions()
     ) -> ReplayOut:
         return await replay_missing_webhooks_api_v1_app_app_id_endpoint_endpoint_id_replay_missing_post.asyncio(
@@ -487,7 +487,7 @@ class Endpoint(ApiBase):
             endpoint_id=endpoint_id,
         )
 
-    def replay(
+    def replay_missing(
         self, app_id: str, endpoint_id: str, replay_in: ReplayIn, options: PostOptions = PostOptions()
     ) -> ReplayOut:
         return replay_missing_webhooks_api_v1_app_app_id_endpoint_endpoint_id_replay_missing_post.sync(

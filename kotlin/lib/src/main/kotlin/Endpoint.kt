@@ -198,7 +198,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun replay(
+    suspend fun replayMissing(
         appId: String,
         endpointId: String,
         replayIn: ReplayIn,

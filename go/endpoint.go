@@ -185,11 +185,11 @@ func (e *Endpoint) GetStats(appId string, endpointId string) (*EndpointStats, er
 	return &ret, nil
 }
 
-func (e *Endpoint) Replay(appId string, endpointId string, replayIn *ReplayIn) error {
-	return e.ReplayWithOptions(appId, endpointId, replayIn, nil)
+func (e *Endpoint) ReplayMissing(appId string, endpointId string, replayIn *ReplayIn) error {
+	return e.ReplayMissingWithOptions(appId, endpointId, replayIn, nil)
 }
 
-func (e *Endpoint) ReplayWithOptions(
+func (e *Endpoint) ReplayMissingWithOptions(
 	appId string,
 	endpointId string,
 	replayIn *ReplayIn,
