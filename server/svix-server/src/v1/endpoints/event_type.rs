@@ -10,7 +10,7 @@ use crate::{
     db::models::eventtype,
     error::{HttpError, Result},
     v1::utils::{
-        api_not_implemented, openapi_tag,
+        api_not_implemented, openapi_desc, openapi_tag,
         patch::{
             patch_field_non_nullable, patch_field_nullable, UnrequiredField,
             UnrequiredNullableField,
@@ -22,7 +22,7 @@ use crate::{
     AppState,
 };
 use aide::axum::{
-    routing::{get, post},
+    routing::{get_with, post_with},
     ApiRouter,
 };
 use axum::{
@@ -189,6 +189,8 @@ pub struct ListFetchOptions {
     pub with_content: bool,
 }
 
+const LIST_EVENT_TYPES_DESCRIPTION: &str = "Return the list of event types.";
+
 async fn list_event_types(
     State(AppState { ref db, .. }): State<AppState>,
     pagination: ValidatedQuery<Pagination<EventTypeName>>,
@@ -233,6 +235,14 @@ async fn list_event_types(
     )))
 }
 
+const CREATE_EVENT_TYPE_DESCRIPTION: &str = r#"
+Create new or unarchive existing event type.
+
+Unarchiving an event type will allow endpoints to filter on it and messages to be sent with it.
+Endpoints filtering on the event type before archival will continue to filter on it.
+This operation does not preserve the description and schemas.
+"#;
+
 async fn create_event_type(
     State(AppState { ref db, .. }): State<AppState>,
     permissions::Organization { org_id }: permissions::Organization,
@@ -269,6 +279,8 @@ async fn create_event_type(
     Ok((StatusCode::CREATED, Json(ret.into())))
 }
 
+const GET_EVENT_TYPE_DESCRIPTION: &str = "Get an event type.";
+
 async fn get_event_type(
     State(AppState { ref db, .. }): State<AppState>,
     Path(EventTypeNamePath { event_type_name }): Path<EventTypeNamePath>,
@@ -286,6 +298,8 @@ async fn get_event_type(
 
     Ok(Json(evtype.into()))
 }
+
+const UPDATE_EVENT_TYPE_DESCRIPTION: &str = "Update an event type.";
 
 async fn update_event_type(
     State(AppState { ref db, .. }): State<AppState>,
@@ -323,6 +337,8 @@ async fn update_event_type(
     }
 }
 
+const PATCH_EVENT_TYPE_DESCRIPTION: &str = "Partially update an event type.";
+
 async fn patch_event_type(
     State(AppState { ref db, .. }): State<AppState>,
     Path(EventTypeNamePath { event_type_name }): Path<EventTypeNamePath>,
@@ -343,6 +359,15 @@ async fn patch_event_type(
     Ok(Json(ret.into()))
 }
 
+const DELETE_EVENT_TYPE_DESCRIPTION: &str = r#"
+Archive an event type.
+
+Endpoints already configured to filter on an event type will continue to do so after archival.
+However, new messages can not be sent with it and endpoints can not filter on it.
+An event type can be unarchived with the
+[create operation](#operation/create_event_type_api_v1_event_type__post).
+"#;
+
 async fn delete_event_type(
     State(AppState { ref db, .. }): State<AppState>,
     Path(EventTypeNamePath { event_type_name }): Path<EventTypeNamePath>,
@@ -361,25 +386,42 @@ async fn delete_event_type(
     Ok((StatusCode::NO_CONTENT, Json(EmptyResponse {})))
 }
 
+const GENERATE_SCHEMA_EXAMPLE_DESCRIPTION: &str =
+    "Generates a fake example from the given JSONSchema";
+
 pub fn router() -> ApiRouter<AppState> {
+    let tag = openapi_tag("Event Type");
     ApiRouter::new()
         .api_route_with(
             "/event-type/",
-            post(create_event_type).get(list_event_types),
-            openapi_tag("Event Type"),
+            post_with(
+                create_event_type,
+                openapi_desc(CREATE_EVENT_TYPE_DESCRIPTION),
+            )
+            .get_with(list_event_types, openapi_desc(LIST_EVENT_TYPES_DESCRIPTION)),
+            &tag,
         )
         .api_route_with(
             "/event-type/:event_type_name/",
-            get(get_event_type)
-                .put(update_event_type)
-                .patch(patch_event_type)
-                .delete(delete_event_type),
-            openapi_tag("Event Type"),
+            get_with(get_event_type, openapi_desc(GET_EVENT_TYPE_DESCRIPTION))
+                .put_with(
+                    update_event_type,
+                    openapi_desc(UPDATE_EVENT_TYPE_DESCRIPTION),
+                )
+                .patch_with(patch_event_type, openapi_desc(PATCH_EVENT_TYPE_DESCRIPTION))
+                .delete_with(
+                    delete_event_type,
+                    openapi_desc(DELETE_EVENT_TYPE_DESCRIPTION),
+                ),
+            &tag,
         )
         .api_route_with(
             "/event-type/schema/generate-example/",
-            post(api_not_implemented),
-            openapi_tag("Event Type"),
+            post_with(
+                api_not_implemented,
+                openapi_desc(GENERATE_SCHEMA_EXAMPLE_DESCRIPTION),
+            ),
+            tag,
         )
 }
 

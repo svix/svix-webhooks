@@ -34,6 +34,13 @@ pub(super) fn generate_secret(
     }
 }
 
+pub(super) const GET_ENDPOINT_SECRET_DESCRIPTION: &str = r#"
+Get the endpoint's signing secret.
+
+This is used to verify the authenticity of the webhook.
+For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
+"#;
+
 pub(super) async fn get_endpoint_secret(
     State(AppState { ref db, cfg, .. }): State<AppState>,
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
@@ -49,6 +56,8 @@ pub(super) async fn get_endpoint_secret(
         key: endp.key.into_endpoint_secret(&cfg.encryption)?,
     }))
 }
+
+pub(super) const ROTATE_ENDPOINT_SECRET_DESCRIPTION: &str = "Rotates the endpoint's signing secret.  The previous secret will be valid for the next 24 hours.";
 
 pub(super) async fn rotate_endpoint_secret(
     State(AppState {

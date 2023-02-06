@@ -71,6 +71,9 @@ async fn bulk_recover_failed_messages(
     Ok(())
 }
 
+pub(super) const RECOVER_FAILED_WEBHOOKS_DESCRIPTION: &str =
+    "Resend all failed messages since a given time.";
+
 pub(super) async fn recover_failed_webhooks(
     State(AppState {
         ref db, queue_tx, ..

@@ -9,7 +9,10 @@ use std::{
     time::{SystemTime, UNIX_EPOCH},
 };
 
-use aide::{transform::TransformPathItem, OperationInput, OperationIo};
+use aide::{
+    transform::{TransformOperation, TransformPathItem},
+    OperationInput, OperationIo,
+};
 use axum::{
     async_trait,
     body::HttpBody,
@@ -509,8 +512,12 @@ pub fn validate_no_control_characters_unrequired(
     }
 }
 
-pub fn openapi_tag(tag: &'static str) -> impl FnOnce(TransformPathItem) -> TransformPathItem {
-    |op| op.tag(tag)
+pub fn openapi_tag<T: AsRef<str>>(tag: T) -> impl Fn(TransformPathItem) -> TransformPathItem {
+    move |op| op.tag(tag.as_ref())
+}
+
+pub fn openapi_desc<T: AsRef<str>>(desc: T) -> impl Fn(TransformOperation) -> TransformOperation {
+    move |op| op.description(desc.as_ref())
 }
 
 pub fn get_unix_timestamp() -> u64 {
