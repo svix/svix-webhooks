@@ -1,4 +1,4 @@
-use aide::axum::{routing::post, ApiRouter};
+use aide::axum::{routing::post_with, ApiRouter};
 use axum::{extract::State, Json};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -7,7 +7,7 @@ use validator::Validate;
 use crate::{
     core::{permissions, security::generate_app_token, types::FeatureFlagSet},
     error::{HttpError, Result},
-    v1::utils::{api_not_implemented, openapi_tag, ValidatedJson},
+    v1::utils::{api_not_implemented, openapi_desc, openapi_tag, ValidatedJson},
     AppState,
 };
 
@@ -26,6 +26,8 @@ pub struct AppPortalAccessIn {
 }
 
 pub type AppPortalAccessOut = DashboardAccessOut;
+
+const APP_PORTAL_ACCESS_DESCRIPTION: &str = "Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.";
 
 async fn app_portal_access(
     State(AppState { cfg, .. }): State<AppState>,
@@ -54,6 +56,12 @@ async fn app_portal_access(
     Ok(Json(DashboardAccessOut { url, token }))
 }
 
+const DASHBOARD_ACCESS_DESCRIPTION: &str = r#"
+DEPRECATED: Please use `app-portal-access` instead.
+
+Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
+"#;
+
 async fn dashboard_access(
     state: State<AppState>,
     permissions: permissions::OrganizationWithApplication,
@@ -68,21 +76,31 @@ async fn dashboard_access(
     .await
 }
 
+const LOGOUT_DESCRIPTION: &str = r#"
+Logout an app token.
+
+Trying to log out other tokens will fail.
+"#;
+
 pub fn router() -> ApiRouter<AppState> {
+    let tag = openapi_tag("Authentication");
     ApiRouter::new()
         .api_route_with(
             "/auth/dashboard-access/:app_id/",
-            post(dashboard_access),
-            openapi_tag("Authentication"),
+            post_with(dashboard_access, openapi_desc(DASHBOARD_ACCESS_DESCRIPTION)),
+            &tag,
         )
         .api_route_with(
             "/auth/logout/",
-            post(api_not_implemented),
-            openapi_tag("Authentication"),
+            post_with(api_not_implemented, openapi_desc(LOGOUT_DESCRIPTION)),
+            &tag,
         )
         .api_route_with(
             "/auth/app-portal-access/:app_id/",
-            post(app_portal_access),
-            openapi_tag("Authentication"),
+            post_with(
+                app_portal_access,
+                openapi_desc(APP_PORTAL_ACCESS_DESCRIPTION),
+            ),
+            tag,
         )
 }

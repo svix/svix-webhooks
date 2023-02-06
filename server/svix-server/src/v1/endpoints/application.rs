@@ -11,7 +11,7 @@ use crate::{
     error::{HttpError, Result},
     transaction,
     v1::utils::{
-        openapi_tag,
+        openapi_desc, openapi_tag,
         patch::{
             patch_field_non_nullable, patch_field_nullable, UnrequiredField,
             UnrequiredNullableField,
@@ -23,7 +23,7 @@ use crate::{
     AppState,
 };
 use aide::axum::{
-    routing::{get, post},
+    routing::{get_with, post_with},
     ApiRouter,
 };
 use axum::{
@@ -189,6 +189,8 @@ impl From<(application::Model, applicationmetadata::Model)> for ApplicationOut {
     }
 }
 
+const LIST_APPLICATIONS_DESCRIPTION: &str = "List all of the organization's applications.";
+
 async fn list_applications(
     State(AppState { ref db, .. }): State<AppState>,
     pagination: ValidatedQuery<Pagination<ApplicationId>>,
@@ -217,6 +219,8 @@ pub struct CreateApplicationQuery {
     #[serde(default = "default_as_false")]
     get_if_exists: bool,
 }
+
+const CREATE_APPLICATION_DESCRIPTION: &str = "Create a new application.";
 
 async fn create_application(
     State(AppState { ref db, .. }): State<AppState>,
@@ -255,11 +259,15 @@ async fn create_application(
     Ok((StatusCode::CREATED, Json((app, metadata).into())))
 }
 
+const GET_APPLICATION_DESCRIPTION: &str = "Get an application.";
+
 async fn get_application(
     permissions::ApplicationWithMetadata { app, metadata }: permissions::ApplicationWithMetadata,
 ) -> Result<Json<ApplicationOut>> {
     Ok(Json((app, metadata).into()))
 }
+
+const UPDATE_APPLICATION_DESCRIPTION: &str = "Update an application.";
 
 async fn update_application(
     State(AppState { ref db, .. }): State<AppState>,
@@ -299,6 +307,8 @@ async fn update_application(
     Ok((status, Json((app, metadata).into())))
 }
 
+const PATCH_APPLICATION_DESCRIPTION: &str = "Partially update an application.";
+
 async fn patch_application(
     State(AppState { ref db, .. }): State<AppState>,
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
@@ -320,6 +330,8 @@ async fn patch_application(
     Ok(Json((app, metadata).into()))
 }
 
+const DELETE_APPLICATION_DESCRIPTION: &str = "Delete an application.";
+
 async fn delete_application(
     State(AppState { ref db, .. }): State<AppState>,
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
@@ -332,19 +344,36 @@ async fn delete_application(
 }
 
 pub fn router() -> ApiRouter<AppState> {
+    let tag = openapi_tag("Application");
     ApiRouter::new()
         .api_route_with(
             "/app/",
-            post(create_application).get(list_applications),
-            openapi_tag("Application"),
+            post_with(
+                create_application,
+                openapi_desc(CREATE_APPLICATION_DESCRIPTION),
+            )
+            .get_with(
+                list_applications,
+                openapi_desc(LIST_APPLICATIONS_DESCRIPTION),
+            ),
+            &tag,
         )
         .api_route_with(
             "/app/:app_id/",
-            get(get_application)
-                .put(update_application)
-                .patch(patch_application)
-                .delete(delete_application),
-            openapi_tag("Application"),
+            get_with(get_application, openapi_desc(GET_APPLICATION_DESCRIPTION))
+                .put_with(
+                    update_application,
+                    openapi_desc(UPDATE_APPLICATION_DESCRIPTION),
+                )
+                .patch_with(
+                    patch_application,
+                    openapi_desc(PATCH_APPLICATION_DESCRIPTION),
+                )
+                .delete_with(
+                    delete_application,
+                    openapi_desc(DELETE_APPLICATION_DESCRIPTION),
+                ),
+            tag,
         )
 }
 

@@ -15,6 +15,9 @@ use crate::{
     AppState,
 };
 
+pub(super) const GET_ENDPOINT_HEADERS_DESCRIPTION: &str =
+    "Get the additional headers to be sent with the webhook";
+
 pub(super) async fn get_endpoint_headers(
     State(AppState { ref db, .. }): State<AppState>,
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
@@ -32,6 +35,9 @@ pub(super) async fn get_endpoint_headers(
         None => Ok(Json(EndpointHeadersOut::default())),
     }
 }
+
+pub(super) const UPDATE_ENDPOINT_HEADERS_DESCRIPTION: &str =
+    "Set the additional headers to be sent with the webhook";
 
 pub(super) async fn update_endpoint_headers(
     State(AppState { ref db, .. }): State<AppState>,
@@ -52,6 +58,9 @@ pub(super) async fn update_endpoint_headers(
 
     Ok((StatusCode::NO_CONTENT, Json(EmptyResponse {})))
 }
+
+pub(super) const PATCH_ENDPOINT_HEADERS_DESCRIPTION: &str =
+    "Partially set the additional headers to be sent with the webhook";
 
 pub(super) async fn patch_endpoint_headers(
     State(AppState { ref db, .. }): State<AppState>,

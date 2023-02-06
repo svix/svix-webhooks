@@ -30,6 +30,8 @@ use crate::{
 };
 use hack::EventTypeNameResult;
 
+pub(super) const LIST_ENDPOINTS_DESCRIPTION: &str = "List the application's endpoints.";
+
 pub(super) async fn list_endpoints(
     State(AppState { ref db, .. }): State<AppState>,
     ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<EndpointId>>>,
@@ -102,6 +104,12 @@ async fn create_endp_from_data(
     Ok((endp, metadata))
 }
 
+pub(super) const CREATE_ENDPOINT_DESCRIPTION: &str = r#"
+Create a new endpoint for the application.
+
+When `secret` is `null` the secret is automatically generated (recommended)
+"#;
+
 pub(super) async fn create_endpoint(
     State(AppState {
         ref db,
@@ -121,6 +129,8 @@ pub(super) async fn create_endpoint(
 
     Ok((StatusCode::CREATED, Json((endp, metadata.data).into())))
 }
+
+pub(super) const GET_ENDPOINT_DESCRIPTION: &str = "Get an endpoint.";
 
 pub(super) async fn get_endpoint(
     State(AppState { ref db, .. }): State<AppState>,
@@ -166,6 +176,8 @@ async fn update_endp_from_data(
     Ok((endp, metadata))
 }
 
+pub(super) const UPDATE_ENDPOINT_DESCRIPTION: &str = "Update an endpoint.";
+
 pub(super) async fn update_endpoint(
     State(AppState {
         ref db,
@@ -196,6 +208,8 @@ pub(super) async fn update_endpoint(
         Ok((StatusCode::CREATED, Json((endp, metadata.data).into())))
     }
 }
+
+pub(super) const PATCH_ENDPOINT_DESCRIPTION: &str = "Partially update an endpoint.";
 
 pub(super) async fn patch_endpoint(
     State(AppState {
@@ -228,6 +242,8 @@ pub(super) async fn patch_endpoint(
 
     Ok(Json((endp, metadata.data).into()))
 }
+
+pub(super) const DELETE_ENDPOINT_DESCRIPTION: &str = "Delete an endpoint.";
 
 pub(super) async fn delete_endpoint(
     State(AppState {

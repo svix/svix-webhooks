@@ -14,14 +14,14 @@ use crate::{
     error::{HttpError, Result},
     queue::MessageTaskBatch,
     v1::utils::{
-        apply_pagination_desc, iterator_from_before_or_after, openapi_tag, validation_error,
-        ApplicationMsgPath, EventTypesQuery, ListResponse, ModelIn, ModelOut, PaginationLimit,
-        ReversibleIterator, ValidatedJson, ValidatedQuery,
+        apply_pagination_desc, iterator_from_before_or_after, openapi_desc, openapi_tag,
+        validation_error, ApplicationMsgPath, EventTypesQuery, ListResponse, ModelIn, ModelOut,
+        PaginationLimit, ReversibleIterator, ValidatedJson, ValidatedQuery,
     },
     AppState,
 };
 use aide::axum::{
-    routing::{delete, get, post},
+    routing::{delete_with, get_with, post_with},
     ApiRouter,
 };
 use axum::{
@@ -169,6 +169,13 @@ pub struct ListMessagesQueryParams {
     after: Option<DateTime<Utc>>,
 }
 
+const LIST_MESSAGES_DESCRIPTION: &str = r#"
+List all of the application's messages.
+
+The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
+The `after` parameter lets you filter all items created after a certain date and is ignored if an iterator is passed.
+`before` and `after` cannot be used simultaneously.
+"#;
 async fn list_messages(
     State(AppState { ref db, .. }): State<AppState>,
     ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<MessageId>>>,
@@ -228,6 +235,17 @@ pub struct CreateMessageQueryParams {
     with_content: bool,
 }
 
+const CREATE_MESSAGE_DESCRIPTION: &str = r#"
+Creates a new message and dispatches it to all of the application's endpoints.
+
+The `eventId` is an optional custom unique ID. It's verified to be unique only up to a day, after that no verification will be made.
+If a message with the same `eventId` already exists for any application in your environment, a 409 conflict error will be returned.
+
+The `eventType` indicates the type and schema of the event. All messages of a certain `eventType` are expected to have the same schema. Endpoints can choose to only listen to specific event types.
+Messages can also have `channels`, which similar to event types let endpoints filter by them. Unlike event types, messages can have multiple channels, and channels don't imply a specific message content or schema.
+
+The `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to ~350kb, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb.
+"#;
 async fn create_message(
     State(AppState {
         ref db,
@@ -291,6 +309,9 @@ pub struct GetMessageQueryParams {
     #[serde(default = "default_true")]
     with_content: bool,
 }
+
+const GET_MESSAGE_DESCRIPTION: &str = "Get a message by its ID or eventID.";
+
 async fn get_message(
     State(AppState { ref db, .. }): State<AppState>,
     Path(ApplicationMsgPath { msg_id, .. }): Path<ApplicationMsgPath>,
@@ -310,6 +331,12 @@ async fn get_message(
     };
     Ok(Json(msg_out))
 }
+
+const EXPUNGE_MESSAGE_CONTENT_DESCRIPTION: &str = r#"
+Delete the given message's payload. Useful in cases when a message was accidentally sent with sensitive content.
+
+The message can't be replayed or resent once its payload has been deleted or expired.
+"#;
 
 async fn expunge_message_content(
     State(AppState { ref db, .. }): State<AppState>,
@@ -331,21 +358,26 @@ async fn expunge_message_content(
 }
 
 pub fn router() -> ApiRouter<AppState> {
+    let tag = openapi_tag("Message");
     ApiRouter::new()
         .api_route_with(
             "/app/:app_id/msg/",
-            post(create_message).get(list_messages),
-            openapi_tag("Message"),
+            post_with(create_message, openapi_desc(CREATE_MESSAGE_DESCRIPTION))
+                .get_with(list_messages, openapi_desc(LIST_MESSAGES_DESCRIPTION)),
+            &tag,
         )
         .api_route_with(
             "/app/:app_id/msg/:msg_id/",
-            get(get_message),
-            openapi_tag("Message"),
+            get_with(get_message, openapi_desc(GET_MESSAGE_DESCRIPTION)),
+            &tag,
         )
         .api_route_with(
             "/app/:app_id/msg/:msg_id/content/",
-            delete(expunge_message_content),
-            openapi_tag("Message"),
+            delete_with(
+                expunge_message_content,
+                openapi_desc(EXPUNGE_MESSAGE_CONTENT_DESCRIPTION),
+            ),
+            tag,
         )
 }
 
