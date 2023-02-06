@@ -18,8 +18,8 @@ mod utils;
 
 use utils::{
     common_calls::{
-        create_test_app, create_test_endpoint, create_test_message, endpoint_in,
-        get_msg_attempt_list_and_assert_count,
+        create_test_app, create_test_endpoint, create_test_message, create_test_msg_with,
+        endpoint_in, get_msg_attempt_list_and_assert_count,
     },
     get_default_test_config, run_with_retries, start_svix_server, start_svix_server_with_cfg,
     IgnoredResponse, TestReceiver,
@@ -192,9 +192,14 @@ async fn test_list_attempts_by_endpoint() {
     let msg_2 = create_test_message(&client, &app_id, serde_json::json!({"test": "data2"}))
         .await
         .unwrap();
-    let msg_3 = create_test_message(&client, &app_id, serde_json::json!({"test": "data3"}))
-        .await
-        .unwrap();
+    let msg_3 = create_test_msg_with(
+        &client,
+        &app_id,
+        serde_json::json!({"test": "data3"}),
+        "user.exploded",
+        ["obits"],
+    )
+    .await;
 
     // And wait at most one second for all attempts to be processed
     run_with_retries(|| async {
@@ -238,6 +243,24 @@ async fn test_list_attempts_by_endpoint() {
         assert!(message_ids.contains(&msg_2.id));
         assert!(message_ids.contains(&msg_3.id));
     }
+
+    let foo_attempts: ListResponse<MessageAttemptOut> = client
+        .get(
+            &format!("api/v1/app/{app_id}/attempt/endpoint/{endp_id_2}/?channel=foo"),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+    assert!(foo_attempts.data.is_empty());
+
+    let obits_attempts: ListResponse<MessageAttemptOut> = client
+        .get(
+            &format!("api/v1/app/{app_id}/attempt/endpoint/{endp_id_2}/?channel=obits"),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+    assert_eq!(obits_attempts.data.len(), 1);
 
     receiver_1.jh.abort();
     receiver_2.jh.abort();

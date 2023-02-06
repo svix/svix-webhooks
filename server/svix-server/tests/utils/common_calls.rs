@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use std::time::Duration;
+use std::{collections::HashSet, time::Duration};
 
 use anyhow::Result;
 use chrono::{DateTime, Utc};
@@ -10,7 +10,10 @@ use reqwest::{StatusCode, Url};
 use serde::{de::DeserializeOwned, Serialize};
 use svix::api::DashboardAccessOut;
 use svix_server::{
-    core::types::{metadata::Metadata, ApplicationId, EventTypeName, FeatureFlagSet, MessageId},
+    core::types::{
+        metadata::Metadata, ApplicationId, EventChannel, EventChannelSet, EventTypeName,
+        FeatureFlagSet, MessageId,
+    },
     v1::{
         endpoints::{
             application::{ApplicationIn, ApplicationOut},
@@ -132,6 +135,40 @@ pub async fn create_test_message(
             StatusCode::ACCEPTED,
         )
         .await
+}
+
+pub async fn create_test_msg_with(
+    client: &TestClient,
+    app_id: &ApplicationId,
+    payload: serde_json::Value,
+    event_type: &str,
+    channel: impl IntoIterator<Item = &str>,
+) -> MessageOut {
+    let channels: HashSet<EventChannel> = channel
+        .into_iter()
+        .map(|x| EventChannel(x.to_string()))
+        .collect();
+
+    let channels = if channels.is_empty() {
+        None
+    } else {
+        Some(EventChannelSet(channels))
+    };
+
+    client
+        .post(
+            &format!("api/v1/app/{}/msg/", &app_id),
+            MessageIn {
+                event_type: EventTypeName(event_type.to_owned()),
+                payload,
+                payload_retention_period: 5,
+                channels,
+                uid: None,
+            },
+            StatusCode::ACCEPTED,
+        )
+        .await
+        .unwrap()
 }
 
 pub fn event_type_in(
