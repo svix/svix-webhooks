@@ -3,6 +3,11 @@
 ## Next
 * 
 
+## Version 0.76.1
+* Server: fix `/attempt/endpoint`'s broken `?channel=` query
+* Libs/Rust: add missing exports to a few API endpoints
+* Libs: fix naming of replay-missing methods in libraries (all but Rust)
+
 ## Version 0.76.0
 * Server: add org_id and app_id to main tracing span
 * Server: make `wait_for` timeout early and retry
