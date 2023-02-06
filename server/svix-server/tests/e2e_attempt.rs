@@ -262,6 +262,33 @@ async fn test_list_attempts_by_endpoint() {
         .unwrap();
     assert_eq!(obits_attempts.data.len(), 1);
 
+    let exploded_attempts: ListResponse<MessageAttemptOut> = client
+        .get(
+            &format!("api/v1/app/{app_id}/attempt/endpoint/{endp_id_2}/?event_types=user.exploded"),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+    assert_eq!(exploded_attempts.data.len(), 1);
+
+    let regular_attempts: ListResponse<MessageAttemptOut> = client
+        .get(
+            &format!("api/v1/app/{app_id}/attempt/endpoint/{endp_id_2}/?event_types[]=event.type"),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+    assert_eq!(regular_attempts.data.len(), 2);
+
+    let all_attempts: ListResponse<MessageAttemptOut> = client
+    .get(
+        &format!("api/v1/app/{app_id}/attempt/endpoint/{endp_id_2}/?event_types[0]=event.type&event_types[1]=user.exploded"),
+        StatusCode::OK,
+    )
+    .await
+    .unwrap();
+    assert_eq!(all_attempts.data.len(), 3);
+
     receiver_1.jh.abort();
     receiver_2.jh.abort();
 }

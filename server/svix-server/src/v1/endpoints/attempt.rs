@@ -20,7 +20,7 @@ use crate::{
         utils::{
             apply_pagination, iterator_from_before_or_after, openapi_tag, ApplicationEndpointPath,
             ApplicationMsgAttemptPath, ApplicationMsgEndpointPath, ApplicationMsgPath,
-            EmptyResponse, ListResponse, MessageListFetchOptions, ModelOut, PaginationLimit,
+            EmptyResponse, EventTypesQuery, ListResponse, ModelOut, PaginationLimit,
             ReversibleIterator, ValidatedQuery,
         },
     },
@@ -225,8 +225,6 @@ pub struct ListAttemptsByEndpointQueryParameters {
     status: Option<MessageStatus>,
     status_code_class: Option<StatusCodeClass>,
     #[validate]
-    event_types: Option<EventTypeNameSet>,
-    #[validate]
     channel: Option<EventChannel>,
     before: Option<DateTime<Utc>>,
     after: Option<DateTime<Utc>>,
@@ -305,11 +303,11 @@ async fn list_attempts_by_endpoint(
     ValidatedQuery(ListAttemptsByEndpointQueryParameters {
         status,
         status_code_class,
-        event_types,
         channel,
         before,
         after,
     }): ValidatedQuery<ListAttemptsByEndpointQueryParameters>,
+    EventTypesQuery(event_types): EventTypesQuery,
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<ListResponse<MessageAttemptOut>>> {
@@ -360,8 +358,6 @@ pub struct ListAttemptsByMsgQueryParameters {
     status: Option<MessageStatus>,
     status_code_class: Option<StatusCodeClass>,
     #[validate]
-    event_types: Option<EventTypeNameSet>,
-    #[validate]
     channel: Option<EventChannel>,
     #[validate]
     endpoint_id: Option<EndpointIdOrUid>,
@@ -376,13 +372,13 @@ async fn list_attempts_by_msg(
     ValidatedQuery(ListAttemptsByMsgQueryParameters {
         status,
         status_code_class,
-        event_types,
         channel,
         endpoint_id,
         before,
         after,
     }): ValidatedQuery<ListAttemptsByMsgQueryParameters>,
     Path(ApplicationMsgPath { msg_id, .. }): Path<ApplicationMsgPath>,
+    EventTypesQuery(event_types): EventTypesQuery,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<ListResponse<MessageAttemptOut>>> {
     let PaginationLimit(limit) = pagination.limit;
@@ -533,7 +529,7 @@ async fn list_attempts_for_endpoint(
         before,
         after,
     }): ValidatedQuery<ListAttemptsForEndpointQueryParameters>,
-    list_filter: MessageListFetchOptions,
+    event_types_query: EventTypesQuery,
     Path(ApplicationMsgEndpointPath {
         app_id,
         msg_id,
@@ -551,7 +547,7 @@ async fn list_attempts_for_endpoint(
             before,
             after,
         }),
-        list_filter,
+        event_types_query,
         Path(ApplicationMsgPath { app_id, msg_id }),
         auth_app,
     )
@@ -579,7 +575,7 @@ async fn list_messageattempts(
         before,
         after,
     }): ValidatedQuery<AttemptListFetchOptions>,
-    list_filter: MessageListFetchOptions,
+    EventTypesQuery(event_types): EventTypesQuery,
     Path(ApplicationMsgPath { msg_id, .. }): Path<ApplicationMsgPath>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<ListResponse<MessageAttemptOut>>> {
@@ -611,7 +607,7 @@ async fn list_messageattempts(
         query = query.filter(Expr::cust_with_values("channels ?? ?", vec![channel]));
     }
 
-    if let Some(EventTypeNameSet(event_types)) = list_filter.event_types {
+    if let Some(EventTypeNameSet(event_types)) = event_types {
         query = query.filter(message::Column::EventType.is_in(event_types));
     }
 
@@ -810,8 +806,6 @@ mod tests {
 
     const INVALID_CHANNEL: &str = "$$invalid-channel";
     const VALID_CHANNEL: &str = "valid-channel";
-    const INVALID_EVENT_TYPES: &[&str] = &["valid-event-type", "&&invalid-event-type"];
-    const VALID_EVENT_TYPES: &[&str] = &["valid-event-type", "another-valid-event-type"];
     const INVALID_ENDPOINT_ID: &str = "$$invalid-endpoint";
     const VALID_ENDPOINT_ID: &str = "ep_valid-endpoint";
 
@@ -829,20 +823,12 @@ mod tests {
     #[test]
     fn test_list_attempts_by_endpoint_query_parameters_validation() {
         let q: ListAttemptsByEndpointQueryParameters =
-            serde_json::from_value(json!({ "event_types": INVALID_EVENT_TYPES })).unwrap();
-        assert!(q.validate().is_err());
-
-        let q: ListAttemptsByEndpointQueryParameters =
             serde_json::from_value(json!({ "channel": INVALID_CHANNEL })).unwrap();
         assert!(q.validate().is_err());
     }
 
     #[test]
     fn test_list_attempts_by_msg_query_parameters_validation() {
-        let q: ListAttemptsByMsgQueryParameters =
-            serde_json::from_value(json!({ "event_types": INVALID_EVENT_TYPES })).unwrap();
-        assert!(q.validate().is_err());
-
         let q: ListAttemptsByMsgQueryParameters =
             serde_json::from_value(json!({ "channel": INVALID_CHANNEL })).unwrap();
         assert!(q.validate().is_err());
@@ -853,7 +839,6 @@ mod tests {
 
         let q: ListAttemptsByMsgQueryParameters = serde_json::from_value(json!(
             {
-                "event_types": VALID_EVENT_TYPES,
                 "channel": VALID_CHANNEL,
                 "endpoint_id": VALID_ENDPOINT_ID
             }
