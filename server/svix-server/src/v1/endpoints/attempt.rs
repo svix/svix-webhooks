@@ -153,7 +153,7 @@ async fn list_attempted_messages(
 
     if let Some(channel) = channel {
         dests_and_msgs =
-            dests_and_msgs.filter(Expr::cust_with_values("channels ?? ?", vec![channel]));
+            dests_and_msgs.filter(Expr::cust_with_values("channels @> $1", [channel.jsonb()]));
     }
 
     if let Some(status) = status {
@@ -604,7 +604,7 @@ async fn list_messageattempts(
     }
 
     if let Some(channel) = channel {
-        query = query.filter(Expr::cust_with_values("channels ?? ?", vec![channel]));
+        query = query.filter(Expr::cust_with_values("channels @> $1", [channel.jsonb()]));
     }
 
     if let Some(EventTypeNameSet(event_types)) = event_types {
