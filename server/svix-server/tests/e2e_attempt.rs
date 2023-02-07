@@ -102,7 +102,7 @@ async fn test_list_attempted_messages() {
         .unwrap()
         .id;
 
-    // Let's have an endponit with a UID too
+    // Let's have an endpoint with a UID too
     let mut endp2 = endpoint_in(&receiver_2.endpoint);
     endp2.uid = Some(EndpointUid("test".to_owned()));
     let endp_id_2 = client
@@ -121,9 +121,14 @@ async fn test_list_attempted_messages() {
     let msg_2 = create_test_message(&client, &app_id, serde_json::json!({"test": "data2"}))
         .await
         .unwrap();
-    let msg_3 = create_test_message(&client, &app_id, serde_json::json!({"test": "data3"}))
-        .await
-        .unwrap();
+    let msg_3 = create_test_msg_with(
+        &client,
+        &app_id,
+        serde_json::json!({"test": "data3"}),
+        "balloon.popped",
+        ["news"],
+    )
+    .await;
 
     run_with_retries(|| async {
         let list_1: ListResponse<AttemptedMessageOut> = client
@@ -163,6 +168,16 @@ async fn test_list_attempted_messages() {
     })
     .await
     .unwrap();
+
+    let list_filtered: ListResponse<AttemptedMessageOut> = client
+        .get(
+            &format!("api/v1/app/{app_id}/endpoint/{endp_id_1}/msg/?channel=news"),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+    assert_eq!(list_filtered.data.len(), 1);
+    assert!(list_filtered.data[0].msg == msg_3);
 }
 
 #[tokio::test]
@@ -619,7 +634,7 @@ async fn test_pagination_by_msg() {
     }
 
     let mut messages = Vec::new();
-    for i in 1..=6usize {
+    for i in 1..=5usize {
         messages.push(
             create_test_message(
                 &client,
@@ -632,6 +647,16 @@ async fn test_pagination_by_msg() {
             .unwrap(),
         );
     }
+    messages.push(
+        create_test_msg_with(
+            &client,
+            &app.id,
+            serde_json::json!({"test": "data6"}),
+            "balloon.popped",
+            ["news"],
+        )
+        .await,
+    );
 
     // Wait until all attempts were made
     run_with_retries(|| async {
@@ -647,6 +672,18 @@ async fn test_pagination_by_msg() {
             if list.data.len() != 6 {
                 anyhow::bail!("list len {}, not 6", list.data.len());
             }
+
+            let list_filtered: ListResponse<MessageAttemptOut> = client
+                .get(
+                    &format!(
+                        "api/v1/app/{}/attempt/endpoint/{}/?channel=news",
+                        app.id, endp_id
+                    ),
+                    StatusCode::OK,
+                )
+                .await
+                .unwrap();
+            assert_eq!(list_filtered.data.len(), 1);
         }
 
         Ok(())

@@ -190,7 +190,7 @@ async fn list_messages(
     }
 
     if let Some(channel) = channel {
-        query = query.filter(Expr::cust_with_values("channels ?? ?", vec![channel]));
+        query = query.filter(Expr::cust_with_values("channels @> $1", [channel.jsonb()]));
     }
 
     let iterator = iterator_from_before_or_after(pagination.iterator, before, after);

@@ -16,7 +16,7 @@ use svix_server::{
 mod utils;
 
 use utils::{
-    common_calls::{create_test_app, create_test_endpoint, message_in},
+    common_calls::{create_test_app, create_test_endpoint, create_test_msg_with, message_in},
     run_with_retries, start_svix_server, IgnoredResponse, TestReceiver,
 };
 
@@ -51,6 +51,14 @@ async fn test_message_create_read_list() {
         )
         .await
         .unwrap();
+    let message_3 = create_test_msg_with(
+        &client,
+        &app_id,
+        serde_json::json!({"test": "data3"}),
+        "balloon.popped",
+        ["news"],
+    )
+    .await;
 
     assert_eq!(
         client
@@ -77,9 +85,20 @@ async fn test_message_create_read_list() {
         .get(&format!("api/v1/app/{}/msg/", &app_id), StatusCode::OK)
         .await
         .unwrap();
-    assert_eq!(list.data.len(), 2);
+    assert_eq!(list.data.len(), 3);
     assert!(list.data.contains(&message_1));
     assert!(list.data.contains(&message_2));
+    assert!(list.data.contains(&message_3));
+
+    let list: ListResponse<MessageOut> = client
+        .get(
+            &format!("api/v1/app/{}/msg/?channel=news", &app_id),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+    assert_eq!(list.data.len(), 1);
+    assert!(list.data.contains(&message_3));
 }
 
 #[tokio::test]
