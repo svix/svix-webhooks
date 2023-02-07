@@ -374,7 +374,7 @@ impl From<(endpoint::Model, Metadata)> for EndpointOut {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Validate, Deserialize, JsonSchema)]
+#[derive(Default, Clone, Debug, PartialEq, Eq, Validate, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointSecretRotateIn {
     #[validate]

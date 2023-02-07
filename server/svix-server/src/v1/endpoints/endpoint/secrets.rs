@@ -13,6 +13,7 @@ use crate::{
     cfg::DefaultSignatureType,
     core::{
         cryptography::Encryption,
+        operational_webhooks::{EndpointEvent, OperationalWebhook},
         permissions,
         types::{EndpointSecretInternal, ExpiringSigningKey, ExpiringSigningKeys},
     },
@@ -50,7 +51,12 @@ pub(super) async fn get_endpoint_secret(
 }
 
 pub(super) async fn rotate_endpoint_secret(
-    State(AppState { ref db, cfg, .. }): State<AppState>,
+    State(AppState {
+        ref db,
+        cfg,
+        ref op_webhooks,
+        ..
+    }): State<AppState>,
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
     ValidatedJson(data): ValidatedJson<EndpointSecretRotateIn>,
@@ -102,7 +108,14 @@ pub(super) async fn rotate_endpoint_secret(
         ))),
         ..endp.into()
     };
-    ctx!(endp.update(db).await)?;
+    let endp = ctx!(endp.update(db).await)?;
+
+    op_webhooks
+        .send_operational_webhook(
+            &app.org_id,
+            OperationalWebhook::EndpointUpdated(EndpointEvent::new(app.uid.as_ref(), &endp)),
+        )
+        .await?;
 
     Ok((StatusCode::NO_CONTENT, Json(EmptyResponse {})))
 }
