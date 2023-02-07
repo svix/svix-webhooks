@@ -150,7 +150,7 @@ pub fn iterator_from_before_or_after<I: BaseId<Output = I> + Validate>(
 }
 
 /// Applies sorting and filtration to a query from its iterator, sort column, and limit
-pub fn apply_pagination<
+pub fn apply_pagination_desc<
     Q: QuerySelect + QueryOrder + QueryFilter,
     C: ColumnTrait,
     I: BaseId<Output = I> + Validate + Into<sea_orm::Value>,
@@ -175,6 +175,34 @@ pub fn apply_pagination<
     }
 }
 
+/// Applies sorting and filtration to a query from its iterator, sort column, and limit,
+/// in an ascending ordering, i.e. one where `Normal` corresponds to starting at the lowest
+/// and counting up, and `Prev` corresponds to starting at the highest and counting down.
+pub fn apply_pagination_asc<
+    Q: QuerySelect + QueryOrder + QueryFilter,
+    C: ColumnTrait,
+    I: BaseId<Output = I> + Validate + Into<sea_orm::Value>,
+>(
+    query: Q,
+    sort_column: C,
+    limit: u64,
+    iterator: Option<ReversibleIterator<I>>,
+) -> Q {
+    let query = query.limit(limit + 1);
+
+    match iterator {
+        Some(ReversibleIterator::Prev(id)) => {
+            query.order_by_desc(sort_column).filter(sort_column.lt(id))
+        }
+
+        Some(ReversibleIterator::Normal(id)) => {
+            query.order_by_asc(sort_column).filter(sort_column.gt(id))
+        }
+
+        None => query.order_by_asc(sort_column),
+    }
+}
+
 #[derive(Serialize)]
 pub struct EmptyResponse {}
 
@@ -194,16 +222,29 @@ pub trait ModelIn {
     fn update_model(self, model: &mut Self::ActiveModel);
 }
 
+#[derive(PartialEq, Eq)]
+enum ListOrdering {
+    Ascending,
+    Descending,
+}
+
+#[derive(PartialEq, Eq)]
+enum IteratorDirection {
+    Next,
+    Previous,
+}
+
 fn list_response_inner<T: ModelOut>(
     mut data: Vec<T>,
     limit: usize,
-    is_prev_iter: bool,
+    ordering: ListOrdering,
+    iter_direction: IteratorDirection,
     supports_prev_iterator: bool,
 ) -> ListResponse<T> {
     let done = data.len() <= limit;
 
     if data.len() > limit {
-        if is_prev_iter {
+        if iter_direction == IteratorDirection::Previous {
             data = data.drain(data.len() - limit..).collect();
         } else {
             data.truncate(limit);
@@ -217,6 +258,10 @@ fn list_response_inner<T: ModelOut>(
     };
     let iterator = data.last().map(|x| x.id_copy());
 
+    if ordering == ListOrdering::Ascending && iter_direction == IteratorDirection::Previous {
+        data.reverse();
+    }
+
     ListResponse {
         data,
         iterator,
@@ -228,12 +273,32 @@ fn list_response_inner<T: ModelOut>(
 pub trait ModelOut: Clone {
     fn id_copy(&self) -> String;
 
-    fn list_response(data: Vec<Self>, limit: usize, is_prev_iter: bool) -> ListResponse<Self> {
-        list_response_inner(data, limit, is_prev_iter, true)
+    fn list_response_asc(data: Vec<Self>, limit: usize, is_prev_iter: bool) -> ListResponse<Self> {
+        let direction = if is_prev_iter {
+            IteratorDirection::Previous
+        } else {
+            IteratorDirection::Next
+        };
+        list_response_inner(data, limit, ListOrdering::Ascending, direction, true)
+    }
+
+    fn list_response_desc(data: Vec<Self>, limit: usize, is_prev_iter: bool) -> ListResponse<Self> {
+        let direction = if is_prev_iter {
+            IteratorDirection::Previous
+        } else {
+            IteratorDirection::Next
+        };
+        list_response_inner(data, limit, ListOrdering::Descending, direction, true)
     }
 
     fn list_response_no_prev(data: Vec<Self>, limit: usize) -> ListResponse<Self> {
-        list_response_inner(data, limit, false, false)
+        list_response_inner(
+            data,
+            limit,
+            ListOrdering::Ascending,
+            IteratorDirection::Next,
+            false,
+        )
     }
 }
 

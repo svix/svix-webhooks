@@ -18,10 +18,10 @@ use crate::{
     v1::{
         endpoints::message::MessageOut,
         utils::{
-            apply_pagination, iterator_from_before_or_after, openapi_tag, ApplicationEndpointPath,
-            ApplicationMsgAttemptPath, ApplicationMsgEndpointPath, ApplicationMsgPath,
-            EmptyResponse, EventTypesQuery, ListResponse, ModelOut, PaginationLimit,
-            ReversibleIterator, ValidatedQuery,
+            apply_pagination_desc, iterator_from_before_or_after, openapi_tag,
+            ApplicationEndpointPath, ApplicationMsgAttemptPath, ApplicationMsgEndpointPath,
+            ApplicationMsgPath, EmptyResponse, EventTypesQuery, ListResponse, ModelOut,
+            PaginationLimit, ReversibleIterator, ValidatedQuery,
         },
     },
     AppState,
@@ -185,7 +185,7 @@ async fn list_attempted_messages(
     let iterator = iterator_from_before_or_after(msg_dest_iterator, before, after);
     let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
 
-    let dests_and_msgs = apply_pagination(
+    let dests_and_msgs = apply_pagination_desc(
         dests_and_msgs,
         messagedestination::Column::Id,
         limit,
@@ -211,7 +211,7 @@ async fn list_attempted_messages(
             .collect::<Result<_>>()?
     };
 
-    Ok(Json(AttemptedMessageOut::list_response(
+    Ok(Json(AttemptedMessageOut::list_response_desc(
         out,
         limit as usize,
         is_prev,
@@ -330,7 +330,7 @@ async fn list_attempts_by_endpoint(
 
     let iterator = iterator_from_before_or_after(pagination.iterator, before, after);
     let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
-    let query = apply_pagination(query, messageattempt::Column::Id, limit, iterator);
+    let query = apply_pagination_desc(query, messageattempt::Column::Id, limit, iterator);
 
     let out = if is_prev {
         ctx!(query.all(db).await)?
@@ -345,7 +345,7 @@ async fn list_attempts_by_endpoint(
             .collect()
     };
 
-    Ok(Json(MessageAttemptOut::list_response(
+    Ok(Json(MessageAttemptOut::list_response_desc(
         out,
         limit as usize,
         is_prev,
@@ -414,7 +414,7 @@ async fn list_attempts_by_msg(
 
     let iterator = iterator_from_before_or_after(pagination.iterator, before, after);
     let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
-    let query = apply_pagination(query, messageattempt::Column::Id, limit, iterator);
+    let query = apply_pagination_desc(query, messageattempt::Column::Id, limit, iterator);
     let out = if is_prev {
         ctx!(query.all(db).await)?
             .into_iter()
@@ -428,7 +428,7 @@ async fn list_attempts_by_msg(
             .collect()
     };
 
-    Ok(Json(MessageAttemptOut::list_response(
+    Ok(Json(MessageAttemptOut::list_response_desc(
         out,
         limit as usize,
         is_prev,
@@ -613,7 +613,7 @@ async fn list_messageattempts(
 
     let iterator = iterator_from_before_or_after(pagination.iterator, before, after);
     let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
-    let query = apply_pagination(query, messageattempt::Column::Id, limit, iterator);
+    let query = apply_pagination_desc(query, messageattempt::Column::Id, limit, iterator);
     let out = if is_prev {
         ctx!(query.all(db).await)?
             .into_iter()
@@ -627,7 +627,7 @@ async fn list_messageattempts(
             .collect()
     };
 
-    Ok(Json(MessageAttemptOut::list_response(
+    Ok(Json(MessageAttemptOut::list_response_desc(
         out,
         limit as usize,
         false,

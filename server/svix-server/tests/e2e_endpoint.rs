@@ -649,6 +649,68 @@ async fn test_list() {
     .unwrap();
 }
 
+#[tokio::test]
+async fn test_endpoint_list_ordering() {
+    let (client, _jh) = start_svix_server().await;
+
+    let app_id = create_test_app(&client, "App1").await.unwrap().id;
+
+    for i in 0..5 {
+        create_test_endpoint(&client, &app_id, &format!("https://test.url/{i}"))
+            .await
+            .unwrap();
+        // Sleep to account for ksuid 4ms resolution
+        tokio::time::sleep(Duration::from_millis(5)).await;
+    }
+
+    let first_list: ListResponse<EndpointOut> = client
+        .get(
+            &format!("api/v1/app/{}/endpoint/?limit=2", &app_id),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(
+        first_list.data.first().unwrap().ep.url,
+        "https://test.url/0"
+    );
+    assert_eq!(first_list.data.last().unwrap().ep.url, "https://test.url/1");
+    assert!(!first_list.done);
+
+    let list: ListResponse<EndpointOut> = client
+        .get(
+            &format!(
+                "api/v1/app/{}/endpoint/?limit=2&iterator={}",
+                &app_id,
+                first_list.iterator.unwrap()
+            ),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(list.data.first().unwrap().ep.url, "https://test.url/2");
+    assert_eq!(list.data.last().unwrap().ep.url, "https://test.url/3");
+    assert!(!list.done);
+
+    let list: ListResponse<EndpointOut> = client
+        .get(
+            &format!(
+                "api/v1/app/{}/endpoint/?iterator={}",
+                &app_id,
+                list.prev_iterator.unwrap()
+            ),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(list.data.first().unwrap().ep.url, "https://test.url/0");
+    assert_eq!(list.data.last().unwrap().ep.url, "https://test.url/1");
+    assert!(list.done);
+}
+
 /// Tests that there is at most one endpoint with a single UID for all endpoints associated with
 /// any application
 #[tokio::test]
