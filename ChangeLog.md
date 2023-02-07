@@ -3,6 +3,13 @@
 ## Next
 * 
 
+## Version 0.77.0
+* Server: fix event_type array query parsing
+* Server: fix bad `?channel=` queries
+* Server: fire operational webhook on endpoint secret rotation
+* Server: implement bidirectional pagination for endpoints
+* Libs/Rust: glob-reexport all generated models in Rust
+
 ## Version 0.76.1
 * Server: fix `/attempt/endpoint`'s broken `?channel=` query
 * Libs/Rust: add missing exports to a few API endpoints
