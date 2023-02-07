@@ -14,7 +14,7 @@ use crate::{
     error::{HttpError, Result},
     queue::MessageTaskBatch,
     v1::utils::{
-        apply_pagination, iterator_from_before_or_after, openapi_tag, validation_error,
+        apply_pagination_desc, iterator_from_before_or_after, openapi_tag, validation_error,
         ApplicationMsgPath, EventTypesQuery, ListResponse, ModelIn, ModelOut, PaginationLimit,
         ReversibleIterator, ValidatedJson, ValidatedQuery,
     },
@@ -196,7 +196,7 @@ async fn list_messages(
     let iterator = iterator_from_before_or_after(pagination.iterator, before, after);
     let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
 
-    let query = apply_pagination(query, message::Column::Id, limit, iterator);
+    let query = apply_pagination_desc(query, message::Column::Id, limit, iterator);
     let into = |x: message::Model| {
         if with_content {
             x.into()
@@ -215,7 +215,11 @@ async fn list_messages(
         ctx!(query.all(db).await)?.into_iter().map(into).collect()
     };
 
-    Ok(Json(MessageOut::list_response(out, limit as usize, false)))
+    Ok(Json(MessageOut::list_response_desc(
+        out,
+        limit as usize,
+        false,
+    )))
 }
 
 #[derive(Debug, Deserialize, Validate, JsonSchema)]

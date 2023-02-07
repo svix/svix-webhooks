@@ -5,7 +5,7 @@ use axum::{
     Json,
 };
 use hyper::StatusCode;
-use sea_orm::{entity::prelude::*, ActiveValue::Set, QueryOrder, TransactionTrait};
+use sea_orm::{entity::prelude::*, ActiveValue::Set, TransactionTrait};
 use sea_orm::{ActiveModelTrait, DatabaseConnection, QuerySelect};
 use url::Url;
 
@@ -21,9 +21,10 @@ use crate::{
     db::models::{application, endpoint, endpointmetadata, eventtype},
     error::{HttpError, Result, ValidationErrorItem},
     v1::utils::{
+        apply_pagination_asc,
         patch::{patch_field_non_nullable, UnrequiredField, UnrequiredNullableField},
         ApplicationEndpointPath, EmptyResponse, ListResponse, ModelIn, ModelOut, Pagination,
-        PaginationLimit, ValidatedJson, ValidatedQuery,
+        PaginationLimit, ReversibleIterator, ValidatedJson, ValidatedQuery,
     },
     AppState,
 };
@@ -31,19 +32,19 @@ use hack::EventTypeNameResult;
 
 pub(super) async fn list_endpoints(
     State(AppState { ref db, .. }): State<AppState>,
-    pagination: ValidatedQuery<Pagination<EndpointId>>,
+    ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<EndpointId>>>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<ListResponse<EndpointOut>>> {
     let PaginationLimit(limit) = pagination.limit;
-    let iterator = pagination.iterator.clone();
+    let iterator = pagination.iterator;
+    let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
 
-    let mut query = endpoint::Entity::secure_find(app.id)
-        .order_by_asc(endpoint::Column::Id)
-        .limit(limit + 1);
-
-    if let Some(iterator) = iterator {
-        query = query.filter(endpoint::Column::Id.gt(iterator))
-    }
+    let query = apply_pagination_asc(
+        endpoint::Entity::secure_find(app.id),
+        endpoint::Column::Id,
+        limit,
+        iterator,
+    );
 
     let results = ctx!(
         query
@@ -58,9 +59,10 @@ pub(super) async fn list_endpoints(
     })
     .collect();
 
-    Ok(Json(EndpointOut::list_response_no_prev(
+    Ok(Json(EndpointOut::list_response_asc(
         results,
         limit as usize,
+        is_prev,
     )))
 }
 
