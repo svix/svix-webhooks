@@ -212,20 +212,12 @@ async fn list_messages(
         }
     };
 
-    let out = if is_prev {
-        ctx!(query.all(db).await)?
-            .into_iter()
-            .rev()
-            .map(into)
-            .collect()
-    } else {
-        ctx!(query.all(db).await)?.into_iter().map(into).collect()
-    };
+    let out = ctx!(query.all(db).await)?.into_iter().map(into).collect();
 
-    Ok(Json(MessageOut::list_response_desc(
+    Ok(Json(MessageOut::list_response(
         out,
         limit as usize,
-        false,
+        is_prev,
     )))
 }
 

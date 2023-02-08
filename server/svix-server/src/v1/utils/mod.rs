@@ -253,11 +253,14 @@ enum IteratorDirection {
 fn list_response_inner<T: ModelOut>(
     mut data: Vec<T>,
     limit: usize,
-    ordering: ListOrdering,
     iter_direction: IteratorDirection,
     supports_prev_iterator: bool,
 ) -> ListResponse<T> {
     let done = data.len() <= limit;
+
+    if iter_direction == IteratorDirection::Previous {
+        data.reverse();
+    }
 
     if data.len() > limit {
         if iter_direction == IteratorDirection::Previous {
@@ -274,10 +277,6 @@ fn list_response_inner<T: ModelOut>(
     };
     let iterator = data.last().map(|x| x.id_copy());
 
-    if ordering == ListOrdering::Ascending && iter_direction == IteratorDirection::Previous {
-        data.reverse();
-    }
-
     ListResponse {
         data,
         iterator,
@@ -289,37 +288,17 @@ fn list_response_inner<T: ModelOut>(
 pub trait ModelOut: Clone {
     fn id_copy(&self) -> String;
 
-    fn list_response(
-        data: Vec<Self>,
-        limit: usize,
-        is_prev_iter: bool,
-        ordering: ListOrdering,
-    ) -> ListResponse<Self> {
+    fn list_response(data: Vec<Self>, limit: usize, is_prev_iter: bool) -> ListResponse<Self> {
         let direction = if is_prev_iter {
             IteratorDirection::Previous
         } else {
             IteratorDirection::Next
         };
-        list_response_inner(data, limit, ordering, direction, true)
-    }
-
-    fn list_response_desc(data: Vec<Self>, limit: usize, is_prev_iter: bool) -> ListResponse<Self> {
-        let direction = if is_prev_iter {
-            IteratorDirection::Previous
-        } else {
-            IteratorDirection::Next
-        };
-        list_response_inner(data, limit, ListOrdering::Descending, direction, true)
+        list_response_inner(data, limit, direction, true)
     }
 
     fn list_response_no_prev(data: Vec<Self>, limit: usize) -> ListResponse<Self> {
-        list_response_inner(
-            data,
-            limit,
-            ListOrdering::Ascending,
-            IteratorDirection::Next,
-            false,
-        )
+        list_response_inner(data, limit, IteratorDirection::Next, false)
     }
 }
 
