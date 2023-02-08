@@ -671,6 +671,7 @@ async fn test_endpoint_list_ordering() {
         .await
         .unwrap();
 
+    // First iterate through in order
     assert_eq!(
         first_list.data.first().unwrap().ep.url,
         "https://test.url/0"
@@ -694,6 +695,7 @@ async fn test_endpoint_list_ordering() {
     assert_eq!(list.data.last().unwrap().ep.url, "https://test.url/3");
     assert!(!list.done);
 
+    // Iterate with previous iterator
     let list: ListResponse<EndpointOut> = client
         .get(
             &format!(
@@ -710,6 +712,7 @@ async fn test_endpoint_list_ordering() {
     assert_eq!(list.data.last().unwrap().ep.url, "https://test.url/1");
     assert!(list.done);
 
+    // Iterate in descending order
     let list: ListResponse<EndpointOut> = client
         .get(
             &format!("api/v1/app/{}/endpoint/?limit=3&order=descending", &app_id),
@@ -737,6 +740,21 @@ async fn test_endpoint_list_ordering() {
     assert_eq!(list.data.first().unwrap().ep.url, "https://test.url/1");
     assert_eq!(list.data.last().unwrap().ep.url, "https://test.url/0");
     assert!(list.done);
+
+    // Previous iterator on descending order
+    let list: ListResponse<EndpointOut> = client
+        .get(
+            &format!(
+                "api/v1/app/{}/endpoint/?limit=2&order=descending&iterator={}",
+                &app_id,
+                list.prev_iterator.unwrap(),
+            ),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+    assert_eq!(list.data.first().unwrap().ep.url, "https://test.url/3");
+    assert_eq!(list.data.last().unwrap().ep.url, "https://test.url/2");
 }
 
 /// Tests that there is at most one endpoint with a single UID for all endpoints associated with

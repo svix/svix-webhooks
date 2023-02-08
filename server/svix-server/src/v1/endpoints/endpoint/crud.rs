@@ -68,7 +68,6 @@ pub(super) async fn list_endpoints(
         results,
         limit as usize,
         is_prev,
-        order,
     )))
 }
 

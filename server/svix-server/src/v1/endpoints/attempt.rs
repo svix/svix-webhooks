@@ -204,20 +204,12 @@ async fn list_attempted_messages(
         Ok(AttemptedMessageOut::from_dest_and_msg(dest, msg))
     };
 
-    let out = if is_prev {
-        ctx!(dests_and_msgs.all(db).await)?
-            .into_iter()
-            .rev()
-            .map(into)
-            .collect::<Result<_>>()?
-    } else {
-        ctx!(dests_and_msgs.all(db).await)?
-            .into_iter()
-            .map(into)
-            .collect::<Result<_>>()?
-    };
+    let out = ctx!(dests_and_msgs.all(db).await)?
+        .into_iter()
+        .map(into)
+        .collect::<Result<_>>()?;
 
-    Ok(Json(AttemptedMessageOut::list_response_desc(
+    Ok(Json(AttemptedMessageOut::list_response(
         out,
         limit as usize,
         is_prev,
@@ -340,20 +332,12 @@ async fn list_attempts_by_endpoint(
     let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
     let query = apply_pagination_desc(query, messageattempt::Column::Id, limit, iterator);
 
-    let out = if is_prev {
-        ctx!(query.all(db).await)?
-            .into_iter()
-            .rev()
-            .map(Into::into)
-            .collect()
-    } else {
-        ctx!(query.all(db).await)?
-            .into_iter()
-            .map(Into::into)
-            .collect()
-    };
+    let out = ctx!(query.all(db).await)?
+        .into_iter()
+        .map(Into::into)
+        .collect();
 
-    Ok(Json(MessageAttemptOut::list_response_desc(
+    Ok(Json(MessageAttemptOut::list_response(
         out,
         limit as usize,
         is_prev,
@@ -425,20 +409,12 @@ async fn list_attempts_by_msg(
     let iterator = iterator_from_before_or_after(pagination.iterator, before, after);
     let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
     let query = apply_pagination_desc(query, messageattempt::Column::Id, limit, iterator);
-    let out = if is_prev {
-        ctx!(query.all(db).await)?
-            .into_iter()
-            .rev()
-            .map(Into::into)
-            .collect()
-    } else {
-        ctx!(query.all(db).await)?
-            .into_iter()
-            .map(Into::into)
-            .collect()
-    };
+    let out = ctx!(query.all(db).await)?
+        .into_iter()
+        .map(Into::into)
+        .collect();
 
-    Ok(Json(MessageAttemptOut::list_response_desc(
+    Ok(Json(MessageAttemptOut::list_response(
         out,
         limit as usize,
         is_prev,
@@ -643,23 +619,15 @@ async fn list_messageattempts(
     let iterator = iterator_from_before_or_after(pagination.iterator, before, after);
     let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
     let query = apply_pagination_desc(query, messageattempt::Column::Id, limit, iterator);
-    let out = if is_prev {
-        ctx!(query.all(db).await)?
-            .into_iter()
-            .rev()
-            .map(Into::into)
-            .collect()
-    } else {
-        ctx!(query.all(db).await)?
-            .into_iter()
-            .map(Into::into)
-            .collect()
-    };
+    let out = ctx!(query.all(db).await)?
+        .into_iter()
+        .map(Into::into)
+        .collect();
 
-    Ok(Json(MessageAttemptOut::list_response_desc(
+    Ok(Json(MessageAttemptOut::list_response(
         out,
         limit as usize,
-        false,
+        is_prev,
     )))
 }
 
