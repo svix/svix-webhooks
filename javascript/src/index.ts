@@ -749,7 +749,8 @@ export class Webhook {
 
   public sign(msgId: string, timestamp: Date, payload: string): string {
     const encoder = new TextEncoder();
-    const toSign = encoder.encode(`${msgId}.${timestamp.getTime() / 1000}.${payload}`);
+    const timestampNumber = Math.floor(timestamp.getTime() / 1000);
+    const toSign = encoder.encode(`${msgId}.${timestampNumber}.${payload}`);
     const expectedSignature = base64.encode(sha256.hmac(this.key, toSign));
     return `v1,${expectedSignature}`;
   }
