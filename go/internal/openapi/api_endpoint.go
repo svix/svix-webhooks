@@ -1350,6 +1350,7 @@ type ApiListEndpointsApiV1AppAppIdEndpointGetRequest struct {
 	appId string
 	iterator *string
 	limit *int32
+	order *Ordering
 	idempotencyKey *string
 }
 
@@ -1359,6 +1360,10 @@ func (r ApiListEndpointsApiV1AppAppIdEndpointGetRequest) Iterator(iterator strin
 }
 func (r ApiListEndpointsApiV1AppAppIdEndpointGetRequest) Limit(limit int32) ApiListEndpointsApiV1AppAppIdEndpointGetRequest {
 	r.limit = &limit
+	return r
+}
+func (r ApiListEndpointsApiV1AppAppIdEndpointGetRequest) Order(order Ordering) ApiListEndpointsApiV1AppAppIdEndpointGetRequest {
+	r.order = &order
 	return r
 }
 func (r ApiListEndpointsApiV1AppAppIdEndpointGetRequest) IdempotencyKey(idempotencyKey string) ApiListEndpointsApiV1AppAppIdEndpointGetRequest {
@@ -1422,6 +1427,9 @@ func (a *EndpointApiService) ListEndpointsApiV1AppAppIdEndpointGetExecute(r ApiL
 	}
 	if r.limit != nil {
 		localVarQueryParams.Add("limit", parameterToString(*r.limit, ""))
+	}
+	if r.order != nil {
+		localVarQueryParams.Add("order", parameterToString(*r.order, ""))
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}

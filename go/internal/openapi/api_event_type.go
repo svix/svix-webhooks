@@ -214,9 +214,14 @@ type ApiDeleteEventTypeApiV1EventTypeEventTypeNameDeleteRequest struct {
 	ctx _context.Context
 	ApiService *EventTypeApiService
 	eventTypeName string
+	expunge *bool
 	idempotencyKey *string
 }
 
+func (r ApiDeleteEventTypeApiV1EventTypeEventTypeNameDeleteRequest) Expunge(expunge bool) ApiDeleteEventTypeApiV1EventTypeEventTypeNameDeleteRequest {
+	r.expunge = &expunge
+	return r
+}
 func (r ApiDeleteEventTypeApiV1EventTypeEventTypeNameDeleteRequest) IdempotencyKey(idempotencyKey string) ApiDeleteEventTypeApiV1EventTypeEventTypeNameDeleteRequest {
 	r.idempotencyKey = &idempotencyKey
 	return r
@@ -234,6 +239,9 @@ Endpoints already configured to filter on an event type will continue to do so a
 However, new messages can not be sent with it and endpoints can not filter on it.
 An event type can be unarchived with the
 [create operation](#operation/create_event_type_api_v1_event_type__post).
+
+If `expunge=true` is set then the event type is deleted instead of archived.
+This can only be used in development environments.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param eventTypeName
  * @return ApiDeleteEventTypeApiV1EventTypeEventTypeNameDeleteRequest
@@ -273,6 +281,9 @@ func (a *EventTypeApiService) DeleteEventTypeApiV1EventTypeEventTypeNameDeleteEx
 		return nil, reportError("eventTypeName must have less than 256 elements")
 	}
 
+	if r.expunge != nil {
+		localVarQueryParams.Add("expunge", parameterToString(*r.expunge, ""))
+	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 

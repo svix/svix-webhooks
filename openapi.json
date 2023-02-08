@@ -1927,6 +1927,12 @@
                         "nullable": true,
                         "title": "Iterator",
                         "type": "string"
+                    },
+                    "prevIterator": {
+                        "example": "-iterator",
+                        "nullable": true,
+                        "title": "Previterator",
+                        "type": "string"
                     }
                 },
                 "required": [
@@ -2730,6 +2736,15 @@
                     "Fail",
                     "Sending"
                 ]
+            },
+            "Ordering": {
+                "description": "Defines the ordering in a listing of results.",
+                "enum": [
+                    "ascending",
+                    "descending"
+                ],
+                "title": "Ordering",
+                "type": "string"
             },
             "RecoverIn": {
                 "properties": {
@@ -4752,6 +4767,19 @@
                             "maximum": 250.0,
                             "title": "Limit",
                             "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "order",
+                        "required": false,
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/components/schemas/Ordering"
+                                }
+                            ],
+                            "default": "descending"
                         }
                     },
                     {
@@ -10779,6 +10807,61 @@
                 ],
                 "x-codeSamples": [
                     {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.messageAttempt.expungeContent('app_id', 'msg_id', 'attempt_id');"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.messageAttempt.expungeContent('app_id', 'msg_id', 'attempt_id');"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "svix.message_attempt.expunge_content('app_id', 'msg_id', 'attempt_id')"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "await svix.message_attempt.expunge_content('app_id', 'msg_id', 'attempt_id')"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "err := svixClient.MessageAttempt.ExpungeContent(\"app_id\", \"msg_id\", \"attempt_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "svix.messageAttempt.expungeContent('app_id', 'msg_id', 'attempt_id')"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "svix.getMessageAttempt().expungeContent('app_id', 'msg_id', 'attempt_id')"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "svix.message_attempt.expunge_content('app_id', 'msg_id', 'attempt_id')"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "svix.message_attempt().expunge_content(\"app_id\", \"msg_id\", \"attempt_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "await svix.MessageAttempt.ExpungeContentAsync(\"app_id\", \"msg_id\", \"attempt_id\")"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix message-attempt expunge-content 'app_id' 'msg_id' 'attempt_id'"
+                    },
+                    {
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'DELETE' \\\n  'https://api.svix.com/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/content/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
@@ -11108,6 +11191,61 @@
                     "Message"
                 ],
                 "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.message.expungeContent('app_id', 'msg_id');"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.message.expungeContent('app_id', 'msg_id');"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "svix.message.expunge_content('app_id', 'msg_id')"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "await svix.message.expunge_content('app_id', 'msg_id')"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "err := svixClient.Message.ExpungeContent(\"app_id\", \"msg_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "svix.message.expungeContent('app_id', 'msg_id')"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "svix.getMessage().expungeContent('app_id', 'msg_id')"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "svix.message.expunge_content('app_id', 'msg_id')"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "svix.message().expunge_content(\"app_id\", \"msg_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "await svix.Message.ExpungeContentAsync(\"app_id\", \"msg_id\")"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix message expunge-content 'app_id' 'msg_id'"
+                    },
                     {
                         "label": "cURL",
                         "lang": "Shell",
@@ -13443,7 +13581,7 @@
         },
         "/api/v1/event-type/{event_type_name}/": {
             "delete": {
-                "description": "Archive an event type.\n\nEndpoints already configured to filter on an event type will continue to do so after archival.\nHowever, new messages can not be sent with it and endpoints can not filter on it.\nAn event type can be unarchived with the\n[create operation](#operation/create_event_type_api_v1_event_type__post).",
+                "description": "Archive an event type.\n\nEndpoints already configured to filter on an event type will continue to do so after archival.\nHowever, new messages can not be sent with it and endpoints can not filter on it.\nAn event type can be unarchived with the\n[create operation](#operation/create_event_type_api_v1_event_type__post).\n\nIf `expunge=true` is set then the event type is deleted instead of archived.\nThis can only be used in development environments.",
                 "operationId": "delete_event_type_api_v1_event_type__event_type_name___delete",
                 "parameters": [
                     {
@@ -13456,6 +13594,16 @@
                             "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "title": "Event Type Name",
                             "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "expunge",
+                        "required": false,
+                        "schema": {
+                            "default": false,
+                            "title": "Expunge",
+                            "type": "boolean"
                         }
                     },
                     {
