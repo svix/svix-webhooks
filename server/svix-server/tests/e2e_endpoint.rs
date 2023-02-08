@@ -709,6 +709,34 @@ async fn test_endpoint_list_ordering() {
     assert_eq!(list.data.first().unwrap().ep.url, "https://test.url/0");
     assert_eq!(list.data.last().unwrap().ep.url, "https://test.url/1");
     assert!(list.done);
+
+    let list: ListResponse<EndpointOut> = client
+        .get(
+            &format!("api/v1/app/{}/endpoint/?limit=3&order=descending", &app_id),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(list.data.first().unwrap().ep.url, "https://test.url/4");
+    assert_eq!(list.data.last().unwrap().ep.url, "https://test.url/2");
+    assert!(!list.done);
+
+    let list: ListResponse<EndpointOut> = client
+        .get(
+            &format!(
+                "api/v1/app/{}/endpoint/?limit=3&order=descending&iterator={}",
+                &app_id,
+                list.iterator.unwrap(),
+            ),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(list.data.first().unwrap().ep.url, "https://test.url/1");
+    assert_eq!(list.data.last().unwrap().ep.url, "https://test.url/0");
+    assert!(list.done);
 }
 
 /// Tests that there is at most one endpoint with a single UID for all endpoints associated with

@@ -93,6 +93,11 @@ impl Validate for PaginationLimit {
     }
 }
 
+#[derive(Deserialize, Validate, JsonSchema)]
+pub struct Ordering {
+    pub order: Option<ListOrdering>,
+}
+
 #[derive(Debug, PartialEq, Eq)]
 pub enum ReversibleIterator<T: Validate> {
     Normal(T),
@@ -175,10 +180,7 @@ pub fn apply_pagination_desc<
     }
 }
 
-/// Applies sorting and filtration to a query from its iterator, sort column, and limit,
-/// in an ascending ordering, i.e. one where `Normal` corresponds to starting at the lowest
-/// and counting up, and `Prev` corresponds to starting at the highest and counting down.
-pub fn apply_pagination_asc<
+pub fn apply_pagination<
     Q: QuerySelect + QueryOrder + QueryFilter,
     C: ColumnTrait,
     I: BaseId<Output = I> + Validate + Into<sea_orm::Value>,
@@ -187,19 +189,29 @@ pub fn apply_pagination_asc<
     sort_column: C,
     limit: u64,
     iterator: Option<ReversibleIterator<I>>,
+    ordering: ListOrdering,
 ) -> Q {
+    use ListOrdering::*;
+    use ReversibleIterator::*;
+
     let query = query.limit(limit + 1);
 
-    match iterator {
-        Some(ReversibleIterator::Prev(id)) => {
+    let iterator = if let Some(it) = iterator {
+        it
+    } else {
+        return match ordering {
+            Ascending => query.order_by_asc(sort_column),
+            Descending => query.order_by_desc(sort_column),
+        };
+    };
+
+    match (iterator, ordering) {
+        (Prev(id), Ascending) | (Normal(id), Descending) => {
             query.order_by_desc(sort_column).filter(sort_column.lt(id))
         }
-
-        Some(ReversibleIterator::Normal(id)) => {
+        (Prev(id), Descending) | (Normal(id), Ascending) => {
             query.order_by_asc(sort_column).filter(sort_column.gt(id))
         }
-
-        None => query.order_by_asc(sort_column),
     }
 }
 
@@ -222,8 +234,9 @@ pub trait ModelIn {
     fn update_model(self, model: &mut Self::ActiveModel);
 }
 
-#[derive(PartialEq, Eq)]
-enum ListOrdering {
+#[derive(Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub enum ListOrdering {
     Ascending,
     Descending,
 }
@@ -273,13 +286,18 @@ fn list_response_inner<T: ModelOut>(
 pub trait ModelOut: Clone {
     fn id_copy(&self) -> String;
 
-    fn list_response_asc(data: Vec<Self>, limit: usize, is_prev_iter: bool) -> ListResponse<Self> {
+    fn list_response(
+        data: Vec<Self>,
+        limit: usize,
+        is_prev_iter: bool,
+        ordering: ListOrdering,
+    ) -> ListResponse<Self> {
         let direction = if is_prev_iter {
             IteratorDirection::Previous
         } else {
             IteratorDirection::Next
         };
-        list_response_inner(data, limit, ListOrdering::Ascending, direction, true)
+        list_response_inner(data, limit, ordering, direction, true)
     }
 
     fn list_response_desc(data: Vec<Self>, limit: usize, is_prev_iter: bool) -> ListResponse<Self> {

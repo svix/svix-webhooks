@@ -21,10 +21,10 @@ use crate::{
     db::models::{application, endpoint, endpointmetadata, eventtype},
     error::{HttpError, Result, ValidationErrorItem},
     v1::utils::{
-        apply_pagination_asc,
+        apply_pagination,
         patch::{patch_field_non_nullable, UnrequiredField, UnrequiredNullableField},
-        ApplicationEndpointPath, EmptyResponse, ListResponse, ModelIn, ModelOut, Pagination,
-        PaginationLimit, ReversibleIterator, ValidatedJson, ValidatedQuery,
+        ApplicationEndpointPath, EmptyResponse, ListOrdering, ListResponse, ModelIn, ModelOut,
+        Ordering, Pagination, PaginationLimit, ReversibleIterator, ValidatedJson, ValidatedQuery,
     },
     AppState,
 };
@@ -33,17 +33,20 @@ use hack::EventTypeNameResult;
 pub(super) async fn list_endpoints(
     State(AppState { ref db, .. }): State<AppState>,
     ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<EndpointId>>>,
+    ValidatedQuery(Ordering { order }): ValidatedQuery<Ordering>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<ListResponse<EndpointOut>>> {
     let PaginationLimit(limit) = pagination.limit;
     let iterator = pagination.iterator;
     let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
 
-    let query = apply_pagination_asc(
+    let order = order.unwrap_or(ListOrdering::Ascending);
+    let query = apply_pagination(
         endpoint::Entity::secure_find(app.id),
         endpoint::Column::Id,
         limit,
         iterator,
+        order.clone(),
     );
 
     let results = ctx!(
@@ -59,10 +62,11 @@ pub(super) async fn list_endpoints(
     })
     .collect();
 
-    Ok(Json(EndpointOut::list_response_asc(
+    Ok(Json(EndpointOut::list_response(
         results,
         limit as usize,
         is_prev,
+        order,
     )))
 }
 
