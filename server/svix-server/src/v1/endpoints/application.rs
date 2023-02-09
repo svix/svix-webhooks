@@ -8,7 +8,7 @@ use crate::{
     },
     ctx,
     db::models::{application, applicationmetadata},
-    error::{HttpError, Result},
+    error::{http_error_on_conflict, HttpError, Result},
     transaction,
     v1::utils::{
         openapi_desc, openapi_tag,
@@ -291,9 +291,9 @@ async fn update_application(
 
     let (app, metadata) = transaction!(db, |txn| async move {
         let app = if create_models {
-            ctx!(app.insert(txn).await)?
+            ctx!(app.insert(txn).await.map_err(http_error_on_conflict))?
         } else {
-            ctx!(app.update(txn).await)?
+            ctx!(app.update(txn).await.map_err(http_error_on_conflict))?
         };
         let metadata = ctx!(metadata.upsert_or_delete(txn).await)?;
         Ok((app, metadata))
