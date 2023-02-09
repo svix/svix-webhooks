@@ -24,8 +24,8 @@ type EventTypeListOptions struct {
 	IncludeArchived *bool
 }
 
-func (e *EventType) List(options *EventTypeListOptions) (*ListResponseEventTypeOut, error) {
-	req := e.api.EventTypeApi.ListEventTypesApiV1EventTypeGet(context.Background())
+func (e *EventType) List(ctx context.Context, options *EventTypeListOptions) (*ListResponseEventTypeOut, error) {
+	req := e.api.EventTypeApi.ListEventTypesApiV1EventTypeGet(ctx)
 	if options != nil {
 		if options.Iterator != nil {
 			req = req.Iterator(*options.Iterator)
@@ -48,12 +48,12 @@ func (e *EventType) List(options *EventTypeListOptions) (*ListResponseEventTypeO
 	return &ret, nil
 }
 
-func (e *EventType) Create(eventTypeIn *EventTypeIn) (*EventTypeOut, error) {
-	return e.CreateWithOptions(eventTypeIn, nil)
+func (e *EventType) Create(ctx context.Context, eventTypeIn *EventTypeIn) (*EventTypeOut, error) {
+	return e.CreateWithOptions(ctx, eventTypeIn, nil)
 }
 
-func (e *EventType) CreateWithOptions(eventTypeIn *EventTypeIn, options *PostOptions) (*EventTypeOut, error) {
-	req := e.api.EventTypeApi.CreateEventTypeApiV1EventTypePost(context.Background())
+func (e *EventType) CreateWithOptions(ctx context.Context, eventTypeIn *EventTypeIn, options *PostOptions) (*EventTypeOut, error) {
+	req := e.api.EventTypeApi.CreateEventTypeApiV1EventTypePost(ctx)
 	req = req.EventTypeIn(openapi.EventTypeIn(*eventTypeIn))
 	if options != nil {
 		if options.IdempotencyKey != nil {
@@ -68,8 +68,8 @@ func (e *EventType) CreateWithOptions(eventTypeIn *EventTypeIn, options *PostOpt
 	return &ret, nil
 }
 
-func (e *EventType) Get(eventTypeName string) (*EventTypeOut, error) {
-	req := e.api.EventTypeApi.GetEventTypeApiV1EventTypeEventTypeNameGet(context.Background(), eventTypeName)
+func (e *EventType) Get(ctx context.Context, eventTypeName string) (*EventTypeOut, error) {
+	req := e.api.EventTypeApi.GetEventTypeApiV1EventTypeEventTypeNameGet(ctx, eventTypeName)
 	out, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
@@ -78,8 +78,8 @@ func (e *EventType) Get(eventTypeName string) (*EventTypeOut, error) {
 	return &ret, nil
 }
 
-func (e *EventType) Update(eventTypeName string, eventTypeUpdate *EventTypeUpdate) (*EventTypeOut, error) {
-	req := e.api.EventTypeApi.UpdateEventTypeApiV1EventTypeEventTypeNamePut(context.Background(), eventTypeName)
+func (e *EventType) Update(ctx context.Context, eventTypeName string, eventTypeUpdate *EventTypeUpdate) (*EventTypeOut, error) {
+	req := e.api.EventTypeApi.UpdateEventTypeApiV1EventTypeEventTypeNamePut(ctx, eventTypeName)
 	req = req.EventTypeUpdate(openapi.EventTypeUpdate(*eventTypeUpdate))
 	out, res, err := req.Execute()
 	if err != nil {
@@ -89,8 +89,8 @@ func (e *EventType) Update(eventTypeName string, eventTypeUpdate *EventTypeUpdat
 	return &ret, nil
 }
 
-func (e *EventType) Delete(eventTypeName string) error {
-	req := e.api.EventTypeApi.DeleteEventTypeApiV1EventTypeEventTypeNameDelete(context.Background(), eventTypeName)
+func (e *EventType) Delete(ctx context.Context, eventTypeName string) error {
+	req := e.api.EventTypeApi.DeleteEventTypeApiV1EventTypeEventTypeNameDelete(ctx, eventTypeName)
 	res, err := req.Execute()
 	return wrapError(err, res)
 }

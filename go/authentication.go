@@ -16,12 +16,12 @@ type (
 	DashboardAccessOut openapi.DashboardAccessOut
 )
 
-func (a *Authentication) AppPortalAccess(appId string, appPortalAccessIn *AppPortalAccessIn) (*AppPortalAccessOut, error) {
-	return a.AppPortalAccessWithOptions(appId, appPortalAccessIn, nil)
+func (a *Authentication) AppPortalAccess(ctx context.Context, appId string, appPortalAccessIn *AppPortalAccessIn) (*AppPortalAccessOut, error) {
+	return a.AppPortalAccessWithOptions(ctx, appId, appPortalAccessIn, nil)
 }
 
-func (a *Authentication) AppPortalAccessWithOptions(appId string, appPortalAccessIn *AppPortalAccessIn, options *PostOptions) (*AppPortalAccessOut, error) {
-	req := a.api.AuthenticationApi.GetAppPortalAccessApiV1AuthAppPortalAccessAppIdPost(context.Background(), appId)
+func (a *Authentication) AppPortalAccessWithOptions(ctx context.Context, appId string, appPortalAccessIn *AppPortalAccessIn, options *PostOptions) (*AppPortalAccessOut, error) {
+	req := a.api.AuthenticationApi.GetAppPortalAccessApiV1AuthAppPortalAccessAppIdPost(ctx, appId)
 	req = req.AppPortalAccessIn(openapi.AppPortalAccessIn(*appPortalAccessIn))
 	if options != nil {
 		if options.IdempotencyKey != nil {
@@ -36,12 +36,12 @@ func (a *Authentication) AppPortalAccessWithOptions(appId string, appPortalAcces
 	return &ret, nil
 }
 
-func (a *Authentication) DashboardAccess(appId string) (*DashboardAccessOut, error) {
-	return a.DashboardAccessWithOptions(appId, nil)
+func (a *Authentication) DashboardAccess(ctx context.Context, appId string) (*DashboardAccessOut, error) {
+	return a.DashboardAccessWithOptions(ctx, appId, nil)
 }
 
-func (a *Authentication) DashboardAccessWithOptions(appId string, options *PostOptions) (*DashboardAccessOut, error) {
-	req := a.api.AuthenticationApi.GetDashboardAccessApiV1AuthDashboardAccessAppIdPost(context.Background(), appId)
+func (a *Authentication) DashboardAccessWithOptions(ctx context.Context, appId string, options *PostOptions) (*DashboardAccessOut, error) {
+	req := a.api.AuthenticationApi.GetDashboardAccessApiV1AuthDashboardAccessAppIdPost(ctx, appId)
 	if options != nil {
 		if options.IdempotencyKey != nil {
 			req = req.IdempotencyKey(*options.IdempotencyKey)
@@ -55,12 +55,12 @@ func (a *Authentication) DashboardAccessWithOptions(appId string, options *PostO
 	return &ret, nil
 }
 
-func (a *Authentication) Logout() error {
-	return a.LogoutWithOptions(nil)
+func (a *Authentication) Logout(ctx context.Context) error {
+	return a.LogoutWithOptions(ctx, nil)
 }
 
-func (a *Authentication) LogoutWithOptions(options *PostOptions) error {
-	req := a.api.AuthenticationApi.LogoutApiV1AuthLogoutPost(context.Background())
+func (a *Authentication) LogoutWithOptions(ctx context.Context, options *PostOptions) error {
+	req := a.api.AuthenticationApi.LogoutApiV1AuthLogoutPost(ctx)
 	if options != nil {
 		if options.IdempotencyKey != nil {
 			req = req.IdempotencyKey(*options.IdempotencyKey)
