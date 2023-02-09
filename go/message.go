@@ -61,7 +61,11 @@ func (m *Message) Create(appId string, messageIn *MessageIn) (*MessageOut, error
 }
 
 func (m *Message) CreateWithOptions(appId string, messageIn *MessageIn, options *PostOptions) (*MessageOut, error) {
-	req := m.api.MessageApi.CreateMessageApiV1AppAppIdMsgPost(context.Background(), appId)
+	return m.CreateWithOptionsAndContext(context.Background(), appId, messageIn, options)
+}
+
+func (m *Message) CreateWithOptionsAndContext(ctx context.Context, appId string, messageIn *MessageIn, options *PostOptions) (*MessageOut, error) {
+	req := m.api.MessageApi.CreateMessageApiV1AppAppIdMsgPost(ctx, appId)
 	req = req.MessageIn(openapi.MessageIn(*messageIn))
 	if options != nil {
 		if options.IdempotencyKey != nil {

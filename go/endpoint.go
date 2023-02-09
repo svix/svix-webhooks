@@ -33,7 +33,11 @@ type EndpointListOptions struct {
 }
 
 func (e *Endpoint) List(appId string, options *EndpointListOptions) (*ListResponseEndpointOut, error) {
-	req := e.api.EndpointApi.ListEndpointsApiV1AppAppIdEndpointGet(context.Background(), appId)
+	return e.ListWithContext(context.Background(), appId, options)
+}
+
+func (e *Endpoint) ListWithContext(ctx context.Context, appId string, options *EndpointListOptions) (*ListResponseEndpointOut, error) {
+	req := e.api.EndpointApi.ListEndpointsApiV1AppAppIdEndpointGet(ctx, appId)
 	if options != nil {
 		if options.Iterator != nil {
 			req = req.Iterator(*options.Iterator)
@@ -70,14 +74,18 @@ func (e *Endpoint) CreateWithOptions(appId string, endpointIn *EndpointIn, optio
 	return &ret, nil
 }
 
-func (e *Endpoint) Get(appId string, endpointId string) (*EndpointOut, error) {
-	req := e.api.EndpointApi.GetEndpointApiV1AppAppIdEndpointEndpointIdGet(context.Background(), endpointId, appId)
+func (e *Endpoint) GetWithContext(ctx context.Context, appId string, endpointId string) (*EndpointOut, error) {
+	req := e.api.EndpointApi.GetEndpointApiV1AppAppIdEndpointEndpointIdGet(ctx, endpointId, appId)
 	out, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
 	ret := EndpointOut(out)
 	return &ret, nil
+}
+
+func (e *Endpoint) Get(appId string, endpointId string) (*EndpointOut, error) {
+	return e.GetWithContext(context.Background(), appId, endpointId)
 }
 
 func (e *Endpoint) Update(appId string, endpointId string, endpointUpdate *EndpointUpdate) (*EndpointOut, error) {
@@ -97,14 +105,18 @@ func (e *Endpoint) Delete(appId string, endpointId string) error {
 	return wrapError(err, res)
 }
 
-func (e *Endpoint) GetSecret(appId string, endpointId string) (*EndpointSecretOut, error) {
-	req := e.api.EndpointApi.GetEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGet(context.Background(), endpointId, appId)
+func (e *Endpoint) GetSecretWithContext(ctx context.Context, appId string, endpointId string) (*EndpointSecretOut, error) {
+	req := e.api.EndpointApi.GetEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGet(ctx, endpointId, appId)
 	out, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
 	}
 	ret := EndpointSecretOut(out)
 	return &ret, nil
+}
+
+func (e *Endpoint) GetSecret(appId string, endpointId string) (*EndpointSecretOut, error) {
+	return e.GetSecretWithContext(context.Background(), appId, endpointId)
 }
 
 func (e *Endpoint) RotateSecret(appId string, endpointId string, endpointSecretRotateIn *EndpointSecretRotateIn) error {

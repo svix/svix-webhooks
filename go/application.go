@@ -64,7 +64,11 @@ func (a *Application) GetOrCreate(applicationIn *ApplicationIn) (*ApplicationOut
 }
 
 func (a *Application) GetOrCreateWithOptions(applicationIn *ApplicationIn, options *PostOptions) (*ApplicationOut, error) {
-	req := a.api.ApplicationApi.CreateApplicationApiV1AppPost(context.Background())
+	return a.GetOrCreateWithOptionsAndContext(context.Background(), applicationIn, options)
+}
+
+func (a *Application) GetOrCreateWithOptionsAndContext(ctx context.Context, applicationIn *ApplicationIn, options *PostOptions) (*ApplicationOut, error) {
+	req := a.api.ApplicationApi.CreateApplicationApiV1AppPost(ctx)
 	req = req.ApplicationIn(openapi.ApplicationIn(*applicationIn))
 	req = req.GetIfExists(true)
 	if options != nil {
