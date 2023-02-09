@@ -1840,6 +1840,12 @@
                         "nullable": true,
                         "title": "Iterator",
                         "type": "string"
+                    },
+                    "prevIterator": {
+                        "example": "-iterator",
+                        "nullable": true,
+                        "title": "Previterator",
+                        "type": "string"
                     }
                 },
                 "required": [
