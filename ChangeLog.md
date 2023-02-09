@@ -3,6 +3,13 @@
 ## Next
 * 
 
+## Version 0.78.0
+* Server: add `order` query parameter for sorting endpoints
+* Server: fix default sort order of endpoints to `desc` to match prod
+* Libs: add support for `prev_iterator` for application and endpoints
+* Libs/JS: fix sign function to support non-round dates
+* Libs/Go: **[Breaking]** accept a context parameter in all Go lib methods
+
 ## Version 0.77.0
 * Server: fix event_type array query parsing
 * Server: fix bad `?channel=` queries
