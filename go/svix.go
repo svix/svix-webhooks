@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/svix/svix-webhooks/go/internal/openapi"
-	"github.com/svix/svix-webhooks/go/internal/version"
+	"github.com/Bureau-Inc/webhooks-svc/go/internal/openapi"
+	"github.com/Bureau-Inc/webhooks-svc/go/internal/version"
 )
 
 type (

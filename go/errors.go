@@ -3,7 +3,7 @@ package svix
 import (
 	"net/http"
 
-	"github.com/svix/svix-webhooks/go/internal/openapi"
+	"github.com/Bureau-Inc/webhooks-svc/go/internal/openapi"
 )
 
 // Error provides access to the body, status, and error on returned errors.
