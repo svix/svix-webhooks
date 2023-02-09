@@ -21,8 +21,8 @@ type ApplicationListOptions struct {
 	Limit    *int32
 }
 
-func (a *Application) List(options *ApplicationListOptions) (*ListResponseApplicationOut, error) {
-	req := a.api.ApplicationApi.ListApplicationsApiV1AppGet(context.Background())
+func (a *Application) List(ctx context.Context, options *ApplicationListOptions) (*ListResponseApplicationOut, error) {
+	req := a.api.ApplicationApi.ListApplicationsApiV1AppGet(ctx)
 	if options != nil {
 		if options.Iterator != nil {
 			req = req.Iterator(*options.Iterator)
@@ -39,12 +39,12 @@ func (a *Application) List(options *ApplicationListOptions) (*ListResponseApplic
 	return &ret, nil
 }
 
-func (a *Application) Create(applicationIn *ApplicationIn) (*ApplicationOut, error) {
-	return a.CreateWithOptions(applicationIn, nil)
+func (a *Application) Create(ctx context.Context, applicationIn *ApplicationIn) (*ApplicationOut, error) {
+	return a.CreateWithOptions(ctx, applicationIn, nil)
 }
 
-func (a *Application) CreateWithOptions(applicationIn *ApplicationIn, options *PostOptions) (*ApplicationOut, error) {
-	req := a.api.ApplicationApi.CreateApplicationApiV1AppPost(context.Background())
+func (a *Application) CreateWithOptions(ctx context.Context, applicationIn *ApplicationIn, options *PostOptions) (*ApplicationOut, error) {
+	req := a.api.ApplicationApi.CreateApplicationApiV1AppPost(ctx)
 	req = req.ApplicationIn(openapi.ApplicationIn(*applicationIn))
 	if options != nil {
 		if options.IdempotencyKey != nil {
@@ -59,12 +59,12 @@ func (a *Application) CreateWithOptions(applicationIn *ApplicationIn, options *P
 	return &ret, nil
 }
 
-func (a *Application) GetOrCreate(applicationIn *ApplicationIn) (*ApplicationOut, error) {
-	return a.GetOrCreateWithOptions(applicationIn, nil)
+func (a *Application) GetOrCreate(ctx context.Context, applicationIn *ApplicationIn) (*ApplicationOut, error) {
+	return a.GetOrCreateWithOptions(ctx, applicationIn, nil)
 }
 
-func (a *Application) GetOrCreateWithOptions(applicationIn *ApplicationIn, options *PostOptions) (*ApplicationOut, error) {
-	req := a.api.ApplicationApi.CreateApplicationApiV1AppPost(context.Background())
+func (a *Application) GetOrCreateWithOptions(ctx context.Context, applicationIn *ApplicationIn, options *PostOptions) (*ApplicationOut, error) {
+	req := a.api.ApplicationApi.CreateApplicationApiV1AppPost(ctx)
 	req = req.ApplicationIn(openapi.ApplicationIn(*applicationIn))
 	req = req.GetIfExists(true)
 	if options != nil {
@@ -80,8 +80,8 @@ func (a *Application) GetOrCreateWithOptions(applicationIn *ApplicationIn, optio
 	return &ret, nil
 }
 
-func (a *Application) Get(appId string) (*ApplicationOut, error) {
-	req := a.api.ApplicationApi.GetApplicationApiV1AppAppIdGet(context.Background(), appId)
+func (a *Application) Get(ctx context.Context, appId string) (*ApplicationOut, error) {
+	req := a.api.ApplicationApi.GetApplicationApiV1AppAppIdGet(ctx, appId)
 	resp, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
@@ -90,8 +90,8 @@ func (a *Application) Get(appId string) (*ApplicationOut, error) {
 	return &ret, nil
 }
 
-func (a *Application) Update(appId string, applicationIn *ApplicationIn) (*ApplicationOut, error) {
-	req := a.api.ApplicationApi.UpdateApplicationApiV1AppAppIdPut(context.Background(), appId)
+func (a *Application) Update(ctx context.Context, appId string, applicationIn *ApplicationIn) (*ApplicationOut, error) {
+	req := a.api.ApplicationApi.UpdateApplicationApiV1AppAppIdPut(ctx, appId)
 	req = req.ApplicationIn(openapi.ApplicationIn(*applicationIn))
 	resp, res, err := req.Execute()
 	if err != nil {
@@ -101,8 +101,8 @@ func (a *Application) Update(appId string, applicationIn *ApplicationIn) (*Appli
 	return &ret, nil
 }
 
-func (a *Application) Delete(appId string) error {
-	req := a.api.ApplicationApi.DeleteApplicationApiV1AppAppIdDelete(context.Background(), appId)
+func (a *Application) Delete(ctx context.Context, appId string) error {
+	req := a.api.ApplicationApi.DeleteApplicationApiV1AppAppIdDelete(ctx, appId)
 	res, err := req.Execute()
 	return wrapError(err, res)
 }

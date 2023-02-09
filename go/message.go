@@ -26,8 +26,8 @@ type MessageListOptions struct {
 	Channel    *string
 }
 
-func (m *Message) List(appId string, options *MessageListOptions) (*ListResponseMessageOut, error) {
-	req := m.api.MessageApi.ListMessagesApiV1AppAppIdMsgGet(context.Background(), appId)
+func (m *Message) List(ctx context.Context, appId string, options *MessageListOptions) (*ListResponseMessageOut, error) {
+	req := m.api.MessageApi.ListMessagesApiV1AppAppIdMsgGet(ctx, appId)
 	if options != nil {
 		if options.Iterator != nil {
 			req = req.Iterator(*options.Iterator)
@@ -56,12 +56,12 @@ func (m *Message) List(appId string, options *MessageListOptions) (*ListResponse
 	return &ret, nil
 }
 
-func (m *Message) Create(appId string, messageIn *MessageIn) (*MessageOut, error) {
-	return m.CreateWithOptions(appId, messageIn, nil)
+func (m *Message) Create(ctx context.Context, appId string, messageIn *MessageIn) (*MessageOut, error) {
+	return m.CreateWithOptions(ctx, appId, messageIn, nil)
 }
 
-func (m *Message) CreateWithOptions(appId string, messageIn *MessageIn, options *PostOptions) (*MessageOut, error) {
-	req := m.api.MessageApi.CreateMessageApiV1AppAppIdMsgPost(context.Background(), appId)
+func (m *Message) CreateWithOptions(ctx context.Context, appId string, messageIn *MessageIn, options *PostOptions) (*MessageOut, error) {
+	req := m.api.MessageApi.CreateMessageApiV1AppAppIdMsgPost(ctx, appId)
 	req = req.MessageIn(openapi.MessageIn(*messageIn))
 	if options != nil {
 		if options.IdempotencyKey != nil {
@@ -76,8 +76,8 @@ func (m *Message) CreateWithOptions(appId string, messageIn *MessageIn, options 
 	return &ret, nil
 }
 
-func (m *Message) Get(appId string, msgId string) (*MessageOut, error) {
-	req := m.api.MessageApi.GetMessageApiV1AppAppIdMsgMsgIdGet(context.Background(), msgId, appId)
+func (m *Message) Get(ctx context.Context, appId string, msgId string) (*MessageOut, error) {
+	req := m.api.MessageApi.GetMessageApiV1AppAppIdMsgMsgIdGet(ctx, msgId, appId)
 	out, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
@@ -86,8 +86,8 @@ func (m *Message) Get(appId string, msgId string) (*MessageOut, error) {
 	return &ret, nil
 }
 
-func (m *Message) ExpungeContent(appId string, msgId string) error {
-	req := m.api.MessageApi.ExpungeMessagePayloadApiV1AppAppIdMsgMsgIdContentDelete(context.Background(), msgId, appId)
+func (m *Message) ExpungeContent(ctx context.Context, appId string, msgId string) error {
+	req := m.api.MessageApi.ExpungeMessagePayloadApiV1AppAppIdMsgMsgIdContentDelete(ctx, msgId, appId)
 	res, err := req.Execute()
 	return wrapError(err, res)
 }
