@@ -42,7 +42,7 @@ pub(super) async fn list_endpoints(
     let iterator = pagination.iterator;
     let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
 
-    let order = order.unwrap_or(ListOrdering::Ascending);
+    let order = order.unwrap_or(ListOrdering::Descending);
     let query = apply_pagination(
         endpoint::Entity::secure_find(app.id),
         endpoint::Column::Id,

@@ -643,7 +643,7 @@ async fn test_list() {
         &client,
         &format!("api/v1/app/{app_id}/endpoint/"),
         |i| endpoint_in(&format!("https://localhost/{i}")),
-        true,
+        false,
     )
     .await
     .unwrap();
@@ -674,9 +674,9 @@ async fn test_endpoint_list_ordering() {
     // First iterate through in order
     assert_eq!(
         first_list.data.first().unwrap().ep.url,
-        "https://test.url/0"
+        "https://test.url/4"
     );
-    assert_eq!(first_list.data.last().unwrap().ep.url, "https://test.url/1");
+    assert_eq!(first_list.data.last().unwrap().ep.url, "https://test.url/3");
     assert!(!first_list.done);
 
     let list: ListResponse<EndpointOut> = client
@@ -692,7 +692,7 @@ async fn test_endpoint_list_ordering() {
         .unwrap();
 
     assert_eq!(list.data.first().unwrap().ep.url, "https://test.url/2");
-    assert_eq!(list.data.last().unwrap().ep.url, "https://test.url/3");
+    assert_eq!(list.data.last().unwrap().ep.url, "https://test.url/1");
     assert!(!list.done);
 
     // Iterate with previous iterator
@@ -708,27 +708,27 @@ async fn test_endpoint_list_ordering() {
         .await
         .unwrap();
 
-    assert_eq!(list.data.first().unwrap().ep.url, "https://test.url/0");
-    assert_eq!(list.data.last().unwrap().ep.url, "https://test.url/1");
+    assert_eq!(list.data.first().unwrap().ep.url, "https://test.url/4");
+    assert_eq!(list.data.last().unwrap().ep.url, "https://test.url/3");
     assert!(list.done);
 
-    // Iterate in descending order
+    // Iterate in ascending order
     let list: ListResponse<EndpointOut> = client
         .get(
-            &format!("api/v1/app/{}/endpoint/?limit=3&order=descending", &app_id),
+            &format!("api/v1/app/{}/endpoint/?limit=3&order=ascending", &app_id),
             StatusCode::OK,
         )
         .await
         .unwrap();
 
-    assert_eq!(list.data.first().unwrap().ep.url, "https://test.url/4");
+    assert_eq!(list.data.first().unwrap().ep.url, "https://test.url/0");
     assert_eq!(list.data.last().unwrap().ep.url, "https://test.url/2");
     assert!(!list.done);
 
     let list: ListResponse<EndpointOut> = client
         .get(
             &format!(
-                "api/v1/app/{}/endpoint/?limit=3&order=descending&iterator={}",
+                "api/v1/app/{}/endpoint/?limit=3&order=ascending&iterator={}",
                 &app_id,
                 list.iterator.unwrap(),
             ),
@@ -737,15 +737,15 @@ async fn test_endpoint_list_ordering() {
         .await
         .unwrap();
 
-    assert_eq!(list.data.first().unwrap().ep.url, "https://test.url/1");
-    assert_eq!(list.data.last().unwrap().ep.url, "https://test.url/0");
+    assert_eq!(list.data.first().unwrap().ep.url, "https://test.url/3");
+    assert_eq!(list.data.last().unwrap().ep.url, "https://test.url/4");
     assert!(list.done);
 
     // Previous iterator on descending order
     let list: ListResponse<EndpointOut> = client
         .get(
             &format!(
-                "api/v1/app/{}/endpoint/?limit=2&order=descending&iterator={}",
+                "api/v1/app/{}/endpoint/?limit=2&order=ascending&iterator={}",
                 &app_id,
                 list.prev_iterator.unwrap(),
             ),
@@ -753,7 +753,7 @@ async fn test_endpoint_list_ordering() {
         )
         .await
         .unwrap();
-    assert_eq!(list.data.first().unwrap().ep.url, "https://test.url/3");
+    assert_eq!(list.data.first().unwrap().ep.url, "https://test.url/1");
     assert_eq!(list.data.last().unwrap().ep.url, "https://test.url/2");
 }
 

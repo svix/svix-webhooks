@@ -224,7 +224,7 @@ pub async fn common_test_list<
         }
     } else {
         for i in 0..10 {
-            assert_eq!(items.get(10 - i), list.data.get(i));
+            assert_eq!(items.get(9 - i), list.data.get(i));
         }
     }
 
