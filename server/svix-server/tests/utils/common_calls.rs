@@ -186,7 +186,7 @@ pub fn event_type_in(
 
 // Common tests
 pub async fn common_test_list<
-    ModelOut: DeserializeOwned + Clone + PartialEq + std::fmt::Debug,
+    ModelOut: DeserializeOwned + PartialEq + std::fmt::Debug,
     ModelIn: Serialize,
 >(
     client: &TestClient,

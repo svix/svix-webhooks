@@ -223,7 +223,7 @@ pub struct EmptyResponse {}
 
 #[derive(Serialize, Deserialize, Clone, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-pub struct ListResponse<T: Clone> {
+pub struct ListResponse<T> {
     pub data: Vec<T>,
     pub iterator: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -285,7 +285,7 @@ fn list_response_inner<T: ModelOut>(
     }
 }
 
-pub trait ModelOut: Clone {
+pub trait ModelOut: Sized {
     fn id_copy(&self) -> String;
 
     fn list_response(data: Vec<Self>, limit: usize, is_prev_iter: bool) -> ListResponse<Self> {
@@ -555,7 +555,7 @@ pub struct ApplicationMsgAttemptPath {
     pub attempt_id: MessageAttemptId,
 }
 
-#[derive(Clone, Deserialize, JsonSchema)]
+#[derive(Deserialize, JsonSchema)]
 pub struct EventTypeNamePath {
     pub event_type_name: EventTypeName,
 }
