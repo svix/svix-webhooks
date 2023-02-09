@@ -107,6 +107,7 @@ from .internal.openapi_client.models.message_in_payload import MessageInPayload
 from .internal.openapi_client.models.message_out import MessageOut
 from .internal.openapi_client.models.message_out_payload import MessageOutPayload
 from .internal.openapi_client.models.message_status import MessageStatus
+from .internal.openapi_client.models.ordering import Ordering
 from .internal.openapi_client.models.recover_in import RecoverIn
 from .internal.openapi_client.models.recover_out import RecoverOut
 from .internal.openapi_client.models.replay_in import ReplayIn
@@ -160,7 +161,7 @@ class EventTypeListOptions(ListOptions):
 
 @dataclass
 class EndpointListOptions(ListOptions):
-    pass
+    order: t.Optional[Ordering] = None
 
 
 @dataclass

@@ -21,6 +21,7 @@ type (
 	EndpointHeadersOut        openapi.EndpointHeadersOut
 	EndpointStats             openapi.EndpointStats
 	EndpointTransformationOut openapi.EndpointTransformationOut
+	Ordering                  openapi.Ordering
 )
 
 type Endpoint struct {
@@ -30,6 +31,7 @@ type Endpoint struct {
 type EndpointListOptions struct {
 	Iterator *string
 	Limit    *int32
+	Order    *Ordering
 }
 
 func (e *Endpoint) List(ctx context.Context, appId string, options *EndpointListOptions) (*ListResponseEndpointOut, error) {
@@ -40,6 +42,9 @@ func (e *Endpoint) List(ctx context.Context, appId string, options *EndpointList
 		}
 		if options.Limit != nil {
 			req = req.Limit(*options.Limit)
+		}
+		if options.Order != nil {
+			req = req.Order(openapi.Ordering(*options.Order))
 		}
 	}
 	out, res, err := req.Execute()

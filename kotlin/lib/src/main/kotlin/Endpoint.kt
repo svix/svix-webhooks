@@ -36,6 +36,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
                 appId,
                 options.iterator,
                 options.limit,
+                options.order,
                 null
             )
         } catch (e: Exception) {

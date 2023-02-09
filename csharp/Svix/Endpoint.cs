@@ -260,6 +260,7 @@ namespace Svix
                     appId,
                     options?.Iterator,
                     options?.Limit,
+                    options?.Order,
                     idempotencyKey);
 
                 return lEndpoints?.Data;
@@ -284,6 +285,7 @@ namespace Svix
                     appId,
                     options?.Iterator,
                     options?.Limit,
+                    options?.Order,
                     idempotencyKey,
                     cancellationToken);
 
