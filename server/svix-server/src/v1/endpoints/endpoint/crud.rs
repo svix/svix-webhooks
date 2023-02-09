@@ -19,7 +19,7 @@ use crate::{
     },
     ctx,
     db::models::{application, endpoint, endpointmetadata, eventtype},
-    error::{HttpError, Result, ValidationErrorItem},
+    error::{http_error_on_conflict, HttpError, Result, ValidationErrorItem},
     v1::utils::{
         apply_pagination,
         patch::{patch_field_non_nullable, UnrequiredField, UnrequiredNullableField},
@@ -87,7 +87,7 @@ async fn create_endp_from_data(
 
     let (endp, metadata) = {
         let txn = ctx!(db.begin().await)?;
-        let endp = ctx!(endp.insert(&txn).await)?;
+        let endp = ctx!(endp.insert(&txn).await.map_err(http_error_on_conflict))?;
         let metadata = ctx!(metadata.upsert_or_delete(&txn).await)?;
         ctx!(txn.commit().await)?;
         (endp, metadata)
@@ -158,7 +158,7 @@ async fn update_endp_from_data(
 ) -> Result<(endpoint::Model, endpointmetadata::Model)> {
     let (endp, metadata) = {
         let txn = ctx!(db.begin().await)?;
-        let endp = ctx!(endp.update(&txn).await)?;
+        let endp = ctx!(endp.update(&txn).await.map_err(http_error_on_conflict))?;
         let metadata = ctx!(metadata.upsert_or_delete(&txn).await)?;
         ctx!(txn.commit().await)?;
         (endp, metadata)

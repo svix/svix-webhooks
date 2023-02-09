@@ -8,7 +8,7 @@ use crate::{
     },
     ctx,
     db::models::eventtype,
-    error::{HttpError, Result},
+    error::{http_error_on_conflict, HttpError, Result},
     v1::utils::{
         api_not_implemented, openapi_desc, openapi_tag,
         patch::{
@@ -317,7 +317,7 @@ async fn update_event_type(
         Some(evtype) => {
             let mut evtype: eventtype::ActiveModel = evtype.into();
             data.update_model(&mut evtype);
-            let ret = ctx!(evtype.update(db).await)?;
+            let ret = ctx!(evtype.update(db).await.map_err(http_error_on_conflict))?;
 
             Ok((StatusCode::OK, Json(ret.into())))
         }
@@ -355,7 +355,7 @@ async fn patch_event_type(
     let mut evtype: eventtype::ActiveModel = evtype.into();
     data.update_model(&mut evtype);
 
-    let ret = ctx!(evtype.update(db).await)?;
+    let ret = ctx!(evtype.update(db).await.map_err(http_error_on_conflict))?;
     Ok(Json(ret.into()))
 }
 
