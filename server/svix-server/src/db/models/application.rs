@@ -7,8 +7,8 @@ use crate::core::types::{
 use crate::{ctx, error};
 use chrono::Utc;
 use sea_orm::ActiveValue::Set;
+use sea_orm::ConnectionTrait;
 use sea_orm::{entity::prelude::*, Condition};
-use sea_orm::{ConnectionTrait, QueryOrder, QuerySelect};
 
 use super::applicationmetadata;
 
@@ -65,34 +65,6 @@ impl Model {
             .unwrap_or_else(|| applicationmetadata::ActiveModel::new(self.id.clone(), None));
 
         Ok(metadata)
-    }
-
-    pub async fn fetch_many_with_metadata(
-        db: &DatabaseConnection,
-        org_id: OrganizationId,
-        limit: u64,
-        after_id: impl Into<Option<ApplicationId>>,
-    ) -> error::Result<impl Iterator<Item = (Self, applicationmetadata::Model)>> {
-        let mut query = Entity::secure_find(org_id)
-            .order_by_asc(Column::Id)
-            .limit(limit);
-
-        if let Some(id) = after_id.into() {
-            query = query.filter(Column::Id.gt(id))
-        }
-
-        let results = ctx!(
-            query
-                .find_also_related(applicationmetadata::Entity)
-                .all(db)
-                .await
-        )?;
-
-        Ok(results.into_iter().map(|(app, metadata)| {
-            let metadata =
-                metadata.unwrap_or_else(|| applicationmetadata::Model::new(app.id.clone()));
-            (app, metadata)
-        }))
     }
 
     pub async fn fetch_with_metadata(

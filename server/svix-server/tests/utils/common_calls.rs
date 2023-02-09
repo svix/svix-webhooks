@@ -193,6 +193,7 @@ pub async fn common_test_list<
     path: &str,
     create_model: fn(usize) -> ModelIn,
     sort_asc: bool,
+    supports_reverse: bool,
 ) -> Result<()> {
     let mut items = Vec::new();
     for i in 0..10 {
@@ -205,7 +206,7 @@ pub async fn common_test_list<
         items.push(item);
     }
 
-    let list = run_with_retries(|| async {
+    let original_list = run_with_retries(|| async {
         let list = client
             .get::<ListResponse<ModelOut>>(&format!("{path}?with_content=true"), StatusCode::OK)
             .await
@@ -220,11 +221,11 @@ pub async fn common_test_list<
 
     if sort_asc {
         for i in 0..10 {
-            assert_eq!(items.get(i), list.data.get(i));
+            assert_eq!(items.get(i), original_list.data.get(i));
         }
     } else {
         for i in 0..10 {
-            assert_eq!(items.get(9 - i), list.data.get(i));
+            assert_eq!(items.get(9 - i), original_list.data.get(i));
         }
     }
 
@@ -279,6 +280,46 @@ pub async fn common_test_list<
         )
         .await
         .unwrap();
+
+    if supports_reverse {
+        let opposite_order = if sort_asc { "descending" } else { "ascending" };
+
+        let opposite_1 = client
+            .get::<ListResponse<ModelOut>>(
+                &format!("{path}?limit=3&order={opposite_order}"),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
+
+        let opposite_2 = client
+            .get::<ListResponse<ModelOut>>(
+                &format!(
+                    "{path}?limit=3&order={opposite_order}&iterator={}",
+                    opposite_1.iterator.unwrap()
+                ),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
+
+        let opposite_prev = client
+            .get::<ListResponse<ModelOut>>(
+                &format!(
+                    "{path}?limit=3&order={opposite_order}&iterator={}",
+                    opposite_2.prev_iterator.unwrap()
+                ),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
+
+        for i in 0..3 {
+            assert_eq!(original_list.data.get(9 - i), opposite_1.data.get(i));
+            assert_eq!(original_list.data.get(6 - i), opposite_2.data.get(i));
+            assert_eq!(original_list.data.get(9 - i), opposite_prev.data.get(i));
+        }
+    }
 
     // Test limits -- ten models were created previously and the default hard/soft cap is 250 so
     // 10..251 is the sane range here.

@@ -644,6 +644,7 @@ async fn test_list() {
         &format!("api/v1/app/{app_id}/endpoint/"),
         |i| endpoint_in(&format!("https://localhost/{i}")),
         false,
+        true,
     )
     .await
     .unwrap();
