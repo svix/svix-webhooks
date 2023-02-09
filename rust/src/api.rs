@@ -240,7 +240,12 @@ impl<'a> Application<'a> {
     }
 }
 
-pub type EndpointListOptions = ListOptions;
+#[derive(Default)]
+pub struct EndpointListOptions {
+    pub iterator: Option<String>,
+    pub limit: Option<i32>,
+    pub order: Option<Ordering>,
+}
 
 pub struct Endpoint<'a> {
     cfg: &'a Configuration,
@@ -256,11 +261,16 @@ impl<'a> Endpoint<'a> {
         app_id: String,
         options: Option<EndpointListOptions>,
     ) -> Result<ListResponseEndpointOut> {
-        let EndpointListOptions { iterator, limit } = options.unwrap_or_default();
+        let EndpointListOptions {
+            iterator,
+            limit,
+            order,
+        } = options.unwrap_or_default();
         Ok(endpoint_api::list_endpoints_api_v1_app_app_id_endpoint_get(
             self.cfg,
             endpoint_api::ListEndpointsApiV1AppAppIdEndpointGetParams {
                 app_id,
+                order,
                 iterator,
                 limit,
                 idempotency_key: None,
@@ -746,6 +756,7 @@ impl<'a> EventType<'a> {
                 self.cfg,
                 event_type_api::DeleteEventTypeApiV1EventTypeEventTypeNameDeleteParams {
                     event_type_name,
+                    expunge: None,
                     idempotency_key: None,
                 },
             )

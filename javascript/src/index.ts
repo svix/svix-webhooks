@@ -52,6 +52,7 @@ import {
   ResponseContext,
   AppPortalAccessOut,
   AppPortalAccessIn,
+  Ordering,
 } from "./openapi/index";
 export * from "./openapi/models/all";
 export * from "./openapi/apis/exception";
@@ -167,7 +168,9 @@ interface ListOptions {
 
 export type ApplicationListOptions = ListOptions;
 
-export type EndpointListOptions = ListOptions;
+export interface EndpointListOptions extends ListOptions {
+  order?: Ordering;
+}
 
 export type IntegrationListOptions = ListOptions;
 

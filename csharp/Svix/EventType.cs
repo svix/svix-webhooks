@@ -28,6 +28,7 @@ namespace Svix
             {
                 var lResponse = _eventTypeApi.DeleteEventTypeApiV1EventTypeEventTypeNameDeleteWithHttpInfo(
                     eventType,
+                    null,
                     idempotencyKey);
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
@@ -49,6 +50,7 @@ namespace Svix
             {
                 var lResponse = await _eventTypeApi.DeleteEventTypeApiV1EventTypeEventTypeNameDeleteWithHttpInfoAsync(
                     eventType,
+                    null,
                     idempotencyKey,
                     cancellationToken);
 
