@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	svix "github.com/svix/svix-webhooks/go"
+	svix "github.com/Bureau-Inc/webhooks-svc/go"
 )
 
 var defaultMsgID = "msg_p5jXN8AQM9LWM0D4loKWxJek"

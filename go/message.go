@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/svix/svix-webhooks/go/internal/openapi"
+	"github.com/Bureau-Inc/webhooks-svc/go/internal/openapi"
 )
 
 type Message struct {
