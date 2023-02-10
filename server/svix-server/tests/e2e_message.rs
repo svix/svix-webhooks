@@ -456,3 +456,58 @@ async fn test_expunge_message_payload() {
 
     assert_eq!(msg.payload, serde_json::json!({"expired": true}));
 }
+
+#[tokio::test]
+async fn test_insert_event_type_into_payload() {
+    let (client, _jh) = start_svix_server().await;
+    let app_id = create_test_app(&client, "testApp").await.unwrap().id;
+    let mut receiver = TestReceiver::start(axum::http::StatusCode::OK);
+
+    let _endp = create_test_endpoint(&client, &app_id, &receiver.endpoint)
+        .await
+        .unwrap()
+        .id;
+
+    let payload = serde_json::json!({"hello": "world"});
+
+    // Default is to not touch the payload
+    let _: IgnoredResponse = client
+        .post(
+            &format!("api/v1/app/{}/msg/", &app_id),
+            message_in("foo", payload.clone()).unwrap(),
+            StatusCode::ACCEPTED,
+        )
+        .await
+        .unwrap();
+
+    let data = receiver.data_recv.recv().await.unwrap();
+    assert_eq!(payload, data);
+
+    // If flag is set, insert event type into payload
+    let _: IgnoredResponse = client
+        .post(
+            &format!("api/v1/app/{}/msg/?insert_event_type=true", &app_id),
+            message_in("foo", payload.clone()).unwrap(),
+            StatusCode::ACCEPTED,
+        )
+        .await
+        .unwrap();
+
+    let data = receiver.data_recv.recv().await.unwrap();
+    assert_eq!(serde_json::json!({"hello":"world", "event":"foo"}), data);
+
+    // If the payload already contains a field called "event" it should not be overwritten
+    let payload = serde_json::json!({"event": "bar"});
+
+    let _: IgnoredResponse = client
+        .post(
+            &format!("api/v1/app/{}/msg/?insert_event_type=true", &app_id),
+            message_in("foo", payload.clone()).unwrap(),
+            StatusCode::ACCEPTED,
+        )
+        .await
+        .unwrap();
+
+    let data = receiver.data_recv.recv().await.unwrap();
+    assert_eq!(payload, data);
+}

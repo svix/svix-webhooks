@@ -225,6 +225,7 @@ async fn list_messages(
 pub struct CreateMessageQueryParams {
     #[serde(default = "default_true")]
     with_content: bool,
+    insert_event_type: Option<bool>,
 }
 
 const CREATE_MESSAGE_DESCRIPTION: &str = r#"
@@ -245,11 +246,12 @@ async fn create_message(
         cache,
         ..
     }): State<AppState>,
-    ValidatedQuery(CreateMessageQueryParams { with_content }): ValidatedQuery<
-        CreateMessageQueryParams,
-    >,
+    ValidatedQuery(CreateMessageQueryParams {
+        with_content,
+        insert_event_type,
+    }): ValidatedQuery<CreateMessageQueryParams>,
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
-    ValidatedJson(data): ValidatedJson<MessageIn>,
+    ValidatedJson(mut data): ValidatedJson<MessageIn>,
 ) -> Result<(StatusCode, Json<MessageOut>)> {
     let create_message_app = CreateMessageApp::layered_fetch(
         &cache,
@@ -262,6 +264,13 @@ async fn create_message(
     .await?
     // Should never happen since you're giving it an existing Application, but just in case
     .ok_or_else(|| err_generic!("Application doesn't exist: {}", app.id))?;
+
+    if insert_event_type.unwrap_or(false) {
+        if let serde_json::Value::Object(ref mut obj) = data.payload {
+            let value = serde_json::Value::String(data.event_type.to_string());
+            obj.entry("event").or_insert(value);
+        }
+    }
 
     let msg = message::ActiveModel {
         app_id: Set(app.id.clone()),
