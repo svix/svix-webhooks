@@ -10,14 +10,14 @@ use crate::{
     db::models::eventtype,
     error::{http_error_on_conflict, HttpError, Result},
     v1::utils::{
-        api_not_implemented, openapi_desc, openapi_tag,
+        api_not_implemented, apply_pagination, openapi_desc, openapi_tag,
         patch::{
             patch_field_non_nullable, patch_field_nullable, UnrequiredField,
             UnrequiredNullableField,
         },
         validate_no_control_characters, validate_no_control_characters_unrequired, EmptyResponse,
-        EventTypeNamePath, ListResponse, ModelIn, ModelOut, Pagination, PaginationLimit,
-        ValidatedJson, ValidatedQuery,
+        EventTypeNamePath, ListOrdering, ListResponse, ModelIn, ModelOut, Pagination,
+        PaginationLimit, ReversibleIterator, ValidatedJson, ValidatedQuery,
     },
     AppState,
 };
@@ -32,8 +32,7 @@ use axum::{
 use chrono::{DateTime, Utc};
 use hyper::StatusCode;
 use schemars::JsonSchema;
-use sea_orm::{entity::prelude::*, ActiveValue::Set, QueryOrder};
-use sea_orm::{ActiveModelTrait, QuerySelect};
+use sea_orm::{entity::prelude::*, ActiveModelTrait, ActiveValue::Set};
 use serde::{Deserialize, Serialize};
 use svix_server_derive::{ModelIn, ModelOut};
 use validator::Validate;
@@ -193,7 +192,7 @@ const LIST_EVENT_TYPES_DESCRIPTION: &str = "Return the list of event types.";
 
 async fn list_event_types(
     State(AppState { ref db, .. }): State<AppState>,
-    pagination: ValidatedQuery<Pagination<EventTypeName>>,
+    ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<EventTypeName>>>,
     fetch_options: ValidatedQuery<ListFetchOptions>,
     permissions::ReadAll {
         org_id,
@@ -202,25 +201,28 @@ async fn list_event_types(
     }: permissions::ReadAll,
 ) -> Result<Json<ListResponse<EventTypeOut>>> {
     let PaginationLimit(limit) = pagination.limit;
-    let iterator = pagination.iterator.clone();
+    let iterator = pagination.iterator;
+    let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
 
-    let mut query = eventtype::Entity::secure_find(org_id)
-        .order_by_asc(eventtype::Column::Name)
-        .limit(limit + 1);
+    let mut query = eventtype::Entity::secure_find(org_id);
 
     if !fetch_options.include_archived {
         query = query.filter(eventtype::Column::Deleted.eq(false));
-    }
-
-    if let Some(iterator) = iterator {
-        query = query.filter(eventtype::Column::Name.gt(iterator));
     }
 
     if let permissions::AllowedFeatureFlags::Some(flags) = feature_flags {
         query = eventtype::Entity::filter_feature_flags(query, flags);
     }
 
-    Ok(Json(EventTypeOut::list_response_no_prev(
+    let query = apply_pagination(
+        query,
+        eventtype::Column::Name,
+        limit,
+        iterator,
+        ListOrdering::Ascending,
+    );
+
+    Ok(Json(EventTypeOut::list_response(
         ctx!(query.all(db).await)?
             .into_iter()
             .map(|x| {
@@ -232,6 +234,7 @@ async fn list_event_types(
             })
             .collect(),
         limit as usize,
+        is_prev,
     )))
 }
 

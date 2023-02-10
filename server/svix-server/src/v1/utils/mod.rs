@@ -179,10 +179,17 @@ pub fn apply_pagination_desc<
     }
 }
 
+/// Marker trait for any type that is used for iterating through results
+/// in the public API.
+pub trait IdIterator: Validate + Into<sea_orm::Value> {}
+
+impl<T: BaseId + Validate + Into<sea_orm::Value>> IdIterator for T {}
+impl IdIterator for EventTypeName {}
+
 pub fn apply_pagination<
     Q: QuerySelect + QueryOrder + QueryFilter,
     C: ColumnTrait,
-    I: BaseId<Output = I> + Validate + Into<sea_orm::Value>,
+    I: IdIterator,
 >(
     query: Q,
     sort_column: C,
