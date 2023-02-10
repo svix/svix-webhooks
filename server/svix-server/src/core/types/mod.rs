@@ -320,6 +320,12 @@ macro_rules! string_wrapper_impl {
                 self.0.fmt(f)
             }
         }
+
+        impl From<String> for $name_id {
+            fn from(s: String) -> Self {
+                $name_id(s)
+            }
+        }
     };
 }
 
@@ -347,12 +353,6 @@ macro_rules! create_id_type {
                 Err(sea_orm::DbErr::Exec(sea_orm::error::RuntimeErr::Internal(
                     format!("{} cannot be converted from u64", stringify!($type)),
                 )))
-            }
-        }
-
-        impl From<String> for $name_id {
-            fn from(s: String) -> Self {
-                $name_id(s)
             }
         }
     };

@@ -273,6 +273,19 @@ pub async fn common_test_list<
     assert_eq!(list.data.len(), 4);
     assert!(list.done);
 
+    let prev = client
+        .get::<ListResponse<ModelOut>>(
+            &format!("{}?limit=3&iterator={}", path, list.prev_iterator.unwrap()),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+    assert_eq!(prev.data.len(), 3);
+    assert_eq!(
+        prev.data.first().unwrap(),
+        original_list.data.get(3).unwrap()
+    );
+
     let _list = client
         .get::<IgnoredResponse>(
             &format!("{path}?limit=6&iterator=BAD-$$$ITERATOR"),
