@@ -24,7 +24,7 @@ use crate::{
         apply_pagination,
         patch::{patch_field_non_nullable, UnrequiredField, UnrequiredNullableField},
         ApplicationEndpointPath, EmptyResponse, ListOrdering, ListResponse, ModelIn, ModelOut,
-        Ordering, Pagination, PaginationLimit, ReversibleIterator, ValidatedJson, ValidatedQuery,
+        Pagination, PaginationLimit, ReversibleIterator, ValidatedJson, ValidatedQuery,
     },
     AppState,
 };
@@ -35,20 +35,18 @@ pub(super) const LIST_ENDPOINTS_DESCRIPTION: &str = "List the application's endp
 pub(super) async fn list_endpoints(
     State(AppState { ref db, .. }): State<AppState>,
     ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<EndpointId>>>,
-    ValidatedQuery(Ordering { order }): ValidatedQuery<Ordering>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<ListResponse<EndpointOut>>> {
     let PaginationLimit(limit) = pagination.limit;
     let iterator = pagination.iterator;
     let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
 
-    let order = order.unwrap_or(ListOrdering::Descending);
     let query = apply_pagination(
         endpoint::Entity::secure_find(app.id),
         endpoint::Column::Id,
         limit,
         iterator,
-        order.clone(),
+        pagination.order.unwrap_or(ListOrdering::Descending),
     );
 
     let results = ctx!(

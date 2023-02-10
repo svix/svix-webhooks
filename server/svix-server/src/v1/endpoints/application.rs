@@ -11,14 +11,14 @@ use crate::{
     error::{http_error_on_conflict, HttpError, Result},
     transaction,
     v1::utils::{
-        openapi_desc, openapi_tag,
+        apply_pagination, openapi_desc, openapi_tag,
         patch::{
             patch_field_non_nullable, patch_field_nullable, UnrequiredField,
             UnrequiredNullableField,
         },
         validate_no_control_characters, validate_no_control_characters_unrequired,
-        validation_error, ApplicationPath, EmptyResponse, ListResponse, ModelIn, ModelOut,
-        Pagination, PaginationLimit, ValidatedJson, ValidatedQuery,
+        validation_error, ApplicationPath, EmptyResponse, ListOrdering, ListResponse, ModelIn,
+        ModelOut, Pagination, PaginationLimit, ReversibleIterator, ValidatedJson, ValidatedQuery,
     },
     AppState,
 };
@@ -193,20 +193,39 @@ const LIST_APPLICATIONS_DESCRIPTION: &str = "List all of the organization's appl
 
 async fn list_applications(
     State(AppState { ref db, .. }): State<AppState>,
-    pagination: ValidatedQuery<Pagination<ApplicationId>>,
+    ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<ApplicationId>>>,
     permissions::Organization { org_id }: permissions::Organization,
 ) -> Result<Json<ListResponse<ApplicationOut>>> {
     let PaginationLimit(limit) = pagination.limit;
-    let iterator = pagination.iterator.clone();
+    let iterator = pagination.iterator;
+    let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
 
-    let apps =
-        ctx!(application::Model::fetch_many_with_metadata(db, org_id, limit + 1, iterator).await)?;
+    let query = apply_pagination(
+        application::Entity::secure_find(org_id),
+        application::Column::Id,
+        limit,
+        iterator,
+        pagination.order.unwrap_or(ListOrdering::Ascending),
+    );
 
-    let results = apps.map(ApplicationOut::from).collect();
+    let results: Vec<ApplicationOut> = ctx!(
+        query
+            .find_also_related(applicationmetadata::Entity)
+            .all(db)
+            .await
+    )?
+    .into_iter()
+    .map(|(app, metadata)| {
+        let metadata = metadata.unwrap_or_else(|| applicationmetadata::Model::new(app.id.clone()));
+        (app, metadata)
+    })
+    .map(ApplicationOut::from)
+    .collect();
 
-    Ok(Json(ApplicationOut::list_response_no_prev(
+    Ok(Json(ApplicationOut::list_response(
         results,
         limit as usize,
+        is_prev,
     )))
 }
 

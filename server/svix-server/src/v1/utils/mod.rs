@@ -56,6 +56,7 @@ pub struct Pagination<T: Validate + JsonSchema> {
     pub limit: PaginationLimit,
     #[validate]
     pub iterator: Option<T>,
+    pub order: Option<ListOrdering>,
 }
 
 #[derive(Debug, JsonSchema)]
@@ -94,11 +95,6 @@ impl Validate for PaginationLimit {
             Err(errs)
         }
     }
-}
-
-#[derive(Deserialize, Validate, JsonSchema)]
-pub struct Ordering {
-    pub order: Option<ListOrdering>,
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -237,7 +233,7 @@ pub trait ModelIn {
     fn update_model(self, model: &mut Self::ActiveModel);
 }
 
-#[derive(Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub enum ListOrdering {
     Ascending,

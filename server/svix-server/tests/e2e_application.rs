@@ -348,6 +348,7 @@ async fn test_list() {
         "api/v1/app/",
         |i| application_in(&format!("App {i}")),
         true,
+        true,
     )
     .await
     .unwrap();

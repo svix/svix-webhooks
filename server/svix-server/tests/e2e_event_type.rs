@@ -296,6 +296,7 @@ async fn test_list() {
         "api/v1/event-type/",
         |i| event_type_in(&format!("test-event-type-{i}"), None).unwrap(),
         true,
+        false,
     )
     .await
     .unwrap();
