@@ -2734,6 +2734,7 @@
                     2,
                     3
                 ],
+                "nullable": true,
                 "title": "MessageStatus",
                 "type": "integer",
                 "x-enum-varnames": [
@@ -2989,6 +2990,7 @@
                     400,
                     500
                 ],
+                "nullable": true,
                 "title": "StatusCodeClass",
                 "type": "integer",
                 "x-enum-varnames": [
