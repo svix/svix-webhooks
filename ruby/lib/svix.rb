@@ -16,6 +16,8 @@ require "svix/api/message_api"
 require "svix/api/message_attempt_api"
 
 # Models
+require "svix/models/app_portal_access_in"
+require "svix/models/app_portal_access_out"
 require "svix/models/application_in"
 require "svix/models/application_out"
 require "svix/models/dashboard_access_out"
