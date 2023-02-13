@@ -204,7 +204,7 @@ namespace Svix
                     options?.EndpointId,
                     options?.Iterator,
                     options?.Limit,
-                   options?.Status,
+                    options?.Status,
                     options?.Code,
                     options?.EventTypes,
                     options?.Channel,
