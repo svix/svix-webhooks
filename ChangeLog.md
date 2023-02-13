@@ -3,6 +3,12 @@
 ## Next
 * 
 
+## Version 0.79.0
+* Server: support prev_iterator for application and event type listing
+* Server: fix returning of 409 (CONFLICT) when inserting/patching an application with a conflicting `uid`
+* Libs/Ruby: require (reexport) app portal models in ruby (fixing errors)
+* Libs/C#: fix MessageAttempt querying when not filtering by status and code
+
 ## Version 0.78.0
 * Server: add `order` query parameter for sorting endpoints
 * Server: fix default sort order of endpoints to `desc` to match prod
