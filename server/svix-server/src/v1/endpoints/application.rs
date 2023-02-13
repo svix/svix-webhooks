@@ -270,7 +270,7 @@ async fn create_application(
     let (app, metadata) = model;
 
     let (app, metadata) = transaction!(db, |txn| async move {
-        let app_result = ctx!(app.insert(txn).await)?;
+        let app_result = ctx!(app.insert(txn).await.map_err(http_error_on_conflict))?;
         let metadata = ctx!(metadata.upsert_or_delete(txn).await)?;
         Ok((app_result, metadata))
     })?;
