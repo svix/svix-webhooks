@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - "kotlin/**"
+      - "openapi.json"
 jobs:
   kotlin:
     name: Kotlin Lint

@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "ruby/**"
+      - "openapi.json"
 
 jobs:
   dotnet:

@@ -6,6 +6,7 @@ on:
       - "go/**"
       - "javascript/**"
       - "python/**"
+      - "openapi.json"
 
 jobs:
   build:
