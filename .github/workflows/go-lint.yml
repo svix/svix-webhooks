@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - "go/**"
+      - "openapi.json"
 jobs:
   build:
     runs-on: ubuntu-latest
