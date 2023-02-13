@@ -10,22 +10,28 @@ use crate::{
             MessageAttemptTriggerType, MessageId, MessageUid,
         },
     },
-    ctx, err_generic,
+    ctx,
+    db::models::application,
+    err_generic,
     error::{HttpError, Result},
     queue::MessageTaskBatch,
     v1::utils::{
-        apply_pagination_desc, iterator_from_before_or_after, openapi_tag, validation_error,
-        ApplicationMsgPath, EventTypesQuery, ListResponse, ModelIn, ModelOut, PaginationLimit,
-        ReversibleIterator, ValidatedJson, ValidatedQuery,
+        apply_pagination_desc, iterator_from_before_or_after, openapi_tag,
+        validation_error, ApplicationMsgPath, ApplicationPath, EventTypesQuery, ListResponse,
+        ModelIn, ModelOut, PaginationLimit, ReversibleIterator, ValidatedJson, ValidatedQuery,
     },
     AppState,
 };
-use aide::axum::{
-    routing::{delete_with, get_with, post_with},
-    ApiRouter,
+use aide::{
+    axum::{
+        routing::{delete_with, get_with, post_with},
+        ApiRouter,
+    },
+    transform::TransformOperation,
 };
 use axum::{
     extract::{Path, State},
+    response::IntoResponse,
     Json,
 };
 use chrono::{DateTime, Duration, Utc};
@@ -224,6 +230,9 @@ async fn list_messages(
 pub struct CreateMessageQueryParams {
     #[serde(default = "default_true")]
     with_content: bool,
+    /// If set to true a 200 OK is returned instead of 404 when the
+    /// application specified in the request does not exist.
+    ignore_missing_app: Option<bool>,
 }
 
 /// Creates a new message and dispatches it to all of the application's endpoints.
@@ -243,12 +252,28 @@ async fn create_message(
         cache,
         ..
     }): State<AppState>,
-    ValidatedQuery(CreateMessageQueryParams { with_content }): ValidatedQuery<
-        CreateMessageQueryParams,
-    >,
-    permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
+    Path(ApplicationPath { app_id }): Path<ApplicationPath>,
+    ValidatedQuery(CreateMessageQueryParams {
+        with_content,
+        ignore_missing_app,
+    }): ValidatedQuery<CreateMessageQueryParams>,
+    permissions::Organization { org_id }: permissions::Organization,
     ValidatedJson(data): ValidatedJson<MessageIn>,
-) -> Result<(StatusCode, Json<MessageOut>)> {
+) -> Result<(StatusCode, axum::response::Response)> {
+    let app = match ctx!(
+        application::Entity::secure_find_by_id_or_uid(org_id, app_id.to_owned())
+            .one(db)
+            .await
+    )? {
+        Some(app) => app,
+        None if ignore_missing_app.unwrap_or(false) => {
+            return Ok((StatusCode::OK, ().into_response()));
+        }
+        None => {
+            return Err(HttpError::not_found(None, Some("Application not found".into())).into())
+        }
+    };
+
     let create_message_app = CreateMessageApp::layered_fetch(
         &cache,
         db,
@@ -291,7 +316,7 @@ async fn create_message(
         MessageOut::without_payload(msg)
     };
 
-    Ok((StatusCode::ACCEPTED, Json(msg_out)))
+    Ok((StatusCode::ACCEPTED, Json(msg_out).into_response()))
 }
 
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
@@ -347,10 +372,17 @@ async fn expunge_message_content(
 
 pub fn router() -> ApiRouter<AppState> {
     let tag = openapi_tag("Message");
+
+    fn document_create_message(op: TransformOperation) -> TransformOperation {
+        let op = op.response::<202, Json<MessageOut>>()
+            .response::<200, ()>();
+        create_message_operation(op)
+    }
+
     ApiRouter::new()
         .api_route_with(
             "/app/:app_id/msg/",
-            post_with(create_message, create_message_operation)
+            post_with(create_message, document_create_message)
                 .get_with(list_messages, list_messages_operation),
             &tag,
         )

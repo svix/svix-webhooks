@@ -99,6 +99,24 @@ async fn test_message_create_read_list() {
         .unwrap();
     assert_eq!(list.data.len(), 1);
     assert!(list.data.contains(&message_3));
+
+    let _: IgnoredResponse = client
+        .post(
+            "api/v1/app/nonexistent_app/msg/",
+            message_in(&app_id, serde_json::json!({"test": "value"})).unwrap(),
+            StatusCode::NOT_FOUND,
+        )
+        .await
+        .unwrap();
+
+    let _: IgnoredResponse = client
+        .post(
+            "api/v1/app/nonexistent_app/msg/?ignore_missing_app=true",
+            message_in(&app_id, serde_json::json!({"test": "value"})).unwrap(),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
 }
 
 #[tokio::test]
