@@ -341,7 +341,7 @@ async fn patch_application(
     let (app, metadata) = model;
 
     let (app, metadata) = transaction!(db, |txn| async move {
-        let app = ctx!(app.update(txn).await)?;
+        let app = ctx!(app.update(txn).await.map_err(http_error_on_conflict))?;
         let metadata = ctx!(metadata.upsert_or_delete(txn).await)?;
         Ok((app, metadata))
     })?;
