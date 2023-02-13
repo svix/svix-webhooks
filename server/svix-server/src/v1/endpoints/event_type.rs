@@ -276,7 +276,7 @@ async fn create_event_type(
                 org_id: Set(org_id),
                 ..data.into()
             };
-            ctx!(evtype.insert(db).await)?
+            ctx!(evtype.insert(db).await.map_err(http_error_on_conflict))?
         }
     };
     Ok((StatusCode::CREATED, Json(ret.into())))
@@ -325,15 +325,14 @@ async fn update_event_type(
             Ok((StatusCode::OK, Json(ret.into())))
         }
         None => {
-            let ret = ctx!(
-                eventtype::ActiveModel {
-                    org_id: Set(org_id),
-                    name: Set(event_type_name),
-                    ..data.into()
-                }
-                .insert(db)
-                .await
-            )?;
+            let ret = ctx!(eventtype::ActiveModel {
+                org_id: Set(org_id),
+                name: Set(event_type_name),
+                ..data.into()
+            }
+            .insert(db)
+            .await
+            .map_err(http_error_on_conflict))?;
 
             Ok((StatusCode::CREATED, Json(ret.into())))
         }
