@@ -225,7 +225,7 @@ async fn list_messages(
 pub struct CreateMessageQueryParams {
     #[serde(default = "default_true")]
     with_content: bool,
-    insert_event_type: Option<bool>,
+    inject_event_type: Option<bool>,
 }
 
 const CREATE_MESSAGE_DESCRIPTION: &str = r#"
@@ -248,7 +248,7 @@ async fn create_message(
     }): State<AppState>,
     ValidatedQuery(CreateMessageQueryParams {
         with_content,
-        insert_event_type,
+        inject_event_type,
     }): ValidatedQuery<CreateMessageQueryParams>,
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
     ValidatedJson(mut data): ValidatedJson<MessageIn>,
@@ -265,10 +265,13 @@ async fn create_message(
     // Should never happen since you're giving it an existing Application, but just in case
     .ok_or_else(|| err_generic!("Application doesn't exist: {}", app.id))?;
 
-    if insert_event_type.unwrap_or(false) {
+    let mut non_object_payload = false;
+    if inject_event_type.unwrap_or(false) {
         if let serde_json::Value::Object(ref mut obj) = data.payload {
             let value = serde_json::Value::String(data.event_type.to_string());
             obj.entry("event").or_insert(value);
+        } else {
+            non_object_payload = true;
         }
     }
 
@@ -278,6 +281,10 @@ async fn create_message(
         ..data.into()
     };
     let msg = ctx!(msg.insert(db).await)?;
+
+    if non_object_payload {
+        tracing::warn!("Non-object message encountered, ID: {}", msg.id);
+    }
 
     let trigger_type = MessageAttemptTriggerType::Scheduled;
     if !create_message_app

@@ -458,7 +458,7 @@ async fn test_expunge_message_payload() {
 }
 
 #[tokio::test]
-async fn test_insert_event_type_into_payload() {
+async fn test_inject_event_type_into_payload() {
     let (client, _jh) = start_svix_server().await;
     let app_id = create_test_app(&client, "testApp").await.unwrap().id;
     let mut receiver = TestReceiver::start(axum::http::StatusCode::OK);
@@ -483,10 +483,10 @@ async fn test_insert_event_type_into_payload() {
     let data = receiver.data_recv.recv().await.unwrap();
     assert_eq!(payload, data);
 
-    // If flag is set, insert event type into payload
+    // If flag is set, inject event type into payload
     let _: IgnoredResponse = client
         .post(
-            &format!("api/v1/app/{}/msg/?insert_event_type=true", &app_id),
+            &format!("api/v1/app/{}/msg/?inject_event_type=true", &app_id),
             message_in("foo", payload.clone()).unwrap(),
             StatusCode::ACCEPTED,
         )
@@ -501,7 +501,7 @@ async fn test_insert_event_type_into_payload() {
 
     let _: IgnoredResponse = client
         .post(
-            &format!("api/v1/app/{}/msg/?insert_event_type=true", &app_id),
+            &format!("api/v1/app/{}/msg/?inject_event_type=true", &app_id),
             message_in("foo", payload.clone()).unwrap(),
             StatusCode::ACCEPTED,
         )
