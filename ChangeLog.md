@@ -1,7 +1,8 @@
 # Changelog
 
 ## Next
-* 
+* Libs/C#: **[Breaking]** change default value for `SvixOptions.Throw` to `true`
+*
 
 ## Version 0.79.0
 * Server: support prev_iterator for application and event type listing
