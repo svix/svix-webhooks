@@ -4,6 +4,11 @@
 * Libs/C#: **[Breaking]** change default value for `SvixOptions.Throw` to `true`
 *
 
+## Version 0.80.0
+* Libs: add `prev_iterator` and `order` support to application list
+* Libs: add `prev_iterator` support to event type list
+* Libs/C#: **[Breaking]** change default value for `SvixOptions.Throw` to `true`
+
 ## Version 0.79.0
 * Server: support prev_iterator for application and event type listing
 * Server: fix returning of 409 (CONFLICT) when inserting/patching an application with a conflicting `uid`
