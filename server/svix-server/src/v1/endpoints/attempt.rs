@@ -18,7 +18,7 @@ use crate::{
     v1::{
         endpoints::message::MessageOut,
         utils::{
-            apply_pagination_desc, iterator_from_before_or_after, openapi_desc, openapi_tag,
+            apply_pagination_desc, iterator_from_before_or_after, openapi_tag,
             ApplicationEndpointPath, ApplicationMsgAttemptPath, ApplicationMsgEndpointPath,
             ApplicationMsgPath, EmptyResponse, EventTypesQuery, ListResponse, ModelOut,
             PaginationLimit, ReversibleIterator, ValidatedQuery,
@@ -44,7 +44,7 @@ use sea_orm::{
 };
 use serde::{Deserialize, Serialize};
 
-use svix_server_derive::ModelOut;
+use svix_server_derive::{aide_annotate, ModelOut};
 use validator::Validate;
 
 use crate::db::models::messageattempt;
@@ -127,13 +127,10 @@ pub struct ListAttemptedMessagesQueryParameters {
     after: Option<DateTime<Utc>>,
 }
 
-const LIST_ATTEMPTED_MESSAGES_DESCRIPTION: &str = r#"
-List messages for a particular endpoint. Additionally includes metadata about the latest message attempt.
-
-The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
-"#;
-
-/// Fetches a list of [`AttemptedMessageOut`]s associated with a given app and endpoint.
+/// List messages for a particular endpoint. Additionally includes metadata about the latest message attempt.
+///
+/// The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
+#[aide_annotate]
 async fn list_attempted_messages(
     State(AppState { ref db, .. }): State<AppState>,
     ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<MessageId>>>,
@@ -294,9 +291,8 @@ fn list_attempts_by_endpoint_or_message_filters(
     query
 }
 
-const LIST_ATTEMPTS_BY_ENDPOINT_DESCRIPTION: &str = "List attempts by endpoint id";
-
-/// Fetches a list of [`MessageAttemptOut`]s for a given endpoint ID
+/// List attempts by endpoint id
+#[aide_annotate]
 async fn list_attempts_by_endpoint(
     State(AppState { ref db, .. }): State<AppState>,
     ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<MessageAttemptId>>>,
@@ -357,9 +353,8 @@ pub struct ListAttemptsByMsgQueryParameters {
     after: Option<DateTime<Utc>>,
 }
 
-const LIST_ATTEMPTS_BY_MSG_DESCRIPTION: &str = "List attempts by message id";
-
-/// Fetches a list of [`MessageAttemptOut`]s for a given message ID
+/// List attempts by message id
+#[aide_annotate]
 async fn list_attempts_by_msg(
     State(AppState { ref db, .. }): State<AppState>,
     ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<MessageAttemptId>>>,
@@ -450,9 +445,8 @@ impl MessageEndpointOut {
     }
 }
 
-const LIST_ATTEMPTED_DESTINATIONS_DESCRIPTION: &str =
-    "`msg_id`: Use a message id or a message `eventId`";
-
+/// `msg_id`: Use a message id or a message `eventId`
+#[aide_annotate]
 async fn list_attempted_destinations(
     State(AppState { ref db, .. }): State<AppState>,
     ValidatedQuery(mut pagination): ValidatedQuery<Pagination<EndpointId>>,
@@ -509,16 +503,14 @@ pub struct ListAttemptsForEndpointQueryParameters {
     pub after: Option<DateTime<Utc>>,
 }
 
-const LIST_ATTEMPTS_FOR_ENDPOINT_DESCRIPTION: &str = r#"
-DEPRECATED: please use list_attempts with endpoint_id as a query parameter instead.
-
-List the message attempts for a particular endpoint.
-
-Returning the endpoint.
-
-The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
-"#;
-
+/// DEPRECATED: please use list_attempts with endpoint_id as a query parameter instead.
+///
+/// List the message attempts for a particular endpoint.
+///
+/// Returning the endpoint.
+///
+/// The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
+#[aide_annotate]
 async fn list_attempts_for_endpoint(
     state: State<AppState>,
     pagination: ValidatedQuery<Pagination<ReversibleIterator<MessageAttemptId>>>,
@@ -564,12 +556,10 @@ pub struct AttemptListFetchOptions {
     pub after: Option<DateTime<Utc>>,
 }
 
-const LIST_MESSAGEATTEMPTS_DESCRIPTION: &str = r#"
-Deprecated: Please use "List Attempts by Endpoint" and "List Attempts by Msg" instead.
-
-`msg_id`: Use a message id or a message `eventId`
-"#;
-
+/// Deprecated: Please use "List Attempts by Endpoint" and "List Attempts by Msg" instead.
+///
+/// `msg_id`: Use a message id or a message `eventId`
+#[aide_annotate]
 async fn list_messageattempts(
     State(AppState { ref db, .. }): State<AppState>,
     ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<MessageAttemptId>>>,
@@ -631,8 +621,8 @@ async fn list_messageattempts(
     )))
 }
 
-const GET_MESSAGEATTEMPT_DESCRIPTION: &str = "`msg_id`: Use a message id or a message `eventId`";
-
+/// `msg_id`: Use a message id or a message `eventId`
+#[aide_annotate]
 async fn get_messageattempt(
     State(AppState { ref db, .. }): State<AppState>,
     Path(ApplicationMsgAttemptPath {
@@ -657,8 +647,8 @@ async fn get_messageattempt(
     Ok(Json(attempt.into()))
 }
 
-const RESEND_WEBHOOK_DESCRIPTION: &str = "Resend a message to the specified endpoint.";
-
+/// Resend a message to the specified endpoint.
+#[aide_annotate]
 async fn resend_webhook(
     State(AppState {
         ref db, queue_tx, ..
@@ -715,8 +705,8 @@ async fn resend_webhook(
     Ok((StatusCode::ACCEPTED, Json(EmptyResponse {})))
 }
 
-const EXPUNGE_ATTEMPT_CONTENT_DESCRIPTION: &str = "Deletes the given attempt's response body. Useful when an endpoint accidentally returned sensitive content.";
-
+/// Deletes the given attempt's response body. Useful when an endpoint accidentally returned sensitive content.
+#[aide_annotate]
 async fn expunge_attempt_content(
     State(AppState { ref db, .. }): State<AppState>,
     Path(ApplicationMsgAttemptPath {
@@ -752,39 +742,30 @@ pub fn router() -> ApiRouter<AppState> {
         // NOTE: [`list_messageattempts`] is deprecated
         .api_route_with(
             "/app/:app_id/msg/:msg_id/attempt/",
-            get_with(
-                list_messageattempts,
-                openapi_desc(LIST_MESSAGEATTEMPTS_DESCRIPTION),
-            ),
+            get_with(list_messageattempts, list_messageattempts_operation),
             &tag,
         )
         .api_route_with(
             "/app/:app_id/msg/:msg_id/attempt/:attempt_id/",
-            get_with(
-                get_messageattempt,
-                openapi_desc(GET_MESSAGEATTEMPT_DESCRIPTION),
-            ),
+            get_with(get_messageattempt, get_messageattempt_operation),
             &tag,
         )
         .api_route_with(
             "/app/:app_id/msg/:msg_id/attempt/:attempt_id/content/",
-            delete_with(
-                expunge_attempt_content,
-                openapi_desc(EXPUNGE_ATTEMPT_CONTENT_DESCRIPTION),
-            ),
+            delete_with(expunge_attempt_content, expunge_attempt_content_operation),
             &tag,
         )
         .api_route_with(
             "/app/:app_id/msg/:msg_id/endpoint/",
             get_with(
                 list_attempted_destinations,
-                openapi_desc(LIST_ATTEMPTED_DESTINATIONS_DESCRIPTION),
+                list_attempted_destinations_operation,
             ),
             &tag,
         )
         .api_route_with(
             "/app/:app_id/msg/:msg_id/endpoint/:endpoint_id/resend/",
-            post_with(resend_webhook, openapi_desc(RESEND_WEBHOOK_DESCRIPTION)),
+            post_with(resend_webhook, resend_webhook_operation),
             &tag,
         )
         // NOTE: [`list_attempts_for_endpoint`] is deprecated
@@ -792,32 +773,26 @@ pub fn router() -> ApiRouter<AppState> {
             "/app/:app_id/msg/:msg_id/endpoint/:endpoint_id/attempt/",
             get_with(
                 list_attempts_for_endpoint,
-                openapi_desc(LIST_ATTEMPTS_FOR_ENDPOINT_DESCRIPTION),
+                list_attempts_for_endpoint_operation,
             ),
             &tag,
         )
         .api_route_with(
             "/app/:app_id/endpoint/:endpoint_id/msg/",
-            get_with(
-                list_attempted_messages,
-                openapi_desc(LIST_ATTEMPTED_MESSAGES_DESCRIPTION),
-            ),
+            get_with(list_attempted_messages, list_attempted_messages_operation),
             &tag,
         )
         .api_route_with(
             "/app/:app_id/attempt/endpoint/:endpoint_id/",
             get_with(
                 list_attempts_by_endpoint,
-                openapi_desc(LIST_ATTEMPTS_BY_ENDPOINT_DESCRIPTION),
+                list_attempts_by_endpoint_operation,
             ),
             &tag,
         )
         .api_route_with(
             "/app/:app_id/attempt/msg/:msg_id/",
-            get_with(
-                list_attempts_by_msg,
-                openapi_desc(LIST_ATTEMPTS_BY_MSG_DESCRIPTION),
-            ),
+            get_with(list_attempts_by_msg, list_attempts_by_msg_operation),
             tag,
         )
 }

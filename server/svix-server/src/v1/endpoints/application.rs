@@ -11,7 +11,7 @@ use crate::{
     error::{http_error_on_conflict, HttpError, Result},
     transaction,
     v1::utils::{
-        apply_pagination, openapi_desc, openapi_tag,
+        apply_pagination, openapi_tag,
         patch::{
             patch_field_non_nullable, patch_field_nullable, UnrequiredField,
             UnrequiredNullableField,
@@ -36,7 +36,7 @@ use schemars::JsonSchema;
 use sea_orm::ActiveModelTrait;
 use sea_orm::ActiveValue::Set;
 use serde::{Deserialize, Serialize};
-use svix_server_derive::ModelOut;
+use svix_server_derive::{aide_annotate, ModelOut};
 use validator::{Validate, ValidationError};
 
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Validate, JsonSchema)]
@@ -189,8 +189,8 @@ impl From<(application::Model, applicationmetadata::Model)> for ApplicationOut {
     }
 }
 
-const LIST_APPLICATIONS_DESCRIPTION: &str = "List all of the organization's applications.";
-
+/// List all of the organization's applications.
+#[aide_annotate]
 async fn list_applications(
     State(AppState { ref db, .. }): State<AppState>,
     ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<ApplicationId>>>,
@@ -239,8 +239,8 @@ pub struct CreateApplicationQuery {
     get_if_exists: bool,
 }
 
-const CREATE_APPLICATION_DESCRIPTION: &str = "Create a new application.";
-
+/// Create a new application.
+#[aide_annotate]
 async fn create_application(
     State(AppState { ref db, .. }): State<AppState>,
     query: ValidatedQuery<CreateApplicationQuery>,
@@ -278,16 +278,16 @@ async fn create_application(
     Ok((StatusCode::CREATED, Json((app, metadata).into())))
 }
 
-const GET_APPLICATION_DESCRIPTION: &str = "Get an application.";
-
+/// Get an application.
+#[aide_annotate]
 async fn get_application(
     permissions::ApplicationWithMetadata { app, metadata }: permissions::ApplicationWithMetadata,
 ) -> Result<Json<ApplicationOut>> {
     Ok(Json((app, metadata).into()))
 }
 
-const UPDATE_APPLICATION_DESCRIPTION: &str = "Update an application.";
-
+/// Update an application.
+#[aide_annotate]
 async fn update_application(
     State(AppState { ref db, .. }): State<AppState>,
     Path(ApplicationPath { app_id }): Path<ApplicationPath>,
@@ -326,8 +326,8 @@ async fn update_application(
     Ok((status, Json((app, metadata).into())))
 }
 
-const PATCH_APPLICATION_DESCRIPTION: &str = "Partially update an application.";
-
+/// Partially update an application.
+#[aide_annotate]
 async fn patch_application(
     State(AppState { ref db, .. }): State<AppState>,
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
@@ -349,8 +349,8 @@ async fn patch_application(
     Ok(Json((app, metadata).into()))
 }
 
-const DELETE_APPLICATION_DESCRIPTION: &str = "Delete an application.";
-
+/// Delete an application.
+#[aide_annotate]
 async fn delete_application(
     State(AppState { ref db, .. }): State<AppState>,
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
@@ -367,31 +367,16 @@ pub fn router() -> ApiRouter<AppState> {
     ApiRouter::new()
         .api_route_with(
             "/app/",
-            post_with(
-                create_application,
-                openapi_desc(CREATE_APPLICATION_DESCRIPTION),
-            )
-            .get_with(
-                list_applications,
-                openapi_desc(LIST_APPLICATIONS_DESCRIPTION),
-            ),
+            post_with(create_application, create_application_operation)
+                .get_with(list_applications, list_applications_operation),
             &tag,
         )
         .api_route_with(
             "/app/:app_id/",
-            get_with(get_application, openapi_desc(GET_APPLICATION_DESCRIPTION))
-                .put_with(
-                    update_application,
-                    openapi_desc(UPDATE_APPLICATION_DESCRIPTION),
-                )
-                .patch_with(
-                    patch_application,
-                    openapi_desc(PATCH_APPLICATION_DESCRIPTION),
-                )
-                .delete_with(
-                    delete_application,
-                    openapi_desc(DELETE_APPLICATION_DESCRIPTION),
-                ),
+            get_with(get_application, get_application_operation)
+                .put_with(update_application, update_application_operation)
+                .patch_with(patch_application, patch_application_operation)
+                .delete_with(delete_application, delete_application_operation),
             tag,
         )
 }

@@ -34,7 +34,7 @@ use hyper::StatusCode;
 use schemars::JsonSchema;
 use sea_orm::{entity::prelude::*, ActiveModelTrait, ActiveValue::Set};
 use serde::{Deserialize, Serialize};
-use svix_server_derive::{ModelIn, ModelOut};
+use svix_server_derive::{aide_annotate, ModelIn, ModelOut};
 use validator::Validate;
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Validate, ModelIn, JsonSchema)]
@@ -188,8 +188,8 @@ pub struct ListFetchOptions {
     pub with_content: bool,
 }
 
-const LIST_EVENT_TYPES_DESCRIPTION: &str = "Return the list of event types.";
-
+/// Return the list of event types.
+#[aide_annotate]
 async fn list_event_types(
     State(AppState { ref db, .. }): State<AppState>,
     ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<EventTypeName>>>,
@@ -238,14 +238,12 @@ async fn list_event_types(
     )))
 }
 
-const CREATE_EVENT_TYPE_DESCRIPTION: &str = r#"
-Create new or unarchive existing event type.
-
-Unarchiving an event type will allow endpoints to filter on it and messages to be sent with it.
-Endpoints filtering on the event type before archival will continue to filter on it.
-This operation does not preserve the description and schemas.
-"#;
-
+/// Create new or unarchive existing event type.
+///
+/// Unarchiving an event type will allow endpoints to filter on it and messages to be sent with it.
+/// Endpoints filtering on the event type before archival will continue to filter on it.
+/// This operation does not preserve the description and schemas.
+#[aide_annotate]
 async fn create_event_type(
     State(AppState { ref db, .. }): State<AppState>,
     permissions::Organization { org_id }: permissions::Organization,
@@ -282,8 +280,8 @@ async fn create_event_type(
     Ok((StatusCode::CREATED, Json(ret.into())))
 }
 
-const GET_EVENT_TYPE_DESCRIPTION: &str = "Get an event type.";
-
+/// Get an event type.
+#[aide_annotate]
 async fn get_event_type(
     State(AppState { ref db, .. }): State<AppState>,
     Path(EventTypeNamePath { event_type_name }): Path<EventTypeNamePath>,
@@ -302,8 +300,8 @@ async fn get_event_type(
     Ok(Json(evtype.into()))
 }
 
-const UPDATE_EVENT_TYPE_DESCRIPTION: &str = "Update an event type.";
-
+/// Update an event type.
+#[aide_annotate]
 async fn update_event_type(
     State(AppState { ref db, .. }): State<AppState>,
     Path(EventTypeNamePath { event_type_name }): Path<EventTypeNamePath>,
@@ -339,8 +337,8 @@ async fn update_event_type(
     }
 }
 
-const PATCH_EVENT_TYPE_DESCRIPTION: &str = "Partially update an event type.";
-
+/// Partially update an event type.
+#[aide_annotate]
 async fn patch_event_type(
     State(AppState { ref db, .. }): State<AppState>,
     Path(EventTypeNamePath { event_type_name }): Path<EventTypeNamePath>,
@@ -361,15 +359,13 @@ async fn patch_event_type(
     Ok(Json(ret.into()))
 }
 
-const DELETE_EVENT_TYPE_DESCRIPTION: &str = r#"
-Archive an event type.
-
-Endpoints already configured to filter on an event type will continue to do so after archival.
-However, new messages can not be sent with it and endpoints can not filter on it.
-An event type can be unarchived with the
-[create operation](#operation/create_event_type_api_v1_event_type__post).
-"#;
-
+/// Archive an event type.
+///
+/// Endpoints already configured to filter on an event type will continue to do so after archival.
+/// However, new messages can not be sent with it and endpoints can not filter on it.
+/// An event type can be unarchived with the
+/// [create operation](#operation/create_event_type_api_v1_event_type__post).
+#[aide_annotate]
 async fn delete_event_type(
     State(AppState { ref db, .. }): State<AppState>,
     Path(EventTypeNamePath { event_type_name }): Path<EventTypeNamePath>,
@@ -396,25 +392,16 @@ pub fn router() -> ApiRouter<AppState> {
     ApiRouter::new()
         .api_route_with(
             "/event-type/",
-            post_with(
-                create_event_type,
-                openapi_desc(CREATE_EVENT_TYPE_DESCRIPTION),
-            )
-            .get_with(list_event_types, openapi_desc(LIST_EVENT_TYPES_DESCRIPTION)),
+            post_with(create_event_type, create_event_type_operation)
+                .get_with(list_event_types, list_event_types_operation),
             &tag,
         )
         .api_route_with(
             "/event-type/:event_type_name/",
-            get_with(get_event_type, openapi_desc(GET_EVENT_TYPE_DESCRIPTION))
-                .put_with(
-                    update_event_type,
-                    openapi_desc(UPDATE_EVENT_TYPE_DESCRIPTION),
-                )
-                .patch_with(patch_event_type, openapi_desc(PATCH_EVENT_TYPE_DESCRIPTION))
-                .delete_with(
-                    delete_event_type,
-                    openapi_desc(DELETE_EVENT_TYPE_DESCRIPTION),
-                ),
+            get_with(get_event_type, get_event_type_operation)
+                .put_with(update_event_type, update_event_type_operation)
+                .patch_with(patch_event_type, patch_event_type_operation)
+                .delete_with(delete_event_type, delete_event_type_operation),
             &tag,
         )
         .api_route_with(
