@@ -44,10 +44,10 @@ func Int32(i int32) *int32 {
 	return &i
 }
 
-func New(token string, options *SvixOptions) *Svix {
+func New(host, token string, options *SvixOptions) *Svix {
 	conf := openapi.NewConfiguration()
-	conf.Scheme = "https"
-	conf.Host = "api.svix.com"
+	conf.Scheme = "http"
+	conf.Host = host
 	conf.HTTPClient = defaultHTTPClient
 
 	var tokenParts = strings.Split(token, ".")
