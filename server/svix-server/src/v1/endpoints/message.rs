@@ -174,7 +174,7 @@ pub struct ListMessagesQueryParams {
 /// The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
 /// The `after` parameter lets you filter all items created after a certain date and is ignored if an iterator is passed.
 /// `before` and `after` cannot be used simultaneously.
-#[aide_annotate]
+#[aide_annotate(op_id = "list_messages_api_v1_app__app_id__msg__get")]
 async fn list_messages(
     State(AppState { ref db, .. }): State<AppState>,
     ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<MessageId>>>,
@@ -301,7 +301,7 @@ pub struct GetMessageQueryParams {
 }
 
 /// Get a message by its ID or eventID.
-#[aide_annotate]
+#[aide_annotate(op_id = "get_message_api_v1_app__app_id__msg__msg_id___get")]
 async fn get_message(
     State(AppState { ref db, .. }): State<AppState>,
     Path(ApplicationMsgPath { msg_id, .. }): Path<ApplicationMsgPath>,
@@ -325,7 +325,7 @@ async fn get_message(
 /// Delete the given message's payload. Useful in cases when a message was accidentally sent with sensitive content.
 ///
 /// The message can't be replayed or resent once its payload has been deleted or expired.
-#[aide_annotate]
+#[aide_annotate(op_id = "expunge_message_payload_api_v1_app__app_id__msg__msg_id__content__delete")]
 async fn expunge_message_content(
     State(AppState { ref db, .. }): State<AppState>,
     Path(ApplicationMsgPath { msg_id, .. }): Path<ApplicationMsgPath>,
