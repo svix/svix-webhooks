@@ -163,6 +163,7 @@ namespace Svix
                 var lResponse = _applicationApi.ListApplicationsApiV1AppGet(
                     options?.Iterator,
                     options?.Limit,
+                    options?.Order,
                     idempotencyKey);
 
                 return lResponse?.Data;
@@ -185,6 +186,7 @@ namespace Svix
                 var lResponse = await _applicationApi.ListApplicationsApiV1AppGetAsync(
                     options?.Iterator,
                     options?.Limit,
+                    options?.Order,
                     idempotencyKey,
                     cancellationToken);
 
