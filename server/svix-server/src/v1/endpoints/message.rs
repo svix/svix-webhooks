@@ -14,9 +14,9 @@ use crate::{
     error::{HttpError, Result},
     queue::MessageTaskBatch,
     v1::utils::{
-        apply_pagination_desc, iterator_from_before_or_after, openapi_desc, openapi_tag,
-        validation_error, ApplicationMsgPath, EventTypesQuery, ListResponse, ModelIn, ModelOut,
-        PaginationLimit, ReversibleIterator, ValidatedJson, ValidatedQuery,
+        apply_pagination_desc, iterator_from_before_or_after, openapi_tag, validation_error,
+        ApplicationMsgPath, EventTypesQuery, ListResponse, ModelIn, ModelOut, PaginationLimit,
+        ReversibleIterator, ValidatedJson, ValidatedQuery,
     },
     AppState,
 };
@@ -36,7 +36,7 @@ use sea_orm::{entity::prelude::*, IntoActiveModel};
 use sea_orm::{sea_query::Expr, ActiveValue::Set};
 use serde::{Deserialize, Serialize};
 
-use svix_server_derive::{ModelIn, ModelOut};
+use svix_server_derive::{aide_annotate, ModelIn, ModelOut};
 use validator::{Validate, ValidationError};
 
 use crate::db::models::message;
@@ -169,13 +169,12 @@ pub struct ListMessagesQueryParams {
     after: Option<DateTime<Utc>>,
 }
 
-const LIST_MESSAGES_DESCRIPTION: &str = r#"
-List all of the application's messages.
-
-The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
-The `after` parameter lets you filter all items created after a certain date and is ignored if an iterator is passed.
-`before` and `after` cannot be used simultaneously.
-"#;
+/// List all of the application's messages.
+///
+/// The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
+/// The `after` parameter lets you filter all items created after a certain date and is ignored if an iterator is passed.
+/// `before` and `after` cannot be used simultaneously.
+#[aide_annotate]
 async fn list_messages(
     State(AppState { ref db, .. }): State<AppState>,
     ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<MessageId>>>,
@@ -227,17 +226,16 @@ pub struct CreateMessageQueryParams {
     with_content: bool,
 }
 
-const CREATE_MESSAGE_DESCRIPTION: &str = r#"
-Creates a new message and dispatches it to all of the application's endpoints.
-
-The `eventId` is an optional custom unique ID. It's verified to be unique only up to a day, after that no verification will be made.
-If a message with the same `eventId` already exists for any application in your environment, a 409 conflict error will be returned.
-
-The `eventType` indicates the type and schema of the event. All messages of a certain `eventType` are expected to have the same schema. Endpoints can choose to only listen to specific event types.
-Messages can also have `channels`, which similar to event types let endpoints filter by them. Unlike event types, messages can have multiple channels, and channels don't imply a specific message content or schema.
-
-The `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to ~350kb, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb.
-"#;
+/// Creates a new message and dispatches it to all of the application's endpoints.
+///
+/// The `eventId` is an optional custom unique ID. It's verified to be unique only up to a day, after that no verification will be made.
+/// If a message with the same `eventId` already exists for any application in your environment, a 409 conflict error will be returned.
+///
+/// The `eventType` indicates the type and schema of the event. All messages of a certain `eventType` are expected to have the same schema. Endpoints can choose to only listen to specific event types.
+/// Messages can also have `channels`, which similar to event types let endpoints filter by them. Unlike event types, messages can have multiple channels, and channels don't imply a specific message content or schema.
+///
+/// The `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to ~350kb, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb.
+#[aide_annotate(op_id = "create_message_api_v1_app__app_id__msg__post")]
 async fn create_message(
     State(AppState {
         ref db,
@@ -302,8 +300,8 @@ pub struct GetMessageQueryParams {
     with_content: bool,
 }
 
-const GET_MESSAGE_DESCRIPTION: &str = "Get a message by its ID or eventID.";
-
+/// Get a message by its ID or eventID.
+#[aide_annotate]
 async fn get_message(
     State(AppState { ref db, .. }): State<AppState>,
     Path(ApplicationMsgPath { msg_id, .. }): Path<ApplicationMsgPath>,
@@ -324,12 +322,10 @@ async fn get_message(
     Ok(Json(msg_out))
 }
 
-const EXPUNGE_MESSAGE_CONTENT_DESCRIPTION: &str = r#"
-Delete the given message's payload. Useful in cases when a message was accidentally sent with sensitive content.
-
-The message can't be replayed or resent once its payload has been deleted or expired.
-"#;
-
+/// Delete the given message's payload. Useful in cases when a message was accidentally sent with sensitive content.
+///
+/// The message can't be replayed or resent once its payload has been deleted or expired.
+#[aide_annotate]
 async fn expunge_message_content(
     State(AppState { ref db, .. }): State<AppState>,
     Path(ApplicationMsgPath { msg_id, .. }): Path<ApplicationMsgPath>,
@@ -354,21 +350,18 @@ pub fn router() -> ApiRouter<AppState> {
     ApiRouter::new()
         .api_route_with(
             "/app/:app_id/msg/",
-            post_with(create_message, openapi_desc(CREATE_MESSAGE_DESCRIPTION))
-                .get_with(list_messages, openapi_desc(LIST_MESSAGES_DESCRIPTION)),
+            post_with(create_message, create_message_operation)
+                .get_with(list_messages, list_messages_operation),
             &tag,
         )
         .api_route_with(
             "/app/:app_id/msg/:msg_id/",
-            get_with(get_message, openapi_desc(GET_MESSAGE_DESCRIPTION)),
+            get_with(get_message, get_message_operation),
             &tag,
         )
         .api_route_with(
             "/app/:app_id/msg/:msg_id/content/",
-            delete_with(
-                expunge_message_content,
-                openapi_desc(EXPUNGE_MESSAGE_CONTENT_DESCRIPTION),
-            ),
+            delete_with(expunge_message_content, expunge_message_content_operation),
             tag,
         )
 }

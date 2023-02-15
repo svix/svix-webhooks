@@ -6,6 +6,7 @@ use chrono::{DateTime, Utc};
 use hyper::StatusCode;
 use sea_orm::{entity::prelude::*, QueryOrder};
 use sea_orm::{DatabaseConnection, QuerySelect};
+use svix_server_derive::aide_annotate;
 
 use super::RecoverIn;
 use crate::{
@@ -71,9 +72,8 @@ async fn bulk_recover_failed_messages(
     Ok(())
 }
 
-pub(super) const RECOVER_FAILED_WEBHOOKS_DESCRIPTION: &str =
-    "Resend all failed messages since a given time.";
-
+/// Resend all failed messages since a given time.
+#[aide_annotate]
 pub(super) async fn recover_failed_webhooks(
     State(AppState {
         ref db, queue_tx, ..

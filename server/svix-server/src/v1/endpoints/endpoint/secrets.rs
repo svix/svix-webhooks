@@ -7,6 +7,7 @@ use hyper::StatusCode;
 use sea_orm::ActiveModelTrait;
 use sea_orm::ActiveValue::Set;
 use std::iter;
+use svix_server_derive::aide_annotate;
 
 use super::{EndpointSecretOut, EndpointSecretRotateIn};
 use crate::{
@@ -34,13 +35,11 @@ pub(super) fn generate_secret(
     }
 }
 
-pub(super) const GET_ENDPOINT_SECRET_DESCRIPTION: &str = r#"
-Get the endpoint's signing secret.
-
-This is used to verify the authenticity of the webhook.
-For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
-"#;
-
+/// Get the endpoint's signing secret.
+///
+/// This is used to verify the authenticity of the webhook.
+/// For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
+#[aide_annotate]
 pub(super) async fn get_endpoint_secret(
     State(AppState { ref db, cfg, .. }): State<AppState>,
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
@@ -57,8 +56,8 @@ pub(super) async fn get_endpoint_secret(
     }))
 }
 
-pub(super) const ROTATE_ENDPOINT_SECRET_DESCRIPTION: &str = "Rotates the endpoint's signing secret.  The previous secret will be valid for the next 24 hours.";
-
+/// Rotates the endpoint's signing secret.  The previous secret will be valid for the next 24 hours.
+#[aide_annotate]
 pub(super) async fn rotate_endpoint_secret(
     State(AppState {
         ref db,

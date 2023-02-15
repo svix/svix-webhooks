@@ -2,6 +2,7 @@ use aide::axum::{routing::post_with, ApiRouter};
 use axum::{extract::State, Json};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use svix_server_derive::aide_annotate;
 use validator::Validate;
 
 use crate::{
@@ -27,8 +28,8 @@ pub struct AppPortalAccessIn {
 
 pub type AppPortalAccessOut = DashboardAccessOut;
 
-const APP_PORTAL_ACCESS_DESCRIPTION: &str = "Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.";
-
+/// Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
+#[aide_annotate]
 async fn app_portal_access(
     State(AppState { cfg, .. }): State<AppState>,
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
@@ -56,12 +57,10 @@ async fn app_portal_access(
     Ok(Json(DashboardAccessOut { url, token }))
 }
 
-const DASHBOARD_ACCESS_DESCRIPTION: &str = r#"
-DEPRECATED: Please use `app-portal-access` instead.
-
-Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
-"#;
-
+/// DEPRECATED: Please use `app-portal-access` instead.
+///
+/// Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
+#[aide_annotate]
 async fn dashboard_access(
     state: State<AppState>,
     permissions: permissions::OrganizationWithApplication,
@@ -87,7 +86,7 @@ pub fn router() -> ApiRouter<AppState> {
     ApiRouter::new()
         .api_route_with(
             "/auth/dashboard-access/:app_id/",
-            post_with(dashboard_access, openapi_desc(DASHBOARD_ACCESS_DESCRIPTION)),
+            post_with(dashboard_access, dashboard_access_operation),
             &tag,
         )
         .api_route_with(
@@ -97,10 +96,7 @@ pub fn router() -> ApiRouter<AppState> {
         )
         .api_route_with(
             "/auth/app-portal-access/:app_id/",
-            post_with(
-                app_portal_access,
-                openapi_desc(APP_PORTAL_ACCESS_DESCRIPTION),
-            ),
+            post_with(app_portal_access, app_portal_access_operation),
             tag,
         )
 }
