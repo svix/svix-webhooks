@@ -190,7 +190,7 @@ impl From<(application::Model, applicationmetadata::Model)> for ApplicationOut {
 }
 
 /// List all of the organization's applications.
-#[aide_annotate]
+#[aide_annotate(op_id = "list_applications_api_v1_app__get")]
 async fn list_applications(
     State(AppState { ref db, .. }): State<AppState>,
     ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<ApplicationId>>>,
@@ -240,7 +240,7 @@ pub struct CreateApplicationQuery {
 }
 
 /// Create a new application.
-#[aide_annotate]
+#[aide_annotate(op_id = "create_application_api_v1_app__post")]
 async fn create_application(
     State(AppState { ref db, .. }): State<AppState>,
     query: ValidatedQuery<CreateApplicationQuery>,
@@ -279,7 +279,7 @@ async fn create_application(
 }
 
 /// Get an application.
-#[aide_annotate]
+#[aide_annotate(op_id = "get_application_api_v1_app__app_id___get")]
 async fn get_application(
     permissions::ApplicationWithMetadata { app, metadata }: permissions::ApplicationWithMetadata,
 ) -> Result<Json<ApplicationOut>> {
@@ -287,7 +287,7 @@ async fn get_application(
 }
 
 /// Update an application.
-#[aide_annotate]
+#[aide_annotate(op_id = "update_application_api_v1_app__app_id___put")]
 async fn update_application(
     State(AppState { ref db, .. }): State<AppState>,
     Path(ApplicationPath { app_id }): Path<ApplicationPath>,
@@ -350,7 +350,7 @@ async fn patch_application(
 }
 
 /// Delete an application.
-#[aide_annotate]
+#[aide_annotate(op_id = "delete_application_api_v1_app__app_id___delete")]
 async fn delete_application(
     State(AppState { ref db, .. }): State<AppState>,
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,

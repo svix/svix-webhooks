@@ -83,7 +83,7 @@ fn doc_comment_from_attributes(attributes: &Vec<syn::Attribute>) -> Option<Strin
         }
     }
 
-    if doc_comment_lines.len() == 0 {
+    if doc_comment_lines.is_empty() {
         return None;
     }
     Some(doc_comment_lines.join("\n"))
@@ -128,8 +128,7 @@ pub fn aide_annotate(
     // The operation summary is the title-cased version of the original
     // function name.
     let mut operation_summary = operation_id
-        .clone()
-        .split("_")
+        .split('_')
         .map(title_case)
         .collect::<Vec<String>>()
         .join(" ");
@@ -156,10 +155,8 @@ pub fn aide_annotate(
                 "op_summary" => operation_summary = value,
                 _ => {
                     let path = meta.path.to_token_stream().to_string();
-                    let msg = format!(
-                        "Unknown argument `{}`, expected `op_id` or `op_summary`",
-                        path
-                    );
+                    let msg =
+                        format!("Unknown argument `{path}`, expected `op_id` or `op_summary`",);
                     return syn::Error::new_spanned(meta.path, msg)
                         .into_compile_error()
                         .into();

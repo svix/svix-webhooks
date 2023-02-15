@@ -524,7 +524,7 @@ pub struct EndpointStatsQueryOut {
 }
 
 /// Get basic statistics for the endpoint.
-#[aide_annotate]
+#[aide_annotate(op_id = "get_endpoint_stats_api_v1_app__app_id__endpoint__endpoint_id__stats__get")]
 async fn endpoint_stats(
     State(AppState { ref db, .. }): State<AppState>,
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,

@@ -1,4 +1,7 @@
-use aide::axum::{routing::post_with, ApiRouter};
+use aide::{
+    axum::{routing::post_with, ApiRouter},
+    transform::TransformOperation,
+};
 use axum::{extract::State, Json};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -8,7 +11,7 @@ use validator::Validate;
 use crate::{
     core::{permissions, security::generate_app_token, types::FeatureFlagSet},
     error::{HttpError, Result},
-    v1::utils::{api_not_implemented, openapi_desc, openapi_tag, ValidatedJson},
+    v1::utils::{api_not_implemented, openapi_tag, ValidatedJson},
     AppState,
 };
 
@@ -29,7 +32,7 @@ pub struct AppPortalAccessIn {
 pub type AppPortalAccessOut = DashboardAccessOut;
 
 /// Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
-#[aide_annotate]
+#[aide_annotate(op_id = "get_app_portal_access_api_v1_auth_app_portal_access__app_id___post")]
 async fn app_portal_access(
     State(AppState { cfg, .. }): State<AppState>,
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
@@ -60,7 +63,7 @@ async fn app_portal_access(
 /// DEPRECATED: Please use `app-portal-access` instead.
 ///
 /// Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
-#[aide_annotate]
+#[aide_annotate(op_id = "get_dashboard_access_api_v1_auth_dashboard_access__app_id___post")]
 async fn dashboard_access(
     state: State<AppState>,
     permissions: permissions::OrganizationWithApplication,
@@ -81,6 +84,12 @@ Logout an app token.
 Trying to log out other tokens will fail.
 "#;
 
+fn logout_operation(op: TransformOperation) -> TransformOperation {
+    op.id("logout_api_v1_auth_logout__post")
+        .summary("Logout")
+        .description(LOGOUT_DESCRIPTION)
+}
+
 pub fn router() -> ApiRouter<AppState> {
     let tag = openapi_tag("Authentication");
     ApiRouter::new()
@@ -91,7 +100,7 @@ pub fn router() -> ApiRouter<AppState> {
         )
         .api_route_with(
             "/auth/logout/",
-            post_with(api_not_implemented, openapi_desc(LOGOUT_DESCRIPTION)),
+            post_with(api_not_implemented, logout_operation),
             &tag,
         )
         .api_route_with(

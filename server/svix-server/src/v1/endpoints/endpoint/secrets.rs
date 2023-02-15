@@ -39,7 +39,9 @@ pub(super) fn generate_secret(
 ///
 /// This is used to verify the authenticity of the webhook.
 /// For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
-#[aide_annotate]
+#[aide_annotate(
+    op_id = "get_endpoint_secret_api_v1_app__app_id__endpoint__endpoint_id__secret__get"
+)]
 pub(super) async fn get_endpoint_secret(
     State(AppState { ref db, cfg, .. }): State<AppState>,
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
@@ -57,7 +59,9 @@ pub(super) async fn get_endpoint_secret(
 }
 
 /// Rotates the endpoint's signing secret.  The previous secret will be valid for the next 24 hours.
-#[aide_annotate]
+#[aide_annotate(
+    op_id = "rotate_endpoint_secret_api_v1_app__app_id__endpoint__endpoint_id__secret_rotate__post"
+)]
 pub(super) async fn rotate_endpoint_secret(
     State(AppState {
         ref db,
