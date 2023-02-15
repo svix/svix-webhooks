@@ -136,7 +136,12 @@ pub struct ListOptions {
     pub limit: Option<i32>,
 }
 
-pub type ApplicationListOptions = ListOptions;
+#[derive(Default)]
+pub struct ApplicationListOptions {
+    pub iterator: Option<String>,
+    pub limit: Option<i32>,
+    pub order: Option<Ordering>,
+}
 
 pub struct Application<'a> {
     cfg: &'a Configuration,
@@ -151,12 +156,17 @@ impl<'a> Application<'a> {
         &self,
         options: Option<ApplicationListOptions>,
     ) -> Result<ListResponseApplicationOut> {
-        let ApplicationListOptions { iterator, limit } = options.unwrap_or_default();
+        let ApplicationListOptions {
+            iterator,
+            limit,
+            order,
+        } = options.unwrap_or_default();
         Ok(application_api::list_applications_api_v1_app_get(
             self.cfg,
             application_api::ListApplicationsApiV1AppGetParams {
                 iterator,
                 limit,
+                order,
                 idempotency_key: None,
             },
         )

@@ -19,6 +19,7 @@ type ListResponseEventTypeOut struct {
 	Data []EventTypeOut `json:"data"`
 	Done bool `json:"done"`
 	Iterator NullableString `json:"iterator,omitempty"`
+	PrevIterator NullableString `json:"prevIterator,omitempty"`
 }
 
 // NewListResponseEventTypeOut instantiates a new ListResponseEventTypeOut object
@@ -130,6 +131,48 @@ func (o *ListResponseEventTypeOut) UnsetIterator() {
 	o.Iterator.Unset()
 }
 
+// GetPrevIterator returns the PrevIterator field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *ListResponseEventTypeOut) GetPrevIterator() string {
+	if o == nil || o.PrevIterator.Get() == nil {
+		var ret string
+		return ret
+	}
+	return *o.PrevIterator.Get()
+}
+
+// GetPrevIteratorOk returns a tuple with the PrevIterator field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ListResponseEventTypeOut) GetPrevIteratorOk() (*string, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return o.PrevIterator.Get(), o.PrevIterator.IsSet()
+}
+
+// HasPrevIterator returns a boolean if a field has been set.
+func (o *ListResponseEventTypeOut) HasPrevIterator() bool {
+	if o != nil && o.PrevIterator.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetPrevIterator gets a reference to the given NullableString and assigns it to the PrevIterator field.
+func (o *ListResponseEventTypeOut) SetPrevIterator(v string) {
+	o.PrevIterator.Set(&v)
+}
+// SetPrevIteratorNil sets the value for PrevIterator to be an explicit nil
+func (o *ListResponseEventTypeOut) SetPrevIteratorNil() {
+	o.PrevIterator.Set(nil)
+}
+
+// UnsetPrevIterator ensures that no value is present for PrevIterator, not even an explicit nil
+func (o *ListResponseEventTypeOut) UnsetPrevIterator() {
+	o.PrevIterator.Unset()
+}
+
 func (o ListResponseEventTypeOut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
@@ -140,6 +183,9 @@ func (o ListResponseEventTypeOut) MarshalJSON() ([]byte, error) {
 	}
 	if o.Iterator.IsSet() {
 		toSerialize["iterator"] = o.Iterator.Get()
+	}
+	if o.PrevIterator.IsSet() {
+		toSerialize["prevIterator"] = o.PrevIterator.Get()
 	}
 	return json.Marshal(toSerialize)
 }

@@ -19,6 +19,7 @@ type Application struct {
 type ApplicationListOptions struct {
 	Iterator *string
 	Limit    *int32
+	Order    *Ordering
 }
 
 func (a *Application) List(ctx context.Context, options *ApplicationListOptions) (*ListResponseApplicationOut, error) {
@@ -29,6 +30,9 @@ func (a *Application) List(ctx context.Context, options *ApplicationListOptions)
 		}
 		if options.Limit != nil {
 			req = req.Limit(*options.Limit)
+		}
+		if options.Order != nil {
+			req = req.Order(openapi.Ordering(*options.Order))
 		}
 	}
 	resp, res, err := req.Execute()

@@ -1966,6 +1966,12 @@
                         "nullable": true,
                         "title": "Iterator",
                         "type": "string"
+                    },
+                    "prevIterator": {
+                        "example": "-iterator",
+                        "nullable": true,
+                        "title": "Previterator",
+                        "type": "string"
                     }
                 },
                 "required": [
@@ -3112,6 +3118,19 @@
                             "maximum": 250.0,
                             "title": "Limit",
                             "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "order",
+                        "required": false,
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/components/schemas/Ordering"
+                                }
+                            ],
+                            "default": "descending"
                         }
                     },
                     {

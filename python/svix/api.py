@@ -150,7 +150,7 @@ class MessageListOptions(ListOptions):
 
 @dataclass
 class ApplicationListOptions(ListOptions):
-    pass
+    order: t.Optional[Ordering] = None
 
 
 @dataclass

@@ -166,7 +166,9 @@ interface ListOptions {
   limit?: number;
 }
 
-export type ApplicationListOptions = ListOptions;
+export interface ApplicationListOptions extends ListOptions {
+  order?: Ordering;
+}
 
 export interface EndpointListOptions extends ListOptions {
   order?: Ordering;
