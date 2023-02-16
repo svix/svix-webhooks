@@ -221,7 +221,7 @@ pub fn apply_pagination<
     }
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, JsonSchema)]
 pub struct EmptyResponse {}
 
 #[derive(Serialize, Deserialize, Clone, JsonSchema)]

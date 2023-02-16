@@ -17,8 +17,9 @@ use crate::{
     queue::MessageTaskBatch,
     v1::utils::{
         apply_pagination_desc, iterator_from_before_or_after, openapi_tag,
-        validation_error, ApplicationMsgPath, ApplicationPath, EventTypesQuery, ListResponse,
-        ModelIn, ModelOut, PaginationLimit, ReversibleIterator, ValidatedJson, ValidatedQuery,
+        validation_error, ApplicationMsgPath, ApplicationPath, EmptyResponse, EventTypesQuery,
+        ListResponse, ModelIn, ModelOut, PaginationLimit, ReversibleIterator, ValidatedJson,
+        ValidatedQuery,
     },
     AppState,
 };
@@ -244,7 +245,7 @@ impl IntoResponse for CreateMessageOut {
     fn into_response(self) -> axum::response::Response {
         match self {
             Self::Accepted(msg) => Json(msg).into_response(),
-            Self::NoContent => ().into_response(),
+            Self::NoContent => Json(EmptyResponse {}).into_response(),
         }
     }
 }
@@ -388,8 +389,9 @@ pub fn router() -> ApiRouter<AppState> {
     let tag = openapi_tag("Message");
 
     fn document_create_message(op: TransformOperation) -> TransformOperation {
-        let op = op.response::<202, Json<MessageOut>>()
-            .response_with::<200, (), _>(|r| {
+        let op = op
+            .response::<202, Json<MessageOut>>()
+            .response_with::<200, Json<EmptyResponse>, _>(|r| {
                 r.description("Response given when `ignore_missing_app=true` is passed and the specified app does not exist")
             });
         create_message_operation(op)
