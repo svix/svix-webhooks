@@ -235,6 +235,20 @@ pub struct CreateMessageQueryParams {
     ignore_missing_app: Option<bool>,
 }
 
+pub enum CreateMessageOut {
+    Accepted(MessageOut),
+    NoContent,
+}
+
+impl IntoResponse for CreateMessageOut {
+    fn into_response(self) -> axum::response::Response {
+        match self {
+            Self::Accepted(msg) => Json(msg).into_response(),
+            Self::NoContent => ().into_response(),
+        }
+    }
+}
+
 /// Creates a new message and dispatches it to all of the application's endpoints.
 ///
 /// The `eventId` is an optional custom unique ID. It's verified to be unique only up to a day, after that no verification will be made.
@@ -259,7 +273,7 @@ async fn create_message(
     }): ValidatedQuery<CreateMessageQueryParams>,
     permissions::Organization { org_id }: permissions::Organization,
     ValidatedJson(data): ValidatedJson<MessageIn>,
-) -> Result<(StatusCode, axum::response::Response)> {
+) -> Result<(StatusCode, CreateMessageOut)> {
     let app = match ctx!(
         application::Entity::secure_find_by_id_or_uid(org_id, app_id.to_owned())
             .one(db)
@@ -267,7 +281,7 @@ async fn create_message(
     )? {
         Some(app) => app,
         None if ignore_missing_app.unwrap_or(false) => {
-            return Ok((StatusCode::OK, ().into_response()));
+            return Ok((StatusCode::OK, CreateMessageOut::NoContent));
         }
         None => {
             return Err(HttpError::not_found(None, Some("Application not found".into())).into())
@@ -316,7 +330,7 @@ async fn create_message(
         MessageOut::without_payload(msg)
     };
 
-    Ok((StatusCode::ACCEPTED, Json(msg_out).into_response()))
+    Ok((StatusCode::ACCEPTED, CreateMessageOut::Accepted(msg_out)))
 }
 
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
@@ -375,7 +389,9 @@ pub fn router() -> ApiRouter<AppState> {
 
     fn document_create_message(op: TransformOperation) -> TransformOperation {
         let op = op.response::<202, Json<MessageOut>>()
-            .response::<200, ()>();
+            .response_with::<200, (), _>(|r| {
+                r.description("Response given when `ignore_missing_app=true` is passed and the specified app does not exist")
+            });
         create_message_operation(op)
     }
 
