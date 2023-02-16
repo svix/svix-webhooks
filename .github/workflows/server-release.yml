@@ -1,8 +1,9 @@
 name: Server Release
 
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - main
 
 jobs:
   release:
@@ -41,6 +42,10 @@ jobs:
       - name: Install musl for x86_64-unknown-linux-musl
         if: ${{ matrix.target == 'x86_64-unknown-linux-musl' }}
         run: sudo apt-get install -y musl-dev musl-tools
+
+      - name: Install OpenSSL for Windows
+        if: ${{ matrix.target == 'x86_64-pc-windows-gnu' }}
+        run: vcpkg install openssl:x64-windows-static-md
 
       - name: Compile server
         uses: actions-rs/cargo@v1
@@ -87,3 +92,4 @@ jobs:
           push: true
           tags: ${{ env.DOCKER_TAGS }}
           platforms: linux/amd64
+
