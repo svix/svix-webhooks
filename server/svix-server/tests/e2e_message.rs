@@ -111,7 +111,7 @@ async fn test_message_create_read_list() {
 
     let _: IgnoredResponse = client
         .post(
-            "api/v1/app/nonexistent_app/msg/?ignore_missing_app=true",
+            "api/v1/app/nonexistent_app/msg/?skip_missing_app=true",
             message_in(&app_id, serde_json::json!({"test": "value"})).unwrap(),
             StatusCode::OK,
         )

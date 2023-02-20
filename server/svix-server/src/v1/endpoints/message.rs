@@ -16,10 +16,9 @@ use crate::{
     error::{HttpError, Result},
     queue::MessageTaskBatch,
     v1::utils::{
-        apply_pagination_desc, iterator_from_before_or_after, openapi_tag,
-        validation_error, ApplicationMsgPath, ApplicationPath, EmptyResponse, EventTypesQuery,
-        ListResponse, ModelIn, ModelOut, PaginationLimit, ReversibleIterator, ValidatedJson,
-        ValidatedQuery,
+        apply_pagination_desc, iterator_from_before_or_after, openapi_tag, validation_error,
+        ApplicationMsgPath, ApplicationPath, EmptyResponse, EventTypesQuery, ListResponse, ModelIn,
+        ModelOut, PaginationLimit, ReversibleIterator, ValidatedJson, ValidatedQuery,
     },
     AppState,
 };
@@ -233,7 +232,7 @@ pub struct CreateMessageQueryParams {
     with_content: bool,
     /// If set to true a 200 OK is returned instead of 404 when the
     /// application specified in the request does not exist.
-    ignore_missing_app: Option<bool>,
+    skip_missing_app: Option<bool>,
 }
 
 pub enum CreateMessageOut {
@@ -270,7 +269,7 @@ async fn create_message(
     Path(ApplicationPath { app_id }): Path<ApplicationPath>,
     ValidatedQuery(CreateMessageQueryParams {
         with_content,
-        ignore_missing_app,
+        skip_missing_app,
     }): ValidatedQuery<CreateMessageQueryParams>,
     permissions::Organization { org_id }: permissions::Organization,
     ValidatedJson(data): ValidatedJson<MessageIn>,
@@ -281,7 +280,7 @@ async fn create_message(
             .await
     )? {
         Some(app) => app,
-        None if ignore_missing_app.unwrap_or(false) => {
+        None if skip_missing_app.unwrap_or(false) => {
             return Ok((StatusCode::OK, CreateMessageOut::NoContent));
         }
         None => {
@@ -392,7 +391,7 @@ pub fn router() -> ApiRouter<AppState> {
         let op = op
             .response::<202, Json<MessageOut>>()
             .response_with::<200, Json<EmptyResponse>, _>(|r| {
-                r.description("Response given when `ignore_missing_app=true` is passed and the specified app does not exist")
+                r.description("Response given when `skip_missing_app=true` is passed and the specified app does not exist")
             });
         create_message_operation(op)
     }
