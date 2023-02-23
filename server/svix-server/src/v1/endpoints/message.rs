@@ -224,6 +224,7 @@ async fn list_messages(
 pub struct CreateMessageQueryParams {
     #[serde(default = "default_true")]
     with_content: bool,
+    inject_event_type: Option<bool>,
 }
 
 /// Creates a new message and dispatches it to all of the application's endpoints.
@@ -243,11 +244,12 @@ async fn create_message(
         cache,
         ..
     }): State<AppState>,
-    ValidatedQuery(CreateMessageQueryParams { with_content }): ValidatedQuery<
-        CreateMessageQueryParams,
-    >,
+    ValidatedQuery(CreateMessageQueryParams {
+        with_content,
+        inject_event_type,
+    }): ValidatedQuery<CreateMessageQueryParams>,
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
-    ValidatedJson(data): ValidatedJson<MessageIn>,
+    ValidatedJson(mut data): ValidatedJson<MessageIn>,
 ) -> Result<(StatusCode, Json<MessageOut>)> {
     let create_message_app = CreateMessageApp::layered_fetch(
         &cache,
@@ -261,12 +263,26 @@ async fn create_message(
     // Should never happen since you're giving it an existing Application, but just in case
     .ok_or_else(|| err_generic!("Application doesn't exist: {}", app.id))?;
 
+    let mut non_object_payload = false;
+    if inject_event_type.unwrap_or(false) {
+        if let serde_json::Value::Object(ref mut obj) = data.payload {
+            let value = serde_json::Value::String(data.event_type.to_string());
+            obj.entry("event").or_insert(value);
+        } else {
+            non_object_payload = true;
+        }
+    }
+
     let msg = message::ActiveModel {
         app_id: Set(app.id.clone()),
         org_id: Set(app.org_id),
         ..data.into()
     };
     let msg = ctx!(msg.insert(db).await)?;
+
+    if non_object_payload {
+        tracing::warn!("Non-object message encountered, ID: {}", msg.id);
+    }
 
     let trigger_type = MessageAttemptTriggerType::Scheduled;
     if !create_message_app
