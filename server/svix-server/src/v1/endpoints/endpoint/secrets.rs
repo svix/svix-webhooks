@@ -3,7 +3,6 @@ use axum::{
     Json,
 };
 use chrono::{Duration, Utc};
-use hyper::StatusCode;
 use sea_orm::ActiveModelTrait;
 use sea_orm::ActiveValue::Set;
 use std::iter;
@@ -21,7 +20,7 @@ use crate::{
     ctx,
     db::models::endpoint,
     error::{HttpError, Result},
-    v1::utils::{ApplicationEndpointPath, EmptyResponse, ValidatedJson},
+    v1::utils::{ApplicationEndpointPath, EmptyResponse, JsonStatus, ValidatedJson},
     AppState,
 };
 
@@ -72,7 +71,7 @@ pub(super) async fn rotate_endpoint_secret(
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
     ValidatedJson(data): ValidatedJson<EndpointSecretRotateIn>,
-) -> Result<(StatusCode, Json<EmptyResponse>)> {
+) -> Result<JsonStatus<204, EmptyResponse>> {
     let mut endp = ctx!(
         endpoint::Entity::secure_find_by_id_or_uid(app.id, endpoint_id)
             .one(db)
@@ -129,5 +128,5 @@ pub(super) async fn rotate_endpoint_secret(
         )
         .await?;
 
-    Ok((StatusCode::NO_CONTENT, Json(EmptyResponse {})))
+    Ok(JsonStatus(EmptyResponse {}))
 }

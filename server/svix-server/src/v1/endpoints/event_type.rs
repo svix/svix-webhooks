@@ -16,8 +16,8 @@ use crate::{
             UnrequiredNullableField,
         },
         validate_no_control_characters, validate_no_control_characters_unrequired, EmptyResponse,
-        EventTypeNamePath, ListOrdering, ListResponse, ModelIn, ModelOut, Pagination,
-        PaginationLimit, ReversibleIterator, ValidatedJson, ValidatedQuery,
+        EventTypeNamePath, JsonStatus, JsonStatusUpsert, ListOrdering, ListResponse, ModelIn,
+        ModelOut, Pagination, PaginationLimit, ReversibleIterator, ValidatedJson, ValidatedQuery,
     },
     AppState,
 };
@@ -30,7 +30,6 @@ use axum::{
     Json,
 };
 use chrono::{DateTime, Utc};
-use hyper::StatusCode;
 use schemars::JsonSchema;
 use sea_orm::{entity::prelude::*, ActiveModelTrait, ActiveValue::Set};
 use serde::{Deserialize, Serialize};
@@ -248,7 +247,7 @@ async fn create_event_type(
     State(AppState { ref db, .. }): State<AppState>,
     permissions::Organization { org_id }: permissions::Organization,
     ValidatedJson(data): ValidatedJson<EventTypeIn>,
-) -> Result<(StatusCode, Json<EventTypeOut>)> {
+) -> Result<JsonStatus<201, EventTypeOut>> {
     let evtype = ctx!(
         eventtype::Entity::secure_find_by_name(org_id.clone(), data.name.to_owned())
             .one(db)
@@ -277,7 +276,7 @@ async fn create_event_type(
             ctx!(evtype.insert(db).await.map_err(http_error_on_conflict))?
         }
     };
-    Ok((StatusCode::CREATED, Json(ret.into())))
+    Ok(JsonStatus(ret.into()))
 }
 
 /// Get an event type.
@@ -307,7 +306,7 @@ async fn update_event_type(
     Path(EventTypeNamePath { event_type_name }): Path<EventTypeNamePath>,
     permissions::Organization { org_id }: permissions::Organization,
     ValidatedJson(data): ValidatedJson<EventTypeUpdate>,
-) -> Result<(StatusCode, Json<EventTypeOut>)> {
+) -> Result<JsonStatusUpsert<EventTypeOut>> {
     let evtype = ctx!(
         eventtype::Entity::secure_find_by_name(org_id.clone(), event_type_name.clone())
             .one(db)
@@ -320,7 +319,7 @@ async fn update_event_type(
             data.update_model(&mut evtype);
             let ret = ctx!(evtype.update(db).await.map_err(http_error_on_conflict))?;
 
-            Ok((StatusCode::OK, Json(ret.into())))
+            Ok(JsonStatusUpsert::Updated(ret.into()))
         }
         None => {
             let ret = ctx!(eventtype::ActiveModel {
@@ -332,7 +331,7 @@ async fn update_event_type(
             .await
             .map_err(http_error_on_conflict))?;
 
-            Ok((StatusCode::CREATED, Json(ret.into())))
+            Ok(JsonStatusUpsert::Created(ret.into()))
         }
     }
 }
@@ -370,7 +369,7 @@ async fn delete_event_type(
     State(AppState { ref db, .. }): State<AppState>,
     Path(EventTypeNamePath { event_type_name }): Path<EventTypeNamePath>,
     permissions::Organization { org_id }: permissions::Organization,
-) -> Result<(StatusCode, Json<EmptyResponse>)> {
+) -> Result<JsonStatus<204, EmptyResponse>> {
     let evtype = ctx!(
         eventtype::Entity::secure_find_by_name(org_id, event_type_name)
             .one(db)
@@ -381,7 +380,7 @@ async fn delete_event_type(
     let mut evtype: eventtype::ActiveModel = evtype.into();
     evtype.deleted = Set(true);
     ctx!(evtype.update(db).await)?;
-    Ok((StatusCode::NO_CONTENT, Json(EmptyResponse {})))
+    Ok(JsonStatus(EmptyResponse {}))
 }
 
 const GENERATE_SCHEMA_EXAMPLE_DESCRIPTION: &str =

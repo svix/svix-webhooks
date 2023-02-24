@@ -17,8 +17,9 @@ use crate::{
             UnrequiredNullableField,
         },
         validate_no_control_characters, validate_no_control_characters_unrequired,
-        validation_error, ApplicationPath, EmptyResponse, ListOrdering, ListResponse, ModelIn,
-        ModelOut, Pagination, PaginationLimit, ReversibleIterator, ValidatedJson, ValidatedQuery,
+        validation_error, ApplicationPath, EmptyResponse, JsonStatus, JsonStatusUpsert,
+        ListOrdering, ListResponse, ModelIn, ModelOut, Pagination, PaginationLimit,
+        ReversibleIterator, ValidatedJson, ValidatedQuery,
     },
     AppState,
 };
@@ -31,7 +32,6 @@ use axum::{
     Json,
 };
 use chrono::{DateTime, Utc};
-use hyper::StatusCode;
 use schemars::JsonSchema;
 use sea_orm::ActiveModelTrait;
 use sea_orm::ActiveValue::Set;
@@ -246,13 +246,14 @@ async fn create_application(
     query: ValidatedQuery<CreateApplicationQuery>,
     permissions::Organization { org_id }: permissions::Organization,
     ValidatedJson(data): ValidatedJson<ApplicationIn>,
-) -> Result<(StatusCode, Json<ApplicationOut>)> {
+) -> Result<JsonStatusUpsert<ApplicationOut>> {
     if let Some(ref uid) = data.uid {
         if let Some((app, metadata)) = ctx!(
             application::Model::fetch_with_metadata(db, org_id.clone(), uid.clone().into()).await
         )? {
             if query.get_if_exists {
-                return Ok((StatusCode::OK, Json((app, metadata).into())));
+                // Technically not updated, but it fits.
+                return Ok(JsonStatusUpsert::Updated((app, metadata).into()));
             }
             return Err(HttpError::conflict(
                 None,
@@ -275,7 +276,7 @@ async fn create_application(
         Ok((app_result, metadata))
     })?;
 
-    Ok((StatusCode::CREATED, Json((app, metadata).into())))
+    Ok(JsonStatusUpsert::Created((app, metadata).into()))
 }
 
 /// Get an application.
@@ -293,7 +294,7 @@ async fn update_application(
     Path(ApplicationPath { app_id }): Path<ApplicationPath>,
     permissions::Organization { org_id }: permissions::Organization,
     ValidatedJson(data): ValidatedJson<ApplicationIn>,
-) -> Result<(StatusCode, Json<ApplicationOut>)> {
+) -> Result<JsonStatusUpsert<ApplicationOut>> {
     let (app, metadata, create_models) = if let Some((app, metadata)) =
         ctx!(application::Model::fetch_with_metadata(db, org_id.clone(), app_id).await)?
     {
@@ -318,12 +319,11 @@ async fn update_application(
         Ok((app, metadata))
     })?;
 
-    let status = if create_models {
-        StatusCode::CREATED
+    if create_models {
+        Ok(JsonStatusUpsert::Created((app, metadata).into()))
     } else {
-        StatusCode::OK
-    };
-    Ok((status, Json((app, metadata).into())))
+        Ok(JsonStatusUpsert::Updated((app, metadata).into()))
+    }
 }
 
 /// Partially update an application.
@@ -354,12 +354,12 @@ async fn patch_application(
 async fn delete_application(
     State(AppState { ref db, .. }): State<AppState>,
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
-) -> Result<(StatusCode, Json<EmptyResponse>)> {
+) -> Result<JsonStatus<204, EmptyResponse>> {
     let mut app: application::ActiveModel = app.into();
     app.deleted = Set(true);
     app.uid = Set(None); // We don't want deleted UIDs to clash
     ctx!(app.update(db).await)?;
-    Ok((StatusCode::NO_CONTENT, Json(EmptyResponse {})))
+    Ok(JsonStatus(EmptyResponse {}))
 }
 
 pub fn router() -> ApiRouter<AppState> {

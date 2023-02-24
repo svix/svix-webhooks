@@ -11,16 +11,17 @@ use std::{
 
 use aide::{
     transform::{TransformOperation, TransformPathItem},
-    OperationInput, OperationIo,
+    OperationInput, OperationIo, OperationOutput,
 };
 use axum::{
     async_trait,
     body::HttpBody,
     extract::{FromRequest, FromRequestParts, Query},
+    response::IntoResponse,
     BoxError,
 };
 use chrono::{DateTime, Utc};
-use http::{request::Parts, Request};
+use http::{request::Parts, Request, StatusCode};
 use regex::Regex;
 use schemars::JsonSchema;
 use sea_orm::{ColumnTrait, QueryFilter, QueryOrder, QuerySelect};
@@ -221,7 +222,7 @@ pub fn apply_pagination<
     }
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, JsonSchema)]
 pub struct EmptyResponse {}
 
 #[derive(Serialize, Deserialize, Clone, JsonSchema)]
@@ -561,6 +562,88 @@ pub struct ApplicationMsgAttemptPath {
 #[derive(Deserialize, JsonSchema)]
 pub struct EventTypeNamePath {
     pub event_type_name: EventTypeName,
+}
+
+/// JsonStatus is a wrapper over `axum::extract::Json` as a handler output.
+/// Setting the `STATUS` const parameter automatically sets the response
+/// status code, as well as inserting it into the aide documentation.
+pub struct JsonStatus<const STATUS: u16, T: JsonSchema + Serialize>(pub T);
+
+impl<const STATUS: u16, T: JsonSchema + Serialize> IntoResponse for JsonStatus<STATUS, T> {
+    fn into_response(self) -> axum::response::Response {
+        (
+            StatusCode::from_u16(STATUS).unwrap(),
+            axum::extract::Json(self.0),
+        )
+            .into_response()
+    }
+}
+
+impl<const STATUS: u16, T: JsonSchema + Serialize> OperationOutput for JsonStatus<STATUS, T> {
+    type Inner = T;
+
+    fn operation_response(
+        ctx: &mut aide::gen::GenContext,
+        operation: &mut aide::openapi::Operation,
+    ) -> Option<aide::openapi::Response> {
+        axum::extract::Json::<T>::operation_response(ctx, operation)
+    }
+
+    fn inferred_responses(
+        ctx: &mut aide::gen::GenContext,
+        operation: &mut aide::openapi::Operation,
+    ) -> Vec<(Option<u16>, aide::openapi::Response)> {
+        if let Some(resp) = Self::operation_response(ctx, operation) {
+            vec![(Some(STATUS), resp)]
+        } else {
+            vec![]
+        }
+    }
+}
+
+/// JsonStatusUpsert is a wrapper over `axum::extract::Json` as a handler
+/// output. It is a special casing of `JsonStatus` for situations where a
+/// resource is either being updated or created within the same operation. In
+/// case of `Updated` HTTP 200 OK is returned, in case of `Created` HTTP 201
+/// CREATED is returned.
+pub enum JsonStatusUpsert<T: JsonSchema + Serialize> {
+    Updated(T),
+    Created(T),
+}
+
+impl<T: JsonSchema + Serialize> IntoResponse for JsonStatusUpsert<T> {
+    fn into_response(self) -> axum::response::Response {
+        let (status, body) = match self {
+            JsonStatusUpsert::Updated(v) => (StatusCode::OK, v),
+            JsonStatusUpsert::Created(v) => (StatusCode::CREATED, v),
+        };
+        (status, axum::extract::Json(body)).into_response()
+    }
+}
+
+impl<T: JsonSchema + Serialize> OperationOutput for JsonStatusUpsert<T> {
+    type Inner = T;
+
+    fn operation_response(
+        ctx: &mut aide::gen::GenContext,
+        operation: &mut aide::openapi::Operation,
+    ) -> Option<aide::openapi::Response> {
+        axum::extract::Json::<T>::operation_response(ctx, operation)
+    }
+
+    fn inferred_responses(
+        ctx: &mut aide::gen::GenContext,
+        operation: &mut aide::openapi::Operation,
+    ) -> Vec<(Option<u16>, aide::openapi::Response)> {
+        if let Some(resp) = Self::operation_response(ctx, operation) {
+            vec![
+                (Some(StatusCode::OK.into()), resp.clone()),
+                (Some(StatusCode::CREATED.into()), resp),
+            ]
+        } else {
+            vec![]
+        }
+    }
 }
 
 #[cfg(test)]

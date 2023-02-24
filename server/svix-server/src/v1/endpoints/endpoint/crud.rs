@@ -4,7 +4,6 @@ use axum::{
     extract::{Path, State},
     Json,
 };
-use hyper::StatusCode;
 use sea_orm::{entity::prelude::*, ActiveValue::Set, TransactionTrait};
 use sea_orm::{ActiveModelTrait, DatabaseConnection, QuerySelect};
 use svix_server_derive::aide_annotate;
@@ -24,8 +23,9 @@ use crate::{
     v1::utils::{
         apply_pagination,
         patch::{patch_field_non_nullable, UnrequiredField, UnrequiredNullableField},
-        ApplicationEndpointPath, EmptyResponse, ListOrdering, ListResponse, ModelIn, ModelOut,
-        Pagination, PaginationLimit, ReversibleIterator, ValidatedJson, ValidatedQuery,
+        ApplicationEndpointPath, EmptyResponse, JsonStatus, JsonStatusUpsert, ListOrdering,
+        ListResponse, ModelIn, ModelOut, Pagination, PaginationLimit, ReversibleIterator,
+        ValidatedJson, ValidatedQuery,
     },
     AppState,
 };
@@ -115,7 +115,7 @@ pub(super) async fn create_endpoint(
     }): State<AppState>,
     permissions::Application { app }: permissions::Application,
     ValidatedJson(data): ValidatedJson<EndpointIn>,
-) -> Result<(StatusCode, Json<EndpointOut>)> {
+) -> Result<JsonStatus<201, EndpointOut>> {
     if let Some(ref event_types_ids) = data.event_types_ids {
         validate_event_types(db, event_types_ids, &app.org_id).await?;
     }
@@ -123,7 +123,7 @@ pub(super) async fn create_endpoint(
 
     let (endp, metadata) = ctx!(create_endp_from_data(db, cfg, &op_webhooks, app, data).await)?;
 
-    Ok((StatusCode::CREATED, Json((endp, metadata.data).into())))
+    Ok(JsonStatus((endp, metadata.data).into()))
 }
 
 /// Get an endpoint.
@@ -184,7 +184,7 @@ pub(super) async fn update_endpoint(
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
     ValidatedJson(mut data): ValidatedJson<EndpointIn>,
-) -> Result<(StatusCode, Json<EndpointOut>)> {
+) -> Result<JsonStatusUpsert<EndpointOut>> {
     if let Some(ref event_types_ids) = data.event_types_ids {
         validate_event_types(db, event_types_ids, &app.org_id).await?;
     }
@@ -198,10 +198,10 @@ pub(super) async fn update_endpoint(
         data.update_model(&mut endp);
         let (endp, metadata) =
             ctx!(update_endp_from_data(db, op_webhooks, app, endp, metadata).await)?;
-        Ok((StatusCode::OK, Json((endp, metadata.data).into())))
+        Ok(JsonStatusUpsert::Updated((endp, metadata.data).into()))
     } else {
         let (endp, metadata) = ctx!(create_endp_from_data(db, cfg, op_webhooks, app, data).await)?;
-        Ok((StatusCode::CREATED, Json((endp, metadata.data).into())))
+        Ok(JsonStatusUpsert::Created((endp, metadata.data).into()))
     }
 }
 
@@ -249,7 +249,7 @@ pub(super) async fn delete_endpoint(
     }): State<AppState>,
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
-) -> Result<(StatusCode, Json<EmptyResponse>)> {
+) -> Result<JsonStatus<204, EmptyResponse>> {
     let endp = ctx!(
         endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endpoint_id)
             .one(db)
@@ -278,7 +278,7 @@ pub(super) async fn delete_endpoint(
         )
         .await?;
 
-    Ok((StatusCode::NO_CONTENT, Json(EmptyResponse {})))
+    Ok(JsonStatus(EmptyResponse {}))
 }
 
 /// This module is here so that our Result override doesn't conflict
