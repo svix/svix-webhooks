@@ -548,6 +548,8 @@ namespace Svix
                 var lStats = _endpointApi.GetEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGet(
                     endpointId,
                     appId,
+                    null,
+                    null,
                     idempotencyKey);
 
                 return lStats;
