@@ -482,6 +482,8 @@ impl<'a> Endpoint<'a> {
                     app_id,
                     endpoint_id,
                     idempotency_key: None,
+                    since: None,
+                    until: None,
                 },
             )
             .await?,
