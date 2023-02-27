@@ -17,7 +17,6 @@ import (
 	_nethttp "net/http"
 	_neturl "net/url"
 	"strings"
-	"time"
 )
 
 // Linger please
@@ -25,57 +24,61 @@ var (
 	_ _context.Context
 )
 
-// StatisticsApiService StatisticsApi service
-type StatisticsApiService service
+// BackgroundTasksApiService BackgroundTasksApi service
+type BackgroundTasksApiService service
 
-type ApiAppUsageStatsApiV1StatsUsageAppGetRequest struct {
+type ApiGetBackgroundTaskApiV1BackgroundTaskTaskIdGetRequest struct {
 	ctx _context.Context
-	ApiService *StatisticsApiService
+	ApiService *BackgroundTasksApiService
+	taskId string
 	idempotencyKey *string
 }
 
-func (r ApiAppUsageStatsApiV1StatsUsageAppGetRequest) IdempotencyKey(idempotencyKey string) ApiAppUsageStatsApiV1StatsUsageAppGetRequest {
+func (r ApiGetBackgroundTaskApiV1BackgroundTaskTaskIdGetRequest) IdempotencyKey(idempotencyKey string) ApiGetBackgroundTaskApiV1BackgroundTaskTaskIdGetRequest {
 	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
-func (r ApiAppUsageStatsApiV1StatsUsageAppGetRequest) Execute() (AppUsageStatsOut, *_nethttp.Response, error) {
-	return r.ApiService.AppUsageStatsApiV1StatsUsageAppGetExecute(r)
+func (r ApiGetBackgroundTaskApiV1BackgroundTaskTaskIdGetRequest) Execute() (BackgroundTaskOut, *_nethttp.Response, error) {
+	return r.ApiService.GetBackgroundTaskApiV1BackgroundTaskTaskIdGetExecute(r)
 }
 
 /*
- * AppUsageStatsApiV1StatsUsageAppGet App Usage Stats
- * Creates a background task to calculate the message destinations for all applications in the environment.
+ * GetBackgroundTaskApiV1BackgroundTaskTaskIdGet Get Background Task
+ * Get a background task by ID.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @return ApiAppUsageStatsApiV1StatsUsageAppGetRequest
+ * @param taskId
+ * @return ApiGetBackgroundTaskApiV1BackgroundTaskTaskIdGetRequest
  */
-func (a *StatisticsApiService) AppUsageStatsApiV1StatsUsageAppGet(ctx _context.Context) ApiAppUsageStatsApiV1StatsUsageAppGetRequest {
-	return ApiAppUsageStatsApiV1StatsUsageAppGetRequest{
+func (a *BackgroundTasksApiService) GetBackgroundTaskApiV1BackgroundTaskTaskIdGet(ctx _context.Context, taskId string) ApiGetBackgroundTaskApiV1BackgroundTaskTaskIdGetRequest {
+	return ApiGetBackgroundTaskApiV1BackgroundTaskTaskIdGetRequest{
 		ApiService: a,
 		ctx: ctx,
+		taskId: taskId,
 	}
 }
 
 /*
  * Execute executes the request
- * @return AppUsageStatsOut
+ * @return BackgroundTaskOut
  */
-func (a *StatisticsApiService) AppUsageStatsApiV1StatsUsageAppGetExecute(r ApiAppUsageStatsApiV1StatsUsageAppGetRequest) (AppUsageStatsOut, *_nethttp.Response, error) {
+func (a *BackgroundTasksApiService) GetBackgroundTaskApiV1BackgroundTaskTaskIdGetExecute(r ApiGetBackgroundTaskApiV1BackgroundTaskTaskIdGetRequest) (BackgroundTaskOut, *_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodGet
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  AppUsageStatsOut
+		localVarReturnValue  BackgroundTaskOut
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StatisticsApiService.AppUsageStatsApiV1StatsUsageAppGet")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "BackgroundTasksApiService.GetBackgroundTaskApiV1BackgroundTaskTaskIdGet")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/stats/usage/app/"
+	localVarPath := localBasePath + "/api/v1/background-task/{task_id}/"
+	localVarPath = strings.Replace(localVarPath, "{"+"task_id"+"}", _neturl.PathEscape(parameterToString(r.taskId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
@@ -197,289 +200,82 @@ func (a *StatisticsApiService) AppUsageStatsApiV1StatsUsageAppGetExecute(r ApiAp
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiGetAppAttemptStatsApiV1StatsAppAppIdAttemptGetRequest struct {
+type ApiListBackgroundTasksApiV1BackgroundTaskGetRequest struct {
 	ctx _context.Context
-	ApiService *StatisticsApiService
-	appId string
-	startDate *time.Time
-	endDate *time.Time
+	ApiService *BackgroundTasksApiService
+	iterator *string
+	limit *int32
+	order *Ordering
 	idempotencyKey *string
 }
 
-func (r ApiGetAppAttemptStatsApiV1StatsAppAppIdAttemptGetRequest) StartDate(startDate time.Time) ApiGetAppAttemptStatsApiV1StatsAppAppIdAttemptGetRequest {
-	r.startDate = &startDate
+func (r ApiListBackgroundTasksApiV1BackgroundTaskGetRequest) Iterator(iterator string) ApiListBackgroundTasksApiV1BackgroundTaskGetRequest {
+	r.iterator = &iterator
 	return r
 }
-func (r ApiGetAppAttemptStatsApiV1StatsAppAppIdAttemptGetRequest) EndDate(endDate time.Time) ApiGetAppAttemptStatsApiV1StatsAppAppIdAttemptGetRequest {
-	r.endDate = &endDate
+func (r ApiListBackgroundTasksApiV1BackgroundTaskGetRequest) Limit(limit int32) ApiListBackgroundTasksApiV1BackgroundTaskGetRequest {
+	r.limit = &limit
 	return r
 }
-func (r ApiGetAppAttemptStatsApiV1StatsAppAppIdAttemptGetRequest) IdempotencyKey(idempotencyKey string) ApiGetAppAttemptStatsApiV1StatsAppAppIdAttemptGetRequest {
+func (r ApiListBackgroundTasksApiV1BackgroundTaskGetRequest) Order(order Ordering) ApiListBackgroundTasksApiV1BackgroundTaskGetRequest {
+	r.order = &order
+	return r
+}
+func (r ApiListBackgroundTasksApiV1BackgroundTaskGetRequest) IdempotencyKey(idempotencyKey string) ApiListBackgroundTasksApiV1BackgroundTaskGetRequest {
 	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
-func (r ApiGetAppAttemptStatsApiV1StatsAppAppIdAttemptGetRequest) Execute() (AttemptStatisticsResponse, *_nethttp.Response, error) {
-	return r.ApiService.GetAppAttemptStatsApiV1StatsAppAppIdAttemptGetExecute(r)
+func (r ApiListBackgroundTasksApiV1BackgroundTaskGetRequest) Execute() (ListResponseBackgroundTaskOut, *_nethttp.Response, error) {
+	return r.ApiService.ListBackgroundTasksApiV1BackgroundTaskGetExecute(r)
 }
 
 /*
- * GetAppAttemptStatsApiV1StatsAppAppIdAttemptGet Get App Attempt Stats
- * Returns application-level statistics on message attempts
+ * ListBackgroundTasksApiV1BackgroundTaskGet List Background Tasks
+ * List background tasks executed in the past 90 days.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param appId
- * @return ApiGetAppAttemptStatsApiV1StatsAppAppIdAttemptGetRequest
+ * @return ApiListBackgroundTasksApiV1BackgroundTaskGetRequest
  */
-func (a *StatisticsApiService) GetAppAttemptStatsApiV1StatsAppAppIdAttemptGet(ctx _context.Context, appId string) ApiGetAppAttemptStatsApiV1StatsAppAppIdAttemptGetRequest {
-	return ApiGetAppAttemptStatsApiV1StatsAppAppIdAttemptGetRequest{
+func (a *BackgroundTasksApiService) ListBackgroundTasksApiV1BackgroundTaskGet(ctx _context.Context) ApiListBackgroundTasksApiV1BackgroundTaskGetRequest {
+	return ApiListBackgroundTasksApiV1BackgroundTaskGetRequest{
 		ApiService: a,
 		ctx: ctx,
-		appId: appId,
 	}
 }
 
 /*
  * Execute executes the request
- * @return AttemptStatisticsResponse
+ * @return ListResponseBackgroundTaskOut
  */
-func (a *StatisticsApiService) GetAppAttemptStatsApiV1StatsAppAppIdAttemptGetExecute(r ApiGetAppAttemptStatsApiV1StatsAppAppIdAttemptGetRequest) (AttemptStatisticsResponse, *_nethttp.Response, error) {
+func (a *BackgroundTasksApiService) ListBackgroundTasksApiV1BackgroundTaskGetExecute(r ApiListBackgroundTasksApiV1BackgroundTaskGetRequest) (ListResponseBackgroundTaskOut, *_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodGet
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  AttemptStatisticsResponse
+		localVarReturnValue  ListResponseBackgroundTaskOut
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StatisticsApiService.GetAppAttemptStatsApiV1StatsAppAppIdAttemptGet")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "BackgroundTasksApiService.ListBackgroundTasksApiV1BackgroundTaskGet")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/stats/app/{app_id}/attempt/"
-	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
+	localVarPath := localBasePath + "/api/v1/background-task/"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
-	if strlen(r.appId) < 1 {
-		return localVarReturnValue, nil, reportError("appId must have at least 1 elements")
-	}
-	if strlen(r.appId) > 256 {
-		return localVarReturnValue, nil, reportError("appId must have less than 256 elements")
-	}
 
-	if r.startDate != nil {
-		localVarQueryParams.Add("startDate", parameterToString(*r.startDate, ""))
+	if r.iterator != nil {
+		localVarQueryParams.Add("iterator", parameterToString(*r.iterator, ""))
 	}
-	if r.endDate != nil {
-		localVarQueryParams.Add("endDate", parameterToString(*r.endDate, ""))
+	if r.limit != nil {
+		localVarQueryParams.Add("limit", parameterToString(*r.limit, ""))
 	}
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	if r.idempotencyKey != nil {
-		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
-	}
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := _ioutil.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = _ioutil.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v HttpErrorOut
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 403 {
-			var v HttpErrorOut
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v HttpErrorOut
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 409 {
-			var v HttpErrorOut
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 422 {
-			var v HTTPValidationError
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 429 {
-			var v HttpErrorOut
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.model = v
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
-type ApiGetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetRequest struct {
-	ctx _context.Context
-	ApiService *StatisticsApiService
-	endpointId string
-	appId string
-	startDate *time.Time
-	endDate *time.Time
-	idempotencyKey *string
-}
-
-func (r ApiGetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetRequest) StartDate(startDate time.Time) ApiGetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetRequest {
-	r.startDate = &startDate
-	return r
-}
-func (r ApiGetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetRequest) EndDate(endDate time.Time) ApiGetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetRequest {
-	r.endDate = &endDate
-	return r
-}
-func (r ApiGetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetRequest) IdempotencyKey(idempotencyKey string) ApiGetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetRequest {
-	r.idempotencyKey = &idempotencyKey
-	return r
-}
-
-func (r ApiGetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetRequest) Execute() (AttemptStatisticsResponse, *_nethttp.Response, error) {
-	return r.ApiService.GetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetExecute(r)
-}
-
-/*
- * GetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGet Get Ep Stats
- * Returns endpoint-level statistics on message attempts
- * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param endpointId
- * @param appId
- * @return ApiGetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetRequest
- */
-func (a *StatisticsApiService) GetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGet(ctx _context.Context, endpointId string, appId string) ApiGetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetRequest {
-	return ApiGetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetRequest{
-		ApiService: a,
-		ctx: ctx,
-		endpointId: endpointId,
-		appId: appId,
-	}
-}
-
-/*
- * Execute executes the request
- * @return AttemptStatisticsResponse
- */
-func (a *StatisticsApiService) GetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetExecute(r ApiGetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetRequest) (AttemptStatisticsResponse, *_nethttp.Response, error) {
-	var (
-		localVarHTTPMethod   = _nethttp.MethodGet
-		localVarPostBody     interface{}
-		localVarFormFileName string
-		localVarFileName     string
-		localVarFileBytes    []byte
-		localVarReturnValue  AttemptStatisticsResponse
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StatisticsApiService.GetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGet")
-	if err != nil {
-		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/api/v1/stats/app/{app_id}/ep/{endpoint_id}/attempt/"
-	localVarPath = strings.Replace(localVarPath, "{"+"endpoint_id"+"}", _neturl.PathEscape(parameterToString(r.endpointId, "")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := _neturl.Values{}
-	localVarFormParams := _neturl.Values{}
-	if strlen(r.endpointId) < 1 {
-		return localVarReturnValue, nil, reportError("endpointId must have at least 1 elements")
-	}
-	if strlen(r.endpointId) > 256 {
-		return localVarReturnValue, nil, reportError("endpointId must have less than 256 elements")
-	}
-	if strlen(r.appId) < 1 {
-		return localVarReturnValue, nil, reportError("appId must have at least 1 elements")
-	}
-	if strlen(r.appId) > 256 {
-		return localVarReturnValue, nil, reportError("appId must have less than 256 elements")
-	}
-
-	if r.startDate != nil {
-		localVarQueryParams.Add("startDate", parameterToString(*r.startDate, ""))
-	}
-	if r.endDate != nil {
-		localVarQueryParams.Add("endDate", parameterToString(*r.endDate, ""))
+	if r.order != nil {
+		localVarQueryParams.Add("order", parameterToString(*r.order, ""))
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}

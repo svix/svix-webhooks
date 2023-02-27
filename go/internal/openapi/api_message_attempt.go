@@ -49,7 +49,7 @@ func (r ApiExpungeAttemptContentApiV1AppAppIdMsgMsgIdAttemptAttemptIdContentDele
 
 /*
  * ExpungeAttemptContentApiV1AppAppIdMsgMsgIdAttemptAttemptIdContentDelete Delete attempt response body
- * Deletes the given attempt's repsonse body. Useful when an endpoint accidentally returned sensitive content.
+ * Deletes the given attempt's response body. Useful when an endpoint accidentally returned sensitive content.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param attemptId
  * @param msgId

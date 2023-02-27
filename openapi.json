@@ -43,6 +43,48 @@
                 "title": "AppPortalAccessOut",
                 "type": "object"
             },
+            "AppUsageStatsOut": {
+                "properties": {
+                    "id": {
+                        "example": "qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/BackgroundTaskStatus"
+                    },
+                    "task": {
+                        "default": "application.stats",
+                        "enum": [
+                            "application.stats"
+                        ],
+                        "title": "Task",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "status"
+                ],
+                "title": "AppUsageStatsOut",
+                "type": "object"
+            },
+            "AppUsageStatsTaskData": {
+                "properties": {
+                    "appStats": {
+                        "items": {
+                            "$ref": "#/components/schemas/ApplicationStats"
+                        },
+                        "title": "Appstats",
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "appStats"
+                ],
+                "title": "AppUsageStatsTaskData",
+                "type": "object"
+            },
             "ApplicationIn": {
                 "properties": {
                     "metadata": {
@@ -232,6 +274,151 @@
                 ],
                 "title": "AttemptStatisticsResponse",
                 "type": "object"
+            },
+            "BackgroundTaskData": {
+                "properties": {
+                    "appStats": {
+                        "items": {
+                            "$ref": "#/components/schemas/ApplicationStats"
+                        },
+                        "nullable": true,
+                        "title": "Appstats",
+                        "type": "array"
+                    },
+                    "messagesSent": {
+                        "nullable": true,
+                        "title": "Messagessent",
+                        "type": "integer"
+                    }
+                },
+                "title": "BackgroundTaskData",
+                "type": "object"
+            },
+            "BackgroundTaskFinishedEvent": {
+                "description": "Sent when a background task finishes.",
+                "example": {
+                    "data": {
+                        "data": {
+                            "appStats": [
+                                {
+                                    "appId": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                    "messageDestinations": 343
+                                }
+                            ]
+                        },
+                        "status": "finished",
+                        "task": "application.stats",
+                        "taskId": "qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2"
+                    },
+                    "type": "background_task.finished"
+                },
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/BackgroundTaskFinishedEventData"
+                    },
+                    "type": {
+                        "default": "background_task.finished",
+                        "enum": [
+                            "background_task.finished"
+                        ],
+                        "title": "Type",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "data"
+                ],
+                "title": "BackgroundTaskFinishedEvent",
+                "type": "object"
+            },
+            "BackgroundTaskFinishedEventData": {
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/AppUsageStatsTaskData"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/BackgroundTaskOpWebhookStatus"
+                    },
+                    "task": {
+                        "$ref": "#/components/schemas/BackgroundTaskOpWebhookType"
+                    },
+                    "taskId": {
+                        "example": "qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "title": "Taskid",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "taskId",
+                    "task",
+                    "status",
+                    "data"
+                ],
+                "title": "BackgroundTaskFinishedEventData",
+                "type": "object"
+            },
+            "BackgroundTaskOpWebhookStatus": {
+                "description": "An enumeration.",
+                "enum": [
+                    "finished",
+                    "failed"
+                ],
+                "title": "BackgroundTaskOpWebhookStatus",
+                "type": "string"
+            },
+            "BackgroundTaskOpWebhookType": {
+                "description": "An enumeration.",
+                "enum": [
+                    "application.stats"
+                ],
+                "title": "BackgroundTaskOpWebhookType",
+                "type": "string"
+            },
+            "BackgroundTaskOut": {
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/BackgroundTaskData"
+                    },
+                    "id": {
+                        "example": "qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/BackgroundTaskStatus"
+                    },
+                    "task": {
+                        "$ref": "#/components/schemas/BackgroundTaskType"
+                    }
+                },
+                "required": [
+                    "id",
+                    "status",
+                    "task",
+                    "data"
+                ],
+                "title": "BackgroundTaskOut",
+                "type": "object"
+            },
+            "BackgroundTaskStatus": {
+                "description": "An enumeration.",
+                "enum": [
+                    "running",
+                    "finished",
+                    "failed"
+                ],
+                "title": "BackgroundTaskStatus",
+                "type": "string"
+            },
+            "BackgroundTaskType": {
+                "description": "An enumeration.",
+                "enum": [
+                    "endpoint.replay",
+                    "endpoint.recover",
+                    "application.stats"
+                ],
+                "title": "BackgroundTaskType",
+                "type": "string"
             },
             "BorderRadiusConfig": {
                 "properties": {
@@ -1882,6 +2069,39 @@
                 "title": "ListResponse[ApplicationStats]",
                 "type": "object"
             },
+            "ListResponse_BackgroundTaskOut_": {
+                "properties": {
+                    "data": {
+                        "items": {
+                            "$ref": "#/components/schemas/BackgroundTaskOut"
+                        },
+                        "title": "Data",
+                        "type": "array"
+                    },
+                    "done": {
+                        "title": "Done",
+                        "type": "boolean"
+                    },
+                    "iterator": {
+                        "example": "iterator",
+                        "nullable": true,
+                        "title": "Iterator",
+                        "type": "string"
+                    },
+                    "prevIterator": {
+                        "example": "-iterator",
+                        "nullable": true,
+                        "title": "Previterator",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "data",
+                    "done"
+                ],
+                "title": "ListResponse[BackgroundTaskOut]",
+                "type": "object"
+            },
             "ListResponse_EndpointMessageOut_": {
                 "properties": {
                     "data": {
@@ -2779,7 +2999,28 @@
                 "type": "object"
             },
             "RecoverOut": {
-                "properties": {},
+                "properties": {
+                    "id": {
+                        "example": "qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/BackgroundTaskStatus"
+                    },
+                    "task": {
+                        "default": "endpoint.recover",
+                        "enum": [
+                            "endpoint.recover"
+                        ],
+                        "title": "Task",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "status"
+                ],
                 "title": "RecoverOut",
                 "type": "object"
             },
@@ -2804,7 +3045,28 @@
                 "type": "object"
             },
             "ReplayOut": {
-                "properties": {},
+                "properties": {
+                    "id": {
+                        "example": "qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/BackgroundTaskStatus"
+                    },
+                    "task": {
+                        "default": "endpoint.replay",
+                        "enum": [
+                            "endpoint.replay"
+                        ],
+                        "title": "Task",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "status"
+                ],
                 "title": "ReplayOut",
                 "type": "object"
             },
@@ -3050,6 +3312,9 @@
                     "a1": {
                         "$ref": "#/components/schemas/MessageAttemptFailingEvent"
                     },
+                    "a2": {
+                        "$ref": "#/components/schemas/BackgroundTaskFinishedEvent"
+                    },
                     "b": {
                         "$ref": "#/components/schemas/EndpointCreatedEvent"
                     },
@@ -3069,7 +3334,8 @@
                     "c",
                     "d",
                     "e",
-                    "a1"
+                    "a1",
+                    "a2"
                 ],
                 "title": "WebhookTypes",
                 "type": "object"
@@ -7496,6 +7762,28 @@
                         }
                     },
                     {
+                        "in": "query",
+                        "name": "since",
+                        "required": false,
+                        "schema": {
+                            "format": "date-time",
+                            "nullable": true,
+                            "title": "Since",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "until",
+                        "required": false,
+                        "schema": {
+                            "format": "date-time",
+                            "nullable": true,
+                            "title": "Until",
+                            "type": "string"
+                        }
+                    },
+                    {
                         "description": "The request's idempotency key",
                         "in": "header",
                         "name": "idempotency-key",
@@ -10702,7 +10990,7 @@
         },
         "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/content/": {
             "delete": {
-                "description": "Deletes the given attempt's repsonse body. Useful when an endpoint accidentally returned sensitive content.",
+                "description": "Deletes the given attempt's response body. Useful when an endpoint accidentally returned sensitive content.",
                 "operationId": "expunge_attempt_content_api_v1_app__app_id__msg__msg_id__attempt__attempt_id__content__delete",
                 "parameters": [
                     {
@@ -12721,6 +13009,257 @@
                 ]
             }
         },
+        "/api/v1/background-task/": {
+            "get": {
+                "description": "List background tasks executed in the past 90 days.",
+                "operationId": "list_background_tasks_api_v1_background_task__get",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "iterator",
+                        "required": false,
+                        "schema": {
+                            "example": "qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "nullable": true,
+                            "title": "Iterator",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "limit",
+                        "required": false,
+                        "schema": {
+                            "default": 50,
+                            "maximum": 250.0,
+                            "title": "Limit",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "order",
+                        "required": false,
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/components/schemas/Ordering"
+                                }
+                            ],
+                            "default": "descending"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "nullable": true,
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListResponse_BackgroundTaskOut_"
+                                }
+                            }
+                        },
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "summary": "List Background Tasks",
+                "tags": [
+                    "Background Tasks"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/background-task/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/background-task/{task_id}/": {
+            "get": {
+                "description": "Get a background task by ID.",
+                "operationId": "get_background_task_api_v1_background_task__task_id___get",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "task_id",
+                        "required": true,
+                        "schema": {
+                            "example": "qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "title": "Task Id",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "nullable": true,
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BackgroundTaskOut"
+                                }
+                            }
+                        },
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "summary": "Get Background Task",
+                "tags": [
+                    "Background Tasks"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/background-task/{task_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            }
+        },
         "/api/v1/environment/export/": {
             "post": {
                 "description": "Download a JSON file containing all org-settings and event types",
@@ -14495,6 +15034,109 @@
                     }
                 ]
             }
+        },
+        "/api/v1/stats/usage/app/": {
+            "get": {
+                "description": "Creates a background task to calculate the message destinations for all applications in the environment.",
+                "operationId": "app_usage_stats_api_v1_stats_usage_app__get",
+                "parameters": [
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "nullable": true,
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AppUsageStatsOut"
+                                }
+                            }
+                        },
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "summary": "App Usage Stats",
+                "tags": [
+                    "Statistics"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/stats/usage/app/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            }
         }
     },
     "tags": [
@@ -14567,6 +15209,30 @@
         }
     ],
     "x-webhooks": {
+        "BackgroundTaskFinishedEvent": {
+            "post": {
+                "description": "Sent when a background task finishes.",
+                "operationId": "BackgroundTaskFinishedEvent",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BackgroundTaskFinishedEvent"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "2XX": {
+                        "description": "Return any 2XX status to indicate that the data was received successfully"
+                    }
+                },
+                "summary": "BackgroundTaskFinishedEvent",
+                "tags": [
+                    "Webhooks"
+                ]
+            }
+        },
         "EndpointCreatedEvent": {
             "post": {
                 "description": "Sent when an endpoint is created.",

@@ -18,6 +18,7 @@ import (
 type WebhookTypes struct {
 	A EndpointDisabledEvent `json:"a"`
 	A1 MessageAttemptFailingEvent `json:"a1"`
+	A2 BackgroundTaskFinishedEvent `json:"a2"`
 	B EndpointCreatedEvent `json:"b"`
 	C EndpointUpdatedEvent `json:"c"`
 	D EndpointDeletedEvent `json:"d"`
@@ -28,10 +29,11 @@ type WebhookTypes struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewWebhookTypes(a EndpointDisabledEvent, a1 MessageAttemptFailingEvent, b EndpointCreatedEvent, c EndpointUpdatedEvent, d EndpointDeletedEvent, e MessageAttemptExhaustedEvent) *WebhookTypes {
+func NewWebhookTypes(a EndpointDisabledEvent, a1 MessageAttemptFailingEvent, a2 BackgroundTaskFinishedEvent, b EndpointCreatedEvent, c EndpointUpdatedEvent, d EndpointDeletedEvent, e MessageAttemptExhaustedEvent) *WebhookTypes {
 	this := WebhookTypes{}
 	this.A = a
 	this.A1 = a1
+	this.A2 = a2
 	this.B = b
 	this.C = c
 	this.D = d
@@ -93,6 +95,30 @@ func (o *WebhookTypes) GetA1Ok() (*MessageAttemptFailingEvent, bool) {
 // SetA1 sets field value
 func (o *WebhookTypes) SetA1(v MessageAttemptFailingEvent) {
 	o.A1 = v
+}
+
+// GetA2 returns the A2 field value
+func (o *WebhookTypes) GetA2() BackgroundTaskFinishedEvent {
+	if o == nil {
+		var ret BackgroundTaskFinishedEvent
+		return ret
+	}
+
+	return o.A2
+}
+
+// GetA2Ok returns a tuple with the A2 field value
+// and a boolean to check if the value has been set.
+func (o *WebhookTypes) GetA2Ok() (*BackgroundTaskFinishedEvent, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.A2, true
+}
+
+// SetA2 sets field value
+func (o *WebhookTypes) SetA2(v BackgroundTaskFinishedEvent) {
+	o.A2 = v
 }
 
 // GetB returns the B field value
@@ -198,6 +224,9 @@ func (o WebhookTypes) MarshalJSON() ([]byte, error) {
 	}
 	if true {
 		toSerialize["a1"] = o.A1
+	}
+	if true {
+		toSerialize["a2"] = o.A2
 	}
 	if true {
 		toSerialize["b"] = o.B

@@ -17,6 +17,7 @@ import (
 	_nethttp "net/http"
 	_neturl "net/url"
 	"strings"
+	"time"
 )
 
 // Linger please
@@ -971,9 +972,19 @@ type ApiGetEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGetRequest struct {
 	ApiService *EndpointApiService
 	endpointId string
 	appId string
+	since *time.Time
+	until *time.Time
 	idempotencyKey *string
 }
 
+func (r ApiGetEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGetRequest) Since(since time.Time) ApiGetEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGetRequest {
+	r.since = &since
+	return r
+}
+func (r ApiGetEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGetRequest) Until(until time.Time) ApiGetEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGetRequest {
+	r.until = &until
+	return r
+}
 func (r ApiGetEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGetRequest) IdempotencyKey(idempotencyKey string) ApiGetEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGetRequest {
 	r.idempotencyKey = &idempotencyKey
 	return r
@@ -1039,6 +1050,12 @@ func (a *EndpointApiService) GetEndpointStatsApiV1AppAppIdEndpointEndpointIdStat
 		return localVarReturnValue, nil, reportError("appId must have less than 256 elements")
 	}
 
+	if r.since != nil {
+		localVarQueryParams.Add("since", parameterToString(*r.since, ""))
+	}
+	if r.until != nil {
+		localVarQueryParams.Add("until", parameterToString(*r.until, ""))
+	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -1753,7 +1770,7 @@ func (r ApiRecoverFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPostReques
 	return r
 }
 
-func (r ApiRecoverFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPostRequest) Execute() (map[string]interface{}, *_nethttp.Response, error) {
+func (r ApiRecoverFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPostRequest) Execute() (RecoverOut, *_nethttp.Response, error) {
 	return r.ApiService.RecoverFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPostExecute(r)
 }
 
@@ -1776,16 +1793,16 @@ func (a *EndpointApiService) RecoverFailedWebhooksApiV1AppAppIdEndpointEndpointI
 
 /*
  * Execute executes the request
- * @return map[string]interface{}
+ * @return RecoverOut
  */
-func (a *EndpointApiService) RecoverFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPostExecute(r ApiRecoverFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPostRequest) (map[string]interface{}, *_nethttp.Response, error) {
+func (a *EndpointApiService) RecoverFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPostExecute(r ApiRecoverFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPostRequest) (RecoverOut, *_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPost
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  map[string]interface{}
+		localVarReturnValue  RecoverOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "EndpointApiService.RecoverFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPost")
@@ -1952,7 +1969,7 @@ func (r ApiReplayMissingWebhooksApiV1AppAppIdEndpointEndpointIdReplayMissingPost
 	return r
 }
 
-func (r ApiReplayMissingWebhooksApiV1AppAppIdEndpointEndpointIdReplayMissingPostRequest) Execute() (map[string]interface{}, *_nethttp.Response, error) {
+func (r ApiReplayMissingWebhooksApiV1AppAppIdEndpointEndpointIdReplayMissingPostRequest) Execute() (ReplayOut, *_nethttp.Response, error) {
 	return r.ApiService.ReplayMissingWebhooksApiV1AppAppIdEndpointEndpointIdReplayMissingPostExecute(r)
 }
 
@@ -1975,16 +1992,16 @@ func (a *EndpointApiService) ReplayMissingWebhooksApiV1AppAppIdEndpointEndpointI
 
 /*
  * Execute executes the request
- * @return map[string]interface{}
+ * @return ReplayOut
  */
-func (a *EndpointApiService) ReplayMissingWebhooksApiV1AppAppIdEndpointEndpointIdReplayMissingPostExecute(r ApiReplayMissingWebhooksApiV1AppAppIdEndpointEndpointIdReplayMissingPostRequest) (map[string]interface{}, *_nethttp.Response, error) {
+func (a *EndpointApiService) ReplayMissingWebhooksApiV1AppAppIdEndpointEndpointIdReplayMissingPostExecute(r ApiReplayMissingWebhooksApiV1AppAppIdEndpointEndpointIdReplayMissingPostRequest) (ReplayOut, *_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPost
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  map[string]interface{}
+		localVarReturnValue  ReplayOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "EndpointApiService.ReplayMissingWebhooksApiV1AppAppIdEndpointEndpointIdReplayMissingPost")
