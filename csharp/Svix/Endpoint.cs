@@ -573,6 +573,8 @@ namespace Svix
                 var lStats = await _endpointApi.GetEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGetAsync(
                     endpointId,
                     appId,
+                    null,
+                    null,
                     idempotencyKey,
                     cancellationToken);
 
