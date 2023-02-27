@@ -192,6 +192,8 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
             return api.getEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGet(
                 endpointId,
                 appId,
+                null,
+                null,
                 null
             )
         } catch (e: Exception) {
