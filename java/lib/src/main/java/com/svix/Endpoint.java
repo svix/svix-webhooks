@@ -26,7 +26,8 @@ public final class Endpoint {
 
 	public ListResponseEndpointOut list(final String appId, final EndpointListOptions options) throws ApiException {
 		try {
-			return api.listEndpointsApiV1AppAppIdEndpointGet(appId, options.getIterator(), options.getLimit(), options.getOrder(), null);
+			return api.listEndpointsApiV1AppAppIdEndpointGet(appId, options.getIterator(), options.getLimit(),
+					options.getOrder(), null);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
@@ -36,7 +37,8 @@ public final class Endpoint {
 		return this.create(appId, endpointIn, new PostOptions());
 	}
 
-	public EndpointOut create(final String appId, final EndpointIn endpointIn, final PostOptions options) throws ApiException {
+	public EndpointOut create(final String appId, final EndpointIn endpointIn, final PostOptions options)
+			throws ApiException {
 		try {
 			return api.createEndpointApiV1AppAppIdEndpointPost(appId, endpointIn, options.getIdempotencyKey());
 		} catch (com.svix.internal.ApiException e) {
@@ -52,7 +54,8 @@ public final class Endpoint {
 		}
 	}
 
-	public EndpointOut update(final String appId, final String endpointId, final EndpointUpdate endpointUpdate) throws ApiException {
+	public EndpointOut update(final String appId, final String endpointId, final EndpointUpdate endpointUpdate)
+			throws ApiException {
 		try {
 			return api.updateEndpointApiV1AppAppIdEndpointEndpointIdPut(endpointId, appId, endpointUpdate, null);
 		} catch (com.svix.internal.ApiException e) {
@@ -76,13 +79,16 @@ public final class Endpoint {
 		}
 	}
 
-	public void rotateSecret(final String appId, final String endpointId, final EndpointSecretRotateIn endpointSecretRotateIn) throws ApiException {
+	public void rotateSecret(final String appId, final String endpointId,
+			final EndpointSecretRotateIn endpointSecretRotateIn) throws ApiException {
 		this.rotateSecret(appId, endpointId, endpointSecretRotateIn, new PostOptions());
 	}
 
-	public void rotateSecret(final String appId, final String endpointId, final EndpointSecretRotateIn endpointSecretRotateIn, final PostOptions options) throws ApiException {
+	public void rotateSecret(final String appId, final String endpointId,
+			final EndpointSecretRotateIn endpointSecretRotateIn, final PostOptions options) throws ApiException {
 		try {
-			api.rotateEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretRotatePost(endpointId, appId, endpointSecretRotateIn, options.getIdempotencyKey());
+			api.rotateEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretRotatePost(endpointId, appId,
+					endpointSecretRotateIn, options.getIdempotencyKey());
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
@@ -92,9 +98,11 @@ public final class Endpoint {
 		this.recover(appId, endpointId, recoverIn, new PostOptions());
 	}
 
-	public void recover(final String appId, final String endpointId, final RecoverIn recoverIn, final PostOptions options) throws ApiException {
+	public void recover(final String appId, final String endpointId, final RecoverIn recoverIn,
+			final PostOptions options) throws ApiException {
 		try {
-			api.recoverFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPost(appId, endpointId, recoverIn, options.getIdempotencyKey());
+			api.recoverFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPost(appId, endpointId, recoverIn,
+					options.getIdempotencyKey());
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
@@ -108,17 +116,21 @@ public final class Endpoint {
 		}
 	}
 
-	public void updateHeaders(final String appId, final String endpointId, final EndpointHeadersIn endpointHeadersIn) throws ApiException {
+	public void updateHeaders(final String appId, final String endpointId, final EndpointHeadersIn endpointHeadersIn)
+			throws ApiException {
 		try {
-			api.updateEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPut(appId, endpointId, endpointHeadersIn, null);
+			api.updateEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPut(appId, endpointId, endpointHeadersIn,
+					null);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
 	}
 
-	public void patchHeaders(final String appId, final String endpointId, final EndpointHeadersPatchIn endpointHeadersIn) throws ApiException {
+	public void patchHeaders(final String appId, final String endpointId,
+			final EndpointHeadersPatchIn endpointHeadersIn) throws ApiException {
 		try {
-			api.patchEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPatch(appId, endpointId, endpointHeadersIn, null);
+			api.patchEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPatch(appId, endpointId, endpointHeadersIn,
+					null);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
@@ -126,35 +138,42 @@ public final class Endpoint {
 
 	public EndpointStats getStats(final String appId, final String endpointId) throws ApiException {
 		try {
-			return api.getEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGet(endpointId, appId, null);
+			return api.getEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGet(endpointId, appId, null, null, null);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
 	}
 
-	public void replayMissing(final String appId, final String endpointId, final ReplayIn replayIn) throws ApiException {
+	public void replayMissing(final String appId, final String endpointId, final ReplayIn replayIn)
+			throws ApiException {
 		this.replayMissing(appId, endpointId, replayIn, new PostOptions());
 	}
 
-	public void replayMissing(final String appId, final String endpointId, final ReplayIn replayIn, final PostOptions options) throws ApiException {
+	public void replayMissing(final String appId, final String endpointId, final ReplayIn replayIn,
+			final PostOptions options) throws ApiException {
 		try {
-			api.replayMissingWebhooksApiV1AppAppIdEndpointEndpointIdReplayMissingPostWithHttpInfo(appId, endpointId, replayIn, options.getIdempotencyKey());
+			api.replayMissingWebhooksApiV1AppAppIdEndpointEndpointIdReplayMissingPostWithHttpInfo(appId, endpointId,
+					replayIn, options.getIdempotencyKey());
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
 	}
 
-	public EndpointTransformationOut transformationGet(final String appId, final String endpointId) throws ApiException {
+	public EndpointTransformationOut transformationGet(final String appId, final String endpointId)
+			throws ApiException {
 		try {
-			return api.getEndpointTransformationApiV1AppAppIdEndpointEndpointIdTransformationGet(endpointId, appId, null);
+			return api.getEndpointTransformationApiV1AppAppIdEndpointEndpointIdTransformationGet(endpointId, appId,
+					null);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
 	}
 
-	public void transformationPartialUpdate(final String appId, final String endpointId, final EndpointTransformationIn transformationIn) throws ApiException {
+	public void transformationPartialUpdate(final String appId, final String endpointId,
+			final EndpointTransformationIn transformationIn) throws ApiException {
 		try {
-			api.setEndpointTransformationApiV1AppAppIdEndpointEndpointIdTransformationPatch(appId, endpointId, transformationIn, null);
+			api.setEndpointTransformationApiV1AppAppIdEndpointEndpointIdTransformationPatch(appId, endpointId,
+					transformationIn, null);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
