@@ -1,8 +1,11 @@
 # Changelog
 
 ## Next
-* Libs/C#: **[Breaking]** change default value for `SvixOptions.Throw` to `true`
-*
+* 
+
+## Version 0.81.0
+* Libs: add support for creating application when creating a message
+* Libs/Go: bump Go version
 
 ## Version 0.80.0
 * Libs: add `prev_iterator` and `order` support to application list
