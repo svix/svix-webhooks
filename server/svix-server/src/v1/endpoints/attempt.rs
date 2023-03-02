@@ -20,7 +20,7 @@ use crate::{
         utils::{
             apply_pagination_desc, iterator_from_before_or_after, openapi_tag,
             ApplicationEndpointPath, ApplicationMsgAttemptPath, ApplicationMsgEndpointPath,
-            ApplicationMsgPath, EmptyResponse, EventTypesQuery, ListResponse, ModelOut,
+            ApplicationMsgPath, EmptyResponse, EventTypesQuery, JsonStatus, ListResponse, ModelOut,
             PaginationLimit, ReversibleIterator, ValidatedQuery,
         },
     },
@@ -669,7 +669,7 @@ async fn resend_webhook(
         ..
     }): Path<ApplicationMsgEndpointPath>,
     permissions::Application { app }: permissions::Application,
-) -> Result<(StatusCode, Json<EmptyResponse>)> {
+) -> Result<JsonStatus<202, EmptyResponse>> {
     let msg = ctx!(
         message::Entity::secure_find_by_id_or_uid(app.id.clone(), msg_id)
             .one(db)
@@ -712,7 +712,7 @@ async fn resend_webhook(
             None,
         )
         .await?;
-    Ok((StatusCode::ACCEPTED, Json(EmptyResponse {})))
+    Ok(JsonStatus(EmptyResponse {}))
 }
 
 /// Deletes the given attempt's response body. Useful when an endpoint accidentally returned sensitive content.

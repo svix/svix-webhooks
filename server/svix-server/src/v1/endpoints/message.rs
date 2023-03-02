@@ -15,8 +15,8 @@ use crate::{
     queue::MessageTaskBatch,
     v1::utils::{
         apply_pagination_desc, iterator_from_before_or_after, openapi_tag, validation_error,
-        ApplicationMsgPath, EventTypesQuery, ListResponse, ModelIn, ModelOut, PaginationLimit,
-        ReversibleIterator, ValidatedJson, ValidatedQuery,
+        ApplicationMsgPath, EventTypesQuery, JsonStatus, ListResponse, ModelIn, ModelOut,
+        PaginationLimit, ReversibleIterator, ValidatedJson, ValidatedQuery,
     },
     AppState,
 };
@@ -248,7 +248,7 @@ async fn create_message(
     >,
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
     ValidatedJson(data): ValidatedJson<MessageIn>,
-) -> Result<(StatusCode, Json<MessageOut>)> {
+) -> Result<JsonStatus<202, MessageOut>> {
     let create_message_app = CreateMessageApp::layered_fetch(
         &cache,
         db,
@@ -291,7 +291,7 @@ async fn create_message(
         MessageOut::without_payload(msg)
     };
 
-    Ok((StatusCode::ACCEPTED, Json(msg_out)))
+    Ok(JsonStatus(msg_out))
 }
 
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
