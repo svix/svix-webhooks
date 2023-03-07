@@ -19,7 +19,7 @@ svix-ksuid = "^0.5.1"
 dotenv = "0.15.0"
 sha2 = "0.10.2"
 hmac-sha256 = "1"
-clap = { version = "3.2.1", features = ["derive"] }
+clap = { version = "4.1.8", features = ["derive"] }
 axum = { version = "0.6.1", features = ["headers"] }
 base64 = "0.13.0"
 hyper = { version = "0.14.16", features = ["full"] }
