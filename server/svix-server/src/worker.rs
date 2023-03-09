@@ -761,11 +761,17 @@ async fn process_queue_task_inner(
 
     let msg = ctx!(message::Entity::find_by_id(msg_id.clone()).one(db).await)?
         .ok_or_else(|| err_generic!("Unexpected: message doesn't exist"))?;
-    let payload = msg
+    let payload = match msg
         .payload
         .as_ref()
         .and_then(|value| serde_json::to_string(value).ok())
-        .ok_or_else(|| err_generic!("Message payload is NULL"))?;
+    {
+        Some(p) => p,
+        None => {
+            tracing::warn!("Message payload is NULL; payload has most likely expired");
+            return Ok(());
+        }
+    };
 
     span.record("app_id", &msg.app_id.0);
     span.record("org_id", &msg.org_id.0);
