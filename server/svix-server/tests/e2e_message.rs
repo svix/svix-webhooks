@@ -399,7 +399,7 @@ async fn test_payload_retention_period() {
         .await
         .unwrap();
 
-    expired_message_cleaner::clean_expired_messages(&pool)
+    expired_message_cleaner::clean_expired_messages(&pool, 5000)
         .await
         .unwrap();
 
