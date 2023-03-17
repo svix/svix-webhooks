@@ -2,29 +2,30 @@ use axum::{
     extract::{Path, State},
     Json,
 };
-use hyper::StatusCode;
 use sea_orm::ActiveModelTrait;
+use svix_server_derive::aide_annotate;
 
 use super::{EndpointHeadersIn, EndpointHeadersOut, EndpointHeadersPatchIn};
 use crate::{
-    core::{
-        permissions,
-        types::{ApplicationIdOrUid, EndpointIdOrUid},
-    },
+    core::permissions,
     ctx,
     db::models::endpoint,
     error::{HttpError, Result},
-    v1::utils::{EmptyResponse, ModelIn, ValidatedJson},
+    v1::utils::{ApplicationEndpointPath, EmptyResponse, JsonStatus, ModelIn, ValidatedJson},
     AppState,
 };
 
+/// Get the additional headers to be sent with the webhook
+#[aide_annotate(
+    op_id = "get_endpoint_headers_api_v1_app__app_id__endpoint__endpoint_id__headers__get"
+)]
 pub(super) async fn get_endpoint_headers(
     State(AppState { ref db, .. }): State<AppState>,
-    Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
+    Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<EndpointHeadersOut>> {
     let endp = ctx!(
-        endpoint::Entity::secure_find_by_id_or_uid(app.id, endp_id)
+        endpoint::Entity::secure_find_by_id_or_uid(app.id, endpoint_id)
             .one(db)
             .await
     )?
@@ -36,14 +37,18 @@ pub(super) async fn get_endpoint_headers(
     }
 }
 
+/// Set the additional headers to be sent with the webhook
+#[aide_annotate(
+    op_id = "update_endpoint_headers_api_v1_app__app_id__endpoint__endpoint_id__headers__put"
+)]
 pub(super) async fn update_endpoint_headers(
     State(AppState { ref db, .. }): State<AppState>,
-    Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
+    Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
     ValidatedJson(data): ValidatedJson<EndpointHeadersIn>,
-) -> Result<(StatusCode, Json<EmptyResponse>)> {
+) -> Result<JsonStatus<204, EmptyResponse>> {
     let endp = ctx!(
-        endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
+        endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endpoint_id)
             .one(db)
             .await
     )?
@@ -53,17 +58,21 @@ pub(super) async fn update_endpoint_headers(
     data.update_model(&mut endp);
     ctx!(endp.update(db).await)?;
 
-    Ok((StatusCode::NO_CONTENT, Json(EmptyResponse {})))
+    Ok(JsonStatus(EmptyResponse {}))
 }
 
+/// Partially set the additional headers to be sent with the webhook
+#[aide_annotate(
+    op_id = "patch_endpoint_headers_api_v1_app__app_id__endpoint__endpoint_id__headers__patch"
+)]
 pub(super) async fn patch_endpoint_headers(
     State(AppState { ref db, .. }): State<AppState>,
-    Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
+    Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
     ValidatedJson(data): ValidatedJson<EndpointHeadersPatchIn>,
-) -> Result<(StatusCode, Json<EmptyResponse>)> {
+) -> Result<JsonStatus<204, EmptyResponse>> {
     let endp = ctx!(
-        endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
+        endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endpoint_id)
             .one(db)
             .await
     )?
@@ -73,7 +82,7 @@ pub(super) async fn patch_endpoint_headers(
     data.update_model(&mut endp);
     ctx!(endp.update(db).await)?;
 
-    Ok((StatusCode::NO_CONTENT, Json(EmptyResponse {})))
+    Ok(JsonStatus(EmptyResponse {}))
 }
 
 #[cfg(test)]

@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "csharp/**"
+      - "openapi.json"
 
 jobs:
   dotnet:

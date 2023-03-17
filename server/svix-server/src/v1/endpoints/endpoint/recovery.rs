@@ -1,26 +1,20 @@
-use axum::{
-    extract::{Path, State},
-    Json,
-};
+use axum::extract::{Path, State};
 use chrono::{DateTime, Utc};
-use hyper::StatusCode;
 use sea_orm::{entity::prelude::*, QueryOrder};
 use sea_orm::{DatabaseConnection, QuerySelect};
+use svix_server_derive::aide_annotate;
 
 use super::RecoverIn;
 use crate::{
     core::{
         permissions,
-        types::{
-            ApplicationIdOrUid, BaseId, EndpointIdOrUid, MessageAttemptTriggerType,
-            MessageEndpointId, MessageStatus,
-        },
+        types::{BaseId, MessageAttemptTriggerType, MessageEndpointId, MessageStatus},
     },
     ctx,
     db::models::{application, endpoint, messagedestination},
     error::{HttpError, Result, ValidationErrorItem},
     queue::{MessageTask, TaskQueueProducer},
-    v1::utils::{EmptyResponse, ValidatedJson},
+    v1::utils::{ApplicationEndpointPath, EmptyResponse, JsonStatus, ValidatedJson},
     AppState,
 };
 
@@ -74,14 +68,18 @@ async fn bulk_recover_failed_messages(
     Ok(())
 }
 
+/// Resend all failed messages since a given time.
+#[aide_annotate(
+    op_id = "recover_failed_webhooks_api_v1_app__app_id__endpoint__endpoint_id__recover__post"
+)]
 pub(super) async fn recover_failed_webhooks(
     State(AppState {
         ref db, queue_tx, ..
     }): State<AppState>,
-    Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
+    Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
     ValidatedJson(data): ValidatedJson<RecoverIn>,
-) -> Result<(StatusCode, Json<EmptyResponse>)> {
+) -> Result<JsonStatus<202, EmptyResponse>> {
     // Add five minutes so that people can easily just do `now() - two_weeks` without having to worry about clock sync
     let timeframe = chrono::Duration::days(14);
     let timeframe = timeframe + chrono::Duration::minutes(5);
@@ -96,7 +94,7 @@ pub(super) async fn recover_failed_webhooks(
     }
 
     let endp = ctx!(
-        endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endp_id)
+        endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endpoint_id)
             .one(db)
             .await
     )?
@@ -108,5 +106,5 @@ pub(super) async fn recover_failed_webhooks(
         async move { bulk_recover_failed_messages(db, queue_tx, app, endp, data.since).await },
     );
 
-    Ok((StatusCode::ACCEPTED, Json(EmptyResponse {})))
+    Ok(JsonStatus(EmptyResponse {}))
 }

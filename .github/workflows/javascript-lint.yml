@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - "javascript/**"
+      - "openapi.json"
 jobs:
   build:
     runs-on: ubuntu-latest

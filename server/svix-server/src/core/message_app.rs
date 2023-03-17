@@ -33,8 +33,8 @@ pub struct CreateMessageApp {
     pub uid: Option<ApplicationUid>,
     pub org_id: OrganizationId,
     pub rate_limit: Option<u16>,
-    pub endpoints: Vec<CreateMessageEndpoint>,
-    pub deleted: bool,
+    endpoints: Vec<CreateMessageEndpoint>,
+    deleted: bool,
 }
 
 impl CreateMessageApp {
@@ -77,8 +77,12 @@ impl CreateMessageApp {
         let cache_key = AppEndpointKey::new(&org_id, &app_id);
 
         // First check Redis
-        if let Ok(Some(cma)) = cache.get(&cache_key).await {
-            return Ok(Some(cma));
+        if let Ok(Some(cma)) = cache.get::<CreateMessageApp>(&cache_key).await {
+            if cma.deleted {
+                return Ok(None);
+            } else {
+                return Ok(Some(cma));
+            }
         }
 
         // Then check PostgreSQL
@@ -101,6 +105,10 @@ impl CreateMessageApp {
 
         // Insert it into Redis
         let _ = cache.set(&cache_key, &out, ttl).await;
+
+        if out.deleted {
+            return Ok(None);
+        }
 
         Ok(Some(out))
     }
@@ -148,7 +156,6 @@ pub struct CreateMessageEndpoint {
     pub id: EndpointId,
     pub url: String,
     pub key: EndpointSecretInternal,
-    pub old_signing_keys: Option<ExpiringSigningKeys>,
     pub event_types_ids: Option<EventTypeNameSet>,
     pub channels: Option<EventChannelSet>,
     pub rate_limit: Option<u16>,
@@ -157,6 +164,8 @@ pub struct CreateMessageEndpoint {
     pub headers: Option<EndpointHeaders>,
     pub disabled: bool,
     pub deleted: bool,
+    // outside of this module, valid_signing_keys should be used instead
+    old_signing_keys: Option<ExpiringSigningKeys>,
 }
 
 impl CreateMessageEndpoint {

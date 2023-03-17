@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -169,6 +170,51 @@ namespace Svix
                     throw;
 
                 return new List<MessageOut>();
+            }
+        }
+
+        public bool ExpungeContent(string appId, string messageId, string idempotencyKey = default)
+        {
+            try
+            {
+                var lResponse = _messageApi.ExpungeMessagePayloadApiV1AppAppIdMsgMsgIdContentDeleteWithHttpInfo(
+                    messageId,
+                    appId,
+                    idempotencyKey);
+
+                return lResponse.StatusCode == HttpStatusCode.NoContent;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(ExpungeContent)} failed");
+
+                if (Throw)
+                    throw;
+
+                return false;
+            }
+        }
+
+        public async Task<bool> ExpungeContentAsync(string appId, string messageId, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var lResponse = await _messageApi.ExpungeMessagePayloadApiV1AppAppIdMsgMsgIdContentDeleteWithHttpInfoAsync(
+                    messageId,
+                    appId,
+                    idempotencyKey,
+                    cancellationToken);
+
+                return lResponse.StatusCode == HttpStatusCode.NoContent;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(ExpungeContentAsync)} failed");
+
+                if (Throw)
+                    throw;
+
+                return false;
             }
         }
     }

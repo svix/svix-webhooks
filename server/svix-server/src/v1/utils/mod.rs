@@ -6,19 +6,22 @@ use std::{
     collections::HashSet,
     error::Error as StdError,
     ops::Deref,
-    str::FromStr,
     time::{SystemTime, UNIX_EPOCH},
 };
 
-use aide::{transform::TransformPathItem, OperationInput, OperationIo};
+use aide::{
+    transform::{TransformOperation, TransformPathItem},
+    OperationInput, OperationIo, OperationOutput,
+};
 use axum::{
     async_trait,
     body::HttpBody,
     extract::{FromRequest, FromRequestParts, Query},
+    response::IntoResponse,
     BoxError,
 };
 use chrono::{DateTime, Utc};
-use http::{request::Parts, Request};
+use http::{request::Parts, Request, StatusCode};
 use regex::Regex;
 use schemars::JsonSchema;
 use sea_orm::{ColumnTrait, QueryFilter, QueryOrder, QuerySelect};
@@ -27,7 +30,10 @@ use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use validator::{Validate, ValidationError};
 
 use crate::{
-    core::types::{BaseId, EventTypeName, EventTypeNameSet},
+    core::types::{
+        ApplicationIdOrUid, BaseId, EndpointIdOrUid, EventTypeName, EventTypeNameSet,
+        MessageAttemptId, MessageIdOrUid,
+    },
     error::{Error, HttpError, Result, ValidationErrorItem},
 };
 
@@ -51,6 +57,7 @@ pub struct Pagination<T: Validate + JsonSchema> {
     pub limit: PaginationLimit,
     #[validate]
     pub iterator: Option<T>,
+    pub order: Option<ListOrdering>,
 }
 
 #[derive(Debug, JsonSchema)]
@@ -143,12 +150,12 @@ pub fn iterator_from_before_or_after<I: BaseId<Output = I> + Validate>(
     iterator.or_else(|| {
         before
             .map(|time| ReversibleIterator::Normal(I::start_id(time)))
-            .or_else(|| after.map(|time| ReversibleIterator::Prev(I::end_id(time))))
+            .or_else(|| after.map(|time| ReversibleIterator::Prev(I::start_id(time))))
     })
 }
 
 /// Applies sorting and filtration to a query from its iterator, sort column, and limit
-pub fn apply_pagination<
+pub fn apply_pagination_desc<
     Q: QuerySelect + QueryOrder + QueryFilter,
     C: ColumnTrait,
     I: BaseId<Output = I> + Validate + Into<sea_orm::Value>,
@@ -173,12 +180,54 @@ pub fn apply_pagination<
     }
 }
 
-#[derive(Serialize)]
+/// Marker trait for any type that is used for iterating through results
+/// in the public API.
+pub trait IdIterator: Validate + Into<sea_orm::Value> {}
+
+impl<T: BaseId + Validate + Into<sea_orm::Value>> IdIterator for T {}
+impl IdIterator for EventTypeName {}
+
+pub fn apply_pagination<
+    Q: QuerySelect + QueryOrder + QueryFilter,
+    C: ColumnTrait,
+    I: IdIterator,
+>(
+    query: Q,
+    sort_column: C,
+    limit: u64,
+    iterator: Option<ReversibleIterator<I>>,
+    ordering: ListOrdering,
+) -> Q {
+    use ListOrdering::*;
+    use ReversibleIterator::*;
+
+    let query = query.limit(limit + 1);
+
+    let iterator = if let Some(it) = iterator {
+        it
+    } else {
+        return match ordering {
+            Ascending => query.order_by_asc(sort_column),
+            Descending => query.order_by_desc(sort_column),
+        };
+    };
+
+    match (iterator, ordering) {
+        (Prev(id), Ascending) | (Normal(id), Descending) => {
+            query.order_by_desc(sort_column).filter(sort_column.lt(id))
+        }
+        (Prev(id), Descending) | (Normal(id), Ascending) => {
+            query.order_by_asc(sort_column).filter(sort_column.gt(id))
+        }
+    }
+}
+
+#[derive(Serialize, JsonSchema)]
 pub struct EmptyResponse {}
 
 #[derive(Serialize, Deserialize, Clone, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-pub struct ListResponse<T: Clone> {
+pub struct ListResponse<T> {
     pub data: Vec<T>,
     pub iterator: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -192,16 +241,33 @@ pub trait ModelIn {
     fn update_model(self, model: &mut Self::ActiveModel);
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub enum ListOrdering {
+    Ascending,
+    Descending,
+}
+
+#[derive(PartialEq, Eq)]
+enum IteratorDirection {
+    Next,
+    Previous,
+}
+
 fn list_response_inner<T: ModelOut>(
     mut data: Vec<T>,
     limit: usize,
-    is_prev_iter: bool,
+    iter_direction: IteratorDirection,
     supports_prev_iterator: bool,
 ) -> ListResponse<T> {
     let done = data.len() <= limit;
 
+    if iter_direction == IteratorDirection::Previous {
+        data.reverse();
+    }
+
     if data.len() > limit {
-        if is_prev_iter {
+        if iter_direction == IteratorDirection::Previous {
             data = data.drain(data.len() - limit..).collect();
         } else {
             data.truncate(limit);
@@ -223,15 +289,20 @@ fn list_response_inner<T: ModelOut>(
     }
 }
 
-pub trait ModelOut: Clone {
+pub trait ModelOut: Sized {
     fn id_copy(&self) -> String;
 
     fn list_response(data: Vec<Self>, limit: usize, is_prev_iter: bool) -> ListResponse<Self> {
-        list_response_inner(data, limit, is_prev_iter, true)
+        let direction = if is_prev_iter {
+            IteratorDirection::Previous
+        } else {
+            IteratorDirection::Next
+        };
+        list_response_inner(data, limit, direction, true)
     }
 
     fn list_response_no_prev(data: Vec<Self>, limit: usize) -> ListResponse<Self> {
-        list_response_inner(data, limit, false, false)
+        list_response_inner(data, limit, IteratorDirection::Next, false)
     }
 }
 
@@ -379,53 +450,44 @@ impl<T: JsonSchema> OperationInput for ValidatedQuery<T> {
     }
 }
 
-/// This struct is slower than Query. Only use this if we need to pass arrays.
-#[derive(Debug)]
-pub struct MessageListFetchOptions {
-    pub event_types: Option<EventTypeNameSet>,
-    pub before: Option<DateTime<Utc>>,
-}
+// A special wrapper to handle query parameter lists. serde_qs and serde_urlencode can't
+// handle url query param arrays as flexibly as we need to support in our API
+pub struct EventTypesQuery(pub Option<EventTypeNameSet>);
 
 #[async_trait]
-impl<S> FromRequestParts<S> for MessageListFetchOptions
+impl<S> FromRequestParts<S> for EventTypesQuery
 where
     S: Send + Sync,
 {
     type Rejection = Error;
 
     async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self> {
-        let pairs: Vec<(String, String)> =
-            serde_urlencoded::from_str(parts.uri.query().unwrap_or_default())
-                .map_err(|err| HttpError::bad_request(None, Some(err.to_string())))?;
+        let pairs = form_urlencoded::parse(parts.uri.query().unwrap_or_default().as_bytes());
 
-        let mut before = None;
-        let mut event_types = EventTypeNameSet(HashSet::<EventTypeName>::new());
-        for (key, value) in pairs {
-            if key == "event_types" {
-                event_types.0.insert(EventTypeName(value));
-            } else if key == "before" {
-                before = Some(DateTime::<Utc>::from_str(&value).map_err(|_| {
-                    HttpError::unprocessable_entity(vec![ValidationErrorItem {
-                        loc: vec!["query".to_owned(), "before".to_owned()],
-                        msg: "Unable to parse before".to_owned(),
-                        ty: "value_error".to_owned(),
-                    }])
-                })?);
-            }
-        }
-        let event_types = if event_types.0.is_empty() {
-            None
+        let event_types: HashSet<EventTypeName> = pairs
+            .filter_map(|(key, value)| {
+                // want to handle both `?event_types=`, `?event_types[]=`, and `?event_types[1]=`
+                if key == "event_types" || (key.starts_with("event_types[") && key.ends_with(']')) {
+                    Some(EventTypeName(value.into_owned()))
+                } else {
+                    None
+                }
+            })
+            .collect();
+
+        if event_types.is_empty() {
+            Ok(Self(None))
         } else {
-            Some(event_types)
-        };
-        Ok(MessageListFetchOptions {
-            event_types,
-            before,
-        })
+            let event_types = EventTypeNameSet(event_types);
+            event_types.validate().map_err(|e| {
+                HttpError::unprocessable_entity(validation_errors(vec!["query".to_owned()], e))
+            })?;
+            Ok(Self(Some(event_types)))
+        }
     }
 }
 
-impl OperationInput for MessageListFetchOptions {}
+impl OperationInput for EventTypesQuery {}
 
 pub async fn api_not_implemented() -> Result<()> {
     Err(HttpError::not_implemented(None, None).into())
@@ -451,8 +513,12 @@ pub fn validate_no_control_characters_unrequired(
     }
 }
 
-pub fn openapi_tag(tag: &'static str) -> impl FnOnce(TransformPathItem) -> TransformPathItem {
-    |op| op.tag(tag)
+pub fn openapi_tag<T: AsRef<str>>(tag: T) -> impl Fn(TransformPathItem) -> TransformPathItem {
+    move |op| op.tag(tag.as_ref())
+}
+
+pub fn openapi_desc<T: AsRef<str>>(desc: T) -> impl Fn(TransformOperation) -> TransformOperation {
+    move |op| op.description(desc.as_ref())
 }
 
 pub fn get_unix_timestamp() -> u64 {
@@ -460,6 +526,124 @@ pub fn get_unix_timestamp() -> u64 {
         .duration_since(UNIX_EPOCH)
         .unwrap()
         .as_secs()
+}
+
+#[derive(Deserialize, JsonSchema)]
+pub struct ApplicationPath {
+    pub app_id: ApplicationIdOrUid,
+}
+
+#[derive(Deserialize, JsonSchema)]
+pub struct ApplicationEndpointPath {
+    pub app_id: ApplicationIdOrUid,
+    pub endpoint_id: EndpointIdOrUid,
+}
+
+#[derive(Deserialize, JsonSchema)]
+pub struct ApplicationMsgPath {
+    pub app_id: ApplicationIdOrUid,
+    pub msg_id: MessageIdOrUid,
+}
+
+#[derive(Deserialize, JsonSchema)]
+pub struct ApplicationMsgEndpointPath {
+    pub app_id: ApplicationIdOrUid,
+    pub msg_id: MessageIdOrUid,
+    pub endpoint_id: EndpointIdOrUid,
+}
+
+#[derive(Deserialize, JsonSchema)]
+pub struct ApplicationMsgAttemptPath {
+    pub app_id: ApplicationIdOrUid,
+    pub msg_id: MessageIdOrUid,
+    pub attempt_id: MessageAttemptId,
+}
+
+#[derive(Deserialize, JsonSchema)]
+pub struct EventTypeNamePath {
+    pub event_type_name: EventTypeName,
+}
+
+/// JsonStatus is a wrapper over `axum::extract::Json` as a handler output.
+/// Setting the `STATUS` const parameter automatically sets the response
+/// status code, as well as inserting it into the aide documentation.
+pub struct JsonStatus<const STATUS: u16, T: JsonSchema + Serialize>(pub T);
+
+impl<const STATUS: u16, T: JsonSchema + Serialize> IntoResponse for JsonStatus<STATUS, T> {
+    fn into_response(self) -> axum::response::Response {
+        (
+            StatusCode::from_u16(STATUS).unwrap(),
+            axum::extract::Json(self.0),
+        )
+            .into_response()
+    }
+}
+
+impl<const STATUS: u16, T: JsonSchema + Serialize> OperationOutput for JsonStatus<STATUS, T> {
+    type Inner = T;
+
+    fn operation_response(
+        ctx: &mut aide::gen::GenContext,
+        operation: &mut aide::openapi::Operation,
+    ) -> Option<aide::openapi::Response> {
+        axum::extract::Json::<T>::operation_response(ctx, operation)
+    }
+
+    fn inferred_responses(
+        ctx: &mut aide::gen::GenContext,
+        operation: &mut aide::openapi::Operation,
+    ) -> Vec<(Option<u16>, aide::openapi::Response)> {
+        if let Some(resp) = Self::operation_response(ctx, operation) {
+            vec![(Some(STATUS), resp)]
+        } else {
+            vec![]
+        }
+    }
+}
+
+/// JsonStatusUpsert is a wrapper over `axum::extract::Json` as a handler
+/// output. It is a special casing of `JsonStatus` for situations where a
+/// resource is either being updated or created within the same operation. In
+/// case of `Updated` HTTP 200 OK is returned, in case of `Created` HTTP 201
+/// CREATED is returned.
+pub enum JsonStatusUpsert<T: JsonSchema + Serialize> {
+    Updated(T),
+    Created(T),
+}
+
+impl<T: JsonSchema + Serialize> IntoResponse for JsonStatusUpsert<T> {
+    fn into_response(self) -> axum::response::Response {
+        let (status, body) = match self {
+            JsonStatusUpsert::Updated(v) => (StatusCode::OK, v),
+            JsonStatusUpsert::Created(v) => (StatusCode::CREATED, v),
+        };
+        (status, axum::extract::Json(body)).into_response()
+    }
+}
+
+impl<T: JsonSchema + Serialize> OperationOutput for JsonStatusUpsert<T> {
+    type Inner = T;
+
+    fn operation_response(
+        ctx: &mut aide::gen::GenContext,
+        operation: &mut aide::openapi::Operation,
+    ) -> Option<aide::openapi::Response> {
+        axum::extract::Json::<T>::operation_response(ctx, operation)
+    }
+
+    fn inferred_responses(
+        ctx: &mut aide::gen::GenContext,
+        operation: &mut aide::openapi::Operation,
+    ) -> Vec<(Option<u16>, aide::openapi::Response)> {
+        if let Some(resp) = Self::operation_response(ctx, operation) {
+            vec![
+                (Some(StatusCode::OK.into()), resp.clone()),
+                (Some(StatusCode::CREATED.into()), resp),
+            ]
+        } else {
+            vec![]
+        }
+    }
 }
 
 #[cfg(test)]

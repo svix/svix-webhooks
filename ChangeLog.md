@@ -3,6 +3,52 @@
 ## Next
 * 
 
+## Version 0.81.0
+* Libs: add support for creating application when creating a message
+* Libs/Go: bump Go version
+
+## Version 0.80.0
+* Libs: add `prev_iterator` and `order` support to application list
+* Libs: add `prev_iterator` support to event type list
+* Libs/C#: **[Breaking]** change default value for `SvixOptions.Throw` to `true`
+
+## Version 0.79.0
+* Server: support prev_iterator for application and event type listing
+* Server: fix returning of 409 (CONFLICT) when inserting/patching an application with a conflicting `uid`
+* Libs/Ruby: require (reexport) app portal models in ruby (fixing errors)
+* Libs/C#: fix MessageAttempt querying when not filtering by status and code
+
+## Version 0.78.0
+* Server: add `order` query parameter for sorting endpoints
+* Server: fix default sort order of endpoints to `desc` to match prod
+* Libs: add support for `prev_iterator` for application and endpoints
+* Libs/JS: fix sign function to support non-round dates
+* Libs/Go: **[Breaking]** accept a context parameter in all Go lib methods
+
+## Version 0.77.0
+* Server: fix event_type array query parsing
+* Server: fix bad `?channel=` queries
+* Server: fire operational webhook on endpoint secret rotation
+* Server: implement bidirectional pagination for endpoints
+* Libs/Rust: glob-reexport all generated models in Rust
+
+## Version 0.76.1
+* Server: fix `/attempt/endpoint`'s broken `?channel=` query
+* Libs/Rust: add missing exports to a few API endpoints
+* Libs: fix naming of replay-missing methods in libraries (all but Rust)
+
+## Version 0.76.0
+* Server: add org_id and app_id to main tracing span
+* Server: make `wait_for` timeout early and retry
+* Server: add since/until query params to endpoint stats
+* Server: add endpoints to expunge payload and response
+* Server: clarify error message and documentation around filtered IP addresses
+* Server: fix error message with endpoint filter types validation
+* Server: fix `?after=<time>` ID Parsing in paginated endpoints
+* Libs: add endpoints to expunge payload and response
+* Libs: add replay missing messages functions
+* Libs: add transformations APIs
+
 ## Version 0.75.0
 * Server: add built in SSRF support (no need for an external proxy)
 * Server: many worker improvements (see #704 for details)

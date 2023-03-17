@@ -647,10 +647,119 @@ async fn test_list() {
         &client,
         &format!("api/v1/app/{app_id}/endpoint/"),
         |i| endpoint_in(&format!("https://localhost/{i}")),
+        false,
         true,
     )
     .await
     .unwrap();
+}
+
+#[tokio::test]
+async fn test_endpoint_list_ordering() {
+    let (client, _jh) = start_svix_server().await;
+
+    let app_id = create_test_app(&client, "App1").await.unwrap().id;
+
+    for i in 0..5 {
+        create_test_endpoint(&client, &app_id, &format!("https://test.url/{i}"))
+            .await
+            .unwrap();
+        // Sleep to account for ksuid 4ms resolution
+        tokio::time::sleep(Duration::from_millis(5)).await;
+    }
+
+    let first_list: ListResponse<EndpointOut> = client
+        .get(
+            &format!("api/v1/app/{}/endpoint/?limit=2", &app_id),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    // First iterate through in order
+    assert_eq!(
+        first_list.data.first().unwrap().ep.url,
+        "https://test.url/4"
+    );
+    assert_eq!(first_list.data.last().unwrap().ep.url, "https://test.url/3");
+    assert!(!first_list.done);
+
+    let list: ListResponse<EndpointOut> = client
+        .get(
+            &format!(
+                "api/v1/app/{}/endpoint/?limit=2&iterator={}",
+                &app_id,
+                first_list.iterator.unwrap()
+            ),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(list.data.first().unwrap().ep.url, "https://test.url/2");
+    assert_eq!(list.data.last().unwrap().ep.url, "https://test.url/1");
+    assert!(!list.done);
+
+    // Iterate with previous iterator
+    let list: ListResponse<EndpointOut> = client
+        .get(
+            &format!(
+                "api/v1/app/{}/endpoint/?iterator={}",
+                &app_id,
+                list.prev_iterator.unwrap()
+            ),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(list.data.first().unwrap().ep.url, "https://test.url/4");
+    assert_eq!(list.data.last().unwrap().ep.url, "https://test.url/3");
+    assert!(list.done);
+
+    // Iterate in ascending order
+    let list: ListResponse<EndpointOut> = client
+        .get(
+            &format!("api/v1/app/{}/endpoint/?limit=3&order=ascending", &app_id),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(list.data.first().unwrap().ep.url, "https://test.url/0");
+    assert_eq!(list.data.last().unwrap().ep.url, "https://test.url/2");
+    assert!(!list.done);
+
+    let list: ListResponse<EndpointOut> = client
+        .get(
+            &format!(
+                "api/v1/app/{}/endpoint/?limit=3&order=ascending&iterator={}",
+                &app_id,
+                list.iterator.unwrap(),
+            ),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(list.data.first().unwrap().ep.url, "https://test.url/3");
+    assert_eq!(list.data.last().unwrap().ep.url, "https://test.url/4");
+    assert!(list.done);
+
+    // Previous iterator on descending order
+    let list: ListResponse<EndpointOut> = client
+        .get(
+            &format!(
+                "api/v1/app/{}/endpoint/?limit=2&order=ascending&iterator={}",
+                &app_id,
+                list.prev_iterator.unwrap(),
+            ),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+    assert_eq!(list.data.first().unwrap().ep.url, "https://test.url/1");
+    assert_eq!(list.data.last().unwrap().ep.url, "https://test.url/2");
 }
 
 /// Tests that there is at most one endpoint with a single UID for all endpoints associated with
@@ -1930,7 +2039,7 @@ async fn test_msg_channels_filter() {
 
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
-    let _receiver = TestReceiver::start(StatusCode::OK);
+    let receiver = TestReceiver::start(StatusCode::OK);
 
     let ec = EventChannelSet(HashSet::from([EventChannel("tag1".to_owned())]));
 
@@ -1940,6 +2049,7 @@ async fn test_msg_channels_filter() {
             &app_id,
             EndpointIn {
                 channels,
+                url: Url::parse(&receiver.endpoint).unwrap(),
                 ..default_test_endpoint()
             },
         )
@@ -1962,8 +2072,6 @@ async fn test_msg_channels_filter() {
             )
             .await
             .unwrap();
-
-        tokio::time::sleep(Duration::from_millis(100)).await;
 
         let _list =
             get_msg_attempt_list_and_assert_count(&client, &app_id, &msg.id, expected_count)

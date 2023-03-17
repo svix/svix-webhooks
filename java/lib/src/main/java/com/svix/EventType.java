@@ -52,7 +52,7 @@ public final class EventType {
 
 	public void delete(final String eventTypeName) throws ApiException {
 		try {
-			api.deleteEventTypeApiV1EventTypeEventTypeNameDelete(eventTypeName, null);
+			api.deleteEventTypeApiV1EventTypeEventTypeNameDelete(eventTypeName, null, null);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}

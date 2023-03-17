@@ -16,8 +16,8 @@ use svix_server::{
 mod utils;
 
 use utils::{
-    common_calls::{create_test_app, create_test_endpoint, message_in},
-    run_with_retries, start_svix_server, TestReceiver,
+    common_calls::{create_test_app, create_test_endpoint, create_test_msg_with, message_in},
+    run_with_retries, start_svix_server, IgnoredResponse, TestReceiver,
 };
 
 #[tokio::test]
@@ -51,6 +51,14 @@ async fn test_message_create_read_list() {
         )
         .await
         .unwrap();
+    let message_3 = create_test_msg_with(
+        &client,
+        &app_id,
+        serde_json::json!({"test": "data3"}),
+        "balloon.popped",
+        ["news"],
+    )
+    .await;
 
     assert_eq!(
         client
@@ -77,9 +85,20 @@ async fn test_message_create_read_list() {
         .get(&format!("api/v1/app/{}/msg/", &app_id), StatusCode::OK)
         .await
         .unwrap();
-    assert_eq!(list.data.len(), 2);
+    assert_eq!(list.data.len(), 3);
     assert!(list.data.contains(&message_1));
     assert!(list.data.contains(&message_2));
+    assert!(list.data.contains(&message_3));
+
+    let list: ListResponse<MessageOut> = client
+        .get(
+            &format!("api/v1/app/{}/msg/?channel=news", &app_id),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+    assert_eq!(list.data.len(), 1);
+    assert!(list.data.contains(&message_3));
 }
 
 #[tokio::test]
@@ -380,7 +399,7 @@ async fn test_payload_retention_period() {
         .await
         .unwrap();
 
-    expired_message_cleaner::clean_expired_messages(&pool)
+    expired_message_cleaner::clean_expired_messages(&pool, 5000)
         .await
         .unwrap();
 
@@ -390,4 +409,50 @@ async fn test_payload_retention_period() {
         .unwrap();
 
     assert_eq!(message.unwrap().payload, None);
+}
+
+#[tokio::test]
+async fn test_expunge_message_payload() {
+    let (client, _jh) = start_svix_server().await;
+
+    let app_id = create_test_app(&client, "testApp").await.unwrap().id;
+
+    let payload = serde_json::json!({"sensitive": "data"});
+    let msg: MessageOut = client
+        .post(
+            &format!("api/v1/app/{}/msg/", &app_id),
+            message_in(&app_id, payload.clone()).unwrap(),
+            StatusCode::ACCEPTED,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(msg.payload, payload);
+
+    let msg = client
+        .get::<MessageOut>(
+            &format!("api/v1/app/{}/msg/{}/", &app_id, &msg.id),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+    assert_eq!(msg.payload, payload);
+
+    let _: IgnoredResponse = client
+        .delete(
+            &format!("api/v1/app/{}/msg/{}/content/", &app_id, &msg.id),
+            StatusCode::NO_CONTENT,
+        )
+        .await
+        .unwrap();
+
+    let msg = client
+        .get::<MessageOut>(
+            &format!("api/v1/app/{}/msg/{}/", &app_id, &msg.id),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(msg.payload, serde_json::json!({"expired": true}));
 }

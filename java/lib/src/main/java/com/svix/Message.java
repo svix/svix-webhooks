@@ -51,6 +51,14 @@ public final class Message {
 		}
 	}
 
+	public void expungeContent(final String msgId, final String appId) throws ApiException {
+		try {
+			api.expungeMessagePayloadApiV1AppAppIdMsgMsgIdContentDelete(msgId, appId, null);
+		} catch (com.svix.internal.ApiException e) {
+			throw Utils.wrapInternalApiException(e);
+		}
+	}
+
 	private static Object getPayload(final Object payload) {
 		// Convert string to JsonObject, otherwise gson fails to convert it.
 		if (payload instanceof String) {

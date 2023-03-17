@@ -238,6 +238,8 @@ There are two configuration variables `db_pool_max_size` and `redis_pool_max_siz
 
 They default to a max size of 20, but higher values can significantly increase performance if your database can handle it.
 
+### SSRF Attacks and Internal IP Addresses
+To prevent SSRF attacks, message dispatches to internal IP addresses are blocked by default. However we understand that this doesn't meet the needs of every user say, for example, the service can only be accessed internally. To bypass these restrictions, see the `whitelist_subnets` configuration option, which accepts an array of CIDR-notation subnets to allow messages to be dispatched to.
 
 ### Webhook signature scheme (symmetric vs asymmetric)
 

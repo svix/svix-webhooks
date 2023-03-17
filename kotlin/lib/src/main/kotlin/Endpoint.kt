@@ -10,9 +10,12 @@ import com.svix.kotlin.models.EndpointOut
 import com.svix.kotlin.models.EndpointSecretOut
 import com.svix.kotlin.models.EndpointSecretRotateIn
 import com.svix.kotlin.models.EndpointStats
+import com.svix.kotlin.models.EndpointTransformationIn
+import com.svix.kotlin.models.EndpointTransformationOut
 import com.svix.kotlin.models.EndpointUpdate
 import com.svix.kotlin.models.ListResponseEndpointOut
 import com.svix.kotlin.models.RecoverIn
+import com.svix.kotlin.models.ReplayIn
 
 class Endpoint internal constructor(token: String, options: SvixOptions) {
     val api = EndpointApi(options.serverUrl)
@@ -33,6 +36,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
                 appId,
                 options.iterator,
                 options.limit,
+                options.order,
                 null
             )
         } catch (e: Exception) {
@@ -188,6 +192,49 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
             return api.getEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGet(
                 endpointId,
                 appId,
+                null
+            )
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
+
+    suspend fun replayMissing(
+        appId: String,
+        endpointId: String,
+        replayIn: ReplayIn,
+        options: PostOptions = PostOptions()
+    ) {
+        try {
+            api.replayMissingWebhooksApiV1AppAppIdEndpointEndpointIdReplayMissingPost(
+                appId,
+                endpointId,
+                replayIn,
+                options.idempotencyKey
+            )
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
+
+    suspend fun transformationGet(appId: String, endpointId: String): EndpointTransformationOut {
+        try {
+            return api.getEndpointTransformationApiV1AppAppIdEndpointEndpointIdTransformationGet(
+                endpointId,
+                appId,
+                null
+            )
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
+
+    suspend fun transformationPartialUpdate(appId: String, endpointId: String, endpointTransformationIn: EndpointTransformationIn) {
+        try {
+            api.setEndpointTransformationApiV1AppAppIdEndpointEndpointIdTransformationPatch(
+                endpointId,
+                appId,
+                endpointTransformationIn,
                 null
             )
         } catch (e: Exception) {

@@ -4,19 +4,7 @@ use crate::apis::{
     message_api, message_attempt_api,
 };
 use crate::error::Result;
-use crate::models::{
-    AppPortalAccessIn, AppPortalAccessOut, IntegrationIn, IntegrationKeyOut, IntegrationOut,
-    IntegrationUpdate, ListResponseIntegrationOut,
-};
-pub use crate::models::{
-    ApplicationIn, ApplicationOut, DashboardAccessOut, EndpointHeadersIn, EndpointHeadersOut,
-    EndpointHeadersPatchIn, EndpointIn, EndpointOut, EndpointSecretOut, EndpointSecretRotateIn,
-    EndpointStats, EndpointUpdate, EventTypeIn, EventTypeOut, EventTypeUpdate,
-    ListResponseApplicationOut, ListResponseEndpointMessageOut, ListResponseEndpointOut,
-    ListResponseEventTypeOut, ListResponseMessageAttemptEndpointOut, ListResponseMessageAttemptOut,
-    ListResponseMessageEndpointOut, ListResponseMessageOut, MessageAttemptOut, MessageIn,
-    MessageOut, MessageStatus, RecoverIn, StatusCodeClass,
-};
+pub use crate::models::*;
 
 const CRATE_VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -148,7 +136,12 @@ pub struct ListOptions {
     pub limit: Option<i32>,
 }
 
-pub type ApplicationListOptions = ListOptions;
+#[derive(Default)]
+pub struct ApplicationListOptions {
+    pub iterator: Option<String>,
+    pub limit: Option<i32>,
+    pub order: Option<Ordering>,
+}
 
 pub struct Application<'a> {
     cfg: &'a Configuration,
@@ -163,12 +156,17 @@ impl<'a> Application<'a> {
         &self,
         options: Option<ApplicationListOptions>,
     ) -> Result<ListResponseApplicationOut> {
-        let ApplicationListOptions { iterator, limit } = options.unwrap_or_default();
+        let ApplicationListOptions {
+            iterator,
+            limit,
+            order,
+        } = options.unwrap_or_default();
         Ok(application_api::list_applications_api_v1_app_get(
             self.cfg,
             application_api::ListApplicationsApiV1AppGetParams {
                 iterator,
                 limit,
+                order,
                 idempotency_key: None,
             },
         )
@@ -252,7 +250,12 @@ impl<'a> Application<'a> {
     }
 }
 
-pub type EndpointListOptions = ListOptions;
+#[derive(Default)]
+pub struct EndpointListOptions {
+    pub iterator: Option<String>,
+    pub limit: Option<i32>,
+    pub order: Option<Ordering>,
+}
 
 pub struct Endpoint<'a> {
     cfg: &'a Configuration,
@@ -268,11 +271,16 @@ impl<'a> Endpoint<'a> {
         app_id: String,
         options: Option<EndpointListOptions>,
     ) -> Result<ListResponseEndpointOut> {
-        let EndpointListOptions { iterator, limit } = options.unwrap_or_default();
+        let EndpointListOptions {
+            iterator,
+            limit,
+            order,
+        } = options.unwrap_or_default();
         Ok(endpoint_api::list_endpoints_api_v1_app_app_id_endpoint_get(
             self.cfg,
             endpoint_api::ListEndpointsApiV1AppAppIdEndpointGetParams {
                 app_id,
+                order,
                 iterator,
                 limit,
                 idempotency_key: None,
@@ -478,6 +486,58 @@ impl<'a> Endpoint<'a> {
             )
             .await?,
         )
+    }
+
+    pub async fn replay_missing(
+        &self,
+        app_id: String,
+        endpoint_id: String,
+        replay_in: ReplayIn,
+        options: Option<PostOptions>,
+    ) -> Result<()> {
+        let PostOptions { idempotency_key } = options.unwrap_or_default();
+        endpoint_api::replay_missing_webhooks_api_v1_app_app_id_endpoint_endpoint_id_replay_missing_post(
+            self.cfg,
+            endpoint_api::ReplayMissingWebhooksApiV1AppAppIdEndpointEndpointIdReplayMissingPostParams{
+                app_id,
+                endpoint_id,
+                replay_in,
+                idempotency_key,
+            },
+        )
+        .await?;
+        Ok(())
+    }
+
+    pub async fn transformation_get(
+        &self,
+        app_id: String,
+        endpoint_id: String,
+    ) -> Result<EndpointTransformationOut> {
+        Ok(endpoint_api::get_endpoint_transformation_api_v1_app_app_id_endpoint_endpoint_id_transformation_get(
+            self.cfg,
+            endpoint_api::GetEndpointTransformationApiV1AppAppIdEndpointEndpointIdTransformationGetParams {
+                app_id,
+                endpoint_id,
+                idempotency_key: None,
+            }
+        )
+        .await?)
+    }
+
+    pub async fn transformation_partial_update(
+        &self,
+        app_id: String,
+        endpoint_id: String,
+        endpoint_transformation_in: EndpointTransformationIn,
+    ) -> Result<()> {
+        endpoint_api::set_endpoint_transformation_api_v1_app_app_id_endpoint_endpoint_id_transformation_patch(self.cfg, endpoint_api::SetEndpointTransformationApiV1AppAppIdEndpointEndpointIdTransformationPatchParams {
+            app_id,
+            endpoint_id,
+            endpoint_transformation_in,
+            idempotency_key: None,
+        }).await?;
+        Ok(())
     }
 }
 
@@ -706,6 +766,7 @@ impl<'a> EventType<'a> {
                 self.cfg,
                 event_type_api::DeleteEventTypeApiV1EventTypeEventTypeNameDeleteParams {
                     event_type_name,
+                    expunge: None,
                     idempotency_key: None,
                 },
             )
@@ -794,6 +855,20 @@ impl<'a> Message<'a> {
             },
         )
         .await?)
+    }
+
+    pub async fn expunge_content(&self, app_id: String, msg_id: String) -> Result<()> {
+        Ok(
+            message_api::expunge_message_payload_api_v1_app_app_id_msg_msg_id_content_delete(
+                self.cfg,
+                message_api::ExpungeMessagePayloadApiV1AppAppIdMsgMsgIdContentDeleteParams {
+                    msg_id,
+                    app_id,
+                    idempotency_key: None,
+                },
+            )
+            .await?,
+        )
     }
 }
 
@@ -1021,6 +1096,26 @@ impl<'a> MessageAttempt<'a> {
                 },
             )
             .await?,
+        )
+    }
+
+    pub async fn expunge_content(
+        &self,
+        app_id: String,
+        msg_id: String,
+        attempt_id: String,
+    ) -> Result<()> {
+        Ok(
+            message_attempt_api::expunge_attempt_content_api_v1_app_app_id_msg_msg_id_attempt_attempt_id_content_delete(
+                self.cfg,
+                message_attempt_api::ExpungeAttemptContentApiV1AppAppIdMsgMsgIdAttemptAttemptIdContentDeleteParams {
+                    app_id,
+                    msg_id,
+                    attempt_id,
+                    idempotency_key: None,
+                },
+            )
+            .await?
         )
     }
 }

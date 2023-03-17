@@ -15,7 +15,7 @@ public final class Application {
 
 	public ListResponseApplicationOut list(final ApplicationListOptions options) throws ApiException {
 		try {
-			return api.listApplicationsApiV1AppGet(options.getIterator(), options.getLimit(), null);
+			return api.listApplicationsApiV1AppGet(options.getIterator(), options.getLimit(), options.getOrder(), null);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
