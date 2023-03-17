@@ -967,6 +967,7 @@ type ApiListApplicationsApiV1AppGetRequest struct {
 	ApiService *ApplicationApiService
 	iterator *string
 	limit *int32
+	order *Ordering
 	idempotencyKey *string
 }
 
@@ -976,6 +977,10 @@ func (r ApiListApplicationsApiV1AppGetRequest) Iterator(iterator string) ApiList
 }
 func (r ApiListApplicationsApiV1AppGetRequest) Limit(limit int32) ApiListApplicationsApiV1AppGetRequest {
 	r.limit = &limit
+	return r
+}
+func (r ApiListApplicationsApiV1AppGetRequest) Order(order Ordering) ApiListApplicationsApiV1AppGetRequest {
+	r.order = &order
 	return r
 }
 func (r ApiListApplicationsApiV1AppGetRequest) IdempotencyKey(idempotencyKey string) ApiListApplicationsApiV1AppGetRequest {
@@ -1030,6 +1035,9 @@ func (a *ApplicationApiService) ListApplicationsApiV1AppGetExecute(r ApiListAppl
 	}
 	if r.limit != nil {
 		localVarQueryParams.Add("limit", parameterToString(*r.limit, ""))
+	}
+	if r.order != nil {
+		localVarQueryParams.Add("order", parameterToString(*r.order, ""))
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}

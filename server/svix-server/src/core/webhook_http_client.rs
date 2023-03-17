@@ -38,7 +38,7 @@ pub enum Error {
     #[error("failure response: {0}")]
     FailureStatus(StatusCode),
 
-    #[error("making requests to local IP addresses is forbidden and blocked")]
+    #[error("requests to this IP range are blocked (see the server configuration)")]
     BlockedIp,
     #[error("error resolving name: {0}")]
     ResolveError(#[from] ResolveError),
@@ -71,6 +71,8 @@ impl WebhookClient {
         ));
         connector.enforce_http(false);
 
+        // Openssl is required here -- in practice, rustls does not support many
+        // ciphers that we encounter on a regular basis:
         let ssl = SslConnector::builder(SslMethod::tls()).expect("SslConnector build failed");
         let https = HttpsConnector::with_connector(NonLocalConnector { connector }, ssl)
             .expect("HttpsConnector build failed");
@@ -137,9 +139,9 @@ impl WebhookClient {
                 match tokio::time::timeout(timeout, self.client.request(req)).await {
                     Ok(Ok(resp)) => Ok(resp),
                     Ok(Err(e)) => Err({
-                        if e.to_string().contains(
-                            "making requests to local IP addresses is forbidden and blocked",
-                        ) {
+                        if e.to_string()
+                            .contains("requests to this IP range are blocked")
+                        {
                             Error::BlockedIp
                         } else {
                             Error::FailedRequest(e)
@@ -150,7 +152,7 @@ impl WebhookClient {
             } else {
                 self.client.request(req).await.map_err(|e| {
                     if e.to_string()
-                        .contains("making requests to local IP addresses is forbidden and blocked")
+                        .contains("requests to this IP range are blocked")
                     {
                         Error::BlockedIp
                     } else {

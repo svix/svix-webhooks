@@ -152,4 +152,12 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
             throw ApiException.wrap(e)
         }
     }
+
+    suspend fun expungeContent(appId: String, msgId: String, attemptId: String) {
+        try {
+            return api.expungeAttemptContentApiV1AppAppIdMsgMsgIdAttemptAttemptIdContentDelete(attemptId, msgId, appId, null)
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
 }

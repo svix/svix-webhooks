@@ -21,7 +21,6 @@ use sea_orm::RuntimeErr;
 use sea_orm::TransactionError;
 use serde::Serialize;
 use serde_json::json;
-use sqlx::Error as SqlxError;
 
 use crate::core::webhook_http_client;
 
@@ -188,34 +187,7 @@ impl<T> Traceable<T> for Result<T> {
 
 impl<T> Traceable<T> for std::result::Result<T, DbErr> {
     fn trace(self, location: &'static str) -> Result<T> {
-        self.map_err(|err| {
-            let typ = if let DbErr::Query(runtime_error) = err {
-                match runtime_error {
-                    RuntimeErr::SqlxError(sqlx_err) => {
-                        if matches!(sqlx_err, SqlxError::RowNotFound) {
-                            HttpError::not_found(None, None).into()
-                        } else if sqlx_err
-                            .as_database_error()
-                            .and_then(|e| e.code())
-                            .filter(|code| code == "23505") // "duplicate key value violates unique constraint"
-                            .is_some()
-                        {
-                            HttpError::conflict(None, None).into()
-                        } else {
-                            ErrorType::Database(sqlx_err.to_string())
-                        }
-                    }
-                    RuntimeErr::Internal(err) => ErrorType::Database(err),
-                }
-            } else {
-                ErrorType::Database(err.to_string())
-            };
-
-            Error {
-                trace: Error::init_trace(location),
-                typ,
-            }
-        })
+        self.map_err(|e| Error::database(e, location))
     }
 }
 
@@ -453,5 +425,24 @@ impl From<crate::core::webhook_http_client::Error> for Error {
             webhook_http_client::Error::TimedOut => ErrorType::Timeout(err.to_string()).into(),
             _ => err_generic!(err.to_string()),
         }
+    }
+}
+
+/// Utility function for Converting a [`DbErr`] into an [`HttpError`] (wrapped by [`Error`]) on the
+/// error "duplicate key value violates unique constraint". This is to be used in `map_err` calls
+/// on creation/update of records
+pub fn http_error_on_conflict(db_err: DbErr) -> Error {
+    match db_err {
+        DbErr::Query(RuntimeErr::SqlxError(e))
+            if e.as_database_error()
+                .and_then(|e| e.code())
+                .filter(|code| code == "23505")
+                .is_some() =>
+        {
+            HttpError::conflict(None, None).into()
+        }
+        // This always inserts a blank locaton, but because it should be wrapped by a [`ctx`] call,
+        // you should still get a meaningful trace
+        e => Error::database(e, ""),
     }
 }

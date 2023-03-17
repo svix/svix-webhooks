@@ -259,6 +259,13 @@ macro_rules! string_wrapper {
 
 macro_rules! string_wrapper_impl {
     ($name_id:ident) => {
+        impl $name_id {
+            /// Wraps the type as JSONB. Useful when doing comparisons in a jsonb container w/sea_orm|postgres.
+            pub fn jsonb(self) -> sea_orm::Value {
+                sea_orm::Value::Json(Some(Box::new(serde_json::Value::String(self.0))))
+            }
+        }
+
         impl Deref for $name_id {
             type Target = String;
 
@@ -318,6 +325,12 @@ macro_rules! string_wrapper_impl {
                 self.0.fmt(f)
             }
         }
+
+        impl From<String> for $name_id {
+            fn from(s: String) -> Self {
+                $name_id(s)
+            }
+        }
     };
 }
 
@@ -345,12 +358,6 @@ macro_rules! create_id_type {
                 Err(sea_orm::DbErr::Exec(sea_orm::error::RuntimeErr::Internal(
                     format!("{} cannot be converted from u64", stringify!($type)),
                 )))
-            }
-        }
-
-        impl From<String> for $name_id {
-            fn from(s: String) -> Self {
-                $name_id(s)
             }
         }
     };

@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - "java/**"
+      - "openapi.json"
 jobs:
   dotnet:
     name: Java Lint

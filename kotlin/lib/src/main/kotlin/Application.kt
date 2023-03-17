@@ -18,7 +18,7 @@ class Application internal constructor(token: String, options: SvixOptions) {
 
     suspend fun list(options: ApplicationListOptions = ApplicationListOptions()): ListResponseApplicationOut {
         try {
-            return api.listApplicationsApiV1AppGet(options.iterator, options.limit, null)
+            return api.listApplicationsApiV1AppGet(options.iterator, options.limit, options.order, null)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }

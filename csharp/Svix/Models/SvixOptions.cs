@@ -13,7 +13,7 @@ namespace Svix.Models
             // empty
         }
 
-        public SvixOptions(string serverUrl, bool bThrow = false)
+        public SvixOptions(string serverUrl, bool bThrow = true)
         {
             ServerUrl = serverUrl;
             Throw = bThrow;

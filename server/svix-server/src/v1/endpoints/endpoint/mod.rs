@@ -11,28 +11,27 @@ use crate::{
         cryptography::Encryption,
         permissions,
         types::{
-            metadata::Metadata, ApplicationIdOrUid, BaseId, EndpointId, EndpointIdOrUid,
-            EndpointSecretInternal, EndpointUid, EventChannelSet, EventTypeNameSet,
-            MessageEndpointId, MessageStatus,
+            metadata::Metadata, BaseId, EndpointId, EndpointSecretInternal, EndpointUid,
+            EventChannelSet, EventTypeNameSet, MessageEndpointId, MessageStatus,
         },
     },
     ctx,
     db::models::messagedestination,
     error::{self, HttpError},
     v1::utils::{
-        api_not_implemented, openapi_tag,
+        api_not_implemented, openapi_desc, openapi_tag,
         patch::{
             patch_field_non_nullable, patch_field_nullable, UnrequiredField,
             UnrequiredNullableField,
         },
         validate_no_control_characters, validate_no_control_characters_unrequired,
-        validation_error, ModelIn,
+        validation_error, ApplicationEndpointPath, ModelIn,
     },
     AppState,
 };
 
 use aide::axum::{
-    routing::{get, post},
+    routing::{get_with, post_with},
     ApiRouter,
 };
 use axum::{
@@ -46,7 +45,7 @@ use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, collections::HashSet};
 use url::Url;
 
-use svix_server_derive::{ModelIn, ModelOut};
+use svix_server_derive::{aide_annotate, ModelIn, ModelOut};
 use validator::{Validate, ValidationError};
 
 use crate::core::types::{EndpointHeaders, EndpointHeadersPatch, EndpointSecret};
@@ -375,7 +374,7 @@ impl From<(endpoint::Model, Metadata)> for EndpointOut {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Validate, Deserialize, JsonSchema)]
+#[derive(Default, Clone, Debug, PartialEq, Eq, Validate, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointSecretRotateIn {
     #[validate]
@@ -524,16 +523,18 @@ pub struct EndpointStatsQueryOut {
     count: i64,
 }
 
+/// Get basic statistics for the endpoint.
+#[aide_annotate(op_id = "get_endpoint_stats_api_v1_app__app_id__endpoint__endpoint_id__stats__get")]
 async fn endpoint_stats(
     State(AppState { ref db, .. }): State<AppState>,
-    Path((_app_id, endp_id)): Path<(ApplicationIdOrUid, EndpointIdOrUid)>,
+    Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     Query(range): Query<EndpointStatsRange>,
     permissions::Application { app }: permissions::Application,
 ) -> error::Result<Json<EndpointStatsOut>> {
     let (since, until) = range.validate_unwrap_or_default()?;
 
     let endpoint = ctx!(
-        crate::db::models::endpoint::Entity::secure_find_by_id_or_uid(app.id, endp_id)
+        crate::db::models::endpoint::Entity::secure_find_by_id_or_uid(app.id, endpoint_id)
             .one(db)
             .await
     )?
@@ -565,52 +566,74 @@ async fn endpoint_stats(
     }))
 }
 
+const SEND_EXAMPLE_DESCRIPTION: &str = "Send an example message for event";
+
 pub fn router() -> ApiRouter<AppState> {
+    let tag = openapi_tag("Endpoint");
     ApiRouter::new()
         .api_route_with(
             "/app/:app_id/endpoint/",
-            post(crud::create_endpoint).get(crud::list_endpoints),
-            openapi_tag("Endpoint"),
+            post_with(crud::create_endpoint, crud::create_endpoint_operation)
+                .get_with(crud::list_endpoints, crud::list_endpoints_operation),
+            &tag,
         )
         .api_route_with(
             "/app/:app_id/endpoint/:endpoint_id/",
-            get(crud::get_endpoint)
-                .put(crud::update_endpoint)
-                .patch(crud::patch_endpoint)
-                .delete(crud::delete_endpoint),
-            openapi_tag("Endpoint"),
+            get_with(crud::get_endpoint, crud::get_endpoint_operation)
+                .put_with(crud::update_endpoint, crud::update_endpoint_operation)
+                .patch_with(crud::patch_endpoint, crud::patch_endpoint_operation)
+                .delete_with(crud::delete_endpoint, crud::delete_endpoint_operation),
+            &tag,
         )
         .api_route_with(
             "/app/:app_id/endpoint/:endpoint_id/secret/",
-            get(secrets::get_endpoint_secret),
-            openapi_tag("Endpoint"),
+            get_with(
+                secrets::get_endpoint_secret,
+                secrets::get_endpoint_secret_operation,
+            ),
+            &tag,
         )
         .api_route_with(
             "/app/:app_id/endpoint/:endpoint_id/secret/rotate/",
-            post(secrets::rotate_endpoint_secret),
-            openapi_tag("Endpoint"),
+            post_with(
+                secrets::rotate_endpoint_secret,
+                secrets::rotate_endpoint_secret_operation,
+            ),
+            &tag,
         )
         .api_route_with(
             "/app/:app_id/endpoint/:endpoint_id/stats/",
-            get(endpoint_stats),
-            openapi_tag("Endpoint"),
+            get_with(endpoint_stats, endpoint_stats_operation),
+            &tag,
         )
         .api_route_with(
             "/app/:app_id/endpoint/:endpoint_id/send-example/",
-            post(api_not_implemented),
-            openapi_tag("Endpoint"),
+            post_with(api_not_implemented, openapi_desc(SEND_EXAMPLE_DESCRIPTION)),
+            &tag,
         )
         .api_route_with(
             "/app/:app_id/endpoint/:endpoint_id/recover/",
-            post(recovery::recover_failed_webhooks),
-            openapi_tag("Endpoint"),
+            post_with(
+                recovery::recover_failed_webhooks,
+                recovery::recover_failed_webhooks_operation,
+            ),
+            &tag,
         )
         .api_route_with(
             "/app/:app_id/endpoint/:endpoint_id/headers/",
-            get(headers::get_endpoint_headers)
-                .patch(headers::patch_endpoint_headers)
-                .put(headers::update_endpoint_headers),
-            openapi_tag("Endpoint"),
+            get_with(
+                headers::get_endpoint_headers,
+                headers::get_endpoint_headers_operation,
+            )
+            .patch_with(
+                headers::patch_endpoint_headers,
+                headers::patch_endpoint_headers_operation,
+            )
+            .put_with(
+                headers::update_endpoint_headers,
+                headers::update_endpoint_headers_operation,
+            ),
+            tag,
         )
 }
 

@@ -14,6 +14,8 @@ import {
   EndpointUpdate,
   EndpointSecretOut,
   EndpointSecretRotateIn,
+  EndpointTransformationIn,
+  EndpointTransformationOut,
   EndpointHeadersIn,
   EndpointHeadersPatchIn,
   EndpointHeadersOut,
@@ -50,6 +52,7 @@ import {
   ResponseContext,
   AppPortalAccessOut,
   AppPortalAccessIn,
+  Ordering,
 } from "./openapi/index";
 export * from "./openapi/models/all";
 export * from "./openapi/apis/exception";
@@ -58,7 +61,7 @@ import * as base64 from "@stablelib/base64";
 import * as sha256 from "fast-sha256";
 
 const WEBHOOK_TOLERANCE_IN_SECONDS = 5 * 60; // 5 minutes
-const VERSION = "0.75.0";
+const VERSION = "0.81.0";
 
 class UserAgentMiddleware implements Middleware {
   public pre(context: RequestContext): Promise<RequestContext> {
@@ -163,9 +166,13 @@ interface ListOptions {
   limit?: number;
 }
 
-export type ApplicationListOptions = ListOptions;
+export interface ApplicationListOptions extends ListOptions {
+  order?: Ordering;
+}
 
-export type EndpointListOptions = ListOptions;
+export interface EndpointListOptions extends ListOptions {
+  order?: Ordering;
+}
 
 export type IntegrationListOptions = ListOptions;
 
@@ -318,7 +325,7 @@ class Endpoint {
       .then(() => Promise.resolve());
   }
 
-  public replay(
+  public replayMissing(
     appId: string,
     endpointId: string,
     replayIn: ReplayIn,
@@ -370,6 +377,25 @@ class Endpoint {
       appId,
       endpointId,
     });
+  }
+
+  public transformationGet(
+    appId: string,
+    endpointId: string
+  ): Promise<EndpointTransformationOut> {
+    return this.api.getEndpointTransformationApiV1AppAppIdEndpointEndpointIdTransformationGet(
+      { endpointId, appId }
+    );
+  }
+
+  public transformationPartialUpdate(
+    appId: string,
+    endpointId: string,
+    endpointTransformationIn: EndpointTransformationIn
+  ): Promise<void> {
+    return this.api.setEndpointTransformationApiV1AppAppIdEndpointEndpointIdTransformationPatch(
+      { appId, endpointId, endpointTransformationIn }
+    );
   }
 }
 
@@ -501,6 +527,10 @@ class Message {
   public get(appId: string, msgId: string): Promise<MessageOut> {
     return this.api.getMessageApiV1AppAppIdMsgMsgIdGet({ msgId, appId });
   }
+
+  public expungeContent(appId: string, msgId: string): Promise<void> {
+    return this.api.expungeMessagePayloadApiV1AppAppIdMsgMsgIdContentDelete({ appId, msgId });
+  }
 }
 
 class MessageAttempt {
@@ -604,6 +634,16 @@ class MessageAttempt {
     return this.api.listAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGet(
       { appId, msgId, endpointId, ...options }
     );
+  }
+
+  public expungeContent(
+    appId: string,
+    msgId: string,
+    attemptId: string
+  ): Promise<void> {
+    return this.api.expungeAttemptContentApiV1AppAppIdMsgMsgIdAttemptAttemptIdContentDelete({
+      appId, msgId, attemptId
+    })
   }
 }
 
@@ -714,7 +754,8 @@ export class Webhook {
 
   public sign(msgId: string, timestamp: Date, payload: string): string {
     const encoder = new TextEncoder();
-    const toSign = encoder.encode(`${msgId}.${timestamp.getTime() / 1000}.${payload}`);
+    const timestampNumber = Math.floor(timestamp.getTime() / 1000);
+    const toSign = encoder.encode(`${msgId}.${timestampNumber}.${payload}`);
     const expectedSignature = base64.encode(sha256.hmac(this.key, toSign));
     return `v1,${expectedSignature}`;
   }

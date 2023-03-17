@@ -16,6 +16,7 @@ import (
 
 // MessageIn struct for MessageIn
 type MessageIn struct {
+	Application *ApplicationIn `json:"application,omitempty"`
 	// List of free-form identifiers that endpoints can filter by
 	Channels []string `json:"channels,omitempty"`
 	// Optional unique identifier for the message
@@ -47,6 +48,38 @@ func NewMessageInWithDefaults() *MessageIn {
 	var payloadRetentionPeriod int32 = 90
 	this.PayloadRetentionPeriod = &payloadRetentionPeriod
 	return &this
+}
+
+// GetApplication returns the Application field value if set, zero value otherwise.
+func (o *MessageIn) GetApplication() ApplicationIn {
+	if o == nil || o.Application == nil {
+		var ret ApplicationIn
+		return ret
+	}
+	return *o.Application
+}
+
+// GetApplicationOk returns a tuple with the Application field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *MessageIn) GetApplicationOk() (*ApplicationIn, bool) {
+	if o == nil || o.Application == nil {
+		return nil, false
+	}
+	return o.Application, true
+}
+
+// HasApplication returns a boolean if a field has been set.
+func (o *MessageIn) HasApplication() bool {
+	if o != nil && o.Application != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetApplication gets a reference to the given ApplicationIn and assigns it to the Application field.
+func (o *MessageIn) SetApplication(v ApplicationIn) {
+	o.Application = &v
 }
 
 // GetChannels returns the Channels field value if set, zero value otherwise (both if not set or set to explicit null).
@@ -206,6 +239,9 @@ func (o *MessageIn) SetPayloadRetentionPeriod(v int32) {
 
 func (o MessageIn) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
+	if o.Application != nil {
+		toSerialize["application"] = o.Application
+	}
 	if o.Channels != nil {
 		toSerialize["channels"] = o.Channels
 	}

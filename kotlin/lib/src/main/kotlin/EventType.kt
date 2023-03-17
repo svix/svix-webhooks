@@ -51,7 +51,7 @@ class EventType internal constructor(token: String, options: SvixOptions) {
 
     suspend fun delete(eventTypeName: String) {
         try {
-            api.deleteEventTypeApiV1EventTypeEventTypeNameDelete(eventTypeName, null)
+            api.deleteEventTypeApiV1EventTypeEventTypeNameDelete(eventTypeName, null, null)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }

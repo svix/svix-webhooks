@@ -6,22 +6,22 @@ use crate::{
         message_app::CreateMessageApp,
         permissions,
         types::{
-            ApplicationIdOrUid, EventChannel, EventChannelSet, EventTypeName, EventTypeNameSet,
-            MessageAttemptTriggerType, MessageId, MessageIdOrUid, MessageUid,
+            EventChannel, EventChannelSet, EventTypeName, EventTypeNameSet,
+            MessageAttemptTriggerType, MessageId, MessageUid,
         },
     },
     ctx, err_generic,
     error::{HttpError, Result},
     queue::MessageTaskBatch,
     v1::utils::{
-        apply_pagination, iterator_from_before_or_after, openapi_tag, validation_error,
-        ListResponse, MessageListFetchOptions, ModelIn, ModelOut, PaginationLimit,
-        ReversibleIterator, ValidatedJson, ValidatedQuery,
+        apply_pagination_desc, iterator_from_before_or_after, openapi_tag, validation_error,
+        ApplicationMsgPath, EventTypesQuery, JsonStatus, ListResponse, ModelIn, ModelOut,
+        PaginationLimit, ReversibleIterator, ValidatedJson, ValidatedQuery,
     },
     AppState,
 };
 use aide::axum::{
-    routing::{get, post},
+    routing::{delete_with, get_with, post_with},
     ApiRouter,
 };
 use axum::{
@@ -31,12 +31,12 @@ use axum::{
 use chrono::{DateTime, Duration, Utc};
 use hyper::StatusCode;
 use schemars::JsonSchema;
-use sea_orm::entity::prelude::*;
 use sea_orm::ActiveModelTrait;
+use sea_orm::{entity::prelude::*, IntoActiveModel};
 use sea_orm::{sea_query::Expr, ActiveValue::Set};
 use serde::{Deserialize, Serialize};
 
-use svix_server_derive::{ModelIn, ModelOut};
+use svix_server_derive::{aide_annotate, ModelIn, ModelOut};
 use validator::{Validate, ValidationError};
 
 use crate::db::models::message;
@@ -165,36 +165,44 @@ pub struct ListMessagesQueryParams {
     #[serde(default = "default_true")]
     with_content: bool,
 
+    before: Option<DateTime<Utc>>,
     after: Option<DateTime<Utc>>,
 }
 
+/// List all of the application's messages.
+///
+/// The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
+/// The `after` parameter lets you filter all items created after a certain date and is ignored if an iterator is passed.
+/// `before` and `after` cannot be used simultaneously.
+#[aide_annotate(op_id = "list_messages_api_v1_app__app_id__msg__get")]
 async fn list_messages(
     State(AppState { ref db, .. }): State<AppState>,
     ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<MessageId>>>,
     ValidatedQuery(ListMessagesQueryParams {
         channel,
         with_content,
+        before,
         after,
     }): ValidatedQuery<ListMessagesQueryParams>,
-    list_filter: MessageListFetchOptions,
+    EventTypesQuery(event_types): EventTypesQuery,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<ListResponse<MessageOut>>> {
     let PaginationLimit(limit) = pagination.limit;
 
     let mut query = message::Entity::secure_find(app.id);
 
-    if let Some(EventTypeNameSet(event_types)) = list_filter.event_types {
+    if let Some(EventTypeNameSet(event_types)) = event_types {
         query = query.filter(message::Column::EventType.is_in(event_types));
     }
 
     if let Some(channel) = channel {
-        query = query.filter(Expr::cust_with_values("channels ?? ?", vec![channel]));
+        query = query.filter(Expr::cust_with_values("channels @> $1", [channel.jsonb()]));
     }
 
-    let iterator = iterator_from_before_or_after(pagination.iterator, list_filter.before, after);
+    let iterator = iterator_from_before_or_after(pagination.iterator, before, after);
     let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
 
-    let query = apply_pagination(query, message::Column::Id, limit, iterator);
+    let query = apply_pagination_desc(query, message::Column::Id, limit, iterator);
     let into = |x: message::Model| {
         if with_content {
             x.into()
@@ -203,17 +211,13 @@ async fn list_messages(
         }
     };
 
-    let out = if is_prev {
-        ctx!(query.all(db).await)?
-            .into_iter()
-            .rev()
-            .map(into)
-            .collect()
-    } else {
-        ctx!(query.all(db).await)?.into_iter().map(into).collect()
-    };
+    let out = ctx!(query.all(db).await)?.into_iter().map(into).collect();
 
-    Ok(Json(MessageOut::list_response(out, limit as usize, false)))
+    Ok(Json(MessageOut::list_response(
+        out,
+        limit as usize,
+        is_prev,
+    )))
 }
 
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
@@ -222,6 +226,16 @@ pub struct CreateMessageQueryParams {
     with_content: bool,
 }
 
+/// Creates a new message and dispatches it to all of the application's endpoints.
+///
+/// The `eventId` is an optional custom unique ID. It's verified to be unique only up to a day, after that no verification will be made.
+/// If a message with the same `eventId` already exists for any application in your environment, a 409 conflict error will be returned.
+///
+/// The `eventType` indicates the type and schema of the event. All messages of a certain `eventType` are expected to have the same schema. Endpoints can choose to only listen to specific event types.
+/// Messages can also have `channels`, which similar to event types let endpoints filter by them. Unlike event types, messages can have multiple channels, and channels don't imply a specific message content or schema.
+///
+/// The `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to ~350kb, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb.
+#[aide_annotate(op_id = "create_message_api_v1_app__app_id__msg__post")]
 async fn create_message(
     State(AppState {
         ref db,
@@ -234,7 +248,7 @@ async fn create_message(
     >,
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
     ValidatedJson(data): ValidatedJson<MessageIn>,
-) -> Result<(StatusCode, Json<MessageOut>)> {
+) -> Result<JsonStatus<202, MessageOut>> {
     let create_message_app = CreateMessageApp::layered_fetch(
         &cache,
         db,
@@ -277,7 +291,7 @@ async fn create_message(
         MessageOut::without_payload(msg)
     };
 
-    Ok((StatusCode::ACCEPTED, Json(msg_out)))
+    Ok(JsonStatus(msg_out))
 }
 
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
@@ -285,9 +299,12 @@ pub struct GetMessageQueryParams {
     #[serde(default = "default_true")]
     with_content: bool,
 }
+
+/// Get a message by its ID or eventID.
+#[aide_annotate(op_id = "get_message_api_v1_app__app_id__msg__msg_id___get")]
 async fn get_message(
     State(AppState { ref db, .. }): State<AppState>,
-    Path((_app_id, msg_id)): Path<(ApplicationIdOrUid, MessageIdOrUid)>,
+    Path(ApplicationMsgPath { msg_id, .. }): Path<ApplicationMsgPath>,
     ValidatedQuery(GetMessageQueryParams { with_content }): ValidatedQuery<GetMessageQueryParams>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<MessageOut>> {
@@ -305,17 +322,47 @@ async fn get_message(
     Ok(Json(msg_out))
 }
 
+/// Delete the given message's payload. Useful in cases when a message was accidentally sent with sensitive content.
+///
+/// The message can't be replayed or resent once its payload has been deleted or expired.
+#[aide_annotate(op_id = "expunge_message_payload_api_v1_app__app_id__msg__msg_id__content__delete")]
+async fn expunge_message_content(
+    State(AppState { ref db, .. }): State<AppState>,
+    Path(ApplicationMsgPath { msg_id, .. }): Path<ApplicationMsgPath>,
+    permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
+) -> Result<StatusCode> {
+    let mut msg = ctx!(
+        message::Entity::secure_find_by_id_or_uid(app.id, msg_id)
+            .one(db)
+            .await
+    )?
+    .ok_or_else(|| HttpError::not_found(None, None))?
+    .into_active_model();
+
+    msg.payload = Set(None);
+    ctx!(msg.update(db).await)?;
+
+    Ok(StatusCode::NO_CONTENT)
+}
+
 pub fn router() -> ApiRouter<AppState> {
+    let tag = openapi_tag("Message");
     ApiRouter::new()
         .api_route_with(
             "/app/:app_id/msg/",
-            post(create_message).get(list_messages),
-            openapi_tag("Message"),
+            post_with(create_message, create_message_operation)
+                .get_with(list_messages, list_messages_operation),
+            &tag,
         )
         .api_route_with(
             "/app/:app_id/msg/:msg_id/",
-            get(get_message),
-            openapi_tag("Message"),
+            get_with(get_message, get_message_operation),
+            &tag,
+        )
+        .api_route_with(
+            "/app/:app_id/msg/:msg_id/content/",
+            delete_with(expunge_message_content, expunge_message_content_operation),
+            tag,
         )
 }
 

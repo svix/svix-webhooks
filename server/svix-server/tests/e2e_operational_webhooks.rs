@@ -20,7 +20,7 @@ use svix_server::{
     },
     v1::endpoints::{
         application::{ApplicationIn, ApplicationOut},
-        endpoint::{EndpointIn, EndpointOut},
+        endpoint::{EndpointIn, EndpointOut, EndpointSecretRotateIn},
     },
 };
 
@@ -235,6 +235,25 @@ async fn test_endpoint_create_update_and_delete() {
         }
         _ => panic!("Got wrong type"),
     };
+
+    // Rotate secrets
+    let _: IgnoredResponse = client_regular
+        .post(
+            &format!(
+                "api/v1/app/{}/endpoint/{}/secret/rotate/",
+                regular_app.id, regular_endp.id
+            ),
+            EndpointSecretRotateIn::default(),
+            StatusCode::NO_CONTENT,
+        )
+        .await
+        .unwrap();
+
+    let op_webhook_out = receiver.data_recv.recv().await.unwrap();
+    assert_eq!(
+        op_webhook_out.get("type").unwrap().as_str().unwrap(),
+        "endpoint.updated"
+    );
 
     // And finally delete the endpoint
     let _: IgnoredResponse = client_regular

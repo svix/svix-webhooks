@@ -12,104 +12,99 @@ package openapi
 
 import (
 	"encoding/json"
+	"fmt"
 )
 
-// AppPortalAccessIn struct for AppPortalAccessIn
-type AppPortalAccessIn struct {
-	FeatureFlags *[]string `json:"featureFlags,omitempty"`
+// Ordering Defines the ordering in a listing of results.
+type Ordering string
+
+// List of Ordering
+const (
+	ORDERING_ASCENDING Ordering = "ascending"
+	ORDERING_DESCENDING Ordering = "descending"
+)
+
+var allowedOrderingEnumValues = []Ordering{
+	"ascending",
+	"descending",
 }
 
-// NewAppPortalAccessIn instantiates a new AppPortalAccessIn object
-// This constructor will assign default values to properties that have it defined,
-// and makes sure properties required by API are set, but the set of arguments
-// will change when the set of required properties is changed
-func NewAppPortalAccessIn() *AppPortalAccessIn {
-	this := AppPortalAccessIn{}
-	return &this
-}
-
-// NewAppPortalAccessInWithDefaults instantiates a new AppPortalAccessIn object
-// This constructor will only assign default values to properties that have it defined,
-// but it doesn't guarantee that properties required by API are set
-func NewAppPortalAccessInWithDefaults() *AppPortalAccessIn {
-	this := AppPortalAccessIn{}
-	return &this
-}
-
-// GetFeatureFlags returns the FeatureFlags field value if set, zero value otherwise.
-func (o *AppPortalAccessIn) GetFeatureFlags() []string {
-	if o == nil || o.FeatureFlags == nil {
-		var ret []string
-		return ret
+func (v *Ordering) UnmarshalJSON(src []byte) error {
+	var value string
+	err := json.Unmarshal(src, &value)
+	if err != nil {
+		return err
 	}
-	return *o.FeatureFlags
-}
-
-// GetFeatureFlagsOk returns a tuple with the FeatureFlags field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *AppPortalAccessIn) GetFeatureFlagsOk() (*[]string, bool) {
-	if o == nil || o.FeatureFlags == nil {
-		return nil, false
-	}
-	return o.FeatureFlags, true
-}
-
-// HasFeatureFlags returns a boolean if a field has been set.
-func (o *AppPortalAccessIn) HasFeatureFlags() bool {
-	if o != nil && o.FeatureFlags != nil {
-		return true
+	enumTypeValue := Ordering(value)
+	for _, existing := range allowedOrderingEnumValues {
+		if existing == enumTypeValue {
+			*v = enumTypeValue
+			return nil
+		}
 	}
 
+	return fmt.Errorf("%+v is not a valid Ordering", value)
+}
+
+// NewOrderingFromValue returns a pointer to a valid Ordering
+// for the value passed as argument, or an error if the value passed is not allowed by the enum
+func NewOrderingFromValue(v string) (*Ordering, error) {
+	ev := Ordering(v)
+	if ev.IsValid() {
+		return &ev, nil
+	} else {
+		return nil, fmt.Errorf("invalid value '%v' for Ordering: valid values are %v", v, allowedOrderingEnumValues)
+	}
+}
+
+// IsValid return true if the value is valid for the enum, false otherwise
+func (v Ordering) IsValid() bool {
+	for _, existing := range allowedOrderingEnumValues {
+		if existing == v {
+			return true
+		}
+	}
 	return false
 }
 
-// SetFeatureFlags gets a reference to the given []string and assigns it to the FeatureFlags field.
-func (o *AppPortalAccessIn) SetFeatureFlags(v []string) {
-	o.FeatureFlags = &v
+// Ptr returns reference to Ordering value
+func (v Ordering) Ptr() *Ordering {
+	return &v
 }
 
-func (o AppPortalAccessIn) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if o.FeatureFlags != nil {
-		toSerialize["featureFlags"] = o.FeatureFlags
-	}
-	return json.Marshal(toSerialize)
-}
-
-type NullableAppPortalAccessIn struct {
-	value *AppPortalAccessIn
+type NullableOrdering struct {
+	value *Ordering
 	isSet bool
 }
 
-func (v NullableAppPortalAccessIn) Get() *AppPortalAccessIn {
+func (v NullableOrdering) Get() *Ordering {
 	return v.value
 }
 
-func (v *NullableAppPortalAccessIn) Set(val *AppPortalAccessIn) {
+func (v *NullableOrdering) Set(val *Ordering) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableAppPortalAccessIn) IsSet() bool {
+func (v NullableOrdering) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableAppPortalAccessIn) Unset() {
+func (v *NullableOrdering) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableAppPortalAccessIn(val *AppPortalAccessIn) *NullableAppPortalAccessIn {
-	return &NullableAppPortalAccessIn{value: val, isSet: true}
+func NewNullableOrdering(val *Ordering) *NullableOrdering {
+	return &NullableOrdering{value: val, isSet: true}
 }
 
-func (v NullableAppPortalAccessIn) MarshalJSON() ([]byte, error) {
+func (v NullableOrdering) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableAppPortalAccessIn) UnmarshalJSON(src []byte) error {
+func (v *NullableOrdering) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
 

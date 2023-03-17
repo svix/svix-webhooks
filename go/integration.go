@@ -23,8 +23,8 @@ type IntegrationListOptions struct {
 	Limit    *int32
 }
 
-func (e *Integration) List(appId string, options *IntegrationListOptions) (*ListResponseIntegrationOut, error) {
-	req := e.api.IntegrationApi.ListIntegrationsApiV1AppAppIdIntegrationGet(context.Background(), appId)
+func (e *Integration) List(ctx context.Context, appId string, options *IntegrationListOptions) (*ListResponseIntegrationOut, error) {
+	req := e.api.IntegrationApi.ListIntegrationsApiV1AppAppIdIntegrationGet(ctx, appId)
 	if options != nil {
 		if options.Iterator != nil {
 			req = req.Iterator(*options.Iterator)
@@ -41,12 +41,12 @@ func (e *Integration) List(appId string, options *IntegrationListOptions) (*List
 	return &ret, nil
 }
 
-func (e *Integration) Create(appId string, endpointIn *IntegrationIn) (*IntegrationOut, error) {
-	return e.CreateWithOptions(appId, endpointIn, nil)
+func (e *Integration) Create(ctx context.Context, appId string, endpointIn *IntegrationIn) (*IntegrationOut, error) {
+	return e.CreateWithOptions(ctx, appId, endpointIn, nil)
 }
 
-func (e *Integration) CreateWithOptions(appId string, endpointIn *IntegrationIn, options *PostOptions) (*IntegrationOut, error) {
-	req := e.api.IntegrationApi.CreateIntegrationApiV1AppAppIdIntegrationPost(context.Background(), appId)
+func (e *Integration) CreateWithOptions(ctx context.Context, appId string, endpointIn *IntegrationIn, options *PostOptions) (*IntegrationOut, error) {
+	req := e.api.IntegrationApi.CreateIntegrationApiV1AppAppIdIntegrationPost(ctx, appId)
 	req = req.IntegrationIn(openapi.IntegrationIn(*endpointIn))
 	if options != nil {
 		if options.IdempotencyKey != nil {
@@ -61,8 +61,8 @@ func (e *Integration) CreateWithOptions(appId string, endpointIn *IntegrationIn,
 	return &ret, nil
 }
 
-func (e *Integration) Get(appId string, integId string) (*IntegrationOut, error) {
-	req := e.api.IntegrationApi.GetIntegrationApiV1AppAppIdIntegrationIntegIdGet(context.Background(), integId, appId)
+func (e *Integration) Get(ctx context.Context, appId string, integId string) (*IntegrationOut, error) {
+	req := e.api.IntegrationApi.GetIntegrationApiV1AppAppIdIntegrationIntegIdGet(ctx, integId, appId)
 	out, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
@@ -71,8 +71,8 @@ func (e *Integration) Get(appId string, integId string) (*IntegrationOut, error)
 	return &ret, nil
 }
 
-func (e *Integration) Update(appId string, integId string, endpointUpdate *IntegrationUpdate) (*IntegrationOut, error) {
-	req := e.api.IntegrationApi.UpdateIntegrationApiV1AppAppIdIntegrationIntegIdPut(context.Background(), integId, appId)
+func (e *Integration) Update(ctx context.Context, appId string, integId string, endpointUpdate *IntegrationUpdate) (*IntegrationOut, error) {
+	req := e.api.IntegrationApi.UpdateIntegrationApiV1AppAppIdIntegrationIntegIdPut(ctx, integId, appId)
 	req = req.IntegrationUpdate(openapi.IntegrationUpdate(*endpointUpdate))
 	out, res, err := req.Execute()
 	if err != nil {
@@ -82,14 +82,14 @@ func (e *Integration) Update(appId string, integId string, endpointUpdate *Integ
 	return &ret, nil
 }
 
-func (e *Integration) Delete(appId string, integId string) error {
-	req := e.api.IntegrationApi.DeleteIntegrationApiV1AppAppIdIntegrationIntegIdDelete(context.Background(), integId, appId)
+func (e *Integration) Delete(ctx context.Context, appId string, integId string) error {
+	req := e.api.IntegrationApi.DeleteIntegrationApiV1AppAppIdIntegrationIntegIdDelete(ctx, integId, appId)
 	res, err := req.Execute()
 	return wrapError(err, res)
 }
 
-func (e *Integration) GetKey(appId string, integId string) (*IntegrationKeyOut, error) {
-	req := e.api.IntegrationApi.GetIntegrationKeyApiV1AppAppIdIntegrationIntegIdKeyGet(context.Background(), integId, appId)
+func (e *Integration) GetKey(ctx context.Context, appId string, integId string) (*IntegrationKeyOut, error) {
+	req := e.api.IntegrationApi.GetIntegrationKeyApiV1AppAppIdIntegrationIntegIdKeyGet(ctx, integId, appId)
 	out, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
@@ -98,12 +98,12 @@ func (e *Integration) GetKey(appId string, integId string) (*IntegrationKeyOut, 
 	return &ret, nil
 }
 
-func (e *Integration) RotateKey(appId string, integId string) (*IntegrationKeyOut, error) {
-	return e.RotateKeyWithOptions(appId, integId, nil)
+func (e *Integration) RotateKey(ctx context.Context, appId string, integId string) (*IntegrationKeyOut, error) {
+	return e.RotateKeyWithOptions(ctx, appId, integId, nil)
 }
 
-func (e *Integration) RotateKeyWithOptions(appId string, integId string, options *PostOptions) (*IntegrationKeyOut, error) {
-	req := e.api.IntegrationApi.RotateIntegrationKeyApiV1AppAppIdIntegrationIntegIdKeyRotatePost(context.Background(), integId, appId)
+func (e *Integration) RotateKeyWithOptions(ctx context.Context, appId string, integId string, options *PostOptions) (*IntegrationKeyOut, error) {
+	req := e.api.IntegrationApi.RotateIntegrationKeyApiV1AppAppIdIntegrationIntegIdKeyRotatePost(ctx, integId, appId)
 	if options != nil {
 		if options.IdempotencyKey != nil {
 			req = req.IdempotencyKey(*options.IdempotencyKey)

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -82,7 +82,7 @@ namespace Svix
                     options?.Iterator,
                     options?.Limit,
                     options?.Channel,
-                    (Svix.Model.MessageStatus)options?.Status,
+                    (Svix.Model.MessageStatus?)options?.Status,
                     options?.Before,
                     options?.After,
                     idempotencyKey);
@@ -111,7 +111,7 @@ namespace Svix
                     options?.Iterator,
                     options?.Limit,
                     options?.Channel,
-                    (Svix.Model.MessageStatus)options?.Status,
+                    (Svix.Model.MessageStatus?)options?.Status,
                     options?.Before,
                     options?.After,
                     idempotencyKey,
@@ -140,8 +140,8 @@ namespace Svix
                     endpointId,
                     options?.Iterator,
                     options?.Limit,
-                    (Svix.Model.MessageStatus)options?.Status,
-                    (Svix.Model.StatusCodeClass)options?.Code,
+                    (Svix.Model.MessageStatus?)options?.Status,
+                    (Svix.Model.StatusCodeClass?)options?.Code,
                     options?.EventTypes,
                     options?.Channel,
                     options?.Before,
@@ -171,8 +171,8 @@ namespace Svix
                     endpointId,
                     options?.Iterator,
                     options?.Limit,
-                    (Svix.Model.MessageStatus)options?.Status,
-                    (Svix.Model.StatusCodeClass)options?.Code,
+                    (Svix.Model.MessageStatus?)options?.Status,
+                    (Svix.Model.StatusCodeClass?)options?.Code,
                     options?.EventTypes,
                     options?.Channel,
                     options?.Before,
@@ -204,8 +204,8 @@ namespace Svix
                     options?.EndpointId,
                     options?.Iterator,
                     options?.Limit,
-                    (Svix.Model.MessageStatus)options?.Status,
-                    (Svix.Model.StatusCodeClass)options?.Code,
+                    (Svix.Model.MessageStatus?)options?.Status,
+                    (Svix.Model.StatusCodeClass?)options?.Code,
                     options?.EventTypes,
                     options?.Channel,
                     options?.Before,
@@ -236,8 +236,8 @@ namespace Svix
                     options?.EndpointId,
                     options?.Iterator,
                     options?.Limit,
-                    (Svix.Model.MessageStatus)options?.Status,
-                    (Svix.Model.StatusCodeClass)options?.Code,
+                    (Svix.Model.MessageStatus?)options?.Status,
+                    (Svix.Model.StatusCodeClass?)options?.Code,
                     options?.EventTypes,
                     options?.Channel,
                     options?.Before,
@@ -272,7 +272,7 @@ namespace Svix
                     options?.Limit,
                     options?.EventTypes,
                     options?.Channel,
-                    (Svix.Model.MessageStatus)options?.Status,
+                    (Svix.Model.MessageStatus?)options?.Status,
                     options?.Before,
                     options?.After,
                     idempotencyKey);
@@ -305,7 +305,7 @@ namespace Svix
                     options?.Limit,
                     options?.EventTypes?.ToList(),
                     options?.Channel,
-                    (Svix.Model.MessageStatus)options?.Status,
+                    (Svix.Model.MessageStatus?)options?.Status,
                     options?.Before,
                     options?.After,
                     idempotencyKey,
@@ -338,7 +338,7 @@ namespace Svix
                     options?.EndpointId,
                     options?.EventTypes,
                     options?.Channel,
-                    (Svix.Model.MessageStatus)options?.Status,
+                    (Svix.Model.MessageStatus?)options?.Status,
                     options?.Before,
                     options?.After,
                     idempotencyKey);
@@ -370,7 +370,7 @@ namespace Svix
                     options?.EndpointId,
                     options?.EventTypes,
                     options?.Channel,
-                    (Svix.Model.MessageStatus)options?.Status,
+                    (Svix.Model.MessageStatus?)options?.Status,
                     options?.Before,
                     options?.After,
                     idempotencyKey,
@@ -480,6 +480,53 @@ namespace Svix
             catch (ApiException e)
             {
                 Logger?.LogError(e, $"{nameof(ResendWebhookAsync)} failed");
+
+                if (Throw)
+                    throw;
+
+                return false;
+            }
+        }
+
+        public bool ExpungeContent(string appId, string messageId, string attemptId, string idempotencyKey = default)
+        {
+            try
+            {
+                var lResponse = _messageAttemptApi.ExpungeAttemptContentApiV1AppAppIdMsgMsgIdAttemptAttemptIdContentDeleteWithHttpInfo(
+                    attemptId,
+                    messageId,
+                    appId,
+                    idempotencyKey);
+
+                return lResponse.StatusCode == HttpStatusCode.NoContent;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(ExpungeContent)} failed");
+
+                if (Throw)
+                    throw;
+
+                return false;
+            }
+        }
+
+        public async Task<bool> ExpungeContentAsync(string appId, string messageId, string attemptId, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var lResponse = await _messageAttemptApi.ExpungeAttemptContentApiV1AppAppIdMsgMsgIdAttemptAttemptIdContentDeleteWithHttpInfoAsync(
+                    attemptId,
+                    messageId,
+                    appId,
+                    idempotencyKey,
+                    cancellationToken);
+
+                return lResponse.StatusCode == HttpStatusCode.NoContent;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(ExpungeContentAsync)} failed");
 
                 if (Throw)
                     throw;
