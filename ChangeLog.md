@@ -1,7 +1,7 @@
 # Changelog
 
 ## Next
-* 
+* Server: refactor expired message cleaner to be incremental
 
 ## Version 0.81.0
 * Libs: add support for creating application when creating a message
