@@ -1,7 +1,14 @@
 # Changelog
 
 ## Next
-* Server: refactor expired message cleaner to be incremental
+* 
+
+## Version 0.82.0
+* Server: refactor expired message cleaner to be incremental (prevent locks)
+* Server: improve OpenAPI generation
+* Server: Fix handling of very large numbers in json (larger than i64)
+* Server: do not throw error on missing payload in worker
+* Server: update dependencies
 
 ## Version 0.81.0
 * Libs: add support for creating application when creating a message
