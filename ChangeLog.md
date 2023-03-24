@@ -3,6 +3,9 @@
 ## Next
 * 
 
+## Version 0.82.1
+* Libs/Java: serialize nulls when making HTTP requests
+
 ## Version 0.82.0
 * Server: refactor expired message cleaner to be incremental (prevent locks)
 * Server: improve OpenAPI generation
