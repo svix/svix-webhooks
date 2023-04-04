@@ -37,7 +37,6 @@ pub(super) async fn list_endpoints(
     ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<EndpointId>>>,
     ValidatedQuery(Ordering { order }): ValidatedQuery<Ordering>,
     permissions::Application { app }: permissions::Application,
-    url: &str,
 ) -> Result<Json<ListResponse<EndpointOut>>> {
     let PaginationLimit(limit) = pagination.limit;
     let iterator = pagination.iterator;
@@ -45,7 +44,7 @@ pub(super) async fn list_endpoints(
 
     let order = order.unwrap_or(ListOrdering::Ascending);
     let query = apply_pagination(
-        endpoint::Entity::secure_find(app.id, url),
+        endpoint::Entity::secure_find(app.id),
         endpoint::Column::Id,
         limit,
         iterator,

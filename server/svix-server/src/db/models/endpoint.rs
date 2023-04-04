@@ -115,22 +115,21 @@ impl ActiveModel {
 }
 
 impl Entity {
-    pub fn secure_find(app_id: ApplicationId, url: &str) -> Select<Entity> {
+    pub fn secure_find(app_id: ApplicationId) -> Select<Entity> {
         Self::find()
             .filter(Column::AppId.eq(app_id))
             .filter(Column::Deleted.eq(false))
-            .filter(Column::Url.contains(url))
     }
 
     pub fn secure_find_by_id(app_id: ApplicationId, id: EndpointId) -> Select<Entity> {
-        Self::secure_find(app_id, "").filter(Column::Id.eq(id))
+        Self::secure_find(app_id).filter(Column::Id.eq(id))
     }
 
     pub fn secure_find_by_id_or_uid(
         app_id: ApplicationId,
         id_or_uid: EndpointIdOrUid,
     ) -> Select<Entity> {
-        Self::secure_find(app_id, "").filter(
+        Self::secure_find(app_id).filter(
             Condition::any()
                 .add(Column::Id.eq(id_or_uid.to_owned()))
                 .add(Column::Uid.eq(id_or_uid)),
