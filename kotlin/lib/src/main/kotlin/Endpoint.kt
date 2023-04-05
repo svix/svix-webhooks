@@ -13,6 +13,7 @@ import com.svix.kotlin.models.EndpointStats
 import com.svix.kotlin.models.EndpointTransformationIn
 import com.svix.kotlin.models.EndpointTransformationOut
 import com.svix.kotlin.models.EndpointUpdate
+import com.svix.kotlin.models.EventExampleIn
 import com.svix.kotlin.models.ListResponseEndpointOut
 import com.svix.kotlin.models.RecoverIn
 import com.svix.kotlin.models.ReplayIn
@@ -236,6 +237,19 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
                 appId,
                 endpointTransformationIn,
                 null
+            )
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
+
+    suspend fun sendExample(appId: String, endpointId: String, eventExampleIn: EventExampleIn, options: PostOptions = PostOptions()) {
+        try {
+            api.sendEventTypeExampleMessageApiV1AppAppIdEndpointEndpointIdSendExamplePost(
+                appId,
+                endpointId,
+                eventExampleIn,
+                options.idempotencyKey
             )
         } catch (e: Exception) {
             throw ApiException.wrap(e)

@@ -21,6 +21,7 @@ type (
 	EndpointHeadersOut        openapi.EndpointHeadersOut
 	EndpointStats             openapi.EndpointStats
 	EndpointTransformationOut openapi.EndpointTransformationOut
+	EventExampleIn            openapi.EventExampleIn
 	Ordering                  openapi.Ordering
 )
 
@@ -237,4 +238,33 @@ func (e *Endpoint) TransformatioPartialUpdate(ctx context.Context, appId string,
 	}
 
 	return nil
+}
+
+func (e *Endpoint) SendExample(ctx context.Context, appId string, endpointId string, eventExampleIn *EventExampleIn) (*MessageOut, error) {
+	return e.SendExampleWithOptions(ctx, appId, endpointId, eventExampleIn, nil)
+}
+
+func (e *Endpoint) SendExampleWithOptions(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+	eventExampleIn *EventExampleIn,
+	options *PostOptions,
+) (*MessageOut, error) {
+	req := e.api.EndpointApi.SendEventTypeExampleMessageApiV1AppAppIdEndpointEndpointIdSendExamplePost(ctx, appId, endpointId)
+	req.EventExampleIn(openapi.EventExampleIn(*eventExampleIn))
+
+	if options != nil {
+		if options.IdempotencyKey != nil {
+			req.IdempotencyKey(*options.IdempotencyKey)
+		}
+	}
+
+	out, res, err := req.Execute()
+	if err != nil {
+		return nil, wrapError(err, res)
+	}
+
+	ret := MessageOut(out)
+	return &ret, nil
 }

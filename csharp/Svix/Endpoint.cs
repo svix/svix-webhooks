@@ -727,5 +727,51 @@ namespace Svix
                 return false;
             }
         }
+
+        public MessageOut SendExample(string appId, string endpointId, EventExampleIn eventExampleIn, string idempotencyKey = default)
+        {
+            try
+            {
+                var response = _endpointApi.SendEventTypeExampleMessageApiV1AppAppIdEndpointEndpointIdSendExamplePost(
+                    appId,
+                    endpointId,
+                    eventExampleIn,
+                    idempotencyKey);
+
+                return response;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(SendExample)} failed");
+
+                if (Throw)
+                    throw;
+
+                return null;
+            }
+        }
+
+        public async Task<MessageOut> SendExampleAsync(string appId, string endpointId, EventExampleIn eventExampleIn, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var response = await _endpointApi.SendEventTypeExampleMessageApiV1AppAppIdEndpointEndpointIdSendExamplePostAsync(
+                    appId,
+                    endpointId,
+                    eventExampleIn,
+                    idempotencyKey);
+
+                return response;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(SendExampleAsync)} failed");
+
+                if (Throw)
+                    throw;
+
+                return null;
+            }
+        }
     }
 }

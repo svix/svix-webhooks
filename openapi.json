@@ -7406,57 +7406,57 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const messageOut = await svix.endpoint.send('app_id', 'endpoint_id', {\n    eventType: \"user.signup\"\n});"
+                        "source": "const messageOut = await svix.endpoint.sendExample('app_id', 'endpoint_id', {\n    eventType: \"user.signup\"\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const messageOut = await svix.endpoint.send('app_id', 'endpoint_id', {\n    eventType: \"user.signup\"\n});"
+                        "source": "const messageOut = await svix.endpoint.sendExample('app_id', 'endpoint_id', {\n    eventType: \"user.signup\"\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "message_out = svix.endpoint.send('app_id', 'endpoint_id', EventExampleIn(\n    event_type=\"user.signup\"\n))"
+                        "source": "message_out = svix.endpoint.send_example('app_id', 'endpoint_id', EventExampleIn(\n    event_type=\"user.signup\"\n))"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "message_out = await svix.endpoint.send('app_id', 'endpoint_id', EventExampleIn(\n    event_type=\"user.signup\"\n))"
+                        "source": "message_out = await svix.endpoint.send_example('app_id', 'endpoint_id', EventExampleIn(\n    event_type=\"user.signup\"\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "messageOut, err := svixClient.Endpoint.Send(\"app_id\", \"endpoint_id\", &svix.EventExampleIn{\n    EventType: \"user.signup\"\n})"
+                        "source": "messageOut, err := svixClient.Endpoint.SendExample(\"app_id\", \"endpoint_id\", &svix.EventExampleIn{\n    EventType: \"user.signup\"\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val messageOut = svix.endpoint.send('app_id', 'endpoint_id', EventExampleIn()\n    .eventType(\"user.signup\")\n)"
+                        "source": "val messageOut = svix.endpoint.sendExample('app_id', 'endpoint_id', EventExampleIn()\n    .eventType(\"user.signup\")\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "MessageOut messageOut = svix.getEndpoint().send('app_id', 'endpoint_id', new EventExampleIn()\n    .eventType(\"user.signup\")\n)"
+                        "source": "MessageOut messageOut = svix.getEndpoint().sendExample('app_id', 'endpoint_id', new EventExampleIn()\n    .eventType(\"user.signup\")\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "message_out = svix.endpoint.send('app_id', 'endpoint_id', Svix::EventExampleIn.new({\n    \"event_type\": \"user.signup\"\n}))"
+                        "source": "message_out = svix.endpoint.send_example('app_id', 'endpoint_id', Svix::EventExampleIn.new({\n    \"event_type\": \"user.signup\"\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let message_out = svix.endpoint().send(\"app_id\", \"endpoint_id\", EventExampleIn {\n    event_type: \"user.signup\".to_string()\n}).await?;"
+                        "source": "let message_out = svix.endpoint().send_example(\"app_id\", \"endpoint_id\", EventExampleIn {\n    event_type: \"user.signup\".to_string()\n}).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var messageOut = await svix.Endpoint.SendAsync(\"app_id\", \"endpoint_id\", new EventExampleIn{\n    eventType: \"user.signup\"\n})"
+                        "source": "var messageOut = await svix.Endpoint.SendExampleAsync(\"app_id\", \"endpoint_id\", new EventExampleIn{\n    eventType: \"user.signup\"\n})"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix endpoint send 'app_id' 'endpoint_id' '{\n    \"eventType\": \"user.signup\"\n}'"
+                        "source": "svix endpoint send-example 'app_id' 'endpoint_id' '{\n    \"eventType\": \"user.signup\"\n}'"
                     },
                     {
                         "label": "cURL",
@@ -9818,7 +9818,7 @@
                 ]
             },
             "post": {
-                "description": "Creates a new message and dispatches it to all of the application's endpoints.\n\nThe `eventId` is an optional custom unique ID. It's verified to be unique only up to a day, after that no verification will be made.\nIf a message with the same `eventId` already exists for any application in your environment, a 409 conflict error will be returned.\n\nThe `eventType` indicates the type and schema of the event. All messages of a certain `eventType` are expected to have the same schema. Endpoints can choose to only listen to specific event types.\nMessages can also have `channels`, which similar to event types let endpoints filter by them. Unlike event types, messages can have multiple channels, and channels don't imply a specific message content or schema.\n\nThe `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to ~350kb, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb.",
+                "description": "Creates a new message and dispatches it to all of the application's endpoints.\n\nThe `eventId` is an optional custom unique ID. It's verified to be unique only up to a day, after that no verification will be made.\nIf a message with the same `eventId` already exists for any application in your environment, a 409 conflict error will be returned.\n\nThe `eventType` indicates the type and schema of the event. All messages of a certain `eventType` are expected to have the same schema. Endpoints can choose to only listen to specific event types.\nMessages can also have `channels`, which similar to event types let endpoints filter by them. Unlike event types, messages can have multiple channels, and channels don't imply a specific message content or schema.\n\nThe `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to ~350kb, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb.\n\nThe optional `application` property will be used to create an application if the application referenced in the path does not exist. If it does then this property is ignored.",
                 "operationId": "create_message_api_v1_app__app_id__msg__post",
                 "parameters": [
                     {
@@ -10706,7 +10706,7 @@
         },
         "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/content/": {
             "delete": {
-                "description": "Deletes the given attempt's repsonse body. Useful when an endpoint accidentally returned sensitive content.",
+                "description": "Deletes the given attempt's response body. Useful when an endpoint accidentally returned sensitive content.",
                 "operationId": "expunge_attempt_content_api_v1_app__app_id__msg__msg_id__attempt__attempt_id__content__delete",
                 "parameters": [
                     {
