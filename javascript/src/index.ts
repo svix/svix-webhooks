@@ -20,6 +20,7 @@ import {
   EndpointHeadersPatchIn,
   EndpointHeadersOut,
   EndpointStats,
+  EventExampleIn,
   RecoverIn,
   ReplayIn,
   IntegrationApi,
@@ -395,6 +396,17 @@ class Endpoint {
   ): Promise<void> {
     return this.api.setEndpointTransformationApiV1AppAppIdEndpointEndpointIdTransformationPatch(
       { appId, endpointId, endpointTransformationIn }
+    );
+  }
+
+  public sendExample(
+    appId: string,
+    endpointId: string,
+    eventExampleIn: EventExampleIn,
+    options?: PostOptions,
+  ): Promise<MessageOut> {
+    return this.api.sendEventTypeExampleMessageApiV1AppAppIdEndpointEndpointIdSendExamplePost(
+      { appId, endpointId, eventExampleIn, ...options }
     );
   }
 }

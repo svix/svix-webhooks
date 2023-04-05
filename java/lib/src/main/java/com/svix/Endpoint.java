@@ -12,7 +12,9 @@ import com.svix.models.EndpointSecretOut;
 import com.svix.models.EndpointSecretRotateIn;
 import com.svix.models.EndpointTransformationIn;
 import com.svix.models.EndpointTransformationOut;
+import com.svix.models.EventExampleIn;
 import com.svix.models.ListResponseEndpointOut;
+import com.svix.models.MessageOut;
 import com.svix.models.RecoverIn;
 import com.svix.models.ReplayIn;
 import com.svix.models.EndpointStats;
@@ -155,6 +157,18 @@ public final class Endpoint {
 	public void transformationPartialUpdate(final String appId, final String endpointId, final EndpointTransformationIn transformationIn) throws ApiException {
 		try {
 			api.setEndpointTransformationApiV1AppAppIdEndpointEndpointIdTransformationPatch(appId, endpointId, transformationIn, null);
+		} catch (com.svix.internal.ApiException e) {
+			throw Utils.wrapInternalApiException(e);
+		}
+	}
+
+	public MessageOut sendExample(final String appId, final String endpointId, final EventExampleIn eventExampleIn) throws ApiException {
+		return this.sendExample(appId, endpointId, eventExampleIn, new PostOptions());
+	}
+
+	public MessageOut sendExample(final String appId, final String endpointId, final EventExampleIn eventExampleIn, final PostOptions options) throws ApiException {
+		try {
+			return api.sendEventTypeExampleMessageApiV1AppAppIdEndpointEndpointIdSendExamplePost(appId, endpointId, eventExampleIn, options.getIdempotencyKey());
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}

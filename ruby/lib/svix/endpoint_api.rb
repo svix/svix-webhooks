@@ -68,5 +68,9 @@ module Svix
       @api.set_endpoint_transformation_api_v1_app_app_id_endpoint_endpoint_id_transformation_patch(app_id, endpoint_id, endpoint_transformation_in, options)
       nil
     end
+
+    def send_example(app_id, endpoint_id, event_example_in, options = {})
+      @api.send_event_type_example_message_api_v1_app_app_id_endpoint_endpoint_id_send_example_post(app_id, endpoint_id, event_example_in, options)
+    end
   end
 end

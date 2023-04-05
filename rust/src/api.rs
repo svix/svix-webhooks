@@ -539,6 +539,26 @@ impl<'a> Endpoint<'a> {
         }).await?;
         Ok(())
     }
+
+    pub async fn send_example(
+        &self,
+        app_id: String,
+        endpoint_id: String,
+        event_example_in: EventExampleIn,
+        options: Option<PostOptions>,
+    ) -> Result<MessageOut> {
+        let PostOptions { idempotency_key } = options.unwrap_or_default();
+        Ok(endpoint_api::send_event_type_example_message_api_v1_app_app_id_endpoint_endpoint_id_send_example_post(
+            self.cfg,
+            endpoint_api::SendEventTypeExampleMessageApiV1AppAppIdEndpointEndpointIdSendExamplePostParams {
+                app_id,
+                endpoint_id,
+                event_example_in,
+                idempotency_key,
+            }
+        )
+        .await?)
+    }
 }
 
 pub type IntegrationListOptions = ListOptions;
