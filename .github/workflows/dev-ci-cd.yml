@@ -35,10 +35,10 @@ jobs:
           ENV=dev
           IAM_ROLE=arn:aws:iam::658114288543:role/GithubActionsRole
           ECS_CLUSTER=orch-$ENV-$REGION-ecs-clstr
-          ECS_SERVICE=${{ secrets.PROJECT_PREFIX }}-$ENV-$REGION-svc-${{ secrets.SERVICE_NAME }}
-          TASK_DEFINITION=${{ secrets.PROJECT_PREFIX }}-$ENV-$REGION-td-${{ secrets.SERVICE_NAME }}
-          CONTAINER_NAME=${{ secrets.PROJECT_PREFIX }}-$ENV-$REGION-cntr-${{ secrets.SERVICE_NAME }}
-          ECR_REPO=${{ secrets.PROJECT_PREFIX }}-$ENV-$REGION-ecr-${{ secrets.SERVICE_NAME }}
+          ECS_SERVICE=orch-$ENV-webhook-svix-server-ecs
+          TASK_DEFINITION=orch-$ENV-webhook-svix-server
+          CONTAINER_NAME=orch-$ENV-$REGION-webhook-svix-server-ecs
+          ECR_REPO=orch-$ENV-$REGION-ecr-webhook-svix
           echo "::set-output name=IAM_ROLE::$IAM_ROLE"
           echo "::set-output name=TASK_DEFINITION::$TASK_DEFINITION"
           echo "::set-output name=CONTAINER_NAME::$CONTAINER_NAME"
