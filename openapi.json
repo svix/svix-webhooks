@@ -2753,6 +2753,32 @@
                     "Sending"
                 ]
             },
+            "OneTimeTokenIn": {
+                "properties": {
+                    "oneTimeToken": {
+                        "title": "Onetimetoken",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "oneTimeToken"
+                ],
+                "title": "OneTimeTokenIn",
+                "type": "object"
+            },
+            "OneTimeTokenOut": {
+                "properties": {
+                    "token": {
+                        "title": "Token",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "token"
+                ],
+                "title": "OneTimeTokenOut",
+                "type": "object"
+            },
             "Ordering": {
                 "description": "Defines the ordering in a listing of results.",
                 "enum": [
@@ -12721,6 +12747,174 @@
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/auth/logout/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/auth/one-time-token/": {
+            "post": {
+                "description": "Exchange a one-time-token for an application token.",
+                "operationId": "exchange_one_time_token_api_v1_auth_one_time_token__post",
+                "parameters": [
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "required": false,
+                        "schema": {
+                            "description": "The request's idempotency key",
+                            "nullable": true,
+                            "title": "Idempotency-Key",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/OneTimeTokenIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OneTimeTokenOut"
+                                }
+                            }
+                        },
+                        "description": "Successful Response"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "summary": "Exchange One Time Token",
+                "tags": [
+                    "Authentication"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const oneTimeTokenOut = await svix.authentication.exchange({\n    oneTimeToken: None\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const oneTimeTokenOut = await svix.authentication.exchange({\n    oneTimeToken: None\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "one_time_token_out = svix.authentication.exchange(OneTimeTokenIn(\n    one_time_token=None\n))"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "one_time_token_out = await svix.authentication.exchange(OneTimeTokenIn(\n    one_time_token=None\n))"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "oneTimeTokenOut, err := svixClient.Authentication.Exchange(&svix.OneTimeTokenIn{\n    OneTimeToken: None\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val oneTimeTokenOut = svix.authentication.exchange(OneTimeTokenIn()\n    .oneTimeToken(None)\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "OneTimeTokenOut oneTimeTokenOut = svix.getAuthentication().exchange(new OneTimeTokenIn()\n    .oneTimeToken(None)\n)"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "one_time_token_out = svix.authentication.exchange(Svix::OneTimeTokenIn.new({\n    \"one_time_token\": null\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let one_time_token_out = svix.authentication().exchange(OneTimeTokenIn {\n    one_time_token: None\n}).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var oneTimeTokenOut = await svix.Authentication.ExchangeAsync(new OneTimeTokenIn{\n    oneTimeToken: None\n})"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix authentication exchange '{\n    \"oneTimeToken\": null\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/auth/one-time-token/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"oneTimeToken\": null\n}'"
                     }
                 ]
             }
