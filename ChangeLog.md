@@ -3,6 +3,9 @@
 ## Next
 * 
 
+## Version 0.83.1
+* Libs: update OpenAPI spec
+
 ## Version 0.83.0
 * Server: bump deps
 * Libs: Add `send-example` wrapper to libraries
