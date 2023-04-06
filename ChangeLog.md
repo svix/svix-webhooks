@@ -3,6 +3,11 @@
 ## Next
 * 
 
+## Version 0.83.0
+* Server: bump deps
+* Libs: Add `send-example` wrapper to libraries
+* Libs/Go: alias missing types from internal dir / openapi package
+
 ## Version 0.82.1
 * Libs/Java: serialize nulls when making HTTP requests
 
