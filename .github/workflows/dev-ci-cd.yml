@@ -39,7 +39,7 @@ jobs:
           ECS_CLUSTER=orch-$ENV-$REGION-ecs-clstr
           ECS_SERVICE=orch-$ENV-webhook-svix-server-ecs
           TASK_DEFINITION=orch-$ENV-webhook-svix-server
-          CONTAINER_NAME=orch-$ENV-$REGION-webhook-svix-server-ecs
+          CONTAINER_NAME=app
           ECR_REPO=orch-$ENV-$REGION-ecr-webhook-svix
           echo "::set-output name=IAM_ROLE::$IAM_ROLE"
           echo "::set-output name=TASK_DEFINITION::$TASK_DEFINITION"
