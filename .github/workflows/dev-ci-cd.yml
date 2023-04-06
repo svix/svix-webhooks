@@ -46,12 +46,12 @@ jobs:
           echo "::set-output name=ECS_SERVICE::$ECS_SERVICE"
           echo "::set-output name=ECR_REPO::$ECR_REPO"
 
-      - name: Updating env file
-        env:
-          ENV_DIR: ${{github.workspace}}/deploy/envs
-        shell: bash
-        run: |
-          cp $ENV_DIR/dev.env .env
+      # - name: Updating env file
+      #   env:
+      #     ENV_DIR: ${{github.workspace}}/deploy/envs
+      #   shell: bash
+      #   run: |
+      #     cp $ENV_DIR/dev.env .env
 
 
       - name: Configure AWS credentials
