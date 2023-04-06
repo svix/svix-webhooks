@@ -15,14 +15,6 @@ RUN adduser \
 
 RUN apk add -U --no-cache ca-certificates git
 
-# RUN GOCACHE=OFF
-
-# RUN go env -w GOPRIVATE=github.com/Bureau-Inc/*
-
-# ARG githubAccessToken
-
-# RUN git config --global url."https://golang:$githubAccessToken@github.com".insteadOf "https://github.com"
-
 WORKDIR /app
 
 COPY ./server/svix-server .
@@ -30,7 +22,7 @@ COPY ./server/svix-server .
 RUN cargo check
 
 # Build the rust app
-RUN cargo build svix_webhook_server ./cmd/
+RUN cd server/svix-server && cargo build
 
 ##################################################################
 FROM scratch
@@ -42,10 +34,9 @@ COPY --from=builder /etc/group /etc/group
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 # Copy our binary
-COPY --from=builder /app/svix_webhook_server /app/svix_webhook_server
-COPY --from=builder /app/.env /app/.env
+COPY --from=builder /app/server/svix-server/target/release/svix-server /app/svix-server
 
 USER appuser:appuser
 
 # Run the binary
-ENTRYPOINT ["/app/svix_webhook_server"]
+ENTRYPOINT ["/app/svix-server"]
