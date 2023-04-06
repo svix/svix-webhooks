@@ -66,6 +66,8 @@ The `eventType` indicates the type and schema of the event. All messages of a ce
 Messages can also have `channels`, which similar to event types let endpoints filter by them. Unlike event types, messages can have multiple channels, and channels don't imply a specific message content or schema.
 
 The `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to ~350kb, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb.
+
+The optional `application` property will be used to create an application if the application referenced in the path does not exist. If it does then this property is ignored.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param appId
  * @return ApiCreateMessageApiV1AppAppIdMsgPostRequest
