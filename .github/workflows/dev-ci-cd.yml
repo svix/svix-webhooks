@@ -1,0 +1,121 @@
+#################################
+## To be passed in the secrets ##
+#################################
+# 1. PROJECT_PREFIX
+# 2. REGION_CODE
+# 3. SERVICE_NAME
+# 4. REGION
+# 5. ACCESS_TOKEN
+#################################
+#################################
+
+name: svix-server svc ci-cd for dev
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    name: Build, Push to ECR and Update Td
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      # Setup branch specific secrets
+      - name: set build env
+        id: build_env
+        shell: bash
+        run: |
+          REGION=${{ secrets.REGION_CODE }}
+          BRANCH="${GITHUB_REF#refs/heads/}"
+          ENV=dev
+          IAM_ROLE=arn:aws:iam::658114288543:role/GithubActionsRole
+          ECS_CLUSTER=orch-$ENV-$REGION-ecs-clstr
+          ECS_SERVICE=${{ secrets.PROJECT_PREFIX }}-$ENV-$REGION-svc-${{ secrets.SERVICE_NAME }}
+          TASK_DEFINITION=${{ secrets.PROJECT_PREFIX }}-$ENV-$REGION-td-${{ secrets.SERVICE_NAME }}
+          CONTAINER_NAME=${{ secrets.PROJECT_PREFIX }}-$ENV-$REGION-cntr-${{ secrets.SERVICE_NAME }}
+          ECR_REPO=${{ secrets.PROJECT_PREFIX }}-$ENV-$REGION-ecr-${{ secrets.SERVICE_NAME }}
+          echo "::set-output name=IAM_ROLE::$IAM_ROLE"
+          echo "::set-output name=TASK_DEFINITION::$TASK_DEFINITION"
+          echo "::set-output name=CONTAINER_NAME::$CONTAINER_NAME"
+          echo "::set-output name=ECS_CLUSTER::$ECS_CLUSTER"
+          echo "::set-output name=ECS_SERVICE::$ECS_SERVICE"
+          echo "::set-output name=ECR_REPO::$ECR_REPO"
+
+      - name: Updating env file
+        env:
+          ENV_DIR: ${{github.workspace}}/deploy/envs
+        shell: bash
+        run: |
+          cp $ENV_DIR/dev.env .env
+
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1.6.0
+        with:
+          role-to-assume: ${{ steps.build_env.outputs.IAM_ROLE }}
+          role-duration-seconds: 900 # the ttl of the session, in seconds.
+          aws-region: ${{ secrets.REGION }}
+
+
+      - name: ECR Image Tag Creation
+        id: image_tag
+        shell: bash
+        env:
+          REGION:  ${{ steps.build_env.outputs.REGION}}
+          PROJECT_PREFIX: ${{ steps.build_env.outputs.PROJECT_PREFIX}}
+          ENV : ${{ steps.build_env.outputs.ENV}}
+          SERVICE_NAME: ${{ steps.build_env.outputs.SERVICE_NAME}}
+        run: |
+          SHA="$(git rev-parse --verify HEAD)"
+          JOB_ID="${GITHUB_RUN_NUMBER}"
+          ORCH_IMAGE_TAG_FULL=dev-"$SHA"
+          echo "::set-output name=ORCH_IMAGE_TAG_FULL::$ORCH_IMAGE_TAG_FULL"
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, Tag, and Push the Image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ steps.build_env.outputs.ECR_REPO }}
+          IMAGE_TAG: ${{ steps.image_tag.outputs.ORCH_IMAGE_TAG_FULL }}
+        run: |
+           docker build -t ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG --build-arg githubAccessToken=${{ secrets.ACCESS_TOKEN }} .
+           echo ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG
+           docker push ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG
+           echo "::set-output name=image::${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG"
+      - name: Download task definition
+        env:
+          TASK_DEFINITION: ${{ steps.build_env.outputs.TASK_DEFINITION }}
+        run: |
+          aws ecs describe-task-definition --task-definition ${{ env.TASK_DEFINITION }} \
+          --query taskDefinition > task-definition.json
+
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        env:
+          CONTAINER_NAME: ${{ steps.build_env.outputs.CONTAINER_NAME }}
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ steps.build-image.outputs.image }}
+
+
+      - name: Deploy Amazon ECS task definition
+        env:
+          ECS_CLUSTER: ${{ steps.build_env.outputs.ECS_CLUSTER }}
+          ECS_SERVICE: ${{ steps.build_env.outputs.ECS_SERVICE }}
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
