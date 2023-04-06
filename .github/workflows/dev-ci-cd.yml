@@ -30,7 +30,9 @@ jobs:
         id: build_env
         shell: bash
         run: |
-          REGION=${{ secrets.REGION_CODE }}
+          # REGION=${{ secrets.REGION_CODE }}
+          # TODO: Remove this.
+          REGION=mb
           BRANCH="${GITHUB_REF#refs/heads/}"
           ENV=dev
           IAM_ROLE=arn:aws:iam::658114288543:role/GithubActionsRole
@@ -59,7 +61,8 @@ jobs:
         with:
           role-to-assume: ${{ steps.build_env.outputs.IAM_ROLE }}
           role-duration-seconds: 900 # the ttl of the session, in seconds.
-          aws-region: ${{ secrets.REGION }}
+          # aws-region: ${{ secrets.REGION }}
+          aws-region: ap-south-1
 
 
       - name: ECR Image Tag Creation
