@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
+use std::collections::HashMap;
+
 use crate::{
     core::{
         permissions,
@@ -42,8 +44,9 @@ use sea_orm::{
     entity::prelude::*, sea_query::Expr, DatabaseConnection, IntoActiveModel, QueryOrder,
     QuerySelect,
 };
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
 
+use serde_json::value::RawValue;
 use svix_server_derive::{aide_annotate, ModelOut};
 use validator::Validate;
 
@@ -87,7 +90,7 @@ impl From<messageattempt::Model> for MessageAttemptOut {
 
 /// A model containing information on a given message plus additional fields on the last attempt for
 /// that message.
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct AttemptedMessageOut {
     #[serde(flatten)]
@@ -113,6 +116,24 @@ impl AttemptedMessageOut {
             status: dest.status,
             next_attempt: dest.next_attempt,
         }
+    }
+}
+
+// XXX: only used in tests, so OK if it's a bit hacky
+impl<'de> Deserialize<'de> for AttemptedMessageOut {
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let raw_value = Box::<RawValue>::deserialize(deserializer)?;
+        let rest: HashMap<&str, &RawValue> = serde_json::from_str(raw_value.get()).unwrap();
+        Ok(Self {
+            msg: serde_json::from_str(raw_value.get()).unwrap(),
+            status: serde_json::from_str(rest.get("status").unwrap().get()).unwrap(),
+            next_attempt: rest
+                .get("next_attempt")
+                .map(|x| serde_json::from_str(x.get()).unwrap()),
+        })
     }
 }
 

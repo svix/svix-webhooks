@@ -17,6 +17,7 @@ use std::{
 };
 use svix_server::db::models::{message, messagedestination};
 use svix_server::v1::endpoints::endpoint::EndpointStatsOut;
+use svix_server::v1::endpoints::message::RawPayload;
 
 use serde::Deserialize;
 use svix::webhooks::Webhook;
@@ -1972,7 +1973,7 @@ async fn test_msg_event_types_filter() {
                 MessageIn {
                     channels: None,
                     event_type: event_name,
-                    payload: serde_json::json!({}),
+                    payload: RawPayload::from_string("{}".to_string()).unwrap(),
                     uid: None,
                     payload_retention_period: 5,
                 },
@@ -2021,7 +2022,7 @@ async fn test_msg_channels_filter() {
                 MessageIn {
                     channels: channels.clone(),
                     event_type: EventTypeName("et1".to_owned()),
-                    payload: serde_json::json!({}),
+                    payload: RawPayload::from_string("{}".to_string()).unwrap(),
                     uid: None,
                     payload_retention_period: 5,
                 },
