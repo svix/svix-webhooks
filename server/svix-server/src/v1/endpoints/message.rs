@@ -36,6 +36,7 @@ use sea_orm::{entity::prelude::*, IntoActiveModel};
 use sea_orm::{sea_query::Expr, ActiveValue::Set};
 use serde::{Deserialize, Serialize};
 
+use serde_json::value::RawValue;
 use svix_server_derive::{aide_annotate, ModelIn, ModelOut};
 use validator::{Validate, ValidationError};
 
@@ -56,15 +57,48 @@ pub fn validate_channels_msg(
     }
 }
 
-pub fn validate_message_in_payload(
-    payload: &serde_json::Value,
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct RawPayload(pub Box<RawValue>);
+
+impl JsonSchema for RawPayload {
+    fn schema_name() -> String {
+        "RawPayload".to_string()
+    }
+
+    fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
+        serde_json::Value::json_schema(gen)
+    }
+
+    fn is_referenceable() -> bool {
+        false
+    }
+}
+
+impl Eq for RawPayload {}
+
+impl PartialEq for RawPayload {
+    fn eq(&self, other: &Self) -> bool {
+        self.0.get() == other.0.get()
+    }
+}
+
+impl RawPayload {
+    pub fn from_string(val: String) -> serde_json::Result<Self> {
+        Ok(Self(RawValue::from_string(val)?))
+    }
+}
+
+pub fn validate_raw_payload_is_object(
+    payload: &RawPayload,
 ) -> std::result::Result<(), ValidationError> {
-    match payload {
-        serde_json::Value::Object(_) => Ok(()),
-        _ => Err(validation_error(
+    // Verify it's an object/map
+    if payload.0.get().starts_with('{') {
+        Ok(())
+    } else {
+        Err(validation_error(
             Some("payload"),
             Some("Payload must be an object."),
-        )),
+        ))
     }
 }
 
@@ -76,9 +110,9 @@ pub struct MessageIn {
     pub uid: Option<MessageUid>,
     #[validate]
     pub event_type: EventTypeName,
-    #[validate(custom = "validate_message_in_payload")]
+    #[validate(custom = "validate_raw_payload_is_object")]
     #[serde(alias = "payload", alias = "data")]
-    pub payload: serde_json::Value,
+    pub payload: RawPayload,
     #[validate(custom = "validate_channels_msg")]
     #[validate]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -104,7 +138,9 @@ impl ModelIn for MessageIn {
         let expiration = Utc::now() + Duration::days(payload_retention_period);
 
         model.uid = Set(uid);
-        model.payload = Set(Some(payload));
+        model.payload = Set(Some(
+            serde_json::from_str(payload.0.get()).expect("It has to be valid"),
+        ));
         model.event_type = Set(event_type);
         model.expiration = Set(expiration.with_timezone(&Utc).into());
         model.channels = Set(channels);
@@ -117,7 +153,7 @@ pub struct MessageOut {
     #[serde(rename = "eventId")]
     pub uid: Option<MessageUid>,
     pub event_type: EventTypeName,
-    pub payload: serde_json::Value,
+    pub payload: RawPayload,
     pub channels: Option<EventChannelSet>,
     pub id: MessageId,
     #[serde(rename = "timestamp")]
@@ -127,7 +163,7 @@ pub struct MessageOut {
 impl MessageOut {
     fn without_payload(model: message::Model) -> Self {
         Self {
-            payload: serde_json::json!({}),
+            payload: RawPayload::from_string("{}".to_string()).expect("Can never fail"),
             ..model.into()
         }
     }
@@ -139,10 +175,11 @@ impl From<message::Model> for MessageOut {
         Self {
             uid: model.uid,
             event_type: model.event_type,
-            payload: match model.payload {
-                Some(payload) => payload,
-                None => serde_json::json!({ "expired": true }),
-            },
+            payload: RawPayload::from_string(match model.payload {
+                Some(payload) => serde_json::to_string(&payload).expect("Can never fail"),
+                None => r#"{"expired":true}"#.to_string(),
+            })
+            .expect("Can never fail"),
             channels: model.channels,
             id: model.id,
             created_at: model.created_at.into(),

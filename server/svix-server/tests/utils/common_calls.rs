@@ -21,7 +21,7 @@ use svix_server::{
             auth::AppPortalAccessIn,
             endpoint::{EndpointIn, EndpointOut, RecoverIn},
             event_type::EventTypeIn,
-            message::{MessageIn, MessageOut},
+            message::{MessageIn, MessageOut, RawPayload},
         },
         utils::ListResponse,
     },
@@ -116,7 +116,7 @@ pub async fn put_endpoint(
 pub fn message_in<T: Serialize>(event_type: &str, payload: T) -> Result<MessageIn> {
     Ok(MessageIn {
         event_type: EventTypeName(event_type.to_owned()),
-        payload: serde_json::to_value(payload)?,
+        payload: RawPayload::from_string(serde_json::to_string(&payload)?)?,
         payload_retention_period: 5,
         channels: None,
         uid: None,
@@ -160,7 +160,7 @@ pub async fn create_test_msg_with(
             &format!("api/v1/app/{}/msg/", &app_id),
             MessageIn {
                 event_type: EventTypeName(event_type.to_owned()),
-                payload,
+                payload: RawPayload::from_string(serde_json::to_string(&payload).unwrap()).unwrap(),
                 payload_retention_period: 5,
                 channels,
                 uid: None,
