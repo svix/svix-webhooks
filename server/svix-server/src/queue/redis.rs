@@ -466,6 +466,25 @@ fn from_redis_key(key: &str) -> TaskQueueDelivery {
 }
 
 impl RedisQueueInner {
+    async fn send_immedietly(&self, task: Arc<QueueTask>) -> Result<()> {
+        let mut pool = ctx!(self.pool.get().await)?;
+
+        let _: () = ctx!(
+            pool.query_async(Cmd::xadd(
+                &self.main_queue_name,
+                GENERATE_STREAM_ID,
+                &[(
+                    QUEUE_KV_KEY,
+                    serde_json::to_string(&task)
+                        .map_err(|e| err_generic!("serialization error: {}", e))?,
+                )],
+            ))
+            .await
+        )?;
+
+        Ok(())
+    }
+
     async fn ack(&self, delivery: &TaskQueueDelivery) -> Result<()> {
         let mut pool = ctx!(self.pool.get().await)?;
 
@@ -492,46 +511,37 @@ impl RedisQueueInner {
 
         Ok(())
     }
+
+    async fn nack(&self, delivery: &TaskQueueDelivery) -> Result<()> {
+        tracing::debug!("nack {}", delivery.id);
+        self.send_immedietly(delivery.task.clone()).await?;
+        self.ack(delivery).await
+    }
 }
 
 #[async_trait]
 impl TaskQueueSend for RedisQueueProducer {
     async fn send(&self, task: Arc<QueueTask>, delay: Option<Duration>) -> Result<()> {
-        let mut pool = ctx!(self.inner.pool.get().await)?;
-
-        // If there's a delay, compute the timestamp at which the delay is up
-        let timestamp = delay.map(|delay| -> Result<_> {
-            Ok(Utc::now()
+        let timestamp = if let Some(delay) = delay {
+            Utc::now()
                 + chrono::Duration::from_std(delay)
-                    .map_err(|_| err_generic!("Duration out of bounds"))?)
-        });
-
-        if let Some(timestamp) = timestamp {
-            let timestamp = timestamp?;
-            // If there's a delay, add it to the DELAYED queue by ZADDING the Redis-key-ified
-            // delivery
-            let delivery = TaskQueueDelivery::from_arc(task.clone(), Some(timestamp));
-            let key = to_redis_key(&delivery);
-            let delayed_queue_name: &str = &self.delayed_queue_name;
-            let _: () = ctx!(
-                pool.zadd(delayed_queue_name, key, timestamp.timestamp())
-                    .await
-            )?;
+                    .map_err(|_| err_generic!("Duration out of bounds"))?
         } else {
-            // If there is no delay simply XADD the task to the MAIN queue
-            let _: () = ctx!(
-                pool.query_async(Cmd::xadd(
-                    &self.inner.main_queue_name,
-                    GENERATE_STREAM_ID,
-                    &[(
-                        QUEUE_KV_KEY,
-                        serde_json::to_string(&*task)
-                            .map_err(|e| err_generic!("serialization error: {}", e))?,
-                    )],
-                ))
+            tracing::trace!("RedisQueue: event sent (no delay)");
+            return self.inner.send_immedietly(task).await;
+        };
+
+        // If there's a delay, add it to the DELAYED queue by ZADDING the Redis-key-ified
+        // delivery
+        let mut pool = ctx!(self.inner.pool.get().await)?;
+        let delivery = TaskQueueDelivery::from_arc(task.clone(), Some(timestamp));
+        let key = to_redis_key(&delivery);
+        let delayed_queue_name: &str = &self.delayed_queue_name;
+        let _: () = ctx!(
+            pool.zadd(delayed_queue_name, key, timestamp.timestamp())
                 .await
-            )?;
-        }
+        )?;
+
         tracing::trace!("RedisQueue: event sent > (delay: {:?})", delay);
         Ok(())
     }
@@ -542,9 +552,7 @@ impl TaskQueueSend for RedisQueueProducer {
     }
 
     async fn nack(&self, delivery: &TaskQueueDelivery) -> Result<()> {
-        tracing::debug!("nack {}", delivery.id);
-        self.send(delivery.task.clone(), None).await?;
-        self.ack(delivery).await
+        self.inner.nack(delivery).await
     }
 }
 
