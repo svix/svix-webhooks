@@ -411,10 +411,10 @@ async fn new_pair_inner(
             main_queue_name: main_queue_name.clone(),
             delayed_queue_name,
         }),
-        TaskQueueConsumer(Box::new(RedisQueueConsumer {
+        TaskQueueConsumer::Redis(RedisQueueConsumer {
             pool: worker_pool,
             main_queue_name,
-        })),
+        }),
     )
 }
 

@@ -12,10 +12,14 @@ use crate::{
         run_with_retries::run_with_retries,
         types::{ApplicationId, EndpointId, MessageAttemptTriggerType, MessageId},
     },
+    ctx,
     error::{Error, ErrorType, Result},
 };
 
-use self::{memory::MemoryQueueProducer, redis::RedisQueueProducer};
+use self::{
+    memory::{MemoryQueueConsumer, MemoryQueueProducer},
+    redis::{RedisQueueConsumer, RedisQueueProducer},
+};
 
 pub mod memory;
 pub mod redis;
@@ -158,11 +162,19 @@ impl TaskQueueProducer {
     }
 }
 
-pub struct TaskQueueConsumer(Box<dyn TaskQueueReceive + Send + Sync>);
+pub enum TaskQueueConsumer {
+    Redis(RedisQueueConsumer),
+    Memory(MemoryQueueConsumer),
+}
+
+//pub struct TaskQueueConsumer(Box<dyn TaskQueueReceive + Send + Sync>);
 
 impl TaskQueueConsumer {
     pub async fn receive_all(&mut self) -> Result<Vec<TaskQueueDelivery>> {
-        self.0.receive_all().await
+        match self {
+            TaskQueueConsumer::Redis(q) => ctx!(q.receive_all().await),
+            TaskQueueConsumer::Memory(q) => ctx!(q.receive_all().await),
+        }
     }
 }
 

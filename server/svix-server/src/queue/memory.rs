@@ -15,7 +15,7 @@ pub async fn new_pair() -> (TaskQueueProducer, TaskQueueConsumer) {
     let (tx, rx) = mpsc::unbounded_channel::<TaskQueueDelivery>();
     (
         TaskQueueProducer::Memory(MemoryQueueProducer { tx }),
-        TaskQueueConsumer(Box::new(MemoryQueueConsumer { rx })),
+        TaskQueueConsumer::Memory(MemoryQueueConsumer { rx }),
     )
 }
 
