@@ -41,6 +41,7 @@ use tokio::time::sleep;
 use crate::{
     ctx, err_generic,
     error::Result,
+    queue::Acker,
     redis::{PoolLike, PooledConnection, PooledConnectionLike, RedisPool},
 };
 
@@ -438,7 +439,7 @@ impl ToRedisArgs for Direction {
     }
 }
 
-struct RedisQueueInner {
+pub(super) struct RedisQueueInner {
     pool: RedisPool,
     main_queue_name: String,
 }
@@ -457,12 +458,12 @@ fn to_redis_key(delivery: &TaskQueueDelivery) -> String {
     )
 }
 
-fn from_redis_key(key: &str) -> TaskQueueDelivery {
+fn from_redis_key(key: &str) -> (String, Arc<QueueTask>) {
     // Get the first delimiter -> it has to have the |
     let pos = key.find('|').unwrap();
     let id = key[..pos].to_string();
     let task = serde_json::from_str(&key[pos + 1..]).unwrap();
-    TaskQueueDelivery { id, task }
+    (id, task)
 }
 
 impl RedisQueueInner {
@@ -485,7 +486,8 @@ impl RedisQueueInner {
         Ok(())
     }
 
-    async fn ack(&self, delivery: &TaskQueueDelivery) -> Result<()> {
+    /// ACKing the delivery, XACKs the message in the queue so it will no longer be retried
+    pub(super) async fn ack(&self, delivery: &TaskQueueDelivery) -> Result<()> {
         let mut pool = ctx!(self.pool.get().await)?;
 
         let mut pipe = redis::pipe();
@@ -512,7 +514,7 @@ impl RedisQueueInner {
         Ok(())
     }
 
-    async fn nack(&self, delivery: &TaskQueueDelivery) -> Result<()> {
+    pub(super) async fn nack(&self, delivery: &TaskQueueDelivery) -> Result<()> {
         tracing::debug!("nack {}", delivery.id);
         self.send_immedietly(delivery.task.clone()).await?;
         self.ack(delivery).await
@@ -534,7 +536,11 @@ impl TaskQueueSend for RedisQueueProducer {
         // If there's a delay, add it to the DELAYED queue by ZADDING the Redis-key-ified
         // delivery
         let mut pool = ctx!(self.inner.pool.get().await)?;
-        let delivery = TaskQueueDelivery::from_arc(task.clone(), Some(timestamp));
+        let delivery = TaskQueueDelivery::from_arc(
+            task.clone(),
+            Some(timestamp),
+            Acker::Redis(self.inner.clone()),
+        );
         let key = to_redis_key(&delivery);
         let delayed_queue_name: &str = &self.delayed_queue_name;
         let _: () = ctx!(
@@ -544,15 +550,6 @@ impl TaskQueueSend for RedisQueueProducer {
 
         tracing::trace!("RedisQueue: event sent > (delay: {:?})", delay);
         Ok(())
-    }
-
-    /// ACKing the delivery, XACKs the message in the queue so it will no longer be retried
-    async fn ack(&self, delivery: &TaskQueueDelivery) -> Result<()> {
-        self.inner.ack(delivery).await
-    }
-
-    async fn nack(&self, delivery: &TaskQueueDelivery) -> Result<()> {
-        self.inner.nack(delivery).await
     }
 }
 
@@ -597,6 +594,7 @@ impl TaskQueueReceive for RedisQueueConsumer {
                 Ok(vec![TaskQueueDelivery {
                     id,
                     task: Arc::new(task),
+                    acker: Acker::Redis(consumer.0.clone()),
                 }])
             } else {
                 Ok(Vec::new())
@@ -634,11 +632,11 @@ async fn migrate_list_to_stream(
 
         let mut pipe = redis::pipe();
         for key in legacy_keys {
-            let delivery = from_redis_key(&key);
+            let (_, task) = from_redis_key(&key);
             let _ = pipe.xadd(
                 queue,
                 GENERATE_STREAM_ID,
-                &[(QUEUE_KV_KEY, serde_json::to_string(&delivery.task).unwrap())],
+                &[(QUEUE_KV_KEY, serde_json::to_string(&task).unwrap())],
             );
         }
 
@@ -716,7 +714,10 @@ pub mod tests {
     use crate::{
         cfg::{CacheType, Configuration},
         core::types::{ApplicationId, EndpointId, MessageAttemptTriggerType, MessageId},
-        queue::{MessageTask, QueueTask, TaskQueueConsumer, TaskQueueDelivery, TaskQueueProducer},
+        queue::{
+            redis::RedisQueueInner, Acker, MessageTask, QueueTask, TaskQueueConsumer,
+            TaskQueueDelivery, TaskQueueProducer,
+        },
         redis::{PoolLike, PooledConnectionLike, RedisPool},
     };
 
@@ -799,12 +800,12 @@ pub mod tests {
 
     /// Reads and acknowledges all items in the queue with the given name for clearing out entries
     /// from previous test runs
-    async fn flush_stale_queue_items(p: TaskQueueProducer, c: &mut TaskQueueConsumer) {
+    async fn flush_stale_queue_items(_p: TaskQueueProducer, c: &mut TaskQueueConsumer) {
         loop {
             tokio::select! {
                 recv = c.receive_all() => {
                     let recv = recv.unwrap().pop().unwrap();
-                    p.ack(recv).await.unwrap();
+                    recv.ack().await.unwrap();
                 }
 
                 _ = tokio::time::sleep(Duration::from_millis(100)) => {
@@ -858,7 +859,7 @@ pub mod tests {
                 let recv = recv.unwrap().pop().unwrap();
                 assert_eq!(*recv.task, mt);
                 // Acknowledge so the queue isn't further polluted
-                p.ack(recv).await.unwrap();
+                recv.ack().await.unwrap();
             }
 
             _ = tokio::time::sleep(Duration::from_secs(5)) => {
@@ -918,7 +919,7 @@ pub mod tests {
 
         let recv = c.receive_all().await.unwrap().pop().unwrap();
         assert_eq!(*recv.task, mt);
-        p.ack(recv).await.unwrap();
+        recv.ack().await.unwrap();
 
         tokio::select! {
             recv = c.receive_all() => {
@@ -967,7 +968,7 @@ pub mod tests {
 
         let recv = c.receive_all().await.unwrap().pop().unwrap();
         assert_eq!(*recv.task, mt);
-        p.nack(recv).await.unwrap();
+        recv.nack().await.unwrap();
 
         tokio::select! {
             recv = c.receive_all() => {
@@ -1021,11 +1022,11 @@ pub mod tests {
 
         let recv2 = c.receive_all().await.unwrap().pop().unwrap();
         assert_eq!(*recv2.task, mt2);
-        p.ack(recv2).await.unwrap();
+        recv2.ack().await.unwrap();
 
         let recv1 = c.receive_all().await.unwrap().pop().unwrap();
         assert_eq!(*recv1.task, mt1);
-        p.ack(recv1).await.unwrap();
+        recv1.ack().await.unwrap();
     }
 
     #[tokio::test]
@@ -1088,6 +1089,10 @@ pub mod tests {
                                 trigger_type: MessageAttemptTriggerType::Manual,
                                 attempt_count: 0,
                             })),
+                            acker: Acker::Redis(Arc::new(RedisQueueInner {
+                                pool: pool.clone(),
+                                main_queue_name: v1_main.to_owned(),
+                            })),
                         }),
                     ))
                     .await
@@ -1106,6 +1111,10 @@ pub mod tests {
                                 endpoint_id: EndpointId("TestEndpointID".to_owned()),
                                 trigger_type: MessageAttemptTriggerType::Manual,
                                 attempt_count: 0,
+                            })),
+                            acker: Acker::Redis(Arc::new(RedisQueueInner {
+                                pool: pool.clone(),
+                                main_queue_name: v1_main.to_owned(),
                             })),
                         }),
                         Utc::now().timestamp() + 2,
@@ -1145,7 +1154,7 @@ pub mod tests {
         }
 
         // Read
-        let (p, mut c) = new_pair_inner(
+        let (_p, mut c) = new_pair_inner(
             pool,
             Duration::from_secs(5),
             "",
@@ -1170,7 +1179,7 @@ pub mod tests {
                     attempt_count: 0,
                 })
             );
-            p.ack(recv).await.unwrap();
+            recv.ack().await.unwrap();
         }
         for num in 1..=5 {
             let recv = c.receive_all().await.unwrap().pop().unwrap();
@@ -1184,7 +1193,7 @@ pub mod tests {
                     attempt_count: 0,
                 })
             );
-            p.ack(recv).await.unwrap();
+            recv.ack().await.unwrap();
         }
         for num in 11..=15 {
             let recv = c.receive_all().await.unwrap().pop().unwrap();
@@ -1198,7 +1207,7 @@ pub mod tests {
                     attempt_count: 0,
                 })
             );
-            p.ack(recv).await.unwrap();
+            recv.ack().await.unwrap();
         }
     }
 }

@@ -994,13 +994,13 @@ pub async fn queue_handler(
                             .await
                             .is_err()
                         {
-                            if let Err(err) = queue_tx.nack(delivery).await {
+                            if let Err(err) = delivery.nack().await {
                                 tracing::error!(
                                     "Error sending 'nack' to Redis after task execution error: {}",
                                     err
                                 );
                             }
-                        } else if let Err(err) = queue_tx.ack(delivery).await {
+                        } else if let Err(err) = delivery.ack().await {
                             tracing::error!(
                                 "Error sending 'ack' to Redis after successful task execution: {}",
                                 err

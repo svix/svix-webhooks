@@ -18,7 +18,7 @@ use crate::{
 
 use self::{
     memory::{MemoryQueueConsumer, MemoryQueueProducer},
-    redis::{RedisQueueConsumer, RedisQueueProducer},
+    redis::{RedisQueueConsumer, RedisQueueInner, RedisQueueProducer},
 };
 
 pub mod memory;
@@ -130,44 +130,12 @@ impl TaskQueueProducer {
         )
         .await
     }
-
-    pub async fn ack(&self, delivery: TaskQueueDelivery) -> Result<()> {
-        tracing::trace!("ack {}", delivery.id);
-        run_with_retries(
-            || async {
-                match self {
-                    TaskQueueProducer::Memory(q) => q.ack(&delivery).await,
-                    TaskQueueProducer::Redis(q) => q.ack(&delivery).await,
-                }
-            },
-            should_retry,
-            RETRY_SCHEDULE,
-        )
-        .await
-    }
-
-    pub async fn nack(&self, delivery: TaskQueueDelivery) -> Result<()> {
-        tracing::trace!("nack {}", delivery.id);
-        run_with_retries(
-            || async {
-                match self {
-                    TaskQueueProducer::Memory(q) => q.nack(&delivery).await,
-                    TaskQueueProducer::Redis(q) => q.nack(&delivery).await,
-                }
-            },
-            should_retry,
-            RETRY_SCHEDULE,
-        )
-        .await
-    }
 }
 
 pub enum TaskQueueConsumer {
     Redis(RedisQueueConsumer),
     Memory(MemoryQueueConsumer),
 }
-
-//pub struct TaskQueueConsumer(Box<dyn TaskQueueReceive + Send + Sync>);
 
 impl TaskQueueConsumer {
     pub async fn receive_all(&mut self) -> Result<Vec<TaskQueueDelivery>> {
@@ -178,29 +146,70 @@ impl TaskQueueConsumer {
     }
 }
 
+/// Used by TaskQueueDeliveries to Ack/Nack itself
+enum Acker {
+    Memory(MemoryQueueProducer),
+    Redis(Arc<RedisQueueInner>),
+}
+
 pub struct TaskQueueDelivery {
     pub id: String,
     pub task: Arc<QueueTask>,
+    acker: Acker,
 }
 
 impl TaskQueueDelivery {
     /// The `timestamp` is when this message will be delivered at
-    fn from_arc(task: Arc<QueueTask>, timestamp: Option<DateTime<Utc>>) -> Self {
+    fn from_arc(task: Arc<QueueTask>, timestamp: Option<DateTime<Utc>>, acker: Acker) -> Self {
         let ksuid = KsuidMs::new(timestamp, None);
         Self {
             id: ksuid.to_string(),
             task,
+            acker,
         }
+    }
+
+    pub async fn ack(self) -> Result<()> {
+        tracing::trace!("ack {}", self.id);
+        run_with_retries(
+            || async {
+                match &self.acker {
+                    Acker::Memory(_) => Ok(()), // nothing to do
+                    Acker::Redis(q) => {
+                        ctx!(q.ack(&self).await)
+                    }
+                }
+            },
+            should_retry,
+            RETRY_SCHEDULE,
+        )
+        .await
+    }
+
+    pub async fn nack(self) -> Result<()> {
+        tracing::trace!("nack {}", self.id);
+        run_with_retries(
+            || async {
+                match &self.acker {
+                    Acker::Memory(q) => {
+                        tracing::debug!("nack {}", self.id);
+                        ctx!(q.send(self.task.clone(), None).await)
+                    }
+                    Acker::Redis(q) => {
+                        ctx!(q.nack(&self).await)
+                    }
+                }
+            },
+            should_retry,
+            RETRY_SCHEDULE,
+        )
+        .await
     }
 }
 
 #[async_trait]
 trait TaskQueueSend: Sync + Send {
     async fn send(&self, task: Arc<QueueTask>, delay: Option<Duration>) -> Result<()>;
-
-    async fn ack(&self, delivery: &TaskQueueDelivery) -> Result<()>;
-
-    async fn nack(&self, delivery: &TaskQueueDelivery) -> Result<()>;
 }
 
 #[async_trait]
@@ -311,7 +320,7 @@ mod tests {
 
         assert_eq!(*recv.task, mock_message("test".to_owned()));
 
-        assert!(tx_mem.ack(recv).await.is_ok());
+        assert!(recv.ack().await.is_ok());
 
         tokio::select! {
             _ = rx_mem.receive_all() => {
@@ -340,7 +349,7 @@ mod tests {
             .unwrap();
         assert_eq!(*recv.task, mock_message("test".to_owned()));
 
-        assert!(tx_mem.nack(recv).await.is_ok());
+        assert!(recv.nack().await.is_ok());
 
         tokio::select! {
             _ = rx_mem.receive_all() => {}

@@ -7,7 +7,7 @@ use tokio::{sync::mpsc, time::sleep};
 use crate::{err_queue, error::Result};
 
 use super::{
-    QueueTask, TaskQueueConsumer, TaskQueueDelivery, TaskQueueProducer, TaskQueueReceive,
+    Acker, QueueTask, TaskQueueConsumer, TaskQueueDelivery, TaskQueueProducer, TaskQueueReceive,
     TaskQueueSend,
 };
 
@@ -28,7 +28,7 @@ pub struct MemoryQueueProducer {
 impl TaskQueueSend for MemoryQueueProducer {
     async fn send(&self, msg: Arc<QueueTask>, delay: Option<Duration>) -> Result<()> {
         let timestamp = delay.map(|delay| Utc::now() + chrono::Duration::from_std(delay).unwrap());
-        let delivery = TaskQueueDelivery::from_arc(msg, timestamp);
+        let delivery = TaskQueueDelivery::from_arc(msg, timestamp, Acker::Memory(self.clone()));
 
         if let Some(delay) = delay {
             let tx = self.tx.clone();
@@ -44,16 +44,6 @@ impl TaskQueueSend for MemoryQueueProducer {
             tracing::error!("Receiver dropped");
         }
 
-        Ok(())
-    }
-
-    async fn ack(&self, _delivery: &TaskQueueDelivery) -> Result<()> {
-        Ok(())
-    }
-
-    async fn nack(&self, delivery: &TaskQueueDelivery) -> Result<()> {
-        tracing::debug!("nack {}", delivery.id);
-        self.send(delivery.task.clone(), None).await?;
         Ok(())
     }
 }
