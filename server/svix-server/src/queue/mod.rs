@@ -275,8 +275,9 @@ mod tests {
             assert_send(&tx_mem, msg_2).await;
         });
 
-        assert_recv(&mut rx_mem, msg_1).await;
-        assert_recv(&mut rx_mem, msg_2).await;
+        let tasks = rx_mem.receive_all().await.unwrap();
+        assert_eq!(*tasks[0].task, mock_message(msg_1.to_owned()));
+        assert_eq!(*tasks[1].task, mock_message(msg_2.to_owned()));
     }
 
     #[tokio::test]
