@@ -44,7 +44,7 @@ impl CreateMessageApp {
         db: &DatabaseTransaction,
         app: application::Model,
     ) -> Result<CreateMessageApp> {
-        let endpoints = ctx!(endpoint::Entity::secure_find(app.id.clone()).all(db).await)?
+        let endpoints = ctx!(endpoint::Entity::secure_find(app.id.clone(), String::new()).all(db).await)?
             .into_iter()
             .map(TryInto::try_into)
             .collect::<Result<Vec<_>>>()?;
