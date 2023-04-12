@@ -27,19 +27,23 @@ pub struct MemoryQueueProducer {
 #[async_trait]
 impl TaskQueueSend for MemoryQueueProducer {
     async fn send(&self, msg: Arc<QueueTask>, delay: Option<Duration>) -> Result<()> {
-        let tx = self.tx.clone();
         let timestamp = delay.map(|delay| Utc::now() + chrono::Duration::from_std(delay).unwrap());
         let delivery = TaskQueueDelivery::from_arc(msg, timestamp);
-        tokio::spawn(async move {
-            // We just assume memory queue always works, so we can defer the error handling
-            tracing::trace!("MemoryQueue: event sent > (delay: {:?})", delay);
-            if let Some(delay) = delay {
+
+        if let Some(delay) = delay {
+            let tx = self.tx.clone();
+            tokio::spawn(async move {
+                // We just assume memory queue always works, so we can defer the error handling
+                tracing::trace!("MemoryQueue: event sent > (delay: {:?})", delay);
                 sleep(delay).await;
-            }
-            if tx.send(delivery).is_err() {
-                tracing::error!("Receiver dropped");
-            }
-        });
+                if tx.send(delivery).is_err() {
+                    tracing::error!("Receiver dropped");
+                }
+            });
+        } else if self.tx.send(delivery).is_err() {
+            tracing::error!("Receiver dropped");
+        }
+
         Ok(())
     }
 
