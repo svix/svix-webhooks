@@ -266,26 +266,26 @@ checksum = "e6b4d9b1225d28d360ec6a231d65af1fd99a2a095154c8040689617290569c5c"
 
 [[package]]
 name = "bb8"
-version = "0.7.1"
+version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2e9f4fa9768efd269499d8fba693260cfc670891cf6de3adc935588447a77cc8"
+checksum = "1627eccf3aa91405435ba240be23513eeca466b5dc33866422672264de061582"
 dependencies = [
  "async-trait",
  "futures-channel",
  "futures-util",
- "parking_lot 0.11.2",
+ "parking_lot 0.12.1",
  "tokio",
 ]
 
 [[package]]
 name = "bb8-redis"
-version = "0.10.1"
+version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c440295545cb69b3cec992ae8844fbb1de1c84f2f90248438af287e14bb09bde"
+checksum = "688ba412f8e9c4a7e131774a94bf5a95df12618d143981b97d2aaf0776815533"
 dependencies = [
  "async-trait",
  "bb8",
- "redis",
+ "redis 0.23.0",
 ]
 
 [[package]]
@@ -2470,11 +2470,35 @@ dependencies = [
  "combine",
  "futures-util",
  "itoa",
- "native-tls",
  "percent-encoding",
  "pin-project-lite",
  "ryu",
  "sha1 0.6.1",
+ "tokio",
+ "tokio-util 0.7.7",
+ "url",
+]
+
+[[package]]
+name = "redis"
+version = "0.23.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3ea8c51b5dc1d8e5fd3350ec8167f464ec0995e79f2e90a075b63371500d557f"
+dependencies = [
+ "async-trait",
+ "bytes",
+ "combine",
+ "crc16",
+ "futures",
+ "futures-util",
+ "itoa",
+ "log",
+ "native-tls",
+ "percent-encoding",
+ "pin-project-lite",
+ "rand",
+ "ryu",
+ "sha1_smol",
  "tokio",
  "tokio-native-tls",
  "tokio-util 0.7.7",
@@ -2491,7 +2515,7 @@ dependencies = [
  "log",
  "pin-project-lite",
  "rand",
- "redis",
+ "redis 0.21.7",
  "tokio",
 ]
 
@@ -3283,7 +3307,7 @@ dependencies = [
  "opentelemetry-http",
  "opentelemetry-otlp",
  "rand",
- "redis",
+ "redis 0.23.0",
  "redis_cluster_async",
  "regex",
  "reqwest",
