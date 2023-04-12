@@ -403,18 +403,19 @@ async fn new_pair_inner(
         }
     });
 
+    let inner = Arc::new(RedisQueueInner {
+        pool: worker_pool,
+        main_queue_name,
+    });
+
     // Once the background thread has been started, simply return the [`TaskQueueProducer`] and
     // [`TaskQueueConsumer`]
     (
         TaskQueueProducer::Redis(RedisQueueProducer {
-            pool: worker_pool.clone(),
-            main_queue_name: main_queue_name.clone(),
-            delayed_queue_name,
+            inner: inner.clone(),
+            delayed_queue_name: Arc::new(delayed_queue_name),
         }),
-        TaskQueueConsumer::Redis(RedisQueueConsumer {
-            pool: worker_pool,
-            main_queue_name,
-        }),
+        TaskQueueConsumer::Redis(RedisQueueConsumer(inner)),
     )
 }
 
@@ -437,11 +438,15 @@ impl ToRedisArgs for Direction {
     }
 }
 
-#[derive(Clone)]
-pub struct RedisQueueProducer {
+struct RedisQueueInner {
     pool: RedisPool,
     main_queue_name: String,
-    delayed_queue_name: String,
+}
+
+#[derive(Clone)]
+pub struct RedisQueueProducer {
+    inner: Arc<RedisQueueInner>,
+    delayed_queue_name: Arc<String>,
 }
 
 fn to_redis_key(delivery: &TaskQueueDelivery) -> String {
@@ -460,48 +465,7 @@ fn from_redis_key(key: &str) -> TaskQueueDelivery {
     TaskQueueDelivery { id, task }
 }
 
-#[async_trait]
-impl TaskQueueSend for RedisQueueProducer {
-    async fn send(&self, task: Arc<QueueTask>, delay: Option<Duration>) -> Result<()> {
-        let mut pool = ctx!(self.pool.get().await)?;
-
-        // If there's a delay, compute the timestamp at which the delay is up
-        let timestamp = delay.map(|delay| -> Result<_> {
-            Ok(Utc::now()
-                + chrono::Duration::from_std(delay)
-                    .map_err(|_| err_generic!("Duration out of bounds"))?)
-        });
-
-        if let Some(timestamp) = timestamp {
-            let timestamp = timestamp?;
-            // If there's a delay, add it to the DELAYED queue by ZADDING the Redis-key-ified
-            // delivery
-            let delivery = TaskQueueDelivery::from_arc(task.clone(), Some(timestamp));
-            let key = to_redis_key(&delivery);
-            let _: () = ctx!(
-                pool.zadd(&self.delayed_queue_name, key, timestamp.timestamp())
-                    .await
-            )?;
-        } else {
-            // If there is no delay simply XADD the task to the MAIN queue
-            let _: () = ctx!(
-                pool.query_async(Cmd::xadd(
-                    &self.main_queue_name,
-                    GENERATE_STREAM_ID,
-                    &[(
-                        QUEUE_KV_KEY,
-                        serde_json::to_string(&*task)
-                            .map_err(|e| err_generic!("serialization error: {}", e))?,
-                    )],
-                ))
-                .await
-            )?;
-        }
-        tracing::trace!("RedisQueue: event sent > (delay: {:?})", delay);
-        Ok(())
-    }
-
-    /// ACKing the delivery, XACKs the message in the queue so it will no longer be retried
+impl RedisQueueInner {
     async fn ack(&self, delivery: &TaskQueueDelivery) -> Result<()> {
         let mut pool = ctx!(self.pool.get().await)?;
 
@@ -530,26 +494,70 @@ impl TaskQueueSend for RedisQueueProducer {
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct RedisQueueConsumer {
-    pool: RedisPool,
-    main_queue_name: String,
+#[async_trait]
+impl TaskQueueSend for RedisQueueProducer {
+    async fn send(&self, task: Arc<QueueTask>, delay: Option<Duration>) -> Result<()> {
+        let mut pool = ctx!(self.inner.pool.get().await)?;
+
+        // If there's a delay, compute the timestamp at which the delay is up
+        let timestamp = delay.map(|delay| -> Result<_> {
+            Ok(Utc::now()
+                + chrono::Duration::from_std(delay)
+                    .map_err(|_| err_generic!("Duration out of bounds"))?)
+        });
+
+        if let Some(timestamp) = timestamp {
+            let timestamp = timestamp?;
+            // If there's a delay, add it to the DELAYED queue by ZADDING the Redis-key-ified
+            // delivery
+            let delivery = TaskQueueDelivery::from_arc(task.clone(), Some(timestamp));
+            let key = to_redis_key(&delivery);
+            let delayed_queue_name: &str = &self.delayed_queue_name;
+            let _: () = ctx!(
+                pool.zadd(delayed_queue_name, key, timestamp.timestamp())
+                    .await
+            )?;
+        } else {
+            // If there is no delay simply XADD the task to the MAIN queue
+            let _: () = ctx!(
+                pool.query_async(Cmd::xadd(
+                    &self.inner.main_queue_name,
+                    GENERATE_STREAM_ID,
+                    &[(
+                        QUEUE_KV_KEY,
+                        serde_json::to_string(&*task)
+                            .map_err(|e| err_generic!("serialization error: {}", e))?,
+                    )],
+                ))
+                .await
+            )?;
+        }
+        tracing::trace!("RedisQueue: event sent > (delay: {:?})", delay);
+        Ok(())
+    }
+
+    /// ACKing the delivery, XACKs the message in the queue so it will no longer be retried
+    async fn ack(&self, delivery: &TaskQueueDelivery) -> Result<()> {
+        self.inner.ack(delivery).await
+    }
 }
+
+#[derive(Clone)]
+pub struct RedisQueueConsumer(Arc<RedisQueueInner>);
 
 #[async_trait]
 impl TaskQueueReceive for RedisQueueConsumer {
     async fn receive_all(&mut self) -> Result<Vec<TaskQueueDelivery>> {
-        let pool = self.pool.clone();
-        let main_queue_name = self.main_queue_name.clone();
+        let consumer = self.clone();
         tokio::spawn(async move {
             // TODO: Receive messages in batches so it's not always a Vec with one member
-            let mut pool = ctx!(pool.get().await)?;
+            let mut pool = ctx!(consumer.0.pool.get().await)?;
 
             // There is no way to make it await a message for unbounded times, so simply block for a short
             // amount of time (to avoid locking) and loop if no messages were retreived
             let resp: StreamReadReply = ctx!(
                 pool.query_async(Cmd::xread_options(
-                    &[&main_queue_name],
+                    &[&consumer.0.main_queue_name],
                     &[LISTEN_STREAM_ID],
                     &StreamReadOptions::default()
                         .group(WORKERS_GROUP, WORKER_CONSUMER)
