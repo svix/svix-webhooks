@@ -540,6 +540,12 @@ impl TaskQueueSend for RedisQueueProducer {
     async fn ack(&self, delivery: &TaskQueueDelivery) -> Result<()> {
         self.inner.ack(delivery).await
     }
+
+    async fn nack(&self, delivery: &TaskQueueDelivery) -> Result<()> {
+        tracing::debug!("nack {}", delivery.id);
+        self.send(delivery.task.clone(), None).await?;
+        self.ack(delivery).await
+    }
 }
 
 #[derive(Clone)]

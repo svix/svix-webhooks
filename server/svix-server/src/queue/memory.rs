@@ -50,6 +50,12 @@ impl TaskQueueSend for MemoryQueueProducer {
     async fn ack(&self, _delivery: &TaskQueueDelivery) -> Result<()> {
         Ok(())
     }
+
+    async fn nack(&self, delivery: &TaskQueueDelivery) -> Result<()> {
+        tracing::debug!("nack {}", delivery.id);
+        self.send(delivery.task.clone(), None).await?;
+        Ok(())
+    }
 }
 
 pub struct MemoryQueueConsumer {
