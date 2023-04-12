@@ -197,7 +197,6 @@ impl TaskQueueDelivery {
 #[async_trait]
 trait TaskQueueSend: Sync + Send {
     async fn send(&self, task: Arc<QueueTask>, delay: Option<Duration>) -> Result<()>;
-    fn clone_box(&self) -> Box<dyn TaskQueueSend>;
 
     async fn ack(&self, delivery: &TaskQueueDelivery) -> Result<()>;
 
@@ -208,12 +207,6 @@ trait TaskQueueSend: Sync + Send {
         tracing::debug!("nack {}", delivery.id);
         self.send(delivery.task.clone(), None).await?;
         self.ack(delivery).await
-    }
-}
-
-impl Clone for Box<dyn TaskQueueSend> {
-    fn clone(&self) -> Box<dyn TaskQueueSend> {
-        self.clone_box()
     }
 }
 

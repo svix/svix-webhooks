@@ -528,10 +528,6 @@ impl TaskQueueSend for RedisQueueProducer {
 
         Ok(())
     }
-
-    fn clone_box(&self) -> Box<dyn TaskQueueSend> {
-        Box::new(self.clone())
-    }
 }
 
 #[derive(Debug, Clone)]

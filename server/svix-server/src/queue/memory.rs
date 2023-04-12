@@ -46,10 +46,6 @@ impl TaskQueueSend for MemoryQueueProducer {
     async fn ack(&self, _delivery: &TaskQueueDelivery) -> Result<()> {
         Ok(())
     }
-
-    fn clone_box(&self) -> Box<dyn TaskQueueSend> {
-        Box::new(self.clone())
-    }
 }
 
 pub struct MemoryQueueConsumer {
