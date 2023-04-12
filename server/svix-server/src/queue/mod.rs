@@ -15,6 +15,8 @@ use crate::{
     error::{Error, ErrorType, Result},
 };
 
+use self::{memory::MemoryQueueProducer, redis::RedisQueueProducer};
+
 pub mod memory;
 pub mod redis;
 
@@ -103,19 +105,22 @@ pub enum QueueTask {
     MessageBatch(MessageTaskBatch),
 }
 
-pub struct TaskQueueProducer(Box<dyn TaskQueueSend>);
-
-impl Clone for TaskQueueProducer {
-    fn clone(&self) -> Self {
-        Self(self.0.clone_box())
-    }
+#[derive(Clone)]
+pub enum TaskQueueProducer {
+    Memory(MemoryQueueProducer),
+    Redis(RedisQueueProducer),
 }
 
 impl TaskQueueProducer {
     pub async fn send(&self, task: QueueTask, delay: Option<Duration>) -> Result<()> {
         let task = Arc::new(task);
         run_with_retries(
-            || async { self.0.send(task.clone(), delay).await },
+            || async {
+                match self {
+                    TaskQueueProducer::Memory(q) => q.send(task.clone(), delay).await,
+                    TaskQueueProducer::Redis(q) => q.send(task.clone(), delay).await,
+                }
+            },
             should_retry,
             RETRY_SCHEDULE,
         )
@@ -125,7 +130,12 @@ impl TaskQueueProducer {
     pub async fn ack(&self, delivery: TaskQueueDelivery) -> Result<()> {
         tracing::trace!("ack {}", delivery.id);
         run_with_retries(
-            || async { self.0.ack(&delivery).await },
+            || async {
+                match self {
+                    TaskQueueProducer::Memory(q) => q.ack(&delivery).await,
+                    TaskQueueProducer::Redis(q) => q.ack(&delivery).await,
+                }
+            },
             should_retry,
             RETRY_SCHEDULE,
         )
@@ -135,7 +145,12 @@ impl TaskQueueProducer {
     pub async fn nack(&self, delivery: TaskQueueDelivery) -> Result<()> {
         tracing::trace!("nack {}", delivery.id);
         run_with_retries(
-            || async { self.0.nack(&delivery).await },
+            || async {
+                match self {
+                    TaskQueueProducer::Memory(q) => q.nack(&delivery).await,
+                    TaskQueueProducer::Redis(q) => q.nack(&delivery).await,
+                }
+            },
             should_retry,
             RETRY_SCHEDULE,
         )

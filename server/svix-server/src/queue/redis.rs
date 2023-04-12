@@ -406,11 +406,11 @@ async fn new_pair_inner(
     // Once the background thread has been started, simply return the [`TaskQueueProducer`] and
     // [`TaskQueueConsumer`]
     (
-        TaskQueueProducer(Box::new(RedisQueueProducer {
+        TaskQueueProducer::Redis(RedisQueueProducer {
             pool: worker_pool.clone(),
             main_queue_name: main_queue_name.clone(),
             delayed_queue_name,
-        })),
+        }),
         TaskQueueConsumer(Box::new(RedisQueueConsumer {
             pool: worker_pool,
             main_queue_name,
