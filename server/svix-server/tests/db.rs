@@ -91,7 +91,7 @@ async fn count_messages(db: &DatabaseConnection, app_id: ApplicationId) -> usize
 }
 
 async fn count_endpoints(db: &DatabaseConnection, app_id: ApplicationId) -> usize {
-    endpoint::Entity::secure_find(app_id, String::new())
+    endpoint::Entity::secure_find(app_id)
         .all(db)
         .await
         .unwrap()

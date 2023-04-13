@@ -46,7 +46,7 @@ pub async fn wipe_org(cfg: &Configuration, org_id: OrganizationId) {
         .unwrap_or_else(|_| panic!("Error fetching applications associated with org ID {org_id}"));
 
     for application in applications {
-        let endpoints: Vec<endpoint::Model> = endpoint::Entity::secure_find(application.id.clone(), String::new())
+        let endpoints: Vec<endpoint::Model> = endpoint::Entity::secure_find(application.id.clone())
             .all(&db)
             .await
             .unwrap_or_else(|_| {
