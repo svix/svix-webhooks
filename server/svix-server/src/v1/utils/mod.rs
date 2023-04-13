@@ -101,11 +101,6 @@ pub struct Ordering {
     pub order: Option<ListOrdering>,
 }
 
-#[derive(Deserialize, Validate, JsonSchema)]
-pub struct SearchString {
-    pub search_string: String,
-}
-
 #[derive(Debug, PartialEq, Eq)]
 pub enum ReversibleIterator<T: Validate> {
     Normal(T),
