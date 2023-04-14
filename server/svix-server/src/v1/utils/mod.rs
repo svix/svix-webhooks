@@ -452,10 +452,10 @@ impl<T: JsonSchema> OperationInput for ValidatedQuery<T> {
 
 // A special wrapper to handle query parameter lists. serde_qs and serde_urlencode can't
 // handle url query param arrays as flexibly as we need to support in our API
-pub struct EventTypesQuery(pub Option<EventTypeNameSet>);
+pub struct EventTypesQueryParams(pub Option<EventTypeNameSet>);
 
 #[async_trait]
-impl<S> FromRequestParts<S> for EventTypesQuery
+impl<S> FromRequestParts<S> for EventTypesQueryParams
 where
     S: Send + Sync,
 {
@@ -487,7 +487,19 @@ where
     }
 }
 
-impl OperationInput for EventTypesQuery {}
+impl OperationInput for EventTypesQueryParams {
+    fn operation_input(ctx: &mut aide::gen::GenContext, operation: &mut aide::openapi::Operation) {
+        // This struct must match what `EventTypesQuery` would be if we used a
+        // simple `#[derive(Deserialize)]` on it.
+        #[derive(JsonSchema)]
+        struct EventTypesQueryParams {
+            #[allow(unused)]
+            event_types: Option<EventTypeNameSet>,
+        }
+
+        Query::<EventTypesQueryParams>::operation_input(ctx, operation);
+    }
+}
 
 pub async fn api_not_implemented() -> Result<()> {
     Err(HttpError::not_implemented(None, None).into())

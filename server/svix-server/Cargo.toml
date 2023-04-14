@@ -65,8 +65,8 @@ redis_cluster_async = { git = "https://github.com/redis-rs/redis-cluster-async.g
 url = { version = "2.2.2", features = ["serde"] }
 rand = "0.8.5"
 jsonschema = "0.16.1"
-aide = { version = "0.9.0", features = ["axum", "redoc", "macros"] }
-schemars = { version = "0.8.11", features = ["chrono", "url"] }
+aide = { git = "https://github.com/svix/aide", rev = "e6e9af3", features = ["axum", "redoc", "macros", "axum-headers"] }
+schemars = { version = "0.8.11", features = ["chrono", "url", "preserve_order"] }
 indexmap = "1.9.2"
 trust-dns-resolver = "0.22.0"
 ipnet = { version = "2.5", features = ["serde"] }

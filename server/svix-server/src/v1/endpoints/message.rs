@@ -15,7 +15,7 @@ use crate::{
     queue::MessageTaskBatch,
     v1::utils::{
         apply_pagination_desc, iterator_from_before_or_after, openapi_tag, validation_error,
-        ApplicationMsgPath, EventTypesQuery, JsonStatus, ListResponse, ModelIn, ModelOut,
+        ApplicationMsgPath, EventTypesQueryParams, JsonStatus, ListResponse, ModelIn, ModelOut,
         PaginationLimit, ReversibleIterator, ValidatedJson, ValidatedQuery,
     },
     AppState,
@@ -221,7 +221,7 @@ async fn list_messages(
         before,
         after,
     }): ValidatedQuery<ListMessagesQueryParams>,
-    EventTypesQuery(event_types): EventTypesQuery,
+    EventTypesQueryParams(event_types): EventTypesQueryParams,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<ListResponse<MessageOut>>> {
     let PaginationLimit(limit) = pagination.limit;

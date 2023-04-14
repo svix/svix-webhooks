@@ -22,7 +22,7 @@ use crate::{
         utils::{
             apply_pagination_desc, iterator_from_before_or_after, openapi_tag,
             ApplicationEndpointPath, ApplicationMsgAttemptPath, ApplicationMsgEndpointPath,
-            ApplicationMsgPath, EmptyResponse, EventTypesQuery, JsonStatus, ListResponse, ModelOut,
+            ApplicationMsgPath, EmptyResponse, EventTypesQueryParams, JsonStatus, ListResponse, ModelOut,
             PaginationLimit, ReversibleIterator, ValidatedQuery,
         },
     },
@@ -328,7 +328,7 @@ async fn list_attempts_by_endpoint(
         before,
         after,
     }): ValidatedQuery<ListAttemptsByEndpointQueryParameters>,
-    EventTypesQuery(event_types): EventTypesQuery,
+    EventTypesQueryParams(event_types): EventTypesQueryParams,
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<ListResponse<MessageAttemptOut>>> {
@@ -392,7 +392,7 @@ async fn list_attempts_by_msg(
         after,
     }): ValidatedQuery<ListAttemptsByMsgQueryParameters>,
     Path(ApplicationMsgPath { msg_id, .. }): Path<ApplicationMsgPath>,
-    EventTypesQuery(event_types): EventTypesQuery,
+    EventTypesQueryParams(event_types): EventTypesQueryParams,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<ListResponse<MessageAttemptOut>>> {
     let PaginationLimit(limit) = pagination.limit;
@@ -549,7 +549,7 @@ async fn list_attempts_for_endpoint(
         before,
         after,
     }): ValidatedQuery<ListAttemptsForEndpointQueryParameters>,
-    event_types_query: EventTypesQuery,
+    event_types_query: EventTypesQueryParams,
     Path(ApplicationMsgEndpointPath {
         app_id,
         msg_id,
@@ -599,7 +599,7 @@ async fn list_messageattempts(
         before,
         after,
     }): ValidatedQuery<AttemptListFetchOptions>,
-    EventTypesQuery(event_types): EventTypesQuery,
+    EventTypesQueryParams(event_types): EventTypesQueryParams,
     Path(ApplicationMsgPath { msg_id, .. }): Path<ApplicationMsgPath>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<ListResponse<MessageAttemptOut>>> {
