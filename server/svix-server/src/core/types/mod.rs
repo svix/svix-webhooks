@@ -1034,15 +1034,93 @@ impl Validate for EndpointHeadersPatch {
     }
 }
 
+/// A macro to which you pass the list of variants of an enum using `repr(N)`
+/// and it returns a `Vec<(N, String)>`, where each element is `(value, "VariantStringified")`
+macro_rules! repr_enum {
+    ($($variant:ident),+) => {
+        vec![
+            $(($variant.into(), stringify!($variant).to_string())),+
+        ]
+    }
+}
+
+/// Generates a `JsonSchema` implementation for an enum using `repr(N)`. The
+/// enum must also derive `IntoPrimitive`.
+///
+/// Arguments are:
+/// 1. Name of the enum type, `Foo`
+/// 2. The repr type used, e.g. in case of `repr(i16)` it must be `i16`
+/// 3. The string description to be used in the docs.
+/// Remaining arguments must be the variants in order. For example:
+///
+/// ```
+/// #[derive(IntoPrimitive)]
+/// #[repr(u8)]
+/// enum MyEnum {
+///     Foo = 0,
+///     Bar = 1,
+///     Qux = 5,
+/// }
+///
+/// jsonschema_for_repr_enum{
+///     MyEnum,
+///     u8,
+///     "My nice little enum",
+///     Foo, Bar, Qux
+/// }
+/// ```
+macro_rules! jsonschema_for_repr_enum {
+    ($tyname:ty, $repr_ty:ty, $descr:expr, $($variant:ident),+) => {
+        impl JsonSchema for $tyname {
+            fn schema_name() -> String {
+                stringify!($tyname).to_string()
+            }
+
+            fn json_schema(_: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
+                use schemars::schema::{InstanceType, Metadata, Schema, SchemaObject, SingleOrVec};
+                use $tyname::*;
+
+                // A list of variant values and their corresponding name.
+                let variants: Vec<($repr_ty, String)> = repr_enum!($($variant),+);
+                // The list of possible enum primitive values.
+                let values = variants.iter().map(|(value, _)| serde_json::json!(value)).collect();
+                // The list of nice variant names the above values correspond to.
+                let variant_names = variants.iter().map(|(_, name)| serde_json::Value::String(name.clone())).collect();
+
+                Schema::Object(SchemaObject{
+                    metadata: Some(Box::new(Metadata {
+                        title: Some(Self::schema_name()),
+                        description: Some($descr.to_string()),
+                        ..Default::default()
+                    })),
+                    instance_type: Some(SingleOrVec::Single(Box::new(InstanceType::Integer))),
+                    enum_values: Some(values),
+                    extensions: indexmap::indexmap!{
+                        "x-enum-varnames".to_string() => serde_json::Value::Array(variant_names),
+                    },
+                    ..Default::default()
+                })
+            }
+        }
+    }
+}
+
 #[repr(i16)]
-#[derive(Clone, Debug, Copy, PartialEq, Eq, IntoPrimitive, TryFromPrimitive, JsonSchema)]
+#[derive(Clone, Debug, Copy, PartialEq, Eq, IntoPrimitive, TryFromPrimitive)]
 pub enum MessageAttemptTriggerType {
     Scheduled = 0,
     Manual = 1,
 }
 
+jsonschema_for_repr_enum! {
+    MessageAttemptTriggerType,
+    i16,
+    "The reason an attempt was made:\n- Scheduled = 0\n- Manual = 1",
+    Scheduled, Manual
+}
+
 #[repr(i16)]
-#[derive(Clone, Debug, Copy, PartialEq, IntoPrimitive, TryFromPrimitive, Hash, Eq, JsonSchema)]
+#[derive(Clone, Debug, Copy, PartialEq, IntoPrimitive, TryFromPrimitive, Hash, Eq)]
 pub enum MessageStatus {
     Success = 0,
     Pending = 1,
@@ -1050,8 +1128,15 @@ pub enum MessageStatus {
     Sending = 3,
 }
 
+jsonschema_for_repr_enum! {
+    MessageStatus,
+    i16,
+    "The sending status of the message:\n- Success = 0\n- Pending = 1\n- Fail = 2\n- Sending = 3",
+    Success, Pending, Fail, Sending
+}
+
 #[repr(i16)]
-#[derive(Clone, Debug, Copy, PartialEq, Eq, IntoPrimitive, TryFromPrimitive, JsonSchema)]
+#[derive(Clone, Debug, Copy, PartialEq, Eq, IntoPrimitive, TryFromPrimitive)]
 pub enum StatusCodeClass {
     CodeNone = 0,
     Code1xx = 100,
@@ -1059,6 +1144,13 @@ pub enum StatusCodeClass {
     Code3xx = 300,
     Code4xx = 400,
     Code5xx = 500,
+}
+
+jsonschema_for_repr_enum! {
+    StatusCodeClass,
+    i16,
+    "The different classes of HTTP status codes:\n- CodeNone = 0\n- Code1xx = 100\n- Code2xx = 200\n- Code3xx = 300\n- Code4xx = 400\n- Code5xx = 500",
+    CodeNone, Code1xx, Code2xx, Code3xx, Code4xx, Code5xx
 }
 
 enum_wrapper!(MessageAttemptTriggerType);
