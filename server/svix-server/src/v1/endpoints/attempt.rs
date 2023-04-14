@@ -139,7 +139,7 @@ impl<'de> Deserialize<'de> for EndpointMessageOut {
 /// Additional parameters (besides pagination) in the query string for the "List Attempted Messages"
 /// endpoint.
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
-pub struct ListAttemptedMessagesQueryParameters {
+pub struct ListAttemptedMessagesQueryParams {
     #[validate]
     channel: Option<EventChannel>,
     status: Option<MessageStatus>,
@@ -156,12 +156,12 @@ pub struct ListAttemptedMessagesQueryParameters {
 async fn list_attempted_messages(
     State(AppState { ref db, .. }): State<AppState>,
     ValidatedQuery(pagination): ValidatedQuery<PaginationDescending<ReversibleIterator<MessageId>>>,
-    ValidatedQuery(ListAttemptedMessagesQueryParameters {
+    ValidatedQuery(ListAttemptedMessagesQueryParams {
         channel,
         status,
         before,
         after,
-    }): ValidatedQuery<ListAttemptedMessagesQueryParameters>,
+    }): ValidatedQuery<ListAttemptedMessagesQueryParams>,
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<ListResponse<EndpointMessageOut>>> {
@@ -238,7 +238,7 @@ async fn list_attempted_messages(
 /// Additional parameters (besides pagination) in the query string for the "List Attempts by
 /// Endpoint" endpoint.
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
-pub struct ListAttemptsByEndpointQueryParameters {
+pub struct ListAttemptsByEndpointQueryParams {
     status: Option<MessageStatus>,
     status_code_class: Option<StatusCodeClass>,
     #[validate]
@@ -322,13 +322,13 @@ async fn list_attempts_by_endpoint(
     ValidatedQuery(pagination): ValidatedQuery<
         PaginationDescending<ReversibleIterator<MessageAttemptId>>,
     >,
-    ValidatedQuery(ListAttemptsByEndpointQueryParameters {
+    ValidatedQuery(ListAttemptsByEndpointQueryParams {
         status,
         status_code_class,
         channel,
         before,
         after,
-    }): ValidatedQuery<ListAttemptsByEndpointQueryParameters>,
+    }): ValidatedQuery<ListAttemptsByEndpointQueryParams>,
     EventTypesQueryParams(event_types): EventTypesQueryParams,
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
@@ -368,7 +368,7 @@ async fn list_attempts_by_endpoint(
 
 /// Flattens in a [`ListAttemptsByEndpointOrMsgQueryParameters`] and adds one extra query parameter
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
-pub struct ListAttemptsByMsgQueryParameters {
+pub struct ListAttemptsByMsgQueryParams {
     status: Option<MessageStatus>,
     status_code_class: Option<StatusCodeClass>,
     #[validate]
@@ -386,14 +386,14 @@ async fn list_attempts_by_msg(
     ValidatedQuery(pagination): ValidatedQuery<
         PaginationDescending<ReversibleIterator<MessageAttemptId>>,
     >,
-    ValidatedQuery(ListAttemptsByMsgQueryParameters {
+    ValidatedQuery(ListAttemptsByMsgQueryParams {
         status,
         status_code_class,
         channel,
         endpoint_id,
         before,
         after,
-    }): ValidatedQuery<ListAttemptsByMsgQueryParameters>,
+    }): ValidatedQuery<ListAttemptsByMsgQueryParams>,
     Path(ApplicationMsgPath { msg_id, .. }): Path<ApplicationMsgPath>,
     EventTypesQueryParams(event_types): EventTypesQueryParams,
     permissions::Application { app }: permissions::Application,
@@ -525,7 +525,7 @@ async fn list_attempted_destinations(
 }
 
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
-pub struct ListAttemptsForEndpointQueryParameters {
+pub struct ListAttemptsForEndpointQueryParams {
     #[validate]
     pub channel: Option<EventChannel>,
     pub status: Option<MessageStatus>,
@@ -558,12 +558,12 @@ impl From<MessageAttemptOut> for MessageAttemptEndpointOut {
 async fn list_attempts_for_endpoint(
     state: State<AppState>,
     pagination: ValidatedQuery<PaginationDescending<ReversibleIterator<MessageAttemptId>>>,
-    ValidatedQuery(ListAttemptsForEndpointQueryParameters {
+    ValidatedQuery(ListAttemptsForEndpointQueryParams {
         channel,
         status,
         before,
         after,
-    }): ValidatedQuery<ListAttemptsForEndpointQueryParameters>,
+    }): ValidatedQuery<ListAttemptsForEndpointQueryParams>,
     event_types_query: EventTypesQueryParams,
     Path(ApplicationMsgEndpointPath {
         app_id,
@@ -575,7 +575,7 @@ async fn list_attempts_for_endpoint(
     list_messageattempts(
         state,
         pagination,
-        ValidatedQuery(AttemptListFetchOptions {
+        ValidatedQuery(AttemptListFetchQueryParams {
             endpoint_id: Some(endpoint_id),
             channel,
             status,
@@ -603,7 +603,7 @@ async fn list_attempts_for_endpoint(
 }
 
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
-pub struct AttemptListFetchOptions {
+pub struct AttemptListFetchQueryParams {
     #[validate]
     pub endpoint_id: Option<EndpointIdOrUid>,
     #[validate]
@@ -622,13 +622,13 @@ async fn list_messageattempts(
     ValidatedQuery(pagination): ValidatedQuery<
         PaginationDescending<ReversibleIterator<MessageAttemptId>>,
     >,
-    ValidatedQuery(AttemptListFetchOptions {
+    ValidatedQuery(AttemptListFetchQueryParams {
         endpoint_id,
         channel,
         status,
         before,
         after,
-    }): ValidatedQuery<AttemptListFetchOptions>,
+    }): ValidatedQuery<AttemptListFetchQueryParams>,
     EventTypesQueryParams(event_types): EventTypesQueryParams,
     Path(ApplicationMsgPath { msg_id, .. }): Path<ApplicationMsgPath>,
     permissions::Application { app }: permissions::Application,
@@ -863,9 +863,9 @@ pub fn router() -> ApiRouter<AppState> {
 #[cfg(test)]
 mod tests {
     use super::{
-        AttemptListFetchOptions, ListAttemptedMessagesQueryParameters,
-        ListAttemptsByEndpointQueryParameters, ListAttemptsByMsgQueryParameters,
-        ListAttemptsForEndpointQueryParameters,
+        AttemptListFetchQueryParams, ListAttemptedMessagesQueryParams,
+        ListAttemptsByEndpointQueryParams, ListAttemptsByMsgQueryParams,
+        ListAttemptsForEndpointQueryParams,
     };
     use serde_json::json;
     use validator::Validate;
@@ -877,33 +877,33 @@ mod tests {
 
     #[test]
     fn test_list_attempted_messages_query_params_validation() {
-        let q: ListAttemptedMessagesQueryParameters =
+        let q: ListAttemptedMessagesQueryParams =
             serde_json::from_value(json!({ "channel": INVALID_CHANNEL })).unwrap();
         assert!(q.validate().is_err());
 
-        let q: ListAttemptedMessagesQueryParameters =
+        let q: ListAttemptedMessagesQueryParams =
             serde_json::from_value(json!({ "channel": VALID_CHANNEL })).unwrap();
         q.validate().unwrap();
     }
 
     #[test]
     fn test_list_attempts_by_endpoint_query_parameters_validation() {
-        let q: ListAttemptsByEndpointQueryParameters =
+        let q: ListAttemptsByEndpointQueryParams =
             serde_json::from_value(json!({ "channel": INVALID_CHANNEL })).unwrap();
         assert!(q.validate().is_err());
     }
 
     #[test]
     fn test_list_attempts_by_msg_query_parameters_validation() {
-        let q: ListAttemptsByMsgQueryParameters =
+        let q: ListAttemptsByMsgQueryParams =
             serde_json::from_value(json!({ "channel": INVALID_CHANNEL })).unwrap();
         assert!(q.validate().is_err());
 
-        let q: ListAttemptsByMsgQueryParameters =
+        let q: ListAttemptsByMsgQueryParams =
             serde_json::from_value(json!({ "endpoint_id": INVALID_ENDPOINT_ID })).unwrap();
         assert!(q.validate().is_err());
 
-        let q: ListAttemptsByMsgQueryParameters = serde_json::from_value(json!(
+        let q: ListAttemptsByMsgQueryParams = serde_json::from_value(json!(
             {
                 "channel": VALID_CHANNEL,
                 "endpoint_id": VALID_ENDPOINT_ID
@@ -915,26 +915,26 @@ mod tests {
 
     #[test]
     fn test_list_attempts_for_endpoint_query_parameters_validation() {
-        let q: ListAttemptsForEndpointQueryParameters =
+        let q: ListAttemptsForEndpointQueryParams =
             serde_json::from_value(json!({ "channel": INVALID_CHANNEL })).unwrap();
         assert!(q.validate().is_err());
 
-        let q: ListAttemptsForEndpointQueryParameters =
+        let q: ListAttemptsForEndpointQueryParams =
             serde_json::from_value(json!({ "channel": VALID_CHANNEL })).unwrap();
         q.validate().unwrap();
     }
 
     #[test]
     fn test_attempt_list_fetch_options_validation() {
-        let q: AttemptListFetchOptions =
+        let q: AttemptListFetchQueryParams =
             serde_json::from_value(json!({ "endpoint_id": INVALID_ENDPOINT_ID })).unwrap();
         assert!(q.validate().is_err());
 
-        let q: AttemptListFetchOptions =
+        let q: AttemptListFetchQueryParams =
             serde_json::from_value(json!({ "channel": INVALID_CHANNEL })).unwrap();
         assert!(q.validate().is_err());
 
-        let q: AttemptListFetchOptions = serde_json::from_value(json!(
+        let q: AttemptListFetchQueryParams = serde_json::from_value(json!(
             {
                 "endpoint_id": VALID_ENDPOINT_ID,
                 "channel": VALID_CHANNEL

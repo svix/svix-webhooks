@@ -181,7 +181,7 @@ impl From<eventtype::Model> for EventTypeOut {
 }
 
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
-pub struct ListFetchOptions {
+pub struct ListFetchQueryParams {
     #[serde(default)]
     pub include_archived: bool,
     #[serde(default)]
@@ -193,7 +193,7 @@ pub struct ListFetchOptions {
 async fn list_event_types(
     State(AppState { ref db, .. }): State<AppState>,
     ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<EventTypeName>>>,
-    fetch_options: ValidatedQuery<ListFetchOptions>,
+    fetch_options: ValidatedQuery<ListFetchQueryParams>,
     permissions::ReadAll {
         org_id,
         feature_flags,
@@ -417,12 +417,12 @@ pub fn router() -> ApiRouter<AppState> {
 #[cfg(test)]
 mod tests {
 
-    use super::ListFetchOptions;
+    use super::ListFetchQueryParams;
     use serde_json::json;
 
     #[test]
     fn test_list_fetch_options_default() {
-        let l: ListFetchOptions = serde_json::from_value(json!({})).unwrap();
+        let l: ListFetchQueryParams = serde_json::from_value(json!({})).unwrap();
         assert!(!l.include_archived);
         assert!(!l.with_content);
     }

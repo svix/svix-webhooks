@@ -234,7 +234,7 @@ fn default_as_false() -> bool {
 }
 
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
-pub struct CreateApplicationQuery {
+pub struct CreateApplicationQueryParams {
     #[serde(default = "default_as_false")]
     get_if_exists: bool,
 }
@@ -243,7 +243,7 @@ pub struct CreateApplicationQuery {
 #[aide_annotate(op_id = "create_application_api_v1_app__post")]
 async fn create_application(
     State(AppState { ref db, .. }): State<AppState>,
-    query: ValidatedQuery<CreateApplicationQuery>,
+    query: ValidatedQuery<CreateApplicationQueryParams>,
     permissions::Organization { org_id }: permissions::Organization,
     ValidatedJson(data): ValidatedJson<ApplicationIn>,
 ) -> Result<JsonStatusUpsert<ApplicationOut>> {
