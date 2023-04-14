@@ -222,6 +222,50 @@ pub fn apply_pagination<
     }
 }
 
+/// A response with no body content and a specific response code, specified by
+/// the generic parameter `N`.
+pub struct NoContentWithCode<const N: u16>;
+
+impl<const N: u16> IntoResponse for NoContentWithCode<N> {
+    fn into_response(self) -> axum::response::Response {
+        (StatusCode::from_u16(N).unwrap(), ()).into_response()
+    }
+}
+
+impl<const N: u16> OperationOutput for NoContentWithCode<N> {
+    type Inner = Self;
+
+    fn operation_response(
+        ctx: &mut aide::gen::GenContext,
+        operation: &mut aide::openapi::Operation,
+    ) -> Option<aide::openapi::Response> {
+        <() as OperationOutput>::operation_response(ctx, operation)
+    }
+
+    fn inferred_responses(
+        ctx: &mut aide::gen::GenContext,
+        operation: &mut aide::openapi::Operation,
+    ) -> Vec<(Option<u16>, aide::openapi::Response)> {
+        if let Some(response) = Self::operation_response(ctx, operation) {
+            vec![(Some(N), response)]
+        } else {
+            vec![]
+        }
+    }
+}
+
+/// A response with no body content and HTTP status code 204, the standard code
+/// for such responses.
+#[derive(OperationIo)]
+#[aide(output_with = "()")]
+pub struct NoContent;
+
+impl IntoResponse for NoContent {
+    fn into_response(self) -> axum::response::Response {
+        NoContentWithCode::<204>::into_response(NoContentWithCode)
+    }
+}
+
 #[derive(Serialize, JsonSchema)]
 pub struct EmptyResponse {}
 

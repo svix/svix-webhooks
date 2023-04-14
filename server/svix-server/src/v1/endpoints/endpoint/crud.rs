@@ -23,9 +23,9 @@ use crate::{
     v1::utils::{
         apply_pagination,
         patch::{patch_field_non_nullable, UnrequiredField, UnrequiredNullableField},
-        ApplicationEndpointPath, EmptyResponse, JsonStatus, JsonStatusUpsert, Ordering,
-        ListResponse, ModelIn, ModelOut, Pagination, PaginationLimit, ReversibleIterator,
-        ValidatedJson, ValidatedQuery,
+        ApplicationEndpointPath, JsonStatus, JsonStatusUpsert, ListResponse, ModelIn, ModelOut,
+        NoContent, Ordering, Pagination, PaginationLimit, ReversibleIterator, ValidatedJson,
+        ValidatedQuery,
     },
     AppState,
 };
@@ -249,7 +249,7 @@ pub(super) async fn delete_endpoint(
     }): State<AppState>,
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
-) -> Result<JsonStatus<204, EmptyResponse>> {
+) -> Result<NoContent> {
     let endp = ctx!(
         endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endpoint_id)
             .one(db)
@@ -278,7 +278,7 @@ pub(super) async fn delete_endpoint(
         )
         .await?;
 
-    Ok(JsonStatus(EmptyResponse {}))
+    Ok(NoContent)
 }
 
 /// This module is here so that our Result override doesn't conflict

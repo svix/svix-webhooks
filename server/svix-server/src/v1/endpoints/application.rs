@@ -17,9 +17,9 @@ use crate::{
             UnrequiredNullableField,
         },
         validate_no_control_characters, validate_no_control_characters_unrequired,
-        validation_error, ApplicationPath, EmptyResponse, JsonStatus, JsonStatusUpsert,
-        Ordering, ListResponse, ModelIn, ModelOut, Pagination, PaginationLimit,
-        ReversibleIterator, ValidatedJson, ValidatedQuery,
+        validation_error, ApplicationPath, JsonStatusUpsert, ListResponse, ModelIn, ModelOut,
+        NoContent, Ordering, Pagination, PaginationLimit, ReversibleIterator, ValidatedJson,
+        ValidatedQuery,
     },
     AppState,
 };
@@ -354,12 +354,12 @@ async fn patch_application(
 async fn delete_application(
     State(AppState { ref db, .. }): State<AppState>,
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
-) -> Result<JsonStatus<204, EmptyResponse>> {
+) -> Result<NoContent> {
     let mut app: application::ActiveModel = app.into();
     app.deleted = Set(true);
     app.uid = Set(None); // We don't want deleted UIDs to clash
     ctx!(app.update(db).await)?;
-    Ok(JsonStatus(EmptyResponse {}))
+    Ok(NoContent)
 }
 
 pub fn router() -> ApiRouter<AppState> {

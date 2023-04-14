@@ -15,9 +15,10 @@ use crate::{
             patch_field_non_nullable, patch_field_nullable, UnrequiredField,
             UnrequiredNullableField,
         },
-        validate_no_control_characters, validate_no_control_characters_unrequired, EmptyResponse,
-        EventTypeNamePath, JsonStatus, JsonStatusUpsert, Ordering, ListResponse, ModelIn,
-        ModelOut, Pagination, PaginationLimit, ReversibleIterator, ValidatedJson, ValidatedQuery,
+        validate_no_control_characters, validate_no_control_characters_unrequired,
+        EventTypeNamePath, JsonStatus, JsonStatusUpsert, ListResponse, ModelIn, ModelOut,
+        NoContent, Ordering, Pagination, PaginationLimit, ReversibleIterator, ValidatedJson,
+        ValidatedQuery,
     },
     AppState,
 };
@@ -369,7 +370,7 @@ async fn delete_event_type(
     State(AppState { ref db, .. }): State<AppState>,
     Path(EventTypeNamePath { event_type_name }): Path<EventTypeNamePath>,
     permissions::Organization { org_id }: permissions::Organization,
-) -> Result<JsonStatus<204, EmptyResponse>> {
+) -> Result<NoContent> {
     let evtype = ctx!(
         eventtype::Entity::secure_find_by_name(org_id, event_type_name)
             .one(db)
@@ -380,7 +381,7 @@ async fn delete_event_type(
     let mut evtype: eventtype::ActiveModel = evtype.into();
     evtype.deleted = Set(true);
     ctx!(evtype.update(db).await)?;
-    Ok(JsonStatus(EmptyResponse {}))
+    Ok(NoContent)
 }
 
 const GENERATE_SCHEMA_EXAMPLE_DESCRIPTION: &str =

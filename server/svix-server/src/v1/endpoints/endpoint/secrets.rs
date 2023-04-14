@@ -20,7 +20,7 @@ use crate::{
     ctx,
     db::models::endpoint,
     error::{HttpError, Result},
-    v1::utils::{ApplicationEndpointPath, EmptyResponse, JsonStatus, ValidatedJson},
+    v1::utils::{ApplicationEndpointPath, NoContent, ValidatedJson},
     AppState,
 };
 
@@ -71,7 +71,7 @@ pub(super) async fn rotate_endpoint_secret(
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
     ValidatedJson(data): ValidatedJson<EndpointSecretRotateIn>,
-) -> Result<JsonStatus<204, EmptyResponse>> {
+) -> Result<NoContent> {
     let mut endp = ctx!(
         endpoint::Entity::secure_find_by_id_or_uid(app.id, endpoint_id)
             .one(db)
@@ -128,5 +128,5 @@ pub(super) async fn rotate_endpoint_secret(
         )
         .await?;
 
-    Ok(JsonStatus(EmptyResponse {}))
+    Ok(NoContent)
 }

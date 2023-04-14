@@ -367,8 +367,8 @@ pub async fn common_test_list<
 }
 
 pub async fn recover_webhooks(client: &TestClient, since: DateTime<Utc>, url: &str) {
-    let _: serde_json::Value = client
-        .post(url, RecoverIn { since }, StatusCode::ACCEPTED)
+    client
+        .post_without_response(url, RecoverIn { since }, StatusCode::ACCEPTED)
         .await
         .unwrap();
 }
