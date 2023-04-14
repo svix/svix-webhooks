@@ -203,6 +203,105 @@ impl ModelIn for EndpointIn {
     }
 }
 
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Validate, ModelIn, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+struct EndpointUpdate {
+    #[serde(default)]
+    #[serde(skip_serializing_if = "String::is_empty")]
+    #[validate(custom = "validate_no_control_characters")]
+    pub description: String,
+
+    #[validate(range(min = 1, message = "Endpoint rate limits must be at least one if set"))]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub rate_limit: Option<u16>,
+
+    /// Optional unique identifier for the endpoint
+    #[validate]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub uid: Option<EndpointUid>,
+
+    #[validate(custom = "validate_url")]
+    pub url: Url,
+
+    #[validate(range(min = 1, message = "Endpoint versions must be at least one"))]
+    pub version: u16,
+
+    #[serde(default)]
+    #[serde(skip_serializing_if = "std::ops::Not::not")]
+    pub disabled: bool,
+
+    #[serde(rename = "filterTypes")]
+    #[validate(custom = "validate_event_types_ids")]
+    #[validate]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub event_types_ids: Option<EventTypeNameSet>,
+
+    #[validate(custom = "validate_channels_endpoint")]
+    #[validate]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub channels: Option<EventChannelSet>,
+
+    #[serde(default)]
+    pub metadata: Metadata,
+}
+
+impl ModelIn for EndpointUpdate {
+    type ActiveModel = endpoint::ActiveModel;
+
+    fn update_model(self, model: &mut Self::ActiveModel) {
+        let EndpointUpdate {
+            description,
+            rate_limit,
+            uid,
+            url,
+            version,
+            disabled,
+            event_types_ids,
+            channels,
+            metadata: _,
+        } = self;
+
+        model.description = Set(description);
+        model.rate_limit = Set(rate_limit.map(|x| x.into()));
+        model.uid = Set(uid);
+        model.url = Set(url.into());
+        model.version = Set(version.into());
+        model.disabled = Set(disabled);
+        model.event_types_ids = Set(event_types_ids);
+        model.channels = Set(channels);
+    }
+}
+
+impl EndpointUpdate {
+    pub fn into_in_with_default_key(self) -> EndpointIn {
+        let EndpointUpdate {
+            description,
+            rate_limit,
+            uid,
+            url,
+            version,
+            disabled,
+            event_types_ids,
+            channels,
+            metadata,
+        } = self;
+
+        EndpointIn {
+            description,
+            rate_limit,
+            uid,
+            url,
+            version,
+            disabled,
+            event_types_ids,
+            channels,
+            metadata,
+
+            key: None,
+        }
+    }
+}
+
 #[derive(Clone, Debug, Default, Serialize, Deserialize, Validate, ModelIn, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointPatch {

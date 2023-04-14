@@ -9,7 +9,7 @@ use sea_orm::{ActiveModelTrait, DatabaseConnection, QuerySelect};
 use svix_server_derive::aide_annotate;
 use url::Url;
 
-use super::{EndpointIn, EndpointOut, EndpointPatch};
+use super::{EndpointIn, EndpointOut, EndpointPatch, EndpointUpdate};
 use crate::{
     cfg::Configuration,
     core::{
@@ -183,7 +183,7 @@ pub(super) async fn update_endpoint(
     }): State<AppState>,
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
-    ValidatedJson(mut data): ValidatedJson<EndpointIn>,
+    ValidatedJson(mut data): ValidatedJson<EndpointUpdate>,
 ) -> Result<JsonStatusUpsert<EndpointOut>> {
     if let Some(ref event_types_ids) = data.event_types_ids {
         validate_event_types(db, event_types_ids, &app.org_id).await?;
@@ -200,6 +200,7 @@ pub(super) async fn update_endpoint(
             ctx!(update_endp_from_data(db, op_webhooks, app, endp, metadata).await)?;
         Ok(JsonStatusUpsert::Updated((endp, metadata.data).into()))
     } else {
+        let data = data.into_in_with_default_key();
         let (endp, metadata) = ctx!(create_endp_from_data(db, cfg, op_webhooks, app, data).await)?;
         Ok(JsonStatusUpsert::Created((endp, metadata.data).into()))
     }
