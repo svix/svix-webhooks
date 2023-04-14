@@ -91,7 +91,7 @@ impl From<messageattempt::Model> for MessageAttemptOut {
 /// that message.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-pub struct AttemptedMessageOut {
+pub struct EndpointMessageOut {
     #[serde(flatten)]
     pub msg: MessageOut,
     pub status: MessageStatus,
@@ -99,18 +99,18 @@ pub struct AttemptedMessageOut {
     pub next_attempt: Option<DateTimeWithTimeZone>,
 }
 
-impl ModelOut for AttemptedMessageOut {
+impl ModelOut for EndpointMessageOut {
     fn id_copy(&self) -> String {
         self.msg.id.0.clone()
     }
 }
 
-impl AttemptedMessageOut {
+impl EndpointMessageOut {
     pub fn from_dest_and_msg(
         dest: messagedestination::Model,
         msg: message::Model,
-    ) -> AttemptedMessageOut {
-        AttemptedMessageOut {
+    ) -> EndpointMessageOut {
+        EndpointMessageOut {
             msg: msg.into(),
             status: dest.status,
             next_attempt: dest.next_attempt,
@@ -119,7 +119,7 @@ impl AttemptedMessageOut {
 }
 
 // XXX: only used in tests, so OK if it's a bit hacky
-impl<'de> Deserialize<'de> for AttemptedMessageOut {
+impl<'de> Deserialize<'de> for EndpointMessageOut {
     fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
     where
         D: Deserializer<'de>,
@@ -164,7 +164,7 @@ async fn list_attempted_messages(
     }): ValidatedQuery<ListAttemptedMessagesQueryParameters>,
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
-) -> Result<Json<ListResponse<AttemptedMessageOut>>> {
+) -> Result<Json<ListResponse<EndpointMessageOut>>> {
     let PaginationLimit(limit) = pagination.limit;
     let endp = ctx!(
         endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endpoint_id)
@@ -220,7 +220,7 @@ async fn list_attempted_messages(
     let into = |(dest, msg): (messagedestination::Model, Option<message::Model>)| {
         let msg =
             msg.ok_or_else(|| err_database!("No associated message with messagedestination"))?;
-        Ok(AttemptedMessageOut::from_dest_and_msg(dest, msg))
+        Ok(EndpointMessageOut::from_dest_and_msg(dest, msg))
     };
 
     let out = ctx!(dests_and_msgs.all(db).await)?
@@ -228,7 +228,7 @@ async fn list_attempted_messages(
         .map(into)
         .collect::<Result<_>>()?;
 
-    Ok(Json(AttemptedMessageOut::list_response(
+    Ok(Json(EndpointMessageOut::list_response(
         out,
         limit as usize,
         is_prev,
@@ -533,6 +533,18 @@ pub struct ListAttemptsForEndpointQueryParameters {
     pub after: Option<DateTime<Utc>>,
 }
 
+#[derive(Serialize, JsonSchema)]
+struct MessageAttemptEndpointOut {
+    #[serde(flatten)]
+    common_: MessageAttemptOut,
+}
+
+impl From<MessageAttemptOut> for MessageAttemptEndpointOut {
+    fn from(common_: MessageAttemptOut) -> Self {
+        Self { common_ }
+    }
+}
+
 /// DEPRECATED: please use list_attempts with endpoint_id as a query parameter instead.
 ///
 /// List the message attempts for a particular endpoint.
@@ -559,7 +571,7 @@ async fn list_attempts_for_endpoint(
         endpoint_id,
     }): Path<ApplicationMsgEndpointPath>,
     auth_app: permissions::Application,
-) -> Result<Json<ListResponse<MessageAttemptOut>>> {
+) -> Result<Json<ListResponse<MessageAttemptEndpointOut>>> {
     list_messageattempts(
         state,
         pagination,
@@ -575,6 +587,19 @@ async fn list_attempts_for_endpoint(
         auth_app,
     )
     .await
+    .map(|Json(list)| {
+        let new_data = list
+            .data
+            .into_iter()
+            .map(MessageAttemptEndpointOut::from)
+            .collect();
+        Json(ListResponse {
+            data: new_data,
+            done: list.done,
+            iterator: list.iterator,
+            prev_iterator: list.prev_iterator,
+        })
+    })
 }
 
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
