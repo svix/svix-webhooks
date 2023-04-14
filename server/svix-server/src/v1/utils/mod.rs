@@ -269,7 +269,9 @@ impl IntoResponse for NoContent {
 #[derive(Serialize, JsonSchema)]
 pub struct EmptyResponse {}
 
-#[derive(Serialize, Deserialize, Clone, JsonSchema)]
+// If you change the internal representation of this then you must also update
+// it in the `JsonSchema` impl below to match.
+#[derive(Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct ListResponse<T> {
     pub data: Vec<T>,
@@ -277,6 +279,33 @@ pub struct ListResponse<T> {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub prev_iterator: Option<String>,
     pub done: bool,
+}
+
+// This custom impl is needed because we want to customize the name of the
+// schema that goes into the spec, but that can only be done by having a custom
+// `JsonSchema` implementation.
+// Tracking issue: https://github.com/GREsau/schemars/issues/193
+impl<T: JsonSchema> JsonSchema for ListResponse<T> {
+    fn schema_name() -> String {
+        let data_type_name = T::schema_name();
+        format!("ListResponse_{data_type_name}_")
+    }
+
+    fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
+        // The actual schema generation is still delegated to the derive macro.
+        #[derive(JsonSchema)]
+        #[allow(unused)]
+        #[serde(rename_all = "camelCase")]
+        struct ListResponse<T> {
+            pub data: Vec<T>,
+            pub iterator: Option<String>,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            pub prev_iterator: Option<String>,
+            pub done: bool,
+        }
+
+        ListResponse::<T>::json_schema(gen)
+    }
 }
 
 pub trait ModelIn {
