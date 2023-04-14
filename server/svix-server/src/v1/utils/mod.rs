@@ -70,6 +70,7 @@ pub struct Pagination<T: Validate + JsonSchema> {
 }
 
 #[derive(Debug, JsonSchema)]
+#[schemars(transparent)]
 pub struct PaginationLimit(pub u64);
 
 impl<'de> Deserialize<'de> for PaginationLimit {

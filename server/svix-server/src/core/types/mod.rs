@@ -438,6 +438,7 @@ impl Validate for EventChannel {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize, JsonSchema)]
+#[schemars(transparent)]
 pub struct EventChannelSet(pub HashSet<EventChannel>);
 json_wrapper!(EventChannelSet);
 
@@ -451,6 +452,7 @@ impl Validate for EventChannelSet {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize, JsonSchema)]
+#[schemars(transparent)]
 pub struct EventTypeNameSet(pub HashSet<EventTypeName>);
 json_wrapper!(EventTypeNameSet);
 
@@ -959,6 +961,7 @@ fn validate_header_key(k: &str, errors: &mut ValidationErrors) {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Default, JsonSchema)]
+#[schemars(transparent)]
 pub struct EndpointHeaders(pub HashMap<String, String>);
 json_wrapper!(EndpointHeaders);
 

@@ -77,6 +77,7 @@ impl Entity {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Default, JsonSchema)]
+#[schemars(transparent)]
 pub struct Schema(HashMap<String, Json>);
 json_wrapper!(Schema);
 
