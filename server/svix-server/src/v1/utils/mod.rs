@@ -51,6 +51,15 @@ const PAGINATION_LIMIT_CAP_LIMIT: u64 = 250;
 const PAGINATION_LIMIT_ERROR: &str = "Given limit must not exceed 250";
 
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
+pub struct PaginationDescending<T: Validate + JsonSchema> {
+    #[validate]
+    #[serde(default = "default_limit")]
+    pub limit: PaginationLimit,
+    #[validate]
+    pub iterator: Option<T>,
+}
+
+#[derive(Debug, Deserialize, Validate, JsonSchema)]
 pub struct Pagination<T: Validate + JsonSchema> {
     #[validate]
     #[serde(default = "default_limit")]

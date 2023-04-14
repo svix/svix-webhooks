@@ -23,7 +23,7 @@ use crate::{
             apply_pagination_desc, iterator_from_before_or_after, openapi_tag,
             ApplicationEndpointPath, ApplicationMsgAttemptPath, ApplicationMsgEndpointPath,
             ApplicationMsgPath, EventTypesQueryParams, ListResponse, ModelOut, NoContentWithCode,
-            PaginationLimit, ReversibleIterator, ValidatedQuery,
+            PaginationDescending, PaginationLimit, ReversibleIterator, ValidatedQuery,
         },
     },
     AppState,
@@ -51,7 +51,6 @@ use svix_server_derive::{aide_annotate, ModelOut};
 use validator::Validate;
 
 use crate::db::models::messageattempt;
-use crate::v1::utils::Pagination;
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ModelOut, JsonSchema)]
 #[serde(rename_all = "camelCase")]
@@ -156,7 +155,7 @@ pub struct ListAttemptedMessagesQueryParameters {
 )]
 async fn list_attempted_messages(
     State(AppState { ref db, .. }): State<AppState>,
-    ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<MessageId>>>,
+    ValidatedQuery(pagination): ValidatedQuery<PaginationDescending<ReversibleIterator<MessageId>>>,
     ValidatedQuery(ListAttemptedMessagesQueryParameters {
         channel,
         status,
@@ -320,7 +319,9 @@ fn list_attempts_by_endpoint_or_message_filters(
 )]
 async fn list_attempts_by_endpoint(
     State(AppState { ref db, .. }): State<AppState>,
-    ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<MessageAttemptId>>>,
+    ValidatedQuery(pagination): ValidatedQuery<
+        PaginationDescending<ReversibleIterator<MessageAttemptId>>,
+    >,
     ValidatedQuery(ListAttemptsByEndpointQueryParameters {
         status,
         status_code_class,
@@ -382,7 +383,9 @@ pub struct ListAttemptsByMsgQueryParameters {
 #[aide_annotate(op_id = "list_attempts_by_msg_api_v1_app__app_id__attempt_msg__msg_id___get")]
 async fn list_attempts_by_msg(
     State(AppState { ref db, .. }): State<AppState>,
-    ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<MessageAttemptId>>>,
+    ValidatedQuery(pagination): ValidatedQuery<
+        PaginationDescending<ReversibleIterator<MessageAttemptId>>,
+    >,
     ValidatedQuery(ListAttemptsByMsgQueryParameters {
         status,
         status_code_class,
@@ -476,7 +479,7 @@ impl MessageEndpointOut {
 )]
 async fn list_attempted_destinations(
     State(AppState { ref db, .. }): State<AppState>,
-    ValidatedQuery(mut pagination): ValidatedQuery<Pagination<EndpointId>>,
+    ValidatedQuery(mut pagination): ValidatedQuery<PaginationDescending<EndpointId>>,
     Path(ApplicationMsgPath { msg_id, .. }): Path<ApplicationMsgPath>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<ListResponse<MessageEndpointOut>>> {
@@ -542,7 +545,7 @@ pub struct ListAttemptsForEndpointQueryParameters {
 )]
 async fn list_attempts_for_endpoint(
     state: State<AppState>,
-    pagination: ValidatedQuery<Pagination<ReversibleIterator<MessageAttemptId>>>,
+    pagination: ValidatedQuery<PaginationDescending<ReversibleIterator<MessageAttemptId>>>,
     ValidatedQuery(ListAttemptsForEndpointQueryParameters {
         channel,
         status,
@@ -591,7 +594,9 @@ pub struct AttemptListFetchOptions {
 #[aide_annotate(op_id = "list_attempts_api_v1_app__app_id__msg__msg_id__attempt__get")]
 async fn list_messageattempts(
     State(AppState { ref db, .. }): State<AppState>,
-    ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<MessageAttemptId>>>,
+    ValidatedQuery(pagination): ValidatedQuery<
+        PaginationDescending<ReversibleIterator<MessageAttemptId>>,
+    >,
     ValidatedQuery(AttemptListFetchOptions {
         endpoint_id,
         channel,

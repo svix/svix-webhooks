@@ -16,7 +16,7 @@ use crate::{
     v1::utils::{
         apply_pagination_desc, iterator_from_before_or_after, openapi_tag, validation_error,
         ApplicationMsgPath, EventTypesQueryParams, JsonStatus, ListResponse, ModelIn, ModelOut,
-        PaginationLimit, ReversibleIterator, ValidatedJson, ValidatedQuery,
+        PaginationDescending, PaginationLimit, ReversibleIterator, ValidatedJson, ValidatedQuery,
     },
     AppState,
 };
@@ -41,7 +41,6 @@ use svix_server_derive::{aide_annotate, ModelIn, ModelOut};
 use validator::{Validate, ValidationError};
 
 use crate::db::models::message;
-use crate::v1::utils::Pagination;
 
 pub fn validate_channels_msg(
     channels: &EventChannelSet,
@@ -214,7 +213,7 @@ pub struct ListMessagesQueryParams {
 #[aide_annotate(op_id = "list_messages_api_v1_app__app_id__msg__get")]
 async fn list_messages(
     State(AppState { ref db, .. }): State<AppState>,
-    ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<MessageId>>>,
+    ValidatedQuery(pagination): ValidatedQuery<PaginationDescending<ReversibleIterator<MessageId>>>,
     ValidatedQuery(ListMessagesQueryParams {
         channel,
         with_content,
