@@ -23,7 +23,7 @@ use crate::{
     v1::utils::{
         apply_pagination,
         patch::{patch_field_non_nullable, UnrequiredField, UnrequiredNullableField},
-        ApplicationEndpointPath, EmptyResponse, JsonStatus, JsonStatusUpsert, ListOrdering,
+        ApplicationEndpointPath, EmptyResponse, JsonStatus, JsonStatusUpsert, Ordering,
         ListResponse, ModelIn, ModelOut, Pagination, PaginationLimit, ReversibleIterator,
         ValidatedJson, ValidatedQuery,
     },
@@ -47,7 +47,7 @@ pub(super) async fn list_endpoints(
         endpoint::Column::Id,
         limit,
         iterator,
-        pagination.order.unwrap_or(ListOrdering::Descending),
+        pagination.order.unwrap_or(Ordering::Descending),
     );
 
     let results = ctx!(

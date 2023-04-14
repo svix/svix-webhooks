@@ -16,7 +16,7 @@ use crate::{
             UnrequiredNullableField,
         },
         validate_no_control_characters, validate_no_control_characters_unrequired, EmptyResponse,
-        EventTypeNamePath, JsonStatus, JsonStatusUpsert, ListOrdering, ListResponse, ModelIn,
+        EventTypeNamePath, JsonStatus, JsonStatusUpsert, Ordering, ListResponse, ModelIn,
         ModelOut, Pagination, PaginationLimit, ReversibleIterator, ValidatedJson, ValidatedQuery,
     },
     AppState,
@@ -218,7 +218,7 @@ async fn list_event_types(
         eventtype::Column::Name,
         limit,
         iterator,
-        ListOrdering::Ascending,
+        Ordering::Ascending,
     );
 
     Ok(Json(EventTypeOut::list_response(

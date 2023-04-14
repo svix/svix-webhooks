@@ -57,7 +57,7 @@ pub struct Pagination<T: Validate + JsonSchema> {
     pub limit: PaginationLimit,
     #[validate]
     pub iterator: Option<T>,
-    pub order: Option<ListOrdering>,
+    pub order: Option<Ordering>,
 }
 
 #[derive(Debug, JsonSchema)]
@@ -196,9 +196,9 @@ pub fn apply_pagination<
     sort_column: C,
     limit: u64,
     iterator: Option<ReversibleIterator<I>>,
-    ordering: ListOrdering,
+    ordering: Ordering,
 ) -> Q {
-    use ListOrdering::*;
+    use Ordering::*;
     use ReversibleIterator::*;
 
     let query = query.limit(limit + 1);
@@ -243,7 +243,7 @@ pub trait ModelIn {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-pub enum ListOrdering {
+pub enum Ordering {
     Ascending,
     Descending,
 }

@@ -18,7 +18,7 @@ use crate::{
         },
         validate_no_control_characters, validate_no_control_characters_unrequired,
         validation_error, ApplicationPath, EmptyResponse, JsonStatus, JsonStatusUpsert,
-        ListOrdering, ListResponse, ModelIn, ModelOut, Pagination, PaginationLimit,
+        Ordering, ListResponse, ModelIn, ModelOut, Pagination, PaginationLimit,
         ReversibleIterator, ValidatedJson, ValidatedQuery,
     },
     AppState,
@@ -205,7 +205,7 @@ async fn list_applications(
         application::Column::Id,
         limit,
         iterator,
-        pagination.order.unwrap_or(ListOrdering::Ascending),
+        pagination.order.unwrap_or(Ordering::Ascending),
     );
 
     let results: Vec<ApplicationOut> = ctx!(
