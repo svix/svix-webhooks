@@ -894,8 +894,20 @@ impl JsonSchema for EndpointSecret {
                 pattern: Some(KEY_PATTERN.to_string()),
                 ..Default::default()
             }));
+            obj.metadata = Some(Box::new(schemars::schema::Metadata{
+                description: Some("The endpoint's verification secret. If `null` is passed, a secret is automatically generated. Format: `base64` encoded random bytes optionally prefixed with `whsec_`. Recommended size: 24.".to_string()),
+                .. Default::default()
+            }));
+            obj.extensions.insert(
+                "example".to_string(),
+                serde_json::Value::String("whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD".to_string()),
+            );
         }
         schema
+    }
+
+    fn is_referenceable() -> bool {
+        false
     }
 }
 

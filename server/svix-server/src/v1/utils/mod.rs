@@ -148,6 +148,10 @@ impl<T: Validate + JsonSchema> JsonSchema for ReversibleIterator<T> {
     fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
         T::json_schema(gen)
     }
+
+    fn is_referenceable() -> bool {
+        false
+    }
 }
 
 /// For use in creating a [`ReversibleIterator`] from `before` and `after` timestamps should one not
