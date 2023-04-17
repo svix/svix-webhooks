@@ -306,14 +306,24 @@ impl<T: JsonSchema> JsonSchema for ListResponse<T> {
     }
 
     fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
+        fn example_iterator() -> &'static str {
+            "iterator"
+        }
+
+        fn example_prev_iterator() -> &'static str {
+            "-iterator"
+        }
+
         // The actual schema generation is still delegated to the derive macro.
         #[derive(JsonSchema)]
         #[allow(unused)]
         #[serde(rename_all = "camelCase")]
         struct ListResponse<T> {
             pub data: Vec<T>,
+            #[schemars(example = "example_iterator")]
             pub iterator: Option<String>,
             #[serde(skip_serializing_if = "Option::is_none")]
+            #[schemars(example = "example_prev_iterator")]
             pub prev_iterator: Option<String>,
             pub done: bool,
         }
@@ -328,6 +338,7 @@ pub trait ModelIn {
     fn update_model(self, model: &mut Self::ActiveModel);
 }
 
+/// Defines the ordering in a listing of results.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub enum Ordering {

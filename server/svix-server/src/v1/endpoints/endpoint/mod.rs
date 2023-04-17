@@ -117,12 +117,37 @@ fn validate_url_unrequired(val: &UnrequiredField<Url>) -> std::result::Result<()
     }
 }
 
+fn example_channel_set() -> Vec<&'static str> {
+    vec!["project_123", "group_2"]
+}
+
+fn example_endpoint_description() -> &'static str {
+    "An example endpoint name"
+}
+
+fn example_filter_types() -> Vec<&'static str> {
+    vec!["user.signup", "user.deleted"]
+}
+
+fn endpoint_disabled_default() -> bool {
+    false
+}
+
+fn example_endpoint_url() -> &'static str {
+    "https://example.com/webhook/"
+}
+
+fn example_endpoint_version() -> u16 {
+    1
+}
+
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Validate, ModelIn, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointIn {
     #[serde(default)]
     #[serde(skip_serializing_if = "String::is_empty")]
     #[validate(custom = "validate_no_control_characters")]
+    #[schemars(example = "example_endpoint_description")]
     pub description: String,
 
     #[validate(range(min = 1, message = "Endpoint rate limits must be at least one if set"))]
@@ -134,20 +159,29 @@ pub struct EndpointIn {
     pub uid: Option<EndpointUid>,
 
     #[validate(custom = "validate_url")]
+    #[schemars(url, length(min = 1, max = 65_536), example = "example_endpoint_url")]
     pub url: Url,
     #[validate(range(min = 1, message = "Endpoint versions must be at least one"))]
+    #[schemars(example = "example_endpoint_version")]
     pub version: u16,
     #[serde(default)]
     #[serde(skip_serializing_if = "std::ops::Not::not")]
+    #[schemars(
+        example = "endpoint_disabled_default",
+        default = "endpoint_disabled_default"
+    )]
     pub disabled: bool,
     #[serde(rename = "filterTypes")]
     #[validate(custom = "validate_event_types_ids")]
     #[validate]
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[schemars(example = "example_filter_types", length(min = 1))]
     pub event_types_ids: Option<EventTypeNameSet>,
+    /// List of message channels this endpoint listens to (omit for all)
     #[validate(custom = "validate_channels_endpoint")]
     #[validate]
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[schemars(example = "example_channel_set", length(min = 1, max = 10))]
     pub channels: Option<EventChannelSet>,
 
     #[validate]
@@ -209,6 +243,7 @@ struct EndpointUpdate {
     #[serde(default)]
     #[serde(skip_serializing_if = "String::is_empty")]
     #[validate(custom = "validate_no_control_characters")]
+    #[schemars(example = "example_endpoint_description")]
     pub description: String,
 
     #[validate(range(min = 1, message = "Endpoint rate limits must be at least one if set"))]
@@ -221,24 +256,33 @@ struct EndpointUpdate {
     pub uid: Option<EndpointUid>,
 
     #[validate(custom = "validate_url")]
+    #[schemars(url, length(min = 1, max = 65_536), example = "example_endpoint_url")]
     pub url: Url,
 
     #[validate(range(min = 1, message = "Endpoint versions must be at least one"))]
+    #[schemars(example = "example_endpoint_version")]
     pub version: u16,
 
     #[serde(default)]
     #[serde(skip_serializing_if = "std::ops::Not::not")]
+    #[schemars(
+        example = "endpoint_disabled_default",
+        default = "endpoint_disabled_default"
+    )]
     pub disabled: bool,
 
     #[serde(rename = "filterTypes")]
     #[validate(custom = "validate_event_types_ids")]
     #[validate]
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[schemars(example = "example_filter_types", length(min = 1))]
     pub event_types_ids: Option<EventTypeNameSet>,
 
+    /// List of message channels this endpoint listens to (omit for all)
     #[validate(custom = "validate_channels_endpoint")]
     #[validate]
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[schemars(example = "example_channel_set", length(min = 1, max = 10))]
     pub channels: Option<EventChannelSet>,
 
     #[serde(default)]
@@ -422,15 +466,25 @@ fn validate_minimum_version_patch(
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointOutCommon {
+    /// An example endpoint name
     pub description: String,
     pub rate_limit: Option<u16>,
     /// Optional unique identifier for the endpoint
     pub uid: Option<EndpointUid>,
+    #[schemars(url, length(min = 1, max = 65_536), example = "example_endpoint_url")]
     pub url: String,
+    #[schemars(example = "example_endpoint_version")]
     pub version: u16,
+    #[schemars(
+        example = "endpoint_disabled_default",
+        default = "endpoint_disabled_default"
+    )]
     pub disabled: bool,
     #[serde(rename = "filterTypes")]
+    #[schemars(example = "example_filter_types", length(min = 1))]
     pub event_types_ids: Option<EventTypeNameSet>,
+    /// List of message channels this endpoint listens to (omit for all)
+    #[schemars(example = "example_channel_set", length(min = 1, max = 10))]
     pub channels: Option<EventChannelSet>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
@@ -493,9 +547,14 @@ pub struct RecoverIn {
     pub since: DateTime<Utc>,
 }
 
+fn endpoint_headers_example() -> HashMap<&'static str, &'static str> {
+    HashMap::from([("X-Example", "123"), ("X-Foobar", "Bar")])
+}
+
 #[derive(Clone, Debug, PartialEq, Eq, Validate, Deserialize, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointHeadersIn {
+    #[schemars(example = "endpoint_headers_example")]
     pub headers: EndpointHeaders,
 }
 
@@ -508,10 +567,19 @@ impl ModelIn for EndpointHeadersIn {
     }
 }
 
+fn sensitive_headers_example() -> HashSet<String> {
+    HashSet::from(["Authorization".to_string()])
+}
+
+/// The value of the headers is returned in the `headers` field.
+///
+/// Sensitive headers that have been redacted are returned in the sensitive field.
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Default, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointHeadersOut {
+    #[schemars(example = "endpoint_headers_example")]
     pub headers: HashMap<String, String>,
+    #[schemars(example = "sensitive_headers_example")]
     pub sensitive: HashSet<String>,
 }
 

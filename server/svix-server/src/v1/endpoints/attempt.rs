@@ -52,11 +52,26 @@ use validator::Validate;
 
 use crate::db::models::messageattempt;
 
+fn example_status_code() -> i16 {
+    200
+}
+
+fn example_endpoint_url() -> &'static str {
+    "https://example.com/webhook/"
+}
+
+fn example_attempt_response() -> &'static str {
+    "{}"
+}
+
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ModelOut, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct MessageAttemptOut {
+    #[schemars(url, length(min = 1, max = 65_536), example = "example_endpoint_url")]
     pub url: String,
+    #[schemars(example = "example_attempt_response")]
     pub response: String,
+    #[schemars(example = "example_status_code")]
     pub response_status_code: i16,
     pub status: MessageStatus,
     pub trigger_type: MessageAttemptTriggerType,
@@ -444,8 +459,8 @@ async fn list_attempts_by_msg(
     )))
 }
 
-/// A type combining information from [`messagedestination::Model`]s and [`endpoint::Model`]s to
-/// output information on attempted destinations
+// A type combining information from [`messagedestination::Model`]s and [`endpoint::Model`]s to
+// output information on attempted destinations
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct MessageEndpointOut {

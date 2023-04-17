@@ -15,9 +15,19 @@ use crate::{
     AppState,
 };
 
+fn login_url_example() -> &'static str {
+    "https://app.svix.com/login#key=eyJhcHBJZCI6ICJhcHBfMXRSdFl"
+}
+
+fn token_example() -> &'static str {
+    "appsk_kV3ts5tKPNJN4Dl25cMTfUNdmabxbX0O"
+}
+
 #[derive(Deserialize, Serialize, JsonSchema)]
 pub struct DashboardAccessOut {
+    #[schemars(url, example = "login_url_example", length(min = 1, max = 65_536))]
     pub url: String,
+    #[schemars(example = "token_example")]
     pub token: String,
 }
 

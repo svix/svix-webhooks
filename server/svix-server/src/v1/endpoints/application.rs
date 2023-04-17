@@ -39,6 +39,10 @@ use serde::{Deserialize, Serialize};
 use svix_server_derive::{aide_annotate, ModelOut};
 use validator::{Validate, ValidationError};
 
+fn application_name_example() -> &'static str {
+    "My first application"
+}
+
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Validate, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct ApplicationIn {
@@ -46,6 +50,7 @@ pub struct ApplicationIn {
         length(min = 1, message = "Application names must be at least one character"),
         custom = "validate_no_control_characters"
     )]
+    #[schemars(example = "application_name_example")]
     pub name: String,
 
     #[validate(range(min = 1, message = "Application rate limits must be at least 1 if set"))]
@@ -165,6 +170,7 @@ pub struct ApplicationOut {
     // FIXME: Do we want to use serde(flatten) or just duplicate the keys?
     #[serde(skip_serializing_if = "Option::is_none")]
     pub uid: Option<ApplicationUid>,
+    #[schemars(example = "application_name_example")]
     pub name: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub rate_limit: Option<u16>,
@@ -189,7 +195,7 @@ impl From<(application::Model, applicationmetadata::Model)> for ApplicationOut {
     }
 }
 
-/// List all of the organization's applications.
+/// List of all the organization's applications.
 #[aide_annotate(op_id = "list_applications_api_v1_app__get")]
 async fn list_applications(
     State(AppState { ref db, .. }): State<AppState>,

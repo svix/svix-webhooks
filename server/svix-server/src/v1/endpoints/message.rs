@@ -104,6 +104,7 @@ pub fn validate_raw_payload_is_object(
 #[derive(Clone, Debug, PartialEq, Eq, Deserialize, Serialize, Validate, ModelIn, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct MessageIn {
+    /// Optional unique identifier for the message
     #[validate]
     #[serde(rename = "eventId", skip_serializing_if = "Option::is_none")]
     pub uid: Option<MessageUid>,
@@ -111,14 +112,28 @@ pub struct MessageIn {
     pub event_type: EventTypeName,
     #[validate(custom = "validate_raw_payload_is_object")]
     #[serde(alias = "payload", alias = "data")]
+    #[schemars(example = "example_payload")]
     pub payload: RawPayload,
+    /// List of free-form identifiers that endpoints can filter by
     #[validate(custom = "validate_channels_msg")]
     #[validate]
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[schemars(example = "example_channel_set", length(min = 1, max = 5))]
     pub channels: Option<EventChannelSet>,
     #[validate(range(min = 5, max = 90))]
     #[serde(default = "default_90")]
     pub payload_retention_period: i64,
+}
+
+fn example_channel_set() -> Vec<&'static str> {
+    vec!["project_123", "group_2"]
+}
+
+fn example_payload() -> serde_json::Value {
+    serde_json::json!({
+        "email": "test@example.com",
+        "username": "test_user"
+    })
 }
 
 // FIXME: This can and should be a derive macro
@@ -149,10 +164,14 @@ impl ModelIn for MessageIn {
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ModelOut, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct MessageOut {
+    /// Optional unique identifier for the message
     #[serde(rename = "eventId")]
     pub uid: Option<MessageUid>,
     pub event_type: EventTypeName,
+    #[schemars(example = "example_payload")]
     pub payload: RawPayload,
+    /// List of free-form identifiers that endpoints can filter by
+    #[schemars(example = "example_channel_set")]
     pub channels: Option<EventChannelSet>,
     pub id: MessageId,
     #[serde(rename = "timestamp")]

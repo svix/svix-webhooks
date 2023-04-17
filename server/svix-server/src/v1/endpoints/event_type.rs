@@ -37,14 +37,30 @@ use serde::{Deserialize, Serialize};
 use svix_server_derive::{aide_annotate, ModelIn, ModelOut};
 use validator::Validate;
 
+fn example_event_archived() -> bool {
+    false
+}
+
+fn event_type_description_example() -> &'static str {
+    "A user has signed up"
+}
+
+fn event_type_versioned_schemas_example() -> serde_json::Value {
+    serde_json::json!({ "1": eventtype::schema_example() })
+}
+
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Validate, ModelIn, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EventTypeIn {
     pub name: EventTypeName,
     #[validate(custom = "validate_no_control_characters")]
+    #[schemars(example = "event_type_description_example")]
     pub description: String,
     #[serde(default, rename = "archived")]
+    #[schemars(example = "example_event_archived")]
     pub deleted: bool,
+    /// The schema for the event type for a specific version as a JSON schema.
+    #[schemars(example = "event_type_versioned_schemas_example")]
     pub schemas: Option<eventtype::Schema>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub feature_flag: Option<FeatureFlag>,
@@ -75,9 +91,13 @@ impl ModelIn for EventTypeIn {
 #[serde(rename_all = "camelCase")]
 struct EventTypeUpdate {
     #[validate(custom = "validate_no_control_characters")]
+    #[schemars(example = "event_type_description_example")]
     description: String,
     #[serde(default, rename = "archived")]
+    #[schemars(example = "example_event_archived")]
     deleted: bool,
+    /// The schema for the event type for a specific version as a JSON schema.
+    #[schemars(example = "event_type_versioned_schemas_example")]
     schemas: Option<eventtype::Schema>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     feature_flag: Option<FeatureFlag>,
@@ -147,7 +167,10 @@ pub struct EventTypeOut {
     pub name: EventTypeName,
     pub description: String,
     #[serde(rename = "archived")]
+    #[schemars(example = "example_event_archived", default = "example_event_archived")]
     pub deleted: bool,
+    /// The schema for the event type for a specific version as a JSON schema.
+    #[schemars(example = "event_type_versioned_schemas_example")]
     pub schemas: Option<eventtype::Schema>,
 
     pub created_at: DateTime<Utc>,
