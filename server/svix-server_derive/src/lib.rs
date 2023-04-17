@@ -188,6 +188,24 @@ pub fn aide_annotate(
                 .id(#operation_id)
                 .summary(#operation_summary)
                 .description(#description)
+                .response_with::<401, ::axum::Json<crate::error::StandardHttpError>, _>(|op| {
+                    op.description("Unauthorized")
+                })
+                .response_with::<403, ::axum::Json<crate::error::StandardHttpError>, _>(|op| {
+                    op.description("Forbidden")
+                })
+                .response_with::<404, ::axum::Json<crate::error::StandardHttpError>, _>(|op| {
+                    op.description("Not Found")
+                })
+                .response_with::<409, ::axum::Json<crate::error::StandardHttpError>, _>(|op| {
+                    op.description("Conflict")
+                })
+                .response_with::<422, ::axum::Json<crate::error::ValidationHttpError>, _>(|op| {
+                    op.description("Validation Error")
+                })
+                .response_with::<429, ::axum::Json<crate::error::StandardHttpError>, _>(|op| {
+                    op.description("Too Many Requests")
+                })
         }
     };
     proc_macro::TokenStream::from(out)
