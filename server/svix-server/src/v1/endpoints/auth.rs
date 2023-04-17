@@ -52,7 +52,7 @@ impl From<DashboardAccessOut> for AppPortalAccessOut {
 }
 
 /// Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
-#[aide_annotate(op_id = "get_app_portal_access_api_v1_auth_app_portal_access__app_id___post")]
+#[aide_annotate(op_id = "v1.authentication.app-portal-access")]
 async fn app_portal_access(
     State(AppState { cfg, .. }): State<AppState>,
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
@@ -86,7 +86,7 @@ async fn app_portal_access(
 /// DEPRECATED: Please use `app-portal-access` instead.
 ///
 /// Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
-#[aide_annotate(op_id = "get_dashboard_access_api_v1_auth_dashboard_access__app_id___post")]
+#[aide_annotate(op_id = "v1.authentication.dashboard-access")]
 async fn dashboard_access(
     state: State<AppState>,
     permissions: permissions::OrganizationWithApplication,

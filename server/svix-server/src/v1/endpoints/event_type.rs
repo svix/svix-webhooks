@@ -212,7 +212,7 @@ pub struct ListFetchQueryParams {
 }
 
 /// Return the list of event types.
-#[aide_annotate(op_id = "list_event_types_api_v1_event_type__get")]
+#[aide_annotate(op_id = "v1.event-type.list")]
 async fn list_event_types(
     State(AppState { ref db, .. }): State<AppState>,
     ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<EventTypeName>>>,
@@ -266,7 +266,7 @@ async fn list_event_types(
 /// Unarchiving an event type will allow endpoints to filter on it and messages to be sent with it.
 /// Endpoints filtering on the event type before archival will continue to filter on it.
 /// This operation does not preserve the description and schemas.
-#[aide_annotate(op_id = "create_event_type_api_v1_event_type__post")]
+#[aide_annotate(op_id = "v1.event-type.create")]
 async fn create_event_type(
     State(AppState { ref db, .. }): State<AppState>,
     permissions::Organization { org_id }: permissions::Organization,
@@ -304,7 +304,7 @@ async fn create_event_type(
 }
 
 /// Get an event type.
-#[aide_annotate(op_id = "get_event_type_api_v1_event_type__event_type_name___get")]
+#[aide_annotate(op_id = "v1.event-type.get")]
 async fn get_event_type(
     State(AppState { ref db, .. }): State<AppState>,
     Path(EventTypeNamePath { event_type_name }): Path<EventTypeNamePath>,
@@ -324,7 +324,7 @@ async fn get_event_type(
 }
 
 /// Update an event type.
-#[aide_annotate(op_id = "update_event_type_api_v1_event_type__event_type_name___put")]
+#[aide_annotate(op_id = "v1.event-type.update")]
 async fn update_event_type(
     State(AppState { ref db, .. }): State<AppState>,
     Path(EventTypeNamePath { event_type_name }): Path<EventTypeNamePath>,
@@ -388,7 +388,7 @@ async fn patch_event_type(
 /// However, new messages can not be sent with it and endpoints can not filter on it.
 /// An event type can be unarchived with the
 /// [create operation](#operation/create_event_type_api_v1_event_type__post).
-#[aide_annotate(op_id = "delete_event_type_api_v1_event_type__event_type_name___delete")]
+#[aide_annotate(op_id = "v1.event-type.delete")]
 async fn delete_event_type(
     State(AppState { ref db, .. }): State<AppState>,
     Path(EventTypeNamePath { event_type_name }): Path<EventTypeNamePath>,

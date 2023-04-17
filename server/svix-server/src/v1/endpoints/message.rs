@@ -229,7 +229,7 @@ pub struct ListMessagesQueryParams {
 /// The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
 /// The `after` parameter lets you filter all items created after a certain date and is ignored if an iterator is passed.
 /// `before` and `after` cannot be used simultaneously.
-#[aide_annotate(op_id = "list_messages_api_v1_app__app_id__msg__get")]
+#[aide_annotate(op_id = "v1.message.list")]
 async fn list_messages(
     State(AppState { ref db, .. }): State<AppState>,
     ValidatedQuery(pagination): ValidatedQuery<PaginationDescending<ReversibleIterator<MessageId>>>,
@@ -290,7 +290,7 @@ pub struct CreateMessageQueryParams {
 /// Messages can also have `channels`, which similar to event types let endpoints filter by them. Unlike event types, messages can have multiple channels, and channels don't imply a specific message content or schema.
 ///
 /// The `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to ~350kb, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb.
-#[aide_annotate(op_id = "create_message_api_v1_app__app_id__msg__post")]
+#[aide_annotate(op_id = "v1.message.create")]
 async fn create_message(
     State(AppState {
         ref db,
@@ -356,7 +356,7 @@ pub struct GetMessageQueryParams {
 }
 
 /// Get a message by its ID or eventID.
-#[aide_annotate(op_id = "get_message_api_v1_app__app_id__msg__msg_id___get")]
+#[aide_annotate(op_id = "v1.message.get")]
 async fn get_message(
     State(AppState { ref db, .. }): State<AppState>,
     Path(ApplicationMsgPath { msg_id, .. }): Path<ApplicationMsgPath>,
@@ -380,7 +380,7 @@ async fn get_message(
 /// Delete the given message's payload. Useful in cases when a message was accidentally sent with sensitive content.
 ///
 /// The message can't be replayed or resent once its payload has been deleted or expired.
-#[aide_annotate(op_id = "expunge_message_payload_api_v1_app__app_id__msg__msg_id__content__delete")]
+#[aide_annotate(op_id = "v1.message.expunge-content")]
 async fn expunge_message_content(
     State(AppState { ref db, .. }): State<AppState>,
     Path(ApplicationMsgPath { msg_id, .. }): Path<ApplicationMsgPath>,

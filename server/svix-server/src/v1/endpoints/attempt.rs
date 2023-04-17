@@ -165,9 +165,7 @@ pub struct ListAttemptedMessagesQueryParams {
 /// List messages for a particular endpoint. Additionally includes metadata about the latest message attempt.
 ///
 /// The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
-#[aide_annotate(
-    op_id = "list_attempted_messages_api_v1_app__app_id__endpoint__endpoint_id__msg__get"
-)]
+#[aide_annotate(op_id = "v1.message-attempt.list-attempted-messages")]
 async fn list_attempted_messages(
     State(AppState { ref db, .. }): State<AppState>,
     ValidatedQuery(pagination): ValidatedQuery<PaginationDescending<ReversibleIterator<MessageId>>>,
@@ -329,9 +327,7 @@ fn list_attempts_by_endpoint_or_message_filters(
 }
 
 /// List attempts by endpoint id
-#[aide_annotate(
-    op_id = "list_attempts_by_endpoint_api_v1_app__app_id__attempt_endpoint__endpoint_id___get"
-)]
+#[aide_annotate(op_id = "v1.message-attempt.list-by-endpoint")]
 async fn list_attempts_by_endpoint(
     State(AppState { ref db, .. }): State<AppState>,
     ValidatedQuery(pagination): ValidatedQuery<
@@ -395,7 +391,7 @@ pub struct ListAttemptsByMsgQueryParams {
 }
 
 /// List attempts by message id
-#[aide_annotate(op_id = "list_attempts_by_msg_api_v1_app__app_id__attempt_msg__msg_id___get")]
+#[aide_annotate(op_id = "v1.message-attempt.list-by-msg")]
 async fn list_attempts_by_msg(
     State(AppState { ref db, .. }): State<AppState>,
     ValidatedQuery(pagination): ValidatedQuery<
@@ -489,9 +485,7 @@ impl MessageEndpointOut {
 }
 
 /// `msg_id`: Use a message id or a message `eventId`
-#[aide_annotate(
-    op_id = "list_attempted_destinations_api_v1_app__app_id__msg__msg_id__endpoint__get"
-)]
+#[aide_annotate(op_id = "v1.message-attempt.list-attempted-destinations")]
 async fn list_attempted_destinations(
     State(AppState { ref db, .. }): State<AppState>,
     ValidatedQuery(mut pagination): ValidatedQuery<PaginationDescending<EndpointId>>,
@@ -567,9 +561,7 @@ impl From<MessageAttemptOut> for MessageAttemptEndpointOut {
 /// Returning the endpoint.
 ///
 /// The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
-#[aide_annotate(
-    op_id = "list_attempts_for_endpoint_api_v1_app__app_id__msg__msg_id__endpoint__endpoint_id__attempt__get"
-)]
+#[aide_annotate(op_id = "v1.message-attempt.list-by-endpoint-deprecated")]
 async fn list_attempts_for_endpoint(
     state: State<AppState>,
     pagination: ValidatedQuery<PaginationDescending<ReversibleIterator<MessageAttemptId>>>,
@@ -631,7 +623,7 @@ pub struct AttemptListFetchQueryParams {
 /// Deprecated: Please use "List Attempts by Endpoint" and "List Attempts by Msg" instead.
 ///
 /// `msg_id`: Use a message id or a message `eventId`
-#[aide_annotate(op_id = "list_attempts_api_v1_app__app_id__msg__msg_id__attempt__get")]
+#[aide_annotate(op_id = "v1.message-attempt.list-by-msg-deprecated")]
 async fn list_messageattempts(
     State(AppState { ref db, .. }): State<AppState>,
     ValidatedQuery(pagination): ValidatedQuery<
@@ -696,7 +688,7 @@ async fn list_messageattempts(
 }
 
 /// `msg_id`: Use a message id or a message `eventId`
-#[aide_annotate(op_id = "get_attempt_api_v1_app__app_id__msg__msg_id__attempt__attempt_id___get")]
+#[aide_annotate(op_id = "v1.message-attempt.get")]
 async fn get_messageattempt(
     State(AppState { ref db, .. }): State<AppState>,
     Path(ApplicationMsgAttemptPath {
@@ -722,9 +714,7 @@ async fn get_messageattempt(
 }
 
 /// Resend a message to the specified endpoint.
-#[aide_annotate(
-    op_id = "resend_webhook_api_v1_app__app_id__msg__msg_id__endpoint__endpoint_id__resend__post"
-)]
+#[aide_annotate(op_id = "v1.message-attempt.resend")]
 async fn resend_webhook(
     State(AppState {
         ref db, queue_tx, ..
@@ -782,9 +772,7 @@ async fn resend_webhook(
 }
 
 /// Deletes the given attempt's response body. Useful when an endpoint accidentally returned sensitive content.
-#[aide_annotate(
-    op_id = "expunge_attempt_content_api_v1_app__app_id__msg__msg_id__attempt__attempt_id__content__delete"
-)]
+#[aide_annotate(op_id = "v1.message-attempt.expunge-content")]
 async fn expunge_attempt_content(
     State(AppState { ref db, .. }): State<AppState>,
     Path(ApplicationMsgAttemptPath {

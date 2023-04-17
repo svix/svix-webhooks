@@ -70,9 +70,7 @@ async fn bulk_recover_failed_messages(
 }
 
 /// Resend all failed messages since a given time.
-#[aide_annotate(
-    op_id = "recover_failed_webhooks_api_v1_app__app_id__endpoint__endpoint_id__recover__post"
-)]
+#[aide_annotate(op_id = "v1.endpoint.recover")]
 pub(super) async fn recover_failed_webhooks(
     State(AppState {
         ref db, queue_tx, ..

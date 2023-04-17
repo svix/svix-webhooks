@@ -32,7 +32,7 @@ use crate::{
 use hack::EventTypeNameResult;
 
 /// List the application's endpoints.
-#[aide_annotate(op_id = "list_endpoints_api_v1_app__app_id__endpoint__get")]
+#[aide_annotate(op_id = "v1.endpoint.list")]
 pub(super) async fn list_endpoints(
     State(AppState { ref db, .. }): State<AppState>,
     ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<EndpointId>>>,
@@ -105,7 +105,7 @@ async fn create_endp_from_data(
 /// Create a new endpoint for the application.
 ///
 /// When `secret` is `null` the secret is automatically generated (recommended)
-#[aide_annotate(op_id = "create_endpoint_api_v1_app__app_id__endpoint__post")]
+#[aide_annotate(op_id = "v1.endpoint.create")]
 pub(super) async fn create_endpoint(
     State(AppState {
         ref db,
@@ -127,7 +127,7 @@ pub(super) async fn create_endpoint(
 }
 
 /// Get an endpoint.
-#[aide_annotate(op_id = "get_endpoint_api_v1_app__app_id__endpoint__endpoint_id___get")]
+#[aide_annotate(op_id = "v1.endpoint.get")]
 pub(super) async fn get_endpoint(
     State(AppState { ref db, .. }): State<AppState>,
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
@@ -173,7 +173,7 @@ async fn update_endp_from_data(
 }
 
 /// Update an endpoint.
-#[aide_annotate(op_id = "update_endpoint_api_v1_app__app_id__endpoint__endpoint_id___put")]
+#[aide_annotate(op_id = "v1.endpoint.update")]
 pub(super) async fn update_endpoint(
     State(AppState {
         ref db,
@@ -241,7 +241,7 @@ pub(super) async fn patch_endpoint(
 }
 
 /// Delete an endpoint.
-#[aide_annotate(op_id = "delete_endpoint_api_v1_app__app_id__endpoint__endpoint_id___delete")]
+#[aide_annotate(op_id = "v1.endpoint.delete")]
 pub(super) async fn delete_endpoint(
     State(AppState {
         ref db,

@@ -16,9 +16,7 @@ use crate::{
 };
 
 /// Get the additional headers to be sent with the webhook
-#[aide_annotate(
-    op_id = "get_endpoint_headers_api_v1_app__app_id__endpoint__endpoint_id__headers__get"
-)]
+#[aide_annotate(op_id = "v1.endpoint.get-headers")]
 pub(super) async fn get_endpoint_headers(
     State(AppState { ref db, .. }): State<AppState>,
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
@@ -38,9 +36,7 @@ pub(super) async fn get_endpoint_headers(
 }
 
 /// Set the additional headers to be sent with the webhook
-#[aide_annotate(
-    op_id = "update_endpoint_headers_api_v1_app__app_id__endpoint__endpoint_id__headers__put"
-)]
+#[aide_annotate(op_id = "v1.endpoint.update-headers")]
 pub(super) async fn update_endpoint_headers(
     State(AppState { ref db, .. }): State<AppState>,
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
@@ -62,9 +58,7 @@ pub(super) async fn update_endpoint_headers(
 }
 
 /// Partially set the additional headers to be sent with the webhook
-#[aide_annotate(
-    op_id = "patch_endpoint_headers_api_v1_app__app_id__endpoint__endpoint_id__headers__patch"
-)]
+#[aide_annotate(op_id = "v1.endpoint.patch-headers")]
 pub(super) async fn patch_endpoint_headers(
     State(AppState { ref db, .. }): State<AppState>,
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
