@@ -609,6 +609,7 @@ impl EndpointStatsRange {
 }
 
 #[derive(Deserialize, Serialize, JsonSchema)]
+#[schemars(rename = "EndpointStats")]
 pub struct EndpointStatsOut {
     pub success: i64,
     pub pending: i64,

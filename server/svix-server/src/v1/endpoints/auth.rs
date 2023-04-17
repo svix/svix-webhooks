@@ -29,7 +29,17 @@ pub struct AppPortalAccessIn {
     pub feature_flags: FeatureFlagSet,
 }
 
-pub type AppPortalAccessOut = DashboardAccessOut;
+#[derive(Serialize, JsonSchema)]
+pub struct AppPortalAccessOut {
+    #[serde(flatten)]
+    common_: DashboardAccessOut,
+}
+
+impl From<DashboardAccessOut> for AppPortalAccessOut {
+    fn from(common_: DashboardAccessOut) -> Self {
+        Self { common_ }
+    }
+}
 
 /// Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
 #[aide_annotate(op_id = "get_app_portal_access_api_v1_auth_app_portal_access__app_id___post")]
@@ -57,7 +67,10 @@ async fn app_portal_access(
     // Included for API compatibility, but this URL will not be useful
     let url = format!("{}/login#key={}", &cfg.internal.app_portal_url, login_key);
 
-    Ok(Json(DashboardAccessOut { url, token }))
+    Ok(Json(AppPortalAccessOut::from(DashboardAccessOut {
+        url,
+        token,
+    })))
 }
 
 /// DEPRECATED: Please use `app-portal-access` instead.
@@ -76,6 +89,7 @@ async fn dashboard_access(
         }),
     )
     .await
+    .map(|Json(AppPortalAccessOut { common_: out })| Json(out))
 }
 
 const LOGOUT_DESCRIPTION: &str = r#"
