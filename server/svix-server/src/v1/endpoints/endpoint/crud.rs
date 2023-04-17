@@ -23,9 +23,9 @@ use crate::{
     v1::utils::{
         apply_pagination,
         patch::{patch_field_non_nullable, UnrequiredField, UnrequiredNullableField},
-        ApplicationEndpointPath, JsonStatus, JsonStatusUpsert, ListResponse, ModelIn, ModelOut,
-        NoContent, Ordering, Pagination, PaginationLimit, ReversibleIterator, ValidatedJson,
-        ValidatedQuery,
+        ApplicationEndpointPath, ApplicationPath, JsonStatus, JsonStatusUpsert, ListResponse,
+        ModelIn, ModelOut, NoContent, Ordering, Pagination, PaginationLimit, ReversibleIterator,
+        ValidatedJson, ValidatedQuery,
     },
     AppState,
 };
@@ -35,6 +35,7 @@ use hack::EventTypeNameResult;
 #[aide_annotate(op_id = "v1.endpoint.list")]
 pub(super) async fn list_endpoints(
     State(AppState { ref db, .. }): State<AppState>,
+    _: Path<ApplicationPath>,
     ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<EndpointId>>>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<ListResponse<EndpointOut>>> {
@@ -113,6 +114,7 @@ pub(super) async fn create_endpoint(
         op_webhooks,
         ..
     }): State<AppState>,
+    _: Path<ApplicationPath>,
     permissions::Application { app }: permissions::Application,
     ValidatedJson(data): ValidatedJson<EndpointIn>,
 ) -> Result<JsonStatus<201, EndpointOut>> {

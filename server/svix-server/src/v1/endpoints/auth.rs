@@ -2,7 +2,10 @@ use aide::{
     axum::{routing::post_with, ApiRouter},
     transform::TransformOperation,
 };
-use axum::{extract::State, Json};
+use axum::{
+    extract::{Path, State},
+    Json,
+};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use svix_server_derive::aide_annotate;
@@ -11,7 +14,7 @@ use validator::Validate;
 use crate::{
     core::{permissions, security::generate_app_token, types::FeatureFlagSet},
     error::{HttpError, Result},
-    v1::utils::{api_not_implemented, openapi_tag, ValidatedJson},
+    v1::utils::{api_not_implemented, openapi_tag, ApplicationPath, ValidatedJson},
     AppState,
 };
 
@@ -55,6 +58,7 @@ impl From<DashboardAccessOut> for AppPortalAccessOut {
 #[aide_annotate(op_id = "v1.authentication.app-portal-access")]
 async fn app_portal_access(
     State(AppState { cfg, .. }): State<AppState>,
+    _: Path<ApplicationPath>,
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
     ValidatedJson(data): ValidatedJson<AppPortalAccessIn>,
 ) -> Result<Json<AppPortalAccessOut>> {
@@ -89,10 +93,12 @@ async fn app_portal_access(
 #[aide_annotate(op_id = "v1.authentication.dashboard-access")]
 async fn dashboard_access(
     state: State<AppState>,
+    path: Path<ApplicationPath>,
     permissions: permissions::OrganizationWithApplication,
 ) -> Result<Json<DashboardAccessOut>> {
     app_portal_access(
         state,
+        path,
         permissions,
         ValidatedJson(AppPortalAccessIn {
             feature_flags: FeatureFlagSet::default(),
