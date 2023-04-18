@@ -44,3 +44,15 @@ You can find general usage documentation at <https://docs.svix.com>.  For comple
 
 ## Usage
 Please refer to [the documentation](https://docs.svix.com/) or [the API reference](https://api.svix.com/docs) for more usage instructions.
+
+# Optional Cargo Features
+
+## TLS
+
+By default reqwest uses rust-native-tls, which will use the operating system TLS framework if available, meaning Windows and macOS. On Linux, it will use OpenSSL 1.1.
+
+[rustls-tls](https://github.com/rustls/rustls) can also be choosen, eg.:
+```
+svix = { version = "N", features = ["rustls-tls"], default-features = false  }
+```
+
