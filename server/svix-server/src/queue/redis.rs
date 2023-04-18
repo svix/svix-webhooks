@@ -439,6 +439,7 @@ impl ToRedisArgs for Direction {
     }
 }
 
+#[derive(Debug)]
 pub(super) struct RedisQueueInner {
     pool: RedisPool,
     main_queue_name: String,

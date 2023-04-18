@@ -19,7 +19,7 @@ pub async fn new_pair() -> (TaskQueueProducer, TaskQueueConsumer) {
     )
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct MemoryQueueProducer {
     tx: mpsc::UnboundedSender<TaskQueueDelivery>,
 }

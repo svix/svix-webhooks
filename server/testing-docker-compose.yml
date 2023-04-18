@@ -71,6 +71,20 @@ services:
       ALLOW_EMPTY_PASSWORD: "yes"
       REDIS_NODES: "redis-cluster redis-cluster-node-0 redis-cluster-node-1 redis-cluster-node-2 redis-cluster-node-3 redis-cluster-node-4"
 
+  rabbitmq:
+    image: rabbitmq:3.11.13-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: "xivs"
+      RABBITMQ_DEFAULT_PASS: "xivs"
+      RABBITMQ_PLUGINS_DIR: "/opt/rabbitmq/plugins:/usr/lib/rabbitmq/plugins"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - ./rabbit/enabled_plugins:/etc/rabbitmq/enabled_plugins
+      - ./rabbit/plugins:/usr/lib/rabbitmq/plugins
+
 volumes:
   postgres-data:
-
+  rabbitmq_data:

@@ -181,6 +181,10 @@ pub struct ConfigurationInner {
     /// Maximum number of concurrent worker tasks to spawn (0 is unlimited)
     pub worker_max_tasks: u16,
 
+    /// The address of the rabbitmq exchange
+    pub rabbit_dsn: Option<Arc<String>>,
+    pub rabbit_consumer_prefetch_size: Option<u16>,
+
     #[serde(flatten)]
     pub internal: InternalConfig,
 }
@@ -216,6 +220,17 @@ fn validate_config_complete(
                 });
             }
         }
+        QueueType::RabbitMQ => {
+            if config.rabbit_dsn.is_none() {
+                return Err(ValidationError {
+                    code: Cow::from("missing field"),
+                    message: Some(Cow::from(
+                        "The rabbit_dsn field must be set if the queue_type is `rabbitmq`",
+                    )),
+                    params: HashMap::new(),
+                });
+            }
+        }
     }
 
     Ok(())
@@ -239,6 +254,7 @@ impl ConfigurationInner {
             QueueType::Memory => QueueBackend::Memory,
             QueueType::Redis => QueueBackend::Redis(self.queue_dsn().expect(err)),
             QueueType::RedisCluster => QueueBackend::RedisCluster(self.queue_dsn().expect(err)),
+            QueueType::RabbitMQ => QueueBackend::RabbitMq(self.rabbit_dsn.as_ref().expect(err)),
         }
     }
 
@@ -280,6 +296,7 @@ pub enum QueueBackend<'a> {
     Memory,
     Redis(&'a str),
     RedisCluster(&'a str),
+    RabbitMq(&'a str),
 }
 
 #[derive(Debug, Eq, PartialEq)]
@@ -311,6 +328,7 @@ pub enum QueueType {
     Memory,
     Redis,
     RedisCluster,
+    RabbitMQ,
 }
 
 #[derive(Clone, Debug, Deserialize)]
