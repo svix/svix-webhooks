@@ -30,15 +30,17 @@ jobs:
         id: build_env
         shell: bash
         run: |
-          REGION=${{ secrets.REGION_CODE }}
+          # REGION=${{ secrets.REGION_CODE }}
+          # TODO: Remove this.
+          REGION=mb
           BRANCH="${GITHUB_REF#refs/heads/}"
           ENV=dev
           IAM_ROLE=arn:aws:iam::658114288543:role/GithubActionsRole
           ECS_CLUSTER=orch-$ENV-$REGION-ecs-clstr
           ECS_SERVICE=orch-$ENV-webhook-svix-server-ecs
           TASK_DEFINITION=orch-$ENV-webhook-svix-server
-          CONTAINER_NAME=orch-$ENV-$REGION-webhook-svix-server-ecs
-          ECR_REPO=orch-$ENV-$REGION-ecr-webhook-svix
+          CONTAINER_NAME=app
+          ECR_REPO=orch-$ENV-$REGION-svix-webhook-svc
           echo "::set-output name=IAM_ROLE::$IAM_ROLE"
           echo "::set-output name=TASK_DEFINITION::$TASK_DEFINITION"
           echo "::set-output name=CONTAINER_NAME::$CONTAINER_NAME"
@@ -46,12 +48,12 @@ jobs:
           echo "::set-output name=ECS_SERVICE::$ECS_SERVICE"
           echo "::set-output name=ECR_REPO::$ECR_REPO"
 
-      - name: Updating env file
-        env:
-          ENV_DIR: ${{github.workspace}}/deploy/envs
-        shell: bash
-        run: |
-          cp $ENV_DIR/dev.env .env
+      # - name: Updating env file
+      #   env:
+      #     ENV_DIR: ${{github.workspace}}/deploy/envs
+      #   shell: bash
+      #   run: |
+      #     cp $ENV_DIR/dev.env .env
 
 
       - name: Configure AWS credentials
@@ -59,7 +61,8 @@ jobs:
         with:
           role-to-assume: ${{ steps.build_env.outputs.IAM_ROLE }}
           role-duration-seconds: 900 # the ttl of the session, in seconds.
-          aws-region: ${{ secrets.REGION }}
+          # aws-region: ${{ secrets.REGION }}
+          aws-region: ap-south-1
 
 
       - name: ECR Image Tag Creation
