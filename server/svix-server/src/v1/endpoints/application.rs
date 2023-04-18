@@ -241,6 +241,7 @@ fn default_as_false() -> bool {
 
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
 pub struct CreateApplicationQueryParams {
+    /// Get an existing application, or create a new one if doesn't exist. It's two separate functions in the libs.
     #[serde(default = "default_as_false")]
     get_if_exists: bool,
 }

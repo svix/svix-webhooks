@@ -5,6 +5,7 @@
                 "properties": {
                     "featureFlags": {
                         "description": "The set of feature flags the created token will have access to.",
+                        "example": [],
                         "items": {
                             "example": "cool-new-feature",
                             "maxLength": 256,
@@ -80,9 +81,6 @@
                     },
                     "id": {
                         "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                        "maxLength": 256,
-                        "minLength": 1,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "type": "string"
                     },
                     "metadata": {
@@ -129,11 +127,9 @@
                         "additionalProperties": {
                             "type": "string"
                         },
-                        "nullable": true,
                         "type": "object"
                     },
                     "name": {
-                        "nullable": true,
                         "type": "string"
                     },
                     "rateLimit": {
@@ -198,9 +194,6 @@
                 "properties": {
                     "appId": {
                         "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                        "maxLength": 256,
-                        "minLength": 1,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "type": "string"
                     },
                     "appUid": {
@@ -213,9 +206,6 @@
                     },
                     "endpointId": {
                         "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                        "maxLength": 256,
-                        "minLength": 1,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "type": "string"
                     },
                     "endpointUid": {
@@ -258,9 +248,6 @@
                 "properties": {
                     "appId": {
                         "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                        "maxLength": 256,
-                        "minLength": 1,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "type": "string"
                     },
                     "appUid": {
@@ -273,9 +260,6 @@
                     },
                     "endpointId": {
                         "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                        "maxLength": 256,
-                        "minLength": 1,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "type": "string"
                     },
                     "endpointUid": {
@@ -318,9 +302,6 @@
                 "properties": {
                     "appId": {
                         "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                        "maxLength": 256,
-                        "minLength": 1,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "type": "string"
                     },
                     "appUid": {
@@ -333,9 +314,6 @@
                     },
                     "endpointId": {
                         "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                        "maxLength": 256,
-                        "minLength": 1,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "type": "string"
                     },
                     "endpointUid": {
@@ -406,17 +384,18 @@
                 ],
                 "type": "object"
             },
-            "EndpointHeadersPatch": {
-                "additionalProperties": {
-                    "nullable": true,
-                    "type": "string"
-                },
-                "type": "object"
-            },
             "EndpointHeadersPatchIn": {
                 "properties": {
                     "headers": {
-                        "$ref": "#/components/schemas/EndpointHeadersPatch"
+                        "additionalProperties": {
+                            "nullable": true,
+                            "type": "string"
+                        },
+                        "example": {
+                            "X-Example": "123",
+                            "X-Foobar": "Bar"
+                        },
+                        "type": "object"
                     }
                 },
                 "required": [
@@ -445,10 +424,12 @@
                         "uniqueItems": true
                     },
                     "description": {
+                        "default": "",
                         "example": "An example endpoint name",
                         "type": "string"
                     },
                     "disabled": {
+                        "default": false,
                         "example": false,
                         "type": "boolean"
                     },
@@ -532,6 +513,8 @@
                             "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "type": "string"
                         },
+                        "maxItems": 5,
+                        "minItems": 1,
                         "nullable": true,
                         "type": "array",
                         "uniqueItems": true
@@ -553,9 +536,6 @@
                     },
                     "id": {
                         "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                        "maxLength": 256,
-                        "minLength": 1,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "type": "string"
                     },
                     "nextAttempt": {
@@ -637,9 +617,6 @@
                     },
                     "id": {
                         "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                        "maxLength": 256,
-                        "minLength": 1,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "type": "string"
                     },
                     "metadata": {
@@ -677,7 +654,7 @@
                     "version": {
                         "example": 1,
                         "format": "uint16",
-                        "minimum": 0,
+                        "minimum": 1,
                         "type": "integer"
                     }
                 },
@@ -706,11 +683,9 @@
                         "uniqueItems": true
                     },
                     "description": {
-                        "nullable": true,
                         "type": "string"
                     },
                     "disabled": {
-                        "nullable": true,
                         "type": "boolean"
                     },
                     "filterTypes": {
@@ -728,7 +703,6 @@
                         "additionalProperties": {
                             "type": "string"
                         },
-                        "nullable": true,
                         "type": "object"
                     },
                     "rateLimit": {
@@ -754,13 +728,11 @@
                     },
                     "url": {
                         "format": "uri",
-                        "nullable": true,
                         "type": "string"
                     },
                     "version": {
                         "format": "uint16",
                         "minimum": 0,
-                        "nullable": true,
                         "type": "integer"
                     }
                 },
@@ -856,10 +828,12 @@
                         "uniqueItems": true
                     },
                     "description": {
+                        "default": "",
                         "example": "An example endpoint name",
                         "type": "string"
                     },
                     "disabled": {
+                        "default": false,
                         "example": false,
                         "type": "boolean"
                     },
@@ -946,9 +920,6 @@
                 "properties": {
                     "appId": {
                         "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                        "maxLength": 256,
-                        "minLength": 1,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "type": "string"
                     },
                     "appUid": {
@@ -961,9 +932,6 @@
                     },
                     "endpointId": {
                         "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                        "maxLength": 256,
-                        "minLength": 1,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "type": "string"
                     },
                     "endpointUid": {
@@ -1053,6 +1021,7 @@
                         "type": "string"
                     },
                     "description": {
+                        "example": "A user has signed up",
                         "type": "string"
                     },
                     "featureFlag": {
@@ -1113,11 +1082,9 @@
             "EventTypePatch": {
                 "properties": {
                     "archived": {
-                        "nullable": true,
                         "type": "boolean"
                     },
                     "description": {
-                        "nullable": true,
                         "type": "string"
                     },
                     "featureFlag": {
@@ -1488,9 +1455,6 @@
                 "properties": {
                     "endpointId": {
                         "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                        "maxLength": 256,
-                        "minLength": 1,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "type": "string"
                     },
                     "id": {
@@ -1499,9 +1463,6 @@
                     },
                     "msgId": {
                         "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                        "maxLength": 256,
-                        "minLength": 1,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "type": "string"
                     },
                     "response": {
@@ -1569,9 +1530,6 @@
                 "properties": {
                     "appId": {
                         "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                        "maxLength": 256,
-                        "minLength": 1,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "type": "string"
                     },
                     "appUid": {
@@ -1584,9 +1542,6 @@
                     },
                     "endpointId": {
                         "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                        "maxLength": 256,
-                        "minLength": 1,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "type": "string"
                     },
                     "lastAttempt": {
@@ -1602,9 +1557,6 @@
                     },
                     "msgId": {
                         "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                        "maxLength": 256,
-                        "minLength": 1,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "type": "string"
                     }
                 },
@@ -1641,9 +1593,6 @@
                 "properties": {
                     "appId": {
                         "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                        "maxLength": 256,
-                        "minLength": 1,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "type": "string"
                     },
                     "appUid": {
@@ -1656,9 +1605,6 @@
                     },
                     "endpointId": {
                         "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                        "maxLength": 256,
-                        "minLength": 1,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "type": "string"
                     },
                     "lastAttempt": {
@@ -1674,9 +1620,6 @@
                     },
                     "msgId": {
                         "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                        "maxLength": 256,
-                        "minLength": 1,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "type": "string"
                     }
                 },
@@ -1692,9 +1635,6 @@
                 "properties": {
                     "endpointId": {
                         "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                        "maxLength": 256,
-                        "minLength": 1,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "type": "string"
                     },
                     "id": {
@@ -1703,9 +1643,6 @@
                     },
                     "msgId": {
                         "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                        "maxLength": 256,
-                        "minLength": 1,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "type": "string"
                     },
                     "response": {
@@ -1812,9 +1749,6 @@
                     },
                     "id": {
                         "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                        "maxLength": 256,
-                        "minLength": 1,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "type": "string"
                     },
                     "nextAttempt": {
@@ -1854,7 +1788,7 @@
                     "version": {
                         "example": 1,
                         "format": "uint16",
-                        "minimum": 0,
+                        "minimum": 1,
                         "type": "integer"
                     }
                 },
@@ -1912,6 +1846,7 @@
                     },
                     "payloadRetentionPeriod": {
                         "default": 90,
+                        "example": 90,
                         "format": "int64",
                         "maximum": 90,
                         "minimum": 5,
@@ -1938,6 +1873,8 @@
                             "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "type": "string"
                         },
+                        "maxItems": 5,
+                        "minItems": 1,
                         "nullable": true,
                         "type": "array",
                         "uniqueItems": true
@@ -1959,9 +1896,6 @@
                     },
                     "id": {
                         "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                        "maxLength": 256,
-                        "minLength": 1,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "type": "string"
                     },
                     "payload": {
@@ -2100,10 +2034,7 @@
                         "name": "iterator",
                         "schema": {
                             "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                            "maxLength": 256,
-                            "minLength": 1,
                             "nullable": true,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "type": "string"
                         },
                         "style": "form"
@@ -2200,10 +2131,12 @@
                 "operationId": "v1.application.create",
                 "parameters": [
                     {
+                        "description": "Get an existing application, or create a new one if doesn't exist. It's two separate functions in the libs.",
                         "in": "query",
                         "name": "get_if_exists",
                         "schema": {
                             "default": false,
+                            "description": "Get an existing application, or create a new one if doesn't exist. It's two separate functions in the libs.",
                             "type": "boolean"
                         },
                         "style": "form"
@@ -3114,10 +3047,7 @@
                         "name": "iterator",
                         "schema": {
                             "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                            "maxLength": 256,
-                            "minLength": 1,
                             "nullable": true,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "type": "string"
                         },
                         "style": "form"
@@ -4133,10 +4063,7 @@
                         "name": "iterator",
                         "schema": {
                             "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                            "maxLength": 256,
-                            "minLength": 1,
                             "nullable": true,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "type": "string"
                         },
                         "style": "form"
@@ -4815,10 +4742,7 @@
                         "name": "iterator",
                         "schema": {
                             "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                            "maxLength": 256,
-                            "minLength": 1,
                             "nullable": true,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "type": "string"
                         },
                         "style": "form"
@@ -5738,10 +5662,7 @@
                         "name": "iterator",
                         "schema": {
                             "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                            "maxLength": 256,
-                            "minLength": 1,
                             "nullable": true,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "type": "string"
                         },
                         "style": "form"

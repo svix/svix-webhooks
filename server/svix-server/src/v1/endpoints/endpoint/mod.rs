@@ -145,7 +145,6 @@ fn example_endpoint_version() -> u16 {
 #[serde(rename_all = "camelCase")]
 pub struct EndpointIn {
     #[serde(default)]
-    #[serde(skip_serializing_if = "String::is_empty")]
     #[validate(custom = "validate_no_control_characters")]
     #[schemars(example = "example_endpoint_description")]
     pub description: String,
@@ -162,14 +161,10 @@ pub struct EndpointIn {
     #[schemars(url, length(min = 1, max = 65_536), example = "example_endpoint_url")]
     pub url: Url,
     #[validate(range(min = 1, message = "Endpoint versions must be at least one"))]
-    #[schemars(example = "example_endpoint_version")]
+    #[schemars(range(min = 1), example = "example_endpoint_version")]
     pub version: u16,
     #[serde(default)]
-    #[serde(skip_serializing_if = "std::ops::Not::not")]
-    #[schemars(
-        example = "endpoint_disabled_default",
-        default = "endpoint_disabled_default"
-    )]
+    #[schemars(example = "endpoint_disabled_default")]
     pub disabled: bool,
     #[serde(rename = "filterTypes")]
     #[validate(custom = "validate_event_types_ids")]
@@ -237,11 +232,10 @@ impl ModelIn for EndpointIn {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Validate, ModelIn, JsonSchema)]
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize, Validate, ModelIn, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 struct EndpointUpdate {
     #[serde(default)]
-    #[serde(skip_serializing_if = "String::is_empty")]
     #[validate(custom = "validate_no_control_characters")]
     #[schemars(example = "example_endpoint_description")]
     pub description: String,
@@ -264,24 +258,18 @@ struct EndpointUpdate {
     pub version: u16,
 
     #[serde(default)]
-    #[serde(skip_serializing_if = "std::ops::Not::not")]
-    #[schemars(
-        example = "endpoint_disabled_default",
-        default = "endpoint_disabled_default"
-    )]
+    #[schemars(example = "endpoint_disabled_default")]
     pub disabled: bool,
 
     #[serde(rename = "filterTypes")]
     #[validate(custom = "validate_event_types_ids")]
     #[validate]
-    #[serde(skip_serializing_if = "Option::is_none")]
     #[schemars(example = "example_filter_types", length(min = 1))]
     pub event_types_ids: Option<EventTypeNameSet>,
 
     /// List of message channels this endpoint listens to (omit for all)
     #[validate(custom = "validate_channels_endpoint")]
     #[validate]
-    #[serde(skip_serializing_if = "Option::is_none")]
     #[schemars(example = "example_channel_set", length(min = 1, max = 10))]
     pub channels: Option<EventChannelSet>,
 
@@ -473,7 +461,7 @@ pub struct EndpointOutCommon {
     pub uid: Option<EndpointUid>,
     #[schemars(url, length(min = 1, max = 65_536), example = "example_endpoint_url")]
     pub url: String,
-    #[schemars(example = "example_endpoint_version")]
+    #[schemars(range(min = 1), example = "example_endpoint_version")]
     pub version: u16,
     #[schemars(
         example = "endpoint_disabled_default",
@@ -607,10 +595,18 @@ impl From<EndpointHeaders> for EndpointHeadersOut {
     }
 }
 
+fn endpoint_headers_patch_example() -> EndpointHeadersPatch {
+    EndpointHeadersPatch(HashMap::from([
+        ("X-Example".to_string(), Some("123".to_string())),
+        ("X-Foobar".to_string(), Some("Bar".to_string())),
+    ]))
+}
+
 #[derive(Clone, Debug, PartialEq, Eq, Validate, Deserialize, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointHeadersPatchIn {
     #[validate]
+    #[schemars(example = "endpoint_headers_patch_example")]
     pub headers: EndpointHeadersPatch,
 }
 

@@ -345,11 +345,7 @@ pub struct StringSchema {
 impl StringSchema {
     pub fn schema_for_ids(prefix: &'static str) -> Self {
         Self {
-            string_validation: Some(schemars::schema::StringValidation {
-                min_length: Some(1),
-                max_length: Some(256),
-                pattern: Some(r"^[a-zA-Z0-9\-_.]+$".to_string()),
-            }),
+            string_validation: None,
             example: Some(format!("{prefix}1srOrx2ZWZBpBUvZwXKQmoEYga2")),
         }
     }
@@ -370,7 +366,6 @@ impl StringSchema {
 /// * `name_id` is the name of the identifier for which the impl is generated.
 /// * `string_schema` is a [`StringSchema`] to enrich the generated schema with
 ///   more information.
-#[macro_export]
 macro_rules! common_jsonschema_impl {
     ($name_id:ident, $string_schema:expr) => {
         impl ::schemars::JsonSchema for $name_id {
@@ -1140,6 +1135,7 @@ fn validate_header_map(
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Default, JsonSchema)]
+#[schemars(transparent)]
 pub struct EndpointHeadersPatch(pub HashMap<String, Option<String>>);
 json_wrapper!(EndpointHeadersPatch);
 

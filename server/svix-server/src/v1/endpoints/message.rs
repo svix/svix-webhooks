@@ -122,6 +122,7 @@ pub struct MessageIn {
     pub channels: Option<EventChannelSet>,
     #[validate(range(min = 5, max = 90))]
     #[serde(default = "default_90")]
+    #[schemars(example = "default_90")]
     pub payload_retention_period: i64,
 }
 
@@ -171,7 +172,7 @@ pub struct MessageOut {
     #[schemars(example = "example_payload")]
     pub payload: RawPayload,
     /// List of free-form identifiers that endpoints can filter by
-    #[schemars(example = "example_channel_set")]
+    #[schemars(length(min = 1, max = 5), example = "example_channel_set")]
     pub channels: Option<EventChannelSet>,
     pub id: MessageId,
     #[serde(rename = "timestamp")]

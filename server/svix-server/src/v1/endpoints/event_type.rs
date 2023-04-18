@@ -165,6 +165,7 @@ impl ModelIn for EventTypePatch {
 #[serde(rename_all = "camelCase")]
 pub struct EventTypeOut {
     pub name: EventTypeName,
+    #[schemars(example = "event_type_description_example")]
     pub description: String,
     #[serde(rename = "archived")]
     #[schemars(example = "example_event_archived", default = "example_event_archived")]
