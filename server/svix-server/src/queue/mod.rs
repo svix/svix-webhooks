@@ -2,6 +2,7 @@ use std::{sync::Arc, time::Duration};
 
 use axum::async_trait;
 use chrono::{DateTime, Utc};
+use lapin::options::{BasicAckOptions, BasicNackOptions};
 use serde::{Deserialize, Serialize};
 use strum::Display;
 use svix_ksuid::*;
@@ -22,6 +23,7 @@ use self::{
 };
 
 pub mod memory;
+pub mod rabbitmq;
 pub mod redis;
 
 const RETRY_SCHEDULE: &[Duration] = &[
@@ -48,6 +50,15 @@ pub async fn new_pair(
             redis::new_pair(pool, prefix).await
         }
         QueueBackend::Memory => memory::new_pair().await,
+        QueueBackend::RabbitMq(dsn) => {
+            let prefix = prefix.unwrap_or("");
+            let queue = format!("{prefix}-message-queue");
+            // Default to a prefetch_size of 1, as it's the safest (least likely to starve consumers)
+            let prefetch_size = cfg.rabbit_consumer_prefetch_size.unwrap_or(1);
+            rabbitmq::new_pair(dsn, queue, prefetch_size)
+                .await
+                .expect("can't connect to rabbit")
+        }
     }
 }
 
@@ -113,6 +124,7 @@ pub enum QueueTask {
 pub enum TaskQueueProducer {
     Memory(MemoryQueueProducer),
     Redis(RedisQueueProducer),
+    RabbitMq(rabbitmq::Producer),
 }
 
 impl TaskQueueProducer {
@@ -123,6 +135,7 @@ impl TaskQueueProducer {
                 match self {
                     TaskQueueProducer::Memory(q) => q.send(task.clone(), delay).await,
                     TaskQueueProducer::Redis(q) => q.send(task.clone(), delay).await,
+                    TaskQueueProducer::RabbitMq(q) => q.send(task.clone(), delay).await,
                 }
             },
             should_retry,
@@ -135,6 +148,7 @@ impl TaskQueueProducer {
 pub enum TaskQueueConsumer {
     Redis(RedisQueueConsumer),
     Memory(MemoryQueueConsumer),
+    RabbitMq(rabbitmq::Consumer),
 }
 
 impl TaskQueueConsumer {
@@ -142,16 +156,20 @@ impl TaskQueueConsumer {
         match self {
             TaskQueueConsumer::Redis(q) => ctx!(q.receive_all().await),
             TaskQueueConsumer::Memory(q) => ctx!(q.receive_all().await),
+            TaskQueueConsumer::RabbitMq(q) => ctx!(q.receive_all().await),
         }
     }
 }
 
 /// Used by TaskQueueDeliveries to Ack/Nack itself
+#[derive(Debug)]
 enum Acker {
     Memory(MemoryQueueProducer),
     Redis(Arc<RedisQueueInner>),
+    RabbitMQ(lapin::message::Delivery),
 }
 
+#[derive(Debug)]
 pub struct TaskQueueDelivery {
     pub id: String,
     pub task: Arc<QueueTask>,
@@ -178,6 +196,15 @@ impl TaskQueueDelivery {
                     Acker::Redis(q) => {
                         ctx!(q.ack(&self).await)
                     }
+                    Acker::RabbitMQ(delivery) => {
+                        ctx!(
+                            delivery
+                                .ack(BasicAckOptions {
+                                    multiple: false // Only ack this message, not others
+                                })
+                                .await
+                        )
+                    }
                 }
             },
             should_retry,
@@ -197,6 +224,17 @@ impl TaskQueueDelivery {
                     }
                     Acker::Redis(q) => {
                         ctx!(q.nack(&self).await)
+                    }
+                    Acker::RabbitMQ(delivery) => {
+                        // See https://www.rabbitmq.com/confirms.html#consumer-nacks-requeue
+                        ctx!(
+                            delivery
+                                .nack(BasicNackOptions {
+                                    requeue: true,
+                                    multiple: false // Only nack this message, not others
+                                })
+                                .await
+                        )
                     }
                 }
             },

@@ -238,6 +238,12 @@ impl<T> Traceable<T> for std::result::Result<T, TransactionError<Error>> {
     }
 }
 
+impl<T> Traceable<T> for std::result::Result<T, lapin::Error> {
+    fn trace(self, location: &'static str) -> Result<T> {
+        self.map_err(|e| Error::queue(format!("{e:?}"), location))
+    }
+}
+
 #[derive(Debug, Clone)]
 pub enum ErrorType {
     /// A generic error
