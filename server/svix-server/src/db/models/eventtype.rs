@@ -76,9 +76,52 @@ impl Entity {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Default, JsonSchema)]
+pub fn schema_example() -> serde_json::Value {
+    serde_json::json!({
+        "description": "An invoice was paid by a user",
+        "properties": {
+            "invoiceId": {
+                "description": "The invoice id",
+                "type": "string"
+            },
+            "userId": {
+                "description": "The user id",
+                "type": "string"
+            }
+        },
+        "required": [
+            "invoiceId",
+            "userId"
+        ],
+        "title": "Invoice Paid Event",
+        "type": "object"
+    })
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Default)]
 pub struct Schema(HashMap<String, Json>);
 json_wrapper!(Schema);
+
+impl JsonSchema for Schema {
+    fn schema_name() -> String {
+        stringify!(Schema).to_string()
+    }
+
+    fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
+        let mut schema = gen.subschema_for::<HashMap<String, Json>>();
+
+        if let schemars::schema::Schema::Object(obj) = &mut schema {
+            obj.extensions
+                .insert("example".to_string(), schema_example());
+        }
+
+        schema
+    }
+
+    fn is_referenceable() -> bool {
+        false
+    }
+}
 
 impl<'de> Deserialize<'de> for Schema {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>

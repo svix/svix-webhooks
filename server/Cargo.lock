@@ -52,9 +52,8 @@ dependencies = [
 
 [[package]]
 name = "aide"
-version = "0.9.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "befdff0b4683a0824fc8719ce639a252d9d62cd89c8d0004c39e2417128c1eb8"
+version = "0.10.0"
+source = "git+https://github.com/svix/aide?rev=e6e9af3#e6e9af320757130074ca9cd537d342b5496d527d"
 dependencies = [
  "aide-macros",
  "axum",
@@ -65,6 +64,7 @@ dependencies = [
  "schemars",
  "serde",
  "serde_json",
+ "serde_qs",
  "thiserror",
  "tower-layer",
  "tower-service",
@@ -74,8 +74,7 @@ dependencies = [
 [[package]]
 name = "aide-macros"
 version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1ae9102630967c9c07c40a3383cd1e6b043bdd203793731ad39eac7f7dce0d4c"
+source = "git+https://github.com/svix/aide?rev=e6e9af3#e6e9af320757130074ca9cd537d342b5496d527d"
 dependencies = [
  "darling",
  "proc-macro2",
@@ -2949,6 +2948,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f7f05c1d5476066defcdfacce1f52fc3cae3af1d3089727100c02ae92e5abbe0"
 dependencies = [
  "serde",
+]
+
+[[package]]
+name = "serde_qs"
+version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c679fa27b429f2bb57fd4710257e643e86c966e716037259f8baa33de594a1b6"
+dependencies = [
+ "axum",
+ "futures",
+ "percent-encoding",
+ "serde",
+ "thiserror",
 ]
 
 [[package]]

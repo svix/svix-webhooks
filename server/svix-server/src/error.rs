@@ -276,11 +276,24 @@ impl From<HttpError> for ErrorType {
     }
 }
 
+#[derive(Debug, Clone, Serialize, JsonSchema)]
+#[schemars(rename = "HttpErrorOut")]
+pub struct StandardHttpError {
+    code: String,
+    detail: String,
+}
+
+#[derive(Debug, Clone, Serialize, JsonSchema)]
+#[schemars(rename = "HTTPValidationError")]
+pub struct ValidationHttpError {
+    detail: Vec<ValidationErrorItem>,
+}
+
 #[derive(Debug, Clone, Serialize)]
 #[serde(untagged)]
 pub enum HttpErrorBody {
-    Standard { code: String, detail: String },
-    Validation { detail: Vec<ValidationErrorItem> },
+    Standard(StandardHttpError),
+    Validation(ValidationHttpError),
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, Eq, JsonSchema)]
@@ -311,7 +324,7 @@ impl HttpError {
     fn new_standard(status: StatusCode, code: String, detail: String) -> Self {
         Self {
             status,
-            body: HttpErrorBody::Standard { code, detail },
+            body: HttpErrorBody::Standard(StandardHttpError { code, detail }),
         }
     }
 
@@ -358,7 +371,7 @@ impl HttpError {
     pub fn unprocessable_entity(detail: Vec<ValidationErrorItem>) -> Self {
         Self {
             status: StatusCode::UNPROCESSABLE_ENTITY,
-            body: HttpErrorBody::Validation { detail },
+            body: HttpErrorBody::Validation(ValidationHttpError { detail }),
         }
     }
 
@@ -388,13 +401,13 @@ impl From<HttpError> for Error {
 impl fmt::Display for HttpError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match &self.body {
-            HttpErrorBody::Standard { code, detail } => write!(
+            HttpErrorBody::Standard(StandardHttpError { code, detail }) => write!(
                 f,
                 "status={} code=\"{}\" detail=\"{}\"",
                 self.status, code, detail
             ),
 
-            HttpErrorBody::Validation { detail } => {
+            HttpErrorBody::Validation(ValidationHttpError { detail }) => {
                 write!(
                     f,
                     "status={} detail={}",

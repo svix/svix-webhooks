@@ -7,7 +7,7 @@ use crate::core::cache::{kv_def, Cache, CacheBehavior, CacheKey, CacheValue};
 use crate::core::cryptography::Encryption;
 use crate::core::message_app::{CreateMessageApp, CreateMessageEndpoint};
 use crate::core::operational_webhooks::{
-    EndpointDisabledEvent, MessageAttemptEvent, OperationalWebhook, OperationalWebhookSender,
+    EndpointDisabledEventData, MessageAttemptEvent, OperationalWebhook, OperationalWebhookSender,
 };
 use crate::core::types::{
     ApplicationId, ApplicationUid, BaseId, EndpointHeaders, EndpointId, EndpointSecretInternal,
@@ -603,7 +603,7 @@ async fn handle_failed_dispatch(
                 op_webhook_sender
                     .send_operational_webhook(
                         org_id,
-                        OperationalWebhook::EndpointDisabled(EndpointDisabledEvent {
+                        OperationalWebhook::EndpointDisabled(EndpointDisabledEventData {
                             app_id: app_id.clone(),
                             app_uid: app_uid.cloned(),
                             endpoint_id: msg_task.endpoint_id.clone(),

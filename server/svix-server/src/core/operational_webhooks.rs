@@ -7,6 +7,7 @@ use std::sync::Arc;
 
 use chrono::{DateTime, Utc};
 use http::StatusCode;
+use schemars::JsonSchema;
 use serde::Serialize;
 use svix::api::{MessageIn, Svix, SvixOptions};
 
@@ -23,9 +24,9 @@ use crate::{
 };
 
 /// Sent when an endpoint has been automatically disabled after continuous failures.
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-pub struct EndpointDisabledEvent {
+pub struct EndpointDisabledEventData {
     pub app_id: ApplicationId,
     pub app_uid: Option<ApplicationUid>,
     pub endpoint_id: EndpointId,
@@ -34,7 +35,7 @@ pub struct EndpointDisabledEvent {
 }
 
 /// Sent when an endpoint is created, updated, or deleted
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointEvent {
     pub app_id: ApplicationId,
@@ -54,7 +55,7 @@ impl EndpointEvent {
     }
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct MessageAttempetLast {
     pub id: MessageAttemptId,
@@ -75,7 +76,7 @@ impl From<messageattempt::Model> for MessageAttempetLast {
 /// Sent when a message delivery has failed (all of the retry attempts have been exhausted) as a
 /// "message.attempt.exhausted" type or after it's failed four times as a "message.attempt.failing"
 /// event.
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct MessageAttemptEvent {
     pub app_id: ApplicationId,
@@ -90,7 +91,7 @@ pub struct MessageAttemptEvent {
 #[serde(tag = "type", content = "data")]
 pub enum OperationalWebhook {
     #[serde(rename = "endpoint.disabled")]
-    EndpointDisabled(EndpointDisabledEvent),
+    EndpointDisabled(EndpointDisabledEventData),
     #[serde(rename = "endpoint.created")]
     EndpointCreated(EndpointEvent),
     #[serde(rename = "endpoint.updated")]
