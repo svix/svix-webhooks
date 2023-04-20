@@ -91,10 +91,12 @@ jobs:
           ECR_REPOSITORY: ${{ steps.build_env.outputs.ECR_REPO }}
           IMAGE_TAG: ${{ steps.image_tag.outputs.ORCH_IMAGE_TAG_FULL }}
         run: |
-           docker build -t ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG --build-arg githubAccessToken=${{ secrets.ACCESS_TOKEN }} .
-           echo ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG
-           docker push ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG
-           echo "::set-output name=image::${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG"
+          pwd
+          docker build -t ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG --build-arg githubAccessToken=${{ secrets.ACCESS_TOKEN }} .
+          docker image list
+          echo ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG
+          docker push ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG
+          echo "::set-output name=image::${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG"
 
       - name: Download task definition
         env:
