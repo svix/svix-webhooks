@@ -52,6 +52,7 @@ fn event_type_versioned_schemas_example() -> serde_json::Value {
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Validate, ModelIn, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EventTypeIn {
+    #[validate]
     pub name: EventTypeName,
     #[validate(custom = "validate_no_control_characters")]
     #[schemars(example = "event_type_description_example")]

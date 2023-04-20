@@ -197,7 +197,15 @@ fn validate_limited_str(s: &str) -> std::result::Result<(), ValidationErrors> {
         static ref RE: Regex = Regex::new(r"^[a-zA-Z0-9\-_.]+$").unwrap();
     }
     let mut errors = ValidationErrors::new();
-    if s.len() > MAX_LENGTH {
+    if s.is_empty() {
+        errors.add(
+            ALL_ERROR,
+            validation_error(
+                Some("length"),
+                Some("String must be at least one character"),
+            ),
+        );
+    } else if s.len() > MAX_LENGTH {
         errors.add(
             ALL_ERROR,
             validation_error(Some("length"), Some("String too long")),
@@ -1350,9 +1358,15 @@ mod tests {
 
         // Check length
         let long_str: String = "X".repeat(300);
-        let app_id = ApplicationUid(long_str.clone());
+        let app_id = ApplicationId(long_str.clone());
         assert!(app_id.validate().is_err());
         let app_uid = ApplicationUid(long_str);
+        assert!(app_uid.validate().is_err());
+
+        let empty_str: String = "".to_owned();
+        let app_id = ApplicationId(empty_str.clone());
+        assert!(app_id.validate().is_err());
+        let app_uid = ApplicationUid(empty_str);
         assert!(app_uid.validate().is_err());
     }
 
@@ -1369,6 +1383,10 @@ mod tests {
         // Check length
         let long_str: String = "X".repeat(300);
         let evt_name = EventTypeName(long_str);
+        assert!(evt_name.validate().is_err());
+
+        let empty_str = "".to_owned();
+        let evt_name = EventTypeName(empty_str);
         assert!(evt_name.validate().is_err());
     }
 
