@@ -53,4 +53,4 @@ CMD \
     if [ ! -z "$WAIT_FOR" ]; then \
         WAIT_FOR_ARG="--wait-for 15"; \
     fi ; \
-    exec RUST_BACKTRACE=1 svix-server --run-migrations $WAIT_FOR_ARG
+    exec env RUST_BACKTRACE=1 svix-server --run-migrations $WAIT_FOR_ARG
