@@ -97,7 +97,6 @@ jobs:
           echo ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG
           docker push ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG
           echo "::set-output name=image::${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:$IMAGE_TAG"
-
       - name: Download task definition
         env:
           TASK_DEFINITION: ${{ steps.build_env.outputs.TASK_DEFINITION }}
