@@ -22,20 +22,19 @@ type MessageIn struct {
 	// Optional unique identifier for the message
 	EventId NullableString `json:"eventId,omitempty"`
 	EventType string `json:"eventType"`
-	Payload map[string]interface{} `json:"payload"`
-	// The retention period for the payload (in days).
-	PayloadRetentionPeriod *int32 `json:"payloadRetentionPeriod,omitempty"`
+	Payload interface{} `json:"payload"`
+	PayloadRetentionPeriod *int64 `json:"payloadRetentionPeriod,omitempty"`
 }
 
 // NewMessageIn instantiates a new MessageIn object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewMessageIn(eventType string, payload map[string]interface{}) *MessageIn {
+func NewMessageIn(eventType string, payload interface{}) *MessageIn {
 	this := MessageIn{}
 	this.EventType = eventType
 	this.Payload = payload
-	var payloadRetentionPeriod int32 = 90
+	var payloadRetentionPeriod int64 = 90
 	this.PayloadRetentionPeriod = &payloadRetentionPeriod
 	return &this
 }
@@ -45,7 +44,7 @@ func NewMessageIn(eventType string, payload map[string]interface{}) *MessageIn {
 // but it doesn't guarantee that properties required by API are set
 func NewMessageInWithDefaults() *MessageIn {
 	this := MessageIn{}
-	var payloadRetentionPeriod int32 = 90
+	var payloadRetentionPeriod int64 = 90
 	this.PayloadRetentionPeriod = &payloadRetentionPeriod
 	return &this
 }
@@ -182,9 +181,10 @@ func (o *MessageIn) SetEventType(v string) {
 }
 
 // GetPayload returns the Payload field value
-func (o *MessageIn) GetPayload() map[string]interface{} {
+// If the value is explicit nil, the zero value for interface{} will be returned
+func (o *MessageIn) GetPayload() interface{} {
 	if o == nil {
-		var ret map[string]interface{}
+		var ret interface{}
 		return ret
 	}
 
@@ -193,22 +193,23 @@ func (o *MessageIn) GetPayload() map[string]interface{} {
 
 // GetPayloadOk returns a tuple with the Payload field value
 // and a boolean to check if the value has been set.
-func (o *MessageIn) GetPayloadOk() (*map[string]interface{}, bool) {
-	if o == nil  {
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *MessageIn) GetPayloadOk() (*interface{}, bool) {
+	if o == nil || o.Payload == nil {
 		return nil, false
 	}
 	return &o.Payload, true
 }
 
 // SetPayload sets field value
-func (o *MessageIn) SetPayload(v map[string]interface{}) {
+func (o *MessageIn) SetPayload(v interface{}) {
 	o.Payload = v
 }
 
 // GetPayloadRetentionPeriod returns the PayloadRetentionPeriod field value if set, zero value otherwise.
-func (o *MessageIn) GetPayloadRetentionPeriod() int32 {
+func (o *MessageIn) GetPayloadRetentionPeriod() int64 {
 	if o == nil || o.PayloadRetentionPeriod == nil {
-		var ret int32
+		var ret int64
 		return ret
 	}
 	return *o.PayloadRetentionPeriod
@@ -216,7 +217,7 @@ func (o *MessageIn) GetPayloadRetentionPeriod() int32 {
 
 // GetPayloadRetentionPeriodOk returns a tuple with the PayloadRetentionPeriod field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *MessageIn) GetPayloadRetentionPeriodOk() (*int32, bool) {
+func (o *MessageIn) GetPayloadRetentionPeriodOk() (*int64, bool) {
 	if o == nil || o.PayloadRetentionPeriod == nil {
 		return nil, false
 	}
@@ -232,8 +233,8 @@ func (o *MessageIn) HasPayloadRetentionPeriod() bool {
 	return false
 }
 
-// SetPayloadRetentionPeriod gets a reference to the given int32 and assigns it to the PayloadRetentionPeriod field.
-func (o *MessageIn) SetPayloadRetentionPeriod(v int32) {
+// SetPayloadRetentionPeriod gets a reference to the given int64 and assigns it to the PayloadRetentionPeriod field.
+func (o *MessageIn) SetPayloadRetentionPeriod(v int64) {
 	o.PayloadRetentionPeriod = &v
 }
 
@@ -251,7 +252,7 @@ func (o MessageIn) MarshalJSON() ([]byte, error) {
 	if true {
 		toSerialize["eventType"] = o.EventType
 	}
-	if true {
+	if o.Payload != nil {
 		toSerialize["payload"] = o.Payload
 	}
 	if o.PayloadRetentionPeriod != nil {

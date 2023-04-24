@@ -20,11 +20,12 @@ type EndpointOut struct {
 	// List of message channels this endpoint listens to (omit for all)
 	Channels []string `json:"channels,omitempty"`
 	CreatedAt time.Time `json:"createdAt"`
-	Description *string `json:"description,omitempty"`
+	// An example endpoint name
+	Description string `json:"description"`
 	Disabled *bool `json:"disabled,omitempty"`
 	FilterTypes []string `json:"filterTypes,omitempty"`
 	Id string `json:"id"`
-	Metadata map[string]string `json:"metadata,omitempty"`
+	Metadata map[string]string `json:"metadata"`
 	RateLimit NullableInt32 `json:"rateLimit,omitempty"`
 	// Optional unique identifier for the endpoint
 	Uid NullableString `json:"uid,omitempty"`
@@ -37,14 +38,14 @@ type EndpointOut struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEndpointOut(createdAt time.Time, id string, updatedAt time.Time, url string, version int32) *EndpointOut {
+func NewEndpointOut(createdAt time.Time, description string, id string, metadata map[string]string, updatedAt time.Time, url string, version int32) *EndpointOut {
 	this := EndpointOut{}
 	this.CreatedAt = createdAt
-	var description string = ""
-	this.Description = &description
+	this.Description = description
 	var disabled bool = false
 	this.Disabled = &disabled
 	this.Id = id
+	this.Metadata = metadata
 	this.UpdatedAt = updatedAt
 	this.Url = url
 	this.Version = version
@@ -56,8 +57,6 @@ func NewEndpointOut(createdAt time.Time, id string, updatedAt time.Time, url str
 // but it doesn't guarantee that properties required by API are set
 func NewEndpointOutWithDefaults() *EndpointOut {
 	this := EndpointOut{}
-	var description string = ""
-	this.Description = &description
 	var disabled bool = false
 	this.Disabled = &disabled
 	return &this
@@ -120,36 +119,28 @@ func (o *EndpointOut) SetCreatedAt(v time.Time) {
 	o.CreatedAt = v
 }
 
-// GetDescription returns the Description field value if set, zero value otherwise.
+// GetDescription returns the Description field value
 func (o *EndpointOut) GetDescription() string {
-	if o == nil || o.Description == nil {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Description
+
+	return o.Description
 }
 
-// GetDescriptionOk returns a tuple with the Description field value if set, nil otherwise
+// GetDescriptionOk returns a tuple with the Description field value
 // and a boolean to check if the value has been set.
 func (o *EndpointOut) GetDescriptionOk() (*string, bool) {
-	if o == nil || o.Description == nil {
+	if o == nil  {
 		return nil, false
 	}
-	return o.Description, true
+	return &o.Description, true
 }
 
-// HasDescription returns a boolean if a field has been set.
-func (o *EndpointOut) HasDescription() bool {
-	if o != nil && o.Description != nil {
-		return true
-	}
-
-	return false
-}
-
-// SetDescription gets a reference to the given string and assigns it to the Description field.
+// SetDescription sets field value
 func (o *EndpointOut) SetDescription(v string) {
-	o.Description = &v
+	o.Description = v
 }
 
 // GetDisabled returns the Disabled field value if set, zero value otherwise.
@@ -241,35 +232,26 @@ func (o *EndpointOut) SetId(v string) {
 	o.Id = v
 }
 
-// GetMetadata returns the Metadata field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetMetadata returns the Metadata field value
 func (o *EndpointOut) GetMetadata() map[string]string {
-	if o == nil  {
+	if o == nil {
 		var ret map[string]string
 		return ret
 	}
+
 	return o.Metadata
 }
 
-// GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
+// GetMetadataOk returns a tuple with the Metadata field value
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EndpointOut) GetMetadataOk() (*map[string]string, bool) {
-	if o == nil || o.Metadata == nil {
+	if o == nil  {
 		return nil, false
 	}
 	return &o.Metadata, true
 }
 
-// HasMetadata returns a boolean if a field has been set.
-func (o *EndpointOut) HasMetadata() bool {
-	if o != nil && o.Metadata != nil {
-		return true
-	}
-
-	return false
-}
-
-// SetMetadata gets a reference to the given map[string]string and assigns it to the Metadata field.
+// SetMetadata sets field value
 func (o *EndpointOut) SetMetadata(v map[string]string) {
 	o.Metadata = v
 }
@@ -438,7 +420,7 @@ func (o EndpointOut) MarshalJSON() ([]byte, error) {
 	if true {
 		toSerialize["createdAt"] = o.CreatedAt
 	}
-	if o.Description != nil {
+	if true {
 		toSerialize["description"] = o.Description
 	}
 	if o.Disabled != nil {
@@ -450,7 +432,7 @@ func (o EndpointOut) MarshalJSON() ([]byte, error) {
 	if true {
 		toSerialize["id"] = o.Id
 	}
-	if o.Metadata != nil {
+	if true {
 		toSerialize["metadata"] = o.Metadata
 	}
 	if o.RateLimit.IsSet() {

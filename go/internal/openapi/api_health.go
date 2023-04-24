@@ -26,29 +26,24 @@ var (
 // HealthApiService HealthApi service
 type HealthApiService service
 
-type ApiHealthApiV1HealthGetRequest struct {
+type ApiV1HealthGetRequest struct {
 	ctx _context.Context
 	ApiService *HealthApiService
-	idempotencyKey *string
 }
 
-func (r ApiHealthApiV1HealthGetRequest) IdempotencyKey(idempotencyKey string) ApiHealthApiV1HealthGetRequest {
-	r.idempotencyKey = &idempotencyKey
-	return r
-}
 
-func (r ApiHealthApiV1HealthGetRequest) Execute() (*_nethttp.Response, error) {
-	return r.ApiService.HealthApiV1HealthGetExecute(r)
+func (r ApiV1HealthGetRequest) Execute() (*_nethttp.Response, error) {
+	return r.ApiService.V1HealthGetExecute(r)
 }
 
 /*
- * HealthApiV1HealthGet Health
+ * V1HealthGet Health
  * Verify the API server is up and running.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @return ApiHealthApiV1HealthGetRequest
+ * @return ApiV1HealthGetRequest
  */
-func (a *HealthApiService) HealthApiV1HealthGet(ctx _context.Context) ApiHealthApiV1HealthGetRequest {
-	return ApiHealthApiV1HealthGetRequest{
+func (a *HealthApiService) V1HealthGet(ctx _context.Context) ApiV1HealthGetRequest {
+	return ApiV1HealthGetRequest{
 		ApiService: a,
 		ctx: ctx,
 	}
@@ -57,7 +52,7 @@ func (a *HealthApiService) HealthApiV1HealthGet(ctx _context.Context) ApiHealthA
 /*
  * Execute executes the request
  */
-func (a *HealthApiService) HealthApiV1HealthGetExecute(r ApiHealthApiV1HealthGetRequest) (*_nethttp.Response, error) {
+func (a *HealthApiService) V1HealthGetExecute(r ApiV1HealthGetRequest) (*_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodGet
 		localVarPostBody     interface{}
@@ -66,7 +61,7 @@ func (a *HealthApiService) HealthApiV1HealthGetExecute(r ApiHealthApiV1HealthGet
 		localVarFileBytes    []byte
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "HealthApiService.HealthApiV1HealthGet")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "HealthApiService.V1HealthGet")
 	if err != nil {
 		return nil, GenericOpenAPIError{error: err.Error()}
 	}
@@ -94,9 +89,6 @@ func (a *HealthApiService) HealthApiV1HealthGetExecute(r ApiHealthApiV1HealthGet
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
-	if r.idempotencyKey != nil {
-		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
-	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return nil, err
@@ -119,8 +111,58 @@ func (a *HealthApiService) HealthApiV1HealthGetExecute(r ApiHealthApiV1HealthGet
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
+		if localVarHTTPResponse.StatusCode == 401 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 403 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 404 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 409 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
 		if localVarHTTPResponse.StatusCode == 422 {
 			var v HTTPValidationError
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v HttpErrorOut
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()

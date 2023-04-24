@@ -7,15 +7,15 @@ module Svix
     end
 
     def app_portal_access(app_id, app_portal_access_in, options = {})
-      return @api.get_app_portal_access_access_api_v1_auth_dashboard_access_app_id_post(app_id, app_portal_access_in, options)
+      return @api.v1_authentication_app_portal_access(app_id, app_portal_access_in, options)
     end
 
     def dashboard_access(app_id, options = {})
-      return @api.get_dashboard_access_api_v1_auth_dashboard_access_app_id_post(app_id, options)
+      return @api.v1_authentication_dashboard_access(app_id, options)
     end
 
     def logout(options = {})
-      return @api.logout_api_v1_auth_logout_post(options)
+      return @api.v1_authentication_logout(options)
     end
   end
 end

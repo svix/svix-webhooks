@@ -7,31 +7,31 @@ module Svix
         end
 
         def list(app_id, options = {})
-            return @api.list_integrations_api_v1_app_app_id_integration_get(app_id, options)
+            return @api.v1_integration_list(app_id, options)
         end
 
         def create(app_id, integ_in, options = {})
-            return @api.create_integration_api_v1_app_app_id_integration_post(app_id, integ_in, options)
+            return @api.v1_integration_create(app_id, integ_in, options)
         end
 
         def get(app_id, integ_id)
-            return @api.get_integration_api_v1_app_app_id_integration_integ_id_get(integ_id, app_id)
+            return @api.v1_integration_get(app_id, integ_id)
         end
 
         def update(app_id, integ_id, integ_update)
-            return @api.update_integration_api_v1_app_app_id_integration_integ_id_put(integ_id, app_id, integ_update)
+            return @api.v1_integration_update(app_id, integ_id, integ_update)
         end
 
         def delete(app_id, integ_id)
-            return @api.delete_integration_api_v1_app_app_id_integration_integ_id_delete(integ_id, app_id)
+            return @api.v1_integration_delete(app_id, integ_id)
         end
 
         def get_key(app_id, integ_id)
-            return @api.get_integration_key_api_v1_app_app_id_integration_integ_id_key_get(integ_id, app_id)
+            return @api.v1_integration_get_key(app_id, integ_id)
         end
 
         def rotate_key(app_id, integ_id, options = {})
-            return @api.rotate_integration_key_api_v1_app_app_id_integration_integ_id_key_rotate_post(integ_id, app_id, options)
+            return @api.v1_integration_rotate_key(app_id, integ_id, options)
         end
 
     end

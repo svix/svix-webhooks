@@ -15,7 +15,7 @@ import (
 	"time"
 )
 
-// EndpointMessageOut struct for EndpointMessageOut
+// EndpointMessageOut A model containing information on a given message plus additional fields on the last attempt for that message.
 type EndpointMessageOut struct {
 	// List of free-form identifiers that endpoints can filter by
 	Channels []string `json:"channels,omitempty"`
@@ -24,7 +24,7 @@ type EndpointMessageOut struct {
 	EventType string `json:"eventType"`
 	Id string `json:"id"`
 	NextAttempt NullableTime `json:"nextAttempt,omitempty"`
-	Payload map[string]interface{} `json:"payload"`
+	Payload interface{} `json:"payload"`
 	Status MessageStatus `json:"status"`
 	Timestamp time.Time `json:"timestamp"`
 }
@@ -33,7 +33,7 @@ type EndpointMessageOut struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEndpointMessageOut(eventType string, id string, payload map[string]interface{}, status MessageStatus, timestamp time.Time) *EndpointMessageOut {
+func NewEndpointMessageOut(eventType string, id string, payload interface{}, status MessageStatus, timestamp time.Time) *EndpointMessageOut {
 	this := EndpointMessageOut{}
 	this.EventType = eventType
 	this.Id = id
@@ -217,9 +217,10 @@ func (o *EndpointMessageOut) UnsetNextAttempt() {
 }
 
 // GetPayload returns the Payload field value
-func (o *EndpointMessageOut) GetPayload() map[string]interface{} {
+// If the value is explicit nil, the zero value for interface{} will be returned
+func (o *EndpointMessageOut) GetPayload() interface{} {
 	if o == nil {
-		var ret map[string]interface{}
+		var ret interface{}
 		return ret
 	}
 
@@ -228,15 +229,16 @@ func (o *EndpointMessageOut) GetPayload() map[string]interface{} {
 
 // GetPayloadOk returns a tuple with the Payload field value
 // and a boolean to check if the value has been set.
-func (o *EndpointMessageOut) GetPayloadOk() (*map[string]interface{}, bool) {
-	if o == nil  {
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *EndpointMessageOut) GetPayloadOk() (*interface{}, bool) {
+	if o == nil || o.Payload == nil {
 		return nil, false
 	}
 	return &o.Payload, true
 }
 
 // SetPayload sets field value
-func (o *EndpointMessageOut) SetPayload(v map[string]interface{}) {
+func (o *EndpointMessageOut) SetPayload(v interface{}) {
 	o.Payload = v
 }
 
@@ -305,7 +307,7 @@ func (o EndpointMessageOut) MarshalJSON() ([]byte, error) {
 	if o.NextAttempt.IsSet() {
 		toSerialize["nextAttempt"] = o.NextAttempt.Get()
 	}
-	if true {
+	if o.Payload != nil {
 		toSerialize["payload"] = o.Payload
 	}
 	if true {

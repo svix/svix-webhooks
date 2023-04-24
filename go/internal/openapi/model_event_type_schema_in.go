@@ -16,15 +16,14 @@ import (
 
 // EventTypeSchemaIn struct for EventTypeSchemaIn
 type EventTypeSchemaIn struct {
-	// The schema for an event type
-	Schema map[string]interface{} `json:"schema"`
+	Schema interface{} `json:"schema"`
 }
 
 // NewEventTypeSchemaIn instantiates a new EventTypeSchemaIn object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEventTypeSchemaIn(schema map[string]interface{}) *EventTypeSchemaIn {
+func NewEventTypeSchemaIn(schema interface{}) *EventTypeSchemaIn {
 	this := EventTypeSchemaIn{}
 	this.Schema = schema
 	return &this
@@ -39,9 +38,10 @@ func NewEventTypeSchemaInWithDefaults() *EventTypeSchemaIn {
 }
 
 // GetSchema returns the Schema field value
-func (o *EventTypeSchemaIn) GetSchema() map[string]interface{} {
+// If the value is explicit nil, the zero value for interface{} will be returned
+func (o *EventTypeSchemaIn) GetSchema() interface{} {
 	if o == nil {
-		var ret map[string]interface{}
+		var ret interface{}
 		return ret
 	}
 
@@ -50,21 +50,22 @@ func (o *EventTypeSchemaIn) GetSchema() map[string]interface{} {
 
 // GetSchemaOk returns a tuple with the Schema field value
 // and a boolean to check if the value has been set.
-func (o *EventTypeSchemaIn) GetSchemaOk() (*map[string]interface{}, bool) {
-	if o == nil  {
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *EventTypeSchemaIn) GetSchemaOk() (*interface{}, bool) {
+	if o == nil || o.Schema == nil {
 		return nil, false
 	}
 	return &o.Schema, true
 }
 
 // SetSchema sets field value
-func (o *EventTypeSchemaIn) SetSchema(v map[string]interface{}) {
+func (o *EventTypeSchemaIn) SetSchema(v interface{}) {
 	o.Schema = v
 }
 
 func (o EventTypeSchemaIn) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if true {
+	if o.Schema != nil {
 		toSerialize["schema"] = o.Schema
 	}
 	return json.Marshal(toSerialize)

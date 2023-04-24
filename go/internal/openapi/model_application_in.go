@@ -16,7 +16,7 @@ import (
 
 // ApplicationIn struct for ApplicationIn
 type ApplicationIn struct {
-	Metadata map[string]string `json:"metadata,omitempty"`
+	Metadata *map[string]string `json:"metadata,omitempty"`
 	Name string `json:"name"`
 	RateLimit NullableInt32 `json:"rateLimit,omitempty"`
 	// Optional unique identifier for the application
@@ -41,23 +41,22 @@ func NewApplicationInWithDefaults() *ApplicationIn {
 	return &this
 }
 
-// GetMetadata returns the Metadata field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetMetadata returns the Metadata field value if set, zero value otherwise.
 func (o *ApplicationIn) GetMetadata() map[string]string {
-	if o == nil  {
+	if o == nil || o.Metadata == nil {
 		var ret map[string]string
 		return ret
 	}
-	return o.Metadata
+	return *o.Metadata
 }
 
 // GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ApplicationIn) GetMetadataOk() (*map[string]string, bool) {
 	if o == nil || o.Metadata == nil {
 		return nil, false
 	}
-	return &o.Metadata, true
+	return o.Metadata, true
 }
 
 // HasMetadata returns a boolean if a field has been set.
@@ -71,7 +70,7 @@ func (o *ApplicationIn) HasMetadata() bool {
 
 // SetMetadata gets a reference to the given map[string]string and assigns it to the Metadata field.
 func (o *ApplicationIn) SetMetadata(v map[string]string) {
-	o.Metadata = v
+	o.Metadata = &v
 }
 
 // GetName returns the Name field value

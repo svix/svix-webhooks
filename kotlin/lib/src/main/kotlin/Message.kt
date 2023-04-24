@@ -18,15 +18,14 @@ class Message internal constructor(token: String, options: SvixOptions) {
 
     suspend fun list(appId: String, options: MessageListOptions = MessageListOptions()): ListResponseMessageOut {
         try {
-            return api.listMessagesApiV1AppAppIdMsgGet(
+            return api.v1MessageList(
                 appId,
-                options.iterator,
                 options.limit,
-                options.eventTypes,
+                options.iterator,
                 options.channel,
                 options.before,
                 options.after,
-                null
+                HashSet(options.eventTypes)
             )
         } catch (e: Exception) {
             throw ApiException.wrap(e)
@@ -35,7 +34,7 @@ class Message internal constructor(token: String, options: SvixOptions) {
 
     suspend fun create(appId: String, messageIn: MessageIn, options: PostOptions = PostOptions()): MessageOut {
         try {
-            return api.createMessageApiV1AppAppIdMsgPost(appId, messageIn, null, options.idempotencyKey)
+            return api.v1MessageCreate(appId, messageIn, null, options.idempotencyKey)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -43,7 +42,7 @@ class Message internal constructor(token: String, options: SvixOptions) {
 
     suspend fun get(msgId: String, appId: String): MessageOut {
         try {
-            return api.getMessageApiV1AppAppIdMsgMsgIdGet(msgId, appId, null)
+            return api.v1MessageGet(appId, msgId, null)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -51,7 +50,7 @@ class Message internal constructor(token: String, options: SvixOptions) {
 
     suspend fun expungeContent(msgId: String, appId: String) {
         try {
-            return api.expungeMessagePayloadApiV1AppAppIdMsgMsgIdContentDelete(msgId, appId, null)
+            return api.v1MessageExpungeContent(appId, msgId)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }

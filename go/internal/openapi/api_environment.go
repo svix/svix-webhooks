@@ -26,34 +26,34 @@ var (
 // EnvironmentApiService EnvironmentApi service
 type EnvironmentApiService service
 
-type ApiExportEnvironmentConfigurationApiV1EnvironmentExportPostRequest struct {
+type ApiV1EnvironmentExportRequest struct {
 	ctx _context.Context
 	ApiService *EnvironmentApiService
 	body *map[string]interface{}
 	idempotencyKey *string
 }
 
-func (r ApiExportEnvironmentConfigurationApiV1EnvironmentExportPostRequest) Body(body map[string]interface{}) ApiExportEnvironmentConfigurationApiV1EnvironmentExportPostRequest {
+func (r ApiV1EnvironmentExportRequest) Body(body map[string]interface{}) ApiV1EnvironmentExportRequest {
 	r.body = &body
 	return r
 }
-func (r ApiExportEnvironmentConfigurationApiV1EnvironmentExportPostRequest) IdempotencyKey(idempotencyKey string) ApiExportEnvironmentConfigurationApiV1EnvironmentExportPostRequest {
+func (r ApiV1EnvironmentExportRequest) IdempotencyKey(idempotencyKey string) ApiV1EnvironmentExportRequest {
 	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
-func (r ApiExportEnvironmentConfigurationApiV1EnvironmentExportPostRequest) Execute() (EnvironmentOut, *_nethttp.Response, error) {
-	return r.ApiService.ExportEnvironmentConfigurationApiV1EnvironmentExportPostExecute(r)
+func (r ApiV1EnvironmentExportRequest) Execute() (EnvironmentOut, *_nethttp.Response, error) {
+	return r.ApiService.V1EnvironmentExportExecute(r)
 }
 
 /*
- * ExportEnvironmentConfigurationApiV1EnvironmentExportPost Export Environment Configuration
+ * V1EnvironmentExport Export Environment Configuration
  * Download a JSON file containing all org-settings and event types
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @return ApiExportEnvironmentConfigurationApiV1EnvironmentExportPostRequest
+ * @return ApiV1EnvironmentExportRequest
  */
-func (a *EnvironmentApiService) ExportEnvironmentConfigurationApiV1EnvironmentExportPost(ctx _context.Context) ApiExportEnvironmentConfigurationApiV1EnvironmentExportPostRequest {
-	return ApiExportEnvironmentConfigurationApiV1EnvironmentExportPostRequest{
+func (a *EnvironmentApiService) V1EnvironmentExport(ctx _context.Context) ApiV1EnvironmentExportRequest {
+	return ApiV1EnvironmentExportRequest{
 		ApiService: a,
 		ctx: ctx,
 	}
@@ -63,7 +63,7 @@ func (a *EnvironmentApiService) ExportEnvironmentConfigurationApiV1EnvironmentEx
  * Execute executes the request
  * @return EnvironmentOut
  */
-func (a *EnvironmentApiService) ExportEnvironmentConfigurationApiV1EnvironmentExportPostExecute(r ApiExportEnvironmentConfigurationApiV1EnvironmentExportPostRequest) (EnvironmentOut, *_nethttp.Response, error) {
+func (a *EnvironmentApiService) V1EnvironmentExportExecute(r ApiV1EnvironmentExportRequest) (EnvironmentOut, *_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPost
 		localVarPostBody     interface{}
@@ -73,7 +73,7 @@ func (a *EnvironmentApiService) ExportEnvironmentConfigurationApiV1EnvironmentEx
 		localVarReturnValue  EnvironmentOut
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "EnvironmentApiService.ExportEnvironmentConfigurationApiV1EnvironmentExportPost")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "EnvironmentApiService.V1EnvironmentExport")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
@@ -205,35 +205,35 @@ func (a *EnvironmentApiService) ExportEnvironmentConfigurationApiV1EnvironmentEx
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiImportEnvironmentConfigurationApiV1EnvironmentImportPostRequest struct {
+type ApiV1EnvironmentImportRequest struct {
 	ctx _context.Context
 	ApiService *EnvironmentApiService
 	environmentIn *EnvironmentIn
 	idempotencyKey *string
 }
 
-func (r ApiImportEnvironmentConfigurationApiV1EnvironmentImportPostRequest) EnvironmentIn(environmentIn EnvironmentIn) ApiImportEnvironmentConfigurationApiV1EnvironmentImportPostRequest {
+func (r ApiV1EnvironmentImportRequest) EnvironmentIn(environmentIn EnvironmentIn) ApiV1EnvironmentImportRequest {
 	r.environmentIn = &environmentIn
 	return r
 }
-func (r ApiImportEnvironmentConfigurationApiV1EnvironmentImportPostRequest) IdempotencyKey(idempotencyKey string) ApiImportEnvironmentConfigurationApiV1EnvironmentImportPostRequest {
+func (r ApiV1EnvironmentImportRequest) IdempotencyKey(idempotencyKey string) ApiV1EnvironmentImportRequest {
 	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
-func (r ApiImportEnvironmentConfigurationApiV1EnvironmentImportPostRequest) Execute() (*_nethttp.Response, error) {
-	return r.ApiService.ImportEnvironmentConfigurationApiV1EnvironmentImportPostExecute(r)
+func (r ApiV1EnvironmentImportRequest) Execute() (*_nethttp.Response, error) {
+	return r.ApiService.V1EnvironmentImportExecute(r)
 }
 
 /*
- * ImportEnvironmentConfigurationApiV1EnvironmentImportPost Import Environment Configuration
+ * V1EnvironmentImport Import Environment Configuration
  * Import a configuration into the active organization.
 It doesn't delete anything, only adds/updates what was passed to it.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @return ApiImportEnvironmentConfigurationApiV1EnvironmentImportPostRequest
+ * @return ApiV1EnvironmentImportRequest
  */
-func (a *EnvironmentApiService) ImportEnvironmentConfigurationApiV1EnvironmentImportPost(ctx _context.Context) ApiImportEnvironmentConfigurationApiV1EnvironmentImportPostRequest {
-	return ApiImportEnvironmentConfigurationApiV1EnvironmentImportPostRequest{
+func (a *EnvironmentApiService) V1EnvironmentImport(ctx _context.Context) ApiV1EnvironmentImportRequest {
+	return ApiV1EnvironmentImportRequest{
 		ApiService: a,
 		ctx: ctx,
 	}
@@ -242,7 +242,7 @@ func (a *EnvironmentApiService) ImportEnvironmentConfigurationApiV1EnvironmentIm
 /*
  * Execute executes the request
  */
-func (a *EnvironmentApiService) ImportEnvironmentConfigurationApiV1EnvironmentImportPostExecute(r ApiImportEnvironmentConfigurationApiV1EnvironmentImportPostRequest) (*_nethttp.Response, error) {
+func (a *EnvironmentApiService) V1EnvironmentImportExecute(r ApiV1EnvironmentImportRequest) (*_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPost
 		localVarPostBody     interface{}
@@ -251,7 +251,7 @@ func (a *EnvironmentApiService) ImportEnvironmentConfigurationApiV1EnvironmentIm
 		localVarFileBytes    []byte
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "EnvironmentApiService.ImportEnvironmentConfigurationApiV1EnvironmentImportPost")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "EnvironmentApiService.V1EnvironmentImport")
 	if err != nil {
 		return nil, GenericOpenAPIError{error: err.Error()}
 	}

@@ -15,7 +15,7 @@ import (
 	"fmt"
 )
 
-// BorderRadiusEnum An enumeration.
+// BorderRadiusEnum the model 'BorderRadiusEnum'
 type BorderRadiusEnum string
 
 // List of BorderRadiusEnum

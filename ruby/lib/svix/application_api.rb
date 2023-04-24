@@ -7,25 +7,25 @@ module Svix
         end
 
         def list(options = {})
-            return @api.list_applications_api_v1_app_get(options)
+            return @api.v1_application_list(options)
         end
 
         def create(application_in, options = {})
-            return @api.create_application_api_v1_app_post(application_in, options)
+            return @api.v1_application_create(application_in, options)
         end
         def get_or_create(application_in, options = {})
-            return @api.create_application_api_v1_app_post(application_in, {**options, get_if_exists: true})
+            return @api.v1_application_create(application_in, {**options, get_if_exists: true})
         end
         def get(app_id)
-            return @api.get_application_api_v1_app_app_id_get(app_id)
+            return @api.v1_application_get(app_id)
         end
 
         def update(app_id, application_in)
-            return @api.update_application_api_v1_app_app_id_put(app_id, application_in)
+            return @api.v1_application_update(app_id, application_in)
         end
 
         def delete(app_id)
-            return @api.delete_application_api_v1_app_app_id_delete(app_id)
+            return @api.v1_application_delete(app_id)
         end
     end
 end

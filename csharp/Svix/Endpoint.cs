@@ -26,7 +26,7 @@ namespace Svix
         {
             try
             {
-                var lEndpoint = _endpointApi.CreateEndpointApiV1AppAppIdEndpointPost(
+                var lEndpoint = _endpointApi.V1EndpointCreate(
                     appId,
                     endpoint,
                     idempotencyKey);
@@ -49,7 +49,7 @@ namespace Svix
         {
             try
             {
-                var lEndpoint = await _endpointApi.CreateEndpointApiV1AppAppIdEndpointPostAsync(
+                var lEndpoint = await _endpointApi.V1EndpointCreateAsync(
                     appId,
                     endpoint,
                     idempotencyKey,
@@ -72,10 +72,9 @@ namespace Svix
         {
             try
             {
-                var lResponse = _endpointApi.DeleteEndpointApiV1AppAppIdEndpointEndpointIdDeleteWithHttpInfo(
-                    endpointId,
+                var lResponse = _endpointApi.V1EndpointDeleteWithHttpInfo(
                     appId,
-                    idempotencyKey);
+                    endpointId);
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
             }
@@ -95,10 +94,9 @@ namespace Svix
         {
             try
             {
-                var lResponse = await _endpointApi.DeleteEndpointApiV1AppAppIdEndpointEndpointIdDeleteWithHttpInfoAsync(
-                    endpointId,
+                var lResponse = await _endpointApi.V1EndpointDeleteWithHttpInfoAsync(
                     appId,
-                    idempotencyKey,
+                    endpointId,
                     cancellationToken);
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
@@ -118,10 +116,9 @@ namespace Svix
         {
             try
             {
-                var lEndpoint = _endpointApi.GetEndpointApiV1AppAppIdEndpointEndpointIdGet(
-                    endpointId,
+                var lEndpoint = _endpointApi.V1EndpointGet(
                     appId,
-                    idempotencyKey);
+                    endpointId);
 
                 return lEndpoint;
             }
@@ -141,10 +138,9 @@ namespace Svix
         {
             try
             {
-                var lEndpoint = await _endpointApi.GetEndpointApiV1AppAppIdEndpointEndpointIdGetAsync(
-                    endpointId,
+                var lEndpoint = await _endpointApi.V1EndpointGetAsync(
                     appId,
-                    idempotencyKey,
+                    endpointId,
                     cancellationToken);
 
                 return lEndpoint;
@@ -164,10 +160,9 @@ namespace Svix
         {
             try
             {
-                var lHeaders = _endpointApi.GetEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersGet(
-                    endpointId,
+                var lHeaders = _endpointApi.V1EndpointGetHeaders(
                     appId,
-                    idempotencyKey);
+                    endpointId);
 
                 return lHeaders;
             }
@@ -187,10 +182,9 @@ namespace Svix
         {
             try
             {
-                var lHeaders = await _endpointApi.GetEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersGetAsync(
-                    endpointId,
+                var lHeaders = await _endpointApi.V1EndpointGetHeadersAsync(
                     appId,
-                    idempotencyKey,
+                    endpointId,
                     cancellationToken);
 
                 return lHeaders;
@@ -210,10 +204,9 @@ namespace Svix
         {
             try
             {
-                var lSecret = _endpointApi.GetEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGet(
-                    endpointId,
+                var lSecret = _endpointApi.V1EndpointGetSecret(
                     appId,
-                    idempotencyKey);
+                    endpointId);
 
                 return lSecret?.Key;
             }
@@ -233,10 +226,9 @@ namespace Svix
         {
             try
             {
-                var lSecret = await _endpointApi.GetEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGetAsync(
-                    endpointId,
+                var lSecret = await _endpointApi.V1EndpointGetSecretAsync(
                     appId,
-                    idempotencyKey,
+                    endpointId,
                     cancellationToken);
 
                 return lSecret.Key;
@@ -256,12 +248,11 @@ namespace Svix
         {
             try
             {
-                var lEndpoints = _endpointApi.ListEndpointsApiV1AppAppIdEndpointGet(
+                var lEndpoints = _endpointApi.V1EndpointList(
                     appId,
-                    options?.Iterator,
                     options?.Limit,
-                    options?.Order,
-                    idempotencyKey);
+                    options?.Iterator,
+                    options?.Order);
 
                 return lEndpoints?.Data;
             }
@@ -281,12 +272,11 @@ namespace Svix
         {
             try
             {
-                var lEndpoints = await _endpointApi.ListEndpointsApiV1AppAppIdEndpointGetAsync(
+                var lEndpoints = await _endpointApi.V1EndpointListAsync(
                     appId,
-                    options?.Iterator,
                     options?.Limit,
+                    options?.Iterator,
                     options?.Order,
-                    idempotencyKey,
                     cancellationToken);
 
                 return lEndpoints?.Data;
@@ -306,11 +296,10 @@ namespace Svix
         {
             try
             {
-                var lResponse = _endpointApi.PatchEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPatchWithHttpInfo(
+                var lResponse = _endpointApi.V1EndpointPatchHeadersWithHttpInfo(
                     appId,
                     endpointId,
-                    headers,
-                    idempotencyKey);
+                    headers);
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
             }
@@ -330,11 +319,10 @@ namespace Svix
         {
             try
             {
-                var lResponse = await _endpointApi.PatchEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPatchWithHttpInfoAsync(
+                var lResponse = await _endpointApi.V1EndpointPatchHeadersWithHttpInfoAsync(
                     appId,
                     endpointId,
                     headers,
-                    idempotencyKey,
                     cancellationToken);
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
@@ -354,7 +342,7 @@ namespace Svix
         {
             try
             {
-                var lResponse = _endpointApi.RecoverFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPostWithHttpInfo(
+                var lResponse = _endpointApi.V1EndpointRecoverWithHttpInfo(
                     appId,
                     endpointId,
                     recover,
@@ -378,7 +366,7 @@ namespace Svix
         {
             try
             {
-                var lResponse = await _endpointApi.RecoverFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPostWithHttpInfoAsync(
+                var lResponse = await _endpointApi.V1EndpointRecoverWithHttpInfoAsync(
                     appId,
                     endpointId,
                     recover,
@@ -402,9 +390,9 @@ namespace Svix
         {
             try
             {
-                var lResponse = _endpointApi.RotateEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretRotatePostWithHttpInfo(
-                    endpointId,
+                var lResponse = _endpointApi.V1EndpointRotateSecretWithHttpInfo(
                     appId,
+                    endpointId,
                     secret,
                     idempotencyKey);
 
@@ -426,7 +414,7 @@ namespace Svix
         {
             try
             {
-                var lResponse = await _endpointApi.RotateEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretRotatePostWithHttpInfoAsync(
+                var lResponse = await _endpointApi.V1EndpointRotateSecretWithHttpInfoAsync(
                     endpointId,
                     appId,
                     secret,
@@ -449,11 +437,10 @@ namespace Svix
         {
             try
             {
-                var lEndpoint = _endpointApi.UpdateEndpointApiV1AppAppIdEndpointEndpointIdPut(
-                    endpointId,
+                var lEndpoint = _endpointApi.V1EndpointUpdate(
                     appId,
-                    endpoint,
-                    idempotencyKey);
+                    endpointId,
+                    endpoint);
 
                 return lEndpoint;
             }
@@ -473,11 +460,10 @@ namespace Svix
         {
             try
             {
-                var lEndpoint = await _endpointApi.UpdateEndpointApiV1AppAppIdEndpointEndpointIdPutAsync(
-                    endpointId,
+                var lEndpoint = await _endpointApi.V1EndpointUpdateAsync(
                     appId,
+                    endpointId,
                     endpoint,
-                    idempotencyKey,
                     cancellationToken);
 
                 return lEndpoint;
@@ -497,11 +483,10 @@ namespace Svix
         {
             try
             {
-                var lResponse = _endpointApi.UpdateEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPutWithHttpInfo(
+                var lResponse = _endpointApi.V1EndpointUpdateHeadersWithHttpInfo(
                     appId,
                     endpointId,
-                    headers,
-                    idempotencyKey);
+                    headers);
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
             }
@@ -521,11 +506,10 @@ namespace Svix
         {
             try
             {
-                var lResponse = await _endpointApi.UpdateEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPutWithHttpInfoAsync(
+                var lResponse = await _endpointApi.V1EndpointUpdateHeadersWithHttpInfoAsync(
                     appId,
                     endpointId,
                     headers,
-                    idempotencyKey,
                     cancellationToken);
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
@@ -545,10 +529,9 @@ namespace Svix
         {
             try
             {
-                var lStats = _endpointApi.GetEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGet(
-                    endpointId,
+                var lStats = _endpointApi.V1EndpointGetStats(
                     appId,
-                    idempotencyKey);
+                    endpointId);
 
                 return lStats;
             }
@@ -568,10 +551,11 @@ namespace Svix
         {
             try
             {
-                var lStats = await _endpointApi.GetEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGetAsync(
-                    endpointId,
+                var lStats = await _endpointApi.V1EndpointGetStatsAsync(
                     appId,
-                    idempotencyKey,
+                    endpointId,
+                    null,
+                    null,
                     cancellationToken);
 
                 return lStats;
@@ -592,7 +576,7 @@ namespace Svix
         {
             try
             {
-                var response = _endpointApi.ReplayMissingWebhooksApiV1AppAppIdEndpointEndpointIdReplayMissingPostWithHttpInfo(
+                var response = _endpointApi.V1EndpointReplayWithHttpInfo(
                     appId,
                     endpointId,
                     replayIn,
@@ -616,7 +600,7 @@ namespace Svix
         {
             try
             {
-                var response = await _endpointApi.ReplayMissingWebhooksApiV1AppAppIdEndpointEndpointIdReplayMissingPostWithHttpInfoAsync(
+                var response = await _endpointApi.V1EndpointReplayWithHttpInfoAsync(
                     appId,
                     endpointId,
                     replayIn,
@@ -640,10 +624,9 @@ namespace Svix
         {
             try
             {
-                var lTransformation = _endpointApi.GetEndpointTransformationApiV1AppAppIdEndpointEndpointIdTransformationGet(
+                var lTransformation = _endpointApi.V1EndpointTransformationGet(
                     appId,
-                    endpointId,
-                    idempotencyKey);
+                    endpointId);
 
                 return lTransformation;
             }
@@ -662,10 +645,9 @@ namespace Svix
         {
             try
             {
-                var lTransformation = await _endpointApi.GetEndpointTransformationApiV1AppAppIdEndpointEndpointIdTransformationGetAsync(
+                var lTransformation = await _endpointApi.V1EndpointTransformationGetAsync(
                     appId,
                     endpointId,
-                    idempotencyKey,
                     cancellationToken);
 
                 return lTransformation;
@@ -685,11 +667,10 @@ namespace Svix
         {
             try
             {
-                var response = _endpointApi.SetEndpointTransformationApiV1AppAppIdEndpointEndpointIdTransformationPatchWithHttpInfo(
+                var response = _endpointApi.V1EndpointTransformationPartialUpdateWithHttpInfo(
                     appId,
                     endpointId,
-                    endpointTransformationIn,
-                    idempotencyKey);
+                    endpointTransformationIn);
 
                 return response.StatusCode == HttpStatusCode.NoContent;
             }
@@ -708,11 +689,10 @@ namespace Svix
         {
             try
             {
-                var response = await _endpointApi.SetEndpointTransformationApiV1AppAppIdEndpointEndpointIdTransformationPatchWithHttpInfoAsync(
+                var response = await _endpointApi.V1EndpointTransformationPartialUpdateWithHttpInfoAsync(
                     appId,
                     endpointId,
                     endpointTransformationIn,
-                    idempotencyKey,
                     cancellationToken);
 
                 return response.StatusCode == HttpStatusCode.NoContent;
@@ -732,7 +712,7 @@ namespace Svix
         {
             try
             {
-                var response = _endpointApi.SendEventTypeExampleMessageApiV1AppAppIdEndpointEndpointIdSendExamplePost(
+                var response = _endpointApi.V1EndpointSendExample(
                     appId,
                     endpointId,
                     eventExampleIn,
@@ -755,7 +735,7 @@ namespace Svix
         {
             try
             {
-                var response = await _endpointApi.SendEventTypeExampleMessageApiV1AppAppIdEndpointEndpointIdSendExamplePostAsync(
+                var response = await _endpointApi.V1EndpointSendExampleAsync(
                     appId,
                     endpointId,
                     eventExampleIn,

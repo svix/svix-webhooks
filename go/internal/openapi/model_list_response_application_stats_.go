@@ -19,6 +19,7 @@ type ListResponseApplicationStats struct {
 	Data []ApplicationStats `json:"data"`
 	Done bool `json:"done"`
 	Iterator NullableString `json:"iterator,omitempty"`
+	PrevIterator NullableString `json:"prevIterator,omitempty"`
 }
 
 // NewListResponseApplicationStats instantiates a new ListResponseApplicationStats object
@@ -130,6 +131,48 @@ func (o *ListResponseApplicationStats) UnsetIterator() {
 	o.Iterator.Unset()
 }
 
+// GetPrevIterator returns the PrevIterator field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *ListResponseApplicationStats) GetPrevIterator() string {
+	if o == nil || o.PrevIterator.Get() == nil {
+		var ret string
+		return ret
+	}
+	return *o.PrevIterator.Get()
+}
+
+// GetPrevIteratorOk returns a tuple with the PrevIterator field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ListResponseApplicationStats) GetPrevIteratorOk() (*string, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return o.PrevIterator.Get(), o.PrevIterator.IsSet()
+}
+
+// HasPrevIterator returns a boolean if a field has been set.
+func (o *ListResponseApplicationStats) HasPrevIterator() bool {
+	if o != nil && o.PrevIterator.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetPrevIterator gets a reference to the given NullableString and assigns it to the PrevIterator field.
+func (o *ListResponseApplicationStats) SetPrevIterator(v string) {
+	o.PrevIterator.Set(&v)
+}
+// SetPrevIteratorNil sets the value for PrevIterator to be an explicit nil
+func (o *ListResponseApplicationStats) SetPrevIteratorNil() {
+	o.PrevIterator.Set(nil)
+}
+
+// UnsetPrevIterator ensures that no value is present for PrevIterator, not even an explicit nil
+func (o *ListResponseApplicationStats) UnsetPrevIterator() {
+	o.PrevIterator.Unset()
+}
+
 func (o ListResponseApplicationStats) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
@@ -140,6 +183,9 @@ func (o ListResponseApplicationStats) MarshalJSON() ([]byte, error) {
 	}
 	if o.Iterator.IsSet() {
 		toSerialize["iterator"] = o.Iterator.Get()
+	}
+	if o.PrevIterator.IsSet() {
+		toSerialize["prevIterator"] = o.PrevIterator.Get()
 	}
 	return json.Marshal(toSerialize)
 }

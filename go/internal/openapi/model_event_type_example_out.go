@@ -16,14 +16,14 @@ import (
 
 // EventTypeExampleOut struct for EventTypeExampleOut
 type EventTypeExampleOut struct {
-	Example map[string]interface{} `json:"example"`
+	Example map[string]map[string]interface{} `json:"example"`
 }
 
 // NewEventTypeExampleOut instantiates a new EventTypeExampleOut object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEventTypeExampleOut(example map[string]interface{}) *EventTypeExampleOut {
+func NewEventTypeExampleOut(example map[string]map[string]interface{}) *EventTypeExampleOut {
 	this := EventTypeExampleOut{}
 	this.Example = example
 	return &this
@@ -38,9 +38,9 @@ func NewEventTypeExampleOutWithDefaults() *EventTypeExampleOut {
 }
 
 // GetExample returns the Example field value
-func (o *EventTypeExampleOut) GetExample() map[string]interface{} {
+func (o *EventTypeExampleOut) GetExample() map[string]map[string]interface{} {
 	if o == nil {
-		var ret map[string]interface{}
+		var ret map[string]map[string]interface{}
 		return ret
 	}
 
@@ -49,7 +49,7 @@ func (o *EventTypeExampleOut) GetExample() map[string]interface{} {
 
 // GetExampleOk returns a tuple with the Example field value
 // and a boolean to check if the value has been set.
-func (o *EventTypeExampleOut) GetExampleOk() (*map[string]interface{}, bool) {
+func (o *EventTypeExampleOut) GetExampleOk() (*map[string]map[string]interface{}, bool) {
 	if o == nil  {
 		return nil, false
 	}
@@ -57,7 +57,7 @@ func (o *EventTypeExampleOut) GetExampleOk() (*map[string]interface{}, bool) {
 }
 
 // SetExample sets field value
-func (o *EventTypeExampleOut) SetExample(v map[string]interface{}) {
+func (o *EventTypeExampleOut) SetExample(v map[string]map[string]interface{}) {
 	o.Example = v
 }
 

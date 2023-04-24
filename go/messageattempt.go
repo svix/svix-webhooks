@@ -42,7 +42,7 @@ func (m *MessageAttempt) List(ctx context.Context, appId string, msgId string, o
 }
 
 func (m *MessageAttempt) ListByMsg(ctx context.Context, appId string, msgId string, options *MessageAttemptListOptions) (*ListResponseMessageAttemptOut, error) {
-	req := m.api.MessageAttemptApi.ListAttemptsByMsgApiV1AppAppIdAttemptMsgMsgIdGet(ctx, appId, msgId)
+	req := m.api.MessageAttemptApi.V1MessageAttemptListByMsg(ctx, appId, msgId)
 	if options != nil {
 		if options.Iterator != nil {
 			req = req.Iterator(*options.Iterator)
@@ -78,7 +78,7 @@ func (m *MessageAttempt) ListByMsg(ctx context.Context, appId string, msgId stri
 }
 
 func (m *MessageAttempt) ListByEndpoint(ctx context.Context, appId string, endpointId string, options *MessageAttemptListOptions) (*ListResponseMessageAttemptOut, error) {
-	req := m.api.MessageAttemptApi.ListAttemptsByEndpointApiV1AppAppIdAttemptEndpointEndpointIdGet(ctx, appId, endpointId)
+	req := m.api.MessageAttemptApi.V1MessageAttemptListByEndpoint(ctx, appId, endpointId)
 	if options != nil {
 		if options.Iterator != nil {
 			req = req.Iterator(*options.Iterator)
@@ -114,7 +114,7 @@ func (m *MessageAttempt) ListByEndpoint(ctx context.Context, appId string, endpo
 }
 
 func (m *MessageAttempt) Get(ctx context.Context, appId string, msgId string, attemptID string) (*MessageAttemptOut, error) {
-	req := m.api.MessageAttemptApi.GetAttemptApiV1AppAppIdMsgMsgIdAttemptAttemptIdGet(ctx, attemptID, msgId, appId)
+	req := m.api.MessageAttemptApi.V1MessageAttemptGet(ctx, appId, msgId, attemptID)
 	out, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
@@ -128,7 +128,7 @@ func (m *MessageAttempt) Resend(ctx context.Context, appId string, msgId string,
 }
 
 func (m *MessageAttempt) ResendWithOptions(ctx context.Context, appId string, msgId string, endpointId string, options *PostOptions) error {
-	req := m.api.MessageAttemptApi.ResendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPost(ctx, endpointId, msgId, appId)
+	req := m.api.MessageAttemptApi.V1MessageAttemptResend(ctx, appId, msgId, endpointId)
 	if options != nil {
 		if options.IdempotencyKey != nil {
 			req = req.IdempotencyKey(*options.IdempotencyKey)
@@ -139,7 +139,7 @@ func (m *MessageAttempt) ResendWithOptions(ctx context.Context, appId string, ms
 }
 
 func (m *MessageAttempt) ListAttemptedMessages(ctx context.Context, appId string, endpointId string, options *MessageAttemptListOptions) (*ListResponseEndpointMessageOut, error) {
-	req := m.api.MessageAttemptApi.ListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGet(ctx, endpointId, appId)
+	req := m.api.MessageAttemptApi.V1MessageAttemptListAttemptedMessages(ctx, appId, endpointId)
 	if options != nil {
 		if options.Iterator != nil {
 			req = req.Iterator(*options.Iterator)
@@ -169,7 +169,7 @@ func (m *MessageAttempt) ListAttemptedMessages(ctx context.Context, appId string
 }
 
 func (m *MessageAttempt) ListAttemptedDestinations(ctx context.Context, appId string, msgId string, options *MessageAttemptListOptions) (*ListResponseMessageEndpointOut, error) {
-	req := m.api.MessageAttemptApi.ListAttemptedDestinationsApiV1AppAppIdMsgMsgIdEndpointGet(ctx, msgId, appId)
+	req := m.api.MessageAttemptApi.V1MessageAttemptListAttemptedDestinations(ctx, appId, msgId)
 	if options != nil {
 		if options.Iterator != nil {
 			req = req.Iterator(*options.Iterator)
@@ -187,7 +187,7 @@ func (m *MessageAttempt) ListAttemptedDestinations(ctx context.Context, appId st
 }
 
 func (m *MessageAttempt) ListAttemptsForEndpoint(ctx context.Context, appId string, msgId string, endpointId string, options *MessageAttemptListOptions) (*ListResponseMessageAttemptEndpointOut, error) {
-	req := m.api.MessageAttemptApi.ListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGet(ctx, msgId, appId, endpointId)
+	req := m.api.MessageAttemptApi.V1MessageAttemptListByEndpointDeprecated(ctx, appId, msgId, endpointId)
 	if options != nil {
 		if options.Iterator != nil {
 			req = req.Iterator(*options.Iterator)
@@ -220,7 +220,7 @@ func (m *MessageAttempt) ListAttemptsForEndpoint(ctx context.Context, appId stri
 }
 
 func (m *MessageAttempt) ExpungeContent(ctx context.Context, appId string, msgId string, attemptId string) error {
-	req := m.api.MessageAttemptApi.ExpungeAttemptContentApiV1AppAppIdMsgMsgIdAttemptAttemptIdContentDelete(ctx, attemptId, msgId, appId)
+	req := m.api.MessageAttemptApi.V1MessageAttemptExpungeContent(ctx, appId, msgId, attemptId)
 	res, err := req.Execute()
 	return wrapError(err, res)
 }

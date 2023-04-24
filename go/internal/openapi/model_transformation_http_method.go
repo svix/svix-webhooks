@@ -15,18 +15,18 @@ import (
 	"fmt"
 )
 
-// TransformationHttpMethod An enumeration.
+// TransformationHttpMethod the model 'TransformationHttpMethod'
 type TransformationHttpMethod string
 
 // List of TransformationHttpMethod
 const (
-	TRANSFORMATIONHTTPMETHOD_PUT TransformationHttpMethod = "PUT"
 	TRANSFORMATIONHTTPMETHOD_POST TransformationHttpMethod = "POST"
+	TRANSFORMATIONHTTPMETHOD_PUT TransformationHttpMethod = "PUT"
 )
 
 var allowedTransformationHttpMethodEnumValues = []TransformationHttpMethod{
-	"PUT",
 	"POST",
+	"PUT",
 }
 
 func (v *TransformationHttpMethod) UnmarshalJSON(src []byte) error {

@@ -17,8 +17,8 @@ import (
 	_nethttp "net/http"
 	_neturl "net/url"
 	"strings"
-	"reflect"
 	"time"
+	"reflect"
 )
 
 // Linger please
@@ -29,7 +29,7 @@ var (
 // MessageApiService MessageApi service
 type MessageApiService service
 
-type ApiCreateMessageApiV1AppAppIdMsgPostRequest struct {
+type ApiV1MessageCreateRequest struct {
 	ctx _context.Context
 	ApiService *MessageApiService
 	appId string
@@ -38,25 +38,25 @@ type ApiCreateMessageApiV1AppAppIdMsgPostRequest struct {
 	idempotencyKey *string
 }
 
-func (r ApiCreateMessageApiV1AppAppIdMsgPostRequest) MessageIn(messageIn MessageIn) ApiCreateMessageApiV1AppAppIdMsgPostRequest {
+func (r ApiV1MessageCreateRequest) MessageIn(messageIn MessageIn) ApiV1MessageCreateRequest {
 	r.messageIn = &messageIn
 	return r
 }
-func (r ApiCreateMessageApiV1AppAppIdMsgPostRequest) WithContent(withContent bool) ApiCreateMessageApiV1AppAppIdMsgPostRequest {
+func (r ApiV1MessageCreateRequest) WithContent(withContent bool) ApiV1MessageCreateRequest {
 	r.withContent = &withContent
 	return r
 }
-func (r ApiCreateMessageApiV1AppAppIdMsgPostRequest) IdempotencyKey(idempotencyKey string) ApiCreateMessageApiV1AppAppIdMsgPostRequest {
+func (r ApiV1MessageCreateRequest) IdempotencyKey(idempotencyKey string) ApiV1MessageCreateRequest {
 	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
-func (r ApiCreateMessageApiV1AppAppIdMsgPostRequest) Execute() (MessageOut, *_nethttp.Response, error) {
-	return r.ApiService.CreateMessageApiV1AppAppIdMsgPostExecute(r)
+func (r ApiV1MessageCreateRequest) Execute() (MessageOut, *_nethttp.Response, error) {
+	return r.ApiService.V1MessageCreateExecute(r)
 }
 
 /*
- * CreateMessageApiV1AppAppIdMsgPost Create Message
+ * V1MessageCreate Create Message
  * Creates a new message and dispatches it to all of the application's endpoints.
 
 The `eventId` is an optional custom unique ID. It's verified to be unique only up to a day, after that no verification will be made.
@@ -66,14 +66,12 @@ The `eventType` indicates the type and schema of the event. All messages of a ce
 Messages can also have `channels`, which similar to event types let endpoints filter by them. Unlike event types, messages can have multiple channels, and channels don't imply a specific message content or schema.
 
 The `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to ~350kb, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb.
-
-The optional `application` property will be used to create an application if the application referenced in the path does not exist. If it does then this property is ignored.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param appId
- * @return ApiCreateMessageApiV1AppAppIdMsgPostRequest
+ * @return ApiV1MessageCreateRequest
  */
-func (a *MessageApiService) CreateMessageApiV1AppAppIdMsgPost(ctx _context.Context, appId string) ApiCreateMessageApiV1AppAppIdMsgPostRequest {
-	return ApiCreateMessageApiV1AppAppIdMsgPostRequest{
+func (a *MessageApiService) V1MessageCreate(ctx _context.Context, appId string) ApiV1MessageCreateRequest {
+	return ApiV1MessageCreateRequest{
 		ApiService: a,
 		ctx: ctx,
 		appId: appId,
@@ -84,7 +82,7 @@ func (a *MessageApiService) CreateMessageApiV1AppAppIdMsgPost(ctx _context.Conte
  * Execute executes the request
  * @return MessageOut
  */
-func (a *MessageApiService) CreateMessageApiV1AppAppIdMsgPostExecute(r ApiCreateMessageApiV1AppAppIdMsgPostRequest) (MessageOut, *_nethttp.Response, error) {
+func (a *MessageApiService) V1MessageCreateExecute(r ApiV1MessageCreateRequest) (MessageOut, *_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPost
 		localVarPostBody     interface{}
@@ -94,7 +92,7 @@ func (a *MessageApiService) CreateMessageApiV1AppAppIdMsgPostExecute(r ApiCreate
 		localVarReturnValue  MessageOut
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MessageApiService.CreateMessageApiV1AppAppIdMsgPost")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MessageApiService.V1MessageCreate")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
@@ -202,16 +200,6 @@ func (a *MessageApiService) CreateMessageApiV1AppAppIdMsgPostExecute(r ApiCreate
 			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-		if localVarHTTPResponse.StatusCode == 413 {
-			var v HttpErrorOut
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
 		if localVarHTTPResponse.StatusCode == 422 {
 			var v HTTPValidationError
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -246,46 +234,41 @@ func (a *MessageApiService) CreateMessageApiV1AppAppIdMsgPostExecute(r ApiCreate
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiExpungeMessagePayloadApiV1AppAppIdMsgMsgIdContentDeleteRequest struct {
+type ApiV1MessageExpungeContentRequest struct {
 	ctx _context.Context
 	ApiService *MessageApiService
-	msgId string
 	appId string
-	idempotencyKey *string
+	msgId string
 }
 
-func (r ApiExpungeMessagePayloadApiV1AppAppIdMsgMsgIdContentDeleteRequest) IdempotencyKey(idempotencyKey string) ApiExpungeMessagePayloadApiV1AppAppIdMsgMsgIdContentDeleteRequest {
-	r.idempotencyKey = &idempotencyKey
-	return r
-}
 
-func (r ApiExpungeMessagePayloadApiV1AppAppIdMsgMsgIdContentDeleteRequest) Execute() (*_nethttp.Response, error) {
-	return r.ApiService.ExpungeMessagePayloadApiV1AppAppIdMsgMsgIdContentDeleteExecute(r)
+func (r ApiV1MessageExpungeContentRequest) Execute() (*_nethttp.Response, error) {
+	return r.ApiService.V1MessageExpungeContentExecute(r)
 }
 
 /*
- * ExpungeMessagePayloadApiV1AppAppIdMsgMsgIdContentDelete Delete message payload
+ * V1MessageExpungeContent Expunge Message Content
  * Delete the given message's payload. Useful in cases when a message was accidentally sent with sensitive content.
 
 The message can't be replayed or resent once its payload has been deleted or expired.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param msgId
  * @param appId
- * @return ApiExpungeMessagePayloadApiV1AppAppIdMsgMsgIdContentDeleteRequest
+ * @param msgId
+ * @return ApiV1MessageExpungeContentRequest
  */
-func (a *MessageApiService) ExpungeMessagePayloadApiV1AppAppIdMsgMsgIdContentDelete(ctx _context.Context, msgId string, appId string) ApiExpungeMessagePayloadApiV1AppAppIdMsgMsgIdContentDeleteRequest {
-	return ApiExpungeMessagePayloadApiV1AppAppIdMsgMsgIdContentDeleteRequest{
+func (a *MessageApiService) V1MessageExpungeContent(ctx _context.Context, appId string, msgId string) ApiV1MessageExpungeContentRequest {
+	return ApiV1MessageExpungeContentRequest{
 		ApiService: a,
 		ctx: ctx,
-		msgId: msgId,
 		appId: appId,
+		msgId: msgId,
 	}
 }
 
 /*
  * Execute executes the request
  */
-func (a *MessageApiService) ExpungeMessagePayloadApiV1AppAppIdMsgMsgIdContentDeleteExecute(r ApiExpungeMessagePayloadApiV1AppAppIdMsgMsgIdContentDeleteRequest) (*_nethttp.Response, error) {
+func (a *MessageApiService) V1MessageExpungeContentExecute(r ApiV1MessageExpungeContentRequest) (*_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodDelete
 		localVarPostBody     interface{}
@@ -294,29 +277,29 @@ func (a *MessageApiService) ExpungeMessagePayloadApiV1AppAppIdMsgMsgIdContentDel
 		localVarFileBytes    []byte
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MessageApiService.ExpungeMessagePayloadApiV1AppAppIdMsgMsgIdContentDelete")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MessageApiService.V1MessageExpungeContent")
 	if err != nil {
 		return nil, GenericOpenAPIError{error: err.Error()}
 	}
 
 	localVarPath := localBasePath + "/api/v1/app/{app_id}/msg/{msg_id}/content/"
-	localVarPath = strings.Replace(localVarPath, "{"+"msg_id"+"}", _neturl.PathEscape(parameterToString(r.msgId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"msg_id"+"}", _neturl.PathEscape(parameterToString(r.msgId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
-	if strlen(r.msgId) < 1 {
-		return nil, reportError("msgId must have at least 1 elements")
-	}
-	if strlen(r.msgId) > 256 {
-		return nil, reportError("msgId must have less than 256 elements")
-	}
 	if strlen(r.appId) < 1 {
 		return nil, reportError("appId must have at least 1 elements")
 	}
 	if strlen(r.appId) > 256 {
 		return nil, reportError("appId must have less than 256 elements")
+	}
+	if strlen(r.msgId) < 1 {
+		return nil, reportError("msgId must have at least 1 elements")
+	}
+	if strlen(r.msgId) > 256 {
+		return nil, reportError("msgId must have less than 256 elements")
 	}
 
 	// to determine the Content-Type header
@@ -335,9 +318,6 @@ func (a *MessageApiService) ExpungeMessagePayloadApiV1AppAppIdMsgMsgIdContentDel
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	if r.idempotencyKey != nil {
-		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
@@ -426,37 +406,37 @@ func (a *MessageApiService) ExpungeMessagePayloadApiV1AppAppIdMsgMsgIdContentDel
 	return localVarHTTPResponse, nil
 }
 
-type ApiGetMessageApiV1AppAppIdMsgMsgIdGetRequest struct {
+type ApiV1MessageGetRequest struct {
 	ctx _context.Context
 	ApiService *MessageApiService
-	msgId string
 	appId string
-	idempotencyKey *string
+	msgId string
+	withContent *bool
 }
 
-func (r ApiGetMessageApiV1AppAppIdMsgMsgIdGetRequest) IdempotencyKey(idempotencyKey string) ApiGetMessageApiV1AppAppIdMsgMsgIdGetRequest {
-	r.idempotencyKey = &idempotencyKey
+func (r ApiV1MessageGetRequest) WithContent(withContent bool) ApiV1MessageGetRequest {
+	r.withContent = &withContent
 	return r
 }
 
-func (r ApiGetMessageApiV1AppAppIdMsgMsgIdGetRequest) Execute() (MessageOut, *_nethttp.Response, error) {
-	return r.ApiService.GetMessageApiV1AppAppIdMsgMsgIdGetExecute(r)
+func (r ApiV1MessageGetRequest) Execute() (MessageOut, *_nethttp.Response, error) {
+	return r.ApiService.V1MessageGetExecute(r)
 }
 
 /*
- * GetMessageApiV1AppAppIdMsgMsgIdGet Get Message
+ * V1MessageGet Get Message
  * Get a message by its ID or eventID.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param msgId
  * @param appId
- * @return ApiGetMessageApiV1AppAppIdMsgMsgIdGetRequest
+ * @param msgId
+ * @return ApiV1MessageGetRequest
  */
-func (a *MessageApiService) GetMessageApiV1AppAppIdMsgMsgIdGet(ctx _context.Context, msgId string, appId string) ApiGetMessageApiV1AppAppIdMsgMsgIdGetRequest {
-	return ApiGetMessageApiV1AppAppIdMsgMsgIdGetRequest{
+func (a *MessageApiService) V1MessageGet(ctx _context.Context, appId string, msgId string) ApiV1MessageGetRequest {
+	return ApiV1MessageGetRequest{
 		ApiService: a,
 		ctx: ctx,
-		msgId: msgId,
 		appId: appId,
+		msgId: msgId,
 	}
 }
 
@@ -464,7 +444,7 @@ func (a *MessageApiService) GetMessageApiV1AppAppIdMsgMsgIdGet(ctx _context.Cont
  * Execute executes the request
  * @return MessageOut
  */
-func (a *MessageApiService) GetMessageApiV1AppAppIdMsgMsgIdGetExecute(r ApiGetMessageApiV1AppAppIdMsgMsgIdGetRequest) (MessageOut, *_nethttp.Response, error) {
+func (a *MessageApiService) V1MessageGetExecute(r ApiV1MessageGetRequest) (MessageOut, *_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodGet
 		localVarPostBody     interface{}
@@ -474,31 +454,34 @@ func (a *MessageApiService) GetMessageApiV1AppAppIdMsgMsgIdGetExecute(r ApiGetMe
 		localVarReturnValue  MessageOut
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MessageApiService.GetMessageApiV1AppAppIdMsgMsgIdGet")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MessageApiService.V1MessageGet")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
 	localVarPath := localBasePath + "/api/v1/app/{app_id}/msg/{msg_id}/"
-	localVarPath = strings.Replace(localVarPath, "{"+"msg_id"+"}", _neturl.PathEscape(parameterToString(r.msgId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"msg_id"+"}", _neturl.PathEscape(parameterToString(r.msgId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
-	if strlen(r.msgId) < 1 {
-		return localVarReturnValue, nil, reportError("msgId must have at least 1 elements")
-	}
-	if strlen(r.msgId) > 256 {
-		return localVarReturnValue, nil, reportError("msgId must have less than 256 elements")
-	}
 	if strlen(r.appId) < 1 {
 		return localVarReturnValue, nil, reportError("appId must have at least 1 elements")
 	}
 	if strlen(r.appId) > 256 {
 		return localVarReturnValue, nil, reportError("appId must have less than 256 elements")
 	}
+	if strlen(r.msgId) < 1 {
+		return localVarReturnValue, nil, reportError("msgId must have at least 1 elements")
+	}
+	if strlen(r.msgId) > 256 {
+		return localVarReturnValue, nil, reportError("msgId must have less than 256 elements")
+	}
 
+	if r.withContent != nil {
+		localVarQueryParams.Add("with_content", parameterToString(*r.withContent, ""))
+	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -515,9 +498,6 @@ func (a *MessageApiService) GetMessageApiV1AppAppIdMsgMsgIdGetExecute(r ApiGetMe
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	if r.idempotencyKey != nil {
-		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
@@ -615,54 +595,49 @@ func (a *MessageApiService) GetMessageApiV1AppAppIdMsgMsgIdGetExecute(r ApiGetMe
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiListMessagesApiV1AppAppIdMsgGetRequest struct {
+type ApiV1MessageListRequest struct {
 	ctx _context.Context
 	ApiService *MessageApiService
 	appId string
-	iterator *string
 	limit *int32
-	eventTypes *[]string
+	iterator *string
 	channel *string
 	before *time.Time
 	after *time.Time
-	idempotencyKey *string
+	eventTypes *[]string
 }
 
-func (r ApiListMessagesApiV1AppAppIdMsgGetRequest) Iterator(iterator string) ApiListMessagesApiV1AppAppIdMsgGetRequest {
-	r.iterator = &iterator
-	return r
-}
-func (r ApiListMessagesApiV1AppAppIdMsgGetRequest) Limit(limit int32) ApiListMessagesApiV1AppAppIdMsgGetRequest {
+func (r ApiV1MessageListRequest) Limit(limit int32) ApiV1MessageListRequest {
 	r.limit = &limit
 	return r
 }
-func (r ApiListMessagesApiV1AppAppIdMsgGetRequest) EventTypes(eventTypes []string) ApiListMessagesApiV1AppAppIdMsgGetRequest {
-	r.eventTypes = &eventTypes
+func (r ApiV1MessageListRequest) Iterator(iterator string) ApiV1MessageListRequest {
+	r.iterator = &iterator
 	return r
 }
-func (r ApiListMessagesApiV1AppAppIdMsgGetRequest) Channel(channel string) ApiListMessagesApiV1AppAppIdMsgGetRequest {
+func (r ApiV1MessageListRequest) Channel(channel string) ApiV1MessageListRequest {
 	r.channel = &channel
 	return r
 }
-func (r ApiListMessagesApiV1AppAppIdMsgGetRequest) Before(before time.Time) ApiListMessagesApiV1AppAppIdMsgGetRequest {
+func (r ApiV1MessageListRequest) Before(before time.Time) ApiV1MessageListRequest {
 	r.before = &before
 	return r
 }
-func (r ApiListMessagesApiV1AppAppIdMsgGetRequest) After(after time.Time) ApiListMessagesApiV1AppAppIdMsgGetRequest {
+func (r ApiV1MessageListRequest) After(after time.Time) ApiV1MessageListRequest {
 	r.after = &after
 	return r
 }
-func (r ApiListMessagesApiV1AppAppIdMsgGetRequest) IdempotencyKey(idempotencyKey string) ApiListMessagesApiV1AppAppIdMsgGetRequest {
-	r.idempotencyKey = &idempotencyKey
+func (r ApiV1MessageListRequest) EventTypes(eventTypes []string) ApiV1MessageListRequest {
+	r.eventTypes = &eventTypes
 	return r
 }
 
-func (r ApiListMessagesApiV1AppAppIdMsgGetRequest) Execute() (ListResponseMessageOut, *_nethttp.Response, error) {
-	return r.ApiService.ListMessagesApiV1AppAppIdMsgGetExecute(r)
+func (r ApiV1MessageListRequest) Execute() (ListResponseMessageOut, *_nethttp.Response, error) {
+	return r.ApiService.V1MessageListExecute(r)
 }
 
 /*
- * ListMessagesApiV1AppAppIdMsgGet List Messages
+ * V1MessageList List Messages
  * List all of the application's messages.
 
 The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
@@ -670,10 +645,10 @@ The `after` parameter lets you filter all items created after a certain date and
 `before` and `after` cannot be used simultaneously.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param appId
- * @return ApiListMessagesApiV1AppAppIdMsgGetRequest
+ * @return ApiV1MessageListRequest
  */
-func (a *MessageApiService) ListMessagesApiV1AppAppIdMsgGet(ctx _context.Context, appId string) ApiListMessagesApiV1AppAppIdMsgGetRequest {
-	return ApiListMessagesApiV1AppAppIdMsgGetRequest{
+func (a *MessageApiService) V1MessageList(ctx _context.Context, appId string) ApiV1MessageListRequest {
+	return ApiV1MessageListRequest{
 		ApiService: a,
 		ctx: ctx,
 		appId: appId,
@@ -684,7 +659,7 @@ func (a *MessageApiService) ListMessagesApiV1AppAppIdMsgGet(ctx _context.Context
  * Execute executes the request
  * @return ListResponseMessageOut
  */
-func (a *MessageApiService) ListMessagesApiV1AppAppIdMsgGetExecute(r ApiListMessagesApiV1AppAppIdMsgGetRequest) (ListResponseMessageOut, *_nethttp.Response, error) {
+func (a *MessageApiService) V1MessageListExecute(r ApiV1MessageListRequest) (ListResponseMessageOut, *_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodGet
 		localVarPostBody     interface{}
@@ -694,7 +669,7 @@ func (a *MessageApiService) ListMessagesApiV1AppAppIdMsgGetExecute(r ApiListMess
 		localVarReturnValue  ListResponseMessageOut
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MessageApiService.ListMessagesApiV1AppAppIdMsgGet")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MessageApiService.V1MessageList")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
@@ -712,11 +687,20 @@ func (a *MessageApiService) ListMessagesApiV1AppAppIdMsgGetExecute(r ApiListMess
 		return localVarReturnValue, nil, reportError("appId must have less than 256 elements")
 	}
 
+	if r.limit != nil {
+		localVarQueryParams.Add("limit", parameterToString(*r.limit, ""))
+	}
 	if r.iterator != nil {
 		localVarQueryParams.Add("iterator", parameterToString(*r.iterator, ""))
 	}
-	if r.limit != nil {
-		localVarQueryParams.Add("limit", parameterToString(*r.limit, ""))
+	if r.channel != nil {
+		localVarQueryParams.Add("channel", parameterToString(*r.channel, ""))
+	}
+	if r.before != nil {
+		localVarQueryParams.Add("before", parameterToString(*r.before, ""))
+	}
+	if r.after != nil {
+		localVarQueryParams.Add("after", parameterToString(*r.after, ""))
 	}
 	if r.eventTypes != nil {
 		t := *r.eventTypes
@@ -728,15 +712,6 @@ func (a *MessageApiService) ListMessagesApiV1AppAppIdMsgGetExecute(r ApiListMess
 		} else {
 			localVarQueryParams.Add("event_types", parameterToString(t, "multi"))
 		}
-	}
-	if r.channel != nil {
-		localVarQueryParams.Add("channel", parameterToString(*r.channel, ""))
-	}
-	if r.before != nil {
-		localVarQueryParams.Add("before", parameterToString(*r.before, ""))
-	}
-	if r.after != nil {
-		localVarQueryParams.Add("after", parameterToString(*r.after, ""))
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -754,9 +729,6 @@ func (a *MessageApiService) ListMessagesApiV1AppAppIdMsgGetExecute(r ApiListMess
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	if r.idempotencyKey != nil {
-		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {

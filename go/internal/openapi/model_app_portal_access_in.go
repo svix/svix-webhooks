@@ -16,6 +16,7 @@ import (
 
 // AppPortalAccessIn struct for AppPortalAccessIn
 type AppPortalAccessIn struct {
+	// The set of feature flags the created token will have access to.
 	FeatureFlags *[]string `json:"featureFlags,omitempty"`
 }
 

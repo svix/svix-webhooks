@@ -17,7 +17,7 @@ import (
 // ApplicationTokenExpireIn struct for ApplicationTokenExpireIn
 type ApplicationTokenExpireIn struct {
 	// How many seconds until the old key is expired.
-	Expiry NullableInt32 `json:"expiry,omitempty"`
+	Expiry NullableInt64 `json:"expiry,omitempty"`
 }
 
 // NewApplicationTokenExpireIn instantiates a new ApplicationTokenExpireIn object
@@ -38,9 +38,9 @@ func NewApplicationTokenExpireInWithDefaults() *ApplicationTokenExpireIn {
 }
 
 // GetExpiry returns the Expiry field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *ApplicationTokenExpireIn) GetExpiry() int32 {
+func (o *ApplicationTokenExpireIn) GetExpiry() int64 {
 	if o == nil || o.Expiry.Get() == nil {
-		var ret int32
+		var ret int64
 		return ret
 	}
 	return *o.Expiry.Get()
@@ -49,7 +49,7 @@ func (o *ApplicationTokenExpireIn) GetExpiry() int32 {
 // GetExpiryOk returns a tuple with the Expiry field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ApplicationTokenExpireIn) GetExpiryOk() (*int32, bool) {
+func (o *ApplicationTokenExpireIn) GetExpiryOk() (*int64, bool) {
 	if o == nil  {
 		return nil, false
 	}
@@ -65,8 +65,8 @@ func (o *ApplicationTokenExpireIn) HasExpiry() bool {
 	return false
 }
 
-// SetExpiry gets a reference to the given NullableInt32 and assigns it to the Expiry field.
-func (o *ApplicationTokenExpireIn) SetExpiry(v int32) {
+// SetExpiry gets a reference to the given NullableInt64 and assigns it to the Expiry field.
+func (o *ApplicationTokenExpireIn) SetExpiry(v int64) {
 	o.Expiry.Set(&v)
 }
 // SetExpiryNil sets the value for Expiry to be an explicit nil

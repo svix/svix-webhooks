@@ -27,364 +27,7 @@ var (
 // AuthenticationApiService AuthenticationApi service
 type AuthenticationApiService service
 
-type ApiExchangeOneTimeTokenApiV1AuthOneTimeTokenPostRequest struct {
-	ctx _context.Context
-	ApiService *AuthenticationApiService
-	oneTimeTokenIn *OneTimeTokenIn
-	idempotencyKey *string
-}
-
-func (r ApiExchangeOneTimeTokenApiV1AuthOneTimeTokenPostRequest) OneTimeTokenIn(oneTimeTokenIn OneTimeTokenIn) ApiExchangeOneTimeTokenApiV1AuthOneTimeTokenPostRequest {
-	r.oneTimeTokenIn = &oneTimeTokenIn
-	return r
-}
-func (r ApiExchangeOneTimeTokenApiV1AuthOneTimeTokenPostRequest) IdempotencyKey(idempotencyKey string) ApiExchangeOneTimeTokenApiV1AuthOneTimeTokenPostRequest {
-	r.idempotencyKey = &idempotencyKey
-	return r
-}
-
-func (r ApiExchangeOneTimeTokenApiV1AuthOneTimeTokenPostRequest) Execute() (OneTimeTokenOut, *_nethttp.Response, error) {
-	return r.ApiService.ExchangeOneTimeTokenApiV1AuthOneTimeTokenPostExecute(r)
-}
-
-/*
- * ExchangeOneTimeTokenApiV1AuthOneTimeTokenPost Exchange One Time Token
- * Exchange a one-time-token for an application token.
- * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @return ApiExchangeOneTimeTokenApiV1AuthOneTimeTokenPostRequest
- */
-func (a *AuthenticationApiService) ExchangeOneTimeTokenApiV1AuthOneTimeTokenPost(ctx _context.Context) ApiExchangeOneTimeTokenApiV1AuthOneTimeTokenPostRequest {
-	return ApiExchangeOneTimeTokenApiV1AuthOneTimeTokenPostRequest{
-		ApiService: a,
-		ctx: ctx,
-	}
-}
-
-/*
- * Execute executes the request
- * @return OneTimeTokenOut
- */
-func (a *AuthenticationApiService) ExchangeOneTimeTokenApiV1AuthOneTimeTokenPostExecute(r ApiExchangeOneTimeTokenApiV1AuthOneTimeTokenPostRequest) (OneTimeTokenOut, *_nethttp.Response, error) {
-	var (
-		localVarHTTPMethod   = _nethttp.MethodPost
-		localVarPostBody     interface{}
-		localVarFormFileName string
-		localVarFileName     string
-		localVarFileBytes    []byte
-		localVarReturnValue  OneTimeTokenOut
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AuthenticationApiService.ExchangeOneTimeTokenApiV1AuthOneTimeTokenPost")
-	if err != nil {
-		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/api/v1/auth/one-time-token/"
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := _neturl.Values{}
-	localVarFormParams := _neturl.Values{}
-	if r.oneTimeTokenIn == nil {
-		return localVarReturnValue, nil, reportError("oneTimeTokenIn is required and must be specified")
-	}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	if r.idempotencyKey != nil {
-		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
-	}
-	// body params
-	localVarPostBody = r.oneTimeTokenIn
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := _ioutil.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = _ioutil.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v HttpErrorOut
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 403 {
-			var v HttpErrorOut
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v HttpErrorOut
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 409 {
-			var v HttpErrorOut
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 422 {
-			var v HTTPValidationError
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 429 {
-			var v HttpErrorOut
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.model = v
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
-type ApiExpireAllApiV1AuthAppAppIdExpireAllPostRequest struct {
-	ctx _context.Context
-	ApiService *AuthenticationApiService
-	appId string
-	applicationTokenExpireIn *ApplicationTokenExpireIn
-	idempotencyKey *string
-}
-
-func (r ApiExpireAllApiV1AuthAppAppIdExpireAllPostRequest) ApplicationTokenExpireIn(applicationTokenExpireIn ApplicationTokenExpireIn) ApiExpireAllApiV1AuthAppAppIdExpireAllPostRequest {
-	r.applicationTokenExpireIn = &applicationTokenExpireIn
-	return r
-}
-func (r ApiExpireAllApiV1AuthAppAppIdExpireAllPostRequest) IdempotencyKey(idempotencyKey string) ApiExpireAllApiV1AuthAppAppIdExpireAllPostRequest {
-	r.idempotencyKey = &idempotencyKey
-	return r
-}
-
-func (r ApiExpireAllApiV1AuthAppAppIdExpireAllPostRequest) Execute() (*_nethttp.Response, error) {
-	return r.ApiService.ExpireAllApiV1AuthAppAppIdExpireAllPostExecute(r)
-}
-
-/*
- * ExpireAllApiV1AuthAppAppIdExpireAllPost Expire All
- * Expire all of the tokens associated with a specific Application
- * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param appId
- * @return ApiExpireAllApiV1AuthAppAppIdExpireAllPostRequest
- */
-func (a *AuthenticationApiService) ExpireAllApiV1AuthAppAppIdExpireAllPost(ctx _context.Context, appId string) ApiExpireAllApiV1AuthAppAppIdExpireAllPostRequest {
-	return ApiExpireAllApiV1AuthAppAppIdExpireAllPostRequest{
-		ApiService: a,
-		ctx: ctx,
-		appId: appId,
-	}
-}
-
-/*
- * Execute executes the request
- */
-func (a *AuthenticationApiService) ExpireAllApiV1AuthAppAppIdExpireAllPostExecute(r ApiExpireAllApiV1AuthAppAppIdExpireAllPostRequest) (*_nethttp.Response, error) {
-	var (
-		localVarHTTPMethod   = _nethttp.MethodPost
-		localVarPostBody     interface{}
-		localVarFormFileName string
-		localVarFileName     string
-		localVarFileBytes    []byte
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AuthenticationApiService.ExpireAllApiV1AuthAppAppIdExpireAllPost")
-	if err != nil {
-		return nil, GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/api/v1/auth/app/{app_id}/expire-all/"
-	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := _neturl.Values{}
-	localVarFormParams := _neturl.Values{}
-	if strlen(r.appId) < 1 {
-		return nil, reportError("appId must have at least 1 elements")
-	}
-	if strlen(r.appId) > 256 {
-		return nil, reportError("appId must have less than 256 elements")
-	}
-	if r.applicationTokenExpireIn == nil {
-		return nil, reportError("applicationTokenExpireIn is required and must be specified")
-	}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	if r.idempotencyKey != nil {
-		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
-	}
-	// body params
-	localVarPostBody = r.applicationTokenExpireIn
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarHTTPResponse, err
-	}
-
-	localVarBody, err := _ioutil.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = _ioutil.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v HttpErrorOut
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarHTTPResponse, newErr
-			}
-			newErr.model = v
-			return localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 403 {
-			var v HttpErrorOut
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarHTTPResponse, newErr
-			}
-			newErr.model = v
-			return localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v HttpErrorOut
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarHTTPResponse, newErr
-			}
-			newErr.model = v
-			return localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 409 {
-			var v HttpErrorOut
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarHTTPResponse, newErr
-			}
-			newErr.model = v
-			return localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 422 {
-			var v HTTPValidationError
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarHTTPResponse, newErr
-			}
-			newErr.model = v
-			return localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 429 {
-			var v HttpErrorOut
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarHTTPResponse, newErr
-			}
-			newErr.model = v
-		}
-		return localVarHTTPResponse, newErr
-	}
-
-	return localVarHTTPResponse, nil
-}
-
-type ApiGetAppPortalAccessApiV1AuthAppPortalAccessAppIdPostRequest struct {
+type ApiV1AuthenticationAppPortalAccessRequest struct {
 	ctx _context.Context
 	ApiService *AuthenticationApiService
 	appId string
@@ -392,28 +35,28 @@ type ApiGetAppPortalAccessApiV1AuthAppPortalAccessAppIdPostRequest struct {
 	idempotencyKey *string
 }
 
-func (r ApiGetAppPortalAccessApiV1AuthAppPortalAccessAppIdPostRequest) AppPortalAccessIn(appPortalAccessIn AppPortalAccessIn) ApiGetAppPortalAccessApiV1AuthAppPortalAccessAppIdPostRequest {
+func (r ApiV1AuthenticationAppPortalAccessRequest) AppPortalAccessIn(appPortalAccessIn AppPortalAccessIn) ApiV1AuthenticationAppPortalAccessRequest {
 	r.appPortalAccessIn = &appPortalAccessIn
 	return r
 }
-func (r ApiGetAppPortalAccessApiV1AuthAppPortalAccessAppIdPostRequest) IdempotencyKey(idempotencyKey string) ApiGetAppPortalAccessApiV1AuthAppPortalAccessAppIdPostRequest {
+func (r ApiV1AuthenticationAppPortalAccessRequest) IdempotencyKey(idempotencyKey string) ApiV1AuthenticationAppPortalAccessRequest {
 	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
-func (r ApiGetAppPortalAccessApiV1AuthAppPortalAccessAppIdPostRequest) Execute() (AppPortalAccessOut, *_nethttp.Response, error) {
-	return r.ApiService.GetAppPortalAccessApiV1AuthAppPortalAccessAppIdPostExecute(r)
+func (r ApiV1AuthenticationAppPortalAccessRequest) Execute() (AppPortalAccessOut, *_nethttp.Response, error) {
+	return r.ApiService.V1AuthenticationAppPortalAccessExecute(r)
 }
 
 /*
- * GetAppPortalAccessApiV1AuthAppPortalAccessAppIdPost Get Consumer App Portal Access
+ * V1AuthenticationAppPortalAccess App Portal Access
  * Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param appId
- * @return ApiGetAppPortalAccessApiV1AuthAppPortalAccessAppIdPostRequest
+ * @return ApiV1AuthenticationAppPortalAccessRequest
  */
-func (a *AuthenticationApiService) GetAppPortalAccessApiV1AuthAppPortalAccessAppIdPost(ctx _context.Context, appId string) ApiGetAppPortalAccessApiV1AuthAppPortalAccessAppIdPostRequest {
-	return ApiGetAppPortalAccessApiV1AuthAppPortalAccessAppIdPostRequest{
+func (a *AuthenticationApiService) V1AuthenticationAppPortalAccess(ctx _context.Context, appId string) ApiV1AuthenticationAppPortalAccessRequest {
+	return ApiV1AuthenticationAppPortalAccessRequest{
 		ApiService: a,
 		ctx: ctx,
 		appId: appId,
@@ -424,7 +67,7 @@ func (a *AuthenticationApiService) GetAppPortalAccessApiV1AuthAppPortalAccessApp
  * Execute executes the request
  * @return AppPortalAccessOut
  */
-func (a *AuthenticationApiService) GetAppPortalAccessApiV1AuthAppPortalAccessAppIdPostExecute(r ApiGetAppPortalAccessApiV1AuthAppPortalAccessAppIdPostRequest) (AppPortalAccessOut, *_nethttp.Response, error) {
+func (a *AuthenticationApiService) V1AuthenticationAppPortalAccessExecute(r ApiV1AuthenticationAppPortalAccessRequest) (AppPortalAccessOut, *_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPost
 		localVarPostBody     interface{}
@@ -434,7 +77,7 @@ func (a *AuthenticationApiService) GetAppPortalAccessApiV1AuthAppPortalAccessApp
 		localVarReturnValue  AppPortalAccessOut
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AuthenticationApiService.GetAppPortalAccessApiV1AuthAppPortalAccessAppIdPost")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AuthenticationApiService.V1AuthenticationAppPortalAccess")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
@@ -573,33 +216,33 @@ func (a *AuthenticationApiService) GetAppPortalAccessApiV1AuthAppPortalAccessApp
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiGetDashboardAccessApiV1AuthDashboardAccessAppIdPostRequest struct {
+type ApiV1AuthenticationDashboardAccessRequest struct {
 	ctx _context.Context
 	ApiService *AuthenticationApiService
 	appId string
 	idempotencyKey *string
 }
 
-func (r ApiGetDashboardAccessApiV1AuthDashboardAccessAppIdPostRequest) IdempotencyKey(idempotencyKey string) ApiGetDashboardAccessApiV1AuthDashboardAccessAppIdPostRequest {
+func (r ApiV1AuthenticationDashboardAccessRequest) IdempotencyKey(idempotencyKey string) ApiV1AuthenticationDashboardAccessRequest {
 	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
-func (r ApiGetDashboardAccessApiV1AuthDashboardAccessAppIdPostRequest) Execute() (DashboardAccessOut, *_nethttp.Response, error) {
-	return r.ApiService.GetDashboardAccessApiV1AuthDashboardAccessAppIdPostExecute(r)
+func (r ApiV1AuthenticationDashboardAccessRequest) Execute() (DashboardAccessOut, *_nethttp.Response, error) {
+	return r.ApiService.V1AuthenticationDashboardAccessExecute(r)
 }
 
 /*
- * GetDashboardAccessApiV1AuthDashboardAccessAppIdPost Get Dashboard Access
+ * V1AuthenticationDashboardAccess Dashboard Access
  * DEPRECATED: Please use `app-portal-access` instead.
 
 Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param appId
- * @return ApiGetDashboardAccessApiV1AuthDashboardAccessAppIdPostRequest
+ * @return ApiV1AuthenticationDashboardAccessRequest
  */
-func (a *AuthenticationApiService) GetDashboardAccessApiV1AuthDashboardAccessAppIdPost(ctx _context.Context, appId string) ApiGetDashboardAccessApiV1AuthDashboardAccessAppIdPostRequest {
-	return ApiGetDashboardAccessApiV1AuthDashboardAccessAppIdPostRequest{
+func (a *AuthenticationApiService) V1AuthenticationDashboardAccess(ctx _context.Context, appId string) ApiV1AuthenticationDashboardAccessRequest {
+	return ApiV1AuthenticationDashboardAccessRequest{
 		ApiService: a,
 		ctx: ctx,
 		appId: appId,
@@ -610,7 +253,7 @@ func (a *AuthenticationApiService) GetDashboardAccessApiV1AuthDashboardAccessApp
  * Execute executes the request
  * @return DashboardAccessOut
  */
-func (a *AuthenticationApiService) GetDashboardAccessApiV1AuthDashboardAccessAppIdPostExecute(r ApiGetDashboardAccessApiV1AuthDashboardAccessAppIdPostRequest) (DashboardAccessOut, *_nethttp.Response, error) {
+func (a *AuthenticationApiService) V1AuthenticationDashboardAccessExecute(r ApiV1AuthenticationDashboardAccessRequest) (DashboardAccessOut, *_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPost
 		localVarPostBody     interface{}
@@ -620,7 +263,7 @@ func (a *AuthenticationApiService) GetDashboardAccessApiV1AuthDashboardAccessApp
 		localVarReturnValue  DashboardAccessOut
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AuthenticationApiService.GetDashboardAccessApiV1AuthDashboardAccessAppIdPost")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AuthenticationApiService.V1AuthenticationDashboardAccess")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
@@ -754,40 +397,46 @@ func (a *AuthenticationApiService) GetDashboardAccessApiV1AuthDashboardAccessApp
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiLogoutApiV1AuthLogoutPostRequest struct {
+type ApiV1AuthenticationExpireAllRequest struct {
 	ctx _context.Context
 	ApiService *AuthenticationApiService
+	appId string
+	applicationTokenExpireIn *ApplicationTokenExpireIn
 	idempotencyKey *string
 }
 
-func (r ApiLogoutApiV1AuthLogoutPostRequest) IdempotencyKey(idempotencyKey string) ApiLogoutApiV1AuthLogoutPostRequest {
+func (r ApiV1AuthenticationExpireAllRequest) ApplicationTokenExpireIn(applicationTokenExpireIn ApplicationTokenExpireIn) ApiV1AuthenticationExpireAllRequest {
+	r.applicationTokenExpireIn = &applicationTokenExpireIn
+	return r
+}
+func (r ApiV1AuthenticationExpireAllRequest) IdempotencyKey(idempotencyKey string) ApiV1AuthenticationExpireAllRequest {
 	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
-func (r ApiLogoutApiV1AuthLogoutPostRequest) Execute() (*_nethttp.Response, error) {
-	return r.ApiService.LogoutApiV1AuthLogoutPostExecute(r)
+func (r ApiV1AuthenticationExpireAllRequest) Execute() (*_nethttp.Response, error) {
+	return r.ApiService.V1AuthenticationExpireAllExecute(r)
 }
 
 /*
- * LogoutApiV1AuthLogoutPost Logout
- * Logout an app token.
-
-Trying to log out other tokens will fail.
+ * V1AuthenticationExpireAll Expire All
+ * Expire all of the tokens associated with a specific Application
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @return ApiLogoutApiV1AuthLogoutPostRequest
+ * @param appId
+ * @return ApiV1AuthenticationExpireAllRequest
  */
-func (a *AuthenticationApiService) LogoutApiV1AuthLogoutPost(ctx _context.Context) ApiLogoutApiV1AuthLogoutPostRequest {
-	return ApiLogoutApiV1AuthLogoutPostRequest{
+func (a *AuthenticationApiService) V1AuthenticationExpireAll(ctx _context.Context, appId string) ApiV1AuthenticationExpireAllRequest {
+	return ApiV1AuthenticationExpireAllRequest{
 		ApiService: a,
 		ctx: ctx,
+		appId: appId,
 	}
 }
 
 /*
  * Execute executes the request
  */
-func (a *AuthenticationApiService) LogoutApiV1AuthLogoutPostExecute(r ApiLogoutApiV1AuthLogoutPostRequest) (*_nethttp.Response, error) {
+func (a *AuthenticationApiService) V1AuthenticationExpireAllExecute(r ApiV1AuthenticationExpireAllRequest) (*_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPost
 		localVarPostBody     interface{}
@@ -796,7 +445,179 @@ func (a *AuthenticationApiService) LogoutApiV1AuthLogoutPostExecute(r ApiLogoutA
 		localVarFileBytes    []byte
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AuthenticationApiService.LogoutApiV1AuthLogoutPost")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AuthenticationApiService.V1AuthenticationExpireAll")
+	if err != nil {
+		return nil, GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/api/v1/auth/app/{app_id}/expire-all/"
+	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := _neturl.Values{}
+	localVarFormParams := _neturl.Values{}
+	if strlen(r.appId) < 1 {
+		return nil, reportError("appId must have at least 1 elements")
+	}
+	if strlen(r.appId) > 256 {
+		return nil, reportError("appId must have less than 256 elements")
+	}
+	if r.applicationTokenExpireIn == nil {
+		return nil, reportError("applicationTokenExpireIn is required and must be specified")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
+	}
+	// body params
+	localVarPostBody = r.applicationTokenExpireIn
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarHTTPResponse, err
+	}
+
+	localVarBody, err := _ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = _ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 401 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 403 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 404 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 409 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 422 {
+			var v HTTPValidationError
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+		}
+		return localVarHTTPResponse, newErr
+	}
+
+	return localVarHTTPResponse, nil
+}
+
+type ApiV1AuthenticationLogoutRequest struct {
+	ctx _context.Context
+	ApiService *AuthenticationApiService
+	idempotencyKey *string
+}
+
+func (r ApiV1AuthenticationLogoutRequest) IdempotencyKey(idempotencyKey string) ApiV1AuthenticationLogoutRequest {
+	r.idempotencyKey = &idempotencyKey
+	return r
+}
+
+func (r ApiV1AuthenticationLogoutRequest) Execute() (*_nethttp.Response, error) {
+	return r.ApiService.V1AuthenticationLogoutExecute(r)
+}
+
+/*
+ * V1AuthenticationLogout Logout
+ * Logout an app token.
+
+Trying to log out other tokens will fail.
+ * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ * @return ApiV1AuthenticationLogoutRequest
+ */
+func (a *AuthenticationApiService) V1AuthenticationLogout(ctx _context.Context) ApiV1AuthenticationLogoutRequest {
+	return ApiV1AuthenticationLogoutRequest{
+		ApiService: a,
+		ctx: ctx,
+	}
+}
+
+/*
+ * Execute executes the request
+ */
+func (a *AuthenticationApiService) V1AuthenticationLogoutExecute(r ApiV1AuthenticationLogoutRequest) (*_nethttp.Response, error) {
+	var (
+		localVarHTTPMethod   = _nethttp.MethodPost
+		localVarPostBody     interface{}
+		localVarFormFileName string
+		localVarFileName     string
+		localVarFileBytes    []byte
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AuthenticationApiService.V1AuthenticationLogout")
 	if err != nil {
 		return nil, GenericOpenAPIError{error: err.Error()}
 	}

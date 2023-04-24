@@ -26,29 +26,24 @@ var (
 // EnvironmentSettingsApiService EnvironmentSettingsApi service
 type EnvironmentSettingsApiService service
 
-type ApiGetOrgSettingsApiV1EnvironmentSettingsGetRequest struct {
+type ApiV1EnvironmentGetSettingsRequest struct {
 	ctx _context.Context
 	ApiService *EnvironmentSettingsApiService
-	idempotencyKey *string
 }
 
-func (r ApiGetOrgSettingsApiV1EnvironmentSettingsGetRequest) IdempotencyKey(idempotencyKey string) ApiGetOrgSettingsApiV1EnvironmentSettingsGetRequest {
-	r.idempotencyKey = &idempotencyKey
-	return r
-}
 
-func (r ApiGetOrgSettingsApiV1EnvironmentSettingsGetRequest) Execute() (EnvironmentSettingsOut, *_nethttp.Response, error) {
-	return r.ApiService.GetOrgSettingsApiV1EnvironmentSettingsGetExecute(r)
+func (r ApiV1EnvironmentGetSettingsRequest) Execute() (EnvironmentSettingsOut, *_nethttp.Response, error) {
+	return r.ApiService.V1EnvironmentGetSettingsExecute(r)
 }
 
 /*
- * GetOrgSettingsApiV1EnvironmentSettingsGet Get Org Settings
+ * V1EnvironmentGetSettings Get Org Settings
  * Get the environment's settings
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @return ApiGetOrgSettingsApiV1EnvironmentSettingsGetRequest
+ * @return ApiV1EnvironmentGetSettingsRequest
  */
-func (a *EnvironmentSettingsApiService) GetOrgSettingsApiV1EnvironmentSettingsGet(ctx _context.Context) ApiGetOrgSettingsApiV1EnvironmentSettingsGetRequest {
-	return ApiGetOrgSettingsApiV1EnvironmentSettingsGetRequest{
+func (a *EnvironmentSettingsApiService) V1EnvironmentGetSettings(ctx _context.Context) ApiV1EnvironmentGetSettingsRequest {
+	return ApiV1EnvironmentGetSettingsRequest{
 		ApiService: a,
 		ctx: ctx,
 	}
@@ -58,7 +53,7 @@ func (a *EnvironmentSettingsApiService) GetOrgSettingsApiV1EnvironmentSettingsGe
  * Execute executes the request
  * @return EnvironmentSettingsOut
  */
-func (a *EnvironmentSettingsApiService) GetOrgSettingsApiV1EnvironmentSettingsGetExecute(r ApiGetOrgSettingsApiV1EnvironmentSettingsGetRequest) (EnvironmentSettingsOut, *_nethttp.Response, error) {
+func (a *EnvironmentSettingsApiService) V1EnvironmentGetSettingsExecute(r ApiV1EnvironmentGetSettingsRequest) (EnvironmentSettingsOut, *_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodGet
 		localVarPostBody     interface{}
@@ -68,7 +63,7 @@ func (a *EnvironmentSettingsApiService) GetOrgSettingsApiV1EnvironmentSettingsGe
 		localVarReturnValue  EnvironmentSettingsOut
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "EnvironmentSettingsApiService.GetOrgSettingsApiV1EnvironmentSettingsGet")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "EnvironmentSettingsApiService.V1EnvironmentGetSettings")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
@@ -95,9 +90,6 @@ func (a *EnvironmentSettingsApiService) GetOrgSettingsApiV1EnvironmentSettingsGe
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	if r.idempotencyKey != nil {
-		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {

@@ -26,8 +26,6 @@ type EndpointTransformationIn struct {
 // will change when the set of required properties is changed
 func NewEndpointTransformationIn() *EndpointTransformationIn {
 	this := EndpointTransformationIn{}
-	var enabled bool = false
-	this.Enabled = &enabled
 	return &this
 }
 
@@ -36,8 +34,6 @@ func NewEndpointTransformationIn() *EndpointTransformationIn {
 // but it doesn't guarantee that properties required by API are set
 func NewEndpointTransformationInWithDefaults() *EndpointTransformationIn {
 	this := EndpointTransformationIn{}
-	var enabled bool = false
-	this.Enabled = &enabled
 	return &this
 }
 

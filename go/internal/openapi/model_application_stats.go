@@ -17,7 +17,6 @@ import (
 // ApplicationStats struct for ApplicationStats
 type ApplicationStats struct {
 	AppId string `json:"appId"`
-	// Optional unique identifier for the application
 	AppUid NullableString `json:"appUid,omitempty"`
 	MessageDestinations int32 `json:"messageDestinations"`
 }

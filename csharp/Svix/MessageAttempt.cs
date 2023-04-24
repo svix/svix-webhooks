@@ -27,11 +27,10 @@ namespace Svix
         {
             try
             {
-                var lAttempt = _messageAttemptApi.GetAttemptApiV1AppAppIdMsgMsgIdAttemptAttemptIdGet(
-                    attemptId,
-                    messageId,
+                var lAttempt = _messageAttemptApi.V1MessageAttemptGet(
                     appId,
-                    idempotencyKey);
+                    messageId,
+                    attemptId);
 
                 return lAttempt;
             }
@@ -51,11 +50,10 @@ namespace Svix
         {
             try
             {
-                var lAttempt = await _messageAttemptApi.GetAttemptApiV1AppAppIdMsgMsgIdAttemptAttemptIdGetAsync(
-                    attemptId,
-                    messageId,
+                var lAttempt = await _messageAttemptApi.V1MessageAttemptGetAsync(
                     appId,
-                    idempotencyKey,
+                    messageId,
+                    attemptId,
                     cancellationToken);
 
                 return lAttempt;
@@ -76,16 +74,15 @@ namespace Svix
         {
             try
             {
-                var lResults = _messageAttemptApi.ListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGet(
-                    endpointId,
+                var lResults = _messageAttemptApi.V1MessageAttemptListAttemptedMessages(
                     appId,
-                    options?.Iterator,
+                    endpointId,
                     options?.Limit,
+                    options?.Iterator,
                     options?.Channel,
                     (Svix.Model.MessageStatus?)options?.Status,
                     options?.Before,
-                    options?.After,
-                    idempotencyKey);
+                    options?.After);
 
                 return lResults?.Data;
             }
@@ -105,16 +102,15 @@ namespace Svix
         {
             try
             {
-                var lResults = await _messageAttemptApi.ListAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGetAsync(
-                    endpointId,
+                var lResults = await _messageAttemptApi.V1MessageAttemptListAttemptedMessagesAsync(
                     appId,
-                    options?.Iterator,
+                    endpointId,
                     options?.Limit,
+                    options?.Iterator,
                     options?.Channel,
                     (Svix.Model.MessageStatus?)options?.Status,
                     options?.Before,
                     options?.After,
-                    idempotencyKey,
                     cancellationToken);
 
                 return lResults?.Data;
@@ -135,18 +131,17 @@ namespace Svix
         {
             try
             {
-                var lResults = _messageAttemptApi.ListAttemptsByEndpointApiV1AppAppIdAttemptEndpointEndpointIdGet(
+                var lResults = _messageAttemptApi.V1MessageAttemptListByEndpoint(
                     appId,
                     endpointId,
-                    options?.Iterator,
                     options?.Limit,
+                    options?.Iterator,
                     (Svix.Model.MessageStatus?)options?.Status,
                     (Svix.Model.StatusCodeClass?)options?.Code,
-                    options?.EventTypes,
                     options?.Channel,
                     options?.Before,
                     options?.After,
-                    idempotencyKey);
+                    options?.EventTypes);
 
                 return lResults?.Data;
             }
@@ -166,18 +161,17 @@ namespace Svix
         {
             try
             {
-                var lResults = await _messageAttemptApi.ListAttemptsByEndpointApiV1AppAppIdAttemptEndpointEndpointIdGetAsync(
+                var lResults = await _messageAttemptApi.V1MessageAttemptListByEndpointAsync(
                     appId,
                     endpointId,
-                    options?.Iterator,
                     options?.Limit,
+                    options?.Iterator,
                     (Svix.Model.MessageStatus?)options?.Status,
                     (Svix.Model.StatusCodeClass?)options?.Code,
-                    options?.EventTypes,
                     options?.Channel,
                     options?.Before,
                     options?.After,
-                    idempotencyKey,
+                    options?.EventTypes,
                     cancellationToken);
 
                 return lResults?.Data;
@@ -198,19 +192,18 @@ namespace Svix
         {
             try
             {
-                var lResults = _messageAttemptApi.ListAttemptsByMsgApiV1AppAppIdAttemptMsgMsgIdGet(
+                var lResults = _messageAttemptApi.V1MessageAttemptListByMsg(
                     appId,
                     messageId,
-                    options?.EndpointId,
-                    options?.Iterator,
                     options?.Limit,
+                    options?.Iterator,
                     (Svix.Model.MessageStatus?)options?.Status,
                     (Svix.Model.StatusCodeClass?)options?.Code,
-                    options?.EventTypes,
                     options?.Channel,
+                    options?.EndpointId,
                     options?.Before,
                     options?.After,
-                    idempotencyKey);
+                    options?.EventTypes);
 
                 return lResults?.Data;
             }
@@ -230,19 +223,18 @@ namespace Svix
         {
             try
             {
-                var lResults = await _messageAttemptApi.ListAttemptsByMsgApiV1AppAppIdAttemptMsgMsgIdGetAsync(
+                var lResults = await _messageAttemptApi.V1MessageAttemptListByMsgAsync(
                     appId,
                     messageId,
-                    options?.EndpointId,
-                    options?.Iterator,
                     options?.Limit,
+                    options?.Iterator,
                     (Svix.Model.MessageStatus?)options?.Status,
                     (Svix.Model.StatusCodeClass?)options?.Code,
-                    options?.EventTypes,
                     options?.Channel,
+                    options?.EndpointId,
                     options?.Before,
                     options?.After,
-                    idempotencyKey,
+                    options?.EventTypes,
                     cancellationToken);
 
                 return lResults?.Data;
@@ -264,18 +256,17 @@ namespace Svix
         {
             try
             {
-                var lResults = _messageAttemptApi.ListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGet(
-                    messageId,
+                var lResults = _messageAttemptApi.V1MessageAttemptListByEndpointDeprecated(
                     appId,
+                    messageId,
                     endpointId,
-                    options?.Iterator,
                     options?.Limit,
-                    options?.EventTypes,
+                    options?.Iterator,
                     options?.Channel,
                     (Svix.Model.MessageStatus?)options?.Status,
                     options?.Before,
                     options?.After,
-                    idempotencyKey);
+                    options?.EventTypes);
 
                 return lResults?.Data;
             }
@@ -297,18 +288,17 @@ namespace Svix
         {
             try
             {
-                var lResults = await _messageAttemptApi.ListAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGetAsync(
-                    messageId,
+                var lResults = await _messageAttemptApi.V1MessageAttemptListByEndpointDeprecatedAsync(
                     appId,
+                    messageId,
                     endpointId,
-                    options?.Iterator,
                     options?.Limit,
-                    options?.EventTypes?.ToList(),
+                    options?.Iterator,
                     options?.Channel,
                     (Svix.Model.MessageStatus?)options?.Status,
                     options?.Before,
                     options?.After,
-                    idempotencyKey,
+                    options?.EventTypes?.ToList(),
                     cancellationToken);
 
                 return lResults?.Data;
@@ -330,18 +320,18 @@ namespace Svix
         {
             try
             {
-                var lResults = _messageAttemptApi.ListAttemptsApiV1AppAppIdMsgMsgIdAttemptGet(
+                var lResults = _messageAttemptApi.V1MessageAttemptListByMsgDeprecated(
                     appId,
                     messageId,
-                    options?.Iterator,
                     options?.Limit,
+                    options?.Iterator,
                     options?.EndpointId,
-                    options?.EventTypes,
                     options?.Channel,
                     (Svix.Model.MessageStatus?)options?.Status,
                     options?.Before,
                     options?.After,
-                    idempotencyKey);
+                    null,
+                    options?.EventTypes);
 
                 return lResults?.Data;
             }
@@ -362,18 +352,18 @@ namespace Svix
         {
             try
             {
-                var lResults = await _messageAttemptApi.ListAttemptsApiV1AppAppIdMsgMsgIdAttemptGetAsync(
+                var lResults = await _messageAttemptApi.V1MessageAttemptListByMsgDeprecatedAsync(
                     appId,
                     messageId,
-                    options?.Iterator,
                     options?.Limit,
+                    options?.Iterator,
                     options?.EndpointId,
-                    options?.EventTypes,
                     options?.Channel,
                     (Svix.Model.MessageStatus?)options?.Status,
                     options?.Before,
                     options?.After,
-                    idempotencyKey,
+                    null,
+                    options?.EventTypes,
                     cancellationToken);
 
                 return lResults?.Data;
@@ -394,12 +384,11 @@ namespace Svix
         {
             try
             {
-                var lResults = _messageAttemptApi.ListAttemptedDestinationsApiV1AppAppIdMsgMsgIdEndpointGet(
-                    messageId,
+                var lResults = _messageAttemptApi.V1MessageAttemptListAttemptedDestinations(
                     appId,
-                    options?.Iterator,
+                    messageId,
                     options?.Limit,
-                    idempotencyKey);
+                    options?.Iterator);
 
                 return lResults?.Data;
             }
@@ -420,12 +409,11 @@ namespace Svix
         {
             try
             {
-                var lResults = await _messageAttemptApi.ListAttemptedDestinationsApiV1AppAppIdMsgMsgIdEndpointGetAsync(
-                    messageId,
+                var lResults = await _messageAttemptApi.V1MessageAttemptListAttemptedDestinationsAsync(
                     appId,
-                    options?.Iterator,
+                    messageId,
                     options?.Limit,
-                    idempotencyKey,
+                    options?.Iterator,
                     cancellationToken);
 
                 return lResults?.Data;
@@ -445,10 +433,10 @@ namespace Svix
         {
             try
             {
-                var lResponse = _messageAttemptApi.ResendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPostWithHttpInfo(
-                    endpointId,
-                    messageId,
+                var lResponse = _messageAttemptApi.V1MessageAttemptResendWithHttpInfo(
                     appId,
+                    messageId,
+                    endpointId,
                     idempotencyKey);
 
                 return lResponse.StatusCode == HttpStatusCode.Accepted;
@@ -469,11 +457,12 @@ namespace Svix
         {
             try
             {
-                var lResponse = await _messageAttemptApi.ResendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPostWithHttpInfoAsync(
-                    endpointId,
-                    messageId,
+                var lResponse = await _messageAttemptApi.V1MessageAttemptResendWithHttpInfoAsync(
                     appId,
-                    idempotencyKey);
+                    messageId,
+                    endpointId,
+                    idempotencyKey,
+                    cancellationToken);
 
                 return lResponse.StatusCode == HttpStatusCode.Accepted;
             }
@@ -492,11 +481,10 @@ namespace Svix
         {
             try
             {
-                var lResponse = _messageAttemptApi.ExpungeAttemptContentApiV1AppAppIdMsgMsgIdAttemptAttemptIdContentDeleteWithHttpInfo(
-                    attemptId,
-                    messageId,
+                var lResponse = _messageAttemptApi.V1MessageAttemptExpungeContentWithHttpInfo(
                     appId,
-                    idempotencyKey);
+                    messageId,
+                    attemptId);
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
             }
@@ -515,11 +503,10 @@ namespace Svix
         {
             try
             {
-                var lResponse = await _messageAttemptApi.ExpungeAttemptContentApiV1AppAppIdMsgMsgIdAttemptAttemptIdContentDeleteWithHttpInfoAsync(
-                    attemptId,
-                    messageId,
+                var lResponse = await _messageAttemptApi.V1MessageAttemptExpungeContentWithHttpInfoAsync(
                     appId,
-                    idempotencyKey,
+                    messageId,
+                    attemptId,
                     cancellationToken);
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
