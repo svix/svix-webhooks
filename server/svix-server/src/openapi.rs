@@ -117,6 +117,20 @@ fn replace_true_schemas(mut openapi: OpenApi) -> OpenApi {
                 tracing::warn!("unexpected `false` schema encountered");
             }
             Schema::Object(obj) => {
+                // When examples are added to a `"foo": bool` schema it gets
+                // expanded into an object, i.e. `"foo": {"example": ...}`, but
+                // no "type" field is set on it. Although the OpenAPI spec does
+                // not specifically say that the type field is mandatory, in
+                // practice a lack of the "type" field should only ever occur
+                // when a `true` schema gets replaced because it is somehow
+                // modified (e.g. example added), or because it's a "$ref"
+                // object.
+                // If it's not a reference, then we must add the "type" field
+                // back with the value "object" so code generators work correctly.
+                if obj.instance_type.is_none() && obj.reference.is_none() {
+                    obj.instance_type = Some(SingleOrVec::Single(Box::new(InstanceType::Object)));
+                }
+
                 obj.object.as_mut().map(visit_object_validation);
             }
         }
