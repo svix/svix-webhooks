@@ -28,41 +28,215 @@ var (
 // StatisticsApiService StatisticsApi service
 type StatisticsApiService service
 
-type ApiGetAppAttemptStatsApiV1StatsAppAppIdAttemptGetRequest struct {
+type ApiCalculateAggregateAppStatsRequest struct {
+	ctx _context.Context
+	ApiService *StatisticsApiService
+	calculateAppStatsIn *CalculateAppStatsIn
+	idempotencyKey *string
+}
+
+func (r ApiCalculateAggregateAppStatsRequest) CalculateAppStatsIn(calculateAppStatsIn CalculateAppStatsIn) ApiCalculateAggregateAppStatsRequest {
+	r.calculateAppStatsIn = &calculateAppStatsIn
+	return r
+}
+func (r ApiCalculateAggregateAppStatsRequest) IdempotencyKey(idempotencyKey string) ApiCalculateAggregateAppStatsRequest {
+	r.idempotencyKey = &idempotencyKey
+	return r
+}
+
+func (r ApiCalculateAggregateAppStatsRequest) Execute() (BackgroundTaskOutCommon, *_nethttp.Response, error) {
+	return r.ApiService.CalculateAggregateAppStatsExecute(r)
+}
+
+/*
+ * CalculateAggregateAppStats Calculate Aggregate App Stats
+ * Creates a background task to calculate the message destinations for all applications in the environment.
+ * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ * @return ApiCalculateAggregateAppStatsRequest
+ */
+func (a *StatisticsApiService) CalculateAggregateAppStats(ctx _context.Context) ApiCalculateAggregateAppStatsRequest {
+	return ApiCalculateAggregateAppStatsRequest{
+		ApiService: a,
+		ctx: ctx,
+	}
+}
+
+/*
+ * Execute executes the request
+ * @return BackgroundTaskOutCommon
+ */
+func (a *StatisticsApiService) CalculateAggregateAppStatsExecute(r ApiCalculateAggregateAppStatsRequest) (BackgroundTaskOutCommon, *_nethttp.Response, error) {
+	var (
+		localVarHTTPMethod   = _nethttp.MethodPost
+		localVarPostBody     interface{}
+		localVarFormFileName string
+		localVarFileName     string
+		localVarFileBytes    []byte
+		localVarReturnValue  BackgroundTaskOutCommon
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StatisticsApiService.CalculateAggregateAppStats")
+	if err != nil {
+		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/api/v1/stats/usage/app/"
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := _neturl.Values{}
+	localVarFormParams := _neturl.Values{}
+	if r.calculateAppStatsIn == nil {
+		return localVarReturnValue, nil, reportError("calculateAppStatsIn is required and must be specified")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
+	}
+	// body params
+	localVarPostBody = r.calculateAppStatsIn
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := _ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = _ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 401 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 403 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 404 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 409 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 422 {
+			var v HTTPValidationError
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiV1StatsAppAttemptsRequest struct {
 	ctx _context.Context
 	ApiService *StatisticsApiService
 	appId string
 	startDate *time.Time
 	endDate *time.Time
-	idempotencyKey *string
 }
 
-func (r ApiGetAppAttemptStatsApiV1StatsAppAppIdAttemptGetRequest) StartDate(startDate time.Time) ApiGetAppAttemptStatsApiV1StatsAppAppIdAttemptGetRequest {
+func (r ApiV1StatsAppAttemptsRequest) StartDate(startDate time.Time) ApiV1StatsAppAttemptsRequest {
 	r.startDate = &startDate
 	return r
 }
-func (r ApiGetAppAttemptStatsApiV1StatsAppAppIdAttemptGetRequest) EndDate(endDate time.Time) ApiGetAppAttemptStatsApiV1StatsAppAppIdAttemptGetRequest {
+func (r ApiV1StatsAppAttemptsRequest) EndDate(endDate time.Time) ApiV1StatsAppAttemptsRequest {
 	r.endDate = &endDate
 	return r
 }
-func (r ApiGetAppAttemptStatsApiV1StatsAppAppIdAttemptGetRequest) IdempotencyKey(idempotencyKey string) ApiGetAppAttemptStatsApiV1StatsAppAppIdAttemptGetRequest {
-	r.idempotencyKey = &idempotencyKey
-	return r
-}
 
-func (r ApiGetAppAttemptStatsApiV1StatsAppAppIdAttemptGetRequest) Execute() (AttemptStatisticsResponse, *_nethttp.Response, error) {
-	return r.ApiService.GetAppAttemptStatsApiV1StatsAppAppIdAttemptGetExecute(r)
+func (r ApiV1StatsAppAttemptsRequest) Execute() (AttemptStatisticsResponse, *_nethttp.Response, error) {
+	return r.ApiService.V1StatsAppAttemptsExecute(r)
 }
 
 /*
- * GetAppAttemptStatsApiV1StatsAppAppIdAttemptGet Get App Attempt Stats
+ * V1StatsAppAttempts Get App Attempt Stats
  * Returns application-level statistics on message attempts
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param appId
- * @return ApiGetAppAttemptStatsApiV1StatsAppAppIdAttemptGetRequest
+ * @return ApiV1StatsAppAttemptsRequest
  */
-func (a *StatisticsApiService) GetAppAttemptStatsApiV1StatsAppAppIdAttemptGet(ctx _context.Context, appId string) ApiGetAppAttemptStatsApiV1StatsAppAppIdAttemptGetRequest {
-	return ApiGetAppAttemptStatsApiV1StatsAppAppIdAttemptGetRequest{
+func (a *StatisticsApiService) V1StatsAppAttempts(ctx _context.Context, appId string) ApiV1StatsAppAttemptsRequest {
+	return ApiV1StatsAppAttemptsRequest{
 		ApiService: a,
 		ctx: ctx,
 		appId: appId,
@@ -73,7 +247,7 @@ func (a *StatisticsApiService) GetAppAttemptStatsApiV1StatsAppAppIdAttemptGet(ct
  * Execute executes the request
  * @return AttemptStatisticsResponse
  */
-func (a *StatisticsApiService) GetAppAttemptStatsApiV1StatsAppAppIdAttemptGetExecute(r ApiGetAppAttemptStatsApiV1StatsAppAppIdAttemptGetRequest) (AttemptStatisticsResponse, *_nethttp.Response, error) {
+func (a *StatisticsApiService) V1StatsAppAttemptsExecute(r ApiV1StatsAppAttemptsRequest) (AttemptStatisticsResponse, *_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodGet
 		localVarPostBody     interface{}
@@ -83,7 +257,7 @@ func (a *StatisticsApiService) GetAppAttemptStatsApiV1StatsAppAppIdAttemptGetExe
 		localVarReturnValue  AttemptStatisticsResponse
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StatisticsApiService.GetAppAttemptStatsApiV1StatsAppAppIdAttemptGet")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StatisticsApiService.V1StatsAppAttempts")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
@@ -123,9 +297,6 @@ func (a *StatisticsApiService) GetAppAttemptStatsApiV1StatsAppAppIdAttemptGetExe
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	if r.idempotencyKey != nil {
-		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
@@ -223,47 +394,42 @@ func (a *StatisticsApiService) GetAppAttemptStatsApiV1StatsAppAppIdAttemptGetExe
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiGetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetRequest struct {
+type ApiV1StatsEndpointAttemptsRequest struct {
 	ctx _context.Context
 	ApiService *StatisticsApiService
-	endpointId string
 	appId string
+	endpointId string
 	startDate *time.Time
 	endDate *time.Time
-	idempotencyKey *string
 }
 
-func (r ApiGetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetRequest) StartDate(startDate time.Time) ApiGetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetRequest {
+func (r ApiV1StatsEndpointAttemptsRequest) StartDate(startDate time.Time) ApiV1StatsEndpointAttemptsRequest {
 	r.startDate = &startDate
 	return r
 }
-func (r ApiGetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetRequest) EndDate(endDate time.Time) ApiGetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetRequest {
+func (r ApiV1StatsEndpointAttemptsRequest) EndDate(endDate time.Time) ApiV1StatsEndpointAttemptsRequest {
 	r.endDate = &endDate
 	return r
 }
-func (r ApiGetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetRequest) IdempotencyKey(idempotencyKey string) ApiGetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetRequest {
-	r.idempotencyKey = &idempotencyKey
-	return r
-}
 
-func (r ApiGetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetRequest) Execute() (AttemptStatisticsResponse, *_nethttp.Response, error) {
-	return r.ApiService.GetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetExecute(r)
+func (r ApiV1StatsEndpointAttemptsRequest) Execute() (AttemptStatisticsResponse, *_nethttp.Response, error) {
+	return r.ApiService.V1StatsEndpointAttemptsExecute(r)
 }
 
 /*
- * GetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGet Get Ep Stats
+ * V1StatsEndpointAttempts Get Ep Stats
  * Returns endpoint-level statistics on message attempts
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param endpointId
  * @param appId
- * @return ApiGetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetRequest
+ * @param endpointId
+ * @return ApiV1StatsEndpointAttemptsRequest
  */
-func (a *StatisticsApiService) GetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGet(ctx _context.Context, endpointId string, appId string) ApiGetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetRequest {
-	return ApiGetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetRequest{
+func (a *StatisticsApiService) V1StatsEndpointAttempts(ctx _context.Context, appId string, endpointId string) ApiV1StatsEndpointAttemptsRequest {
+	return ApiV1StatsEndpointAttemptsRequest{
 		ApiService: a,
 		ctx: ctx,
-		endpointId: endpointId,
 		appId: appId,
+		endpointId: endpointId,
 	}
 }
 
@@ -271,7 +437,7 @@ func (a *StatisticsApiService) GetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGe
  * Execute executes the request
  * @return AttemptStatisticsResponse
  */
-func (a *StatisticsApiService) GetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetExecute(r ApiGetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGetRequest) (AttemptStatisticsResponse, *_nethttp.Response, error) {
+func (a *StatisticsApiService) V1StatsEndpointAttemptsExecute(r ApiV1StatsEndpointAttemptsRequest) (AttemptStatisticsResponse, *_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodGet
 		localVarPostBody     interface{}
@@ -281,29 +447,29 @@ func (a *StatisticsApiService) GetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGe
 		localVarReturnValue  AttemptStatisticsResponse
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StatisticsApiService.GetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGet")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StatisticsApiService.V1StatsEndpointAttempts")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
 	localVarPath := localBasePath + "/api/v1/stats/app/{app_id}/ep/{endpoint_id}/attempt/"
-	localVarPath = strings.Replace(localVarPath, "{"+"endpoint_id"+"}", _neturl.PathEscape(parameterToString(r.endpointId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"endpoint_id"+"}", _neturl.PathEscape(parameterToString(r.endpointId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
-	if strlen(r.endpointId) < 1 {
-		return localVarReturnValue, nil, reportError("endpointId must have at least 1 elements")
-	}
-	if strlen(r.endpointId) > 256 {
-		return localVarReturnValue, nil, reportError("endpointId must have less than 256 elements")
-	}
 	if strlen(r.appId) < 1 {
 		return localVarReturnValue, nil, reportError("appId must have at least 1 elements")
 	}
 	if strlen(r.appId) > 256 {
 		return localVarReturnValue, nil, reportError("appId must have less than 256 elements")
+	}
+	if strlen(r.endpointId) < 1 {
+		return localVarReturnValue, nil, reportError("endpointId must have at least 1 elements")
+	}
+	if strlen(r.endpointId) > 256 {
+		return localVarReturnValue, nil, reportError("endpointId must have less than 256 elements")
 	}
 
 	if r.startDate != nil {
@@ -328,9 +494,6 @@ func (a *StatisticsApiService) GetEpStatsApiV1StatsAppAppIdEpEndpointIdAttemptGe
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	if r.idempotencyKey != nil {
-		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {

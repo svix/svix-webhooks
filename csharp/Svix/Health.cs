@@ -23,7 +23,7 @@ namespace Svix
         {
             try
             {
-                var lResponse = _healthApi.HealthApiV1HealthGetWithHttpInfo(idempotencyKey);
+                var lResponse = _healthApi.V1HealthGetWithHttpInfo();
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
             }
@@ -42,7 +42,7 @@ namespace Svix
         {
             try
             {
-                var lResponse = await _healthApi.HealthApiV1HealthGetWithHttpInfoAsync(idempotencyKey, cancellationToken)
+                var lResponse = await _healthApi.V1HealthGetWithHttpInfoAsync(cancellationToken)
                     .ConfigureAwait(false);
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;

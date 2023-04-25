@@ -23,7 +23,7 @@ type MessageOut struct {
 	EventId NullableString `json:"eventId,omitempty"`
 	EventType string `json:"eventType"`
 	Id string `json:"id"`
-	Payload map[string]interface{} `json:"payload"`
+	Payload interface{} `json:"payload"`
 	Timestamp time.Time `json:"timestamp"`
 }
 
@@ -31,7 +31,7 @@ type MessageOut struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewMessageOut(eventType string, id string, payload map[string]interface{}, timestamp time.Time) *MessageOut {
+func NewMessageOut(eventType string, id string, payload interface{}, timestamp time.Time) *MessageOut {
 	this := MessageOut{}
 	this.EventType = eventType
 	this.Id = id
@@ -172,9 +172,10 @@ func (o *MessageOut) SetId(v string) {
 }
 
 // GetPayload returns the Payload field value
-func (o *MessageOut) GetPayload() map[string]interface{} {
+// If the value is explicit nil, the zero value for interface{} will be returned
+func (o *MessageOut) GetPayload() interface{} {
 	if o == nil {
-		var ret map[string]interface{}
+		var ret interface{}
 		return ret
 	}
 
@@ -183,15 +184,16 @@ func (o *MessageOut) GetPayload() map[string]interface{} {
 
 // GetPayloadOk returns a tuple with the Payload field value
 // and a boolean to check if the value has been set.
-func (o *MessageOut) GetPayloadOk() (*map[string]interface{}, bool) {
-	if o == nil  {
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *MessageOut) GetPayloadOk() (*interface{}, bool) {
+	if o == nil || o.Payload == nil {
 		return nil, false
 	}
 	return &o.Payload, true
 }
 
 // SetPayload sets field value
-func (o *MessageOut) SetPayload(v map[string]interface{}) {
+func (o *MessageOut) SetPayload(v interface{}) {
 	o.Payload = v
 }
 
@@ -233,7 +235,7 @@ func (o MessageOut) MarshalJSON() ([]byte, error) {
 	if true {
 		toSerialize["id"] = o.Id
 	}
-	if true {
+	if o.Payload != nil {
 		toSerialize["payload"] = o.Payload
 	}
 	if true {

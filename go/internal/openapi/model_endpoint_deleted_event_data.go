@@ -17,10 +17,8 @@ import (
 // EndpointDeletedEventData struct for EndpointDeletedEventData
 type EndpointDeletedEventData struct {
 	AppId string `json:"appId"`
-	// Optional unique identifier for the application
 	AppUid NullableString `json:"appUid,omitempty"`
 	EndpointId string `json:"endpointId"`
-	// Optional unique identifier for the endpoint
 	EndpointUid NullableString `json:"endpointUid,omitempty"`
 }
 

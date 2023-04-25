@@ -7,19 +7,19 @@ module Svix
     end
 
     def list(app_id, options = {})
-      return @api.list_messages_api_v1_app_app_id_msg_get(app_id, options)
+      return @api.v1_message_list(app_id, options)
     end
 
     def create(app_id, message_in, options = {})
-      return @api.create_message_api_v1_app_app_id_msg_post(app_id, message_in, options)
+      return @api.v1_message_create(app_id, message_in, options)
     end
 
     def get(app_id, msg_id)
-      return @api.get_message_api_v1_app_app_id_msg_msg_id_get(msg_id, app_id)
+      return @api.v1_message_get(app_id, msg_id)
     end
 
     def expunge_content(app_id, msg_id)
-      return @api.expunge_message_payload_api_v1_app_app_id_msg_msg_id_content_delete(msg_id, app_id)
+      return @api.v1_message_expunge_content(app_id, msg_id)
     end
   end
 end

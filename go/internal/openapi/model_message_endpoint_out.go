@@ -20,16 +20,17 @@ type MessageEndpointOut struct {
 	// List of message channels this endpoint listens to (omit for all)
 	Channels []string `json:"channels,omitempty"`
 	CreatedAt time.Time `json:"createdAt"`
-	Description *string `json:"description,omitempty"`
+	// An example endpoint name
+	Description string `json:"description"`
 	Disabled *bool `json:"disabled,omitempty"`
 	FilterTypes []string `json:"filterTypes,omitempty"`
 	Id string `json:"id"`
-	Metadata map[string]string `json:"metadata,omitempty"`
 	NextAttempt NullableTime `json:"nextAttempt,omitempty"`
 	RateLimit NullableInt32 `json:"rateLimit,omitempty"`
 	Status MessageStatus `json:"status"`
 	// Optional unique identifier for the endpoint
 	Uid NullableString `json:"uid,omitempty"`
+	UpdatedAt time.Time `json:"updatedAt"`
 	Url string `json:"url"`
 	Version int32 `json:"version"`
 }
@@ -38,15 +39,15 @@ type MessageEndpointOut struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewMessageEndpointOut(createdAt time.Time, id string, status MessageStatus, url string, version int32) *MessageEndpointOut {
+func NewMessageEndpointOut(createdAt time.Time, description string, id string, status MessageStatus, updatedAt time.Time, url string, version int32) *MessageEndpointOut {
 	this := MessageEndpointOut{}
 	this.CreatedAt = createdAt
-	var description string = ""
-	this.Description = &description
+	this.Description = description
 	var disabled bool = false
 	this.Disabled = &disabled
 	this.Id = id
 	this.Status = status
+	this.UpdatedAt = updatedAt
 	this.Url = url
 	this.Version = version
 	return &this
@@ -57,8 +58,6 @@ func NewMessageEndpointOut(createdAt time.Time, id string, status MessageStatus,
 // but it doesn't guarantee that properties required by API are set
 func NewMessageEndpointOutWithDefaults() *MessageEndpointOut {
 	this := MessageEndpointOut{}
-	var description string = ""
-	this.Description = &description
 	var disabled bool = false
 	this.Disabled = &disabled
 	return &this
@@ -121,36 +120,28 @@ func (o *MessageEndpointOut) SetCreatedAt(v time.Time) {
 	o.CreatedAt = v
 }
 
-// GetDescription returns the Description field value if set, zero value otherwise.
+// GetDescription returns the Description field value
 func (o *MessageEndpointOut) GetDescription() string {
-	if o == nil || o.Description == nil {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Description
+
+	return o.Description
 }
 
-// GetDescriptionOk returns a tuple with the Description field value if set, nil otherwise
+// GetDescriptionOk returns a tuple with the Description field value
 // and a boolean to check if the value has been set.
 func (o *MessageEndpointOut) GetDescriptionOk() (*string, bool) {
-	if o == nil || o.Description == nil {
+	if o == nil  {
 		return nil, false
 	}
-	return o.Description, true
+	return &o.Description, true
 }
 
-// HasDescription returns a boolean if a field has been set.
-func (o *MessageEndpointOut) HasDescription() bool {
-	if o != nil && o.Description != nil {
-		return true
-	}
-
-	return false
-}
-
-// SetDescription gets a reference to the given string and assigns it to the Description field.
+// SetDescription sets field value
 func (o *MessageEndpointOut) SetDescription(v string) {
-	o.Description = &v
+	o.Description = v
 }
 
 // GetDisabled returns the Disabled field value if set, zero value otherwise.
@@ -240,39 +231,6 @@ func (o *MessageEndpointOut) GetIdOk() (*string, bool) {
 // SetId sets field value
 func (o *MessageEndpointOut) SetId(v string) {
 	o.Id = v
-}
-
-// GetMetadata returns the Metadata field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *MessageEndpointOut) GetMetadata() map[string]string {
-	if o == nil  {
-		var ret map[string]string
-		return ret
-	}
-	return o.Metadata
-}
-
-// GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *MessageEndpointOut) GetMetadataOk() (*map[string]string, bool) {
-	if o == nil || o.Metadata == nil {
-		return nil, false
-	}
-	return &o.Metadata, true
-}
-
-// HasMetadata returns a boolean if a field has been set.
-func (o *MessageEndpointOut) HasMetadata() bool {
-	if o != nil && o.Metadata != nil {
-		return true
-	}
-
-	return false
-}
-
-// SetMetadata gets a reference to the given map[string]string and assigns it to the Metadata field.
-func (o *MessageEndpointOut) SetMetadata(v map[string]string) {
-	o.Metadata = v
 }
 
 // GetNextAttempt returns the NextAttempt field value if set, zero value otherwise (both if not set or set to explicit null).
@@ -425,6 +383,30 @@ func (o *MessageEndpointOut) UnsetUid() {
 	o.Uid.Unset()
 }
 
+// GetUpdatedAt returns the UpdatedAt field value
+func (o *MessageEndpointOut) GetUpdatedAt() time.Time {
+	if o == nil {
+		var ret time.Time
+		return ret
+	}
+
+	return o.UpdatedAt
+}
+
+// GetUpdatedAtOk returns a tuple with the UpdatedAt field value
+// and a boolean to check if the value has been set.
+func (o *MessageEndpointOut) GetUpdatedAtOk() (*time.Time, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.UpdatedAt, true
+}
+
+// SetUpdatedAt sets field value
+func (o *MessageEndpointOut) SetUpdatedAt(v time.Time) {
+	o.UpdatedAt = v
+}
+
 // GetUrl returns the Url field value
 func (o *MessageEndpointOut) GetUrl() string {
 	if o == nil {
@@ -481,7 +463,7 @@ func (o MessageEndpointOut) MarshalJSON() ([]byte, error) {
 	if true {
 		toSerialize["createdAt"] = o.CreatedAt
 	}
-	if o.Description != nil {
+	if true {
 		toSerialize["description"] = o.Description
 	}
 	if o.Disabled != nil {
@@ -492,9 +474,6 @@ func (o MessageEndpointOut) MarshalJSON() ([]byte, error) {
 	}
 	if true {
 		toSerialize["id"] = o.Id
-	}
-	if o.Metadata != nil {
-		toSerialize["metadata"] = o.Metadata
 	}
 	if o.NextAttempt.IsSet() {
 		toSerialize["nextAttempt"] = o.NextAttempt.Get()
@@ -507,6 +486,9 @@ func (o MessageEndpointOut) MarshalJSON() ([]byte, error) {
 	}
 	if o.Uid.IsSet() {
 		toSerialize["uid"] = o.Uid.Get()
+	}
+	if true {
+		toSerialize["updatedAt"] = o.UpdatedAt
 	}
 	if true {
 		toSerialize["url"] = o.Url

@@ -16,15 +16,16 @@ import (
 
 // HTTPValidationError struct for HTTPValidationError
 type HTTPValidationError struct {
-	Detail *[]ValidationError `json:"detail,omitempty"`
+	Detail []ValidationError `json:"detail"`
 }
 
 // NewHTTPValidationError instantiates a new HTTPValidationError object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewHTTPValidationError() *HTTPValidationError {
+func NewHTTPValidationError(detail []ValidationError) *HTTPValidationError {
 	this := HTTPValidationError{}
+	this.Detail = detail
 	return &this
 }
 
@@ -36,41 +37,33 @@ func NewHTTPValidationErrorWithDefaults() *HTTPValidationError {
 	return &this
 }
 
-// GetDetail returns the Detail field value if set, zero value otherwise.
+// GetDetail returns the Detail field value
 func (o *HTTPValidationError) GetDetail() []ValidationError {
-	if o == nil || o.Detail == nil {
+	if o == nil {
 		var ret []ValidationError
 		return ret
 	}
-	return *o.Detail
+
+	return o.Detail
 }
 
-// GetDetailOk returns a tuple with the Detail field value if set, nil otherwise
+// GetDetailOk returns a tuple with the Detail field value
 // and a boolean to check if the value has been set.
 func (o *HTTPValidationError) GetDetailOk() (*[]ValidationError, bool) {
-	if o == nil || o.Detail == nil {
+	if o == nil  {
 		return nil, false
 	}
-	return o.Detail, true
+	return &o.Detail, true
 }
 
-// HasDetail returns a boolean if a field has been set.
-func (o *HTTPValidationError) HasDetail() bool {
-	if o != nil && o.Detail != nil {
-		return true
-	}
-
-	return false
-}
-
-// SetDetail gets a reference to the given []ValidationError and assigns it to the Detail field.
+// SetDetail sets field value
 func (o *HTTPValidationError) SetDetail(v []ValidationError) {
-	o.Detail = &v
+	o.Detail = v
 }
 
 func (o HTTPValidationError) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Detail != nil {
+	if true {
 		toSerialize["detail"] = o.Detail
 	}
 	return json.Marshal(toSerialize)

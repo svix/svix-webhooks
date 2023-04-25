@@ -23,7 +23,7 @@ type ApplicationListOptions struct {
 }
 
 func (a *Application) List(ctx context.Context, options *ApplicationListOptions) (*ListResponseApplicationOut, error) {
-	req := a.api.ApplicationApi.ListApplicationsApiV1AppGet(ctx)
+	req := a.api.ApplicationApi.V1ApplicationList(ctx)
 	if options != nil {
 		if options.Iterator != nil {
 			req = req.Iterator(*options.Iterator)
@@ -48,7 +48,7 @@ func (a *Application) Create(ctx context.Context, applicationIn *ApplicationIn) 
 }
 
 func (a *Application) CreateWithOptions(ctx context.Context, applicationIn *ApplicationIn, options *PostOptions) (*ApplicationOut, error) {
-	req := a.api.ApplicationApi.CreateApplicationApiV1AppPost(ctx)
+	req := a.api.ApplicationApi.V1ApplicationCreate(ctx)
 	req = req.ApplicationIn(openapi.ApplicationIn(*applicationIn))
 	if options != nil {
 		if options.IdempotencyKey != nil {
@@ -68,7 +68,7 @@ func (a *Application) GetOrCreate(ctx context.Context, applicationIn *Applicatio
 }
 
 func (a *Application) GetOrCreateWithOptions(ctx context.Context, applicationIn *ApplicationIn, options *PostOptions) (*ApplicationOut, error) {
-	req := a.api.ApplicationApi.CreateApplicationApiV1AppPost(ctx)
+	req := a.api.ApplicationApi.V1ApplicationCreate(ctx)
 	req = req.ApplicationIn(openapi.ApplicationIn(*applicationIn))
 	req = req.GetIfExists(true)
 	if options != nil {
@@ -85,7 +85,7 @@ func (a *Application) GetOrCreateWithOptions(ctx context.Context, applicationIn 
 }
 
 func (a *Application) Get(ctx context.Context, appId string) (*ApplicationOut, error) {
-	req := a.api.ApplicationApi.GetApplicationApiV1AppAppIdGet(ctx, appId)
+	req := a.api.ApplicationApi.V1ApplicationGet(ctx, appId)
 	resp, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
@@ -95,7 +95,7 @@ func (a *Application) Get(ctx context.Context, appId string) (*ApplicationOut, e
 }
 
 func (a *Application) Update(ctx context.Context, appId string, applicationIn *ApplicationIn) (*ApplicationOut, error) {
-	req := a.api.ApplicationApi.UpdateApplicationApiV1AppAppIdPut(ctx, appId)
+	req := a.api.ApplicationApi.V1ApplicationUpdate(ctx, appId)
 	req = req.ApplicationIn(openapi.ApplicationIn(*applicationIn))
 	resp, res, err := req.Execute()
 	if err != nil {
@@ -106,7 +106,7 @@ func (a *Application) Update(ctx context.Context, appId string, applicationIn *A
 }
 
 func (a *Application) Delete(ctx context.Context, appId string) error {
-	req := a.api.ApplicationApi.DeleteApplicationApiV1AppAppIdDelete(ctx, appId)
+	req := a.api.ApplicationApi.V1ApplicationDelete(ctx, appId)
 	res, err := req.Execute()
 	return wrapError(err, res)
 }

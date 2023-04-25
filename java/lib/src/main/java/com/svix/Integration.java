@@ -17,7 +17,7 @@ public final class Integration {
 
 	public ListResponseIntegrationOut list(final String appId, final IntegrationListOptions options) throws ApiException {
 		try {
-			return api.listIntegrationsApiV1AppAppIdIntegrationGet(appId, options.getIterator(), options.getLimit(), null);
+			return api.v1IntegrationList(appId, options.getLimit(), options.getIterator());
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
@@ -29,7 +29,7 @@ public final class Integration {
 
 	public IntegrationOut create(final String appId, final IntegrationIn integrationIn, final PostOptions options) throws ApiException {
 		try {
-			return api.createIntegrationApiV1AppAppIdIntegrationPost(appId, integrationIn, options.getIdempotencyKey());
+			return api.v1IntegrationCreate(appId, integrationIn, options.getIdempotencyKey());
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
@@ -37,7 +37,7 @@ public final class Integration {
 
 	public IntegrationOut get(final String appId, final String integId) throws ApiException {
 		try {
-			return api.getIntegrationApiV1AppAppIdIntegrationIntegIdGet(integId, appId, null);
+			return api.v1IntegrationGet(appId, integId);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
@@ -45,7 +45,7 @@ public final class Integration {
 
 	public IntegrationOut update(final String appId, final String integId, final IntegrationUpdate integUpdate) throws ApiException {
 		try {
-			return api.updateIntegrationApiV1AppAppIdIntegrationIntegIdPut(integId, appId, integUpdate, null);
+			return api.v1IntegrationUpdate(appId, integId, integUpdate);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
@@ -53,7 +53,7 @@ public final class Integration {
 
 	public void delete(final String appId, final String integId) throws ApiException {
 		try {
-			api.deleteIntegrationApiV1AppAppIdIntegrationIntegIdDelete(integId, appId, null);
+			api.v1IntegrationDelete(appId, integId);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
@@ -61,7 +61,7 @@ public final class Integration {
 
 	public IntegrationKeyOut getKey(final String appId, final String integId) throws ApiException {
 		try {
-			return api.getIntegrationKeyApiV1AppAppIdIntegrationIntegIdKeyGet(integId, appId, null);
+			return api.v1IntegrationGetKey(appId, integId);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
@@ -73,7 +73,7 @@ public final class Integration {
 
 	public IntegrationKeyOut rotateKey(final String appId, final String integId, final PostOptions options) throws ApiException {
 		try {
-			return api.rotateIntegrationKeyApiV1AppAppIdIntegrationIntegIdKeyRotatePost(integId, appId, options.getIdempotencyKey());
+			return api.v1IntegrationRotateKey(appId, integId, options.getIdempotencyKey());
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}

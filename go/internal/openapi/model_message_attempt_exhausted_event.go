@@ -17,18 +17,17 @@ import (
 // MessageAttemptExhaustedEvent Sent when a message delivery has failed (all of the retry attempts have been exhausted).
 type MessageAttemptExhaustedEvent struct {
 	Data MessageAttemptExhaustedEventData `json:"data"`
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // NewMessageAttemptExhaustedEvent instantiates a new MessageAttemptExhaustedEvent object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewMessageAttemptExhaustedEvent(data MessageAttemptExhaustedEventData) *MessageAttemptExhaustedEvent {
+func NewMessageAttemptExhaustedEvent(data MessageAttemptExhaustedEventData, type_ string) *MessageAttemptExhaustedEvent {
 	this := MessageAttemptExhaustedEvent{}
 	this.Data = data
-	var type_ string = "message.attempt.exhausted"
-	this.Type = &type_
+	this.Type = type_
 	return &this
 }
 
@@ -38,7 +37,7 @@ func NewMessageAttemptExhaustedEvent(data MessageAttemptExhaustedEventData) *Mes
 func NewMessageAttemptExhaustedEventWithDefaults() *MessageAttemptExhaustedEvent {
 	this := MessageAttemptExhaustedEvent{}
 	var type_ string = "message.attempt.exhausted"
-	this.Type = &type_
+	this.Type = type_
 	return &this
 }
 
@@ -66,36 +65,28 @@ func (o *MessageAttemptExhaustedEvent) SetData(v MessageAttemptExhaustedEventDat
 	o.Data = v
 }
 
-// GetType returns the Type field value if set, zero value otherwise.
+// GetType returns the Type field value
 func (o *MessageAttemptExhaustedEvent) GetType() string {
-	if o == nil || o.Type == nil {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Type
+
+	return o.Type
 }
 
-// GetTypeOk returns a tuple with the Type field value if set, nil otherwise
+// GetTypeOk returns a tuple with the Type field value
 // and a boolean to check if the value has been set.
 func (o *MessageAttemptExhaustedEvent) GetTypeOk() (*string, bool) {
-	if o == nil || o.Type == nil {
+	if o == nil  {
 		return nil, false
 	}
-	return o.Type, true
+	return &o.Type, true
 }
 
-// HasType returns a boolean if a field has been set.
-func (o *MessageAttemptExhaustedEvent) HasType() bool {
-	if o != nil && o.Type != nil {
-		return true
-	}
-
-	return false
-}
-
-// SetType gets a reference to the given string and assigns it to the Type field.
+// SetType sets field value
 func (o *MessageAttemptExhaustedEvent) SetType(v string) {
-	o.Type = &v
+	o.Type = v
 }
 
 func (o MessageAttemptExhaustedEvent) MarshalJSON() ([]byte, error) {
@@ -103,7 +94,7 @@ func (o MessageAttemptExhaustedEvent) MarshalJSON() ([]byte, error) {
 	if true {
 		toSerialize["data"] = o.Data
 	}
-	if o.Type != nil {
+	if true {
 		toSerialize["type"] = o.Type
 	}
 	return json.Marshal(toSerialize)

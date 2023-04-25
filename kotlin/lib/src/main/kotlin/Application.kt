@@ -18,7 +18,7 @@ class Application internal constructor(token: String, options: SvixOptions) {
 
     suspend fun list(options: ApplicationListOptions = ApplicationListOptions()): ListResponseApplicationOut {
         try {
-            return api.listApplicationsApiV1AppGet(options.iterator, options.limit, options.order, null)
+            return api.v1ApplicationList(options.limit, options.iterator, options.order)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -26,7 +26,7 @@ class Application internal constructor(token: String, options: SvixOptions) {
 
     suspend fun create(applicationIn: ApplicationIn, options: PostOptions = PostOptions()): ApplicationOut {
         try {
-            return api.createApplicationApiV1AppPost(applicationIn, null, options.idempotencyKey)
+            return api.v1ApplicationCreate(applicationIn, null, options.idempotencyKey)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -34,7 +34,7 @@ class Application internal constructor(token: String, options: SvixOptions) {
 
     suspend fun getOrCreate(applicationIn: ApplicationIn, options: PostOptions = PostOptions()): ApplicationOut {
         try {
-            return api.createApplicationApiV1AppPost(applicationIn, true, options.idempotencyKey)
+            return api.v1ApplicationCreate(applicationIn, true, options.idempotencyKey)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -42,7 +42,7 @@ class Application internal constructor(token: String, options: SvixOptions) {
 
     suspend fun get(appId: String): ApplicationOut {
         try {
-            return api.getApplicationApiV1AppAppIdGet(appId, null)
+            return api.v1ApplicationGet(appId)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -50,7 +50,7 @@ class Application internal constructor(token: String, options: SvixOptions) {
 
     suspend fun update(appId: String, applicationIn: ApplicationIn): ApplicationOut {
         try {
-            return api.updateApplicationApiV1AppAppIdPut(appId, applicationIn, null)
+            return api.v1ApplicationUpdate(appId, applicationIn)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -58,7 +58,7 @@ class Application internal constructor(token: String, options: SvixOptions) {
 
     suspend fun delete(appId: String) {
         try {
-            api.deleteApplicationApiV1AppAppIdDelete(appId, null)
+            api.v1ApplicationDelete(appId)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }

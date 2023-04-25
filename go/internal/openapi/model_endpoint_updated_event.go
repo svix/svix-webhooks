@@ -17,18 +17,17 @@ import (
 // EndpointUpdatedEvent Sent when an endpoint is updated.
 type EndpointUpdatedEvent struct {
 	Data EndpointUpdatedEventData `json:"data"`
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 // NewEndpointUpdatedEvent instantiates a new EndpointUpdatedEvent object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEndpointUpdatedEvent(data EndpointUpdatedEventData) *EndpointUpdatedEvent {
+func NewEndpointUpdatedEvent(data EndpointUpdatedEventData, type_ string) *EndpointUpdatedEvent {
 	this := EndpointUpdatedEvent{}
 	this.Data = data
-	var type_ string = "endpoint.updated"
-	this.Type = &type_
+	this.Type = type_
 	return &this
 }
 
@@ -38,7 +37,7 @@ func NewEndpointUpdatedEvent(data EndpointUpdatedEventData) *EndpointUpdatedEven
 func NewEndpointUpdatedEventWithDefaults() *EndpointUpdatedEvent {
 	this := EndpointUpdatedEvent{}
 	var type_ string = "endpoint.updated"
-	this.Type = &type_
+	this.Type = type_
 	return &this
 }
 
@@ -66,36 +65,28 @@ func (o *EndpointUpdatedEvent) SetData(v EndpointUpdatedEventData) {
 	o.Data = v
 }
 
-// GetType returns the Type field value if set, zero value otherwise.
+// GetType returns the Type field value
 func (o *EndpointUpdatedEvent) GetType() string {
-	if o == nil || o.Type == nil {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Type
+
+	return o.Type
 }
 
-// GetTypeOk returns a tuple with the Type field value if set, nil otherwise
+// GetTypeOk returns a tuple with the Type field value
 // and a boolean to check if the value has been set.
 func (o *EndpointUpdatedEvent) GetTypeOk() (*string, bool) {
-	if o == nil || o.Type == nil {
+	if o == nil  {
 		return nil, false
 	}
-	return o.Type, true
+	return &o.Type, true
 }
 
-// HasType returns a boolean if a field has been set.
-func (o *EndpointUpdatedEvent) HasType() bool {
-	if o != nil && o.Type != nil {
-		return true
-	}
-
-	return false
-}
-
-// SetType gets a reference to the given string and assigns it to the Type field.
+// SetType sets field value
 func (o *EndpointUpdatedEvent) SetType(v string) {
-	o.Type = &v
+	o.Type = v
 }
 
 func (o EndpointUpdatedEvent) MarshalJSON() ([]byte, error) {
@@ -103,7 +94,7 @@ func (o EndpointUpdatedEvent) MarshalJSON() ([]byte, error) {
 	if true {
 		toSerialize["data"] = o.Data
 	}
-	if o.Type != nil {
+	if true {
 		toSerialize["type"] = o.Type
 	}
 	return json.Marshal(toSerialize)

@@ -1,5 +1,7 @@
 package com.svix;
 
+import java.util.HashSet;
+
 import com.svix.exceptions.ApiException;
 import com.svix.internal.api.MessageApi;
 import com.svix.models.ListResponseMessageOut;
@@ -16,15 +18,14 @@ public final class Message {
 
 	public ListResponseMessageOut list(final String appId, final MessageListOptions options) throws ApiException {
 		try {
-			return api.listMessagesApiV1AppAppIdMsgGet(
+			return api.v1MessageList(
 					appId,
-					options.getIterator(),
 					options.getLimit(),
-					options.getEventTypes(),
+					options.getIterator(),
 					options.getChannel(),
 					options.getBefore(),
 					options.getAfter(),
-					null
+					new HashSet<>(options.getEventTypes())
 			);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
@@ -37,7 +38,7 @@ public final class Message {
 
 	public MessageOut create(final String appId, final MessageIn messageIn, final PostOptions options) throws ApiException {
 		try {
-			return api.createMessageApiV1AppAppIdMsgPost(appId, messageIn.payload(getPayload(messageIn.getPayload())), null, options.getIdempotencyKey());
+			return api.v1MessageCreate(appId, messageIn.payload(getPayload(messageIn.getPayload())), null, options.getIdempotencyKey());
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
@@ -45,7 +46,7 @@ public final class Message {
 
 	public MessageOut get(final String msgId, final String appId) throws ApiException {
 		try {
-			return api.getMessageApiV1AppAppIdMsgMsgIdGet(msgId, appId, null);
+			return api.v1MessageGet(appId, msgId, null);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
@@ -53,7 +54,7 @@ public final class Message {
 
 	public void expungeContent(final String msgId, final String appId) throws ApiException {
 		try {
-			api.expungeMessagePayloadApiV1AppAppIdMsgMsgIdContentDelete(msgId, appId, null);
+			api.v1MessageExpungeContent(appId, msgId);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}

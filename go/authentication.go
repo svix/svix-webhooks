@@ -21,7 +21,7 @@ func (a *Authentication) AppPortalAccess(ctx context.Context, appId string, appP
 }
 
 func (a *Authentication) AppPortalAccessWithOptions(ctx context.Context, appId string, appPortalAccessIn *AppPortalAccessIn, options *PostOptions) (*AppPortalAccessOut, error) {
-	req := a.api.AuthenticationApi.GetAppPortalAccessApiV1AuthAppPortalAccessAppIdPost(ctx, appId)
+	req := a.api.AuthenticationApi.V1AuthenticationAppPortalAccess(ctx, appId)
 	req = req.AppPortalAccessIn(openapi.AppPortalAccessIn(*appPortalAccessIn))
 	if options != nil {
 		if options.IdempotencyKey != nil {
@@ -41,7 +41,7 @@ func (a *Authentication) DashboardAccess(ctx context.Context, appId string) (*Da
 }
 
 func (a *Authentication) DashboardAccessWithOptions(ctx context.Context, appId string, options *PostOptions) (*DashboardAccessOut, error) {
-	req := a.api.AuthenticationApi.GetDashboardAccessApiV1AuthDashboardAccessAppIdPost(ctx, appId)
+	req := a.api.AuthenticationApi.V1AuthenticationDashboardAccess(ctx, appId)
 	if options != nil {
 		if options.IdempotencyKey != nil {
 			req = req.IdempotencyKey(*options.IdempotencyKey)
@@ -60,7 +60,7 @@ func (a *Authentication) Logout(ctx context.Context) error {
 }
 
 func (a *Authentication) LogoutWithOptions(ctx context.Context, options *PostOptions) error {
-	req := a.api.AuthenticationApi.LogoutApiV1AuthLogoutPost(ctx)
+	req := a.api.AuthenticationApi.V1AuthenticationLogout(ctx)
 	if options != nil {
 		if options.IdempotencyKey != nil {
 			req = req.IdempotencyKey(*options.IdempotencyKey)

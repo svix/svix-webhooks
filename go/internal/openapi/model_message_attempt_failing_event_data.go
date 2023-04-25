@@ -14,14 +14,12 @@ import (
 	"encoding/json"
 )
 
-// MessageAttemptFailingEventData struct for MessageAttemptFailingEventData
+// MessageAttemptFailingEventData Sent when a message delivery has failed (all of the retry attempts have been exhausted) as a \"message.attempt.exhausted\" type or after it's failed four times as a \"message.attempt.failing\" event.
 type MessageAttemptFailingEventData struct {
 	AppId string `json:"appId"`
-	// Optional unique identifier for the application
 	AppUid NullableString `json:"appUid,omitempty"`
 	EndpointId string `json:"endpointId"`
 	LastAttempt MessageAttemptFailedData `json:"lastAttempt"`
-	// Optional unique identifier for the message
 	MsgEventId NullableString `json:"msgEventId,omitempty"`
 	MsgId string `json:"msgId"`
 }
