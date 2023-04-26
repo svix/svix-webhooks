@@ -2281,6 +2281,13 @@
             },
             "MessageAttemptHeadersOut": {
                 "properties": {
+                    "sensitive": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "uniqueItems": true
+                    },
                     "sentHeaders": {
                         "additionalProperties": {
                             "type": "string"
@@ -2289,6 +2296,7 @@
                     }
                 },
                 "required": [
+                    "sensitive",
                     "sentHeaders"
                 ],
                 "type": "object"

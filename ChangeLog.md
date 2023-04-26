@@ -3,6 +3,13 @@
 ## Next
 * 
 
+## Version 0.84.0
+* Server: add (beta) RabbitMQ implementation
+* Server: upgrade redis-rs and a few other dependencies
+* Server: improve OpenAPI generation
+* Server: fix issue with Redis being required in the docker image
+* Libs/Rust: support choosing the wanted TLS implementation
+
 ## Version 0.83.1
 * Libs: update OpenAPI spec
 

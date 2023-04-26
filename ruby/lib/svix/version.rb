@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
 module Svix
-  VERSION = "0.83.1"
+  VERSION = "0.84.0"
 end
