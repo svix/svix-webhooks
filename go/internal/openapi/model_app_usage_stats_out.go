@@ -14,146 +14,151 @@ import (
 	"encoding/json"
 )
 
-// EndpointTransformationIn struct for EndpointTransformationIn
-type EndpointTransformationIn struct {
-	Code NullableString `json:"code,omitempty"`
-	Enabled *bool `json:"enabled,omitempty"`
+// AppUsageStatsOut struct for AppUsageStatsOut
+type AppUsageStatsOut struct {
+	Id string `json:"id"`
+	Status BackgroundTaskStatus `json:"status"`
+	Task BackgroundTaskType `json:"task"`
 }
 
-// NewEndpointTransformationIn instantiates a new EndpointTransformationIn object
+// NewAppUsageStatsOut instantiates a new AppUsageStatsOut object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEndpointTransformationIn() *EndpointTransformationIn {
-	this := EndpointTransformationIn{}
+func NewAppUsageStatsOut(id string, status BackgroundTaskStatus, task BackgroundTaskType) *AppUsageStatsOut {
+	this := AppUsageStatsOut{}
+	this.Id = id
+	this.Status = status
+	this.Task = task
 	return &this
 }
 
-// NewEndpointTransformationInWithDefaults instantiates a new EndpointTransformationIn object
+// NewAppUsageStatsOutWithDefaults instantiates a new AppUsageStatsOut object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewEndpointTransformationInWithDefaults() *EndpointTransformationIn {
-	this := EndpointTransformationIn{}
+func NewAppUsageStatsOutWithDefaults() *AppUsageStatsOut {
+	this := AppUsageStatsOut{}
 	return &this
 }
 
-// GetCode returns the Code field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *EndpointTransformationIn) GetCode() string {
-	if o == nil || o.Code.Get() == nil {
+// GetId returns the Id field value
+func (o *AppUsageStatsOut) GetId() string {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Code.Get()
+
+	return o.Id
 }
 
-// GetCodeOk returns a tuple with the Code field value if set, nil otherwise
+// GetIdOk returns a tuple with the Id field value
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *EndpointTransformationIn) GetCodeOk() (*string, bool) {
+func (o *AppUsageStatsOut) GetIdOk() (*string, bool) {
 	if o == nil  {
 		return nil, false
 	}
-	return o.Code.Get(), o.Code.IsSet()
+	return &o.Id, true
 }
 
-// HasCode returns a boolean if a field has been set.
-func (o *EndpointTransformationIn) HasCode() bool {
-	if o != nil && o.Code.IsSet() {
-		return true
-	}
-
-	return false
+// SetId sets field value
+func (o *AppUsageStatsOut) SetId(v string) {
+	o.Id = v
 }
 
-// SetCode gets a reference to the given NullableString and assigns it to the Code field.
-func (o *EndpointTransformationIn) SetCode(v string) {
-	o.Code.Set(&v)
-}
-// SetCodeNil sets the value for Code to be an explicit nil
-func (o *EndpointTransformationIn) SetCodeNil() {
-	o.Code.Set(nil)
-}
-
-// UnsetCode ensures that no value is present for Code, not even an explicit nil
-func (o *EndpointTransformationIn) UnsetCode() {
-	o.Code.Unset()
-}
-
-// GetEnabled returns the Enabled field value if set, zero value otherwise.
-func (o *EndpointTransformationIn) GetEnabled() bool {
-	if o == nil || o.Enabled == nil {
-		var ret bool
+// GetStatus returns the Status field value
+func (o *AppUsageStatsOut) GetStatus() BackgroundTaskStatus {
+	if o == nil {
+		var ret BackgroundTaskStatus
 		return ret
 	}
-	return *o.Enabled
+
+	return o.Status
 }
 
-// GetEnabledOk returns a tuple with the Enabled field value if set, nil otherwise
+// GetStatusOk returns a tuple with the Status field value
 // and a boolean to check if the value has been set.
-func (o *EndpointTransformationIn) GetEnabledOk() (*bool, bool) {
-	if o == nil || o.Enabled == nil {
+func (o *AppUsageStatsOut) GetStatusOk() (*BackgroundTaskStatus, bool) {
+	if o == nil  {
 		return nil, false
 	}
-	return o.Enabled, true
+	return &o.Status, true
 }
 
-// HasEnabled returns a boolean if a field has been set.
-func (o *EndpointTransformationIn) HasEnabled() bool {
-	if o != nil && o.Enabled != nil {
-		return true
+// SetStatus sets field value
+func (o *AppUsageStatsOut) SetStatus(v BackgroundTaskStatus) {
+	o.Status = v
+}
+
+// GetTask returns the Task field value
+func (o *AppUsageStatsOut) GetTask() BackgroundTaskType {
+	if o == nil {
+		var ret BackgroundTaskType
+		return ret
 	}
 
-	return false
+	return o.Task
 }
 
-// SetEnabled gets a reference to the given bool and assigns it to the Enabled field.
-func (o *EndpointTransformationIn) SetEnabled(v bool) {
-	o.Enabled = &v
+// GetTaskOk returns a tuple with the Task field value
+// and a boolean to check if the value has been set.
+func (o *AppUsageStatsOut) GetTaskOk() (*BackgroundTaskType, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.Task, true
 }
 
-func (o EndpointTransformationIn) MarshalJSON() ([]byte, error) {
+// SetTask sets field value
+func (o *AppUsageStatsOut) SetTask(v BackgroundTaskType) {
+	o.Task = v
+}
+
+func (o AppUsageStatsOut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Code.IsSet() {
-		toSerialize["code"] = o.Code.Get()
+	if true {
+		toSerialize["id"] = o.Id
 	}
-	if o.Enabled != nil {
-		toSerialize["enabled"] = o.Enabled
+	if true {
+		toSerialize["status"] = o.Status
+	}
+	if true {
+		toSerialize["task"] = o.Task
 	}
 	return json.Marshal(toSerialize)
 }
 
-type NullableEndpointTransformationIn struct {
-	value *EndpointTransformationIn
+type NullableAppUsageStatsOut struct {
+	value *AppUsageStatsOut
 	isSet bool
 }
 
-func (v NullableEndpointTransformationIn) Get() *EndpointTransformationIn {
+func (v NullableAppUsageStatsOut) Get() *AppUsageStatsOut {
 	return v.value
 }
 
-func (v *NullableEndpointTransformationIn) Set(val *EndpointTransformationIn) {
+func (v *NullableAppUsageStatsOut) Set(val *AppUsageStatsOut) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableEndpointTransformationIn) IsSet() bool {
+func (v NullableAppUsageStatsOut) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableEndpointTransformationIn) Unset() {
+func (v *NullableAppUsageStatsOut) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableEndpointTransformationIn(val *EndpointTransformationIn) *NullableEndpointTransformationIn {
-	return &NullableEndpointTransformationIn{value: val, isSet: true}
+func NewNullableAppUsageStatsOut(val *AppUsageStatsOut) *NullableAppUsageStatsOut {
+	return &NullableAppUsageStatsOut{value: val, isSet: true}
 }
 
-func (v NullableEndpointTransformationIn) MarshalJSON() ([]byte, error) {
+func (v NullableAppUsageStatsOut) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableEndpointTransformationIn) UnmarshalJSON(src []byte) error {
+func (v *NullableAppUsageStatsOut) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
