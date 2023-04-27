@@ -3,6 +3,9 @@
 ## Next
 * 
 
+## Version 0.84.1
+* Libs: regenerate libs from the correct openapi spec (could have caused potential authentication issues)
+
 ## Version 0.84.0
 * Server: add (beta) RabbitMQ implementation
 * Server: upgrade redis-rs and a few other dependencies
