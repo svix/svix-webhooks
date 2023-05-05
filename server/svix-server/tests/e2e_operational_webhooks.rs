@@ -8,6 +8,7 @@ use http::StatusCode;
 
 use reqwest::Url;
 use serde::Deserialize;
+use svix::api::EventTypeOut;
 use svix_ksuid::KsuidLike;
 use svix_server::{
     cfg::ConfigurationInner,
@@ -418,5 +419,26 @@ async fn test_message_attempt_operational_webhooks() {
         assert_eq!(endpoint_id, regular_endp.id);
     } else {
         panic!("Invalid type for op_webhook_out")
+    }
+}
+
+#[tokio::test]
+async fn test_operational_webhooks_event_types_exist() {
+    let cfg = get_default_test_config();
+    let (_, client_op, _, _jh) = start_svix_server_with_operational_webhooks(cfg);
+
+    for et in &[
+        "message.attempt.failing",
+        "message.attempt.exhausted",
+        "endpoint.created",
+        "endpoint.deleted",
+        "endpoint.disabled",
+        "endpoint.created",
+        "endpoint.updated",
+    ] {
+        let _: EventTypeOut = client_op
+            .get(&format!("api/v1/event-type/{et}/"), StatusCode::OK)
+            .await
+            .unwrap();
     }
 }

@@ -26,7 +26,7 @@ pub fn default_org_id() -> OrganizationId {
     OrganizationId("org_23rb8YdGqMT0qIzpgGwdXfHirMu".to_owned())
 }
 
-/// The default org_id we use (useful for generating JWTs when testing).
+/// The default Operational Webhooks org_id
 pub fn management_org_id() -> OrganizationId {
     OrganizationId("org_00000000000SvixManagement00".to_owned())
 }
