@@ -7,7 +7,7 @@
 # The OpenTelemetry address to send events to if given.
 #opentelemetry_address: "http://localhost:1234"
 
-# The OpenTelemetry service name to use. Default: "svix-agent"
+# The OpenTelemetry service name to use. Default: "svix-webhook-bridge"
 # If the OpenTelemetry address is not set, this will do nothing.
 #opentelemetry_service_name: "my-agent"
 

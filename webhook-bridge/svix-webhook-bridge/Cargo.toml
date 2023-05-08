@@ -1,5 +1,5 @@
 [package]
-name = "svix-agent"
+name = "svix-webhook-bridge"
 version = "0.1.0"
 edition = "2021"
 
@@ -13,9 +13,9 @@ opentelemetry-http = "0.7.0"
 opentelemetry-otlp = { version = "0.11.0", features = ["metrics", "grpc-tonic", "http-proto", "reqwest-client"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.9.21"
-svix-agent-plugin-generic = { optional=true, path = "../svix-agent-plugin-generic" }
-svix-agent-plugin-webhook-receiver = { optional=true, path = "../svix-agent-plugin-webhook-receiver" }
-svix-agent-types = { path = "../svix-agent-types" }
+svix-webhook-bridge-plugin-queue-consumer = { optional=true, path = "../svix-webhook-bridge-plugin-queue-consumer" }
+svix-webhook-bridge-plugin-webhook-receiver = { optional=true, path = "../svix-webhook-bridge-plugin-webhook-receiver" }
+svix-webhook-bridge-types = { path = "../svix-webhook-bridge-types" }
 svix-ksuid = "0.7.0"
 tokio = { version = "1", features=["full"] }
 tracing = "0.1"
@@ -26,8 +26,8 @@ tracing-subscriber = { version="0.3", features=["env-filter", "fmt", "json"] }
 default = ["gcp-pubsub", "rabbitmq", "redis", "sqs", "webhook-receiver"]
 
 gcp-pubsub = ["generic-queue"]
-generic-queue = ["dep:svix-agent-plugin-generic"]
+generic-queue = ["dep:svix-webhook-bridge-plugin-queue-consumer"]
 rabbitmq = ["generic-queue"]
 redis = ["generic-queue"]
 sqs = ["generic-queue"]
-webhook-receiver = ["dep:svix-agent-plugin-webhook-receiver"]
+webhook-receiver = ["dep:svix-webhook-bridge-plugin-webhook-receiver"]

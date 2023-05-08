@@ -1,6 +1,6 @@
 version: "3.7"
 services:
-  mq:
+  rabbitmq:
     image: rabbitmq:3.11.11-management-alpine
     ports:
       - "5672:5672"

@@ -1,23 +1,23 @@
-# Svix Agent
+# Svix Webhook Bridge
 
 This service subscribes to a queue or stream and forwards each item to Svix when a valid message is found.
 
 ## Usage
 
 ```
-svix-agent -c path/to/svix-agent.yaml
+svix-webhook-bridge -c path/to/svix-webhook-bridge.yaml
 ```
 
 ## Configuration
 
-> For an annotated sample configuration see [the example config](svix-agent.example.yaml).
+> For an annotated sample configuration see [the example config](svix-webhook-bridge.example.yaml).
 
-`svix-agent` is organized in terms of "plugins" which are tasks that run in tandem.
-Each plugin represents a unit of work performed while the agent while it runs.
+`svix-webhook-bridge` is organized in terms of "plugins" which are tasks that run in tandem.
+Each plugin represents a unit of work performed while the service runs.
 
-Presently there are 2 "plugins" available for `svix-agent`.
+Presently there are 2 "plugins" available for `svix-webhook-bridge`.
 
-### svix-agent-plugin-generic
+### svix-webhook-bridge-plugin-queue-consumer
 
 This plugin consumes messages from message queues to and forwards them to Svix to create messages.
 
@@ -56,7 +56,7 @@ Messages received by these consumers must follow an expected format:
 For detail on the `message` field, see: <https://api.svix.com/docs#tag/Message/operation/v1.message.create>
 
 Important to note that queues, exchanges, topics, or what have you, should be created and configured independently,
-prior to using the agent plugin. There's nothing in place to automatically create these resources.
+prior to using the plugin. There's nothing in place to automatically create these resources.
 The plugin will only try (and fail) to read from the stream in such a case.
 
 
@@ -129,7 +129,7 @@ Note that the SQS consumer requires credentials to be set as environment vars:
 - `AWS_ACCESS_KEY_ID`
 - `AWS_SECRET_ACCESS_KEY`
 
-> This incidentally means all SQS consumers configured for a given `svix-agent` will need to share these details.
+> This incidentally means all SQS consumers configured for a given `svix-webhook-bridge` will need to share these details.
 
 ```yaml
 plugins:
@@ -145,12 +145,12 @@ plugins:
 ```
 
 
-### svix-agent-plugin-webhook-receiver
+### svix-webhook-bridge-plugin-webhook-receiver
 
 This plugin starts an HTTP server which accepts webhooks and forwards them to one of the supported messaging
 systems.
 
-Again, same as with `svix-agent-plugin-generic`, the supported systems are:
+Again, same as with `svix-webhook-bridge-plugin-queue-consumer`, the supported systems are:
 
 - GCP Pub/Sub
 - RabbitMQ

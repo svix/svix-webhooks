@@ -4,8 +4,9 @@ use lazy_static::lazy_static;
 use opentelemetry::runtime::Tokio;
 use opentelemetry_otlp::WithExportConfig;
 use std::path::PathBuf;
-use svix_agent_types::Plugin;
+use std::time::Duration;
 use svix_ksuid::{KsuidLike as _, KsuidMs};
+use svix_webhook_bridge_types::Plugin;
 use tracing_subscriber::prelude::*;
 
 mod config;
@@ -24,7 +25,7 @@ fn get_svc_identifiers(cfg: &Config) -> opentelemetry::sdk::Resource {
             cfg.opentelemetry_service_name
                 .as_deref()
                 // FIXME: can we do something better?
-                .unwrap_or("svix-agent")
+                .unwrap_or("svix-webhook-bridge")
                 .to_owned(),
         ),
         opentelemetry::KeyValue::new("instance_id", INSTANCE_ID.to_owned()),
@@ -100,19 +101,20 @@ fn setup_tracing(cfg: &Config) {
     };
 }
 
-async fn supervise(consumers: Vec<Box<dyn Plugin>>) -> std::io::Result<()> {
+async fn supervise(plugins: Vec<Box<dyn Plugin>>) -> std::io::Result<()> {
     let mut set = tokio::task::JoinSet::new();
-    for consumer in consumers {
+    for plugin in plugins {
         set.spawn(async move {
             // FIXME: needs much better signaling for termination
             loop {
-                let fut = consumer.run();
+                let fut = plugin.run();
                 // If this future returns, the consumer terminated unexpectedly.
                 if let Err(e) = fut.await {
                     tracing::warn!("plugin unexpectedly terminated: {}", e);
                 } else {
                     tracing::warn!("plugin unexpectedly terminated");
                 }
+                tokio::time::sleep(Duration::from_secs(1)).await;
             }
         });
     }
@@ -137,7 +139,7 @@ async fn supervise(consumers: Vec<Box<dyn Plugin>>) -> std::io::Result<()> {
 
 #[derive(Parser)]
 pub struct Args {
-    #[arg(short, long, env = "SVIX_AGENT_CFG")]
+    #[arg(short, long, env = "SVIX_WEBHOOK_BRIDGE_CFG")]
     cfg: Option<PathBuf>,
 }
 
@@ -148,7 +150,7 @@ async fn main() -> std::io::Result<()> {
     let config = args.cfg.unwrap_or_else(|| {
         std::env::current_dir()
             .expect("current dir")
-            .join("svix-agent.yaml")
+            .join("svix-webhook-bridge.yaml")
     });
     let cfg: Config = serde_yaml::from_str(&std::fs::read_to_string(&config).map_err(|e| {
         let p = config.into_os_string().into_string().expect("config path");
@@ -167,20 +169,20 @@ async fn main() -> std::io::Result<()> {
 
     tracing::info!("starting");
 
-    let mut consumers = Vec::with_capacity(cfg.plugins.len());
+    let mut plugins = Vec::with_capacity(cfg.plugins.len());
     for cc in cfg.plugins {
         let consumer = cc.try_into().map_err(|e| {
             std::io::Error::new(
                 std::io::ErrorKind::Other,
-                format!("Failed to configure consumer plugin: {}", e),
+                format!("Failed to configure plugin: {}", e),
             )
         })?;
-        consumers.push(consumer);
+        plugins.push(consumer);
     }
-    if consumers.is_empty() {
-        tracing::warn!("No consumers configured.")
+    if plugins.is_empty() {
+        tracing::warn!("No plugins configured.")
     }
-    supervise(consumers).await?;
+    supervise(plugins).await?;
     tracing::info!("exiting...");
     Ok(())
 }
