@@ -1,8 +1,9 @@
 name: Webhook Bridge Release
 
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - onelson/bridge
 
 jobs:
   docker:
