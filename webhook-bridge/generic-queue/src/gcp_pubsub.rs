@@ -222,7 +222,7 @@ impl<T: 'static + Serialize + Send + Sync> TaskQueueSend<T> for GCPPubSubQueuePr
         let topic = self.client.topic(&self.topic);
 
         // Publishing to a non-existent topic will cause the publisher to wait (forever?)
-        // Giving this error will allow dependents like `svix-agent-plugin-webhook-receiver` to
+        // Giving this error will allow dependents like `svix-webhook-bridge-plugin-webhook-receiver` to
         // respond 500 immediately when this happens, instead of holding the connection open
         // indefinitely.
         if !topic.exists(None).await.map_err(QueueError::generic)? {

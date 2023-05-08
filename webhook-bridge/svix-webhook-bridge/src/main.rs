@@ -4,8 +4,8 @@ use lazy_static::lazy_static;
 use opentelemetry::runtime::Tokio;
 use opentelemetry_otlp::WithExportConfig;
 use std::path::PathBuf;
-use svix_agent_types::Plugin;
 use svix_ksuid::{KsuidLike as _, KsuidMs};
+use svix_webhook_bridge_types::Plugin;
 use tracing_subscriber::prelude::*;
 
 mod config;
@@ -24,7 +24,7 @@ fn get_svc_identifiers(cfg: &Config) -> opentelemetry::sdk::Resource {
             cfg.opentelemetry_service_name
                 .as_deref()
                 // FIXME: can we do something better?
-                .unwrap_or("svix-agent")
+                .unwrap_or("svix-webhook-bridge")
                 .to_owned(),
         ),
         opentelemetry::KeyValue::new("instance_id", INSTANCE_ID.to_owned()),
@@ -137,7 +137,7 @@ async fn supervise(consumers: Vec<Box<dyn Plugin>>) -> std::io::Result<()> {
 
 #[derive(Parser)]
 pub struct Args {
-    #[arg(short, long, env = "SVIX_AGENT_CFG")]
+    #[arg(short, long, env = "svix_webhook_bridge_CFG")]
     cfg: Option<PathBuf>,
 }
 
@@ -148,7 +148,7 @@ async fn main() -> std::io::Result<()> {
     let config = args.cfg.unwrap_or_else(|| {
         std::env::current_dir()
             .expect("current dir")
-            .join("svix-agent.yaml")
+            .join("svix-webhook-bridge.yaml")
     });
     let cfg: Config = serde_yaml::from_str(&std::fs::read_to_string(&config).map_err(|e| {
         let p = config.into_os_string().into_string().expect("config path");

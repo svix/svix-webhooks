@@ -11,12 +11,12 @@ use std::time::Duration;
 
 use serde_json::json;
 use svix::api::MessageIn;
-use svix_agent_plugin_generic::config::GCPPubSubInputOpts;
-use svix_agent_plugin_generic::{
+use svix_webhook_bridge_plugin_queue_consumer::config::GCPPubSubInputOpts;
+use svix_webhook_bridge_plugin_queue_consumer::{
     config::{OutputOpts, SvixOptions},
     CreateMessageRequest, GCPPubSubConsumerConfig, GCPPubSubConsumerPlugin,
 };
-use svix_agent_types::Plugin;
+use svix_webhook_bridge_types::Plugin;
 use wiremock::matchers::method;
 use wiremock::{Mock, MockServer, ResponseTemplate};
 

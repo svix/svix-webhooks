@@ -3125,7 +3125,19 @@ dependencies = [
 ]
 
 [[package]]
-name = "svix-agent"
+name = "svix-ksuid"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "75d773122e48817eb6eb74605cf799574a855bf4c7eb0c1bb06c005067123b13"
+dependencies = [
+ "base-encode",
+ "byteorder",
+ "getrandom 0.2.9",
+ "time 0.3.21",
+]
+
+[[package]]
+name = "svix-webhook-bridge"
 version = "0.1.0"
 dependencies = [
  "clap",
@@ -3135,10 +3147,10 @@ dependencies = [
  "opentelemetry-otlp",
  "serde",
  "serde_yaml",
- "svix-agent-plugin-generic",
- "svix-agent-plugin-webhook-receiver",
- "svix-agent-types",
  "svix-ksuid",
+ "svix-webhook-bridge-plugin-queue-consumer",
+ "svix-webhook-bridge-plugin-webhook-receiver",
+ "svix-webhook-bridge-types",
  "tokio",
  "tracing",
  "tracing-opentelemetry",
@@ -3146,7 +3158,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "svix-agent-plugin-generic"
+name = "svix-webhook-bridge-plugin-queue-consumer"
 version = "0.1.0"
 dependencies = [
  "aws-config",
@@ -3164,7 +3176,7 @@ dependencies = [
  "serde",
  "serde_json",
  "svix",
- "svix-agent-types",
+ "svix-webhook-bridge-types",
  "tokio",
  "tokio-executor-trait",
  "tokio-reactor-trait",
@@ -3174,7 +3186,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "svix-agent-plugin-webhook-receiver"
+name = "svix-webhook-bridge-plugin-webhook-receiver"
 version = "0.1.0"
 dependencies = [
  "anyhow",
@@ -3189,7 +3201,7 @@ dependencies = [
  "serde_yaml",
  "smol",
  "svix",
- "svix-agent-types",
+ "svix-webhook-bridge-types",
  "threadpool",
  "tokio",
  "tower-http",
@@ -3197,22 +3209,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "svix-agent-types"
+name = "svix-webhook-bridge-types"
 version = "0.1.0"
 dependencies = [
  "async-trait",
-]
-
-[[package]]
-name = "svix-ksuid"
-version = "0.7.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "75d773122e48817eb6eb74605cf799574a855bf4c7eb0c1bb06c005067123b13"
-dependencies = [
- "base-encode",
- "byteorder",
- "getrandom 0.2.9",
- "time 0.3.21",
 ]
 
 [[package]]

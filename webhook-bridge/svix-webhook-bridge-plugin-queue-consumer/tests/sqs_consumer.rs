@@ -1,26 +1,28 @@
-//! Requires a rabbitmq node to be running on localhost:5672 (the default port) and using the
-//! default guest/guest credentials.
-//! Try using the `testing-docker-compose.yml` in the repo root to get this going.
+//! Use the `testing-docker-compose.yml` in the repo root to run the dependencies for testing,
+//! including ElasticMQ.
+//!
+//! Use `run-tests.sh` to use the requisite environment for testing.
 
-use generic_queue::rabbitmq::FieldTable;
-use lapin::{options::QueueDeclareOptions, Channel, Connection, ConnectionProperties, Queue};
-use serde_json::json;
 use std::time::Duration;
+
+use aws_sdk_sqs::Client;
+use serde_json::json;
 use svix::api::MessageIn;
-use svix_agent_plugin_generic::{
-    config::{OutputOpts, RabbitMqInputOpts, SvixOptions},
-    CreateMessageRequest, RabbitMqConsumerConfig, RabbitMqConsumerPlugin,
+use svix_webhook_bridge_plugin_queue_consumer::{
+    config::{OutputOpts, SvixOptions},
+    CreateMessageRequest, SqsConsumerConfig, SqsConsumerPlugin, SqsInputOpts,
 };
-use svix_agent_types::Plugin;
+use svix_webhook_bridge_types::Plugin;
 use wiremock::matchers::method;
 use wiremock::{Mock, MockServer, ResponseTemplate};
 
-fn get_test_plugin(svix_url: String, mq_uri: &str, queue_name: &str) -> RabbitMqConsumerPlugin {
-    RabbitMqConsumerPlugin::new(RabbitMqConsumerConfig {
-        input: RabbitMqInputOpts {
-            uri: mq_uri.to_string(),
-            queue_name: queue_name.to_string(),
-            ..Default::default()
+const ROOT_URL: &str = "http://localhost:9324";
+
+fn get_test_plugin(svix_url: String, queue_dsn: String) -> SqsConsumerPlugin {
+    SqsConsumerPlugin::new(SqsConsumerConfig {
+        input: SqsInputOpts {
+            queue_dsn,
+            override_endpoint: true,
         },
         output: OutputOpts {
             token: "xxxx".to_string(),
@@ -32,56 +34,46 @@ fn get_test_plugin(svix_url: String, mq_uri: &str, queue_name: &str) -> RabbitMq
     })
 }
 
-async fn declare_queue(name: &str, channel: &Channel) -> Queue {
-    channel
-        .queue_declare(
-            name,
-            QueueDeclareOptions {
-                auto_delete: true,
-                ..Default::default()
-            },
-            FieldTable::default(),
-        )
-        .await
-        .unwrap()
+async fn mq_connection() -> Client {
+    let config = aws_config::from_env().endpoint_url(ROOT_URL).load().await;
+    Client::new(&config)
 }
 
-async fn mq_connection(uri: &str) -> Connection {
-    let options = ConnectionProperties::default()
-        .with_connection_name("test".into())
-        .with_executor(tokio_executor_trait::Tokio::current())
-        .with_reactor(tokio_reactor_trait::Tokio);
-    Connection::connect(uri, options).await.unwrap()
-}
-
-async fn publish(channel: &Channel, queue_name: &str, payload: &[u8]) {
-    let confirm = channel
-        .basic_publish(
-            "",
-            queue_name,
-            Default::default(),
-            payload,
-            Default::default(),
-        )
+async fn create_test_queue(client: &Client) -> String {
+    let name: String = std::iter::repeat_with(fastrand::alphanumeric)
+        .take(8)
+        .collect();
+    client
+        .create_queue()
+        .queue_name(&name)
+        .send()
         .await
         .unwrap();
-    confirm.await.unwrap();
+
+    name
+}
+
+async fn publish(client: &Client, url: &str, payload: &str) {
+    client
+        .send_message()
+        .queue_url(url)
+        .message_body(payload)
+        .send()
+        .await
+        .unwrap();
 }
 
 /// General "pause while we wait for messages to travel" beat. If you're seeing flakes, bump this up.
-const WAIT_MS: u64 = 150;
-/// These tests assume a "vanilla" rabbitmq instance, using the default port, creds, exchange...
-const MQ_URI: &str = "amqp://guest:guest@localhost:5672/%2f";
+const WAIT_MS: u64 = 100;
 
 /// Push a msg on the queue.
 /// Check to see if the svix server sees a request.
 #[tokio::test]
 async fn test_consume_ok() {
-    let mq_conn = mq_connection(MQ_URI).await;
-    let channel = mq_conn.create_channel().await.unwrap();
-    // setup the queue before running the consumer or the consumer will error out
-    let queue = declare_queue("", &channel).await;
-    let queue_name = queue.name().as_str();
+    let client = mq_connection().await;
+    let queue_name = create_test_queue(&client).await;
+
+    let queue_url = format!("{ROOT_URL}/queue/{queue_name}");
 
     let mock_server = MockServer::start().await;
     // The mock will make asserts on drop (i.e. when the body of the test is returning).
@@ -102,7 +94,7 @@ async fn test_consume_ok() {
         .expect(1);
     mock_server.register(mock).await;
 
-    let plugin = get_test_plugin(mock_server.uri(), MQ_URI, queue_name);
+    let plugin = get_test_plugin(mock_server.uri(), queue_url.clone());
 
     let handle = tokio::spawn(async move {
         let fut = plugin.run();
@@ -117,25 +109,27 @@ async fn test_consume_ok() {
         post_options: None,
     };
 
-    publish(&channel, queue_name, &serde_json::to_vec(&msg).unwrap()).await;
+    publish(&client, &queue_url, &serde_json::to_string(&msg).unwrap()).await;
 
     // Wait for the consumer to consume.
     tokio::time::sleep(Duration::from_millis(WAIT_MS)).await;
 
     handle.abort();
-    channel
-        .queue_delete(queue_name, Default::default())
+
+    client
+        .delete_queue()
+        .queue_url(&queue_url)
+        .send()
         .await
-        .ok();
+        .unwrap();
 }
 
 #[tokio::test]
 async fn test_missing_app_id_nack() {
-    let mq_conn = mq_connection(MQ_URI).await;
-    let channel = mq_conn.create_channel().await.unwrap();
-    // setup the queue before running the consumer or the consumer will error out
-    let queue = declare_queue("", &channel).await;
-    let queue_name = queue.name().as_str();
+    let client = mq_connection().await;
+    let queue_name = create_test_queue(&client).await;
+
+    let queue_url = format!("{ROOT_URL}/queue/{queue_name}");
 
     let mock_server = MockServer::start().await;
     let mock = Mock::given(method("POST"))
@@ -146,7 +140,7 @@ async fn test_missing_app_id_nack() {
         .expect(0);
     mock_server.register(mock).await;
 
-    let plugin = get_test_plugin(mock_server.uri(), MQ_URI, queue_name);
+    let plugin = get_test_plugin(mock_server.uri(), queue_url.clone());
 
     let handle = tokio::spawn(async move {
         let fut = plugin.run();
@@ -157,9 +151,9 @@ async fn test_missing_app_id_nack() {
     tokio::time::sleep(Duration::from_millis(WAIT_MS)).await;
 
     publish(
-        &channel,
-        queue_name,
-        &serde_json::to_vec(&json!({
+        &client,
+        &queue_url,
+        &serde_json::to_string(&json!({
             // No app id
             "message": {
                 "eventType": "testing.things",
@@ -176,19 +170,21 @@ async fn test_missing_app_id_nack() {
     // Wait for the consumer to consume.
     tokio::time::sleep(Duration::from_millis(WAIT_MS)).await;
     handle.abort();
-    channel
-        .queue_delete(queue_name, Default::default())
+
+    client
+        .delete_queue()
+        .queue_url(&queue_url)
+        .send()
         .await
-        .ok();
+        .unwrap();
 }
 
 #[tokio::test]
 async fn test_missing_event_type_nack() {
-    let mq_conn = mq_connection(MQ_URI).await;
-    let channel = mq_conn.create_channel().await.unwrap();
-    // setup the queue before running the consumer or the consumer will error out
-    let queue = declare_queue("", &channel).await;
-    let queue_name = queue.name().as_str();
+    let client = mq_connection().await;
+    let queue_name = create_test_queue(&client).await;
+
+    let queue_url = format!("{ROOT_URL}/queue/{queue_name}");
 
     let mock_server = MockServer::start().await;
     let mock = Mock::given(method("POST"))
@@ -199,7 +195,7 @@ async fn test_missing_event_type_nack() {
         .expect(0);
     mock_server.register(mock).await;
 
-    let plugin = get_test_plugin(mock_server.uri(), MQ_URI, queue_name);
+    let plugin = get_test_plugin(mock_server.uri(), queue_url.clone());
 
     let handle = tokio::spawn(async move {
         let fut = plugin.run();
@@ -210,9 +206,9 @@ async fn test_missing_event_type_nack() {
     tokio::time::sleep(Duration::from_millis(WAIT_MS)).await;
 
     publish(
-        &channel,
-        queue_name,
-        &serde_json::to_vec(&json!({
+        &client,
+        &queue_url,
+        &serde_json::to_string(&json!({
             "app_id": "app_1234",
             "message": {
                 // No event type
@@ -228,20 +224,22 @@ async fn test_missing_event_type_nack() {
     // Wait for the consumer to consume.
     tokio::time::sleep(Duration::from_millis(WAIT_MS)).await;
     handle.abort();
-    channel
-        .queue_delete(queue_name, Default::default())
+
+    client
+        .delete_queue()
+        .queue_url(&queue_url)
+        .send()
         .await
-        .ok();
+        .unwrap();
 }
 
 /// Check that the plugin keeps running when it can't send a message to svix
 #[tokio::test]
 async fn test_consume_svix_503() {
-    let mq_conn = mq_connection(MQ_URI).await;
-    let channel = mq_conn.create_channel().await.unwrap();
-    // setup the queue before running the consumer or the consumer will error out
-    let queue = declare_queue("", &channel).await;
-    let queue_name = queue.name().as_str();
+    let client = mq_connection().await;
+    let queue_name = create_test_queue(&client).await;
+
+    let queue_url = format!("{ROOT_URL}/queue/{queue_name}");
 
     let mock_server = MockServer::start().await;
     // The mock will make asserts on drop (i.e. when the body of the test is returning).
@@ -253,7 +251,7 @@ async fn test_consume_svix_503() {
         .expect(1);
     mock_server.register(mock).await;
 
-    let plugin = get_test_plugin(mock_server.uri(), MQ_URI, queue_name);
+    let plugin = get_test_plugin(mock_server.uri(), queue_url.clone());
 
     let handle = tokio::spawn(async move {
         let fut = plugin.run();
@@ -263,9 +261,9 @@ async fn test_consume_svix_503() {
     tokio::time::sleep(Duration::from_millis(WAIT_MS)).await;
 
     publish(
-        &channel,
-        queue_name,
-        &serde_json::to_vec(&CreateMessageRequest {
+        &client,
+        &queue_url,
+        &serde_json::to_string(&CreateMessageRequest {
             app_id: "app_1234".into(),
             message: MessageIn::new("testing.things".into(), json!({"hi": "there"})),
             post_options: None,
@@ -279,24 +277,26 @@ async fn test_consume_svix_503() {
 
     assert!(!handle.is_finished());
     handle.abort();
-    channel
-        .queue_delete(queue_name, Default::default())
+
+    client
+        .delete_queue()
+        .queue_url(&queue_url)
+        .send()
         .await
-        .ok();
+        .unwrap();
 }
 
 /// Check that the plugin keeps running when it can't send a message to svix because idk, the servers are all offline??
 #[tokio::test]
 async fn test_consume_svix_offline() {
-    let mq_conn = mq_connection(MQ_URI).await;
-    let channel = mq_conn.create_channel().await.unwrap();
-    // setup the queue before running the consumer or the consumer will error out
-    let queue = declare_queue("", &channel).await;
-    let queue_name = queue.name().as_str();
+    let client = mq_connection().await;
+    let queue_name = create_test_queue(&client).await;
+
+    let queue_url = format!("{ROOT_URL}/queue/{queue_name}");
 
     let mock_server = MockServer::start().await;
 
-    let plugin = get_test_plugin(mock_server.uri(), MQ_URI, queue_name);
+    let plugin = get_test_plugin(mock_server.uri(), queue_url.clone());
 
     // bye-bye svix...
     drop(mock_server);
@@ -309,9 +309,9 @@ async fn test_consume_svix_offline() {
     tokio::time::sleep(Duration::from_millis(WAIT_MS)).await;
 
     publish(
-        &channel,
-        queue_name,
-        &serde_json::to_vec(&CreateMessageRequest {
+        &client,
+        &queue_url,
+        &serde_json::to_string(&CreateMessageRequest {
             app_id: "app_1234".into(),
             message: MessageIn::new("testing.things".into(), json!({"hi": "there"})),
             post_options: None,
@@ -325,8 +325,11 @@ async fn test_consume_svix_offline() {
 
     assert!(!handle.is_finished());
     handle.abort();
-    channel
-        .queue_delete(queue_name, Default::default())
+
+    client
+        .delete_queue()
+        .queue_url(&queue_url)
+        .send()
         .await
-        .ok();
+        .unwrap();
 }

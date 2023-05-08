@@ -1,5 +1,5 @@
 [package]
-name = "svix-agent-types"
+name = "svix-webhook-bridge-types"
 version = "0.1.0"
 edition = "2021"
 

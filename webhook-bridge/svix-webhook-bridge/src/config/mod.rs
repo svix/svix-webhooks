@@ -1,5 +1,5 @@
 use serde::Deserialize;
-use svix_agent_types::Plugin;
+use svix_webhook_bridge_types::Plugin;
 use tracing::Level;
 
 #[derive(Deserialize)]
@@ -57,19 +57,19 @@ pub enum LogFormat {
 #[serde(rename_all = "lowercase")]
 pub enum PluginConfig {
     #[cfg(feature = "gcp-pubsub")]
-    GCPPubSubConsumer(svix_agent_plugin_generic::GCPPubSubConsumerConfig),
+    GCPPubSubConsumer(svix_webhook_bridge_plugin_queue_consumer::GCPPubSubConsumerConfig),
 
     #[cfg(feature = "rabbitmq")]
-    RabbitMQConsumer(svix_agent_plugin_generic::RabbitMqConsumerConfig),
+    RabbitMQConsumer(svix_webhook_bridge_plugin_queue_consumer::RabbitMqConsumerConfig),
 
     #[cfg(feature = "redis")]
-    RedisConsumer(svix_agent_plugin_generic::RedisConsumerConfig),
+    RedisConsumer(svix_webhook_bridge_plugin_queue_consumer::RedisConsumerConfig),
 
     #[cfg(feature = "sqs")]
-    SqsConsumer(svix_agent_plugin_generic::SqsConsumerConfig),
+    SqsConsumer(svix_webhook_bridge_plugin_queue_consumer::SqsConsumerConfig),
 
     #[cfg(feature = "webhook-receiver")]
-    WebhookReceiver(svix_agent_plugin_webhook_receiver::WebhookReceiverPluginConfig),
+    WebhookReceiver(svix_webhook_bridge_plugin_webhook_receiver::WebhookReceiverPluginConfig),
 
     #[serde(other)]
     Unknown,

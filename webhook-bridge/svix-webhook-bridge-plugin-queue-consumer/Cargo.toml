@@ -1,5 +1,5 @@
 [package]
-name = "svix-agent-plugin-generic"
+name = "svix-webhook-bridge-plugin-queue-consumer"
 version = "0.1.0"
 edition = "2021"
 
@@ -11,7 +11,7 @@ generic_queue = { path = "../generic-queue" }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 svix = "0.84.1"
-svix-agent-types = { path = "../svix-agent-types" }
+svix-webhook-bridge-types = { path = "../svix-webhook-bridge-types" }
 tokio = { version = "1", features = ["full"] }
 tokio-executor-trait = "2.1"
 tokio-reactor-trait = "1.1"
