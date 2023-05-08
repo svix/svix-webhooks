@@ -1,0 +1,33 @@
+[package]
+name = "svix-agent"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = { version = "4.2.4", features = ["env", "derive"] }
+lazy_static = "1.4"
+opentelemetry = { version = "0.18.0", features = ["rt-tokio"] }
+opentelemetry-http = "0.7.0"
+opentelemetry-otlp = { version = "0.11.0", features = ["metrics", "grpc-tonic", "http-proto", "reqwest-client"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_yaml = "0.9.21"
+svix-agent-plugin-generic = { optional=true, path = "../svix-agent-plugin-generic" }
+svix-agent-plugin-webhook-receiver = { optional=true, path = "../svix-agent-plugin-webhook-receiver" }
+svix-agent-types = { path = "../svix-agent-types" }
+svix-ksuid = "0.7.0"
+tokio = { version = "1", features=["full"] }
+tracing = "0.1"
+tracing-opentelemetry = "0.18.0"
+tracing-subscriber = { version="0.3", features=["env-filter", "fmt", "json"] }
+
+[features]
+default = ["gcp-pubsub", "rabbitmq", "redis", "sqs", "webhook-receiver"]
+
+gcp-pubsub = ["generic-queue"]
+generic-queue = ["dep:svix-agent-plugin-generic"]
+rabbitmq = ["generic-queue"]
+redis = ["generic-queue"]
+sqs = ["generic-queue"]
+webhook-receiver = ["dep:svix-agent-plugin-webhook-receiver"]
