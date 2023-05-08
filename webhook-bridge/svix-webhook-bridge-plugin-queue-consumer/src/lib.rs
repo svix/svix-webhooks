@@ -10,7 +10,7 @@ use generic_queue::{
 };
 use serde::{Deserialize, Serialize};
 use svix::api::{MessageIn, PostOptions as PostOptions_, Svix};
-use svix_agent_types::{async_trait, Plugin};
+use svix_webhook_bridge_types::{async_trait, Plugin};
 
 pub mod config;
 pub use config::{

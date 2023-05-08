@@ -23,28 +23,28 @@ WORKDIR /app
 COPY Cargo.toml .
 COPY Cargo.lock .
 COPY generic-queue/Cargo.toml generic-queue/
-COPY svix-agent-types/Cargo.toml svix-agent-types/
-COPY svix-agent-plugin-generic/Cargo.toml svix-agent-plugin-generic/
-COPY svix-agent-plugin-webhook-receiver/Cargo.toml svix-agent-plugin-webhook-receiver/
-COPY svix-agent/Cargo.toml svix-agent/
+COPY svix-webhook-bridge-types/Cargo.toml svix-webhook-bridge-types/
+COPY svix-webhook-bridge-plugin-queue-consumer/Cargo.toml svix-webhook-bridge-plugin-queue-consumer/
+COPY svix-webhook-bridge-plugin-webhook-receiver/Cargo.toml svix-webhook-bridge-plugin-webhook-receiver/
+COPY svix-webhook-bridge/Cargo.toml svix-webhook-bridge/
 RUN set -ex ;\
         mkdir generic-queue/src ;\
-        mkdir svix-agent-plugin-generic/src ;\
-        mkdir svix-agent-plugin-webhook-receiver/src ;\
-        mkdir svix-agent-types/src ;\
-        mkdir svix-agent/src ;\
+        mkdir svix-webhook-bridge-plugin-queue-consumer/src ;\
+        mkdir svix-webhook-bridge-plugin-webhook-receiver/src ;\
+        mkdir svix-webhook-bridge-types/src ;\
+        mkdir svix-webhook-bridge/src ;\
         echo '' > generic-queue/src/lib.rs ;\
-        echo '' > svix-agent-plugin-generic/src/lib.rs ;\
-        echo '' > svix-agent-plugin-webhook-receiver/src/lib.rs ;\
-        echo '' > svix-agent-types/src/lib.rs ;\
-        echo 'fn main() { println!("Dummy!"); }' > svix-agent/src/main.rs ;\
+        echo '' > svix-webhook-bridge-plugin-queue-consumer/src/lib.rs ;\
+        echo '' > svix-webhook-bridge-plugin-webhook-receiver/src/lib.rs ;\
+        echo '' > svix-webhook-bridge-types/src/lib.rs ;\
+        echo 'fn main() { println!("Dummy!"); }' > svix-webhook-bridge/src/main.rs ;\
         cargo build --release ;\
         rm -rf \
           generic-queue/src \
-          svix-agent-plugin-generic/src \
-          svix-agent-plugin-webhook-receiver/src \
-          svix-agent-types/src \
-          svix-agent/src
+          svix-webhook-bridge-plugin-queue-consumer/src \
+          svix-webhook-bridge-plugin-webhook-receiver/src \
+          svix-webhook-bridge-types/src \
+          svix-webhook-bridge/src
 
 COPY . .
 # touching the lib.rs/main.rs ensures cargo rebuilds them instead of considering them already built.
@@ -68,7 +68,8 @@ RUN apt-get update ;\
 
 USER appuser
 
-COPY --from=build /app/target/release/svix-agent /usr/local/bin/svix-agent
+COPY --from=build /app/target/release/svix-webhook-bridge /usr/local/bin/svix-webhook-bridge
 
-# Will fail if there's no `svix-agent.yaml` in the CWD or `SVIX_AGENT_CFG` is not set to a valid path to a config
-CMD ["svix-agent"]
+# Will fail if there's no `svix-webhook-bridge.yaml` in the CWD or `SVIX_WEBHOOK_BRIDGE_CFG` is not set to a valid
+# path to a config.
+CMD ["svix-webhook-bridge"]

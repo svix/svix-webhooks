@@ -6,7 +6,7 @@ use axum::{
 };
 use serde::Deserialize;
 use std::net::SocketAddr;
-use svix_agent_types::{async_trait, Plugin};
+use svix_webhook_bridge_types::{async_trait, Plugin};
 use tracing::instrument;
 use types::{IntegrationId, IntegrationState, InternalState, SerializableRequest, Unvalidated};
 

@@ -9,7 +9,7 @@ use generic_queue::gcp_pubsub::{
 use generic_queue::{Delivery, TaskQueueBackend, TaskQueueReceive};
 use std::time::{Duration, Instant};
 use svix::api::Svix;
-use svix_agent_types::{async_trait, Plugin};
+use svix_webhook_bridge_types::{async_trait, Plugin};
 use tracing::instrument;
 
 pub struct GCPPubSubConsumerPlugin {
