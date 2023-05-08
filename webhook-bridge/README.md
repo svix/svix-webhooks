@@ -10,6 +10,12 @@ svix-webhook-bridge -c path/to/svix-webhook-bridge.yaml
 
 ## Configuration
 
+The CLI itself exposes only a single flag (`-c`, `--cfg`) used to set the path for the config file.
+The location of the config file can also be set with the `SVIX_WEBHOOK_BRIDGE_CFG` env var.
+The config file itself does the heavy lifting.
+
+When unset, the current working directory is checked for a file named `svix-webhook-bridge.yaml`.
+
 > For an annotated sample configuration see [the example config](svix-webhook-bridge.example.yaml).
 
 `svix-webhook-bridge` is organized in terms of "plugins" which are tasks that run in tandem.
