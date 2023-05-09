@@ -3,6 +3,11 @@
 ## Next
 * 
 
+## Version 0.85.0
+* Server: add a missing migration for operational webhooks event types.
+* Libs/Ruby: fix the library failing to load due to missing dependency.
+* Libs: **[Semi-breaking]** we changed the return value of the transformation simulation endpoint. It's technically a breaking page, though the API is private so it shouldn't affect people.
+
 ## Version 0.84.1
 * Libs: regenerate libs from the correct openapi spec (could have caused potential authentication issues)
 
