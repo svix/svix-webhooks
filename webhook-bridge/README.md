@@ -33,11 +33,38 @@ Currently this supports the following messaging systems:
 - Redis
 - SQS
 
-Generally instances of this plugin are configured in terms of inputs and outputs, where the input configuration varies
-by the messaging system.
+Generally instances of this plugin are configured in terms of inputs, _optional transformations_, and outputs, where
+the input configuration varies by the messaging system.
 
 The output options control how the Svix client is built and configured.
 The sole required field is `token`.
+
+The optional _transformation_ can be set to a JavaScript fragment which can be used to reshape the messages as they flow through.
+
+```yaml
+
+plugins:
+- type: ...
+  input:
+    # ... snip ...
+
+  # Reshape the messages we get from the queue before they get sent to Svix
+  transformation: | 
+    export default function (input) {
+      return {
+        app_id: input.key,
+        message: {
+          eventType: input.event_type,
+          payload: input.data
+        }
+      };
+    }
+
+  output:
+    # ... snip ...
+```
+
+Transformations should have a default export which is a function that accepts an object and returns an object.
 
 Messages received by these consumers must follow an expected format:
 

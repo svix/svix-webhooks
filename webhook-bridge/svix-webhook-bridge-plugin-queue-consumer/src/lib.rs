@@ -1,5 +1,3 @@
-use std::time::{Duration, Instant};
-
 use generic_queue::{
     rabbitmq::{
         BasicProperties, BasicPublishOptions, ConnectionProperties, RabbitMqBackend, RabbitMqConfig,
@@ -9,8 +7,11 @@ use generic_queue::{
     Delivery, TaskQueueBackend, TaskQueueReceive,
 };
 use serde::{Deserialize, Serialize};
+use std::time::{Duration, Instant};
 use svix::api::{MessageIn, PostOptions as PostOptions_, Svix};
-use svix_webhook_bridge_types::{async_trait, Plugin};
+use svix_webhook_bridge_types::{
+    async_trait, JsObject, JsReturn, Plugin, TransformerJob, TransformerTx,
+};
 
 pub mod config;
 pub use config::{
@@ -25,19 +26,52 @@ pub use gcp_pubsub::GCPPubSubConsumerPlugin;
 pub const PLUGIN_NAME: &str = env!("CARGO_PKG_NAME");
 pub const PLUGIN_VERS: &str = env!("CARGO_PKG_VERSION");
 
+#[async_trait]
+trait Consumer {
+    fn transformer_tx(&self) -> Option<&TransformerTx>;
+    async fn transform(&self, script: String, payload: JsObject) -> std::io::Result<JsObject> {
+        let (job, rx) = TransformerJob::new(script.clone(), payload);
+        self.transformer_tx()
+            .expect("transformations not configured")
+            .send(job)
+            .map_err(|e| Error::Generic(e.to_string()))?;
+
+        let ret = rx
+            .await
+            .map_err(|_e| Error::Generic("transformation rx failed".to_string()))
+            .and_then(|x| {
+                x.map_err(|_e| Error::Generic("transformation execution failed".to_string()))
+            })?;
+
+        match ret {
+            JsReturn::Object(v) => Ok(v),
+            JsReturn::Invalid => {
+                Err(Error::Generic("transformation produced unexpected value".to_string()).into())
+            }
+        }
+    }
+    async fn consume(&self) -> std::io::Result<()>;
+}
+
 pub struct RabbitMqConsumerPlugin {
     input_options: RabbitMqInputOpts,
     svix_client: Svix,
+    transformer_tx: Option<TransformerTx>,
+    transformation: Option<String>,
 }
 
 pub struct RedisConsumerPlugin {
     input_options: RedisInputOpts,
     svix_client: Svix,
+    transformer_tx: Option<TransformerTx>,
+    transformation: Option<String>,
 }
 
 pub struct SqsConsumerPlugin {
     input_options: SqsInputOpts,
     svix_client: Svix,
+    transformer_tx: Option<TransformerTx>,
+    transformation: Option<String>,
 }
 
 impl TryInto<Box<dyn Plugin>> for RabbitMqConsumerConfig {
@@ -65,30 +99,42 @@ impl TryInto<Box<dyn Plugin>> for SqsConsumerConfig {
 }
 
 impl RabbitMqConsumerPlugin {
-    pub fn new(RabbitMqConsumerConfig { input, output }: RabbitMqConsumerConfig) -> Self {
+    pub fn new(
+        RabbitMqConsumerConfig {
+            input,
+            transformation,
+            output,
+        }: RabbitMqConsumerConfig,
+    ) -> Self {
         Self {
             input_options: input,
             svix_client: Svix::new(output.token, output.svix_options.map(Into::into)),
+            transformer_tx: None,
+            transformation,
         }
     }
+}
 
+#[async_trait]
+impl Consumer for RabbitMqConsumerPlugin {
+    fn transformer_tx(&self) -> Option<&TransformerTx> {
+        self.transformer_tx.as_ref()
+    }
     async fn consume(&self) -> std::io::Result<()> {
         let mut consumer =
-            <RabbitMqBackend as TaskQueueBackend<serde_json::Value>>::consuming_half(
-                RabbitMqConfig {
-                    uri: self.input_options.uri.clone(),
-                    connection_properties: ConnectionProperties::default(),
-                    publish_exchange: String::new(),
-                    publish_routing_key: String::new(),
-                    publish_options: BasicPublishOptions::default(),
-                    publish_properites: BasicProperties::default(),
-                    consume_queue: self.input_options.queue_name.clone(),
-                    consumer_tag: self.input_options.consumer_tag.clone().unwrap_or_default(),
-                    consume_options: self.input_options.consume_opts.unwrap_or_default(),
-                    consume_arguments: self.input_options.consume_args.clone().unwrap_or_default(),
-                    requeue_on_nack: self.input_options.requeue_on_nack,
-                },
-            )
+            <RabbitMqBackend as TaskQueueBackend<JsObject>>::consuming_half(RabbitMqConfig {
+                uri: self.input_options.uri.clone(),
+                connection_properties: ConnectionProperties::default(),
+                publish_exchange: String::new(),
+                publish_routing_key: String::new(),
+                publish_options: BasicPublishOptions::default(),
+                publish_properites: BasicProperties::default(),
+                consume_queue: self.input_options.queue_name.clone(),
+                consumer_tag: self.input_options.consumer_tag.clone().unwrap_or_default(),
+                consume_options: self.input_options.consume_opts.unwrap_or_default(),
+                consume_arguments: self.input_options.consume_args.clone().unwrap_or_default(),
+                requeue_on_nack: self.input_options.requeue_on_nack,
+            })
             .await
             .map_err(Error::from)?;
 
@@ -112,7 +158,7 @@ impl RabbitMqConsumerPlugin {
                 let span = tracing::error_span!("process", messaging.operation = "process");
                 let _enter = span.enter();
 
-                let payload = match Delivery::<serde_json::Value>::payload(&delivery) {
+                let payload = match Delivery::<JsObject>::payload(&delivery) {
                     Ok(p) => p,
                     Err(e) => {
                         tracing::warn!("nack: {e}");
@@ -121,12 +167,24 @@ impl RabbitMqConsumerPlugin {
                     }
                 };
 
+                let payload = if let Some(script) = &self.transformation {
+                    match self.transform(script.clone(), payload).await {
+                        Err(e) => {
+                            tracing::error!("nack: {e}");
+                            delivery.nack().await.map_err(Error::from)?;
+                            continue;
+                        }
+                        Ok(x) => x,
+                    }
+                } else {
+                    payload
+                };
+
                 match create_svix_message(&self.svix_client, payload).await {
                     Ok(_) => {
                         tracing::trace!("ack");
                         delivery.ack().await.map_err(Error::from)?
                     }
-
                     Err(e) => {
                         tracing::error!("nack: {e}");
                         delivery.nack().await.map_err(Error::from)?
@@ -134,47 +192,42 @@ impl RabbitMqConsumerPlugin {
                 }
             }
         }
-
         Ok(())
     }
 }
 
 #[async_trait]
 impl Plugin for RabbitMqConsumerPlugin {
+    fn set_transformer(&mut self, tx: Option<TransformerTx>) {
+        self.transformer_tx = tx;
+    }
     async fn run(&self) -> std::io::Result<()> {
-        let mut fails: u64 = 0;
-        let mut last_fail = Instant::now();
-
-        tracing::info!("rabbitmq starting: {}", &self.input_options.queue_name);
-
-        loop {
-            if let Err(e) = self.consume().await {
-                tracing::error!("{e}");
-            }
-            tracing::error!("rabbitmq disconnected: {}", &self.input_options.queue_name);
-
-            if last_fail.elapsed() > Duration::from_secs(10) {
-                // reset the fail count if we didn't have a hiccup in the past short while.
-                tracing::trace!("been a while since last fail, resetting count");
-                fails = 0;
-            } else {
-                fails += 1;
-            }
-
-            last_fail = Instant::now();
-            tokio::time::sleep(Duration::from_millis((300 * fails).min(3000))).await;
-        }
+        run_inner(self, "rabbitmq", &self.input_options.queue_name).await
     }
 }
 
 impl RedisConsumerPlugin {
-    pub fn new(RedisConsumerConfig { input, output }: RedisConsumerConfig) -> Self {
+    pub fn new(
+        RedisConsumerConfig {
+            input,
+            transformation,
+            output,
+        }: RedisConsumerConfig,
+    ) -> Self {
         Self {
             input_options: input,
             svix_client: Svix::new(output.token, output.svix_options.map(Into::into)),
+            transformer_tx: None,
+            transformation,
         }
     }
+}
 
+#[async_trait]
+impl Consumer for RedisConsumerPlugin {
+    fn transformer_tx(&self) -> Option<&TransformerTx> {
+        self.transformer_tx.as_ref()
+    }
     async fn consume(&self) -> std::io::Result<()> {
         let mut consumer =
             <RedisQueueBackend as TaskQueueBackend<CreateMessageRequest>>::consuming_half(
@@ -209,13 +262,26 @@ impl RedisConsumerPlugin {
                 let span = tracing::error_span!("process", messaging.operation = "process");
                 let _enter = span.enter();
 
-                let payload = match Delivery::<serde_json::Value>::payload(&delivery) {
+                let payload = match Delivery::<JsObject>::payload(&delivery) {
                     Ok(p) => p,
                     Err(e) => {
                         tracing::warn!("nack: {e}");
                         delivery.nack().await.map_err(Error::from)?;
                         continue;
                     }
+                };
+
+                let payload = if let Some(script) = &self.transformation {
+                    match self.transform(script.clone(), payload).await {
+                        Err(e) => {
+                            tracing::error!("nack: {e}");
+                            delivery.nack().await.map_err(Error::from)?;
+                            continue;
+                        }
+                        Ok(x) => x,
+                    }
+                } else {
+                    payload
                 };
 
                 match create_svix_message(&self.svix_client, payload).await {
@@ -230,47 +296,42 @@ impl RedisConsumerPlugin {
                 }
             }
         }
-
         Ok(())
     }
 }
 
 #[async_trait]
 impl Plugin for RedisConsumerPlugin {
+    fn set_transformer(&mut self, tx: Option<TransformerTx>) {
+        self.transformer_tx = tx;
+    }
     async fn run(&self) -> std::io::Result<()> {
-        let mut fails: u64 = 0;
-        let mut last_fail = Instant::now();
-
-        tracing::info!("redis starting: {}", &self.input_options.queue_key);
-
-        loop {
-            if let Err(e) = self.consume().await {
-                tracing::error!("{e}");
-            }
-
-            tracing::error!("redis disconnected: {}", &self.input_options.queue_key);
-            if last_fail.elapsed() > Duration::from_secs(10) {
-                // reset the fail count if we didn't have a hiccup in the past short while.
-                tracing::trace!("been a while since last fail, resetting count");
-                fails = 0;
-            } else {
-                fails += 1;
-            }
-
-            last_fail = Instant::now();
-            tokio::time::sleep(Duration::from_millis((300 * fails).min(3000))).await;
-        }
+        run_inner(self, "redis", &self.input_options.queue_key).await
     }
 }
 
 impl SqsConsumerPlugin {
-    pub fn new(SqsConsumerConfig { input, output }: SqsConsumerConfig) -> Self {
+    pub fn new(
+        SqsConsumerConfig {
+            input,
+            transformation,
+            output,
+        }: SqsConsumerConfig,
+    ) -> Self {
         Self {
             input_options: input,
             svix_client: Svix::new(output.token, output.svix_options.map(Into::into)),
+            transformer_tx: None,
+            transformation,
         }
     }
+}
 
+#[async_trait]
+impl Consumer for SqsConsumerPlugin {
+    fn transformer_tx(&self) -> Option<&TransformerTx> {
+        self.transformer_tx.as_ref()
+    }
     async fn consume(&self) -> std::io::Result<()> {
         let mut consumer =
             <SqsQueueBackend as TaskQueueBackend<CreateMessageRequest>>::consuming_half(
@@ -301,13 +362,26 @@ impl SqsConsumerPlugin {
                 let span = tracing::error_span!("process", messaging.operation = "process");
                 let _enter = span.enter();
 
-                let payload = match Delivery::<serde_json::Value>::payload(&delivery) {
+                let payload = match Delivery::<JsObject>::payload(&delivery) {
                     Ok(p) => p,
                     Err(e) => {
                         tracing::warn!("nack: {e}");
                         delivery.nack().await.map_err(Error::from)?;
                         continue;
                     }
+                };
+
+                let payload = if let Some(script) = &self.transformation {
+                    match self.transform(script.clone(), payload).await {
+                        Err(e) => {
+                            tracing::error!("nack: {e}");
+                            delivery.nack().await.map_err(Error::from)?;
+                            continue;
+                        }
+                        Ok(x) => x,
+                    }
+                } else {
+                    payload
                 };
 
                 match create_svix_message(&self.svix_client, payload).await {
@@ -329,32 +403,44 @@ impl SqsConsumerPlugin {
 
 #[async_trait]
 impl Plugin for SqsConsumerPlugin {
+    fn set_transformer(&mut self, tx: Option<TransformerTx>) {
+        self.transformer_tx = tx;
+    }
     async fn run(&self) -> std::io::Result<()> {
-        let mut fails: u64 = 0;
-        let mut last_fail = Instant::now();
-
-        tracing::info!("sqs starting: {}", &self.input_options.queue_dsn);
-
-        loop {
-            if let Err(e) = self.consume().await {
-                tracing::error!("{e}");
-            }
-
-            tracing::error!("sqs disconnected: {}", &self.input_options.queue_dsn);
-
-            if last_fail.elapsed() > Duration::from_secs(10) {
-                // reset the fail count if we didn't have a hiccup in the past short while.
-                tracing::trace!("been a while since last fail, resetting count");
-                fails = 0;
-            } else {
-                fails += 1;
-            }
-
-            last_fail = Instant::now();
-            tokio::time::sleep(Duration::from_millis((300 * fails).min(3000))).await;
-        }
+        run_inner(self, "sqs", &self.input_options.queue_dsn).await
     }
 }
+
+async fn run_inner(
+    consumer: &impl Consumer,
+    system_name: &str,
+    source: &str,
+) -> std::io::Result<()> {
+    let mut fails: u64 = 0;
+    let mut last_fail = Instant::now();
+
+    tracing::info!("{system_name} starting: {source}");
+
+    loop {
+        if let Err(e) = consumer.consume().await {
+            tracing::error!("{e}");
+        }
+
+        tracing::error!("{system_name} disconnected: {source}");
+
+        if last_fail.elapsed() > Duration::from_secs(10) {
+            // reset the fail count if we didn't have a hiccup in the past short while.
+            tracing::trace!("been a while since last fail, resetting count");
+            fails = 0;
+        } else {
+            fails += 1;
+        }
+
+        last_fail = Instant::now();
+        tokio::time::sleep(Duration::from_millis((300 * fails).min(3000))).await;
+    }
+}
+
 #[derive(Clone, Default, Deserialize, Serialize)]
 pub struct PostOptions {
     idempotency_key: Option<String>,
@@ -376,12 +462,12 @@ pub struct CreateMessageRequest {
     pub post_options: Option<PostOptions>,
 }
 
-async fn create_svix_message(svix: &Svix, value: serde_json::Value) -> std::io::Result<()> {
+async fn create_svix_message(svix: &Svix, value: JsObject) -> std::io::Result<()> {
     let CreateMessageRequest {
         app_id,
         message,
         post_options,
-    }: CreateMessageRequest = serde_json::from_value(value)?;
+    }: CreateMessageRequest = serde_json::from_value(value.into())?;
     let span = tracing::error_span!(
         "create_svix_message",
         app_id = app_id,
