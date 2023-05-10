@@ -3,6 +3,9 @@
 ## Next
 * 
 
+## Version 0.85.1
+* Libs: update OpenAPI spec
+
 ## Version 0.85.0
 * Server: add a missing migration for operational webhooks event types.
 * Libs/Ruby: fix the library failing to load due to missing dependency.
