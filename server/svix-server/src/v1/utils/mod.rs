@@ -563,13 +563,14 @@ where
         let pairs = form_urlencoded::parse(parts.uri.query().unwrap_or_default().as_bytes());
 
         let event_types: HashSet<EventTypeName> = pairs
-            .filter_map(|(key, value)| {
+            .filter(|(key, _)|
                 // want to handle both `?event_types=`, `?event_types[]=`, and `?event_types[1]=`
-                if key == "event_types" || (key.starts_with("event_types[") && key.ends_with(']')) {
-                    Some(EventTypeName(value.into_owned()))
-                } else {
-                    None
-                }
+                key == "event_types" || (key.starts_with("event_types[") && key.ends_with(']')))
+            .flat_map(|(_, value)| {
+                value
+                    .split(',')
+                    .map(|x| EventTypeName(x.to_owned()))
+                    .collect::<Vec<_>>()
             })
             .collect();
 
