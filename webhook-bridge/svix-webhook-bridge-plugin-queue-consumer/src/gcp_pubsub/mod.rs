@@ -1,27 +1,37 @@
 use crate::config::{GCPPubSubConsumerConfig, GCPPubSubInputOpts};
 use crate::error::Error;
-use crate::PLUGIN_NAME;
 use crate::PLUGIN_VERS;
 use crate::{create_svix_message, CreateMessageRequest};
+use crate::{run_inner, Consumer, PLUGIN_NAME};
 use generic_queue::gcp_pubsub::{
     GCPPubSubConfig, GCPPubSubDelivery, GCPPubSubQueueBackend, GCPPubSubQueueConsumer,
 };
 use generic_queue::{Delivery, TaskQueueBackend, TaskQueueReceive};
-use std::time::{Duration, Instant};
+use std::time::Duration;
 use svix::api::Svix;
-use svix_webhook_bridge_types::{async_trait, Plugin};
+use svix_webhook_bridge_types::{async_trait, JsObject, Plugin, TransformerTx};
 use tracing::instrument;
 
 pub struct GCPPubSubConsumerPlugin {
     input_options: GCPPubSubInputOpts,
     svix_client: Svix,
+    transformer_tx: Option<TransformerTx>,
+    transformation: Option<String>,
 }
 
 impl GCPPubSubConsumerPlugin {
-    pub fn new(GCPPubSubConsumerConfig { input, output }: GCPPubSubConsumerConfig) -> Self {
+    pub fn new(
+        GCPPubSubConsumerConfig {
+            input,
+            transformation,
+            output,
+        }: GCPPubSubConsumerConfig,
+    ) -> Self {
         Self {
             input_options: input,
             svix_client: Svix::new(output.token, output.svix_options.map(Into::into)),
+            transformer_tx: None,
+            transformation,
         }
     }
 
@@ -49,16 +59,29 @@ impl GCPPubSubConsumerPlugin {
     }
 
     /// Parses the delivery as JSON and feeds it into [`create_svix_message`].
-    /// Will nack the delivery if either the JSON parse step, or the request to svix fails.
+    /// Will nack the delivery if either the JSON parse, transformation, or the request to svix fails.
     #[instrument(skip_all, fields(messaging.operation = "process"))]
-    async fn process(&self, delivery: GCPPubSubDelivery<serde_json::Value>) -> std::io::Result<()> {
-        let payload = match Delivery::<serde_json::Value>::payload(&delivery) {
+    async fn process(&self, delivery: GCPPubSubDelivery<JsObject>) -> std::io::Result<()> {
+        let payload = match Delivery::<JsObject>::payload(&delivery) {
             Ok(p) => p,
             Err(e) => {
                 tracing::warn!("{e}");
                 delivery.nack().await.map_err(Error::from)?;
                 return Ok(());
             }
+        };
+
+        let payload = if let Some(script) = &self.transformation {
+            match self.transform(script.clone(), payload).await {
+                Err(e) => {
+                    tracing::error!("nack: {e}");
+                    delivery.nack().await.map_err(Error::from)?;
+                    return Ok(());
+                }
+                Ok(x) => x,
+            }
+        } else {
+            payload
         };
 
         match create_svix_message(&self.svix_client, payload).await {
@@ -73,7 +96,13 @@ impl GCPPubSubConsumerPlugin {
         }
         Ok(())
     }
+}
 
+#[async_trait]
+impl Consumer for GCPPubSubConsumerPlugin {
+    fn transformer_tx(&self) -> Option<&TransformerTx> {
+        self.transformer_tx.as_ref()
+    }
     async fn consume(&self) -> std::io::Result<()> {
         let mut consumer =
             <GCPPubSubQueueBackend as TaskQueueBackend<CreateMessageRequest>>::consuming_half(
@@ -86,7 +115,6 @@ impl GCPPubSubConsumerPlugin {
             )
             .await
             .map_err(Error::from)?;
-
         tracing::debug!(
             "gcp pubsub consuming: {}",
             &self.input_options.subscription_id
@@ -100,7 +128,6 @@ impl GCPPubSubConsumerPlugin {
 
 impl TryInto<Box<dyn Plugin>> for GCPPubSubConsumerConfig {
     type Error = &'static str;
-
     fn try_into(self) -> Result<Box<dyn Plugin>, Self::Error> {
         Ok(Box::new(GCPPubSubConsumerPlugin::new(self)))
     }
@@ -108,35 +135,10 @@ impl TryInto<Box<dyn Plugin>> for GCPPubSubConsumerConfig {
 
 #[async_trait]
 impl Plugin for GCPPubSubConsumerPlugin {
+    fn set_transformer(&mut self, tx: Option<TransformerTx>) {
+        self.transformer_tx = tx;
+    }
     async fn run(&self) -> std::io::Result<()> {
-        let mut fails: u64 = 0;
-        let mut last_fail = Instant::now();
-
-        tracing::info!(
-            "gcp pubsub starting: {}",
-            &self.input_options.subscription_id
-        );
-
-        loop {
-            if let Err(e) = self.consume().await {
-                tracing::error!("{e}");
-            }
-
-            tracing::error!(
-                "gcp pubsub disconnected: {}",
-                &self.input_options.subscription_id
-            );
-
-            if last_fail.elapsed() > Duration::from_secs(10) {
-                // reset the fail count if we didn't have a hiccup in the past short while.
-                tracing::trace!("been a while since last fail, resetting count");
-                fails = 0;
-            } else {
-                fails += 1;
-            }
-
-            last_fail = Instant::now();
-            tokio::time::sleep(Duration::from_millis((300 * fails).min(3000))).await;
-        }
+        run_inner(self, "gcp subsub", &self.input_options.subscription_id).await
     }
 }

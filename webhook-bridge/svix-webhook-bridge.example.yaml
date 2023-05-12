@@ -25,6 +25,17 @@ plugins:
     subscription_id: "my-subscription"
     # Optional - will fallback to looking at env vars when left unset.
     credentials_file: "/path/to/credentials.json"
+  # Optional - when unset, messages from the queue will be sent to Svix as-is.
+  transformation: |
+    function handler(input) {
+      return {
+        app_id: input.key,
+        message: {
+          eventType: input.event_type,
+          payload: input.data
+        }
+      };
+    }
   output:
     # Required (the Svix token to use when creating messages with this consumer)
     token: "XYZ"
@@ -40,6 +51,17 @@ plugins:
     consumer_tag: "my-consumer-001"
     # Optional (default: false)
     requeue_on_nack: true
+  # Optional - when unset, messages from the queue will be sent to Svix as-is.
+  transformation: |
+    function handler(input) {
+      return {
+        app_id: input.key,
+        message: {
+          eventType: input.event_type,
+          payload: input.data
+        }
+      };
+    }
   output:
     # Required (the Svix token to use when creating messages with this consumer)
     token: "XYZ"
@@ -59,6 +81,17 @@ plugins:
     max_connections: 4
     # Optional (default: false)
     requeue_on_nack: true
+  # Optional - when unset, messages from the queue will be sent to Svix as-is.
+  transformation: |
+    function handler(input) {
+      return {
+        app_id: input.key,
+        message: {
+          eventType: input.event_type,
+          payload: input.data
+        }
+      };
+    }
   output:
     # Required (the Svix token to use when creating messages with this consumer)
     token: "XYZ"
@@ -74,6 +107,17 @@ plugins:
     queue_dsn: "http://localhost:19324/000000000000/local"
     # Optional (default: false)
     override_endpoint: true
+  # Optional - when unset, messages from the queue will be sent to Svix as-is.
+  transformation: |
+    function handler(input) {
+      return {
+        app_id: input.key,
+        message: {
+          eventType: input.event_type,
+          payload: input.data
+        }
+      };
+    }
   output:
     # Required (the Svix token to use when creating messages with this consumer)
     token: "XYZ"
