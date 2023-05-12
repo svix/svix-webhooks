@@ -6,9 +6,6 @@ use svix_webhook_bridge_types::{JsObject, JsReturn};
 use threadpool::ThreadPool;
 use tokio::sync::{oneshot, Mutex};
 
-// NOTE: The worker is in a struct to try and get around requirements for Send with `async`, but I
-// think it can be eliminated with a little effort.
-
 #[derive(Clone, Debug)]
 pub struct TpHandle(pub Arc<Mutex<ThreadPool>>);
 
