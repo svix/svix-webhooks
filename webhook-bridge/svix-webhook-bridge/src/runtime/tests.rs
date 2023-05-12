@@ -6,7 +6,7 @@ use svix_webhook_bridge_types::JsReturn;
 #[test]
 fn test_happy_fn() {
     let src = r#"
-    export default function (input) {
+    function handler(input) {
         return { "x": 123, ...input };
     }
     "#
@@ -24,7 +24,7 @@ fn test_happy_fn() {
 #[test]
 fn test_invalid_output_bool() {
     let src = r#"
-    export default function (input) {
+    function handler(input) {
         return false;
     }
     "#
@@ -41,7 +41,7 @@ fn test_invalid_output_bool() {
 #[ignore]
 fn test_invalid_output_array() {
     let src = r#"
-    export default function (input) {
+    function handler(input) {
         return [1, 2];
     }
     "#

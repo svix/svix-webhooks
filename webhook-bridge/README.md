@@ -50,7 +50,7 @@ plugins:
 
   # Reshape the messages we get from the queue before they get sent to Svix
   transformation: | 
-    export default function (input) {
+    function handler(input) {
       return {
         app_id: input.key,
         message: {
@@ -64,7 +64,7 @@ plugins:
     # ... snip ...
 ```
 
-Transformations should have a default export which is a function that accepts an object and returns an object.
+Transformations should define a function called `handler` that accepts an object and returns an object.
 
 Messages received by these consumers must follow an expected format:
 

@@ -27,7 +27,7 @@ plugins:
     credentials_file: "/path/to/credentials.json"
   # Optional - when unset, messages from the queue will be sent to Svix as-is.
   transformation: |
-    export default function (input) {
+    function handler(input) {
       return {
         app_id: input.key,
         message: {
@@ -53,7 +53,7 @@ plugins:
     requeue_on_nack: true
   # Optional - when unset, messages from the queue will be sent to Svix as-is.
   transformation: |
-    export default function (input) {
+    function handler(input) {
       return {
         app_id: input.key,
         message: {
@@ -83,7 +83,7 @@ plugins:
     requeue_on_nack: true
   # Optional - when unset, messages from the queue will be sent to Svix as-is.
   transformation: |
-    export default function (input) {
+    function handler(input) {
       return {
         app_id: input.key,
         message: {
@@ -109,7 +109,7 @@ plugins:
     override_endpoint: true
   # Optional - when unset, messages from the queue will be sent to Svix as-is.
   transformation: |
-    export default function (input) {
+    function handler(input) {
       return {
         app_id: input.key,
         message: {
