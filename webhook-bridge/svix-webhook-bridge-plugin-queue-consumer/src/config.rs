@@ -6,24 +6,28 @@ use svix::api::SvixOptions as _SvixOptions;
 #[derive(Debug, Default, Deserialize)]
 pub struct RabbitMqConsumerConfig {
     pub input: RabbitMqInputOpts,
+    pub transformation: Option<String>,
     pub output: OutputOpts,
 }
 
 #[derive(Debug, Default, Deserialize)]
 pub struct RedisConsumerConfig {
     pub input: RedisInputOpts,
+    pub transformation: Option<String>,
     pub output: OutputOpts,
 }
 
 #[derive(Debug, Default, Deserialize)]
 pub struct SqsConsumerConfig {
     pub input: SqsInputOpts,
+    pub transformation: Option<String>,
     pub output: OutputOpts,
 }
 
 #[derive(Debug, Default, Deserialize)]
 pub struct GCPPubSubConsumerConfig {
     pub input: GCPPubSubInputOpts,
+    pub transformation: Option<String>,
     pub output: OutputOpts,
 }
 

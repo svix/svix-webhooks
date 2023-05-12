@@ -6,10 +6,11 @@ use opentelemetry_otlp::WithExportConfig;
 use std::path::PathBuf;
 use std::time::Duration;
 use svix_ksuid::{KsuidLike as _, KsuidMs};
-use svix_webhook_bridge_types::Plugin;
+use svix_webhook_bridge_types::{Plugin, TransformerJob};
 use tracing_subscriber::prelude::*;
 
 mod config;
+mod runtime;
 
 lazy_static! {
     // Seems like it would be useful to be able to configure this.
@@ -24,7 +25,6 @@ fn get_svc_identifiers(cfg: &Config) -> opentelemetry::sdk::Resource {
             "service.name",
             cfg.opentelemetry_service_name
                 .as_deref()
-                // FIXME: can we do something better?
                 .unwrap_or("svix-webhook-bridge")
                 .to_owned(),
         ),
@@ -169,15 +169,50 @@ async fn main() -> std::io::Result<()> {
 
     tracing::info!("starting");
 
+    let (xform_tx, mut xform_rx) = tokio::sync::mpsc::unbounded_channel::<TransformerJob>();
+
+    // XXX: this is a bit nasty, but might be okay to start.
+    // The nested spawns are needed to make sure we can saturate the
+    // threadpool (otherwise we'd run each job serially).
+    //
+    // Another approach would be to do what og-ingester did: give each plugin a clone of the
+    // `TpHandle`, but this would likely mean moving the runtime module over to the `-types` crate.
+    // I'd rather not do this, mostly to help keep things more unit test friendly; channels can
+    // help keep the coupling more loose, with less stateful baggage.
+    // Starting with this just to keep the JS executor stuff here in the binary.
+    tokio::spawn(async move {
+        let tp = runtime::TpHandle::new();
+        while let Some(TransformerJob {
+            payload,
+            script,
+            callback_tx,
+        }) = xform_rx.recv().await
+        {
+            let tp = tp.clone();
+            tokio::spawn(async move {
+                let out = tp.run_script(payload.into(), script).await;
+                if callback_tx
+                    .send(out.map_err(|e| tracing::error!("{}", e)))
+                    .is_err()
+                {
+                    // If the callback fails, the plugin is likely unwinding/dropping.
+                    // Not a whole lot we can do about that.
+                    tracing::error!("failed to send js output back to caller");
+                }
+            });
+        }
+    });
+
     let mut plugins = Vec::with_capacity(cfg.plugins.len());
     for cc in cfg.plugins {
-        let consumer = cc.try_into().map_err(|e| {
+        let mut plugin: Box<dyn Plugin> = cc.try_into().map_err(|e| {
             std::io::Error::new(
                 std::io::ErrorKind::Other,
                 format!("Failed to configure plugin: {}", e),
             )
         })?;
-        plugins.push(consumer);
+        plugin.set_transformer(Some(xform_tx.clone()));
+        plugins.push(plugin);
     }
     if plugins.is_empty() {
         tracing::warn!("No plugins configured.")
