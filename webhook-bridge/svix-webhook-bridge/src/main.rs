@@ -3,14 +3,16 @@ use clap::Parser;
 use lazy_static::lazy_static;
 use opentelemetry::runtime::Tokio;
 use opentelemetry_otlp::WithExportConfig;
+use std::io::Error;
 use std::path::PathBuf;
 use std::time::Duration;
 use svix_ksuid::{KsuidLike as _, KsuidMs};
-use svix_webhook_bridge_types::{Plugin, TransformerJob};
+use svix_webhook_bridge_types::{SenderInput, TransformerJob};
 use tracing_subscriber::prelude::*;
 
 mod config;
 mod runtime;
+mod webhook_receiver;
 
 lazy_static! {
     // Seems like it would be useful to be able to configure this.
@@ -23,8 +25,9 @@ fn get_svc_identifiers(cfg: &Config) -> opentelemetry::sdk::Resource {
     opentelemetry::sdk::Resource::new(vec![
         opentelemetry::KeyValue::new(
             "service.name",
-            cfg.opentelemetry_service_name
-                .as_deref()
+            cfg.opentelemetry
+                .as_ref()
+                .and_then(|x| x.service_name.as_deref())
                 .unwrap_or("svix-webhook-bridge")
                 .to_owned(),
         ),
@@ -44,7 +47,12 @@ fn setup_tracing(cfg: &Config) {
         std::env::set_var("RUST_LOG", var.join(","));
     }
 
-    let otel_layer = cfg.opentelemetry_address.as_ref().map(|addr| {
+    let otel_cfg = match &cfg.opentelemetry {
+        Some(cfg) => cfg,
+        None => return,
+    };
+
+    let otel_layer = {
         // Configure the OpenTelemetry tracing layer
         opentelemetry::global::set_text_map_propagator(
             opentelemetry::sdk::propagation::TraceContextPropagator::new(),
@@ -52,7 +60,7 @@ fn setup_tracing(cfg: &Config) {
 
         let exporter = opentelemetry_otlp::new_exporter()
             .tonic()
-            .with_endpoint(addr);
+            .with_endpoint(&otel_cfg.address);
 
         let tracer = opentelemetry_otlp::new_pipeline()
             .tracing()
@@ -60,7 +68,8 @@ fn setup_tracing(cfg: &Config) {
             .with_trace_config(
                 opentelemetry::sdk::trace::config()
                     .with_sampler(
-                        cfg.opentelemetry_sample_ratio
+                        otel_cfg
+                            .sample_ratio
                             .map(opentelemetry::sdk::trace::Sampler::TraceIdRatioBased)
                             .unwrap_or(opentelemetry::sdk::trace::Sampler::AlwaysOn),
                     )
@@ -70,7 +79,7 @@ fn setup_tracing(cfg: &Config) {
             .unwrap();
 
         tracing_opentelemetry::layer().with_tracer(tracer)
-    });
+    };
 
     // Then initialize logging with an additional layer printing to stdout. This additional layer is
     // either formatted normally or in JSON format
@@ -101,18 +110,22 @@ fn setup_tracing(cfg: &Config) {
     };
 }
 
-async fn supervise(plugins: Vec<Box<dyn Plugin>>) -> std::io::Result<()> {
+async fn supervise(inputs: Vec<Box<dyn SenderInput>>) -> std::io::Result<()> {
     let mut set = tokio::task::JoinSet::new();
-    for plugin in plugins {
+    for input in inputs {
         set.spawn(async move {
             // FIXME: needs much better signaling for termination
             loop {
-                let fut = plugin.run();
+                let fut = input.run();
                 // If this future returns, the consumer terminated unexpectedly.
                 if let Err(e) = fut.await {
-                    tracing::warn!("plugin unexpectedly terminated: {}", e);
+                    tracing::warn!(
+                        "sender input {} unexpectedly terminated: {}",
+                        input.name(),
+                        e
+                    );
                 } else {
-                    tracing::warn!("plugin unexpectedly terminated");
+                    tracing::warn!("sender input {} unexpectedly terminated", input.name());
                 }
                 tokio::time::sleep(Duration::from_secs(1)).await;
             }
@@ -150,7 +163,7 @@ async fn main() -> std::io::Result<()> {
     let config = args.cfg.unwrap_or_else(|| {
         std::env::current_dir()
             .expect("current dir")
-            .join("svix-webhook-bridge.yaml")
+            .join("svix-bridge.yaml")
     });
     let cfg: Config = serde_yaml::from_str(&std::fs::read_to_string(&config).map_err(|e| {
         let p = config.into_os_string().into_string().expect("config path");
@@ -203,21 +216,32 @@ async fn main() -> std::io::Result<()> {
         }
     });
 
-    let mut plugins = Vec::with_capacity(cfg.plugins.len());
-    for cc in cfg.plugins {
-        let mut plugin: Box<dyn Plugin> = cc.try_into().map_err(|e| {
-            std::io::Error::new(
+    let mut senders = Vec::with_capacity(cfg.senders.len());
+    for sc in cfg.senders {
+        let mut sender: Box<dyn SenderInput> = sc.try_into().map_err(|e| {
+            Error::new(
                 std::io::ErrorKind::Other,
                 format!("Failed to configure plugin: {}", e),
             )
         })?;
-        plugin.set_transformer(Some(xform_tx.clone()));
-        plugins.push(plugin);
+        sender.set_transformer(Some(xform_tx.clone()));
+        senders.push(sender);
     }
-    if plugins.is_empty() {
-        tracing::warn!("No plugins configured.")
+    if senders.is_empty() {
+        tracing::warn!("No senders configured.")
     }
-    supervise(plugins).await?;
+    let senders_fut = supervise(senders);
+
+    if cfg.receivers.is_empty() {
+        tracing::warn!("No receivers configured.")
+    }
+    let receivers_fut = webhook_receiver::run(cfg.http_listen_address, cfg.receivers, xform_tx);
+
+    match tokio::try_join!(senders_fut, receivers_fut) {
+        Ok(_) => tracing::error!("unexpectedly exiting"),
+        Err(e) => tracing::error!("unexpectedly exiting: {}", e),
+    }
+
     tracing::info!("exiting...");
     Ok(())
 }

@@ -1,4 +1,7 @@
 pub use async_trait::async_trait;
+use serde::Deserialize;
+pub use svix;
+use svix::api::SvixOptions as _SvixOptions;
 use tokio::sync::mpsc;
 use tokio::sync::oneshot;
 
@@ -50,9 +53,83 @@ impl TransformerJob {
 /// Plugins should run until they are done, and likely they should not be "done" until the program
 /// exits.
 #[async_trait]
-pub trait Plugin: Send {
+pub trait SenderInput: Send {
+    fn name(&self) -> &str;
     /// For plugins that want to run JS transformations on payloads.
     /// Giving them a sender lets them pass messages to the JS executor.
     fn set_transformer(&mut self, _tx: Option<TransformerTx>) {}
     async fn run(&self) -> std::io::Result<()>;
+}
+
+/// Represents something we can hand a webhook payload to.
+/// Aka a "forwarder."
+///
+/// To start, we're only using this in conjunction with an HTTP server "owned" by the bridge binary.
+#[async_trait]
+pub trait ReceiverOutput: Send + Sync {
+    fn name(&self) -> &str;
+    async fn handle(&self, payload: JsObject) -> std::io::Result<()>;
+}
+
+#[derive(Deserialize, Debug, Clone, Default)]
+#[serde(tag = "type", rename_all = "lowercase")]
+pub enum WebhookVerifier {
+    Svix {
+        endpoint_secret: String,
+    },
+    #[default]
+    None,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(tag = "type", rename_all = "lowercase")]
+pub enum ReceiverInputOpts {
+    Webhook {
+        path_id: String,
+        #[serde(default)]
+        verification: WebhookVerifier,
+    },
+    #[serde(rename = "svix-webhook")]
+    SvixWebhook {
+        path_id: String,
+        endpoint_secret: String,
+    },
+}
+
+impl ReceiverInputOpts {
+    pub fn path_id(&self) -> &str {
+        match self {
+            ReceiverInputOpts::Webhook { path_id, .. }
+            | ReceiverInputOpts::SvixWebhook { path_id, .. } => path_id,
+        }
+    }
+}
+
+// N.b. the codegen types we get from openapi don't impl Deserialize so we need our own version.
+#[derive(Debug, Default, Deserialize)]
+pub struct SvixOptions {
+    #[serde(default)]
+    pub debug: bool,
+    pub server_url: Option<String>,
+}
+
+impl From<SvixOptions> for _SvixOptions {
+    fn from(SvixOptions { debug, server_url }: SvixOptions) -> Self {
+        _SvixOptions { debug, server_url }
+    }
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(tag = "type", rename_all = "lowercase")]
+pub enum SenderOutputOpts {
+    Svix(SvixSenderOutputOpts),
+}
+
+#[derive(Debug, Deserialize)]
+pub struct SvixSenderOutputOpts {
+    /// Svix API token for the client.
+    pub token: String,
+    /// Options for the Svix client.
+    #[serde(default)]
+    pub options: Option<SvixOptions>,
 }

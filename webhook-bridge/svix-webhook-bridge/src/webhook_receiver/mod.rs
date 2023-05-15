@@ -1,85 +1,47 @@
-use crate::config::IntegrationConfig;
+use crate::config::ReceiverConfig;
 use axum::{
+    body::Body,
     extract::{Path, State},
     routing::post,
     Router,
 };
-use forwarding::ForwardingMethod;
-use serde::Deserialize;
 use std::net::SocketAddr;
-use svix_webhook_bridge_types::{
-    async_trait, JsObject, JsReturn, Plugin, TransformerJob, TransformerTx,
-};
+use svix_webhook_bridge_types::{JsObject, JsReturn, TransformerJob, TransformerTx};
 use tracing::instrument;
 use types::{IntegrationId, IntegrationState, InternalState, SerializableRequest, Unvalidated};
 
-pub mod config;
-mod forwarding;
+mod config;
 mod types;
 mod verification;
 
-pub const PLUGIN_NAME: &str = env!("CARGO_PKG_NAME");
-pub const PLUGIN_VERS: &str = env!("CARGO_PKG_VERSION");
-
-#[derive(Clone, Debug, Deserialize, PartialEq)]
-pub struct WebhookReceiverPluginConfig {
-    pub listen_addr: SocketAddr,
-    pub routes: Vec<IntegrationConfig>,
+fn router() -> Router<InternalState, Body> {
+    Router::new()
+        .route(
+            "/webhook/:integration_id",
+            post(route).put(route).get(route).patch(route),
+        )
+        .route(
+            "/webhook/:integration_id/",
+            post(route).put(route).get(route).patch(route),
+        )
 }
 
-#[derive(Clone, Debug)]
-pub struct WebhookReceiverPlugin {
-    cfg: WebhookReceiverPluginConfig,
-    transformer_tx: Option<TransformerTx>,
-}
+pub async fn run(
+    listen_addr: SocketAddr,
+    routes: Vec<ReceiverConfig>,
+    transformer_tx: TransformerTx,
+) -> std::io::Result<()> {
+    let state = InternalState::from_receiver_configs(routes, transformer_tx)
+        .await
+        .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
 
-impl WebhookReceiverPlugin {
-    pub fn new(cfg: WebhookReceiverPluginConfig) -> Self {
-        Self {
-            cfg,
-            transformer_tx: None,
-        }
-    }
-}
+    let router = router().with_state(state);
 
-impl TryInto<Box<dyn Plugin>> for WebhookReceiverPluginConfig {
-    type Error = &'static str;
-
-    fn try_into(self) -> Result<Box<dyn Plugin>, Self::Error> {
-        Ok(Box::new(WebhookReceiverPlugin::new(self)))
-    }
-}
-
-#[async_trait]
-impl Plugin for WebhookReceiverPlugin {
-    fn set_transformer(&mut self, tx: Option<TransformerTx>) {
-        self.transformer_tx = tx;
-    }
-
-    async fn run(&self) -> std::io::Result<()> {
-        let addr = &self.cfg.listen_addr;
-        let state =
-            InternalState::from_routes(self.cfg.routes.as_slice(), self.transformer_tx.clone())
-                .await
-                .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
-
-        let router = Router::new()
-            .route(
-                "/webhook/:integration_id",
-                post(route).put(route).get(route).patch(route),
-            )
-            .route(
-                "/webhook/:integration_id/",
-                post(route).put(route).get(route).patch(route),
-            )
-            .with_state(state);
-
-        tracing::info!("Listening on: {addr}");
-        axum::Server::bind(addr)
-            .serve(router.into_make_service())
-            .await
-            .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))
-    }
+    tracing::info!("Listening on: {listen_addr}");
+    axum::Server::bind(&listen_addr)
+        .serve(router.into_make_service())
+        .await
+        .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))
 }
 
 #[instrument(
@@ -87,8 +49,6 @@ impl Plugin for WebhookReceiverPlugin {
     level="error",
     fields(
         integration_id=integration_id.as_ref(),
-        svixagent_plugin.name = PLUGIN_NAME,
-        svixagent_plugin.vers = PLUGIN_VERS,
     )
 )]
 async fn route(
@@ -101,7 +61,7 @@ async fn route(
 ) -> http::StatusCode {
     if let Some(IntegrationState {
         verifier,
-        forwarder,
+        output,
         transformation,
     }) = routes.get(&integration_id)
     {
@@ -125,10 +85,9 @@ async fn route(
                 };
 
                 tracing::debug!("forwarding request");
-                // `forward` method was ambiguous. It looks like there are many traits that offer
-                // this method.
-                match ForwardingMethod::forward(forwarder, payload).await {
-                    Ok(c) => c,
+
+                match output.handle(payload).await {
+                    Ok(_) => http::StatusCode::NO_CONTENT,
                     Err(e) => {
                         tracing::error!("Error forwarding request: {}", e);
                         http::StatusCode::INTERNAL_SERVER_ERROR
@@ -150,13 +109,8 @@ async fn route(
 async fn transform(
     payload: JsObject,
     script: String,
-    tx: Option<TransformerTx>,
+    tx: TransformerTx,
 ) -> Result<JsObject, http::StatusCode> {
-    let tx = tx.ok_or_else(|| {
-        tracing::error!("transformations are not available");
-        http::StatusCode::INTERNAL_SERVER_ERROR
-    })?;
-
     let (job, callback) = TransformerJob::new(script.clone(), payload);
     if let Err(e) = tx.send(job) {
         tracing::error!("transformations are not available: {}", e);
@@ -177,3 +131,6 @@ async fn transform(
         }
     }
 }
+
+#[cfg(test)]
+mod tests;

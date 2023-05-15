@@ -1,27 +1,44 @@
 use serde::Deserialize;
-use svix_webhook_bridge_plugin_queue_consumer::config::{
-    GCPPubSubConsumerConfig, RabbitMqConsumerConfig, RedisConsumerConfig, SqsConsumerConfig,
+use std::net::SocketAddr;
+use svix_webhook_bridge_plugin_queue::config::{
+    into_receiver_output, QueueConsumerConfig, ReceiverOutputOpts as QueueOutOpts,
 };
-use svix_webhook_bridge_types::Plugin;
+use svix_webhook_bridge_types::{ReceiverInputOpts, ReceiverOutput, SenderInput};
 use tracing::Level;
 
 #[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Config {
     #[serde(default)]
-    pub plugins: Vec<PluginConfig>,
+    pub senders: Vec<SenderConfig>,
+    #[serde(default)]
+    pub receivers: Vec<ReceiverConfig>,
     /// The log level to run the service with. Supported: info, debug, trace
     #[serde(default)]
     pub log_level: LogLevel,
     /// The log format that all output will follow. Supported: default, json
     #[serde(default)]
     pub log_format: LogFormat,
+    /// OpenTelemetry exporter settings
+    #[serde(default)]
+    pub opentelemetry: Option<OtelExporterConfig>,
+    #[serde(default = "default_http_listen_address")]
+    pub http_listen_address: SocketAddr,
+}
+
+fn default_http_listen_address() -> SocketAddr {
+    "0.0.0.0:5000".parse().expect("default http listen address")
+}
+
+#[derive(Deserialize)]
+pub struct OtelExporterConfig {
     /// The OpenTelemetry service name to use
-    pub opentelemetry_service_name: Option<String>,
+    pub service_name: Option<String>,
     /// The OpenTelemetry address to send events to if given.
-    pub opentelemetry_address: Option<String>,
+    pub address: String,
     /// The ratio at which to sample spans when sending to OpenTelemetry. When not given it defaults
     /// to always sending. If the OpenTelemetry address is not set, this will do nothing.
-    pub opentelemetry_sample_ratio: Option<f64>,
+    pub sample_ratio: Option<f64>,
 }
 
 #[derive(Clone, Debug, Default, Deserialize)]
@@ -52,53 +69,64 @@ pub enum LogFormat {
     Json,
 }
 
-// FIXME: ideally we wouldn't need to modify `ConsumerConfig` when adding new plugins.
-//   Possibly we could codegen this type via macro that look at a data/cfg file, or in
-//   a build script.
 #[derive(Deserialize)]
-#[serde(tag = "type")]
-#[serde(rename_all = "lowercase")]
-pub enum PluginConfig {
-    #[cfg(feature = "gcp-pubsub")]
-    GCPPubSubConsumer(GCPPubSubConsumerConfig),
-
-    #[cfg(feature = "rabbitmq")]
-    RabbitMQConsumer(RabbitMqConsumerConfig),
-
-    #[cfg(feature = "redis")]
-    RedisConsumer(RedisConsumerConfig),
-
-    #[cfg(feature = "sqs")]
-    SqsConsumer(SqsConsumerConfig),
-
-    #[cfg(feature = "webhook-receiver")]
-    WebhookReceiver(svix_webhook_bridge_plugin_webhook_receiver::WebhookReceiverPluginConfig),
-
-    #[serde(other)]
-    Unknown,
+#[serde(untagged)]
+pub enum SenderConfig {
+    #[cfg(any(
+        feature = "gcp-pubsub",
+        feature = "rabbitmq",
+        feature = "redis",
+        feature = "sqs"
+    ))]
+    QueueConsumer(QueueConsumerConfig),
 }
 
-impl TryInto<Box<dyn Plugin>> for PluginConfig {
+impl TryInto<Box<dyn SenderInput>> for SenderConfig {
     type Error = &'static str;
 
-    fn try_into(self) -> Result<Box<dyn Plugin>, Self::Error> {
+    fn try_into(self) -> Result<Box<dyn SenderInput>, Self::Error> {
         match self {
-            #[cfg(feature = "gcp-pubsub")]
-            PluginConfig::GCPPubSubConsumer(cc) => cc.try_into(),
-
-            #[cfg(feature = "rabbitmq")]
-            PluginConfig::RabbitMQConsumer(cc) => cc.try_into(),
-
-            #[cfg(feature = "redis")]
-            PluginConfig::RedisConsumer(cc) => cc.try_into(),
-
-            #[cfg(feature = "sqs")]
-            PluginConfig::SqsConsumer(cc) => cc.try_into(),
-
-            #[cfg(feature = "webhook-receiver")]
-            PluginConfig::WebhookReceiver(cc) => cc.try_into(),
-
-            PluginConfig::Unknown => Err("unknown plugin"),
+            #[cfg(any(
+                feature = "gcp-pubsub",
+                feature = "rabbitmq",
+                feature = "redis",
+                feature = "sqs"
+            ))]
+            SenderConfig::QueueConsumer(backend) => backend.try_into(),
         }
     }
 }
+
+#[derive(Deserialize)]
+pub struct ReceiverConfig {
+    pub name: String,
+    pub input: ReceiverInputOpts,
+    #[serde(default)]
+    pub transformation: Option<String>,
+    pub output: ReceiverOut,
+}
+
+#[derive(Deserialize)]
+#[serde(untagged)]
+pub enum ReceiverOut {
+    #[cfg(any(
+        feature = "gcp-pubsub",
+        feature = "rabbitmq",
+        feature = "redis",
+        feature = "sqs"
+    ))]
+    QueueProducer(QueueOutOpts),
+}
+
+impl ReceiverConfig {
+    pub async fn into_receiver_output(self) -> std::io::Result<Box<dyn ReceiverOutput>> {
+        match self.output {
+            ReceiverOut::QueueProducer(x) => into_receiver_output(self.name.clone(), x)
+                .await
+                .map_err(Into::into),
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests;

@@ -1,4 +1,5 @@
-use generic_queue::QueueError;
+pub use generic_queue::QueueError;
+use svix_webhook_bridge_types::svix;
 
 pub enum Error {
     Payload(String),

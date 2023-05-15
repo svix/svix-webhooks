@@ -1,13 +1,22 @@
-use crate::config::{GCPPubSubConsumerConfig, GCPPubSubInputOpts};
 use crate::error::Error;
 use crate::ConsumerWrapper;
 use crate::{run_inner, Consumer};
 use generic_queue::gcp_pubsub::{GCPPubSubConfig, GCPPubSubQueueBackend};
 use generic_queue::TaskQueueBackend;
-use svix::api::Svix;
-use svix_webhook_bridge_types::{async_trait, JsObject, Plugin, TransformerTx};
+use serde::Deserialize;
+use std::path::PathBuf;
+use svix_webhook_bridge_types::{
+    async_trait, svix::api::Svix, JsObject, SenderInput, SenderOutputOpts, TransformerTx,
+};
+
+#[derive(Debug, Default, Deserialize)]
+pub struct GCPPubSubInputOpts {
+    pub subscription_id: String,
+    pub credentials_file: Option<PathBuf>,
+}
 
 pub struct GCPPubSubConsumerPlugin {
+    name: String,
     input_options: GCPPubSubInputOpts,
     svix_client: Svix,
     transformer_tx: Option<TransformerTx>,
@@ -16,15 +25,19 @@ pub struct GCPPubSubConsumerPlugin {
 
 impl GCPPubSubConsumerPlugin {
     pub fn new(
-        GCPPubSubConsumerConfig {
-            input,
-            transformation,
-            output,
-        }: GCPPubSubConsumerConfig,
+        name: String,
+        input: GCPPubSubInputOpts,
+        transformation: Option<String>,
+        output: SenderOutputOpts,
     ) -> Self {
         Self {
+            name,
             input_options: input,
-            svix_client: Svix::new(output.token, output.svix_options.map(Into::into)),
+            svix_client: match output {
+                SenderOutputOpts::Svix(output) => {
+                    Svix::new(output.token, output.options.map(Into::into))
+                }
+            },
             transformer_tx: None,
             transformation,
         }
@@ -68,19 +81,21 @@ impl Consumer for GCPPubSubConsumerPlugin {
     }
 }
 
-impl TryInto<Box<dyn Plugin>> for GCPPubSubConsumerConfig {
-    type Error = &'static str;
-    fn try_into(self) -> Result<Box<dyn Plugin>, Self::Error> {
-        Ok(Box::new(GCPPubSubConsumerPlugin::new(self)))
-    }
-}
-
 #[async_trait]
-impl Plugin for GCPPubSubConsumerPlugin {
+impl SenderInput for GCPPubSubConsumerPlugin {
+    fn name(&self) -> &str {
+        &self.name
+    }
     fn set_transformer(&mut self, tx: Option<TransformerTx>) {
         self.transformer_tx = tx;
     }
     async fn run(&self) -> std::io::Result<()> {
         run_inner(self).await
     }
+}
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct GCPPubSubOutputOpts {
+    pub topic: String,
+    pub credentials_file: Option<PathBuf>,
 }

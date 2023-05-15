@@ -9,6 +9,5 @@ members = [
     "generic-queue",
     "svix-webhook-bridge-types",
     "svix-webhook-bridge",
-    "svix-webhook-bridge-plugin-queue-consumer",
-    "svix-webhook-bridge-plugin-webhook-receiver",
+    "svix-webhook-bridge-plugin-queue",
 ]

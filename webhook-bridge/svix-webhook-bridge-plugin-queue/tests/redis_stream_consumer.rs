@@ -1,90 +1,91 @@
 //! Use the `testing-docker-compose.yml` in the repo root to run the dependencies for testing,
-//! including ElasticMQ.
-//!
-//! Use `run-tests.sh` to use the requisite environment for testing.
+//! including Redis.
 
 use std::time::Duration;
 
-use aws_sdk_sqs::Client;
+use redis::{AsyncCommands, Client};
 use serde_json::json;
-use svix::api::MessageIn;
-use svix_webhook_bridge_plugin_queue_consumer::{
-    config::{OutputOpts, SqsConsumerConfig, SqsInputOpts, SvixOptions},
-    CreateMessageRequest, SqsConsumerPlugin,
+use svix_webhook_bridge_plugin_queue::{
+    config::RedisInputOpts, CreateMessageRequest, RedisConsumerPlugin,
 };
-use svix_webhook_bridge_types::{JsReturn, Plugin, TransformerJob};
+use svix_webhook_bridge_types::{
+    svix::api::MessageIn, JsReturn, SenderInput, SenderOutputOpts, SvixOptions,
+    SvixSenderOutputOpts, TransformerJob,
+};
 use wiremock::matchers::{body_partial_json, method};
 use wiremock::{Mock, MockServer, ResponseTemplate};
 
-const ROOT_URL: &str = "http://localhost:9324";
-
 fn get_test_plugin(
     svix_url: String,
-    queue_dsn: String,
+    queue_key: String,
     use_transformation: bool,
-) -> SqsConsumerPlugin {
-    SqsConsumerPlugin::new(SqsConsumerConfig {
-        input: SqsInputOpts {
-            queue_dsn,
-            override_endpoint: true,
+) -> RedisConsumerPlugin {
+    RedisConsumerPlugin::new(
+        "test".into(),
+        RedisInputOpts {
+            dsn: "redis://localhost/".to_owned(),
+            max_connections: 8,
+            reinsert_on_nack: false,
+            queue_key,
+            consumer_group: "test_cg".to_owned(),
+            consumer_name: "test_cn".to_owned(),
         },
-        transformation: if use_transformation {
+        if use_transformation {
             // The actual script doesn't matter since the test case will be performing the
             // transformation, not the actual JS executor.
-            Some(String::from("export default function (x) { return x; }"))
+            Some(String::from("function handle(x) { return x; }"))
         } else {
             None
         },
-        output: OutputOpts {
+        SenderOutputOpts::Svix(SvixSenderOutputOpts {
             token: "xxxx".to_string(),
-            svix_options: Some(SvixOptions {
+            options: Some(SvixOptions {
                 server_url: Some(svix_url),
                 ..Default::default()
             }),
-        },
-    })
+        }),
+    )
 }
 
-async fn mq_connection() -> Client {
-    let config = aws_config::from_env().endpoint_url(ROOT_URL).load().await;
-    Client::new(&config)
+async fn redis_connection() -> Client {
+    Client::open("redis://localhost/").unwrap()
 }
 
-async fn create_test_queue(client: &Client) -> String {
+async fn create_test_stream(client: &Client) -> String {
     let name: String = std::iter::repeat_with(fastrand::alphanumeric)
         .take(8)
         .collect();
-    client
-        .create_queue()
-        .queue_name(&name)
-        .send()
+
+    let mut conn = client.get_async_connection().await.unwrap();
+
+    let _: () = conn
+        .xgroup_create_mkstream(&name, "test_cg", 0i8)
         .await
         .unwrap();
 
     name
 }
 
-async fn publish(client: &Client, url: &str, payload: &str) {
-    client
-        .send_message()
-        .queue_url(url)
-        .message_body(payload)
-        .send()
-        .await
-        .unwrap();
+async fn delete_test_stream(client: &Client, key: &str) {
+    let mut conn = client.get_async_connection().await.unwrap();
+    let _: () = conn.del(key).await.unwrap();
+}
+
+async fn publish(client: &Client, key: &str, payload: &str) {
+    let mut conn = client.get_async_connection().await.unwrap();
+
+    let _: () = conn.xadd(key, "*", &[("payload", payload)]).await.unwrap();
 }
 
 /// General "pause while we wait for messages to travel" beat. If you're seeing flakes, bump this up.
-const WAIT_MS: u64 = 100;
+const WAIT_MS: u64 = 250;
 
 /// Push a msg on the queue.
 /// Check to see if the svix server sees a request.
 #[tokio::test]
 async fn test_consume_ok() {
-    let client = mq_connection().await;
-    let queue_name = create_test_queue(&client).await;
-
-    let queue_url = format!("{ROOT_URL}/queue/{queue_name}");
+    let client = redis_connection().await;
+    let key = create_test_stream(&client).await;
 
     let mock_server = MockServer::start().await;
     // The mock will make asserts on drop (i.e. when the body of the test is returning).
@@ -105,7 +106,7 @@ async fn test_consume_ok() {
         .expect(1);
     mock_server.register(mock).await;
 
-    let plugin = get_test_plugin(mock_server.uri(), queue_url.clone(), false);
+    let plugin = get_test_plugin(mock_server.uri(), key.clone(), false);
 
     let handle = tokio::spawn(async move {
         let fut = plugin.run();
@@ -120,29 +121,22 @@ async fn test_consume_ok() {
         post_options: None,
     };
 
-    publish(&client, &queue_url, &serde_json::to_string(&msg).unwrap()).await;
+    publish(&client, &key, &serde_json::to_string(&msg).unwrap()).await;
 
     // Wait for the consumer to consume.
     tokio::time::sleep(Duration::from_millis(WAIT_MS)).await;
 
     handle.abort();
 
-    client
-        .delete_queue()
-        .queue_url(&queue_url)
-        .send()
-        .await
-        .unwrap();
+    delete_test_stream(&client, &key).await;
 }
 
 /// Push a msg on the queue.
 /// Check to see if the svix server sees a request, but this time transform the payload.
 #[tokio::test]
 async fn test_consume_transformed_ok() {
-    let client = mq_connection().await;
-    let queue_name = create_test_queue(&client).await;
-
-    let queue_url = format!("{ROOT_URL}/queue/{queue_name}");
+    let client = redis_connection().await;
+    let key = create_test_stream(&client).await;
 
     let mock_server = MockServer::start().await;
     // The mock will make asserts on drop (i.e. when the body of the test is returning).
@@ -165,7 +159,7 @@ async fn test_consume_transformed_ok() {
         .expect(1);
     mock_server.register(mock).await;
 
-    let mut plugin = get_test_plugin(mock_server.uri(), queue_url.clone(), true);
+    let mut plugin = get_test_plugin(mock_server.uri(), key.clone(), true);
     let (transformer_tx, mut transformer_rx) =
         tokio::sync::mpsc::unbounded_channel::<TransformerJob>();
     let _handle = tokio::spawn(async move {
@@ -196,27 +190,20 @@ async fn test_consume_transformed_ok() {
         post_options: None,
     };
 
-    publish(&client, &queue_url, &serde_json::to_string(&msg).unwrap()).await;
+    publish(&client, &key, &serde_json::to_string(&msg).unwrap()).await;
 
     // Wait for the consumer to consume.
     tokio::time::sleep(Duration::from_millis(WAIT_MS)).await;
 
     handle.abort();
 
-    client
-        .delete_queue()
-        .queue_url(&queue_url)
-        .send()
-        .await
-        .unwrap();
+    delete_test_stream(&client, &key).await;
 }
 
 #[tokio::test]
 async fn test_missing_app_id_nack() {
-    let client = mq_connection().await;
-    let queue_name = create_test_queue(&client).await;
-
-    let queue_url = format!("{ROOT_URL}/queue/{queue_name}");
+    let client = redis_connection().await;
+    let key = create_test_stream(&client).await;
 
     let mock_server = MockServer::start().await;
     let mock = Mock::given(method("POST"))
@@ -227,7 +214,7 @@ async fn test_missing_app_id_nack() {
         .expect(0);
     mock_server.register(mock).await;
 
-    let plugin = get_test_plugin(mock_server.uri(), queue_url.clone(), false);
+    let plugin = get_test_plugin(mock_server.uri(), key.clone(), false);
 
     let handle = tokio::spawn(async move {
         let fut = plugin.run();
@@ -239,7 +226,7 @@ async fn test_missing_app_id_nack() {
 
     publish(
         &client,
-        &queue_url,
+        &key,
         &serde_json::to_string(&json!({
             // No app id
             "message": {
@@ -258,20 +245,13 @@ async fn test_missing_app_id_nack() {
     tokio::time::sleep(Duration::from_millis(WAIT_MS)).await;
     handle.abort();
 
-    client
-        .delete_queue()
-        .queue_url(&queue_url)
-        .send()
-        .await
-        .unwrap();
+    delete_test_stream(&client, &key).await
 }
 
 #[tokio::test]
 async fn test_missing_event_type_nack() {
-    let client = mq_connection().await;
-    let queue_name = create_test_queue(&client).await;
-
-    let queue_url = format!("{ROOT_URL}/queue/{queue_name}");
+    let client = redis_connection().await;
+    let key = create_test_stream(&client).await;
 
     let mock_server = MockServer::start().await;
     let mock = Mock::given(method("POST"))
@@ -282,7 +262,7 @@ async fn test_missing_event_type_nack() {
         .expect(0);
     mock_server.register(mock).await;
 
-    let plugin = get_test_plugin(mock_server.uri(), queue_url.clone(), false);
+    let plugin = get_test_plugin(mock_server.uri(), key.clone(), false);
 
     let handle = tokio::spawn(async move {
         let fut = plugin.run();
@@ -294,7 +274,7 @@ async fn test_missing_event_type_nack() {
 
     publish(
         &client,
-        &queue_url,
+        &key,
         &serde_json::to_string(&json!({
             "app_id": "app_1234",
             "message": {
@@ -312,21 +292,14 @@ async fn test_missing_event_type_nack() {
     tokio::time::sleep(Duration::from_millis(WAIT_MS)).await;
     handle.abort();
 
-    client
-        .delete_queue()
-        .queue_url(&queue_url)
-        .send()
-        .await
-        .unwrap();
+    delete_test_stream(&client, &key).await
 }
 
 /// Check that the plugin keeps running when it can't send a message to svix
 #[tokio::test]
 async fn test_consume_svix_503() {
-    let client = mq_connection().await;
-    let queue_name = create_test_queue(&client).await;
-
-    let queue_url = format!("{ROOT_URL}/queue/{queue_name}");
+    let client = redis_connection().await;
+    let key = create_test_stream(&client).await;
 
     let mock_server = MockServer::start().await;
     // The mock will make asserts on drop (i.e. when the body of the test is returning).
@@ -338,7 +311,7 @@ async fn test_consume_svix_503() {
         .expect(1);
     mock_server.register(mock).await;
 
-    let plugin = get_test_plugin(mock_server.uri(), queue_url.clone(), false);
+    let plugin = get_test_plugin(mock_server.uri(), key.clone(), false);
 
     let handle = tokio::spawn(async move {
         let fut = plugin.run();
@@ -349,7 +322,7 @@ async fn test_consume_svix_503() {
 
     publish(
         &client,
-        &queue_url,
+        &key,
         &serde_json::to_string(&CreateMessageRequest {
             app_id: "app_1234".into(),
             message: MessageIn::new("testing.things".into(), json!({"hi": "there"})),
@@ -365,25 +338,18 @@ async fn test_consume_svix_503() {
     assert!(!handle.is_finished());
     handle.abort();
 
-    client
-        .delete_queue()
-        .queue_url(&queue_url)
-        .send()
-        .await
-        .unwrap();
+    delete_test_stream(&client, &key).await
 }
 
 /// Check that the plugin keeps running when it can't send a message to svix because idk, the servers are all offline??
 #[tokio::test]
 async fn test_consume_svix_offline() {
-    let client = mq_connection().await;
-    let queue_name = create_test_queue(&client).await;
-
-    let queue_url = format!("{ROOT_URL}/queue/{queue_name}");
+    let client = redis_connection().await;
+    let key = create_test_stream(&client).await;
 
     let mock_server = MockServer::start().await;
 
-    let plugin = get_test_plugin(mock_server.uri(), queue_url.clone(), false);
+    let plugin = get_test_plugin(mock_server.uri(), key.clone(), false);
 
     // bye-bye svix...
     drop(mock_server);
@@ -397,7 +363,7 @@ async fn test_consume_svix_offline() {
 
     publish(
         &client,
-        &queue_url,
+        &key,
         &serde_json::to_string(&CreateMessageRequest {
             app_id: "app_1234".into(),
             message: MessageIn::new("testing.things".into(), json!({"hi": "there"})),
@@ -413,10 +379,5 @@ async fn test_consume_svix_offline() {
     assert!(!handle.is_finished());
     handle.abort();
 
-    client
-        .delete_queue()
-        .queue_url(&queue_url)
-        .send()
-        .await
-        .unwrap();
+    delete_test_stream(&client, &key).await
 }

@@ -1,18 +1,43 @@
-use crate::config::{RabbitMqConsumerConfig, RabbitMqInputOpts};
 use crate::error::Error;
 use crate::run_inner;
 use crate::Consumer;
 use crate::ConsumerWrapper;
 use generic_queue::{
     rabbitmq::{
-        BasicProperties, BasicPublishOptions, ConnectionProperties, RabbitMqBackend, RabbitMqConfig,
+        BasicConsumeOptions, BasicProperties, BasicPublishOptions, ConnectionProperties,
+        FieldTable, RabbitMqBackend, RabbitMqConfig,
     },
     TaskQueueBackend,
 };
-use svix::api::Svix;
-use svix_webhook_bridge_types::{async_trait, JsObject, Plugin, TransformerTx};
+use serde::Deserialize;
+use svix_webhook_bridge_types::{
+    async_trait, svix::api::Svix, JsObject, SenderInput, SenderOutputOpts, TransformerTx,
+};
+
+#[derive(Debug, Deserialize)]
+pub struct RabbitMqInputOpts {
+    /// Connection string for RabbitMQ.
+    pub uri: String,
+    /// The name of the queue to consume from.
+    /// N.b. the queue must be declared before the consumer can connect to it.
+    pub queue_name: String,
+    /// Identifier for the consumer.
+    #[serde(default)]
+    pub consumer_tag: Option<String>,
+    #[serde(default)]
+    pub consume_opts: Option<BasicConsumeOptions>,
+    #[serde(default)]
+    pub consume_args: Option<FieldTable>,
+    #[serde(default = "default_requeue")]
+    pub requeue_on_nack: bool,
+}
+
+fn default_requeue() -> bool {
+    true
+}
 
 pub struct RabbitMqConsumerPlugin {
+    name: String,
     input_options: RabbitMqInputOpts,
     svix_client: Svix,
     transformer_tx: Option<TransformerTx>,
@@ -21,26 +46,22 @@ pub struct RabbitMqConsumerPlugin {
 
 impl RabbitMqConsumerPlugin {
     pub fn new(
-        RabbitMqConsumerConfig {
-            input,
-            transformation,
-            output,
-        }: RabbitMqConsumerConfig,
+        name: String,
+        input: RabbitMqInputOpts,
+        transformation: Option<String>,
+        output: SenderOutputOpts,
     ) -> Self {
         Self {
+            name,
             input_options: input,
-            svix_client: Svix::new(output.token, output.svix_options.map(Into::into)),
+            svix_client: match output {
+                SenderOutputOpts::Svix(output) => {
+                    Svix::new(output.token, output.options.map(Into::into))
+                }
+            },
             transformer_tx: None,
             transformation,
         }
-    }
-}
-
-impl TryInto<Box<dyn Plugin>> for RabbitMqConsumerConfig {
-    type Error = &'static str;
-
-    fn try_into(self) -> Result<Box<dyn Plugin>, Self::Error> {
-        Ok(Box::new(RabbitMqConsumerPlugin::new(self)))
     }
 }
 
@@ -88,11 +109,28 @@ impl Consumer for RabbitMqConsumerPlugin {
 }
 
 #[async_trait]
-impl Plugin for RabbitMqConsumerPlugin {
+impl SenderInput for RabbitMqConsumerPlugin {
+    fn name(&self) -> &str {
+        &self.name
+    }
     fn set_transformer(&mut self, tx: Option<TransformerTx>) {
         self.transformer_tx = tx;
     }
     async fn run(&self) -> std::io::Result<()> {
         run_inner(self).await
     }
+}
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct RabbitMqOutputOpts {
+    /// Connection string for RabbitMQ.
+    pub uri: String,
+    /// The exchange to publish messages to.
+    pub exchange: String,
+    /// The routing key to publish messages to.
+    pub routing_key: String,
+    #[serde(default)]
+    pub publish_options: BasicPublishOptions,
+    #[serde(default)]
+    pub publish_properties: BasicProperties,
 }

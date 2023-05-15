@@ -5,8 +5,11 @@ use generic_queue::sqs::{SqsDelivery, SqsQueueConsumer};
 use generic_queue::{Delivery, QueueError, TaskQueueReceive};
 use serde::{Deserialize, Serialize};
 use std::time::{Duration, Instant};
-use svix::api::{MessageIn, PostOptions as PostOptions_, Svix};
-use svix_webhook_bridge_types::{async_trait, JsObject, JsReturn, TransformerJob, TransformerTx};
+use svix_webhook_bridge_types::{
+    async_trait,
+    svix::api::{MessageIn, PostOptions as PostOptions_, Svix},
+    JsObject, JsReturn, TransformerJob, TransformerTx,
+};
 use tracing::instrument;
 
 pub const PLUGIN_NAME: &str = env!("CARGO_PKG_NAME");
@@ -16,6 +19,7 @@ pub mod config;
 mod error;
 mod gcp_pubsub;
 mod rabbitmq;
+mod receiver_output;
 mod redis;
 mod sqs;
 pub use self::{

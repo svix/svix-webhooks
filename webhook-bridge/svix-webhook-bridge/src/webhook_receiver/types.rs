@@ -1,10 +1,5 @@
-use crate::config::IntegrationConfig;
-use crate::forwarding::GenericQueueForwarder;
-use crate::{
-    config::{ForwardDestination, VerificationScheme},
-    forwarding::Forwarder,
-    verification::{NoVerifier, SvixVerifier, VerificationMethod, Verifier},
-};
+use super::verification::{NoVerifier, SvixVerifier, VerificationMethod, Verifier};
+use crate::config::ReceiverConfig;
 use anyhow::Result;
 use axum::{
     async_trait,
@@ -15,65 +10,72 @@ use axum::{
 use http::{HeaderMap, HeaderValue, Request};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, marker::PhantomData, sync::Arc};
-use svix_webhook_bridge_types::{JsObject, TransformerTx};
+use svix_webhook_bridge_types::{
+    svix, JsObject, ReceiverInputOpts, ReceiverOutput, TransformerTx, WebhookVerifier,
+};
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 /// The [`InternalState`] is passed to the Axum route and is used to map the "IntegrationId" in the
 /// URL to the configured [`Verifier`] and [`Forwarder`] variants.
 pub struct InternalState {
-    pub routes: HashMap<IntegrationId, IntegrationState>,
-    pub transformer_tx: Option<TransformerTx>,
+    pub routes: Arc<HashMap<IntegrationId, IntegrationState>>,
+    pub transformer_tx: TransformerTx,
 }
 
 impl InternalState {
-    pub async fn from_routes(
-        routes: &[IntegrationConfig],
-        transformer_tx: Option<TransformerTx>,
+    /// For most production use cases, favor [`InternalState::from_receiver_configs`].
+    /// Mostly this is an escape hatch to help with testing.
+    ///
+    /// Constructs an [`InternalState`] from a raw mapping of [`IntegrationId`] to
+    /// [`IntegrationState`], allowing us to bypass all the config parsing machinery.
+    ///
+    /// By skipping the config parsing, we can provide custom (i.e. not exposed through the public
+    /// config) [`ReceiverOutput`] implementations.
+    pub fn new(
+        state_map: HashMap<IntegrationId, IntegrationState>,
+        transformer_tx: TransformerTx,
+    ) -> Self {
+        InternalState {
+            routes: Arc::new(state_map),
+            transformer_tx,
+        }
+    }
+
+    pub async fn from_receiver_configs(
+        routes: Vec<ReceiverConfig>,
+        transformer_tx: TransformerTx,
     ) -> Result<Self> {
         let mut state_map = HashMap::new();
 
         for cfg in routes {
-            let verifier = match &cfg.verification {
-                VerificationScheme::None => NoVerifier.into(),
-                VerificationScheme::Svix { secret } => SvixVerifier::new(Arc::new(
-                    svix::webhooks::Webhook::new(
-                        &secret.to_secret().expect("Error reading secret"),
-                    )
-                    .expect("Invalid Svix secret"),
+            let verifier = match &cfg.input {
+                ReceiverInputOpts::Webhook {
+                    verification: WebhookVerifier::Svix { endpoint_secret },
+                    ..
+                }
+                | ReceiverInputOpts::SvixWebhook {
+                    endpoint_secret, ..
+                } => SvixVerifier::new(Arc::new(
+                    svix::webhooks::Webhook::new(endpoint_secret).expect("Invalid Svix secret"),
                 ))
                 .into(),
+                ReceiverInputOpts::Webhook {
+                    verification: WebhookVerifier::None,
+                    ..
+                } => NoVerifier.into(),
             };
 
-            let forwarder = match &cfg.destination {
-                ForwardDestination::GCPPubSub(sender_cfg) => {
-                    GenericQueueForwarder::from_gcp_pupsub_cfg(sender_cfg.clone()).await?
-                }
-                ForwardDestination::RabbitMQ(sender_cfg) => {
-                    GenericQueueForwarder::from_rabbitmq_cfg(sender_cfg.clone()).await?
-                }
-                ForwardDestination::Redis(sender_cfg) => {
-                    GenericQueueForwarder::from_redis_cfg(sender_cfg.clone()).await?
-                }
-                ForwardDestination::SQS(sender_cfg) => {
-                    GenericQueueForwarder::from_sqs_cfg(sender_cfg.clone()).await?
-                }
-            }
-            .into();
-
             state_map.insert(
-                cfg.name.clone(),
+                IntegrationId(cfg.input.path_id().to_string()),
                 IntegrationState {
                     verifier,
-                    forwarder,
                     transformation: cfg.transformation.clone(),
+                    output: Arc::new(cfg.into_receiver_output().await?),
                 },
             );
         }
 
-        Ok(InternalState {
-            routes: state_map,
-            transformer_tx,
-        })
+        Ok(InternalState::new(state_map, transformer_tx))
     }
 }
 
@@ -94,6 +96,18 @@ impl InternalState {
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct IntegrationId(String);
 
+impl From<String> for IntegrationId {
+    fn from(value: String) -> Self {
+        IntegrationId(value)
+    }
+}
+
+impl From<&str> for IntegrationId {
+    fn from(value: &str) -> Self {
+        IntegrationId(value.to_string())
+    }
+}
+
 impl AsRef<str> for IntegrationId {
     fn as_ref(&self) -> &str {
         &self.0
@@ -107,39 +121,11 @@ impl AsRef<str> for IntegrationId {
 /// What distinguishes it from the [`IntegrationConfig`] is that it contains the necessary members
 /// for validating and forwarding a webhook instead of just containing the definition of how to
 /// derive these necessary members.
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct IntegrationState {
     pub verifier: Verifier,
-    pub forwarder: Forwarder,
+    pub output: Arc<Box<dyn ReceiverOutput>>,
     pub transformation: Option<String>,
-}
-
-/// Any arbitrary HTTP request which is not a webhook dispatched by Svix may also have arbitrary
-/// validation associated with it by means of custom JavaScript. This JavaScript is evaluated by
-/// the Deno JS runtime.
-///
-/// The convention of the contained JavaScript is that it should include a function as a default
-/// export which takes a single input. This input will be a JSON object including all headers that
-/// came from the request in a map and the payload verbatim. This exported function must return a
-/// `bool` for the associated [`IntegrationId`]'s route to function in any capacity.
-///
-/// Should the `handler` function return `true`, then the request is deemed a valid webhook as per
-/// the user's specifications and the webhook is then forwarded as with the Svix scheme via the
-/// configured [`ForwardDestination`].
-///
-/// Should a `handler` return `false`, then the request is either silently discarded or logged at
-/// the warning level depending on the value of `log_on_invalid` in the [`crate::config::Config`].
-///
-/// Should a `handler` throw an error or return a value that is not a `bool`, then an error will
-/// be logged and the request is discarded.
-#[repr(transparent)]
-#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
-pub struct JsCode(pub String);
-
-impl From<String> for JsCode {
-    fn from(s: String) -> Self {
-        Self(s)
-    }
 }
 
 /// The [`RequestFromParts`] is a structure consisting of all relevant parts of the HTTP request to
@@ -240,7 +226,7 @@ impl SerializableRequest<Unvalidated> {
         mut self,
         verifier: &V,
     ) -> Result<SerializableRequest<Validated>, http::StatusCode> {
-        // Do relevant conversions to [`String`] representaitons if wanted/needed
+        // Do relevant conversions to [`String`] representations if wanted/needed
         match (verifier.want_string_rep(), verifier.need_string_rep()) {
             // Needed
             (true, true) | (false, true) => {
@@ -288,7 +274,6 @@ impl SerializableRequest<Unvalidated> {
 
             Err(e) => {
                 tracing::error!("Error validating request: {}", e);
-                println!("Error validating request: {}", e);
                 Err(http::StatusCode::INTERNAL_SERVER_ERROR)
             }
         }

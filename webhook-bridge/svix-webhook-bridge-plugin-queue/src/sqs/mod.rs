@@ -1,39 +1,44 @@
-use crate::config::{SqsConsumerConfig, SqsInputOpts};
 use crate::error::Error;
 use crate::{run_inner, Consumer, ConsumerWrapper};
 use generic_queue::{
     sqs::{SqsConfig, SqsQueueBackend},
     TaskQueueBackend,
 };
-use svix::api::Svix;
-use svix_webhook_bridge_types::{async_trait, JsObject, Plugin, TransformerTx};
+use serde::Deserialize;
+use svix_webhook_bridge_types::{
+    async_trait, svix::api::Svix, JsObject, SenderInput, SenderOutputOpts, TransformerTx,
+};
+
+#[derive(Debug, Default, Deserialize)]
+pub struct SqsInputOpts {
+    pub queue_dsn: String,
+    #[serde(default)]
+    pub override_endpoint: bool,
+}
 
 pub struct SqsConsumerPlugin {
+    name: String,
     input_options: SqsInputOpts,
     svix_client: Svix,
     transformer_tx: Option<TransformerTx>,
     transformation: Option<String>,
 }
 
-impl TryInto<Box<dyn Plugin>> for SqsConsumerConfig {
-    type Error = &'static str;
-
-    fn try_into(self) -> Result<Box<dyn Plugin>, Self::Error> {
-        Ok(Box::new(SqsConsumerPlugin::new(self)))
-    }
-}
-
 impl SqsConsumerPlugin {
     pub fn new(
-        SqsConsumerConfig {
-            input,
-            transformation,
-            output,
-        }: SqsConsumerConfig,
+        name: String,
+        input: SqsInputOpts,
+        transformation: Option<String>,
+        output: SenderOutputOpts,
     ) -> Self {
         Self {
+            name,
             input_options: input,
-            svix_client: Svix::new(output.token, output.svix_options.map(Into::into)),
+            svix_client: match output {
+                SenderOutputOpts::Svix(output) => {
+                    Svix::new(output.token, output.options.map(Into::into))
+                }
+            },
             transformer_tx: None,
             transformation,
         }
@@ -74,11 +79,21 @@ impl Consumer for SqsConsumerPlugin {
 }
 
 #[async_trait]
-impl Plugin for SqsConsumerPlugin {
+impl SenderInput for SqsConsumerPlugin {
+    fn name(&self) -> &str {
+        &self.name
+    }
     fn set_transformer(&mut self, tx: Option<TransformerTx>) {
         self.transformer_tx = tx;
     }
     async fn run(&self) -> std::io::Result<()> {
         run_inner(self).await
     }
+}
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct SqsOutputOpts {
+    pub queue_dsn: String,
+    #[serde(default)]
+    pub override_endpoint: bool,
 }

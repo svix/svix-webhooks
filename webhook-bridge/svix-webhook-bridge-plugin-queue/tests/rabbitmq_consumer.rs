@@ -1,125 +1,104 @@
-//! Use the `testing-docker-compose.yml` in the repo root to run the dependencies for testing,
-//! including the gcloud pubsub emulator.
-//!
-//! Use `run-tests.sh` to use the requisite environment for testing.
+//! Requires a rabbitmq node to be running on localhost:5672 (the default port) and using the
+//! default guest/guest credentials.
+//! Try using the `testing-docker-compose.yml` in the repo root to get this going.
 
-use google_cloud_googleapis::pubsub::v1::{DeadLetterPolicy, PubsubMessage};
-use google_cloud_pubsub::client::{Client, ClientConfig};
-use google_cloud_pubsub::subscription::{Subscription, SubscriptionConfig};
-use google_cloud_pubsub::topic::Topic;
-use std::time::Duration;
-
+use generic_queue::rabbitmq::FieldTable;
+use lapin::{options::QueueDeclareOptions, Channel, Connection, ConnectionProperties, Queue};
 use serde_json::json;
-use svix::api::MessageIn;
-use svix_webhook_bridge_plugin_queue_consumer::{
-    config::{GCPPubSubConsumerConfig, GCPPubSubInputOpts, OutputOpts, SvixOptions},
-    CreateMessageRequest, GCPPubSubConsumerPlugin,
+use std::time::Duration;
+use svix_webhook_bridge_plugin_queue::{
+    config::RabbitMqInputOpts, CreateMessageRequest, RabbitMqConsumerPlugin,
 };
-use svix_webhook_bridge_types::{JsReturn, Plugin, TransformerJob};
+use svix_webhook_bridge_types::{
+    svix::api::MessageIn, JsReturn, SenderInput, SenderOutputOpts, SvixOptions,
+    SvixSenderOutputOpts, TransformerJob,
+};
 use wiremock::matchers::{body_partial_json, method};
 use wiremock::{Mock, MockServer, ResponseTemplate};
 
-const DEFAULT_PUBSUB_EMULATOR_HOST: &str = "localhost:8085";
-
 fn get_test_plugin(
     svix_url: String,
-    subscription_id: String,
+    mq_uri: &str,
+    queue_name: &str,
     use_transformation: bool,
-) -> GCPPubSubConsumerPlugin {
-    GCPPubSubConsumerPlugin::new(GCPPubSubConsumerConfig {
-        input: GCPPubSubInputOpts {
-            subscription_id,
-            credentials_file: None,
+) -> RabbitMqConsumerPlugin {
+    RabbitMqConsumerPlugin::new(
+        "test".into(),
+        RabbitMqInputOpts {
+            uri: mq_uri.to_string(),
+            queue_name: queue_name.to_string(),
+            consumer_tag: None,
+            consume_opts: None,
+            consume_args: None,
+            requeue_on_nack: false,
         },
-        transformation: if use_transformation {
+        if use_transformation {
             // The actual script doesn't matter since the test case will be performing the
             // transformation, not the actual JS executor.
-            Some(String::from("export default function (x) { return x; }"))
+            Some(String::from("function handle(x) { return x; }"))
         } else {
             None
         },
-        output: OutputOpts {
+        SenderOutputOpts::Svix(SvixSenderOutputOpts {
             token: "xxxx".to_string(),
-            svix_options: Some(SvixOptions {
+            options: Some(SvixOptions {
                 server_url: Some(svix_url),
                 ..Default::default()
             }),
-        },
-    })
+        }),
+    )
 }
 
-async fn mq_connection() -> Client {
-    // The `Default` impl for `ClientConfig` looks for this env var. When set it branches for
-    // local-mode use using the addr in the env var and a hardcoded project id of `local-project`.
-    if std::env::var("PUBSUB_EMULATOR_HOST").is_err() {
-        std::env::set_var("PUBSUB_EMULATOR_HOST", DEFAULT_PUBSUB_EMULATOR_HOST);
-    }
-    Client::new(ClientConfig::default()).await.unwrap()
-}
-
-fn random_chars() -> impl Iterator<Item = char> {
-    std::iter::repeat_with(fastrand::alphanumeric)
-}
-
-async fn create_test_queue(client: &Client) -> (Topic, Subscription) {
-    let topic_name: String = "topic-".chars().chain(random_chars().take(8)).collect();
-    // Need to define a dead letter topic to avoid the "bad" test cases from pulling the nacked
-    // messages again and again.
-    let dead_letter_topic_name: String = "topic-".chars().chain(random_chars().take(8)).collect();
-    let subscription_name: String = "subscription-"
-        .chars()
-        .chain(random_chars().take(8))
-        .collect();
-
-    let topic = client.create_topic(&topic_name, None, None).await.unwrap();
-    let dead_letter_topic = client
-        .create_topic(&dead_letter_topic_name, None, None)
-        .await
-        .unwrap();
-    let subscription = client
-        .create_subscription(
-            &subscription_name,
-            &topic_name,
-            SubscriptionConfig {
-                // Messages published to the topic need to supply a unique ID to make use of this
-                enable_exactly_once_delivery: true,
-                dead_letter_policy: Some(DeadLetterPolicy {
-                    dead_letter_topic: dead_letter_topic.fully_qualified_name().into(),
-                    max_delivery_attempts: MAX_DELIVERY_ATTEMPTS,
-                }),
+async fn declare_queue(name: &str, channel: &Channel) -> Queue {
+    channel
+        .queue_declare(
+            name,
+            QueueDeclareOptions {
+                auto_delete: true,
                 ..Default::default()
             },
-            None,
+            FieldTable::default(),
+        )
+        .await
+        .unwrap()
+}
+
+async fn mq_connection(uri: &str) -> Connection {
+    let options = ConnectionProperties::default()
+        .with_connection_name("test".into())
+        .with_executor(tokio_executor_trait::Tokio::current())
+        .with_reactor(tokio_reactor_trait::Tokio);
+    Connection::connect(uri, options).await.unwrap()
+}
+
+async fn publish(channel: &Channel, queue_name: &str, payload: &[u8]) {
+    let confirm = channel
+        .basic_publish(
+            "",
+            queue_name,
+            Default::default(),
+            payload,
+            Default::default(),
         )
         .await
         .unwrap();
-
-    (topic, subscription)
-}
-
-async fn publish(topic: &Topic, payload: &str) {
-    let publisher = topic.new_publisher(None);
-    let awaiter = publisher
-        .publish(PubsubMessage {
-            data: payload.to_owned().into_bytes(),
-            message_id: random_chars().take(6).collect(),
-            ..Default::default()
-        })
-        .await;
-    awaiter.get().await.unwrap();
+    confirm.await.unwrap();
 }
 
 /// General "pause while we wait for messages to travel" beat. If you're seeing flakes, bump this up.
-const WAIT_MS: u64 = 100;
-/// Controls how many times a message can be nack'd before it lands on the dead letter topic.
-const MAX_DELIVERY_ATTEMPTS: i32 = 5;
+const WAIT_MS: u64 = 150;
+/// These tests assume a "vanilla" rabbitmq instance, using the default port, creds, exchange...
+const MQ_URI: &str = "amqp://guest:guest@localhost:5672/%2f";
 
 /// Push a msg on the queue.
 /// Check to see if the svix server sees a request.
 #[tokio::test]
 async fn test_consume_ok() {
-    let client = mq_connection().await;
-    let (topic, subscription) = create_test_queue(&client).await;
+    let mq_conn = mq_connection(MQ_URI).await;
+    let channel = mq_conn.create_channel().await.unwrap();
+    // setup the queue before running the consumer or the consumer will error out
+    let queue = declare_queue("", &channel).await;
+    let queue_name = queue.name().as_str();
 
     let mock_server = MockServer::start().await;
     // The mock will make asserts on drop (i.e. when the body of the test is returning).
@@ -140,7 +119,7 @@ async fn test_consume_ok() {
         .expect(1);
     mock_server.register(mock).await;
 
-    let plugin = get_test_plugin(mock_server.uri(), subscription.id(), false);
+    let plugin = get_test_plugin(mock_server.uri(), MQ_URI, queue_name, false);
 
     let handle = tokio::spawn(async move {
         let fut = plugin.run();
@@ -155,30 +134,32 @@ async fn test_consume_ok() {
         post_options: None,
     };
 
-    publish(&topic, &serde_json::to_string(&msg).unwrap()).await;
+    publish(&channel, queue_name, &serde_json::to_vec(&msg).unwrap()).await;
 
     // Wait for the consumer to consume.
     tokio::time::sleep(Duration::from_millis(WAIT_MS)).await;
 
     handle.abort();
-
-    subscription.delete(None).await.ok();
-    topic.delete(None).await.ok();
+    channel
+        .queue_delete(queue_name, Default::default())
+        .await
+        .ok();
 }
-
 /// Push a msg on the queue.
 /// Check to see if the svix server sees a request, but this time transform the payload.
 #[tokio::test]
 async fn test_consume_transformed_ok() {
-    let client = mq_connection().await;
-    let (topic, subscription) = create_test_queue(&client).await;
+    let mq_conn = mq_connection(MQ_URI).await;
+    let channel = mq_conn.create_channel().await.unwrap();
+    // setup the queue before running the consumer or the consumer will error out
+    let queue = declare_queue("", &channel).await;
+    let queue_name = queue.name().as_str();
 
     let mock_server = MockServer::start().await;
     // The mock will make asserts on drop (i.e. when the body of the test is returning).
     // The `expect` call should ensure we see exactly 1 POST request.
     // <https://docs.rs/wiremock/latest/wiremock/struct.Mock.html#method.expect>
     let mock = Mock::given(method("POST"))
-        // The transformed bit of the payload
         .and(body_partial_json(json!({ "payload": { "good": "bye" } })))
         .respond_with(ResponseTemplate::new(202).set_body_json(json!({
           "eventType": "testing.things",
@@ -195,7 +176,7 @@ async fn test_consume_transformed_ok() {
         .expect(1);
     mock_server.register(mock).await;
 
-    let mut plugin = get_test_plugin(mock_server.uri(), subscription.id(), true);
+    let mut plugin = get_test_plugin(mock_server.uri(), MQ_URI, queue_name, true);
     let (transformer_tx, mut transformer_rx) =
         tokio::sync::mpsc::unbounded_channel::<TransformerJob>();
     let _handle = tokio::spawn(async move {
@@ -226,21 +207,25 @@ async fn test_consume_transformed_ok() {
         post_options: None,
     };
 
-    publish(&topic, &serde_json::to_string(&msg).unwrap()).await;
+    publish(&channel, queue_name, &serde_json::to_vec(&msg).unwrap()).await;
 
     // Wait for the consumer to consume.
     tokio::time::sleep(Duration::from_millis(WAIT_MS)).await;
 
     handle.abort();
-
-    subscription.delete(None).await.ok();
-    topic.delete(None).await.ok();
+    channel
+        .queue_delete(queue_name, Default::default())
+        .await
+        .ok();
 }
 
 #[tokio::test]
 async fn test_missing_app_id_nack() {
-    let client = mq_connection().await;
-    let (topic, subscription) = create_test_queue(&client).await;
+    let mq_conn = mq_connection(MQ_URI).await;
+    let channel = mq_conn.create_channel().await.unwrap();
+    // setup the queue before running the consumer or the consumer will error out
+    let queue = declare_queue("", &channel).await;
+    let queue_name = queue.name().as_str();
 
     let mock_server = MockServer::start().await;
     let mock = Mock::given(method("POST"))
@@ -251,7 +236,7 @@ async fn test_missing_app_id_nack() {
         .expect(0);
     mock_server.register(mock).await;
 
-    let plugin = get_test_plugin(mock_server.uri(), subscription.id(), false);
+    let plugin = get_test_plugin(mock_server.uri(), MQ_URI, queue_name, false);
 
     let handle = tokio::spawn(async move {
         let fut = plugin.run();
@@ -262,8 +247,9 @@ async fn test_missing_app_id_nack() {
     tokio::time::sleep(Duration::from_millis(WAIT_MS)).await;
 
     publish(
-        &topic,
-        &serde_json::to_string(&json!({
+        &channel,
+        queue_name,
+        &serde_json::to_vec(&json!({
             // No app id
             "message": {
                 "eventType": "testing.things",
@@ -280,15 +266,19 @@ async fn test_missing_app_id_nack() {
     // Wait for the consumer to consume.
     tokio::time::sleep(Duration::from_millis(WAIT_MS)).await;
     handle.abort();
-
-    subscription.delete(None).await.ok();
-    topic.delete(None).await.ok();
+    channel
+        .queue_delete(queue_name, Default::default())
+        .await
+        .ok();
 }
 
 #[tokio::test]
 async fn test_missing_event_type_nack() {
-    let client = mq_connection().await;
-    let (topic, subscription) = create_test_queue(&client).await;
+    let mq_conn = mq_connection(MQ_URI).await;
+    let channel = mq_conn.create_channel().await.unwrap();
+    // setup the queue before running the consumer or the consumer will error out
+    let queue = declare_queue("", &channel).await;
+    let queue_name = queue.name().as_str();
 
     let mock_server = MockServer::start().await;
     let mock = Mock::given(method("POST"))
@@ -299,7 +289,7 @@ async fn test_missing_event_type_nack() {
         .expect(0);
     mock_server.register(mock).await;
 
-    let plugin = get_test_plugin(mock_server.uri(), subscription.id(), false);
+    let plugin = get_test_plugin(mock_server.uri(), MQ_URI, queue_name, false);
 
     let handle = tokio::spawn(async move {
         let fut = plugin.run();
@@ -310,8 +300,9 @@ async fn test_missing_event_type_nack() {
     tokio::time::sleep(Duration::from_millis(WAIT_MS)).await;
 
     publish(
-        &topic,
-        &serde_json::to_string(&json!({
+        &channel,
+        queue_name,
+        &serde_json::to_vec(&json!({
             "app_id": "app_1234",
             "message": {
                 // No event type
@@ -327,16 +318,20 @@ async fn test_missing_event_type_nack() {
     // Wait for the consumer to consume.
     tokio::time::sleep(Duration::from_millis(WAIT_MS)).await;
     handle.abort();
-
-    subscription.delete(None).await.ok();
-    topic.delete(None).await.ok();
+    channel
+        .queue_delete(queue_name, Default::default())
+        .await
+        .ok();
 }
 
 /// Check that the plugin keeps running when it can't send a message to svix
 #[tokio::test]
 async fn test_consume_svix_503() {
-    let client = mq_connection().await;
-    let (topic, subscription) = create_test_queue(&client).await;
+    let mq_conn = mq_connection(MQ_URI).await;
+    let channel = mq_conn.create_channel().await.unwrap();
+    // setup the queue before running the consumer or the consumer will error out
+    let queue = declare_queue("", &channel).await;
+    let queue_name = queue.name().as_str();
 
     let mock_server = MockServer::start().await;
     // The mock will make asserts on drop (i.e. when the body of the test is returning).
@@ -345,14 +340,10 @@ async fn test_consume_svix_503() {
     let mock = Mock::given(method("POST"))
         .respond_with(ResponseTemplate::new(503))
         .named("create_message")
-        // N.b. this test case is different than other backend flavors of these since there's a
-        // minimum of 5 delivery attempts made before messages are forwarded to the dead letter topic.
-        // In other cases this can happen immediately, but not with gcp pubsub.
-        .up_to_n_times(MAX_DELIVERY_ATTEMPTS.try_into().unwrap())
-        .expect(1..);
+        .expect(1);
     mock_server.register(mock).await;
 
-    let plugin = get_test_plugin(mock_server.uri(), subscription.id(), false);
+    let plugin = get_test_plugin(mock_server.uri(), MQ_URI, queue_name, false);
 
     let handle = tokio::spawn(async move {
         let fut = plugin.run();
@@ -362,8 +353,9 @@ async fn test_consume_svix_503() {
     tokio::time::sleep(Duration::from_millis(WAIT_MS)).await;
 
     publish(
-        &topic,
-        &serde_json::to_string(&CreateMessageRequest {
+        &channel,
+        queue_name,
+        &serde_json::to_vec(&CreateMessageRequest {
             app_id: "app_1234".into(),
             message: MessageIn::new("testing.things".into(), json!({"hi": "there"})),
             post_options: None,
@@ -377,20 +369,24 @@ async fn test_consume_svix_503() {
 
     assert!(!handle.is_finished());
     handle.abort();
-
-    subscription.delete(None).await.ok();
-    topic.delete(None).await.ok();
+    channel
+        .queue_delete(queue_name, Default::default())
+        .await
+        .ok();
 }
 
 /// Check that the plugin keeps running when it can't send a message to svix because idk, the servers are all offline??
 #[tokio::test]
 async fn test_consume_svix_offline() {
-    let client = mq_connection().await;
-    let (topic, subscription) = create_test_queue(&client).await;
+    let mq_conn = mq_connection(MQ_URI).await;
+    let channel = mq_conn.create_channel().await.unwrap();
+    // setup the queue before running the consumer or the consumer will error out
+    let queue = declare_queue("", &channel).await;
+    let queue_name = queue.name().as_str();
 
     let mock_server = MockServer::start().await;
 
-    let plugin = get_test_plugin(mock_server.uri(), subscription.id(), false);
+    let plugin = get_test_plugin(mock_server.uri(), MQ_URI, queue_name, false);
 
     // bye-bye svix...
     drop(mock_server);
@@ -403,8 +399,9 @@ async fn test_consume_svix_offline() {
     tokio::time::sleep(Duration::from_millis(WAIT_MS)).await;
 
     publish(
-        &topic,
-        &serde_json::to_string(&CreateMessageRequest {
+        &channel,
+        queue_name,
+        &serde_json::to_vec(&CreateMessageRequest {
             app_id: "app_1234".into(),
             message: MessageIn::new("testing.things".into(), json!({"hi": "there"})),
             post_options: None,
@@ -418,7 +415,8 @@ async fn test_consume_svix_offline() {
 
     assert!(!handle.is_finished());
     handle.abort();
-
-    subscription.delete(None).await.ok();
-    topic.delete(None).await.ok();
+    channel
+        .queue_delete(queue_name, Default::default())
+        .await
+        .ok();
 }

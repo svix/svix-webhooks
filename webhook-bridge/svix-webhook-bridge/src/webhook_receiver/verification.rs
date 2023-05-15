@@ -1,9 +1,9 @@
-use crate::types::{SerializableHeaderMap, SerializablePayload, SerializableRequest, Unvalidated};
+use super::types::{SerializableHeaderMap, SerializablePayload, SerializableRequest, Unvalidated};
 use anyhow::Result;
 use axum::async_trait;
 use enum_dispatch::enum_dispatch;
 use std::sync::Arc;
-use svix::webhooks::Webhook;
+use svix_webhook_bridge_types::svix::webhooks::Webhook;
 
 #[async_trait]
 #[enum_dispatch]
@@ -81,11 +81,11 @@ pub enum Verifier {
 
 #[cfg(test)]
 mod tests {
+    use super::super::types::SerializableRequest;
     use super::{SvixVerifier, VerificationMethod};
-    use crate::types::SerializableRequest;
     use axum::extract::FromRequest;
     use std::sync::Arc;
-    use svix::webhooks::Webhook;
+    use svix_webhook_bridge_types::svix::webhooks::Webhook;
 
     #[tokio::test]
     async fn test_svix_verification() {

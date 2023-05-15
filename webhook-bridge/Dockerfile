@@ -25,25 +25,21 @@ COPY Cargo.toml .
 COPY Cargo.lock .
 COPY generic-queue/Cargo.toml generic-queue/
 COPY svix-webhook-bridge-types/Cargo.toml svix-webhook-bridge-types/
-COPY svix-webhook-bridge-plugin-queue-consumer/Cargo.toml svix-webhook-bridge-plugin-queue-consumer/
-COPY svix-webhook-bridge-plugin-webhook-receiver/Cargo.toml svix-webhook-bridge-plugin-webhook-receiver/
+COPY svix-webhook-bridge-plugin-queue/Cargo.toml svix-webhook-bridge-plugin-queue/
 COPY svix-webhook-bridge/Cargo.toml svix-webhook-bridge/
 RUN set -ex ;\
         mkdir generic-queue/src ;\
-        mkdir svix-webhook-bridge-plugin-queue-consumer/src ;\
-        mkdir svix-webhook-bridge-plugin-webhook-receiver/src ;\
+        mkdir svix-webhook-bridge-plugin-queue/src ;\
         mkdir svix-webhook-bridge-types/src ;\
         mkdir svix-webhook-bridge/src ;\
         echo '' > generic-queue/src/lib.rs ;\
-        echo '' > svix-webhook-bridge-plugin-queue-consumer/src/lib.rs ;\
-        echo '' > svix-webhook-bridge-plugin-webhook-receiver/src/lib.rs ;\
+        echo '' > svix-webhook-bridge-plugin-queue/src/lib.rs ;\
         echo '' > svix-webhook-bridge-types/src/lib.rs ;\
         echo 'fn main() { println!("Dummy!"); }' > svix-webhook-bridge/src/main.rs ;\
         cargo build --release ;\
         rm -rf \
           generic-queue/src \
-          svix-webhook-bridge-plugin-queue-consumer/src \
-          svix-webhook-bridge-plugin-webhook-receiver/src \
+          svix-webhook-bridge-plugin-queue/src \
           svix-webhook-bridge-types/src \
           svix-webhook-bridge/src
 

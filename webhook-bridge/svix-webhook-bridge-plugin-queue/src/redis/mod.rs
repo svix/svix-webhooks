@@ -1,14 +1,31 @@
-use crate::config::{RedisConsumerConfig, RedisInputOpts};
 use crate::error::Error;
 use crate::run_inner;
 use crate::Consumer;
 use crate::ConsumerWrapper;
 use generic_queue::redis::RedisConfig;
 use generic_queue::{redis::RedisQueueBackend, TaskQueueBackend};
-use svix::api::Svix;
-use svix_webhook_bridge_types::{async_trait, JsObject, Plugin, TransformerTx};
+use serde::Deserialize;
+use svix_webhook_bridge_types::{
+    async_trait, svix::api::Svix, JsObject, SenderInput, SenderOutputOpts, TransformerTx,
+};
+
+#[derive(Debug, Default, Deserialize)]
+pub struct RedisInputOpts {
+    pub dsn: String,
+    pub max_connections: u16,
+    #[serde(default = "default_reinsert_on_nack")]
+    pub reinsert_on_nack: bool,
+    pub queue_key: String,
+    pub consumer_group: String,
+    pub consumer_name: String,
+}
+
+fn default_reinsert_on_nack() -> bool {
+    true
+}
 
 pub struct RedisConsumerPlugin {
+    name: String,
     input_options: RedisInputOpts,
     svix_client: Svix,
     transformer_tx: Option<TransformerTx>,
@@ -17,26 +34,22 @@ pub struct RedisConsumerPlugin {
 
 impl RedisConsumerPlugin {
     pub fn new(
-        RedisConsumerConfig {
-            input,
-            transformation,
-            output,
-        }: RedisConsumerConfig,
+        name: String,
+        input: RedisInputOpts,
+        transformation: Option<String>,
+        output: SenderOutputOpts,
     ) -> Self {
         Self {
+            name,
             input_options: input,
-            svix_client: Svix::new(output.token, output.svix_options.map(Into::into)),
+            svix_client: match output {
+                SenderOutputOpts::Svix(output) => {
+                    Svix::new(output.token, output.options.map(Into::into))
+                }
+            },
             transformer_tx: None,
             transformation,
         }
-    }
-}
-
-impl TryInto<Box<dyn Plugin>> for RedisConsumerConfig {
-    type Error = &'static str;
-
-    fn try_into(self) -> Result<Box<dyn Plugin>, Self::Error> {
-        Ok(Box::new(RedisConsumerPlugin::new(self)))
     }
 }
 
@@ -79,11 +92,21 @@ impl Consumer for RedisConsumerPlugin {
 }
 
 #[async_trait]
-impl Plugin for RedisConsumerPlugin {
+impl SenderInput for RedisConsumerPlugin {
+    fn name(&self) -> &str {
+        &self.name
+    }
     fn set_transformer(&mut self, tx: Option<TransformerTx>) {
         self.transformer_tx = tx;
     }
     async fn run(&self) -> std::io::Result<()> {
         run_inner(self).await
     }
+}
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct RedisOutputOpts {
+    pub dsn: String,
+    pub max_connections: u16,
+    pub queue_key: String,
 }
