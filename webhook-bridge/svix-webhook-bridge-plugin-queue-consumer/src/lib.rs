@@ -1,37 +1,135 @@
-use generic_queue::{
-    rabbitmq::{
-        BasicProperties, BasicPublishOptions, ConnectionProperties, RabbitMqBackend, RabbitMqConfig,
-    },
-    redis::{RedisConfig, RedisQueueBackend},
-    sqs::{SqsConfig, SqsQueueBackend},
-    Delivery, TaskQueueBackend, TaskQueueReceive,
-};
+use generic_queue::gcp_pubsub::{GCPPubSubDelivery, GCPPubSubQueueConsumer};
+use generic_queue::rabbitmq::{RabbitMqConsumer, RabbitMqDelivery};
+use generic_queue::redis::{RedisStreamConsumer, RedisStreamDelivery, RedisStreamJsonSerde};
+use generic_queue::sqs::{SqsDelivery, SqsQueueConsumer};
+use generic_queue::{Delivery, QueueError, TaskQueueReceive};
 use serde::{Deserialize, Serialize};
 use std::time::{Duration, Instant};
 use svix::api::{MessageIn, PostOptions as PostOptions_, Svix};
-use svix_webhook_bridge_types::{
-    async_trait, JsObject, JsReturn, Plugin, TransformerJob, TransformerTx,
-};
-
-pub mod config;
-pub use config::{
-    GCPPubSubConsumerConfig, RabbitMqConsumerConfig, RabbitMqInputOpts, RedisConsumerConfig,
-    RedisInputOpts, SqsConsumerConfig, SqsInputOpts,
-};
-mod error;
-use error::Error;
-mod gcp_pubsub;
-pub use gcp_pubsub::GCPPubSubConsumerPlugin;
+use svix_webhook_bridge_types::{async_trait, JsObject, JsReturn, TransformerJob, TransformerTx};
+use tracing::instrument;
 
 pub const PLUGIN_NAME: &str = env!("CARGO_PKG_NAME");
 pub const PLUGIN_VERS: &str = env!("CARGO_PKG_VERSION");
 
+pub mod config;
+mod error;
+mod gcp_pubsub;
+mod rabbitmq;
+mod redis;
+mod sqs;
+pub use self::{
+    error::Error, gcp_pubsub::GCPPubSubConsumerPlugin, rabbitmq::RabbitMqConsumerPlugin,
+    redis::RedisConsumerPlugin, sqs::SqsConsumerPlugin,
+};
+
+/// Each queue backend has a different delivery type which is also generic by the type of the
+/// payload (or more).
+/// This wrapper hides the inner types so the calling code can be generalized more trivially.
+pub enum DeliveryWrapper {
+    GCPPubSub(GCPPubSubDelivery<JsObject>),
+    RabbitMQ(RabbitMqDelivery<JsObject>),
+    Redis(RedisStreamDelivery<JsObject, RedisStreamJsonSerde>),
+    SQS(SqsDelivery<JsObject>),
+}
+
+impl DeliveryWrapper {
+    /// Delegates to the inner delivery types ack method.
+    async fn ack(self) -> Result<(), QueueError> {
+        match self {
+            DeliveryWrapper::GCPPubSub(x) => x.ack().await,
+            DeliveryWrapper::RabbitMQ(x) => x.ack().await,
+            DeliveryWrapper::Redis(x) => x.ack().await,
+            DeliveryWrapper::SQS(x) => x.ack().await,
+        }
+    }
+    /// Delegates to the inner delivery types nack method.
+    async fn nack(self) -> Result<(), QueueError> {
+        match self {
+            DeliveryWrapper::GCPPubSub(x) => x.nack().await,
+            DeliveryWrapper::RabbitMQ(x) => x.nack().await,
+            DeliveryWrapper::Redis(x) => x.nack().await,
+            DeliveryWrapper::SQS(x) => x.nack().await,
+        }
+    }
+
+    /// Decodes the inner delivery as JsObject.
+    fn payload(&self) -> Result<JsObject, QueueError> {
+        match self {
+            DeliveryWrapper::GCPPubSub(x) => Delivery::<JsObject>::payload(x),
+            DeliveryWrapper::RabbitMQ(x) => Delivery::<JsObject>::payload(x),
+            DeliveryWrapper::Redis(x) => Delivery::<JsObject>::payload(x),
+            DeliveryWrapper::SQS(x) => Delivery::<JsObject>::payload(x),
+        }
+    }
+}
+
+/// Each queue backend has a different consumer type which is also generic by the type of the
+/// payload (or more).
+/// This wrapper hides the inner types so the calling code can be generalized more trivially.
+pub enum ConsumerWrapper {
+    GCPPubSub(GCPPubSubQueueConsumer),
+    RabbitMQ(RabbitMqConsumer),
+    Redis(RedisStreamConsumer<RedisStreamJsonSerde>),
+    SQS(SqsQueueConsumer),
+}
+
+impl ConsumerWrapper {
+    async fn receive_all(
+        &mut self,
+        max_batch_size: usize,
+        timeout: Duration,
+    ) -> Result<Vec<DeliveryWrapper>, QueueError> {
+        Ok(match self {
+            ConsumerWrapper::GCPPubSub(x) => x
+                .receive_all(max_batch_size, timeout)
+                .await?
+                .into_iter()
+                .map(DeliveryWrapper::GCPPubSub)
+                .collect(),
+            ConsumerWrapper::RabbitMQ(x) => x
+                .receive_all(max_batch_size, timeout)
+                .await?
+                .into_iter()
+                .map(DeliveryWrapper::RabbitMQ)
+                .collect(),
+            ConsumerWrapper::Redis(x) => x
+                .receive_all(max_batch_size, timeout)
+                .await?
+                .into_iter()
+                .map(DeliveryWrapper::Redis)
+                .collect(),
+            ConsumerWrapper::SQS(x) => x
+                .receive_all(max_batch_size, timeout)
+                .await?
+                .into_iter()
+                .map(DeliveryWrapper::SQS)
+                .collect(),
+        })
+    }
+}
+
 #[async_trait]
 trait Consumer {
-    fn transformer_tx(&self) -> Option<&TransformerTx>;
+    /// The source of the stream of messages.
+    /// The name/identifier for the queue or subscription or whatever.
+    fn source(&self) -> &str;
+
+    /// The name of the messaging system.
+    fn system(&self) -> &str;
+
+    /// Gets the channel sender for running transformations.
+    fn transformer_tx(&self) -> &Option<TransformerTx>;
+    /// The js source for the transformation to run on each payload.
+    fn transformation(&self) -> &Option<String>;
+
+    /// The client to use when creating messages in svix.
+    fn svix_client(&self) -> &Svix;
+
     async fn transform(&self, script: String, payload: JsObject) -> std::io::Result<JsObject> {
         let (job, rx) = TransformerJob::new(script.clone(), payload);
         self.transformer_tx()
+            .as_ref()
             .expect("transformations not configured")
             .send(job)
             .map_err(|e| Error::Generic(e.to_string()))?;
@@ -50,374 +148,87 @@ trait Consumer {
             }
         }
     }
-    async fn consume(&self) -> std::io::Result<()>;
-}
 
-pub struct RabbitMqConsumerPlugin {
-    input_options: RabbitMqInputOpts,
-    svix_client: Svix,
-    transformer_tx: Option<TransformerTx>,
-    transformation: Option<String>,
-}
+    /// Gets a "wrapped" consumer, called by [`consume`].
+    async fn consumer(&self) -> std::io::Result<ConsumerWrapper>;
 
-pub struct RedisConsumerPlugin {
-    input_options: RedisInputOpts,
-    svix_client: Svix,
-    transformer_tx: Option<TransformerTx>,
-    transformation: Option<String>,
-}
-
-pub struct SqsConsumerPlugin {
-    input_options: SqsInputOpts,
-    svix_client: Svix,
-    transformer_tx: Option<TransformerTx>,
-    transformation: Option<String>,
-}
-
-impl TryInto<Box<dyn Plugin>> for RabbitMqConsumerConfig {
-    type Error = &'static str;
-
-    fn try_into(self) -> Result<Box<dyn Plugin>, Self::Error> {
-        Ok(Box::new(RabbitMqConsumerPlugin::new(self)))
-    }
-}
-
-impl TryInto<Box<dyn Plugin>> for RedisConsumerConfig {
-    type Error = &'static str;
-
-    fn try_into(self) -> Result<Box<dyn Plugin>, Self::Error> {
-        Ok(Box::new(RedisConsumerPlugin::new(self)))
-    }
-}
-
-impl TryInto<Box<dyn Plugin>> for SqsConsumerConfig {
-    type Error = &'static str;
-
-    fn try_into(self) -> Result<Box<dyn Plugin>, Self::Error> {
-        Ok(Box::new(SqsConsumerPlugin::new(self)))
-    }
-}
-
-impl RabbitMqConsumerPlugin {
-    pub fn new(
-        RabbitMqConsumerConfig {
-            input,
-            transformation,
-            output,
-        }: RabbitMqConsumerConfig,
-    ) -> Self {
-        Self {
-            input_options: input,
-            svix_client: Svix::new(output.token, output.svix_options.map(Into::into)),
-            transformer_tx: None,
-            transformation,
+    /// Main consumer loop
+    async fn consume(&self) -> std::io::Result<()> {
+        let mut consumer = self.consumer().await?;
+        tracing::debug!("{} consuming: {}", self.system(), self.source(),);
+        loop {
+            self.receive(&mut consumer).await?;
         }
     }
-}
 
-#[async_trait]
-impl Consumer for RabbitMqConsumerPlugin {
-    fn transformer_tx(&self) -> Option<&TransformerTx> {
-        self.transformer_tx.as_ref()
-    }
-    async fn consume(&self) -> std::io::Result<()> {
-        let mut consumer =
-            <RabbitMqBackend as TaskQueueBackend<JsObject>>::consuming_half(RabbitMqConfig {
-                uri: self.input_options.uri.clone(),
-                connection_properties: ConnectionProperties::default(),
-                publish_exchange: String::new(),
-                publish_routing_key: String::new(),
-                publish_options: BasicPublishOptions::default(),
-                publish_properites: BasicProperties::default(),
-                consume_queue: self.input_options.queue_name.clone(),
-                consumer_tag: self.input_options.consumer_tag.clone().unwrap_or_default(),
-                consume_options: self.input_options.consume_opts.unwrap_or_default(),
-                consume_arguments: self.input_options.consume_args.clone().unwrap_or_default(),
-                requeue_on_nack: self.input_options.requeue_on_nack,
-            })
+    /// Pulls N messages off the queue and feeds them to [`Self::process`].
+    #[instrument(skip_all,
+    fields(
+        otel.kind = "CONSUMER",
+        messaging.system = self.system(),
+        messaging.operation = "receive",
+        messaging.source = self.source(),
+        svixagent_plugin.name = crate::PLUGIN_NAME,
+        svixagent_plugin.vers = crate::PLUGIN_VERS,
+    )
+    )]
+    async fn receive(&self, consumer: &mut ConsumerWrapper) -> std::io::Result<()> {
+        let deliveries = consumer
+            .receive_all(1, Duration::from_millis(10))
             .await
             .map_err(Error::from)?;
+        tracing::trace!("received: {}", deliveries.len());
+        for delivery in deliveries {
+            self.process(delivery).await?;
+        }
+        Ok(())
+    }
 
-        tracing::debug!("rabbitmq consuming: {}", &self.input_options.queue_name);
+    /// Parses the delivery as JSON and feeds it into [`create_svix_message`].
+    /// Will nack the delivery if either the JSON parse, transformation, or the request to svix fails.
+    #[instrument(skip_all, fields(messaging.operation = "process"))]
+    async fn process(&self, delivery: DeliveryWrapper) -> std::io::Result<()> {
+        let payload = match delivery.payload() {
+            Ok(p) => p,
+            Err(e) => {
+                tracing::warn!("{e}");
+                delivery.nack().await.map_err(Error::from)?;
+                return Ok(());
+            }
+        };
 
-        // FIXME: `while let` swallows errors from `receive_all`.
-        while let Ok(deliveries) = consumer.receive_all(1, Duration::from_millis(10)).await {
-            let span = tracing::error_span!(
-                "receive",
-                otel.kind = "CONSUMER",
-                messaging.system = "rabbitmq",
-                messaging.operation = "receive",
-                messaging.source = &self.input_options.queue_name,
-                svixagent_plugin.name = PLUGIN_NAME,
-                svixagent_plugin.vers = PLUGIN_VERS,
-            );
-            let _enter = span.enter();
-            tracing::trace!("received: {}", deliveries.len());
-
-            for delivery in deliveries {
-                let span = tracing::error_span!("process", messaging.operation = "process");
-                let _enter = span.enter();
-
-                let payload = match Delivery::<JsObject>::payload(&delivery) {
-                    Ok(p) => p,
-                    Err(e) => {
-                        tracing::warn!("nack: {e}");
-                        delivery.nack().await.map_err(Error::from)?;
-                        continue;
-                    }
-                };
-
-                let payload = if let Some(script) = &self.transformation {
-                    match self.transform(script.clone(), payload).await {
-                        Err(e) => {
-                            tracing::error!("nack: {e}");
-                            delivery.nack().await.map_err(Error::from)?;
-                            continue;
-                        }
-                        Ok(x) => x,
-                    }
-                } else {
-                    payload
-                };
-
-                match create_svix_message(&self.svix_client, payload).await {
-                    Ok(_) => {
-                        tracing::trace!("ack");
-                        delivery.ack().await.map_err(Error::from)?
-                    }
-                    Err(e) => {
-                        tracing::error!("nack: {e}");
-                        delivery.nack().await.map_err(Error::from)?
-                    }
+        let payload = if let Some(script) = self.transformation() {
+            match self.transform(script.clone(), payload).await {
+                Err(e) => {
+                    tracing::error!("nack: {e}");
+                    delivery.nack().await.map_err(Error::from)?;
+                    return Ok(());
                 }
+                Ok(x) => x,
+            }
+        } else {
+            payload
+        };
+
+        match create_svix_message(self.svix_client(), payload).await {
+            Ok(_) => {
+                tracing::trace!("ack");
+                delivery.ack().await.map_err(Error::from)?
+            }
+            Err(e) => {
+                tracing::error!("nack: {e}");
+                delivery.nack().await.map_err(Error::from)?
             }
         }
         Ok(())
     }
 }
 
-#[async_trait]
-impl Plugin for RabbitMqConsumerPlugin {
-    fn set_transformer(&mut self, tx: Option<TransformerTx>) {
-        self.transformer_tx = tx;
-    }
-    async fn run(&self) -> std::io::Result<()> {
-        run_inner(self, "rabbitmq", &self.input_options.queue_name).await
-    }
-}
-
-impl RedisConsumerPlugin {
-    pub fn new(
-        RedisConsumerConfig {
-            input,
-            transformation,
-            output,
-        }: RedisConsumerConfig,
-    ) -> Self {
-        Self {
-            input_options: input,
-            svix_client: Svix::new(output.token, output.svix_options.map(Into::into)),
-            transformer_tx: None,
-            transformation,
-        }
-    }
-}
-
-#[async_trait]
-impl Consumer for RedisConsumerPlugin {
-    fn transformer_tx(&self) -> Option<&TransformerTx> {
-        self.transformer_tx.as_ref()
-    }
-    async fn consume(&self) -> std::io::Result<()> {
-        let mut consumer =
-            <RedisQueueBackend as TaskQueueBackend<CreateMessageRequest>>::consuming_half(
-                RedisConfig {
-                    dsn: self.input_options.dsn.clone(),
-                    max_connections: self.input_options.max_connections,
-                    reinsert_on_nack: self.input_options.reinsert_on_nack,
-                    queue_key: self.input_options.queue_key.clone(),
-                    consumer_group: self.input_options.consumer_group.clone(),
-                    consumer_name: self.input_options.consumer_name.clone(),
-                },
-            )
-            .await
-            .map_err(Error::from)?;
-
-        tracing::debug!("redis consuming: {}", &self.input_options.queue_key);
-        // FIXME: `while let` swallows errors from `receive_all`.
-        while let Ok(deliveries) = consumer.receive_all(1, Duration::from_millis(10)).await {
-            let span = tracing::error_span!(
-                "receive",
-                otel.kind = "CONSUMER",
-                messaging.system = "redis",
-                messaging.operation = "receive",
-                messaging.source = &self.input_options.queue_key,
-                svixagent_plugin.name = PLUGIN_NAME,
-                svixagent_plugin.vers = PLUGIN_VERS,
-            );
-            let _enter = span.enter();
-            tracing::trace!("received: {}", deliveries.len());
-
-            for delivery in deliveries {
-                let span = tracing::error_span!("process", messaging.operation = "process");
-                let _enter = span.enter();
-
-                let payload = match Delivery::<JsObject>::payload(&delivery) {
-                    Ok(p) => p,
-                    Err(e) => {
-                        tracing::warn!("nack: {e}");
-                        delivery.nack().await.map_err(Error::from)?;
-                        continue;
-                    }
-                };
-
-                let payload = if let Some(script) = &self.transformation {
-                    match self.transform(script.clone(), payload).await {
-                        Err(e) => {
-                            tracing::error!("nack: {e}");
-                            delivery.nack().await.map_err(Error::from)?;
-                            continue;
-                        }
-                        Ok(x) => x,
-                    }
-                } else {
-                    payload
-                };
-
-                match create_svix_message(&self.svix_client, payload).await {
-                    Ok(_) => {
-                        tracing::trace!("ack");
-                        delivery.ack().await.map_err(Error::from)?
-                    }
-                    Err(e) => {
-                        tracing::error!("nack: {e}");
-                        delivery.nack().await.map_err(Error::from)?
-                    }
-                }
-            }
-        }
-        Ok(())
-    }
-}
-
-#[async_trait]
-impl Plugin for RedisConsumerPlugin {
-    fn set_transformer(&mut self, tx: Option<TransformerTx>) {
-        self.transformer_tx = tx;
-    }
-    async fn run(&self) -> std::io::Result<()> {
-        run_inner(self, "redis", &self.input_options.queue_key).await
-    }
-}
-
-impl SqsConsumerPlugin {
-    pub fn new(
-        SqsConsumerConfig {
-            input,
-            transformation,
-            output,
-        }: SqsConsumerConfig,
-    ) -> Self {
-        Self {
-            input_options: input,
-            svix_client: Svix::new(output.token, output.svix_options.map(Into::into)),
-            transformer_tx: None,
-            transformation,
-        }
-    }
-}
-
-#[async_trait]
-impl Consumer for SqsConsumerPlugin {
-    fn transformer_tx(&self) -> Option<&TransformerTx> {
-        self.transformer_tx.as_ref()
-    }
-    async fn consume(&self) -> std::io::Result<()> {
-        let mut consumer =
-            <SqsQueueBackend as TaskQueueBackend<CreateMessageRequest>>::consuming_half(
-                SqsConfig {
-                    queue_dsn: self.input_options.queue_dsn.clone(),
-                    override_endpoint: self.input_options.override_endpoint,
-                },
-            )
-            .await
-            .map_err(Error::from)?;
-
-        tracing::debug!("sqs consuming: {}", &self.input_options.queue_dsn);
-        // FIXME: `while let` swallows errors from `receive_all`.
-        while let Ok(deliveries) = consumer.receive_all(1, Duration::from_millis(10)).await {
-            let span = tracing::error_span!(
-                "receive",
-                otel.kind = "CONSUMER",
-                messaging.system = "sqs",
-                messaging.operation = "receive",
-                messaging.source = &self.input_options.queue_dsn,
-                svixagent_plugin.name = PLUGIN_NAME,
-                svixagent_plugin.vers = PLUGIN_VERS,
-            );
-            let _enter = span.enter();
-            tracing::trace!("received: {}", deliveries.len());
-
-            for delivery in deliveries {
-                let span = tracing::error_span!("process", messaging.operation = "process");
-                let _enter = span.enter();
-
-                let payload = match Delivery::<JsObject>::payload(&delivery) {
-                    Ok(p) => p,
-                    Err(e) => {
-                        tracing::warn!("nack: {e}");
-                        delivery.nack().await.map_err(Error::from)?;
-                        continue;
-                    }
-                };
-
-                let payload = if let Some(script) = &self.transformation {
-                    match self.transform(script.clone(), payload).await {
-                        Err(e) => {
-                            tracing::error!("nack: {e}");
-                            delivery.nack().await.map_err(Error::from)?;
-                            continue;
-                        }
-                        Ok(x) => x,
-                    }
-                } else {
-                    payload
-                };
-
-                match create_svix_message(&self.svix_client, payload).await {
-                    Ok(_) => {
-                        tracing::trace!("ack");
-                        delivery.ack().await.map_err(Error::from)?
-                    }
-                    Err(e) => {
-                        tracing::error!("nack: {e}");
-                        delivery.nack().await.map_err(Error::from)?
-                    }
-                }
-            }
-        }
-
-        Ok(())
-    }
-}
-
-#[async_trait]
-impl Plugin for SqsConsumerPlugin {
-    fn set_transformer(&mut self, tx: Option<TransformerTx>) {
-        self.transformer_tx = tx;
-    }
-    async fn run(&self) -> std::io::Result<()> {
-        run_inner(self, "sqs", &self.input_options.queue_dsn).await
-    }
-}
-
-async fn run_inner(
-    consumer: &impl Consumer,
-    system_name: &str,
-    source: &str,
-) -> std::io::Result<()> {
+async fn run_inner(consumer: &(impl Consumer + Send + Sync)) -> std::io::Result<()> {
     let mut fails: u64 = 0;
     let mut last_fail = Instant::now();
+    let system_name = consumer.system();
+    let source = consumer.source();
 
     tracing::info!("{system_name} starting: {source}");
 

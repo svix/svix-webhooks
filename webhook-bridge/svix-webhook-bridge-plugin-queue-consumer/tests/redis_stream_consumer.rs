@@ -7,8 +7,8 @@ use redis::{AsyncCommands, Client};
 use serde_json::json;
 use svix::api::MessageIn;
 use svix_webhook_bridge_plugin_queue_consumer::{
-    config::{OutputOpts, SvixOptions},
-    CreateMessageRequest, RedisConsumerConfig, RedisConsumerPlugin, RedisInputOpts,
+    config::{OutputOpts, RedisConsumerConfig, RedisInputOpts, SvixOptions},
+    CreateMessageRequest, RedisConsumerPlugin,
 };
 use svix_webhook_bridge_types::{JsReturn, Plugin, TransformerJob};
 use wiremock::matchers::{body_partial_json, method};
