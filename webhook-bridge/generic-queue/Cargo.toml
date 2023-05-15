@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 async-trait = "0.1"
 aws-config = { version = "0.55", optional = true }
+aws-sdk-kinesis = { version = "0.27.0", optional = true }
 aws-sdk-sqs = { version = "0.25", optional = true }
 bb8 = { version = "0.7.1", optional = true }
 bb8-redis = { version = "0.10.1", optional = true }
@@ -30,6 +31,7 @@ tracing = "0.1"
 
 [features]
 default = ["gcp_pubsub", "memory_queue", "rabbitmq", "redis", "redis_cluster", "sqs"]
+kinesis = ["dep:aws-config", "dep:aws-sdk-kinesis"]
 gcp_pubsub = ["dep:google-cloud-pubsub", "dep:google-cloud-googleapis", "dep:google-cloud-gax", "dep:tokio-util", "dep:futures-util", "dep:google-cloud-default", "dep:google-cloud-auth"]
 memory_queue = []
 rabbitmq = ["dep:lapin"]

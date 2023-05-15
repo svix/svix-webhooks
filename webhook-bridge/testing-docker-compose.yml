@@ -26,3 +26,10 @@ services:
       "--project", "local-project",
       "--host-port", "0.0.0.0:8085"
     ]
+
+  kinesis:
+    # They don't seem to tag releases... might need to find a different image or build one of our own using the npm
+    # package.
+    image: instructure/kinesalite:latest
+    ports:
+      - "4567:4567"

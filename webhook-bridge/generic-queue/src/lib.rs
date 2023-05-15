@@ -8,6 +8,8 @@ use thiserror::Error;
 
 #[cfg(feature = "gcp_pubsub")]
 pub mod gcp_pubsub;
+#[cfg(feature = "kinesis")]
+pub mod kinesis;
 #[cfg(feature = "memory_queue")]
 pub mod memory_queue;
 #[cfg(feature = "rabbitmq")]
