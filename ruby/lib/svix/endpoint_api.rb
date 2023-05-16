@@ -51,8 +51,8 @@ module Svix
       return @api.v1_endpoint_patch_headers(app_id, endpoint_id, endpoint_headers_in)
     end
 
-    def get_stats(app_id, endpoint_id)
-      return @api.v1_endpoint_get_stats(app_id, endpoint_id)
+    def get_stats(app_id, endpoint_id, options = {})
+      return @api.v1_endpoint_get_stats(app_id, endpoint_id, options)
     end
 
     def replay_missing(app_id, endpoint_id, replay_in, options = {})

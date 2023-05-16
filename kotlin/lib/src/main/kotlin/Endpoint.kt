@@ -182,13 +182,17 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun getStats(appId: String, endpointId: String): EndpointStats {
+    suspend fun getStats(
+        appId: String,
+        endpointId: String,
+        options: EndpointStatsOptions = EndpointStatsOptions()
+    ): EndpointStats {
         try {
             return api.v1EndpointGetStats(
                 appId,
                 endpointId,
-                null,
-                null
+                options.since,
+                options.until
             )
         } catch (e: Exception) {
             throw ApiException.wrap(e)

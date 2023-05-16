@@ -246,6 +246,12 @@ pub struct Endpoint<'a> {
     cfg: &'a Configuration,
 }
 
+#[derive(Default)]
+pub struct EndpointStatsOptions {
+    pub since: Option<String>,
+    pub until: Option<String>,
+}
+
 impl<'a> Endpoint<'a> {
     fn new(cfg: &'a Configuration) -> Self {
         Self { cfg }
@@ -432,14 +438,20 @@ impl<'a> Endpoint<'a> {
         .await?)
     }
 
-    pub async fn get_stats(&self, app_id: String, endpoint_id: String) -> Result<EndpointStats> {
+    pub async fn get_stats(
+        &self,
+        app_id: String,
+        endpoint_id: String,
+        options: Option<EndpointStatsOptions>,
+    ) -> Result<EndpointStats> {
+        let EndpointStatsOptions { since, until } = options.unwrap_or_default();
         Ok(endpoint_api::v1_endpoint_get_stats(
             self.cfg,
             endpoint_api::V1EndpointGetStatsParams {
                 app_id,
                 endpoint_id,
-                since: None,
-                until: None,
+                since,
+                until,
             },
         )
         .await?)

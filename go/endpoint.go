@@ -2,6 +2,7 @@ package svix
 
 import (
 	"context"
+	"time"
 
 	"github.com/svix/svix-webhooks/go/internal/openapi"
 )
@@ -33,6 +34,11 @@ type EndpointListOptions struct {
 	Iterator *string
 	Limit    *int32
 	Order    *Ordering
+}
+
+type EndpointStatsOptions struct {
+	Since *time.Time
+	Until *time.Time
 }
 
 func (e *Endpoint) List(ctx context.Context, appId string, options *EndpointListOptions) (*ListResponseEndpointOut, error) {
@@ -182,7 +188,11 @@ func (e *Endpoint) PatchHeaders(ctx context.Context, appId string, endpointId st
 }
 
 func (e *Endpoint) GetStats(ctx context.Context, appId string, endpointId string) (*EndpointStats, error) {
-	req := e.api.EndpointApi.V1EndpointGetStats(ctx, appId, endpointId)
+	return e.GetStatsWithOptions(ctx, appId, endpointId, EndpointStatsOptions{})
+}
+
+func (e *Endpoint) GetStatsWithOptions(ctx context.Context, appId string, endpointId string, options EndpointStatsOptions) (*EndpointStats, error) {
+	req := e.api.EndpointApi.V1EndpointGetStats(ctx, appId, endpointId, options.Since, options.Until)
 	out, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)

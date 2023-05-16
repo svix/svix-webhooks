@@ -172,6 +172,12 @@ class EndpointListOptions(ListOptions):
 
 
 @dataclass
+class EndpointStatsOptions:
+    since: t.Optional[datetime] = None
+    until: t.Optional[datetime] = None
+
+
+@dataclass
 class IntegrationListOptions(ListOptions):
     pass
 
@@ -486,11 +492,15 @@ class Endpoint(ApiBase):
             json_body=endpoint_headers_in,
         )
 
-    def get_stats(self, app_id: str, endpoint_id: str) -> EndpointStats:
+    def get_stats(
+        self, app_id: str, endpoint_id: str, options: EndpointStatsOptions = EndpointStatsOptions()
+    ) -> EndpointStats:
         return v1_endpoint_get_stats.sync(
             client=self._client,
             app_id=app_id,
             endpoint_id=endpoint_id,
+            since=options.since,
+            until=options.until,
         )
 
     def replay_missing(

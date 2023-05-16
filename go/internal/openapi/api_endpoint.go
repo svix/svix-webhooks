@@ -1156,12 +1156,14 @@ func (r ApiV1EndpointGetStatsRequest) Execute() (EndpointStats, *_nethttp.Respon
  * @param endpointId The ep's ID or UID
  * @return ApiV1EndpointGetStatsRequest
  */
-func (a *EndpointApiService) V1EndpointGetStats(ctx _context.Context, appId string, endpointId string) ApiV1EndpointGetStatsRequest {
+func (a *EndpointApiService) V1EndpointGetStats(ctx _context.Context, appId string, endpointId string, since *time.Time, until *time.Time) ApiV1EndpointGetStatsRequest {
 	return ApiV1EndpointGetStatsRequest{
 		ApiService: a,
 		ctx: ctx,
 		appId: appId,
 		endpointId: endpointId,
+		since: since,
+		until: until,
 	}
 }
 
