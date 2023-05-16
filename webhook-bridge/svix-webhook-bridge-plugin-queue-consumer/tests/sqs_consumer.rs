@@ -9,8 +9,8 @@ use aws_sdk_sqs::Client;
 use serde_json::json;
 use svix::api::MessageIn;
 use svix_webhook_bridge_plugin_queue_consumer::{
-    config::{OutputOpts, SvixOptions},
-    CreateMessageRequest, SqsConsumerConfig, SqsConsumerPlugin, SqsInputOpts,
+    config::{OutputOpts, SqsConsumerConfig, SqsInputOpts, SvixOptions},
+    CreateMessageRequest, SqsConsumerPlugin,
 };
 use svix_webhook_bridge_types::{JsReturn, Plugin, TransformerJob};
 use wiremock::matchers::{body_partial_json, method};

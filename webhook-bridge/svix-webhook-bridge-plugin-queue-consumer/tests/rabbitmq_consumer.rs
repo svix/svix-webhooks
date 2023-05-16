@@ -8,8 +8,8 @@ use serde_json::json;
 use std::time::Duration;
 use svix::api::MessageIn;
 use svix_webhook_bridge_plugin_queue_consumer::{
-    config::{OutputOpts, RabbitMqInputOpts, SvixOptions},
-    CreateMessageRequest, RabbitMqConsumerConfig, RabbitMqConsumerPlugin,
+    config::{OutputOpts, RabbitMqConsumerConfig, RabbitMqInputOpts, SvixOptions},
+    CreateMessageRequest, RabbitMqConsumerPlugin,
 };
 use svix_webhook_bridge_types::{JsReturn, Plugin, TransformerJob};
 use wiremock::matchers::{body_partial_json, method};
