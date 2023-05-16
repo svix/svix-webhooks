@@ -11,10 +11,9 @@ use std::time::Duration;
 
 use serde_json::json;
 use svix::api::MessageIn;
-use svix_webhook_bridge_plugin_queue_consumer::config::GCPPubSubInputOpts;
 use svix_webhook_bridge_plugin_queue_consumer::{
-    config::{OutputOpts, SvixOptions},
-    CreateMessageRequest, GCPPubSubConsumerConfig, GCPPubSubConsumerPlugin,
+    config::{GCPPubSubConsumerConfig, GCPPubSubInputOpts, OutputOpts, SvixOptions},
+    CreateMessageRequest, GCPPubSubConsumerPlugin,
 };
 use svix_webhook_bridge_types::{JsReturn, Plugin, TransformerJob};
 use wiremock::matchers::{body_partial_json, method};
