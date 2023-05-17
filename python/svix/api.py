@@ -16,6 +16,7 @@ from .internal.openapi_client.api.authentication import (
     v1_authentication_dashboard_access,
     v1_authentication_logout,
 )
+from .internal.openapi_client.api.background_tasks import get_background_task, list_background_tasks
 from .internal.openapi_client.api.endpoint import (
     v1_endpoint_create,
     v1_endpoint_delete,
@@ -71,6 +72,9 @@ from .internal.openapi_client.models.app_portal_access_in import AppPortalAccess
 from .internal.openapi_client.models.app_portal_access_out import AppPortalAccessOut
 from .internal.openapi_client.models.application_in import ApplicationIn
 from .internal.openapi_client.models.application_out import ApplicationOut
+from .internal.openapi_client.models.background_task_out import BackgroundTaskOut
+from .internal.openapi_client.models.background_task_status import BackgroundTaskStatus
+from .internal.openapi_client.models.background_task_type import BackgroundTaskType
 from .internal.openapi_client.models.dashboard_access_out import DashboardAccessOut
 from .internal.openapi_client.models.endpoint_headers_in import EndpointHeadersIn
 from .internal.openapi_client.models.endpoint_headers_out import EndpointHeadersOut
@@ -93,6 +97,7 @@ from .internal.openapi_client.models.integration_key_out import IntegrationKeyOu
 from .internal.openapi_client.models.integration_out import IntegrationOut
 from .internal.openapi_client.models.integration_update import IntegrationUpdate
 from .internal.openapi_client.models.list_response_application_out import ListResponseApplicationOut
+from .internal.openapi_client.models.list_response_background_task_out import ListResponseBackgroundTaskOut
 from .internal.openapi_client.models.list_response_endpoint_message_out import ListResponseEndpointMessageOut
 from .internal.openapi_client.models.list_response_endpoint_out import ListResponseEndpointOut
 from .internal.openapi_client.models.list_response_event_type_out import ListResponseEventTypeOut
@@ -169,6 +174,11 @@ class EndpointListOptions(ListOptions):
 @dataclass
 class IntegrationListOptions(ListOptions):
     pass
+
+
+class BackgroundTaskListOptions(ListOptions):
+    status: t.Optional[BackgroundTaskStatus] = None
+    task: t.Optional[BackgroundTaskType] = None
 
 
 @dataclass
@@ -931,6 +941,24 @@ class MessageAttempt(ApiBase):
             msg_id=msg_id,
             attempt_id=attempt_id,
         )
+
+
+class BackgroundTaskAsync(ApiBase):
+    async def list(
+        self, options: BackgroundTaskListOptions = BackgroundTaskListOptions()
+    ) -> ListResponseBackgroundTaskOut:
+        return await list_background_tasks.asyncio(client=self._client, **options.to_dict())
+
+    async def get(self, task_id: str) -> BackgroundTaskOut:
+        return await get_background_task.asyncio(client=self._client, task_id=task_id)
+
+
+class BackgroundTask(ApiBase):
+    def list(self, options: BackgroundTaskListOptions = BackgroundTaskListOptions()) -> ListResponseBackgroundTaskOut:
+        return list_background_tasks.sync(client=self._client, **options.to_dict())
+
+    def get(self, task_id: str) -> BackgroundTaskOut:
+        return get_background_task.sync(client=self._client, task_id=task_id)
 
 
 class ClientBase:
