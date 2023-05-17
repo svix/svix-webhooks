@@ -4,10 +4,11 @@ FROM rust:1.69-slim-bullseye AS build
 RUN apt-get update && apt-get install -y \
     build-essential=12.* \
     checkinstall=1.* \
-    zlib1g-dev=1:* \
-    pkg-config=0.29.* \
+    curl=7.* \
     libssl-dev=* \
+    pkg-config=0.29.* \
     protobuf-compiler=* \
+    zlib1g-dev=1:* \
     --no-install-recommends
 
 RUN set -ex ; \
