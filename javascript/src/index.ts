@@ -54,6 +54,11 @@ import {
   AppPortalAccessOut,
   AppPortalAccessIn,
   Ordering,
+  BackgroundTaskStatus,
+  BackgroundTaskType,
+  BackgroundTaskOut,
+  ListResponseBackgroundTaskOut,
+  BackgroundTasksApi,
 } from "./openapi/index";
 export * from "./openapi/models/all";
 export * from "./openapi/apis/exception";
@@ -95,6 +100,7 @@ export class Svix {
   public readonly integration: Integration;
   public readonly message: Message;
   public readonly messageAttempt: MessageAttempt;
+  public readonly backgroundTask: BackgroundTask;
 
   public constructor(token: string, options: SvixOptions = {}) {
     const regionalUrl = REGIONS.find((x) => x.region === token.split(".")[1])?.url;
@@ -123,6 +129,7 @@ export class Svix {
     this.integration = new Integration(config);
     this.message = new Message(config);
     this.messageAttempt = new MessageAttempt(config);
+    this.backgroundTask = new BackgroundTask(config);
   }
 }
 export interface PostOptions {
@@ -196,6 +203,11 @@ export interface MessageAttemptListOptions extends ListOptions {
   after?: Date;
   statusCodeClass?: StatusCodeClass;
   channel?: string;
+}
+
+export interface BackgroundTaskListOptions extends ListOptions {
+  status?: BackgroundTaskStatus;
+  task?: BackgroundTaskType;
 }
 
 class Application {
@@ -657,6 +669,31 @@ class MessageAttempt {
       appId, msgId, attemptId
     })
   }
+}
+
+class BackgroundTask {
+  private readonly api: BackgroundTasksApi;
+
+  public constructor(config: Configuration) {
+    this.api = new BackgroundTasksApi(config);
+  }
+
+  public listByEndpoint(
+    options?: BackgroundTaskListOptions
+  ): Promise<ListResponseBackgroundTaskOut> {
+    return this.api.listBackgroundTasks({
+      ...options,
+    });
+  }
+
+  public get(
+    taskId: string,
+  ): Promise<BackgroundTaskOut> {
+    return this.api.getBackgroundTask({
+      taskId
+    });
+  }
+
 }
 
 class ExtendableError extends Error {
