@@ -13,6 +13,8 @@ pub struct IntegrationConfig {
     pub name: IntegrationId,
     pub verification: VerificationScheme,
     pub destination: ForwardDestination,
+    #[serde(default)]
+    pub transformation: Option<String>,
 }
 
 /// The [`VerificationScheme`] is an enum with variant for every method for verifying a webhook's

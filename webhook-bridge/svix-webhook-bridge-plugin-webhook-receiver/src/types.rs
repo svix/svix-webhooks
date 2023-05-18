@@ -2,7 +2,7 @@ use crate::config::IntegrationConfig;
 use crate::forwarding::GenericQueueForwarder;
 use crate::{
     config::{ForwardDestination, VerificationScheme},
-    forwarding::{Forwarder, ForwardingMethod},
+    forwarding::Forwarder,
     verification::{NoVerifier, SvixVerifier, VerificationMethod, Verifier},
 };
 use anyhow::Result;
@@ -15,13 +15,21 @@ use axum::{
 use http::{HeaderMap, HeaderValue, Request};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, marker::PhantomData, sync::Arc};
+use svix_webhook_bridge_types::{JsObject, TransformerTx};
 
 #[derive(Clone, Debug)]
 /// The [`InternalState`] is passed to the Axum route and is used to map the "IntegrationId" in the
 /// URL to the configured [`Verifier`] and [`Forwarder`] variants.
-pub struct InternalState(pub HashMap<IntegrationId, IntegrationState>);
+pub struct InternalState {
+    pub routes: HashMap<IntegrationId, IntegrationState>,
+    pub transformer_tx: Option<TransformerTx>,
+}
+
 impl InternalState {
-    pub async fn from_routes(routes: &[IntegrationConfig]) -> Result<Self> {
+    pub async fn from_routes(
+        routes: &[IntegrationConfig],
+        transformer_tx: Option<TransformerTx>,
+    ) -> Result<Self> {
         let mut state_map = HashMap::new();
 
         for cfg in routes {
@@ -57,11 +65,15 @@ impl InternalState {
                 IntegrationState {
                     verifier,
                     forwarder,
+                    transformation: cfg.transformation.clone(),
                 },
             );
         }
 
-        Ok(InternalState(state_map))
+        Ok(InternalState {
+            routes: state_map,
+            transformer_tx,
+        })
     }
 }
 
@@ -99,6 +111,7 @@ impl AsRef<str> for IntegrationId {
 pub struct IntegrationState {
     pub verifier: Verifier,
     pub forwarder: Forwarder,
+    pub transformation: Option<String>,
 }
 
 /// Any arbitrary HTTP request which is not a webhook dispatched by Svix may also have arbitrary
@@ -282,18 +295,6 @@ impl SerializableRequest<Unvalidated> {
     }
 }
 
-impl SerializableRequest<Validated> {
-    pub async fn forward<F: ForwardingMethod>(self, f: &F) -> http::StatusCode {
-        match f.forward(self).await {
-            Ok(c) => c,
-            Err(e) => {
-                tracing::error!("Error forwarding request: {}", e);
-                http::StatusCode::INTERNAL_SERVER_ERROR
-            }
-        }
-    }
-}
-
 #[derive(Clone, Debug)]
 pub enum SerializableHeaderMap {
     Standard(HeaderMap),
@@ -384,5 +385,12 @@ impl SerializablePayload {
             )),
             Self::StringSerializable(s) => Ok(Self::StringSerializable(s)),
         }
+    }
+
+    pub fn as_js_object(&self) -> Result<JsObject> {
+        Ok(match self {
+            Self::Standard(v) => serde_json::from_slice(v)?,
+            Self::StringSerializable(s) => serde_json::from_str(s)?,
+        })
     }
 }
