@@ -531,13 +531,38 @@ namespace Svix
             {
                 var lStats = _endpointApi.V1EndpointGetStats(
                     appId,
-                    endpointId);
+                    endpointId,
+                    null,
+                    null);
 
                 return lStats;
             }
             catch (ApiException e)
             {
                 Logger?.LogError(e, $"{nameof(GetStats)} failed");
+
+                if (Throw)
+                    throw;
+
+                return null;
+            }
+        }
+
+        public EndpointStats GetStatsWithOptions(string appId, string endpointId, EndpointStatsOptions options = null, string idempotencyKey = default)
+        {
+            try
+            {
+                var lStats = _endpointApi.V1EndpointGetStats(
+                    appId,
+                    endpointId,
+                    options?.Since,
+                    options?.Until);
+
+                return lStats;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(GetStatsWithOptions)} failed");
 
                 if (Throw)
                     throw;
@@ -563,6 +588,31 @@ namespace Svix
             catch (ApiException e)
             {
                 Logger?.LogError(e, $"{nameof(GetStatsAsync)} failed");
+
+                if (Throw)
+                    throw;
+
+                return null;
+            }
+        }
+
+        public async Task<EndpointStats> GetStatsWithOptionsAsync(string appId, string endpointId, EndpointStatsOptions options = null, string idempotencyKey = default,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var lStats = await _endpointApi.V1EndpointGetStatsAsync(
+                    appId,
+                    endpointId,
+                    options?.Since,
+                    options?.Until,
+                    cancellationToken);
+
+                return lStats;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(GetStatsWithOptionsAsync)} failed");
 
                 if (Throw)
                     throw;

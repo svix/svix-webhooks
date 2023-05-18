@@ -182,6 +182,11 @@ export interface EndpointListOptions extends ListOptions {
   order?: Ordering;
 }
 
+export interface EndpointStatsOptions {
+  since?: Date;
+  until?: Date;
+}
+
 export type IntegrationListOptions = ListOptions;
 
 export interface EventTypeListOptions extends ListOptions {
@@ -385,10 +390,11 @@ class Endpoint {
     });
   }
 
-  public getStats(appId: string, endpointId: string): Promise<EndpointStats> {
+  public getStats(appId: string, endpointId: string, options?: EndpointStatsOptions): Promise<EndpointStats> {
     return this.api.v1EndpointGetStats({
       appId,
       endpointId,
+      ...options
     });
   }
 
