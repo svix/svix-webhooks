@@ -1,5 +1,4 @@
 use crate::config::{GCPPubSubOutputOpts, RabbitMqOutputOpts, RedisOutputOpts, SqsOutputOpts};
-use crate::types::{SerializablePayload, SerializableRequest, Validated};
 use anyhow::Result;
 use axum::async_trait;
 use enum_dispatch::enum_dispatch;
@@ -9,11 +8,12 @@ use generic_queue::redis::{RedisConfig, RedisQueueBackend};
 use generic_queue::sqs::{SqsConfig, SqsQueueBackend};
 use generic_queue::{TaskQueueBackend, TaskQueueSend};
 use std::sync::Arc;
+use svix_webhook_bridge_types::JsObject;
 
 #[async_trait]
 #[enum_dispatch]
 pub trait ForwardingMethod {
-    async fn forward(&self, req: SerializableRequest<Validated>) -> Result<http::StatusCode>;
+    async fn forward(&self, payload: JsObject) -> Result<http::StatusCode>;
 }
 
 #[derive(Clone)]
@@ -101,13 +101,8 @@ impl std::fmt::Debug for GenericQueueForwarder {
 }
 #[async_trait]
 impl ForwardingMethod for GenericQueueForwarder {
-    async fn forward(&self, req: SerializableRequest<Validated>) -> Result<http::StatusCode> {
-        let payload = match req.payload() {
-            SerializablePayload::Standard(data) => serde_json::from_slice(data)?,
-            SerializablePayload::StringSerializable(s) => serde_json::from_str(s)?,
-        };
-
-        self.sender.send(payload).await?;
+    async fn forward(&self, payload: JsObject) -> Result<http::StatusCode> {
+        self.sender.send(payload.into()).await?;
         Ok(http::StatusCode::OK)
     }
 }
