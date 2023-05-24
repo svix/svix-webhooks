@@ -86,7 +86,7 @@ async fn publish(channel: &Channel, queue_name: &str, payload: &[u8]) {
 }
 
 /// General "pause while we wait for messages to travel" beat. If you're seeing flakes, bump this up.
-const WAIT_MS: u64 = 150;
+const WAIT_MS: u64 = 200;
 /// These tests assume a "vanilla" rabbitmq instance, using the default port, creds, exchange...
 const MQ_URI: &str = "amqp://guest:guest@localhost:5672/%2f";
 
