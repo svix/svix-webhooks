@@ -107,4 +107,4 @@ receivers:
       # - `AWS_ACCESS_KEY_ID`
       # - `AWS_SECRET_ACCESS_KEY`
       type: "sqs"
-      queue_dsn: "https://example.aws.com/my-queue"
+      queue_dsn: "https://aws.example.com/my-queue"

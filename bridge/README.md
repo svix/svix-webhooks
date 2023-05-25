@@ -1,12 +1,31 @@
+<h1 align="center">
+  <a href="https://www.svix.com">
+    <img width="120" src="https://avatars.githubusercontent.com/u/80175132?s=200&v=4" />
+    <p align="center">Svix - Webhooks as a service</p>
+  </a>
+</h1>
+
+![GitHub tag](https://img.shields.io/github/tag/svix/svix-webhooks.svg)
+[![Build Status](https://github.com/svix/svix-webhooks/workflows/Bridge%20CI/badge.svg)](https://github.com/svix/svix-webhooks/actions)
+[![Bridge Security](https://github.com/svix/svix-webhooks/actions/workflows/bridge-security.yml/badge.svg)](https://github.com/svix/svix-webhooks/actions/workflows/bridge-security.yml)
+[![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
+[![Join our slack](https://img.shields.io/badge/Slack-join%20the%20community-blue?logo=slack&style=social)](https://www.svix.com/slack/)
+
 # Svix Bridge
 
-`svix-bridge` is organized in terms of **senders** and **receivers**.
+Bridge is an agent to help integrate webhooks into your existing messaging infrastructure.
+
+Bridge is organized in terms of **senders** and **receivers**.
 
 **Senders** are useful when you have a data source (an "input") such as a
 message queue and want to generate Svix webhooks from those messages.
 
 **Receivers** act as HTTP endpoints which wait for Svix webhooks to arrive, then
 publish the payload on to a specified "output."
+
+**Receivers** also (optionally) perform validation of the webhooks using Svix's signature verification.
+
+Both **senders** and **receivers** are defined in terms of their input, and optional JavaScript transformation, and their output.
 
 Currently the supported Sender inputs and Receiver outputs are the following
 messaging systems:
@@ -16,13 +35,28 @@ messaging systems:
 - Redis
 - SQS
 
-## Usage
+> Important to note that queues, exchanges, topics, etc should be created and configured independently,
+> prior to using launching Bridge. Bridge will not automatically attempt to create these resources, it will only try
+> (and fail) to read from or publish to the stream/queue in this case.
+
+
+## Installation
+
+Docker images are available on [docker hub](https://registry.hub.docker.com/r/svix/svix-bridge)
 
 ```
-svix-bridge -c path/to/svix-bridge.yaml
+$ docker pull svix/svix-bridge
 ```
 
-## Configuration
+If you don't want to use docker, see [Building from Source](../README.md#building-from-source).
+
+
+
+# Usage and Configuration
+
+```
+$ svix-bridge -c path/to/svix-bridge.yaml
+```
 
 The CLI itself exposes only a single flag (`-c`, `--cfg`) used to set the path for the config file.
 The location of the config file can also be set with the `SVIX_BRIDGE_CFG` env var.
@@ -34,7 +68,6 @@ Each sender and receiver can optionally specify a `transformation`.
 Transformations should define a function called `handler` that accepts an object and returns an object.
 
 Senders should produce JSON following an expected shape:
-
 ```
 {
     // This indicates which Svix application to send the message to
@@ -52,21 +85,36 @@ Senders should produce JSON following an expected shape:
 > The comments in the above JSON are for illustrative purposes only ;)
 > That's not valid JSON! Sorry!
 
-
 For detail on the `message` field, see: <https://api.svix.com/docs#tag/Message/operation/v1.message.create>
 
-Important to note that queues, exchanges, topics, or what have you, should be created and configured independently,
-prior to using the plugin. There's nothing in place to automatically create these resources.
-The plugin will only try (and fail) to read from the stream in such a case.
+See the example configs for how to configure each input and output in more detail:
+- [senders](./svix-bridge.example.senders.yaml)
+- [receivers](./svix-bridge.example.receivers.yaml)
 
-- GCP Pub/Sub
-- RabbitMQ
-- Redis
-- SQS
+# Building from source
 
-The HTTP server also (optionally) performs validation of the webhooks using Svix's signature verification method.
+You would need a working Rust complier in order to build Svix Bridge.
+The easiest way is to use [rustup](https://rustup.rs/).
 
-The `verification` section for each route can be set one of two ways:
-* `none` which accepts and forwards any JSON POST HTTP request.
-* `svix` that takes a Svix endpoint secret (starting with `whsec_`) and
-  validating it using an official Svix library
+```
+# Clone the repository
+git clone https://github.com/svix/svix-webhooks
+# Change to the source directory
+cd svix-webhooks/bridge/
+# Build
+cargo install --path svix-bridge
+```
+
+Some system dependencies are required for Bridge to build successfully.
+Consult the [Dockerfile](./Dockerfile) for a good reference of what's required at build time.
+
+# Building with Docker
+
+```
+# Clone the repository
+git clone https://github.com/svix/svix-webhooks
+# Change to the source directory
+cd svix-webhooks/bridge/
+# Build
+docker build --tag svix-bridge:local .
+```

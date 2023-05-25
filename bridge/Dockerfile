@@ -66,6 +66,7 @@ RUN apt-get update ;\
 USER appuser
 
 COPY --from=build /app/target/release/svix-bridge /usr/local/bin/svix-bridge
+EXPOSE 5000
 
 # Will fail if there's no `svix-bridge.yaml` in the CWD or `SVIX_BRIDGE_CFG` is not set to a valid
 # path to a config.
