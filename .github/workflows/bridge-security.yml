@@ -1,0 +1,24 @@
+name: Bridge Security
+
+on:
+  push:
+    branches:
+    - main
+    paths:
+      - 'bridge/**/Cargo.toml'
+      - 'bridge/**/Cargo.lock'
+      - '.github/workflows/bridge-security.yml'
+  pull_request:
+    paths:
+      - 'bridge/**/Cargo.toml'
+      - 'bridge/**/Cargo.lock'
+      - '.github/workflows/bridge-security.yml'
+
+jobs:
+  security_audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: EmbarkStudios/cargo-deny-action@v1
+        with:
+            arguments: --manifest-path=bridge/Cargo.toml
