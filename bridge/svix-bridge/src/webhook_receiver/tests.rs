@@ -33,8 +33,9 @@ impl ReceiverOutput for FakeReceiverOutput {
     }
 
     async fn handle(&self, payload: JsObject) -> std::io::Result<()> {
-        self.tx.send(payload).unwrap();
-        Ok(())
+        self.tx
+            .send(payload)
+            .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))
     }
 }
 
@@ -319,4 +320,117 @@ async fn test_forwarding_svix_verification_match() {
     assert_eq!(response.status(), StatusCode::NO_CONTENT);
     let forwarded = a_rx.try_recv().unwrap();
     assert_eq!(json!(forwarded), json!({"a": true}));
+}
+
+/// Simulated queue failure. Assuming the [`ReceiverOutput`] implementation has proper error
+/// handling and actually gives an `Err` when the queue publish fails, this demonstrates how the
+/// HTTP handler behaves.
+#[tokio::test]
+async fn test_forwarding_error_is_500() {
+    let (tx, _rx) = tokio::sync::mpsc::unbounded_channel();
+    let (a_output, mut a_rx) = FakeReceiverOutput::new();
+
+    let payload = json!({"a": true});
+    let payload_bytes = serde_json::to_vec(&payload).unwrap();
+
+    let state_map = [(
+        "a".into(),
+        IntegrationState {
+            verifier: NoVerifier.into(),
+            output: Arc::new(Box::new(a_output)),
+            transformation: None,
+        },
+    )]
+    .into_iter()
+    .collect();
+    let state = InternalState::new(state_map, tx);
+    let app = router().with_state(state);
+
+    // Close the channel held by the ReceiverOutput to simulate a queue failure.
+    a_rx.close();
+    // The channel should be empty.
+    assert!(a_rx.try_recv().is_err());
+    let response = app
+        .oneshot(
+            Request::builder()
+                .uri("/webhook/a")
+                .method("POST")
+                .header("content-type", "application/json")
+                .body(payload_bytes.into())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(response.status(), StatusCode::INTERNAL_SERVER_ERROR);
+}
+
+#[tokio::test]
+async fn test_non_object_body_is_400() {
+    let (tx, _rx) = tokio::sync::mpsc::unbounded_channel();
+    let (a_output, _a_rx) = FakeReceiverOutput::new();
+
+    // We require payloads to be an object (though this requirement could be relaxed now that we
+    // have transformations).
+    let payload = json!([1, 2, 3]);
+    let payload_bytes = serde_json::to_vec(&payload).unwrap();
+
+    let state_map = [(
+        "a".into(),
+        IntegrationState {
+            verifier: NoVerifier.into(),
+            output: Arc::new(Box::new(a_output)),
+            transformation: None,
+        },
+    )]
+    .into_iter()
+    .collect();
+    let state = InternalState::new(state_map, tx);
+    let app = router().with_state(state);
+
+    let response = app
+        .oneshot(
+            Request::builder()
+                .uri("/webhook/a")
+                .method("POST")
+                .header("content-type", "application/json")
+                .body(payload_bytes.into())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+}
+
+#[tokio::test]
+async fn test_non_json_body_is_400() {
+    let (tx, _rx) = tokio::sync::mpsc::unbounded_channel();
+    let (a_output, _a_rx) = FakeReceiverOutput::new();
+
+    let payload_bytes = b"not a json body".to_vec();
+
+    let state_map = [(
+        "a".into(),
+        IntegrationState {
+            verifier: NoVerifier.into(),
+            output: Arc::new(Box::new(a_output)),
+            transformation: None,
+        },
+    )]
+    .into_iter()
+    .collect();
+    let state = InternalState::new(state_map, tx);
+    let app = router().with_state(state);
+
+    let response = app
+        .oneshot(
+            Request::builder()
+                .uri("/webhook/a")
+                .method("POST")
+                .header("content-type", "text/plain")
+                .body(payload_bytes.into())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(response.status(), StatusCode::BAD_REQUEST);
 }
