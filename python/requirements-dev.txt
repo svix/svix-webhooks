@@ -7,9 +7,7 @@
 anyio==3.5.0
     # via httpcore
 attrs==21.4.0
-    # via
-    #   openapi-python-client
-    #   pytest
+    # via openapi-python-client
 autoflake==1.4
     # via
     #   -r requirements.in/development.txt
@@ -29,6 +27,8 @@ click==8.0.1
     #   black
     #   pip-tools
     #   typer
+exceptiongroup==1.1.1
+    # via pytest
 flake8==3.9.2
     # via
     #   -r requirements.in/development.txt
@@ -85,8 +85,6 @@ platformdirs==3.5.1
     # via black
 pluggy==0.13.1
     # via pytest
-py==1.10.0
-    # via pytest
 pycodestyle==2.7.0
     # via
     #   flake8
@@ -99,7 +97,7 @@ pyflakes==2.3.1
     #   flake8
 pyproject-hooks==1.0.0
     # via build
-pytest==6.2.4
+pytest==7.3.1
     # via -r requirements.in/development.txt
 python-dateutil==2.8.2
     # via openapi-python-client
@@ -118,14 +116,13 @@ sniffio==1.2.0
     #   anyio
     #   httpcore
     #   httpx
-toml==0.10.2
-    # via pytest
 tomli==2.0.0
     # via
     #   black
     #   build
     #   mypy
     #   pyproject-hooks
+    #   pytest
 typer==0.7.0
     # via openapi-python-client
 typing-extensions==3.10.0.0
