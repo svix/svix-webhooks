@@ -3,7 +3,7 @@ use clap::Parser;
 use lazy_static::lazy_static;
 use opentelemetry::runtime::Tokio;
 use opentelemetry_otlp::WithExportConfig;
-use std::io::Error;
+use std::io::{Error, ErrorKind, Result};
 use std::path::PathBuf;
 use std::time::Duration;
 use svix_bridge_types::{SenderInput, TransformerJob};
@@ -28,7 +28,7 @@ fn get_svc_identifiers(cfg: &Config) -> opentelemetry::sdk::Resource {
             cfg.opentelemetry
                 .as_ref()
                 .and_then(|x| x.service_name.as_deref())
-                .unwrap_or("svix-webhook-bridge")
+                .unwrap_or("svix-bridge")
                 .to_owned(),
         ),
         opentelemetry::KeyValue::new("instance_id", INSTANCE_ID.to_owned()),
@@ -47,12 +47,7 @@ fn setup_tracing(cfg: &Config) {
         std::env::set_var("RUST_LOG", var.join(","));
     }
 
-    let otel_cfg = match &cfg.opentelemetry {
-        Some(cfg) => cfg,
-        None => return,
-    };
-
-    let otel_layer = {
+    let otel_layer = cfg.opentelemetry.as_ref().map(|otel_cfg| {
         // Configure the OpenTelemetry tracing layer
         opentelemetry::global::set_text_map_propagator(
             opentelemetry::sdk::propagation::TraceContextPropagator::new(),
@@ -79,7 +74,7 @@ fn setup_tracing(cfg: &Config) {
             .unwrap();
 
         tracing_opentelemetry::layer().with_tracer(tracer)
-    };
+    });
 
     // Then initialize logging with an additional layer printing to stdout. This additional layer is
     // either formatted normally or in JSON format
@@ -110,7 +105,7 @@ fn setup_tracing(cfg: &Config) {
     };
 }
 
-async fn supervise(inputs: Vec<Box<dyn SenderInput>>) -> std::io::Result<()> {
+async fn supervise_senders(inputs: Vec<Box<dyn SenderInput>>) -> Result<()> {
     let mut set = tokio::task::JoinSet::new();
     for input in inputs {
         set.spawn(async move {
@@ -157,7 +152,7 @@ pub struct Args {
 }
 
 #[tokio::main]
-async fn main() -> std::io::Result<()> {
+async fn main() -> Result<()> {
     let args = Args::parse();
 
     let config = args.cfg.unwrap_or_else(|| {
@@ -167,17 +162,9 @@ async fn main() -> std::io::Result<()> {
     });
     let cfg: Config = serde_yaml::from_str(&std::fs::read_to_string(&config).map_err(|e| {
         let p = config.into_os_string().into_string().expect("config path");
-        std::io::Error::new(
-            std::io::ErrorKind::Other,
-            format!("Failed to read {p}: {e}"),
-        )
+        Error::new(ErrorKind::Other, format!("Failed to read {p}: {e}"))
     })?)
-    .map_err(|e| {
-        std::io::Error::new(
-            std::io::ErrorKind::Other,
-            format!("Failed to parse config: {}", e),
-        )
-    })?;
+    .map_err(|e| Error::new(ErrorKind::Other, format!("Failed to parse config: {}", e)))?;
     setup_tracing(&cfg);
 
     tracing::info!("starting");
@@ -218,19 +205,14 @@ async fn main() -> std::io::Result<()> {
 
     let mut senders = Vec::with_capacity(cfg.senders.len());
     for sc in cfg.senders {
-        let mut sender: Box<dyn SenderInput> = sc.try_into().map_err(|e| {
-            Error::new(
-                std::io::ErrorKind::Other,
-                format!("Failed to configure plugin: {}", e),
-            )
-        })?;
+        let mut sender: Box<dyn SenderInput> = sc.into();
         sender.set_transformer(Some(xform_tx.clone()));
         senders.push(sender);
     }
     if senders.is_empty() {
         tracing::warn!("No senders configured.")
     }
-    let senders_fut = supervise(senders);
+    let senders_fut = supervise_senders(senders);
 
     if cfg.receivers.is_empty() {
         tracing::warn!("No receivers configured.")

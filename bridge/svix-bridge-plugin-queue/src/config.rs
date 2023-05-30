@@ -18,11 +18,9 @@ pub struct QueueConsumerConfig {
     pub output: SenderOutputOpts,
 }
 
-impl TryInto<Box<dyn SenderInput>> for QueueConsumerConfig {
-    type Error = &'static str;
-
-    fn try_into(self) -> Result<Box<dyn SenderInput>, Self::Error> {
-        Ok(match self.input {
+impl QueueConsumerConfig {
+    pub fn into_sender_input(self) -> Box<dyn SenderInput> {
+        match self.input {
             SenderInputOpts::GCPPubSub(input) => Box::new(GCPPubSubConsumerPlugin::new(
                 self.name,
                 input,
@@ -47,7 +45,7 @@ impl TryInto<Box<dyn SenderInput>> for QueueConsumerConfig {
                 self.transformation,
                 self.output,
             )),
-        })
+        }
     }
 }
 

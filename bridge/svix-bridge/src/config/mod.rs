@@ -81,18 +81,16 @@ pub enum SenderConfig {
     QueueConsumer(QueueConsumerConfig),
 }
 
-impl TryInto<Box<dyn SenderInput>> for SenderConfig {
-    type Error = &'static str;
-
-    fn try_into(self) -> Result<Box<dyn SenderInput>, Self::Error> {
-        match self {
+impl From<SenderConfig> for Box<dyn SenderInput> {
+    fn from(value: SenderConfig) -> Self {
+        match value {
             #[cfg(any(
                 feature = "gcp-pubsub",
                 feature = "rabbitmq",
                 feature = "redis",
                 feature = "sqs"
             ))]
-            SenderConfig::QueueConsumer(backend) => backend.try_into(),
+            SenderConfig::QueueConsumer(backend) => backend.into_sender_input(),
         }
     }
 }
