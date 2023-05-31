@@ -1,7 +1,7 @@
 # Changelog
 
 ## Next
-* 
+* Libs/Go: add missing `endpoint_id` option to list attempts by msg.
 
 ## Version 0.85.1
 * Libs: update OpenAPI spec

@@ -34,6 +34,7 @@ type MessageAttemptListOptions struct {
 	After           *time.Time
 	StatusCodeClass *StatusCodeClass
 	Channel         *string
+	EndpointId      *string
 }
 
 // Deprecated: use `ListByMsg` or `ListByEndpoint` instead
@@ -67,6 +68,9 @@ func (m *MessageAttempt) ListByMsg(ctx context.Context, appId string, msgId stri
 		}
 		if options.Channel != nil {
 			req = req.Channel(*options.Channel)
+		}
+		if options.EndpointId != nil {
+			req = req.EndpointId(*options.EndpointId)
 		}
 	}
 	out, res, err := req.Execute()
