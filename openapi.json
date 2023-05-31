@@ -326,7 +326,8 @@
                 "enum": [
                     "endpoint.replay",
                     "endpoint.recover",
-                    "application.stats"
+                    "application.stats",
+                    "message.broadcast"
                 ],
                 "type": "string"
             },
@@ -2419,6 +2420,83 @@
                     "Scheduled",
                     "Manual"
                 ]
+            },
+            "MessageBroadcastIn": {
+                "properties": {
+                    "channels": {
+                        "description": "List of free-form identifiers that endpoints can filter by",
+                        "example": [
+                            "project_123",
+                            "group_2"
+                        ],
+                        "items": {
+                            "example": "project_1337",
+                            "maxLength": 128,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "maxItems": 5,
+                        "minItems": 1,
+                        "nullable": true,
+                        "type": "array",
+                        "uniqueItems": true
+                    },
+                    "eventId": {
+                        "description": "Optional unique identifier for the message",
+                        "example": "unique-msg-identifier",
+                        "maxLength": 256,
+                        "minLength": 1,
+                        "nullable": true,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "type": "string"
+                    },
+                    "eventType": {
+                        "description": "The event type's name",
+                        "example": "user.signup",
+                        "maxLength": 256,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "type": "string"
+                    },
+                    "payload": {
+                        "example": {
+                            "email": "test@example.com",
+                            "username": "test_user"
+                        },
+                        "type": "object"
+                    },
+                    "payloadRetentionPeriod": {
+                        "default": 90,
+                        "example": 90,
+                        "format": "int64",
+                        "maximum": 90,
+                        "minimum": 5,
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "eventType",
+                    "payload"
+                ],
+                "type": "object"
+            },
+            "MessageBroadcastOut": {
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/BackgroundTaskStatus"
+                    },
+                    "task": {
+                        "$ref": "#/components/schemas/BackgroundTaskType"
+                    }
+                },
+                "required": [
+                    "id",
+                    "status",
+                    "task"
+                ],
+                "type": "object"
             },
             "MessageEndpointOut": {
                 "properties": {
@@ -6414,6 +6492,15 @@
                         "style": "form"
                     },
                     {
+                        "in": "query",
+                        "name": "with_content",
+                        "schema": {
+                            "default": false,
+                            "type": "boolean"
+                        },
+                        "style": "form"
+                    },
+                    {
                         "description": "The app's ID or UID",
                         "in": "path",
                         "name": "app_id",
@@ -6586,6 +6673,144 @@
                         "lang": "Shell",
                         "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
+                ]
+            }
+        },
+        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg/test-attempt/": {
+            "post": {
+                "description": "Creates and sends a message to the specified endpoint. The message attempt and response from the endpoint is returned.\nFIXME: use MessageIn for expediency, even though the `application` parameter is unused. Since this endpoint isn't publicly documented anyway, it should be fine",
+                "operationId": "create_message_attempt_for_endpoint",
+                "parameters": [
+                    {
+                        "description": "The app's ID or UID",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The app's ID or UID",
+                            "example": "unique-app-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The ep's ID or UID",
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The ep's ID or UID",
+                            "example": "unique-ep-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MessageIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MessageAttemptOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Create Message Attempt For Endpoint",
+                "tags": [
+                    "Message"
                 ]
             }
         },
@@ -9669,6 +9894,15 @@
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "in": "query",
+                        "name": "with_content",
+                        "schema": {
+                            "default": false,
+                            "type": "boolean"
                         },
                         "style": "form"
                     },
@@ -14993,6 +15227,114 @@
                 ]
             }
         },
+        "/api/v1/msg/broadcast/": {
+            "post": {
+                "description": "Creates a background task to send the same message to each application in your organization",
+                "operationId": "create_broadcast_message",
+                "parameters": [
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MessageBroadcastIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "202": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MessageBroadcastOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Create Broadcast Message",
+                "tags": [
+                    "Broadcast"
+                ]
+            }
+        },
         "/api/v1/stats/app/{app_id}/attempt/": {
             "get": {
                 "description": "Returns application-level statistics on message attempts",
@@ -15525,6 +15867,10 @@
         {
             "description": "The webhooks the Svix service sends to notify you of events.",
             "name": "Webhooks"
+        },
+        {
+            "description": "The background tasks that have been executed for your environment.",
+            "name": "Background Tasks"
         }
     ],
     "x-tagGroups": [
@@ -15532,7 +15878,8 @@
             "name": "General",
             "tags": [
                 "Application",
-                "Event Type"
+                "Event Type",
+                "Background Tasks"
             ]
         },
         {

@@ -1,6 +1,7 @@
 # Changelog
 
 ## Next
+* Libs: update OpenAPI spec
 * Libs/Go: add missing `endpoint_id` option to list attempts by msg.
 * Libs/JavaScript: add missing `withContent` field to `MessageListOptions`.
 
