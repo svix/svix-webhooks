@@ -199,6 +199,7 @@ export interface MessageListOptions extends ListOptions {
   before?: Date;
   after?: Date;
   channel?: string;
+  withContent?: boolean;
 }
 
 export interface MessageAttemptListOptions extends ListOptions {
