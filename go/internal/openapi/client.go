@@ -58,6 +58,8 @@ type APIClient struct {
 
 	BackgroundTasksApi *BackgroundTasksApiService
 
+	BroadcastApi *BroadcastApiService
+
 	EndpointApi *EndpointApiService
 
 	EnvironmentApi *EnvironmentApiService
@@ -96,6 +98,7 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.ApplicationApi = (*ApplicationApiService)(&c.common)
 	c.AuthenticationApi = (*AuthenticationApiService)(&c.common)
 	c.BackgroundTasksApi = (*BackgroundTasksApiService)(&c.common)
+	c.BroadcastApi = (*BroadcastApiService)(&c.common)
 	c.EndpointApi = (*EndpointApiService)(&c.common)
 	c.EnvironmentApi = (*EnvironmentApiService)(&c.common)
 	c.EnvironmentSettingsApi = (*EnvironmentSettingsApiService)(&c.common)
