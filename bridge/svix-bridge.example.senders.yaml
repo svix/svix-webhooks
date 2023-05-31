@@ -1,0 +1,135 @@
+# Svix Webhook Bridge Example Configuration
+
+# Set the log level for the service. Supported: error, info, warn, debug, trace. Default: info
+#log_level: "debug"
+
+# The log format that all output will follow. Supported: default, json
+#log_format: "json"
+
+# Optional: configures an OTEL exporter forwarding spans to the specified collector
+opentelemetry:
+  address: "http://localhost:1234"
+  sample_ratio: 0.5
+  # Optional: default "svix-bridge"
+  service_name: "my-bridge"
+
+
+# The host/port to bind to for incoming HTTP requests.
+# Optional: default "0.0.0.0:5000"
+# http_listen_address: "0.0.0.0:5000"
+
+
+# Senders consume JSON from their input, optionally transform, then forward to Svix.
+# Currently supported inputs are various message queue consumers while the sole
+# output is "svix" (which does a Create Message API request)
+senders:
+  # GCP Pub/Sub Consumer
+  - name: "gcp-example"
+    input:
+      type: "gcp-pubsub"
+      subscription_id: "my-subscription"
+      # Optional - will fallback to looking at env vars when left unset.
+      credentials_file: "/path/to/credentials.json"
+    # Optional - when unset, messages from the queue will be sent to Svix as-is.
+    transformation: |
+      function handler(input) {
+        return {
+          app_id: input.key,
+          message: {
+            eventType: input.event_type,
+            payload: input.data
+          }
+        };
+      }
+    output:
+      type: "svix"
+      # Required (the Svix token to use when creating messages with this consumer)
+      token: "XYZ"
+
+  # RabbitMQ Consumer
+  - name: "rabbitmq-example"
+    input:
+      type: "rabbitmq"
+      # Required
+      uri: "amqp://guest:guest@localhost:5672/%2f"
+      # Required
+      queue_name: "my-queue"
+      # Optional (default: unset, managed by rabbitmq)
+      consumer_tag: "my-consumer-001"
+      # Optional: default true
+      requeue_on_nack: false
+    # Optional - when unset, messages from the queue will be sent to Svix as-is.
+    transformation: |
+      function handler(input) {
+        return {
+          app_id: input.key,
+          message: {
+            eventType: input.event_type,
+            payload: input.data
+          }
+        };
+      }
+    output:
+      type: "svix"
+      # Required (the Svix token to use when creating messages with this consumer)
+      token: "XYZ"
+
+  # Redis Consumer
+  - name: "redis-example"
+    input:
+      type: "redis"
+      # Required
+      dsn: "redis://localhost:6379/"
+      # Required
+      queue_key: "my_queue"
+      # Required
+      consumer_name: "my_consumer"
+      # Required
+      consumer_group: "my_group"
+      # Required
+      max_connections: 4
+      # Optional: default true
+      reinsert_on_nack: true
+    # Optional - when unset, messages from the queue will be sent to Svix as-is.
+    transformation: |
+      function handler(input) {
+        return {
+          app_id: input.key,
+          message: {
+            eventType: input.event_type,
+            payload: input.data
+          }
+        };
+      }
+    output:
+      type: "svix"
+      # Required (the Svix token to use when creating messages with this consumer)
+      token: "XYZ"
+
+  # SQS Consumer
+  # Also remember to set your AWS credentials in env vars to use this:
+  # - `AWS_DEFAULT_REGION`
+  # - `AWS_ACCESS_KEY_ID`
+  # - `AWS_SECRET_ACCESS_KEY`
+  - name: "sqs-example"
+    input:
+      type: "sqs"
+      # Required
+      queue_dsn: "http://localhost:19324/000000000000/local"
+      # Optional (default: false)
+      override_endpoint: true
+    # Optional - when unset, messages from the queue will be sent to Svix as-is.
+    transformation: |
+      function handler(input) {
+        return {
+          app_id: input.key,
+          message: {
+            eventType: input.event_type,
+            payload: input.data
+          }
+        };
+      }
+    output:
+      type: "svix"
+      # Required (the Svix token to use when creating messages with this consumer)
+      token: "XYZ"
