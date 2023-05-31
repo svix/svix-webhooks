@@ -127,7 +127,9 @@ namespace Svix
                     options?.Channel,
                     options?.Before,
                     options?.After,
-                    options?.EventTypes);
+                    options?.WithContent,
+                    options?.EventTypes
+                    );
 
                 return lResponse?.Data;
             }
@@ -153,6 +155,7 @@ namespace Svix
                     options?.Channel,
                     options?.Before,
                     options?.After,
+                    options?.WithContent,
                     options?.EventTypes,
                     cancellationToken);
 
