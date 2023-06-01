@@ -1,9 +1,18 @@
 # Changelog
 
 ## Next
+*
+
+## Version 1.4.12
+* Sync OSS package version with our internal version.
+* Server: support comma separated array query params
+* Bridge: initial release
 * Libs: update OpenAPI spec
+* Libs: add support for "Background Task" endpoints
+* Libs: add support for since/until to endpoint stats
 * Libs/Go: add missing `endpoint_id` option to list attempts by msg.
 * Libs/JavaScript: add missing `withContent` field to `MessageListOptions`.
+* Libs/Rust: fix typo in error handling message
 
 ## Version 0.85.1
 * Libs: update OpenAPI spec
