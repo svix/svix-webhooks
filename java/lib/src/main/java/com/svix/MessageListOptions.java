@@ -8,6 +8,7 @@ public class MessageListOptions extends ListOptions {
 	private OffsetDateTime before;
 	private OffsetDateTime after;
 	private String channel;
+	private Boolean withContent;
 
 	public MessageListOptions eventTypes(final List<String> eventTypes) {
 		this.eventTypes = eventTypes;
@@ -59,5 +60,18 @@ public class MessageListOptions extends ListOptions {
 
 	public OffsetDateTime getAfter() {
 		return after;
+	}
+
+	public Boolean getWithContent() {
+		return withContent;
+	}
+
+	public void setWithContent(final Boolean withContent) {
+		this.withContent = withContent;
+	}
+
+	public MessageListOptions withContent(final Boolean withContent) {
+		this.withContent = withContent;
+		return this;
 	}
 }

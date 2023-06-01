@@ -14,6 +14,8 @@ public class MessageAttemptListOptions extends ListOptions {
 	private OffsetDateTime after;
 	private StatusCodeClass statusCodeClass;
 	private String channel;
+	private Boolean withContent;
+	private String endpointId;
 
 	public MessageAttemptListOptions() {
         super();
@@ -95,5 +97,31 @@ public class MessageAttemptListOptions extends ListOptions {
 
 	public StatusCodeClass getStatusCodeClass() {
 		return statusCodeClass;
+	}
+
+	public Boolean getWithContent() {
+		return withContent;
+	}
+
+	public void setWithContent(final Boolean withContent) {
+		this.withContent = withContent;
+	}
+
+	public MessageAttemptListOptions withContent(final Boolean withContent) {
+		this.withContent = withContent;
+		return this;
+	}
+
+	public String getEndpointId() {
+		return endpointId;
+	}
+
+	public void setEndpointId(final String endpointId) {
+		this.endpointId = endpointId;
+	}
+
+	public MessageAttemptListOptions endpointId(final String endpointId) {
+		this.endpointId = endpointId;
+		return this;
 	}
 }
