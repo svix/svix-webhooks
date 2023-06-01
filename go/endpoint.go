@@ -192,7 +192,13 @@ func (e *Endpoint) GetStats(ctx context.Context, appId string, endpointId string
 }
 
 func (e *Endpoint) GetStatsWithOptions(ctx context.Context, appId string, endpointId string, options EndpointStatsOptions) (*EndpointStats, error) {
-	req := e.api.EndpointApi.V1EndpointGetStats(ctx, appId, endpointId, options.Since, options.Until)
+	req := e.api.EndpointApi.V1EndpointGetStats(ctx, appId, endpointId)
+	if options.Since != nil {
+		req = req.Since(*options.Since)
+	}
+	if options.Until != nil {
+		req = req.Until(*options.Until)
+	}
 	out, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)

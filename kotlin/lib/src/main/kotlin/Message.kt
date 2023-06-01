@@ -25,6 +25,7 @@ class Message internal constructor(token: String, options: SvixOptions) {
                 options.channel,
                 options.before,
                 options.after,
+                options.withContent,
                 HashSet(options.eventTypes)
             )
         } catch (e: Exception) {

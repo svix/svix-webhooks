@@ -111,6 +111,7 @@ namespace Svix
                     (Svix.Model.MessageStatus?)options?.Status,
                     options?.Before,
                     options?.After,
+                    options?.WithContent,
                     cancellationToken);
 
                 return lResults?.Data;

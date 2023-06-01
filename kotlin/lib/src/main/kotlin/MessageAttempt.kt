@@ -36,7 +36,7 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
                 options.messageStatus,
                 options.statusCodeClass,
                 options.channel,
-                null,
+                options.endpointId,
                 options.before,
                 options.after,
                 HashSet(options.eventTypes)
@@ -100,7 +100,8 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
                 options.channel,
                 options.messageStatus,
                 options.before,
-                options.after
+                options.after,
+                options.withContent
             )
         } catch (e: Exception) {
             throw ApiException.wrap(e)

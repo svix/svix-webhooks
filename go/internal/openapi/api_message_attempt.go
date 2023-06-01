@@ -781,6 +781,7 @@ type ApiV1MessageAttemptListAttemptedMessagesRequest struct {
 	status *MessageStatus
 	before *time.Time
 	after *time.Time
+	withContent *bool
 }
 
 func (r ApiV1MessageAttemptListAttemptedMessagesRequest) Limit(limit int32) ApiV1MessageAttemptListAttemptedMessagesRequest {
@@ -805,6 +806,10 @@ func (r ApiV1MessageAttemptListAttemptedMessagesRequest) Before(before time.Time
 }
 func (r ApiV1MessageAttemptListAttemptedMessagesRequest) After(after time.Time) ApiV1MessageAttemptListAttemptedMessagesRequest {
 	r.after = &after
+	return r
+}
+func (r ApiV1MessageAttemptListAttemptedMessagesRequest) WithContent(withContent bool) ApiV1MessageAttemptListAttemptedMessagesRequest {
+	r.withContent = &withContent
 	return r
 }
 
@@ -887,6 +892,9 @@ func (a *MessageAttemptApiService) V1MessageAttemptListAttemptedMessagesExecute(
 	}
 	if r.after != nil {
 		localVarQueryParams.Add("after", parameterToString(*r.after, ""))
+	}
+	if r.withContent != nil {
+		localVarQueryParams.Add("with_content", parameterToString(*r.withContent, ""))
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
