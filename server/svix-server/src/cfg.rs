@@ -436,7 +436,7 @@ mod tests {
         // NOTE: Does not use `figment::Jail` like the above because set env vars will leak into
         // other tests overwriting real configurations
         let mut cfg = load().unwrap();
-        let mut cfg = Arc::make_mut(&mut cfg);
+        let cfg = Arc::make_mut(&mut cfg);
 
         // Override all relevant values
         cfg.queue_type = QueueType::Redis;
