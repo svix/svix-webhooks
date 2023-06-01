@@ -736,6 +736,7 @@ pub struct MessageListOptions {
     /// RFC3339 date string
     pub after: Option<String>,
     pub channel: Option<String>,
+    pub with_content: Option<bool>,
 }
 
 pub struct Message<'a> {
@@ -759,6 +760,7 @@ impl<'a> Message<'a> {
             before,
             after,
             channel,
+            with_content,
         } = options.unwrap_or_default();
         Ok(message_api::v1_message_list(
             self.cfg,
@@ -770,6 +772,7 @@ impl<'a> Message<'a> {
                 before,
                 after,
                 channel,
+                with_content,
             },
         )
         .await?)
@@ -828,6 +831,8 @@ pub struct MessageAttemptListOptions {
     pub channel: Option<String>,
     pub status: Option<MessageStatus>,
     pub status_code_class: Option<StatusCodeClass>,
+    pub with_content: Option<bool>,
+    pub endpoint_id: Option<String>,
 }
 
 pub struct MessageAttempt<'a> {
@@ -854,6 +859,8 @@ impl<'a> MessageAttempt<'a> {
             channel,
             status,
             status_code_class,
+            endpoint_id,
+            with_content: _,
         } = options.unwrap_or_default();
         Ok(message_attempt_api::v1_message_attempt_list_by_msg(
             self.cfg,
@@ -868,7 +875,7 @@ impl<'a> MessageAttempt<'a> {
                 channel,
                 status,
                 status_code_class,
-                endpoint_id: None,
+                endpoint_id,
             },
         )
         .await?)
@@ -889,6 +896,8 @@ impl<'a> MessageAttempt<'a> {
             channel,
             status,
             status_code_class,
+            endpoint_id: _,
+            with_content: _,
         } = options.unwrap_or_default();
         Ok(message_attempt_api::v1_message_attempt_list_by_endpoint(
             self.cfg,
@@ -923,6 +932,8 @@ impl<'a> MessageAttempt<'a> {
             channel,
             status,
             status_code_class: _,
+            with_content,
+            endpoint_id: _,
         } = options.unwrap_or_default();
         Ok(
             message_attempt_api::v1_message_attempt_list_attempted_messages(
@@ -936,6 +947,7 @@ impl<'a> MessageAttempt<'a> {
                     after,
                     channel,
                     status,
+                    with_content,
                 },
             )
             .await?,
@@ -979,6 +991,8 @@ impl<'a> MessageAttempt<'a> {
             channel,
             status,
             status_code_class: _,
+            endpoint_id: _,
+            with_content: _,
         } = options.unwrap_or_default();
         Ok(
             message_attempt_api::v1_message_attempt_list_by_endpoint_deprecated(
