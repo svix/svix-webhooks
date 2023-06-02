@@ -1,4 +1,4 @@
-name: Webhook Bridge CI
+name: Bridge CI
 
 on:
   push:
