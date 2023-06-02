@@ -1,4 +1,4 @@
-# Svix Webhook Bridge Example Configuration
+# Svix Bridge Example Configuration
 
 # Set the log level for the service. Supported: error, info, warn, debug, trace. Default: info
 #log_level: "debug"

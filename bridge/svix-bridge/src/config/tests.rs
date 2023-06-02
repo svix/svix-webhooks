@@ -5,7 +5,7 @@ use crate::config::{LogFormat, LogLevel, SenderConfig};
 /// configuration options as possible to ensure they parse correctly.
 // FIXME: today, largely based on the examples. Should instead focus on coverage.
 const OMNIBUS: &str = r#"
-# Svix Webhook Bridge Example Configuration
+# Svix Bridge Example Configuration
 
 # Set the log level for the service. Supported: error, info, warn, debug, trace. Default: info
 #log_level: "debug"
