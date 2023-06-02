@@ -6,7 +6,7 @@
 </h1>
 
 ![GitHub tag](https://img.shields.io/github/tag/svix/svix-webhooks.svg)
-[![Build Status](https://github.com/svix/svix-webhooks/workflows/Bridge%20CI/badge.svg)](https://github.com/svix/svix-webhooks/actions)
+[![Build Status](https://github.com/svix/svix-webhooks/workflows/Webhook%20Bridge%20CI/badge.svg)](https://github.com/svix/svix-webhooks/actions)
 [![Bridge Security](https://github.com/svix/svix-webhooks/actions/workflows/bridge-security.yml/badge.svg)](https://github.com/svix/svix-webhooks/actions/workflows/bridge-security.yml)
 [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
 [![Join our slack](https://img.shields.io/badge/Slack-join%20the%20community-blue?logo=slack&style=social)](https://www.svix.com/slack/)
