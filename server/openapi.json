@@ -169,6 +169,25 @@
                 ],
                 "type": "object"
             },
+            "Duration": {
+                "properties": {
+                    "nanos": {
+                        "format": "uint32",
+                        "minimum": 0,
+                        "type": "integer"
+                    },
+                    "secs": {
+                        "format": "uint64",
+                        "minimum": 0,
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "nanos",
+                    "secs"
+                ],
+                "type": "object"
+            },
             "EndpointCreatedEvent": {
                 "description": "Sent when an endpoint is created.",
                 "properties": {
@@ -1956,6 +1975,21 @@
                 "required": [
                     "since"
                 ],
+                "type": "object"
+            },
+            "RetrySchedule": {
+                "items": {
+                    "$ref": "#/components/schemas/Duration"
+                },
+                "type": "array"
+            },
+            "RetryScheduleInOut": {
+                "properties": {
+                    "retrySchedule": {
+                        "$ref": "#/components/schemas/RetrySchedule",
+                        "nullable": true
+                    }
+                },
                 "type": "object"
             },
             "StatusCodeClass": {
@@ -7003,6 +7037,52 @@
                     }
                 },
                 "summary": "Update Event Type",
+                "tags": [
+                    "Event Type"
+                ]
+            }
+        },
+        "/api/v1/event-type/{event_type_name}/retry-schedule/": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RetryScheduleInOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "Event Type"
+                ]
+            },
+            "put": {
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RetryScheduleInOut"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RetryScheduleInOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
                 "tags": [
                     "Event Type"
                 ]
