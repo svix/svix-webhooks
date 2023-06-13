@@ -5,6 +5,7 @@ pub mod application;
 pub mod attempt;
 pub mod auth;
 pub mod endpoint;
+pub mod environment_settings;
 pub mod event_type;
 pub mod health;
 pub mod message;

@@ -149,6 +149,81 @@
                 },
                 "type": "object"
             },
+            "BorderRadiusConfig": {
+                "properties": {
+                    "button": {
+                        "$ref": "#/components/schemas/BorderRadiusEnum",
+                        "nullable": true
+                    },
+                    "card": {
+                        "$ref": "#/components/schemas/BorderRadiusEnum",
+                        "nullable": true
+                    },
+                    "input": {
+                        "$ref": "#/components/schemas/BorderRadiusEnum",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "BorderRadiusEnum": {
+                "enum": [
+                    "none",
+                    "lg",
+                    "md",
+                    "sm",
+                    "full"
+                ],
+                "type": "string"
+            },
+            "CustomColorPalette": {
+                "properties": {
+                    "backgroundHover": {
+                        "format": "color",
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "backgroundPrimary": {
+                        "format": "color",
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "backgroundSecondary": {
+                        "format": "color",
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "interactiveAccent": {
+                        "format": "color",
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "textDanger": {
+                        "format": "color",
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "textPrimary": {
+                        "format": "color",
+                        "nullable": true,
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "CustomThemeOverride": {
+                "properties": {
+                    "borderRadius": {
+                        "$ref": "#/components/schemas/BorderRadiusConfig",
+                        "nullable": true
+                    },
+                    "fontSize": {
+                        "$ref": "#/components/schemas/FontSizeConfig",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
             "DashboardAccessOut": {
                 "properties": {
                     "token": {
@@ -969,6 +1044,53 @@
                 ],
                 "type": "object"
             },
+            "EnvironmentSettingsOut": {
+                "properties": {
+                    "colorPaletteDark": {
+                        "$ref": "#/components/schemas/CustomColorPalette",
+                        "nullable": true
+                    },
+                    "colorPaletteLight": {
+                        "$ref": "#/components/schemas/CustomColorPalette",
+                        "nullable": true
+                    },
+                    "customColor": {
+                        "format": "color",
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "customFontFamily": {
+                        "example": "Open Sans",
+                        "nullable": true,
+                        "pattern": "^[a-zA-Z0-9\\-_ ]+$",
+                        "type": "string"
+                    },
+                    "customLogoUrl": {
+                        "format": "uri",
+                        "maxLength": 65536,
+                        "minLength": 1,
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "customThemeOverride": {
+                        "$ref": "#/components/schemas/CustomThemeOverride",
+                        "nullable": true
+                    },
+                    "enableChannels": {
+                        "default": false,
+                        "type": "boolean"
+                    },
+                    "enableIntegrationManagement": {
+                        "default": false,
+                        "type": "boolean"
+                    },
+                    "enableTransformations": {
+                        "default": false,
+                        "type": "boolean"
+                    }
+                },
+                "type": "object"
+            },
             "EventTypeIn": {
                 "properties": {
                     "archived": {
@@ -1194,6 +1316,16 @@
                 "required": [
                     "description"
                 ],
+                "type": "object"
+            },
+            "FontSizeConfig": {
+                "properties": {
+                    "base": {
+                        "format": "int",
+                        "nullable": true,
+                        "type": "integer"
+                    }
+                },
                 "type": "object"
             },
             "HTTPValidationError": {
