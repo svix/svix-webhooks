@@ -3,7 +3,12 @@
 //! from the endpoint is valid in the process.
 
 use reqwest::StatusCode;
+use serde::Deserialize;
+use std::collections::HashSet;
 
+use svix_server::v1::endpoints::auth::{
+    AppPortalAccessIn, DashboardAccessOut, OneTimeTokenIn, OneTimeTokenOut,
+};
 use svix_server::{core::types::ApplicationId, v1::endpoints::application::ApplicationOut};
 
 mod utils;
@@ -96,6 +101,78 @@ async fn test_dashboard_access_without_body() {
             &format!("api/v1/auth/dashboard-access/{app_id}/"),
             (),
             StatusCode::OK,
+        )
+        .await
+        .unwrap();
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+#[allow(dead_code)]
+struct OneTimeTokenInner {
+    app_id: String,
+    one_time_token: String,
+    region: String,
+}
+
+#[tokio::test]
+async fn test_app_portal_access_one_time_tokens() {
+    if let Ok("none") = std::env::var("SVIX_CACHE_TYPE").as_deref() {
+        // Noop for configurations where cache is disabled.
+        // The token exchange depends on cache!
+        return;
+    }
+
+    let (client, _jh) = start_svix_server().await;
+
+    let app_id: ApplicationId = client
+        .post::<_, ApplicationOut>(
+            "api/v1/app/",
+            application_in("TEST_APP_NAME"),
+            StatusCode::CREATED,
+        )
+        .await
+        .unwrap()
+        .id;
+
+    let DashboardAccessOut { url, token } = client
+        .post(
+            &format!("api/v1/auth/app-portal-access/{app_id}/"),
+            AppPortalAccessIn {
+                feature_flags: HashSet::new(),
+            },
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    let url = url::Url::parse(&url).unwrap();
+    let OneTimeTokenInner { one_time_token, .. } = serde_json::from_slice(
+        &base64::decode(url.fragment().unwrap().strip_prefix("key=").unwrap()).unwrap(),
+    )
+    .unwrap();
+
+    let OneTimeTokenOut {
+        token: exchanged_token,
+    } = client
+        .post(
+            "api/v1/auth/one-time-token/",
+            OneTimeTokenIn {
+                one_time_token: one_time_token.clone(),
+            },
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(exchanged_token, token);
+
+    // Assert they can only be used once
+    let _: IgnoredResponse = client
+        .post(
+            "api/v1/auth/one-time-token/",
+            OneTimeTokenIn { one_time_token },
+            StatusCode::UNAUTHORIZED,
         )
         .await
         .unwrap();

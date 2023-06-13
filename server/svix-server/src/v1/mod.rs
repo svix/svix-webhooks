@@ -13,8 +13,14 @@ pub mod endpoints;
 pub mod utils;
 
 pub fn router() -> ApiRouter<AppState> {
-    let ret: ApiRouter<AppState> = ApiRouter::new()
+    // These routes should not have auth/permissions middleware applied.
+    // We don't currently have any layers for this, so for now we merge these in with the rest.
+    let authless: ApiRouter<AppState> = ApiRouter::new()
         .merge(endpoints::health::router())
+        .merge(endpoints::auth::authless_router(true));
+
+    let ret: ApiRouter<AppState> = ApiRouter::new()
+        .merge(authless)
         .merge(endpoints::auth::router())
         .merge(endpoints::application::router())
         .merge(endpoints::endpoint::router())

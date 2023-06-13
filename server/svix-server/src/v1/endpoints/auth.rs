@@ -8,11 +8,18 @@ use axum::{
 };
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use std::time::Duration;
 use svix_server_derive::aide_annotate;
 use validator::Validate;
 
 use crate::{
-    core::{permissions, security::generate_app_token, types::FeatureFlagSet},
+    core::{
+        cache::{string_kv_def, CacheBehavior, CacheKey, StringCacheValue},
+        permissions,
+        security::generate_app_token,
+        types::FeatureFlagSet,
+    },
+    ctx, err_generic,
     error::{HttpError, Result},
     v1::utils::{api_not_implemented, openapi_tag, ApplicationPath, ValidatedJson},
     AppState,
@@ -62,21 +69,29 @@ impl From<DashboardAccessOut> for AppPortalAccessOut {
 /// Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
 #[aide_annotate(op_id = "v1.authentication.app-portal-access")]
 async fn app_portal_access(
-    State(AppState { cfg, .. }): State<AppState>,
+    State(AppState { cfg, ref cache, .. }): State<AppState>,
     _: Path<ApplicationPath>,
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
     ValidatedJson(data): ValidatedJson<AppPortalAccessIn>,
 ) -> Result<Json<AppPortalAccessOut>> {
+    let one_time_token = generate_one_time_token()?;
+    let key = OneTimeTokenCacheKey::new(&one_time_token);
+
+    // The "exchange" endpoint will give this JWT back when requested with the one time token.
     let token = generate_app_token(
         &cfg.jwt_secret,
         app.org_id,
         app.id.clone(),
         data.feature_flags,
     )?;
-
+    ctx!(
+        cache
+            .set_string(&key, &token, Duration::from_secs(60 * 60 * 24 * 7))
+            .await
+    )?;
     let login_key = serde_json::to_vec(&serde_json::json!({
         "appId": app.id,
-        "token": token,
+        "oneTimeToken": one_time_token,
         "region": &cfg.internal.region,
     }))
     .map_err(|_| HttpError::internal_server_error(None, None))?;
@@ -125,6 +140,56 @@ fn logout_operation(op: TransformOperation) -> TransformOperation {
         .description(LOGOUT_DESCRIPTION)
 }
 
+type OneTimeTokenCacheValue = String;
+string_kv_def!(
+    OneTimeTokenCacheKey,
+    OneTimeTokenCacheValue,
+    "AUTH_ONE_TIME_TOKEN"
+);
+
+impl OneTimeTokenCacheKey {
+    pub fn new(one_time_token: &str) -> OneTimeTokenCacheKey {
+        OneTimeTokenCacheKey(format!("{}_{}", Self::PREFIX_CACHE, one_time_token))
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct OneTimeTokenIn {
+    pub one_time_token: String,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct OneTimeTokenOut {
+    pub token: String,
+}
+
+/// This is a one time token
+#[aide_annotate(op_id = "v1.authentication.exchange-one-time-token")]
+async fn exchange_one_time_token(
+    State(AppState { ref cache, .. }): State<AppState>,
+    Json(OneTimeTokenIn { one_time_token }): Json<OneTimeTokenIn>,
+) -> Result<Json<OneTimeTokenOut>> {
+    let key = OneTimeTokenCacheKey::new(&one_time_token);
+    let token = ctx!(cache.get_string(&key).await)?.ok_or_else(|| {
+        HttpError::unauthorized(
+            None,
+            Some("One time token not found. Has it already been used?".to_owned()),
+        )
+    })?;
+    ctx!(cache.delete(&key).await)?;
+
+    Ok(Json(OneTimeTokenOut { token }))
+}
+
+fn generate_one_time_token() -> std::result::Result<String, crate::error::Error> {
+    const KEY_SIZE: usize = 24;
+    let mut buf = [0u8; KEY_SIZE];
+    ctx!(getrandom::getrandom(&mut buf).map_err(|e| err_generic!("getrandom failure: {}", e)))?;
+    Ok(base64::encode_config(buf, base64::URL_SAFE_NO_PAD))
+}
+
 pub fn router() -> ApiRouter<AppState> {
     let tag = openapi_tag("Authentication");
     ApiRouter::new()
@@ -143,4 +208,13 @@ pub fn router() -> ApiRouter<AppState> {
             post_with(app_portal_access, app_portal_access_operation),
             tag,
         )
+}
+
+pub fn authless_router(hide_secret_routes: bool) -> ApiRouter<AppState> {
+    let tag = openapi_tag("Authentication");
+    ApiRouter::new().api_route_with(
+        "/auth/one-time-token/",
+        post_with(exchange_one_time_token, exchange_one_time_token_operation),
+        |op| op.hidden(hide_secret_routes).with(&tag),
+    )
 }
