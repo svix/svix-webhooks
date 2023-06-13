@@ -30,7 +30,7 @@ impl fmt::Display for Error {
         match self {
             Error::Generic(s) => s.fmt(f),
             Error::Http(e) => format!("Http error (status={}) {:?}", e.status, e.payload).fmt(f),
-            Error::Validation(e) => format!("Varidation error {:?}", e.payload).fmt(f),
+            Error::Validation(e) => format!("Validation error {:?}", e.payload).fmt(f),
         }
     }
 }

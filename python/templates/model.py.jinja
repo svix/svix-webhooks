@@ -4,7 +4,7 @@ from typing import Any, Dict
 
 {{ class_name }} = Dict[str, Any]
 {% else %}
-from typing import Any, Dict, Type, TypeVar, Tuple, Optional, BinaryIO, TextIO
+from typing import Any, Dict, Type, TypeVar, Tuple, Optional, BinaryIO, TextIO, TYPE_CHECKING
 
 {% if model.additional_properties %}
 from typing import List
@@ -22,6 +22,12 @@ from ..types import UNSET, Unset
 {{ relative }}
 {% endfor %}
 
+{% for lazy_import in model.lazy_imports %}
+{% if loop.first %}
+if TYPE_CHECKING:
+{% endif %}
+  {{ lazy_import }}
+{% endfor %}
 
 {% if model.additional_properties %}
 {% set additional_property_type = 'Any' if model.additional_properties == True else model.additional_properties.get_type_string() %}

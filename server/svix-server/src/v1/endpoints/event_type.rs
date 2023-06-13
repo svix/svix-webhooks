@@ -15,9 +15,10 @@ use crate::{
             patch_field_non_nullable, patch_field_nullable, UnrequiredField,
             UnrequiredNullableField,
         },
-        validate_no_control_characters, validate_no_control_characters_unrequired, EmptyResponse,
-        EventTypeNamePath, JsonStatus, JsonStatusUpsert, ListOrdering, ListResponse, ModelIn,
-        ModelOut, Pagination, PaginationLimit, ReversibleIterator, ValidatedJson, ValidatedQuery,
+        validate_no_control_characters, validate_no_control_characters_unrequired,
+        EventTypeNamePath, JsonStatus, JsonStatusUpsert, ListResponse, ModelIn, ModelOut,
+        NoContent, Ordering, Pagination, PaginationLimit, ReversibleIterator, ValidatedJson,
+        ValidatedQuery,
     },
     AppState,
 };
@@ -36,14 +37,31 @@ use serde::{Deserialize, Serialize};
 use svix_server_derive::{aide_annotate, ModelIn, ModelOut};
 use validator::Validate;
 
+fn example_event_archived() -> bool {
+    false
+}
+
+fn event_type_description_example() -> &'static str {
+    "A user has signed up"
+}
+
+fn event_type_versioned_schemas_example() -> serde_json::Value {
+    serde_json::json!({ "1": eventtype::schema_example() })
+}
+
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Validate, ModelIn, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EventTypeIn {
+    #[validate]
     pub name: EventTypeName,
     #[validate(custom = "validate_no_control_characters")]
+    #[schemars(example = "event_type_description_example")]
     pub description: String,
     #[serde(default, rename = "archived")]
+    #[schemars(example = "example_event_archived")]
     pub deleted: bool,
+    /// The schema for the event type for a specific version as a JSON schema.
+    #[schemars(example = "event_type_versioned_schemas_example")]
     pub schemas: Option<eventtype::Schema>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub feature_flag: Option<FeatureFlag>,
@@ -74,9 +92,13 @@ impl ModelIn for EventTypeIn {
 #[serde(rename_all = "camelCase")]
 struct EventTypeUpdate {
     #[validate(custom = "validate_no_control_characters")]
+    #[schemars(example = "event_type_description_example")]
     description: String,
     #[serde(default, rename = "archived")]
+    #[schemars(example = "example_event_archived")]
     deleted: bool,
+    /// The schema for the event type for a specific version as a JSON schema.
+    #[schemars(example = "event_type_versioned_schemas_example")]
     schemas: Option<eventtype::Schema>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     feature_flag: Option<FeatureFlag>,
@@ -144,9 +166,13 @@ impl ModelIn for EventTypePatch {
 #[serde(rename_all = "camelCase")]
 pub struct EventTypeOut {
     pub name: EventTypeName,
+    #[schemars(example = "event_type_description_example")]
     pub description: String,
     #[serde(rename = "archived")]
+    #[schemars(example = "example_event_archived", default = "example_event_archived")]
     pub deleted: bool,
+    /// The schema for the event type for a specific version as a JSON schema.
+    #[schemars(example = "event_type_versioned_schemas_example")]
     pub schemas: Option<eventtype::Schema>,
 
     pub created_at: DateTime<Utc>,
@@ -180,7 +206,7 @@ impl From<eventtype::Model> for EventTypeOut {
 }
 
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
-pub struct ListFetchOptions {
+pub struct ListFetchQueryParams {
     #[serde(default)]
     pub include_archived: bool,
     #[serde(default)]
@@ -188,11 +214,11 @@ pub struct ListFetchOptions {
 }
 
 /// Return the list of event types.
-#[aide_annotate(op_id = "list_event_types_api_v1_event_type__get")]
+#[aide_annotate(op_id = "v1.event-type.list")]
 async fn list_event_types(
     State(AppState { ref db, .. }): State<AppState>,
     ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<EventTypeName>>>,
-    fetch_options: ValidatedQuery<ListFetchOptions>,
+    fetch_options: ValidatedQuery<ListFetchQueryParams>,
     permissions::ReadAll {
         org_id,
         feature_flags,
@@ -218,7 +244,7 @@ async fn list_event_types(
         eventtype::Column::Name,
         limit,
         iterator,
-        ListOrdering::Ascending,
+        Ordering::Ascending,
     );
 
     Ok(Json(EventTypeOut::list_response(
@@ -242,7 +268,7 @@ async fn list_event_types(
 /// Unarchiving an event type will allow endpoints to filter on it and messages to be sent with it.
 /// Endpoints filtering on the event type before archival will continue to filter on it.
 /// This operation does not preserve the description and schemas.
-#[aide_annotate(op_id = "create_event_type_api_v1_event_type__post")]
+#[aide_annotate(op_id = "v1.event-type.create")]
 async fn create_event_type(
     State(AppState { ref db, .. }): State<AppState>,
     permissions::Organization { org_id }: permissions::Organization,
@@ -280,7 +306,7 @@ async fn create_event_type(
 }
 
 /// Get an event type.
-#[aide_annotate(op_id = "get_event_type_api_v1_event_type__event_type_name___get")]
+#[aide_annotate(op_id = "v1.event-type.get")]
 async fn get_event_type(
     State(AppState { ref db, .. }): State<AppState>,
     Path(EventTypeNamePath { event_type_name }): Path<EventTypeNamePath>,
@@ -300,7 +326,7 @@ async fn get_event_type(
 }
 
 /// Update an event type.
-#[aide_annotate(op_id = "update_event_type_api_v1_event_type__event_type_name___put")]
+#[aide_annotate(op_id = "v1.event-type.update")]
 async fn update_event_type(
     State(AppState { ref db, .. }): State<AppState>,
     Path(EventTypeNamePath { event_type_name }): Path<EventTypeNamePath>,
@@ -364,12 +390,12 @@ async fn patch_event_type(
 /// However, new messages can not be sent with it and endpoints can not filter on it.
 /// An event type can be unarchived with the
 /// [create operation](#operation/create_event_type_api_v1_event_type__post).
-#[aide_annotate(op_id = "delete_event_type_api_v1_event_type__event_type_name___delete")]
+#[aide_annotate(op_id = "v1.event-type.delete")]
 async fn delete_event_type(
     State(AppState { ref db, .. }): State<AppState>,
     Path(EventTypeNamePath { event_type_name }): Path<EventTypeNamePath>,
     permissions::Organization { org_id }: permissions::Organization,
-) -> Result<JsonStatus<204, EmptyResponse>> {
+) -> Result<NoContent> {
     let evtype = ctx!(
         eventtype::Entity::secure_find_by_name(org_id, event_type_name)
             .one(db)
@@ -380,7 +406,7 @@ async fn delete_event_type(
     let mut evtype: eventtype::ActiveModel = evtype.into();
     evtype.deleted = Set(true);
     ctx!(evtype.update(db).await)?;
-    Ok(JsonStatus(EmptyResponse {}))
+    Ok(NoContent)
 }
 
 const GENERATE_SCHEMA_EXAMPLE_DESCRIPTION: &str =
@@ -471,12 +497,12 @@ pub fn router() -> ApiRouter<AppState> {
 #[cfg(test)]
 mod tests {
 
-    use super::ListFetchOptions;
+    use super::ListFetchQueryParams;
     use serde_json::json;
 
     #[test]
     fn test_list_fetch_options_default() {
-        let l: ListFetchOptions = serde_json::from_value(json!({})).unwrap();
+        let l: ListFetchQueryParams = serde_json::from_value(json!({})).unwrap();
         assert!(!l.include_archived);
         assert!(!l.with_content);
     }

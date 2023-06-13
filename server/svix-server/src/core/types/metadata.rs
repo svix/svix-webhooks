@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 pub const MAX_METADATA_SIZE: usize = 4096;
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Default, JsonSchema)]
+#[schemars(transparent)]
 pub struct Metadata(HashMap<String, String>);
 
 json_wrapper!(Metadata);

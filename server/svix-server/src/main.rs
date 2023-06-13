@@ -68,6 +68,10 @@ enum Commands {
         #[clap(long)]
         yes_i_know_what_im_doing: bool,
     },
+
+    /// Generate OpenAPI JSON specification and exit
+    #[clap()]
+    GenerateOpenapi,
 }
 
 #[derive(Subcommand)]
@@ -181,6 +185,22 @@ async fn main() {
             } else {
                 println!("Please confirm you wish to wipe this organization with the `--yes-i-know-what-im-doing` flag");
             }
+
+            exit(0);
+        }
+        Some(Commands::GenerateOpenapi) => {
+            let mut openapi = svix_server::openapi::initialize_openapi();
+
+            let router = svix_server::v1::router();
+            aide::axum::ApiRouter::new()
+                .nest("/api/v1", router)
+                .finish_api(&mut openapi);
+
+            let openapi = svix_server::openapi::postprocess_spec(openapi);
+            println!(
+                "{}",
+                serde_json::to_string_pretty(&openapi).expect("Failed to serialize JSON spec")
+            );
 
             exit(0);
         }

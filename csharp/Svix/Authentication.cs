@@ -24,7 +24,7 @@ namespace Svix
         {
             try
             {
-                var lMessage = _authenticationApi.GetAppPortalAccessApiV1AuthAppPortalAccessAppIdPost(
+                var lMessage = _authenticationApi.V1AuthenticationAppPortalAccess(
                     appId,
                     appPortalAccess,
                     idempotencyKey);
@@ -47,7 +47,7 @@ namespace Svix
         {
             try
             {
-                var lMessage = await _authenticationApi.GetAppPortalAccessApiV1AuthAppPortalAccessAppIdPostAsync(
+                var lMessage = await _authenticationApi.V1AuthenticationAppPortalAccessAsync(
                     appId,
                     appPortalAccess,
                     idempotencyKey);
@@ -69,7 +69,7 @@ namespace Svix
         {
             try
             {
-                var lMessage = _authenticationApi.GetDashboardAccessApiV1AuthDashboardAccessAppIdPost(
+                var lMessage = _authenticationApi.V1AuthenticationDashboardAccess(
                     appId,
                     idempotencyKey);
 
@@ -91,7 +91,7 @@ namespace Svix
         {
             try
             {
-                var lMessage = await _authenticationApi.GetDashboardAccessApiV1AuthDashboardAccessAppIdPostAsync(
+                var lMessage = await _authenticationApi.V1AuthenticationDashboardAccessAsync(
                     appId,
                     idempotencyKey);
 
@@ -112,7 +112,7 @@ namespace Svix
         {
             try
             {
-                var lResult = _authenticationApi.LogoutApiV1AuthLogoutPostWithHttpInfo(
+                var lResult = _authenticationApi.V1AuthenticationLogoutWithHttpInfo(
                     idempotencyKey);
 
                 return lResult.StatusCode == HttpStatusCode.NoContent;
@@ -132,7 +132,7 @@ namespace Svix
         {
             try
             {
-                var lResult = await _authenticationApi.LogoutApiV1AuthLogoutPostWithHttpInfoAsync(
+                var lResult = await _authenticationApi.V1AuthenticationLogoutWithHttpInfoAsync(
                     idempotencyKey,
                     cancellationToken);
 

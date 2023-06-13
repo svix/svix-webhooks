@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
+use std::collections::HashMap;
+
 use crate::{
     core::{
         permissions,
@@ -20,8 +22,8 @@ use crate::{
         utils::{
             apply_pagination_desc, iterator_from_before_or_after, openapi_tag,
             ApplicationEndpointPath, ApplicationMsgAttemptPath, ApplicationMsgEndpointPath,
-            ApplicationMsgPath, EmptyResponse, EventTypesQuery, JsonStatus, ListResponse, ModelOut,
-            PaginationLimit, ReversibleIterator, ValidatedQuery,
+            ApplicationMsgPath, EventTypesQueryParams, ListResponse, ModelOut, NoContentWithCode,
+            PaginationDescending, PaginationLimit, ReversibleIterator, ValidatedQuery,
         },
     },
     AppState,
@@ -42,19 +44,34 @@ use sea_orm::{
     entity::prelude::*, sea_query::Expr, DatabaseConnection, IntoActiveModel, QueryOrder,
     QuerySelect,
 };
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
 
+use serde_json::value::RawValue;
 use svix_server_derive::{aide_annotate, ModelOut};
 use validator::Validate;
 
 use crate::db::models::messageattempt;
-use crate::v1::utils::Pagination;
+
+fn example_status_code() -> i16 {
+    200
+}
+
+fn example_endpoint_url() -> &'static str {
+    "https://example.com/webhook/"
+}
+
+fn example_attempt_response() -> &'static str {
+    "{}"
+}
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, ModelOut, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct MessageAttemptOut {
+    #[schemars(url, length(min = 1, max = 65_536), example = "example_endpoint_url")]
     pub url: String,
+    #[schemars(example = "example_attempt_response")]
     pub response: String,
+    #[schemars(example = "example_status_code")]
     pub response_status_code: i16,
     pub status: MessageStatus,
     pub trigger_type: MessageAttemptTriggerType,
@@ -87,9 +104,9 @@ impl From<messageattempt::Model> for MessageAttemptOut {
 
 /// A model containing information on a given message plus additional fields on the last attempt for
 /// that message.
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-pub struct AttemptedMessageOut {
+pub struct EndpointMessageOut {
     #[serde(flatten)]
     pub msg: MessageOut,
     pub status: MessageStatus,
@@ -97,18 +114,18 @@ pub struct AttemptedMessageOut {
     pub next_attempt: Option<DateTimeWithTimeZone>,
 }
 
-impl ModelOut for AttemptedMessageOut {
+impl ModelOut for EndpointMessageOut {
     fn id_copy(&self) -> String {
         self.msg.id.0.clone()
     }
 }
 
-impl AttemptedMessageOut {
+impl EndpointMessageOut {
     pub fn from_dest_and_msg(
         dest: messagedestination::Model,
         msg: message::Model,
-    ) -> AttemptedMessageOut {
-        AttemptedMessageOut {
+    ) -> EndpointMessageOut {
+        EndpointMessageOut {
             msg: msg.into(),
             status: dest.status,
             next_attempt: dest.next_attempt,
@@ -116,10 +133,28 @@ impl AttemptedMessageOut {
     }
 }
 
+// XXX: only used in tests, so OK if it's a bit hacky
+impl<'de> Deserialize<'de> for EndpointMessageOut {
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let raw_value = Box::<RawValue>::deserialize(deserializer)?;
+        let rest: HashMap<&str, &RawValue> = serde_json::from_str(raw_value.get()).unwrap();
+        Ok(Self {
+            msg: serde_json::from_str(raw_value.get()).unwrap(),
+            status: serde_json::from_str(rest.get("status").unwrap().get()).unwrap(),
+            next_attempt: rest
+                .get("next_attempt")
+                .map(|x| serde_json::from_str(x.get()).unwrap()),
+        })
+    }
+}
+
 /// Additional parameters (besides pagination) in the query string for the "List Attempted Messages"
 /// endpoint.
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
-pub struct ListAttemptedMessagesQueryParameters {
+pub struct ListAttemptedMessagesQueryParams {
     #[validate]
     channel: Option<EventChannel>,
     status: Option<MessageStatus>,
@@ -130,21 +165,19 @@ pub struct ListAttemptedMessagesQueryParameters {
 /// List messages for a particular endpoint. Additionally includes metadata about the latest message attempt.
 ///
 /// The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
-#[aide_annotate(
-    op_id = "list_attempted_messages_api_v1_app__app_id__endpoint__endpoint_id__msg__get"
-)]
+#[aide_annotate(op_id = "v1.message-attempt.list-attempted-messages")]
 async fn list_attempted_messages(
     State(AppState { ref db, .. }): State<AppState>,
-    ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<MessageId>>>,
-    ValidatedQuery(ListAttemptedMessagesQueryParameters {
+    ValidatedQuery(pagination): ValidatedQuery<PaginationDescending<ReversibleIterator<MessageId>>>,
+    ValidatedQuery(ListAttemptedMessagesQueryParams {
         channel,
         status,
         before,
         after,
-    }): ValidatedQuery<ListAttemptedMessagesQueryParameters>,
+    }): ValidatedQuery<ListAttemptedMessagesQueryParams>,
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
-) -> Result<Json<ListResponse<AttemptedMessageOut>>> {
+) -> Result<Json<ListResponse<EndpointMessageOut>>> {
     let PaginationLimit(limit) = pagination.limit;
     let endp = ctx!(
         endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endpoint_id)
@@ -200,7 +233,7 @@ async fn list_attempted_messages(
     let into = |(dest, msg): (messagedestination::Model, Option<message::Model>)| {
         let msg =
             msg.ok_or_else(|| err_database!("No associated message with messagedestination"))?;
-        Ok(AttemptedMessageOut::from_dest_and_msg(dest, msg))
+        Ok(EndpointMessageOut::from_dest_and_msg(dest, msg))
     };
 
     let out = ctx!(dests_and_msgs.all(db).await)?
@@ -208,7 +241,7 @@ async fn list_attempted_messages(
         .map(into)
         .collect::<Result<_>>()?;
 
-    Ok(Json(AttemptedMessageOut::list_response(
+    Ok(Json(EndpointMessageOut::list_response(
         out,
         limit as usize,
         is_prev,
@@ -218,7 +251,7 @@ async fn list_attempted_messages(
 /// Additional parameters (besides pagination) in the query string for the "List Attempts by
 /// Endpoint" endpoint.
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
-pub struct ListAttemptsByEndpointQueryParameters {
+pub struct ListAttemptsByEndpointQueryParams {
     status: Option<MessageStatus>,
     status_code_class: Option<StatusCodeClass>,
     #[validate]
@@ -294,20 +327,20 @@ fn list_attempts_by_endpoint_or_message_filters(
 }
 
 /// List attempts by endpoint id
-#[aide_annotate(
-    op_id = "list_attempts_by_endpoint_api_v1_app__app_id__attempt_endpoint__endpoint_id___get"
-)]
+#[aide_annotate(op_id = "v1.message-attempt.list-by-endpoint")]
 async fn list_attempts_by_endpoint(
     State(AppState { ref db, .. }): State<AppState>,
-    ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<MessageAttemptId>>>,
-    ValidatedQuery(ListAttemptsByEndpointQueryParameters {
+    ValidatedQuery(pagination): ValidatedQuery<
+        PaginationDescending<ReversibleIterator<MessageAttemptId>>,
+    >,
+    ValidatedQuery(ListAttemptsByEndpointQueryParams {
         status,
         status_code_class,
         channel,
         before,
         after,
-    }): ValidatedQuery<ListAttemptsByEndpointQueryParameters>,
-    EventTypesQuery(event_types): EventTypesQuery,
+    }): ValidatedQuery<ListAttemptsByEndpointQueryParams>,
+    EventTypesQueryParams(event_types): EventTypesQueryParams,
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<ListResponse<MessageAttemptOut>>> {
@@ -346,7 +379,7 @@ async fn list_attempts_by_endpoint(
 
 /// Flattens in a [`ListAttemptsByEndpointOrMsgQueryParameters`] and adds one extra query parameter
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
-pub struct ListAttemptsByMsgQueryParameters {
+pub struct ListAttemptsByMsgQueryParams {
     status: Option<MessageStatus>,
     status_code_class: Option<StatusCodeClass>,
     #[validate]
@@ -358,20 +391,22 @@ pub struct ListAttemptsByMsgQueryParameters {
 }
 
 /// List attempts by message id
-#[aide_annotate(op_id = "list_attempts_by_msg_api_v1_app__app_id__attempt_msg__msg_id___get")]
+#[aide_annotate(op_id = "v1.message-attempt.list-by-msg")]
 async fn list_attempts_by_msg(
     State(AppState { ref db, .. }): State<AppState>,
-    ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<MessageAttemptId>>>,
-    ValidatedQuery(ListAttemptsByMsgQueryParameters {
+    ValidatedQuery(pagination): ValidatedQuery<
+        PaginationDescending<ReversibleIterator<MessageAttemptId>>,
+    >,
+    ValidatedQuery(ListAttemptsByMsgQueryParams {
         status,
         status_code_class,
         channel,
         endpoint_id,
         before,
         after,
-    }): ValidatedQuery<ListAttemptsByMsgQueryParameters>,
+    }): ValidatedQuery<ListAttemptsByMsgQueryParams>,
     Path(ApplicationMsgPath { msg_id, .. }): Path<ApplicationMsgPath>,
-    EventTypesQuery(event_types): EventTypesQuery,
+    EventTypesQueryParams(event_types): EventTypesQueryParams,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<ListResponse<MessageAttemptOut>>> {
     let PaginationLimit(limit) = pagination.limit;
@@ -420,8 +455,8 @@ async fn list_attempts_by_msg(
     )))
 }
 
-/// A type combining information from [`messagedestination::Model`]s and [`endpoint::Model`]s to
-/// output information on attempted destinations
+// A type combining information from [`messagedestination::Model`]s and [`endpoint::Model`]s to
+// output information on attempted destinations
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct MessageEndpointOut {
@@ -450,12 +485,10 @@ impl MessageEndpointOut {
 }
 
 /// `msg_id`: Use a message id or a message `eventId`
-#[aide_annotate(
-    op_id = "list_attempted_destinations_api_v1_app__app_id__msg__msg_id__endpoint__get"
-)]
+#[aide_annotate(op_id = "v1.message-attempt.list-attempted-destinations")]
 async fn list_attempted_destinations(
     State(AppState { ref db, .. }): State<AppState>,
-    ValidatedQuery(mut pagination): ValidatedQuery<Pagination<EndpointId>>,
+    ValidatedQuery(mut pagination): ValidatedQuery<PaginationDescending<EndpointId>>,
     Path(ApplicationMsgPath { msg_id, .. }): Path<ApplicationMsgPath>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<ListResponse<MessageEndpointOut>>> {
@@ -501,12 +534,24 @@ async fn list_attempted_destinations(
 }
 
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
-pub struct ListAttemptsForEndpointQueryParameters {
+pub struct ListAttemptsForEndpointQueryParams {
     #[validate]
     pub channel: Option<EventChannel>,
     pub status: Option<MessageStatus>,
     pub before: Option<DateTime<Utc>>,
     pub after: Option<DateTime<Utc>>,
+}
+
+#[derive(Serialize, JsonSchema)]
+struct MessageAttemptEndpointOut {
+    #[serde(flatten)]
+    common_: MessageAttemptOut,
+}
+
+impl From<MessageAttemptOut> for MessageAttemptEndpointOut {
+    fn from(common_: MessageAttemptOut) -> Self {
+        Self { common_ }
+    }
 }
 
 /// DEPRECATED: please use list_attempts with endpoint_id as a query parameter instead.
@@ -516,30 +561,28 @@ pub struct ListAttemptsForEndpointQueryParameters {
 /// Returning the endpoint.
 ///
 /// The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
-#[aide_annotate(
-    op_id = "list_attempts_for_endpoint_api_v1_app__app_id__msg__msg_id__endpoint__endpoint_id__attempt__get"
-)]
+#[aide_annotate(op_id = "v1.message-attempt.list-by-endpoint-deprecated")]
 async fn list_attempts_for_endpoint(
     state: State<AppState>,
-    pagination: ValidatedQuery<Pagination<ReversibleIterator<MessageAttemptId>>>,
-    ValidatedQuery(ListAttemptsForEndpointQueryParameters {
+    pagination: ValidatedQuery<PaginationDescending<ReversibleIterator<MessageAttemptId>>>,
+    ValidatedQuery(ListAttemptsForEndpointQueryParams {
         channel,
         status,
         before,
         after,
-    }): ValidatedQuery<ListAttemptsForEndpointQueryParameters>,
-    event_types_query: EventTypesQuery,
+    }): ValidatedQuery<ListAttemptsForEndpointQueryParams>,
+    event_types_query: EventTypesQueryParams,
     Path(ApplicationMsgEndpointPath {
         app_id,
         msg_id,
         endpoint_id,
     }): Path<ApplicationMsgEndpointPath>,
     auth_app: permissions::Application,
-) -> Result<Json<ListResponse<MessageAttemptOut>>> {
+) -> Result<Json<ListResponse<MessageAttemptEndpointOut>>> {
     list_messageattempts(
         state,
         pagination,
-        ValidatedQuery(AttemptListFetchOptions {
+        ValidatedQuery(AttemptListFetchQueryParams {
             endpoint_id: Some(endpoint_id),
             channel,
             status,
@@ -551,10 +594,23 @@ async fn list_attempts_for_endpoint(
         auth_app,
     )
     .await
+    .map(|Json(list)| {
+        let new_data = list
+            .data
+            .into_iter()
+            .map(MessageAttemptEndpointOut::from)
+            .collect();
+        Json(ListResponse {
+            data: new_data,
+            done: list.done,
+            iterator: list.iterator,
+            prev_iterator: list.prev_iterator,
+        })
+    })
 }
 
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
-pub struct AttemptListFetchOptions {
+pub struct AttemptListFetchQueryParams {
     #[validate]
     pub endpoint_id: Option<EndpointIdOrUid>,
     #[validate]
@@ -567,18 +623,20 @@ pub struct AttemptListFetchOptions {
 /// Deprecated: Please use "List Attempts by Endpoint" and "List Attempts by Msg" instead.
 ///
 /// `msg_id`: Use a message id or a message `eventId`
-#[aide_annotate(op_id = "list_attempts_api_v1_app__app_id__msg__msg_id__attempt__get")]
+#[aide_annotate(op_id = "v1.message-attempt.list-by-msg-deprecated")]
 async fn list_messageattempts(
     State(AppState { ref db, .. }): State<AppState>,
-    ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<MessageAttemptId>>>,
-    ValidatedQuery(AttemptListFetchOptions {
+    ValidatedQuery(pagination): ValidatedQuery<
+        PaginationDescending<ReversibleIterator<MessageAttemptId>>,
+    >,
+    ValidatedQuery(AttemptListFetchQueryParams {
         endpoint_id,
         channel,
         status,
         before,
         after,
-    }): ValidatedQuery<AttemptListFetchOptions>,
-    EventTypesQuery(event_types): EventTypesQuery,
+    }): ValidatedQuery<AttemptListFetchQueryParams>,
+    EventTypesQueryParams(event_types): EventTypesQueryParams,
     Path(ApplicationMsgPath { msg_id, .. }): Path<ApplicationMsgPath>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<ListResponse<MessageAttemptOut>>> {
@@ -630,7 +688,7 @@ async fn list_messageattempts(
 }
 
 /// `msg_id`: Use a message id or a message `eventId`
-#[aide_annotate(op_id = "get_attempt_api_v1_app__app_id__msg__msg_id__attempt__attempt_id___get")]
+#[aide_annotate(op_id = "v1.message-attempt.get")]
 async fn get_messageattempt(
     State(AppState { ref db, .. }): State<AppState>,
     Path(ApplicationMsgAttemptPath {
@@ -656,9 +714,7 @@ async fn get_messageattempt(
 }
 
 /// Resend a message to the specified endpoint.
-#[aide_annotate(
-    op_id = "resend_webhook_api_v1_app__app_id__msg__msg_id__endpoint__endpoint_id__resend__post"
-)]
+#[aide_annotate(op_id = "v1.message-attempt.resend")]
 async fn resend_webhook(
     State(AppState {
         ref db, queue_tx, ..
@@ -669,7 +725,7 @@ async fn resend_webhook(
         ..
     }): Path<ApplicationMsgEndpointPath>,
     permissions::Application { app }: permissions::Application,
-) -> Result<JsonStatus<202, EmptyResponse>> {
+) -> Result<NoContentWithCode<202>> {
     let msg = ctx!(
         message::Entity::secure_find_by_id_or_uid(app.id.clone(), msg_id)
             .one(db)
@@ -712,13 +768,11 @@ async fn resend_webhook(
             None,
         )
         .await?;
-    Ok(JsonStatus(EmptyResponse {}))
+    Ok(NoContentWithCode)
 }
 
 /// Deletes the given attempt's response body. Useful when an endpoint accidentally returned sensitive content.
-#[aide_annotate(
-    op_id = "expunge_attempt_content_api_v1_app__app_id__msg__msg_id__attempt__attempt_id__content__delete"
-)]
+#[aide_annotate(op_id = "v1.message-attempt.expunge-content")]
 async fn expunge_attempt_content(
     State(AppState { ref db, .. }): State<AppState>,
     Path(ApplicationMsgAttemptPath {
@@ -812,9 +866,9 @@ pub fn router() -> ApiRouter<AppState> {
 #[cfg(test)]
 mod tests {
     use super::{
-        AttemptListFetchOptions, ListAttemptedMessagesQueryParameters,
-        ListAttemptsByEndpointQueryParameters, ListAttemptsByMsgQueryParameters,
-        ListAttemptsForEndpointQueryParameters,
+        AttemptListFetchQueryParams, ListAttemptedMessagesQueryParams,
+        ListAttemptsByEndpointQueryParams, ListAttemptsByMsgQueryParams,
+        ListAttemptsForEndpointQueryParams,
     };
     use serde_json::json;
     use validator::Validate;
@@ -826,33 +880,33 @@ mod tests {
 
     #[test]
     fn test_list_attempted_messages_query_params_validation() {
-        let q: ListAttemptedMessagesQueryParameters =
+        let q: ListAttemptedMessagesQueryParams =
             serde_json::from_value(json!({ "channel": INVALID_CHANNEL })).unwrap();
         assert!(q.validate().is_err());
 
-        let q: ListAttemptedMessagesQueryParameters =
+        let q: ListAttemptedMessagesQueryParams =
             serde_json::from_value(json!({ "channel": VALID_CHANNEL })).unwrap();
         q.validate().unwrap();
     }
 
     #[test]
     fn test_list_attempts_by_endpoint_query_parameters_validation() {
-        let q: ListAttemptsByEndpointQueryParameters =
+        let q: ListAttemptsByEndpointQueryParams =
             serde_json::from_value(json!({ "channel": INVALID_CHANNEL })).unwrap();
         assert!(q.validate().is_err());
     }
 
     #[test]
     fn test_list_attempts_by_msg_query_parameters_validation() {
-        let q: ListAttemptsByMsgQueryParameters =
+        let q: ListAttemptsByMsgQueryParams =
             serde_json::from_value(json!({ "channel": INVALID_CHANNEL })).unwrap();
         assert!(q.validate().is_err());
 
-        let q: ListAttemptsByMsgQueryParameters =
+        let q: ListAttemptsByMsgQueryParams =
             serde_json::from_value(json!({ "endpoint_id": INVALID_ENDPOINT_ID })).unwrap();
         assert!(q.validate().is_err());
 
-        let q: ListAttemptsByMsgQueryParameters = serde_json::from_value(json!(
+        let q: ListAttemptsByMsgQueryParams = serde_json::from_value(json!(
             {
                 "channel": VALID_CHANNEL,
                 "endpoint_id": VALID_ENDPOINT_ID
@@ -864,26 +918,26 @@ mod tests {
 
     #[test]
     fn test_list_attempts_for_endpoint_query_parameters_validation() {
-        let q: ListAttemptsForEndpointQueryParameters =
+        let q: ListAttemptsForEndpointQueryParams =
             serde_json::from_value(json!({ "channel": INVALID_CHANNEL })).unwrap();
         assert!(q.validate().is_err());
 
-        let q: ListAttemptsForEndpointQueryParameters =
+        let q: ListAttemptsForEndpointQueryParams =
             serde_json::from_value(json!({ "channel": VALID_CHANNEL })).unwrap();
         q.validate().unwrap();
     }
 
     #[test]
     fn test_attempt_list_fetch_options_validation() {
-        let q: AttemptListFetchOptions =
+        let q: AttemptListFetchQueryParams =
             serde_json::from_value(json!({ "endpoint_id": INVALID_ENDPOINT_ID })).unwrap();
         assert!(q.validate().is_err());
 
-        let q: AttemptListFetchOptions =
+        let q: AttemptListFetchQueryParams =
             serde_json::from_value(json!({ "channel": INVALID_CHANNEL })).unwrap();
         assert!(q.validate().is_err());
 
-        let q: AttemptListFetchOptions = serde_json::from_value(json!(
+        let q: AttemptListFetchQueryParams = serde_json::from_value(json!(
             {
                 "endpoint_id": VALID_ENDPOINT_ID,
                 "channel": VALID_CHANNEL

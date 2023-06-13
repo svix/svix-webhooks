@@ -4,10 +4,7 @@
 #![warn(clippy::all)]
 #![forbid(unsafe_code)]
 
-use aide::{
-    axum::ApiRouter,
-    openapi::{self, OpenApi},
-};
+use aide::axum::ApiRouter;
 
 use crate::core::cache::Cache;
 use cfg::ConfigurationInner;
@@ -42,6 +39,7 @@ pub mod core;
 pub mod db;
 pub mod error;
 pub mod expired_message_cleaner;
+pub mod openapi;
 pub mod queue;
 pub mod redis;
 pub mod v1;
@@ -83,111 +81,6 @@ async fn graceful_shutdown_handler() {
 #[tracing::instrument(name = "app_start", level = "trace", skip_all)]
 pub async fn run(cfg: Configuration, listener: Option<TcpListener>) {
     run_with_prefix(None, cfg, listener).await
-}
-
-pub fn initialize_openapi() -> OpenApi {
-    aide::gen::on_error(|error| {
-        tracing::error!("Aide generation error: {error}");
-    });
-    // Extract schemas to `#/components/schemas/` instead of using inline schemas.
-    aide::gen::extract_schemas(true);
-    // Have aide attempt to infer the `Content-Type` of responses based on the
-    // handlers' return types.
-    aide::gen::infer_responses(true);
-
-    aide::gen::in_context(|ctx| {
-        ctx.schema = schemars::gen::SchemaGenerator::new(
-            schemars::gen::SchemaSettings::draft07().with(|s| {
-                // HACK: These are set by the `extract_schemas` call above, but
-                // reinitializing the schema generator here means we are
-                // overwriting it. Hopefully, in the future we can set schema
-                // generator options without overwriting settings set by aide
-                // internally.
-                s.inline_subschemas = false;
-                s.definitions_path = "#/components/schemas/".into();
-
-                // Schemars generates an `anyOf` for `Option<T>` by default. This changes that
-                // to instead simply mark them as nullable.
-                s.option_nullable = true;
-                s.option_add_null_type = false;
-            }),
-        );
-    });
-
-    let tag_groups = serde_json::json![[
-        {
-            "name": "General",
-            "tags": ["Application", "Event Type"]
-        },
-        {
-            "name": "Application specific",
-            "tags": ["Authentication", "Endpoint", "Message", "Message Attempt", "Integration"]
-        },
-        {
-            "name": "Utility",
-            "tags": ["Health"]
-        },
-        {
-            "name": "Webhooks",
-            "tags": ["Webhooks"]
-        }
-    ]];
-
-    OpenApi {
-        info: openapi::Info {
-            title: "Svix API".to_owned(),
-            version: "1.4".to_owned(),
-            extensions: indexmap::indexmap! {
-                "x-logo".to_string() => serde_json::json!({
-                    "url": "https://www.svix.com/static/img/brand-padded.svg",
-                    "altText": "Svix Logo",
-                }),
-            },
-            ..Default::default()
-        },
-        tags: vec![
-            openapi::Tag {
-                name: "Application".to_owned(),
-                ..openapi::Tag::default()
-            },
-            openapi::Tag {
-                name: "Message".to_owned(),
-                ..openapi::Tag::default()
-            },
-            openapi::Tag {
-                name: "Message Attempt".to_owned(),
-                ..openapi::Tag::default()
-            },
-            openapi::Tag {
-                name: "Endpoint".to_owned(),
-                ..openapi::Tag::default()
-            },
-            openapi::Tag {
-                name: "Integration".to_owned(),
-                ..openapi::Tag::default()
-            },
-            openapi::Tag {
-                name: "Event Type".to_owned(),
-                ..openapi::Tag::default()
-            },
-            openapi::Tag {
-                name: "Authentication".to_owned(),
-                ..openapi::Tag::default()
-            },
-            openapi::Tag {
-                name: "Health".to_owned(),
-                ..openapi::Tag::default()
-            },
-            openapi::Tag {
-                name: "Webhooks".to_owned(),
-                ..openapi::Tag::default()
-            },
-        ],
-        extensions: indexmap::indexmap! {
-            "x-tagGroups".to_owned() => tag_groups,
-        },
-        ..Default::default()
-    }
 }
 
 #[derive(Clone)]
@@ -237,7 +130,7 @@ pub async fn run_with_prefix(
     // OpenAPI/aide must be initialized before any routers are constructed
     // because its initialization sets generation-global settings which are
     // needed at router-construction time.
-    let mut openapi = initialize_openapi();
+    let mut openapi = openapi::initialize_openapi();
 
     let svc_cache = cache.clone();
     // build our application with a route
@@ -254,6 +147,8 @@ pub async fn run_with_prefix(
     let app = ApiRouter::new()
         .nest_api_service("/api/v1", v1_router)
         .finish_api(&mut openapi);
+
+    let openapi = openapi::postprocess_spec(openapi);
     let docs_router = docs::router(openapi);
     let app = app
         .merge(docs_router)

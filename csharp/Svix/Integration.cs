@@ -25,7 +25,7 @@ namespace Svix
         {
             try
             {
-                var lIntegration = _integrationApi.CreateIntegrationApiV1AppAppIdIntegrationPost(
+                var lIntegration = _integrationApi.V1IntegrationCreate(
                     appId,
                     integration,
                     idempotencyKey);
@@ -48,7 +48,7 @@ namespace Svix
         {
             try
             {
-                var lIntegration = await _integrationApi.CreateIntegrationApiV1AppAppIdIntegrationPostAsync(
+                var lIntegration = await _integrationApi.V1IntegrationCreateAsync(
                     appId,
                     integration,
                     idempotencyKey,
@@ -71,10 +71,9 @@ namespace Svix
         {
             try
             {
-                var lResponse = _integrationApi.DeleteIntegrationApiV1AppAppIdIntegrationIntegIdDeleteWithHttpInfo(
-                    integrationId,
+                var lResponse = _integrationApi.V1IntegrationDeleteWithHttpInfo(
                     appId,
-                    idempotencyKey);
+                    integrationId);
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
             }
@@ -94,10 +93,9 @@ namespace Svix
         {
             try
             {
-                var lResponse = await _integrationApi.DeleteIntegrationApiV1AppAppIdIntegrationIntegIdDeleteWithHttpInfoAsync(
-                    integrationId,
+                var lResponse = await _integrationApi.V1IntegrationDeleteWithHttpInfoAsync(
                     appId,
-                    idempotencyKey,
+                    integrationId,
                     cancellationToken);
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
@@ -117,10 +115,9 @@ namespace Svix
         {
             try
             {
-                var lIntegration = _integrationApi.GetIntegrationApiV1AppAppIdIntegrationIntegIdGet(
-                    integrationId,
+                var lIntegration = _integrationApi.V1IntegrationGet(
                     appId,
-                    idempotencyKey);
+                    integrationId);
 
                 return lIntegration;
             }
@@ -139,10 +136,9 @@ namespace Svix
         {
             try
             {
-                var lIntegration = await _integrationApi.GetIntegrationApiV1AppAppIdIntegrationIntegIdGetAsync(
-                    integrationId,
+                var lIntegration = await _integrationApi.V1IntegrationGetAsync(
                     appId,
-                    idempotencyKey,
+                    integrationId,
                     cancellationToken);
 
                 return lIntegration;
@@ -162,10 +158,9 @@ namespace Svix
         {
             try
             {
-                var lResponse = _integrationApi.GetIntegrationKeyApiV1AppAppIdIntegrationIntegIdKeyGet(
-                    integrationId,
+                var lResponse = _integrationApi.V1IntegrationGetKey(
                     appId,
-                    idempotencyKey);
+                    integrationId);
 
                 return lResponse.Key;
             }
@@ -185,10 +180,9 @@ namespace Svix
         {
             try
             {
-                var lResponse = await _integrationApi.GetIntegrationKeyApiV1AppAppIdIntegrationIntegIdKeyGetAsync(
-                    integrationId,
+                var lResponse = await _integrationApi.V1IntegrationGetKeyAsync(
                     appId,
-                    idempotencyKey,
+                    integrationId,
                     cancellationToken);
 
                 return lResponse.Key;
@@ -208,11 +202,10 @@ namespace Svix
         {
             try
             {
-                var lResult = _integrationApi.ListIntegrationsApiV1AppAppIdIntegrationGet(
+                var lResult = _integrationApi.V1IntegrationList(
                     appId,
-                    options?.Iterator,
                     options?.Limit,
-                    idempotencyKey);
+                    options?.Iterator);
 
                 return lResult?.Data;
             }
@@ -232,11 +225,10 @@ namespace Svix
         {
             try
             {
-                var lResult = await _integrationApi.ListIntegrationsApiV1AppAppIdIntegrationGetAsync(
+                var lResult = await _integrationApi.V1IntegrationListAsync(
                     appId,
-                    options?.Iterator,
                     options?.Limit,
-                    idempotencyKey,
+                    options?.Iterator,
                     cancellationToken);
 
                 return lResult?.Data;
@@ -256,9 +248,9 @@ namespace Svix
         {
             try
             {
-                var lResponse = _integrationApi.RotateIntegrationKeyApiV1AppAppIdIntegrationIntegIdKeyRotatePost(
-                    integrationId,
+                var lResponse = _integrationApi.V1IntegrationRotateKey(
                     appId,
+                    integrationId,
                     idempotencyKey);
 
                 return lResponse.Key;
@@ -279,9 +271,9 @@ namespace Svix
         {
             try
             {
-                var lResponse = await _integrationApi.RotateIntegrationKeyApiV1AppAppIdIntegrationIntegIdKeyRotatePostAsync(
-                    integrationId,
+                var lResponse = await _integrationApi.V1IntegrationRotateKeyAsync(
                     appId,
+                    integrationId,
                     idempotencyKey,
                     cancellationToken);
 
@@ -302,11 +294,10 @@ namespace Svix
         {
             try
             {
-                var lIntegration = _integrationApi.UpdateIntegrationApiV1AppAppIdIntegrationIntegIdPut(
-                    integrationId,
+                var lIntegration = _integrationApi.V1IntegrationUpdate(
                     appId,
-                    integration,
-                    idempotencyKey);
+                    integrationId,
+                    integration);
 
                 return lIntegration;
             }
@@ -325,11 +316,10 @@ namespace Svix
         {
             try
             {
-                var lIntegration = await _integrationApi.UpdateIntegrationApiV1AppAppIdIntegrationIntegIdPutAsync(
-                    integrationId,
+                var lIntegration = await _integrationApi.V1IntegrationUpdateAsync(
                     appId,
+                    integrationId,
                     integration,
-                    idempotencyKey,
                     cancellationToken);
 
                 return lIntegration;

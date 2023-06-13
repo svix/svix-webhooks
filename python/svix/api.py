@@ -5,71 +5,76 @@ from datetime import datetime
 from deprecated import deprecated
 
 from .internal.openapi_client.api.application import (
-    create_application_api_v1_app_post,
-    delete_application_api_v1_app_app_id_delete,
-    get_application_api_v1_app_app_id_get,
-    list_applications_api_v1_app_get,
-    update_application_api_v1_app_app_id_put,
+    v1_application_create,
+    v1_application_delete,
+    v1_application_get,
+    v1_application_list,
+    v1_application_update,
 )
 from .internal.openapi_client.api.authentication import (
-    get_app_portal_access_api_v1_auth_app_portal_access_app_id_post,
-    get_dashboard_access_api_v1_auth_dashboard_access_app_id_post,
-    logout_api_v1_auth_logout_post,
+    v1_authentication_app_portal_access,
+    v1_authentication_dashboard_access,
+    v1_authentication_logout,
 )
+from .internal.openapi_client.api.background_tasks import get_background_task, list_background_tasks
 from .internal.openapi_client.api.endpoint import (
-    create_endpoint_api_v1_app_app_id_endpoint_post,
-    delete_endpoint_api_v1_app_app_id_endpoint_endpoint_id_delete,
-    get_endpoint_api_v1_app_app_id_endpoint_endpoint_id_get,
-    get_endpoint_headers_api_v1_app_app_id_endpoint_endpoint_id_headers_get,
-    get_endpoint_secret_api_v1_app_app_id_endpoint_endpoint_id_secret_get,
-    get_endpoint_stats_api_v1_app_app_id_endpoint_endpoint_id_stats_get,
-    get_endpoint_transformation_api_v1_app_app_id_endpoint_endpoint_id_transformation_get,
-    list_endpoints_api_v1_app_app_id_endpoint_get,
-    patch_endpoint_headers_api_v1_app_app_id_endpoint_endpoint_id_headers_patch,
-    recover_failed_webhooks_api_v1_app_app_id_endpoint_endpoint_id_recover_post,
-    replay_missing_webhooks_api_v1_app_app_id_endpoint_endpoint_id_replay_missing_post,
-    rotate_endpoint_secret_api_v1_app_app_id_endpoint_endpoint_id_secret_rotate_post,
-    set_endpoint_transformation_api_v1_app_app_id_endpoint_endpoint_id_transformation_patch,
-    update_endpoint_api_v1_app_app_id_endpoint_endpoint_id_put,
-    update_endpoint_headers_api_v1_app_app_id_endpoint_endpoint_id_headers_put,
+    v1_endpoint_create,
+    v1_endpoint_delete,
+    v1_endpoint_get,
+    v1_endpoint_get_headers,
+    v1_endpoint_get_secret,
+    v1_endpoint_get_stats,
+    v1_endpoint_list,
+    v1_endpoint_patch_headers,
+    v1_endpoint_recover,
+    v1_endpoint_replay,
+    v1_endpoint_rotate_secret,
+    v1_endpoint_send_example,
+    v1_endpoint_transformation_get,
+    v1_endpoint_transformation_partial_update,
+    v1_endpoint_update,
+    v1_endpoint_update_headers,
 )
 from .internal.openapi_client.api.event_type import (
-    create_event_type_api_v1_event_type_post,
-    delete_event_type_api_v1_event_type_event_type_name_delete,
-    get_event_type_api_v1_event_type_event_type_name_get,
-    list_event_types_api_v1_event_type_get,
-    update_event_type_api_v1_event_type_event_type_name_put,
+    v1_event_type_create,
+    v1_event_type_delete,
+    v1_event_type_get,
+    v1_event_type_list,
+    v1_event_type_update,
 )
 from .internal.openapi_client.api.integration import (
-    create_integration_api_v1_app_app_id_integration_post,
-    delete_integration_api_v1_app_app_id_integration_integ_id_delete,
-    get_integration_api_v1_app_app_id_integration_integ_id_get,
-    get_integration_key_api_v1_app_app_id_integration_integ_id_key_get,
-    list_integrations_api_v1_app_app_id_integration_get,
-    rotate_integration_key_api_v1_app_app_id_integration_integ_id_key_rotate_post,
-    update_integration_api_v1_app_app_id_integration_integ_id_put,
+    v1_integration_create,
+    v1_integration_delete,
+    v1_integration_get,
+    v1_integration_get_key,
+    v1_integration_list,
+    v1_integration_rotate_key,
+    v1_integration_update,
 )
 from .internal.openapi_client.api.message import (
-    create_message_api_v1_app_app_id_msg_post,
-    expunge_message_payload_api_v1_app_app_id_msg_msg_id_content_delete,
-    get_message_api_v1_app_app_id_msg_msg_id_get,
-    list_messages_api_v1_app_app_id_msg_get,
+    v1_message_create,
+    v1_message_expunge_content,
+    v1_message_get,
+    v1_message_list,
 )
 from .internal.openapi_client.api.message_attempt import (
-    expunge_attempt_content_api_v1_app_app_id_msg_msg_id_attempt_attempt_id_content_delete,
-    get_attempt_api_v1_app_app_id_msg_msg_id_attempt_attempt_id_get,
-    list_attempted_destinations_api_v1_app_app_id_msg_msg_id_endpoint_get,
-    list_attempted_messages_api_v1_app_app_id_endpoint_endpoint_id_msg_get,
-    list_attempts_by_endpoint_api_v1_app_app_id_attempt_endpoint_endpoint_id_get,
-    list_attempts_by_msg_api_v1_app_app_id_attempt_msg_msg_id_get,
-    list_attempts_for_endpoint_api_v1_app_app_id_msg_msg_id_endpoint_endpoint_id_attempt_get,
-    resend_webhook_api_v1_app_app_id_msg_msg_id_endpoint_endpoint_id_resend_post,
+    v1_message_attempt_expunge_content,
+    v1_message_attempt_get,
+    v1_message_attempt_list_attempted_destinations,
+    v1_message_attempt_list_attempted_messages,
+    v1_message_attempt_list_by_endpoint,
+    v1_message_attempt_list_by_endpoint_deprecated,
+    v1_message_attempt_list_by_msg,
+    v1_message_attempt_resend,
 )
 from .internal.openapi_client.client import AuthenticatedClient
 from .internal.openapi_client.models.app_portal_access_in import AppPortalAccessIn
 from .internal.openapi_client.models.app_portal_access_out import AppPortalAccessOut
 from .internal.openapi_client.models.application_in import ApplicationIn
 from .internal.openapi_client.models.application_out import ApplicationOut
+from .internal.openapi_client.models.background_task_out import BackgroundTaskOut
+from .internal.openapi_client.models.background_task_status import BackgroundTaskStatus
+from .internal.openapi_client.models.background_task_type import BackgroundTaskType
 from .internal.openapi_client.models.dashboard_access_out import DashboardAccessOut
 from .internal.openapi_client.models.endpoint_headers_in import EndpointHeadersIn
 from .internal.openapi_client.models.endpoint_headers_out import EndpointHeadersOut
@@ -83,6 +88,7 @@ from .internal.openapi_client.models.endpoint_stats import EndpointStats
 from .internal.openapi_client.models.endpoint_transformation_in import EndpointTransformationIn
 from .internal.openapi_client.models.endpoint_transformation_out import EndpointTransformationOut
 from .internal.openapi_client.models.endpoint_update import EndpointUpdate
+from .internal.openapi_client.models.event_example_in import EventExampleIn
 from .internal.openapi_client.models.event_type_in import EventTypeIn
 from .internal.openapi_client.models.event_type_out import EventTypeOut
 from .internal.openapi_client.models.event_type_update import EventTypeUpdate
@@ -91,6 +97,7 @@ from .internal.openapi_client.models.integration_key_out import IntegrationKeyOu
 from .internal.openapi_client.models.integration_out import IntegrationOut
 from .internal.openapi_client.models.integration_update import IntegrationUpdate
 from .internal.openapi_client.models.list_response_application_out import ListResponseApplicationOut
+from .internal.openapi_client.models.list_response_background_task_out import ListResponseBackgroundTaskOut
 from .internal.openapi_client.models.list_response_endpoint_message_out import ListResponseEndpointMessageOut
 from .internal.openapi_client.models.list_response_endpoint_out import ListResponseEndpointOut
 from .internal.openapi_client.models.list_response_event_type_out import ListResponseEventTypeOut
@@ -165,8 +172,19 @@ class EndpointListOptions(ListOptions):
 
 
 @dataclass
+class EndpointStatsOptions:
+    since: t.Optional[datetime] = None
+    until: t.Optional[datetime] = None
+
+
+@dataclass
 class IntegrationListOptions(ListOptions):
     pass
+
+
+class BackgroundTaskListOptions(ListOptions):
+    status: t.Optional[BackgroundTaskStatus] = None
+    task: t.Optional[BackgroundTaskType] = None
 
 
 @dataclass
@@ -190,100 +208,88 @@ class AuthenticationAsync(ApiBase):
     async def app_portal_access(
         self, app_id: str, app_portal_access_in: AppPortalAccessIn, options: PostOptions = PostOptions()
     ) -> AppPortalAccessOut:
-        return await get_app_portal_access_api_v1_auth_app_portal_access_app_id_post.asyncio(
+        return await v1_authentication_app_portal_access.asyncio(
             client=self._client, app_id=app_id, json_body=app_portal_access_in, **options.to_dict()
         )
 
     async def dashboard_access(self, app_id: str, options: PostOptions = PostOptions()) -> DashboardAccessOut:
-        return await get_dashboard_access_api_v1_auth_dashboard_access_app_id_post.asyncio(
-            client=self._client, app_id=app_id, **options.to_dict()
-        )
+        return await v1_authentication_dashboard_access.asyncio(client=self._client, app_id=app_id, **options.to_dict())
 
     async def logout(self, options: PostOptions = PostOptions()) -> None:
-        return await logout_api_v1_auth_logout_post.asyncio(client=self._client, **options.to_dict())
+        return await v1_authentication_logout.asyncio(client=self._client, **options.to_dict())
 
 
 class Authentication(ApiBase):
     def app_portal_access(
         self, app_id: str, app_portal_access_in: AppPortalAccessIn, options: PostOptions = PostOptions()
     ) -> AppPortalAccessOut:
-        return get_app_portal_access_api_v1_auth_app_portal_access_app_id_post.sync(
+        return v1_authentication_app_portal_access.sync(
             client=self._client, app_id=app_id, json_body=app_portal_access_in, **options.to_dict()
         )
 
     def dashboard_access(self, app_id: str, options: PostOptions = PostOptions()) -> DashboardAccessOut:
-        return get_dashboard_access_api_v1_auth_dashboard_access_app_id_post.sync(
-            client=self._client, app_id=app_id, **options.to_dict()
-        )
+        return v1_authentication_dashboard_access.sync(client=self._client, app_id=app_id, **options.to_dict())
 
     def logout(self, options: PostOptions = PostOptions()) -> None:
-        return logout_api_v1_auth_logout_post.sync(client=self._client, **options.to_dict())
+        return v1_authentication_logout.sync(client=self._client, **options.to_dict())
 
 
 class ApplicationAsync(ApiBase):
     async def list(self, options: ApplicationListOptions = ApplicationListOptions()) -> ListResponseApplicationOut:
-        return await list_applications_api_v1_app_get.asyncio(client=self._client, **options.to_dict())
+        return await v1_application_list.asyncio(client=self._client, **options.to_dict())
 
     async def create(self, application_in: ApplicationIn, options: PostOptions = PostOptions()) -> ApplicationOut:
-        return await create_application_api_v1_app_post.asyncio(
-            client=self._client, json_body=application_in, **options.to_dict()
-        )
+        return await v1_application_create.asyncio(client=self._client, json_body=application_in, **options.to_dict())
 
     async def get(self, app_id: str) -> ApplicationOut:
-        return await get_application_api_v1_app_app_id_get.asyncio(client=self._client, app_id=app_id)
+        return await v1_application_get.asyncio(client=self._client, app_id=app_id)
 
     async def get_or_create(
         self, application_in: ApplicationIn, options: PostOptions = PostOptions()
     ) -> ApplicationOut:
-        return await create_application_api_v1_app_post.asyncio(
+        return await v1_application_create.asyncio(
             client=self._client, json_body=application_in, get_if_exists=True, **options.to_dict()
         )
 
     async def update(self, app_id: str, application_in: ApplicationIn) -> ApplicationOut:
-        return await update_application_api_v1_app_app_id_put.asyncio(
-            client=self._client, app_id=app_id, json_body=application_in
-        )
+        return await v1_application_update.asyncio(client=self._client, app_id=app_id, json_body=application_in)
 
     async def delete(self, app_id: str) -> None:
-        return await delete_application_api_v1_app_app_id_delete.asyncio(client=self._client, app_id=app_id)
+        return await v1_application_delete.asyncio(client=self._client, app_id=app_id)
 
 
 class Application(ApiBase):
     def list(self, options: ApplicationListOptions = ApplicationListOptions()) -> ListResponseApplicationOut:
-        return list_applications_api_v1_app_get.sync(client=self._client, **options.to_dict())
+        return v1_application_list.sync(client=self._client, **options.to_dict())
 
     def create(self, application_in: ApplicationIn, options: PostOptions = PostOptions()) -> ApplicationOut:
-        return create_application_api_v1_app_post.sync(
-            client=self._client, json_body=application_in, **options.to_dict()
-        )
+        return v1_application_create.sync(client=self._client, json_body=application_in, **options.to_dict())
 
     def get(self, app_id: str) -> ApplicationOut:
-        return get_application_api_v1_app_app_id_get.sync(client=self._client, app_id=app_id)
+        return v1_application_get.sync(client=self._client, app_id=app_id)
 
     def get_or_create(self, application_in: ApplicationIn, options: PostOptions = PostOptions()) -> ApplicationOut:
-        return create_application_api_v1_app_post.sync(
+        return v1_application_create.sync(
             client=self._client, json_body=application_in, get_if_exists=True, **options.to_dict()
         )
 
     def update(self, app_id: str, application_in: ApplicationIn) -> ApplicationOut:
-        return update_application_api_v1_app_app_id_put.sync(
-            client=self._client, app_id=app_id, json_body=application_in
-        )
+        return v1_application_update.sync(client=self._client, app_id=app_id, json_body=application_in)
 
     def delete(self, app_id: str) -> None:
-        return delete_application_api_v1_app_app_id_delete.sync(client=self._client, app_id=app_id)
+        return v1_application_delete.sync(client=self._client, app_id=app_id)
 
 
 class EndpointAsync(ApiBase):
     async def list(self, app_id: str, options: EndpointListOptions = EndpointListOptions()) -> ListResponseEndpointOut:
-        return await list_endpoints_api_v1_app_app_id_endpoint_get.asyncio(
+        return await v1_endpoint_list.asyncio(
             client=self._client,
             app_id=app_id,
             **options.to_dict(),
         )
 
     async def create(self, app_id: str, endpoint_in: EndpointIn, options: PostOptions = PostOptions()) -> EndpointOut:
-        return await create_endpoint_api_v1_app_app_id_endpoint_post.asyncio(
+        return await v1_endpoint_create.asyncio(
             client=self._client,
             app_id=app_id,
             json_body=endpoint_in,
@@ -291,12 +297,10 @@ class EndpointAsync(ApiBase):
         )
 
     async def get(self, app_id: str, endpoint_id: str) -> EndpointOut:
-        return await get_endpoint_api_v1_app_app_id_endpoint_endpoint_id_get.asyncio(
-            client=self._client, app_id=app_id, endpoint_id=endpoint_id
-        )
+        return await v1_endpoint_get.asyncio(client=self._client, app_id=app_id, endpoint_id=endpoint_id)
 
     async def update(self, app_id: str, endpoint_id: str, endpoint_update: EndpointUpdate) -> EndpointOut:
-        return await update_endpoint_api_v1_app_app_id_endpoint_endpoint_id_put.asyncio(
+        return await v1_endpoint_update.asyncio(
             client=self._client,
             app_id=app_id,
             endpoint_id=endpoint_id,
@@ -304,14 +308,14 @@ class EndpointAsync(ApiBase):
         )
 
     async def delete(self, app_id: str, endpoint_id: str) -> None:
-        return await delete_endpoint_api_v1_app_app_id_endpoint_endpoint_id_delete.asyncio(
+        return await v1_endpoint_delete.asyncio(
             client=self._client,
             app_id=app_id,
             endpoint_id=endpoint_id,
         )
 
     async def get_secret(self, app_id: str, endpoint_id: str) -> EndpointSecretOut:
-        return await get_endpoint_secret_api_v1_app_app_id_endpoint_endpoint_id_secret_get.asyncio(
+        return await v1_endpoint_get_secret.asyncio(
             client=self._client,
             app_id=app_id,
             endpoint_id=endpoint_id,
@@ -324,7 +328,7 @@ class EndpointAsync(ApiBase):
         endpoint_secret_rotate_in: EndpointSecretRotateIn,
         options: PostOptions = PostOptions(),
     ) -> None:
-        return await rotate_endpoint_secret_api_v1_app_app_id_endpoint_endpoint_id_secret_rotate_post.asyncio(
+        return await v1_endpoint_rotate_secret.asyncio(
             client=self._client,
             app_id=app_id,
             endpoint_id=endpoint_id,
@@ -335,7 +339,7 @@ class EndpointAsync(ApiBase):
     async def recover(
         self, app_id: str, endpoint_id: str, recover_in: RecoverIn, options: PostOptions = PostOptions()
     ) -> RecoverOut:
-        return await recover_failed_webhooks_api_v1_app_app_id_endpoint_endpoint_id_recover_post.asyncio(
+        return await v1_endpoint_recover.asyncio(
             client=self._client,
             app_id=app_id,
             endpoint_id=endpoint_id,
@@ -344,14 +348,14 @@ class EndpointAsync(ApiBase):
         )
 
     async def get_headers(self, app_id: str, endpoint_id: str) -> EndpointHeadersOut:
-        return await get_endpoint_headers_api_v1_app_app_id_endpoint_endpoint_id_headers_get.asyncio(
+        return await v1_endpoint_get_headers.asyncio(
             client=self._client,
             app_id=app_id,
             endpoint_id=endpoint_id,
         )
 
     async def update_headers(self, app_id: str, endpoint_id: str, endpoint_headers_in: EndpointHeadersIn) -> None:
-        return await update_endpoint_headers_api_v1_app_app_id_endpoint_endpoint_id_headers_put.asyncio(
+        return await v1_endpoint_update_headers.asyncio(
             client=self._client,
             app_id=app_id,
             endpoint_id=endpoint_id,
@@ -359,7 +363,7 @@ class EndpointAsync(ApiBase):
         )
 
     async def patch_headers(self, app_id: str, endpoint_id: str, endpoint_headers_in: EndpointHeadersPatchIn) -> None:
-        return await patch_endpoint_headers_api_v1_app_app_id_endpoint_endpoint_id_headers_patch.asyncio(
+        return await v1_endpoint_patch_headers.asyncio(
             client=self._client,
             app_id=app_id,
             endpoint_id=endpoint_id,
@@ -369,36 +373,45 @@ class EndpointAsync(ApiBase):
     async def replay_missing(
         self, app_id: str, endpoint_id: str, replay_in: ReplayIn, options: PostOptions = PostOptions()
     ) -> ReplayOut:
-        return await replay_missing_webhooks_api_v1_app_app_id_endpoint_endpoint_id_replay_missing_post.asyncio(
+        return await v1_endpoint_replay.asyncio(
             client=self._client, app_id=app_id, endpoint_id=endpoint_id, json_body=replay_in, **options.to_dict()
         )
 
     async def transformations_get(self, app_id: str, endpoint_id: str) -> EndpointTransformationOut:
-        return await get_endpoint_transformation_api_v1_app_app_id_endpoint_endpoint_id_transformation_get.asyncio(
-            client=self._client, app_id=app_id, endpoint_id=endpoint_id
-        )
+        return await v1_endpoint_transformation_get.asyncio(client=self._client, app_id=app_id, endpoint_id=endpoint_id)
 
     async def transformation_partial_update(
         self, app_id: str, endpoint_id: str, endpoint_transformation_in: EndpointTransformationIn
     ) -> None:
-        await set_endpoint_transformation_api_v1_app_app_id_endpoint_endpoint_id_transformation_patch.asyncio(
+        await v1_endpoint_transformation_partial_update.asyncio(
             client=self._client,
             app_id=app_id,
             endpoint_id=endpoint_id,
             json_body=endpoint_transformation_in,
         )
 
+    async def send_example(
+        self, app_id: str, endpoint_id: str, event_example_in: EventExampleIn, options: PostOptions = PostOptions()
+    ) -> MessageOut:
+        return await v1_endpoint_send_example.asyncio(
+            client=self._client,
+            app_id=app_id,
+            endpoint_id=endpoint_id,
+            json_body=event_example_in,
+            **options.to_dict(),
+        )
+
 
 class Endpoint(ApiBase):
     def list(self, app_id: str, options: EndpointListOptions = EndpointListOptions()) -> ListResponseEndpointOut:
-        return list_endpoints_api_v1_app_app_id_endpoint_get.sync(
+        return v1_endpoint_list.sync(
             client=self._client,
             app_id=app_id,
             **options.to_dict(),
         )
 
     def create(self, app_id: str, endpoint_in: EndpointIn, options: PostOptions = PostOptions()) -> EndpointOut:
-        return create_endpoint_api_v1_app_app_id_endpoint_post.sync(
+        return v1_endpoint_create.sync(
             client=self._client,
             app_id=app_id,
             json_body=endpoint_in,
@@ -406,12 +419,10 @@ class Endpoint(ApiBase):
         )
 
     def get(self, app_id: str, endpoint_id: str) -> EndpointOut:
-        return get_endpoint_api_v1_app_app_id_endpoint_endpoint_id_get.sync(
-            client=self._client, app_id=app_id, endpoint_id=endpoint_id
-        )
+        return v1_endpoint_get.sync(client=self._client, app_id=app_id, endpoint_id=endpoint_id)
 
     def update(self, app_id: str, endpoint_id: str, endpoint_update: EndpointUpdate) -> EndpointOut:
-        return update_endpoint_api_v1_app_app_id_endpoint_endpoint_id_put.sync(
+        return v1_endpoint_update.sync(
             client=self._client,
             app_id=app_id,
             endpoint_id=endpoint_id,
@@ -419,14 +430,14 @@ class Endpoint(ApiBase):
         )
 
     def delete(self, app_id: str, endpoint_id: str) -> None:
-        return delete_endpoint_api_v1_app_app_id_endpoint_endpoint_id_delete.sync(
+        return v1_endpoint_delete.sync(
             client=self._client,
             app_id=app_id,
             endpoint_id=endpoint_id,
         )
 
     def get_secret(self, app_id: str, endpoint_id: str) -> EndpointSecretOut:
-        return get_endpoint_secret_api_v1_app_app_id_endpoint_endpoint_id_secret_get.sync(
+        return v1_endpoint_get_secret.sync(
             client=self._client,
             app_id=app_id,
             endpoint_id=endpoint_id,
@@ -439,7 +450,7 @@ class Endpoint(ApiBase):
         endpoint_secret_rotate_in: EndpointSecretRotateIn,
         options: PostOptions = PostOptions(),
     ) -> None:
-        return rotate_endpoint_secret_api_v1_app_app_id_endpoint_endpoint_id_secret_rotate_post.sync(
+        return v1_endpoint_rotate_secret.sync(
             client=self._client,
             app_id=app_id,
             endpoint_id=endpoint_id,
@@ -450,7 +461,7 @@ class Endpoint(ApiBase):
     def recover(
         self, app_id: str, endpoint_id: str, recover_in: RecoverIn, options: PostOptions = PostOptions()
     ) -> RecoverOut:
-        return recover_failed_webhooks_api_v1_app_app_id_endpoint_endpoint_id_recover_post.sync(
+        return v1_endpoint_recover.sync(
             client=self._client,
             app_id=app_id,
             endpoint_id=endpoint_id,
@@ -459,14 +470,14 @@ class Endpoint(ApiBase):
         )
 
     def get_headers(self, app_id: str, endpoint_id: str) -> EndpointHeadersOut:
-        return get_endpoint_headers_api_v1_app_app_id_endpoint_endpoint_id_headers_get.sync(
+        return v1_endpoint_get_headers.sync(
             client=self._client,
             app_id=app_id,
             endpoint_id=endpoint_id,
         )
 
     def update_headers(self, app_id: str, endpoint_id: str, endpoint_headers_in: EndpointHeadersIn) -> None:
-        return update_endpoint_headers_api_v1_app_app_id_endpoint_endpoint_id_headers_put.sync(
+        return v1_endpoint_update_headers.sync(
             client=self._client,
             app_id=app_id,
             endpoint_id=endpoint_id,
@@ -474,72 +485,85 @@ class Endpoint(ApiBase):
         )
 
     def patch_headers(self, app_id: str, endpoint_id: str, endpoint_headers_in: EndpointHeadersPatchIn) -> None:
-        return patch_endpoint_headers_api_v1_app_app_id_endpoint_endpoint_id_headers_patch.sync(
+        return v1_endpoint_patch_headers.sync(
             client=self._client,
             app_id=app_id,
             endpoint_id=endpoint_id,
             json_body=endpoint_headers_in,
         )
 
-    def get_stats(self, app_id: str, endpoint_id: str) -> EndpointStats:
-        return get_endpoint_stats_api_v1_app_app_id_endpoint_endpoint_id_stats_get.sync(
+    def get_stats(
+        self, app_id: str, endpoint_id: str, options: EndpointStatsOptions = EndpointStatsOptions()
+    ) -> EndpointStats:
+        return v1_endpoint_get_stats.sync(
             client=self._client,
             app_id=app_id,
             endpoint_id=endpoint_id,
+            since=options.since,
+            until=options.until,
         )
 
     def replay_missing(
         self, app_id: str, endpoint_id: str, replay_in: ReplayIn, options: PostOptions = PostOptions()
     ) -> ReplayOut:
-        return replay_missing_webhooks_api_v1_app_app_id_endpoint_endpoint_id_replay_missing_post.sync(
+        return v1_endpoint_replay.sync(
             client=self._client, app_id=app_id, endpoint_id=endpoint_id, json_body=replay_in, **options.to_dict()
         )
 
     def transformations_get(self, app_id: str, endpoint_id: str) -> EndpointTransformationOut:
-        return get_endpoint_transformation_api_v1_app_app_id_endpoint_endpoint_id_transformation_get.sync(
-            client=self._client, app_id=app_id, endpoint_id=endpoint_id
-        )
+        return v1_endpoint_transformation_get.sync(client=self._client, app_id=app_id, endpoint_id=endpoint_id)
 
     def transformation_partial_update(
         self, app_id: str, endpoint_id: str, endpoint_transformation_in: EndpointTransformationIn
     ) -> None:
-        set_endpoint_transformation_api_v1_app_app_id_endpoint_endpoint_id_transformation_patch.sync(
+        v1_endpoint_transformation_partial_update.sync(
             client=self._client,
             app_id=app_id,
             endpoint_id=endpoint_id,
             json_body=endpoint_transformation_in,
         )
 
+    def send_example(
+        self, app_id: str, endpoint_id: str, event_example_in: EventExampleIn, options: PostOptions = PostOptions()
+    ) -> MessageOut:
+        return v1_endpoint_send_example.sync(
+            client=self._client,
+            app_id=app_id,
+            endpoint_id=endpoint_id,
+            json_body=event_example_in,
+            **options.to_dict(),
+        )
+
 
 class EventTypeAsync(ApiBase):
     async def list(self, options: EventTypeListOptions = EventTypeListOptions()) -> ListResponseEventTypeOut:
-        return await list_event_types_api_v1_event_type_get.asyncio(
+        return await v1_event_type_list.asyncio(
             client=self._client,
             **options.to_dict(),
         )
 
     async def create(self, event_type_in: EventTypeIn, options: PostOptions = PostOptions()) -> EventTypeOut:
-        return await create_event_type_api_v1_event_type_post.asyncio(
+        return await v1_event_type_create.asyncio(
             client=self._client,
             json_body=event_type_in,
             **options.to_dict(),
         )
 
     async def get(self, event_type_name: str) -> EventTypeOut:
-        return await get_event_type_api_v1_event_type_event_type_name_get.asyncio(
+        return await v1_event_type_get.asyncio(
             client=self._client,
             event_type_name=event_type_name,
         )
 
     async def update(self, event_type_name: str, event_type_update: EventTypeUpdate) -> EventTypeOut:
-        return await update_event_type_api_v1_event_type_event_type_name_put.asyncio(
+        return await v1_event_type_update.asyncio(
             client=self._client,
             event_type_name=event_type_name,
             json_body=event_type_update,
         )
 
     async def delete(self, event_type_name: str) -> None:
-        return await delete_event_type_api_v1_event_type_event_type_name_delete.asyncio(
+        return await v1_event_type_delete.asyncio(
             client=self._client,
             event_type_name=event_type_name,
         )
@@ -547,33 +571,33 @@ class EventTypeAsync(ApiBase):
 
 class EventType(ApiBase):
     def list(self, options: EventTypeListOptions = EventTypeListOptions()) -> ListResponseEventTypeOut:
-        return list_event_types_api_v1_event_type_get.sync(
+        return v1_event_type_list.sync(
             client=self._client,
             **options.to_dict(),
         )
 
     def create(self, event_type_in: EventTypeIn, options: PostOptions = PostOptions()) -> EventTypeOut:
-        return create_event_type_api_v1_event_type_post.sync(
+        return v1_event_type_create.sync(
             client=self._client,
             json_body=event_type_in,
             **options.to_dict(),
         )
 
     def get(self, event_type_name: str) -> EventTypeOut:
-        return get_event_type_api_v1_event_type_event_type_name_get.sync(
+        return v1_event_type_get.sync(
             client=self._client,
             event_type_name=event_type_name,
         )
 
     def update(self, event_type_name: str, event_type_update: EventTypeUpdate) -> EventTypeOut:
-        return update_event_type_api_v1_event_type_event_type_name_put.sync(
+        return v1_event_type_update.sync(
             client=self._client,
             event_type_name=event_type_name,
             json_body=event_type_update,
         )
 
     def delete(self, event_type_name: str) -> None:
-        return delete_event_type_api_v1_event_type_event_type_name_delete.sync(
+        return v1_event_type_delete.sync(
             client=self._client,
             event_type_name=event_type_name,
         )
@@ -583,7 +607,7 @@ class IntegrationAsync(ApiBase):
     async def list(
         self, app_id: str, options: IntegrationListOptions = IntegrationListOptions()
     ) -> ListResponseIntegrationOut:
-        return await list_integrations_api_v1_app_app_id_integration_get.asyncio(
+        return await v1_integration_list.asyncio(
             client=self._client,
             app_id=app_id,
             **options.to_dict(),
@@ -592,7 +616,7 @@ class IntegrationAsync(ApiBase):
     async def create(
         self, app_id: str, integ_in: IntegrationIn, options: PostOptions = PostOptions()
     ) -> IntegrationOut:
-        return await create_integration_api_v1_app_app_id_integration_post.asyncio(
+        return await v1_integration_create.asyncio(
             client=self._client,
             app_id=app_id,
             json_body=integ_in,
@@ -600,14 +624,14 @@ class IntegrationAsync(ApiBase):
         )
 
     async def get(self, app_id: str, integ_id: str) -> IntegrationOut:
-        return await get_integration_api_v1_app_app_id_integration_integ_id_get.asyncio(
+        return await v1_integration_get.asyncio(
             client=self._client,
             app_id=app_id,
             integ_id=integ_id,
         )
 
     async def update(self, app_id: str, integ_id: str, integ_update: IntegrationUpdate) -> IntegrationOut:
-        return await update_integration_api_v1_app_app_id_integration_integ_id_put.asyncio(
+        return await v1_integration_update.asyncio(
             client=self._client,
             app_id=app_id,
             integ_id=integ_id,
@@ -615,21 +639,21 @@ class IntegrationAsync(ApiBase):
         )
 
     async def delete(self, app_id: str, integ_id: str) -> None:
-        return await delete_integration_api_v1_app_app_id_integration_integ_id_delete.asyncio(
+        return await v1_integration_delete.asyncio(
             client=self._client,
             app_id=app_id,
             integ_id=integ_id,
         )
 
     async def get_key(self, app_id: str, integ_id: str) -> IntegrationKeyOut:
-        return await get_integration_key_api_v1_app_app_id_integration_integ_id_key_get.asyncio(
+        return await v1_integration_get_key.asyncio(
             client=self._client,
             app_id=app_id,
             integ_id=integ_id,
         )
 
     async def rotate_key(self, app_id: str, integ_id: str, options: PostOptions = PostOptions()) -> IntegrationKeyOut:
-        return await rotate_integration_key_api_v1_app_app_id_integration_integ_id_key_rotate_post.asyncio(
+        return await v1_integration_rotate_key.asyncio(
             client=self._client,
             app_id=app_id,
             integ_id=integ_id,
@@ -641,14 +665,14 @@ class Integration(ApiBase):
     def list(
         self, app_id: str, options: IntegrationListOptions = IntegrationListOptions()
     ) -> ListResponseIntegrationOut:
-        return list_integrations_api_v1_app_app_id_integration_get.sync(
+        return v1_integration_list.sync(
             client=self._client,
             app_id=app_id,
             **options.to_dict(),
         )
 
     def create(self, app_id: str, integ_in: IntegrationIn, options: PostOptions = PostOptions()) -> IntegrationOut:
-        return create_integration_api_v1_app_app_id_integration_post.sync(
+        return v1_integration_create.sync(
             client=self._client,
             app_id=app_id,
             json_body=integ_in,
@@ -656,14 +680,14 @@ class Integration(ApiBase):
         )
 
     def get(self, app_id: str, integ_id: str) -> IntegrationOut:
-        return get_integration_api_v1_app_app_id_integration_integ_id_get.sync(
+        return v1_integration_get.sync(
             client=self._client,
             app_id=app_id,
             integ_id=integ_id,
         )
 
     def update(self, app_id: str, integ_id: str, integ_update: IntegrationUpdate) -> IntegrationOut:
-        return update_integration_api_v1_app_app_id_integration_integ_id_put.sync(
+        return v1_integration_update.sync(
             client=self._client,
             app_id=app_id,
             integ_id=integ_id,
@@ -671,21 +695,21 @@ class Integration(ApiBase):
         )
 
     def delete(self, app_id: str, integ_id: str) -> None:
-        return delete_integration_api_v1_app_app_id_integration_integ_id_delete.sync(
+        return v1_integration_delete.sync(
             client=self._client,
             app_id=app_id,
             integ_id=integ_id,
         )
 
     def get_key(self, app_id: str, integ_id: str) -> IntegrationKeyOut:
-        return get_integration_key_api_v1_app_app_id_integration_integ_id_key_get.sync(
+        return v1_integration_get_key.sync(
             client=self._client,
             app_id=app_id,
             integ_id=integ_id,
         )
 
     def rotate_key(self, app_id: str, integ_id: str, options: PostOptions = PostOptions()) -> IntegrationKeyOut:
-        return rotate_integration_key_api_v1_app_app_id_integration_integ_id_key_rotate_post.sync(
+        return v1_integration_rotate_key.sync(
             client=self._client,
             app_id=app_id,
             integ_id=integ_id,
@@ -695,14 +719,14 @@ class Integration(ApiBase):
 
 class MessageAsync(ApiBase):
     async def list(self, app_id: str, options: MessageListOptions = MessageListOptions()) -> ListResponseMessageOut:
-        return await list_messages_api_v1_app_app_id_msg_get.asyncio(
+        return await v1_message_list.asyncio(
             client=self._client,
             app_id=app_id,
             **options.to_dict(),
         )
 
     async def create(self, app_id: str, message_in: MessageIn, options: PostOptions = PostOptions()) -> MessageOut:
-        ret = await create_message_api_v1_app_app_id_msg_post.asyncio(
+        ret = await v1_message_create.asyncio(
             client=self._client,
             app_id=app_id,
             json_body=message_in,
@@ -713,14 +737,14 @@ class MessageAsync(ApiBase):
         return ret
 
     async def get(self, app_id: str, msg_id: str) -> MessageOut:
-        return await get_message_api_v1_app_app_id_msg_msg_id_get.asyncio(
+        return await v1_message_get.asyncio(
             client=self._client,
             app_id=app_id,
             msg_id=msg_id,
         )
 
     async def expunge_content(self, app_id: str, msg_id: str) -> None:
-        return await expunge_message_payload_api_v1_app_app_id_msg_msg_id_content_delete.asyncio(
+        return await v1_message_expunge_content.asyncio(
             client=self._client,
             app_id=app_id,
             msg_id=msg_id,
@@ -729,14 +753,14 @@ class MessageAsync(ApiBase):
 
 class Message(ApiBase):
     def list(self, app_id: str, options: MessageListOptions = MessageListOptions()) -> ListResponseMessageOut:
-        return list_messages_api_v1_app_app_id_msg_get.sync(
+        return v1_message_list.sync(
             client=self._client,
             app_id=app_id,
             **options.to_dict(),
         )
 
     def create(self, app_id: str, message_in: MessageIn, options: PostOptions = PostOptions()) -> MessageOut:
-        ret = create_message_api_v1_app_app_id_msg_post.sync(
+        ret = v1_message_create.sync(
             client=self._client,
             app_id=app_id,
             json_body=message_in,
@@ -747,14 +771,14 @@ class Message(ApiBase):
         return ret
 
     def get(self, app_id: str, msg_id: str) -> MessageOut:
-        return get_message_api_v1_app_app_id_msg_msg_id_get.sync(
+        return v1_message_get.sync(
             client=self._client,
             app_id=app_id,
             msg_id=msg_id,
         )
 
     def expunge_content(self, app_id: str, msg_id: str) -> None:
-        return expunge_message_payload_api_v1_app_app_id_msg_msg_id_content_delete.sync(
+        return v1_message_expunge_content.sync(
             client=self._client,
             app_id=app_id,
             msg_id=msg_id,
@@ -765,19 +789,19 @@ class MessageAttemptAsync(ApiBase):
     async def list_by_msg(
         self, app_id: str, msg_id: str, options: MessageAttemptListOptions = MessageAttemptListOptions()
     ) -> ListResponseMessageAttemptOut:
-        return await list_attempts_by_msg_api_v1_app_app_id_attempt_msg_msg_id_get.asyncio(
+        return await v1_message_attempt_list_by_msg.asyncio(
             client=self._client, app_id=app_id, msg_id=msg_id, **options.to_dict()
         )
 
     async def list_by_endpoint(
         self, app_id: str, endpoint_id: str, options: MessageAttemptListOptions = MessageAttemptListOptions()
     ) -> ListResponseMessageAttemptOut:
-        return await list_attempts_by_endpoint_api_v1_app_app_id_attempt_endpoint_endpoint_id_get.asyncio(
+        return await v1_message_attempt_list_by_endpoint.asyncio(
             client=self._client, app_id=app_id, endpoint_id=endpoint_id, **options.to_dict()
         )
 
     async def get(self, app_id: str, msg_id: str, attempt_id: str) -> MessageAttemptOut:
-        return await get_attempt_api_v1_app_app_id_msg_msg_id_attempt_attempt_id_get.asyncio(
+        return await v1_message_attempt_get.asyncio(
             client=self._client,
             app_id=app_id,
             msg_id=msg_id,
@@ -785,7 +809,7 @@ class MessageAttemptAsync(ApiBase):
         )
 
     async def resend(self, app_id: str, msg_id: str, endpoint_id: str, options: PostOptions = PostOptions()) -> None:
-        return await resend_webhook_api_v1_app_app_id_msg_msg_id_endpoint_endpoint_id_resend_post.asyncio(
+        return await v1_message_attempt_resend.asyncio(
             client=self._client,
             app_id=app_id,
             msg_id=msg_id,
@@ -796,7 +820,7 @@ class MessageAttemptAsync(ApiBase):
     async def list_attempted_messages(
         self, app_id: str, endpoint_id: str, options: MessageAttemptListOptions = MessageAttemptListOptions()
     ) -> ListResponseEndpointMessageOut:
-        return await list_attempted_messages_api_v1_app_app_id_endpoint_endpoint_id_msg_get.asyncio(
+        return await v1_message_attempt_list_attempted_messages.asyncio(
             client=self._client,
             app_id=app_id,
             endpoint_id=endpoint_id,
@@ -806,7 +830,7 @@ class MessageAttemptAsync(ApiBase):
     async def list_attempted_destinations(
         self, app_id: str, msg_id: str, options: MessageAttemptListOptions = MessageAttemptListOptions()
     ) -> ListResponseMessageEndpointOut:
-        return await list_attempted_destinations_api_v1_app_app_id_msg_msg_id_endpoint_get.asyncio(
+        return await v1_message_attempt_list_attempted_destinations.asyncio(
             client=self._client,
             app_id=app_id,
             msg_id=msg_id,
@@ -820,7 +844,7 @@ class MessageAttemptAsync(ApiBase):
         endpoint_id: str,
         options: MessageAttemptListOptions = MessageAttemptListOptions(),
     ) -> ListResponseMessageAttemptEndpointOut:
-        return await list_attempts_for_endpoint_api_v1_app_app_id_msg_msg_id_endpoint_endpoint_id_attempt_get.asyncio(
+        return await v1_message_attempt_list_by_endpoint_deprecated.asyncio(
             client=self._client,
             app_id=app_id,
             msg_id=msg_id,
@@ -834,7 +858,7 @@ class MessageAttemptAsync(ApiBase):
         msg_id: str,
         attempt_id: str,
     ) -> None:
-        return await expunge_attempt_content_api_v1_app_app_id_msg_msg_id_attempt_attempt_id_content_delete.asyncio(
+        return await v1_message_attempt_expunge_content.asyncio(
             client=self._client,
             app_id=app_id,
             msg_id=msg_id,
@@ -852,19 +876,19 @@ class MessageAttempt(ApiBase):
     def list_by_msg(
         self, app_id: str, msg_id: str, options: MessageAttemptListOptions = MessageAttemptListOptions()
     ) -> ListResponseMessageAttemptOut:
-        return list_attempts_by_msg_api_v1_app_app_id_attempt_msg_msg_id_get.sync(
+        return v1_message_attempt_list_by_msg.sync(
             client=self._client, app_id=app_id, msg_id=msg_id, **options.to_dict()
         )
 
     def list_by_endpoint(
         self, app_id: str, endpoint_id: str, options: MessageAttemptListOptions = MessageAttemptListOptions()
     ) -> ListResponseMessageAttemptOut:
-        return list_attempts_by_endpoint_api_v1_app_app_id_attempt_endpoint_endpoint_id_get.sync(
+        return v1_message_attempt_list_by_endpoint.sync(
             client=self._client, app_id=app_id, endpoint_id=endpoint_id, **options.to_dict()
         )
 
     def get(self, app_id: str, msg_id: str, attempt_id: str) -> MessageAttemptOut:
-        return get_attempt_api_v1_app_app_id_msg_msg_id_attempt_attempt_id_get.sync(
+        return v1_message_attempt_get.sync(
             client=self._client,
             app_id=app_id,
             msg_id=msg_id,
@@ -872,7 +896,7 @@ class MessageAttempt(ApiBase):
         )
 
     def resend(self, app_id: str, msg_id: str, endpoint_id: str, options: PostOptions = PostOptions()) -> None:
-        return resend_webhook_api_v1_app_app_id_msg_msg_id_endpoint_endpoint_id_resend_post.sync(
+        return v1_message_attempt_resend.sync(
             client=self._client,
             app_id=app_id,
             msg_id=msg_id,
@@ -883,7 +907,7 @@ class MessageAttempt(ApiBase):
     def list_attempted_messages(
         self, app_id: str, endpoint_id: str, options: MessageAttemptListOptions = MessageAttemptListOptions()
     ) -> ListResponseEndpointMessageOut:
-        return list_attempted_messages_api_v1_app_app_id_endpoint_endpoint_id_msg_get.sync(
+        return v1_message_attempt_list_attempted_messages.sync(
             client=self._client,
             app_id=app_id,
             endpoint_id=endpoint_id,
@@ -893,7 +917,7 @@ class MessageAttempt(ApiBase):
     def list_attempted_destinations(
         self, app_id: str, msg_id: str, options: MessageAttemptListOptions = MessageAttemptListOptions()
     ) -> ListResponseMessageEndpointOut:
-        return list_attempted_destinations_api_v1_app_app_id_msg_msg_id_endpoint_get.sync(
+        return v1_message_attempt_list_attempted_destinations.sync(
             client=self._client,
             app_id=app_id,
             msg_id=msg_id,
@@ -907,7 +931,7 @@ class MessageAttempt(ApiBase):
         endpoint_id: str,
         options: MessageAttemptListOptions = MessageAttemptListOptions(),
     ) -> ListResponseMessageAttemptEndpointOut:
-        return list_attempts_for_endpoint_api_v1_app_app_id_msg_msg_id_endpoint_endpoint_id_attempt_get.sync(
+        return v1_message_attempt_list_by_endpoint_deprecated.sync(
             client=self._client,
             app_id=app_id,
             msg_id=msg_id,
@@ -921,12 +945,30 @@ class MessageAttempt(ApiBase):
         msg_id: str,
         attempt_id: str,
     ) -> None:
-        return expunge_attempt_content_api_v1_app_app_id_msg_msg_id_attempt_attempt_id_content_delete.sync(
+        return v1_message_attempt_expunge_content.sync(
             client=self._client,
             app_id=app_id,
             msg_id=msg_id,
             attempt_id=attempt_id,
         )
+
+
+class BackgroundTaskAsync(ApiBase):
+    async def list(
+        self, options: BackgroundTaskListOptions = BackgroundTaskListOptions()
+    ) -> ListResponseBackgroundTaskOut:
+        return await list_background_tasks.asyncio(client=self._client, **options.to_dict())
+
+    async def get(self, task_id: str) -> BackgroundTaskOut:
+        return await get_background_task.asyncio(client=self._client, task_id=task_id)
+
+
+class BackgroundTask(ApiBase):
+    def list(self, options: BackgroundTaskListOptions = BackgroundTaskListOptions()) -> ListResponseBackgroundTaskOut:
+        return list_background_tasks.sync(client=self._client, **options.to_dict())
+
+    def get(self, task_id: str) -> BackgroundTaskOut:
+        return get_background_task.sync(client=self._client, task_id=task_id)
 
 
 class ClientBase:

@@ -9,7 +9,9 @@ use svix_server::{
     db::models::message,
     expired_message_cleaner,
     v1::{
-        endpoints::attempt::MessageAttemptOut, endpoints::message::MessageOut, utils::ListResponse,
+        endpoints::attempt::MessageAttemptOut,
+        endpoints::message::{MessageOut, RawPayload},
+        utils::ListResponse,
     },
 };
 
@@ -126,7 +128,10 @@ async fn test_message_create_read_list_with_content() {
         .await
         .unwrap();
 
-    assert_eq!(msg_1_w_payload.payload, msg_payload);
+    assert_eq!(
+        msg_1_w_payload.payload.0.get(),
+        serde_json::to_string(&msg_payload).unwrap()
+    );
 
     let msg_2_wo_payload: MessageOut = client
         .post(
@@ -137,14 +142,14 @@ async fn test_message_create_read_list_with_content() {
         .await
         .unwrap();
 
-    assert_eq!(msg_2_wo_payload.payload, serde_json::json!({}));
+    assert_eq!(msg_2_wo_payload.payload.0.get(), "{}");
 
     let msg_1_wo_payload = MessageOut {
-        payload: serde_json::json!({}),
+        payload: RawPayload::from_string("{}".to_string()).unwrap(),
         ..msg_1_w_payload.clone()
     };
     let msg_2_w_payload = MessageOut {
-        payload: msg_payload,
+        payload: RawPayload::from_string(serde_json::to_string(&msg_payload).unwrap()).unwrap(),
         ..msg_2_wo_payload.clone()
     };
 
@@ -427,7 +432,10 @@ async fn test_expunge_message_payload() {
         .await
         .unwrap();
 
-    assert_eq!(msg.payload, payload);
+    assert_eq!(
+        msg.payload.0.get(),
+        serde_json::to_string(&payload).unwrap()
+    );
 
     let msg = client
         .get::<MessageOut>(
@@ -436,7 +444,10 @@ async fn test_expunge_message_payload() {
         )
         .await
         .unwrap();
-    assert_eq!(msg.payload, payload);
+    assert_eq!(
+        msg.payload.0.get(),
+        serde_json::to_string(&payload).unwrap()
+    );
 
     let _: IgnoredResponse = client
         .delete(
@@ -454,5 +465,5 @@ async fn test_expunge_message_payload() {
         .await
         .unwrap();
 
-    assert_eq!(msg.payload, serde_json::json!({"expired": true}));
+    assert_eq!(msg.payload.0.get(), r#"{"expired":true}"#);
 }

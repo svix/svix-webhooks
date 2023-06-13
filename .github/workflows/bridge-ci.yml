@@ -1,0 +1,88 @@
+name: Bridge CI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'bridge/**'
+      - '.github/workflows/bridge-ci.yml'
+  pull_request:
+    paths:
+      - 'bridge/**'
+      - '.github/workflows/bridge-ci.yml'
+
+jobs:
+  test-versions:
+    name: Webhook Bridge CI
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust: [stable, beta]
+    steps:
+    - uses: actions/checkout@master
+    - uses: actions-rs/toolchain@v1
+      with:
+        toolchain: ${{ matrix.rust }}
+        override: true
+        profile: minimal
+        components: clippy, rustfmt
+    - uses: Swatinem/rust-cache@v1
+      with:
+        working-directory: bridge
+
+    - name: rustfmt
+      uses: actions-rs/cargo@v1
+      with:
+        command: fmt
+        args: --manifest-path bridge/Cargo.toml --all -- --check
+
+    - name: Install dependencies
+      # Packages should align with whatever is in the bridge/Dockerfile
+      run: |
+        sudo apt-get install -y \
+          build-essential=12.* \
+          checkinstall=1.* \
+          curl \
+          libssl-dev=* \
+          pkg-config=0.29.* \
+          protobuf-compiler=* \
+          zlib1g-dev=1:*
+
+    - name: Build
+      uses: actions-rs/cargo@v1
+      with:
+        command: build
+        args: --manifest-path bridge/Cargo.toml --all --locked
+
+    - name: Start dependencies
+      run: docker-compose -f "bridge/testing-docker-compose.yml" up -d
+
+    - name: Clippy
+      uses: actions-rs/cargo@v1
+      with:
+        command: clippy
+        args: --manifest-path bridge/Cargo.toml --all --all-targets --all-features -- -D warnings
+
+    - name: Run tests
+      working-directory: ./bridge
+      run: ./run-tests.sh
+
+    - name: Stop dependencies
+      run: docker-compose -f "bridge/testing-docker-compose.yml" down
+
+#  deny-check:
+#    name: cargo-deny check
+#    runs-on: ubuntu-latest
+#    continue-on-error: ${{ matrix.checks == 'advisories' }}
+#    strategy:
+#      matrix:
+#        checks:
+#          - advisories
+#          - bans licenses sources
+#    steps:
+#      - uses: actions/checkout@v2
+#      - uses: EmbarkStudios/cargo-deny-action@v1
+#        with:
+#          command: check ${{ matrix.checks }}
+#          arguments: --all-features --manifest-path axum/Cargo.toml

@@ -11,14 +11,12 @@ use crate::{
     ctx,
     db::models::endpoint,
     error::{HttpError, Result},
-    v1::utils::{ApplicationEndpointPath, EmptyResponse, JsonStatus, ModelIn, ValidatedJson},
+    v1::utils::{ApplicationEndpointPath, ModelIn, NoContent, ValidatedJson},
     AppState,
 };
 
 /// Get the additional headers to be sent with the webhook
-#[aide_annotate(
-    op_id = "get_endpoint_headers_api_v1_app__app_id__endpoint__endpoint_id__headers__get"
-)]
+#[aide_annotate(op_id = "v1.endpoint.get-headers")]
 pub(super) async fn get_endpoint_headers(
     State(AppState { ref db, .. }): State<AppState>,
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
@@ -38,15 +36,13 @@ pub(super) async fn get_endpoint_headers(
 }
 
 /// Set the additional headers to be sent with the webhook
-#[aide_annotate(
-    op_id = "update_endpoint_headers_api_v1_app__app_id__endpoint__endpoint_id__headers__put"
-)]
+#[aide_annotate(op_id = "v1.endpoint.update-headers")]
 pub(super) async fn update_endpoint_headers(
     State(AppState { ref db, .. }): State<AppState>,
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
     ValidatedJson(data): ValidatedJson<EndpointHeadersIn>,
-) -> Result<JsonStatus<204, EmptyResponse>> {
+) -> Result<NoContent> {
     let endp = ctx!(
         endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endpoint_id)
             .one(db)
@@ -58,19 +54,17 @@ pub(super) async fn update_endpoint_headers(
     data.update_model(&mut endp);
     ctx!(endp.update(db).await)?;
 
-    Ok(JsonStatus(EmptyResponse {}))
+    Ok(NoContent)
 }
 
 /// Partially set the additional headers to be sent with the webhook
-#[aide_annotate(
-    op_id = "patch_endpoint_headers_api_v1_app__app_id__endpoint__endpoint_id__headers__patch"
-)]
+#[aide_annotate(op_id = "v1.endpoint.patch-headers")]
 pub(super) async fn patch_endpoint_headers(
     State(AppState { ref db, .. }): State<AppState>,
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
     ValidatedJson(data): ValidatedJson<EndpointHeadersPatchIn>,
-) -> Result<JsonStatus<204, EmptyResponse>> {
+) -> Result<NoContent> {
     let endp = ctx!(
         endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endpoint_id)
             .one(db)
@@ -82,7 +76,7 @@ pub(super) async fn patch_endpoint_headers(
     data.update_model(&mut endp);
     ctx!(endp.update(db).await)?;
 
-    Ok(JsonStatus(EmptyResponse {}))
+    Ok(NoContent)
 }
 
 #[cfg(test)]

@@ -10,13 +10,13 @@ services:
       - "5432:5432"
 
   redis:
-    image: "redis:6.2-alpine"
+    image: "redis:7-alpine"
     ports:
       - "6379:6379"
 
   # Redis cluster
   redis-cluster:
-    image: "bitnami/redis-cluster:6.2"
+    image: "bitnami/redis-cluster:7.0"
     environment:
       ALLOW_EMPTY_PASSWORD: "yes"
       REDIS_NODES: "redis-cluster redis-cluster-node-0 redis-cluster-node-1 redis-cluster-node-2 redis-cluster-node-3 redis-cluster-node-4"
@@ -32,7 +32,7 @@ services:
       - redis-cluster-node-4
 
   redis-cluster-node-0:
-    image: "bitnami/redis-cluster:6.2"
+    image: "bitnami/redis-cluster:7.0"
     ports:
       - "6381:6379"
     environment:
@@ -40,7 +40,7 @@ services:
       REDIS_NODES: "redis-cluster redis-cluster-node-0 redis-cluster-node-1 redis-cluster-node-2 redis-cluster-node-3 redis-cluster-node-4"
 
   redis-cluster-node-1:
-    image: "bitnami/redis-cluster:6.2"
+    image: "bitnami/redis-cluster:7.0"
     ports:
       - "6382:6379"
     environment:
@@ -48,7 +48,7 @@ services:
       REDIS_NODES: "redis-cluster redis-cluster-node-0 redis-cluster-node-1 redis-cluster-node-2 redis-cluster-node-3 redis-cluster-node-4"
 
   redis-cluster-node-2:
-    image: "bitnami/redis-cluster:6.2"
+    image: "bitnami/redis-cluster:7.0"
     ports:
       - "6383:6379"
     environment:
@@ -56,7 +56,7 @@ services:
       REDIS_NODES: "redis-cluster redis-cluster-node-0 redis-cluster-node-1 redis-cluster-node-2 redis-cluster-node-3 redis-cluster-node-4"
 
   redis-cluster-node-3:
-    image: "bitnami/redis-cluster:6.2"
+    image: "bitnami/redis-cluster:7.0"
     ports:
       - "6384:6379"
     environment:
@@ -64,13 +64,27 @@ services:
       REDIS_NODES: "redis-cluster redis-cluster-node-0 redis-cluster-node-1 redis-cluster-node-2 redis-cluster-node-3 redis-cluster-node-4"
 
   redis-cluster-node-4:
-    image: "bitnami/redis-cluster:6.2"
+    image: "bitnami/redis-cluster:7.0"
     ports:
       - "6385:6379"
     environment:
       ALLOW_EMPTY_PASSWORD: "yes"
       REDIS_NODES: "redis-cluster redis-cluster-node-0 redis-cluster-node-1 redis-cluster-node-2 redis-cluster-node-3 redis-cluster-node-4"
 
+  rabbitmq:
+    image: rabbitmq:3.11.13-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: "xivs"
+      RABBITMQ_DEFAULT_PASS: "xivs"
+      RABBITMQ_PLUGINS_DIR: "/opt/rabbitmq/plugins:/usr/lib/rabbitmq/plugins"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - ./rabbit/enabled_plugins:/etc/rabbitmq/enabled_plugins
+      - ./rabbit/plugins:/usr/lib/rabbitmq/plugins
+
 volumes:
   postgres-data:
-
+  rabbitmq_data:

@@ -13,6 +13,7 @@ import com.svix.kotlin.models.EndpointStats
 import com.svix.kotlin.models.EndpointTransformationIn
 import com.svix.kotlin.models.EndpointTransformationOut
 import com.svix.kotlin.models.EndpointUpdate
+import com.svix.kotlin.models.EventExampleIn
 import com.svix.kotlin.models.ListResponseEndpointOut
 import com.svix.kotlin.models.RecoverIn
 import com.svix.kotlin.models.ReplayIn
@@ -32,12 +33,11 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         options: EndpointListOptions = EndpointListOptions()
     ): ListResponseEndpointOut {
         try {
-            return api.listEndpointsApiV1AppAppIdEndpointGet(
+            return api.v1EndpointList(
                 appId,
-                options.iterator,
                 options.limit,
-                options.order,
-                null
+                options.iterator,
+                options.order
             )
         } catch (e: Exception) {
             throw ApiException.wrap(e)
@@ -50,7 +50,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         options: PostOptions = PostOptions()
     ): EndpointOut {
         try {
-            return api.createEndpointApiV1AppAppIdEndpointPost(
+            return api.v1EndpointCreate(
                 appId,
                 endpointIn,
                 options.idempotencyKey
@@ -62,7 +62,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
 
     suspend fun get(appId: String, endpointId: String): EndpointOut {
         try {
-            return api.getEndpointApiV1AppAppIdEndpointEndpointIdGet(endpointId, appId, null)
+            return api.v1EndpointGet(endpointId, appId)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -74,11 +74,10 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         endpointUpdate: EndpointUpdate
     ): EndpointOut {
         try {
-            return api.updateEndpointApiV1AppAppIdEndpointEndpointIdPut(
-                endpointId,
+            return api.v1EndpointUpdate(
                 appId,
-                endpointUpdate,
-                null
+                endpointId,
+                endpointUpdate
             )
         } catch (e: Exception) {
             throw ApiException.wrap(e)
@@ -87,7 +86,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
 
     suspend fun delete(appId: String, endpointId: String) {
         try {
-            api.deleteEndpointApiV1AppAppIdEndpointEndpointIdDelete(endpointId, appId, null)
+            api.v1EndpointDelete(appId, endpointId)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -95,10 +94,9 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
 
     suspend fun getSecret(appId: String, endpointId: String): EndpointSecretOut {
         try {
-            return api.getEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGet(
-                endpointId,
+            return api.v1EndpointGetSecret(
                 appId,
-                null
+                endpointId
             )
         } catch (e: Exception) {
             throw ApiException.wrap(e)
@@ -112,9 +110,9 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         options: PostOptions = PostOptions()
     ) {
         try {
-            api.rotateEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretRotatePost(
-                endpointId,
+            api.v1EndpointRotateSecret(
                 appId,
+                endpointId,
                 endpointSecretRotateIn,
                 options.idempotencyKey
             )
@@ -130,7 +128,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         options: PostOptions = PostOptions()
     ) {
         try {
-            api.recoverFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPost(
+            api.v1EndpointRecover(
                 appId,
                 endpointId,
                 recoverIn,
@@ -143,10 +141,9 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
 
     suspend fun getHeaders(appId: String, endpointId: String): EndpointHeadersOut {
         try {
-            return api.getEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersGet(
-                endpointId,
+            return api.v1EndpointGetHeaders(
                 appId,
-                null
+                endpointId
             )
         } catch (e: Exception) {
             throw ApiException.wrap(e)
@@ -159,11 +156,10 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         endpointHeadersIn: EndpointHeadersIn
     ) {
         try {
-            api.updateEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPut(
+            api.v1EndpointUpdateHeaders(
                 appId,
                 endpointId,
-                endpointHeadersIn,
-                null
+                endpointHeadersIn
             )
         } catch (e: Exception) {
             throw ApiException.wrap(e)
@@ -176,23 +172,27 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         endpointHeadersIn: EndpointHeadersPatchIn
     ) {
         try {
-            api.patchEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPatch(
+            api.v1EndpointPatchHeaders(
                 appId,
                 endpointId,
-                endpointHeadersIn,
-                null
+                endpointHeadersIn
             )
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
     }
 
-    suspend fun getStats(appId: String, endpointId: String): EndpointStats {
+    suspend fun getStats(
+        appId: String,
+        endpointId: String,
+        options: EndpointStatsOptions = EndpointStatsOptions()
+    ): EndpointStats {
         try {
-            return api.getEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGet(
-                endpointId,
+            return api.v1EndpointGetStats(
                 appId,
-                null
+                endpointId,
+                options.since,
+                options.until
             )
         } catch (e: Exception) {
             throw ApiException.wrap(e)
@@ -206,7 +206,7 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
         options: PostOptions = PostOptions()
     ) {
         try {
-            api.replayMissingWebhooksApiV1AppAppIdEndpointEndpointIdReplayMissingPost(
+            api.v1EndpointReplay(
                 appId,
                 endpointId,
                 replayIn,
@@ -219,10 +219,9 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
 
     suspend fun transformationGet(appId: String, endpointId: String): EndpointTransformationOut {
         try {
-            return api.getEndpointTransformationApiV1AppAppIdEndpointEndpointIdTransformationGet(
-                endpointId,
+            return api.v1EndpointTransformationGet(
                 appId,
-                null
+                endpointId
             )
         } catch (e: Exception) {
             throw ApiException.wrap(e)
@@ -231,11 +230,23 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
 
     suspend fun transformationPartialUpdate(appId: String, endpointId: String, endpointTransformationIn: EndpointTransformationIn) {
         try {
-            api.setEndpointTransformationApiV1AppAppIdEndpointEndpointIdTransformationPatch(
-                endpointId,
+            api.v1EndpointTransformationPartialUpdate(
                 appId,
-                endpointTransformationIn,
-                null
+                endpointId,
+                endpointTransformationIn
+            )
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
+
+    suspend fun sendExample(appId: String, endpointId: String, eventExampleIn: EventExampleIn, options: PostOptions = PostOptions()) {
+        try {
+            api.v1EndpointSendExample(
+                appId,
+                endpointId,
+                eventExampleIn,
+                options.idempotencyKey
             )
         } catch (e: Exception) {
             throw ApiException.wrap(e)

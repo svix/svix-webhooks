@@ -28,7 +28,7 @@ namespace Svix
             {
                 application = application ?? throw new ArgumentNullException(nameof(application));
 
-                var lApplication = _applicationApi.CreateApplicationApiV1AppPost(
+                var lApplication = _applicationApi.V1ApplicationCreate(
                     application,
                     options?.GetIfExists ?? false,
                     idempotencyKey);
@@ -52,7 +52,7 @@ namespace Svix
             {
                 application = application ?? throw new ArgumentNullException(nameof(application));
 
-                var lApplication = await _applicationApi.CreateApplicationApiV1AppPostAsync(
+                var lApplication = await _applicationApi.V1ApplicationCreateAsync(
                     application,
                     options?.GetIfExists ?? false,
                     idempotencyKey,
@@ -75,9 +75,7 @@ namespace Svix
         {
             try
             {
-                var lResponse = _applicationApi.DeleteApplicationApiV1AppAppIdDeleteWithHttpInfo(
-                    appId,
-                    idempotencyKey);
+                var lResponse = _applicationApi.V1ApplicationDeleteWithHttpInfo(appId);
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
             }
@@ -96,9 +94,8 @@ namespace Svix
         {
             try
             {
-                var lResponse = await _applicationApi.DeleteApplicationApiV1AppAppIdDeleteWithHttpInfoAsync(
+                var lResponse = await _applicationApi.V1ApplicationDeleteWithHttpInfoAsync(
                     appId,
-                    idempotencyKey,
                     cancellationToken);
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
@@ -118,9 +115,7 @@ namespace Svix
         {
             try
             {
-                var lApplication = _applicationApi.GetApplicationApiV1AppAppIdGet(
-                    appId,
-                    idempotencyKey);
+                var lApplication = _applicationApi.V1ApplicationGet(appId);
 
                 return lApplication;
             }
@@ -139,9 +134,7 @@ namespace Svix
         {
             try
             {
-                var lApplication = await _applicationApi.GetApplicationApiV1AppAppIdGetAsync(
-                    appId,
-                    idempotencyKey);
+                var lApplication = await _applicationApi.V1ApplicationGetAsync(appId);
 
                 return lApplication;
             }
@@ -160,11 +153,10 @@ namespace Svix
         {
             try
             {
-                var lResponse = _applicationApi.ListApplicationsApiV1AppGet(
-                    options?.Iterator,
+                var lResponse = _applicationApi.V1ApplicationList(
                     options?.Limit,
-                    options?.Order,
-                    idempotencyKey);
+                    options?.Iterator,
+                    options?.Order);
 
                 return lResponse?.Data;
             }
@@ -183,11 +175,10 @@ namespace Svix
         {
             try
             {
-                var lResponse = await _applicationApi.ListApplicationsApiV1AppGetAsync(
-                    options?.Iterator,
+                var lResponse = await _applicationApi.V1ApplicationListAsync(
                     options?.Limit,
+                    options?.Iterator,
                     options?.Order,
-                    idempotencyKey,
                     cancellationToken);
 
                 return lResponse?.Data;
@@ -207,10 +198,9 @@ namespace Svix
         {
             try
             {
-                var lApplication = _applicationApi.UpdateApplicationApiV1AppAppIdPut(
+                var lApplication = _applicationApi.V1ApplicationUpdate(
                     appId,
-                    application,
-                    idempotencyKey);
+                    application);
 
                 return lApplication;
             }
@@ -229,10 +219,9 @@ namespace Svix
         {
             try
             {
-                var lApplication = await _applicationApi.UpdateApplicationApiV1AppAppIdPutAsync(
+                var lApplication = await _applicationApi.V1ApplicationUpdateAsync(
                     appId,
                     application,
-                    idempotencyKey,
                     cancellationToken);
 
                 return lApplication;

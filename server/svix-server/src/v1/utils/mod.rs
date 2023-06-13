@@ -51,16 +51,26 @@ const PAGINATION_LIMIT_CAP_LIMIT: u64 = 250;
 const PAGINATION_LIMIT_ERROR: &str = "Given limit must not exceed 250";
 
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
+pub struct PaginationDescending<T: Validate + JsonSchema> {
+    #[validate]
+    #[serde(default = "default_limit")]
+    pub limit: PaginationLimit,
+    #[validate]
+    pub iterator: Option<T>,
+}
+
+#[derive(Debug, Deserialize, Validate, JsonSchema)]
 pub struct Pagination<T: Validate + JsonSchema> {
     #[validate]
     #[serde(default = "default_limit")]
     pub limit: PaginationLimit,
     #[validate]
     pub iterator: Option<T>,
-    pub order: Option<ListOrdering>,
+    pub order: Option<Ordering>,
 }
 
 #[derive(Debug, JsonSchema)]
+#[schemars(transparent)]
 pub struct PaginationLimit(pub u64);
 
 impl<'de> Deserialize<'de> for PaginationLimit {
@@ -138,6 +148,10 @@ impl<T: Validate + JsonSchema> JsonSchema for ReversibleIterator<T> {
     fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
         T::json_schema(gen)
     }
+
+    fn is_referenceable() -> bool {
+        false
+    }
 }
 
 /// For use in creating a [`ReversibleIterator`] from `before` and `after` timestamps should one not
@@ -196,9 +210,9 @@ pub fn apply_pagination<
     sort_column: C,
     limit: u64,
     iterator: Option<ReversibleIterator<I>>,
-    ordering: ListOrdering,
+    ordering: Ordering,
 ) -> Q {
-    use ListOrdering::*;
+    use Ordering::*;
     use ReversibleIterator::*;
 
     let query = query.limit(limit + 1);
@@ -222,10 +236,56 @@ pub fn apply_pagination<
     }
 }
 
+/// A response with no body content and a specific response code, specified by
+/// the generic parameter `N`.
+pub struct NoContentWithCode<const N: u16>;
+
+impl<const N: u16> IntoResponse for NoContentWithCode<N> {
+    fn into_response(self) -> axum::response::Response {
+        (StatusCode::from_u16(N).unwrap(), ()).into_response()
+    }
+}
+
+impl<const N: u16> OperationOutput for NoContentWithCode<N> {
+    type Inner = Self;
+
+    fn operation_response(
+        ctx: &mut aide::gen::GenContext,
+        operation: &mut aide::openapi::Operation,
+    ) -> Option<aide::openapi::Response> {
+        <() as OperationOutput>::operation_response(ctx, operation)
+    }
+
+    fn inferred_responses(
+        ctx: &mut aide::gen::GenContext,
+        operation: &mut aide::openapi::Operation,
+    ) -> Vec<(Option<u16>, aide::openapi::Response)> {
+        if let Some(response) = Self::operation_response(ctx, operation) {
+            vec![(Some(N), response)]
+        } else {
+            vec![]
+        }
+    }
+}
+
+/// A response with no body content and HTTP status code 204, the standard code
+/// for such responses.
+#[derive(OperationIo)]
+#[aide(output_with = "()")]
+pub struct NoContent;
+
+impl IntoResponse for NoContent {
+    fn into_response(self) -> axum::response::Response {
+        NoContentWithCode::<204>::into_response(NoContentWithCode)
+    }
+}
+
 #[derive(Serialize, JsonSchema)]
 pub struct EmptyResponse {}
 
-#[derive(Serialize, Deserialize, Clone, JsonSchema)]
+// If you change the internal representation of this then you must also update
+// it in the `JsonSchema` impl below to match.
+#[derive(Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct ListResponse<T> {
     pub data: Vec<T>,
@@ -235,15 +295,53 @@ pub struct ListResponse<T> {
     pub done: bool,
 }
 
+// This custom impl is needed because we want to customize the name of the
+// schema that goes into the spec, but that can only be done by having a custom
+// `JsonSchema` implementation.
+// Tracking issue: https://github.com/GREsau/schemars/issues/193
+impl<T: JsonSchema> JsonSchema for ListResponse<T> {
+    fn schema_name() -> String {
+        let data_type_name = T::schema_name();
+        format!("ListResponse_{data_type_name}_")
+    }
+
+    fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
+        fn example_iterator() -> &'static str {
+            "iterator"
+        }
+
+        fn example_prev_iterator() -> &'static str {
+            "-iterator"
+        }
+
+        // The actual schema generation is still delegated to the derive macro.
+        #[derive(JsonSchema)]
+        #[allow(unused)]
+        #[serde(rename_all = "camelCase")]
+        struct ListResponse<T> {
+            pub data: Vec<T>,
+            #[schemars(example = "example_iterator")]
+            pub iterator: Option<String>,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            #[schemars(example = "example_prev_iterator")]
+            pub prev_iterator: Option<String>,
+            pub done: bool,
+        }
+
+        ListResponse::<T>::json_schema(gen)
+    }
+}
+
 pub trait ModelIn {
     type ActiveModel;
 
     fn update_model(self, model: &mut Self::ActiveModel);
 }
 
+/// Defines the ordering in a listing of results.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-pub enum ListOrdering {
+pub enum Ordering {
     Ascending,
     Descending,
 }
@@ -452,10 +550,10 @@ impl<T: JsonSchema> OperationInput for ValidatedQuery<T> {
 
 // A special wrapper to handle query parameter lists. serde_qs and serde_urlencode can't
 // handle url query param arrays as flexibly as we need to support in our API
-pub struct EventTypesQuery(pub Option<EventTypeNameSet>);
+pub struct EventTypesQueryParams(pub Option<EventTypeNameSet>);
 
 #[async_trait]
-impl<S> FromRequestParts<S> for EventTypesQuery
+impl<S> FromRequestParts<S> for EventTypesQueryParams
 where
     S: Send + Sync,
 {
@@ -465,13 +563,14 @@ where
         let pairs = form_urlencoded::parse(parts.uri.query().unwrap_or_default().as_bytes());
 
         let event_types: HashSet<EventTypeName> = pairs
-            .filter_map(|(key, value)| {
+            .filter(|(key, _)|
                 // want to handle both `?event_types=`, `?event_types[]=`, and `?event_types[1]=`
-                if key == "event_types" || (key.starts_with("event_types[") && key.ends_with(']')) {
-                    Some(EventTypeName(value.into_owned()))
-                } else {
-                    None
-                }
+                key == "event_types" || (key.starts_with("event_types[") && key.ends_with(']')))
+            .flat_map(|(_, value)| {
+                value
+                    .split(',')
+                    .map(|x| EventTypeName(x.to_owned()))
+                    .collect::<Vec<_>>()
             })
             .collect();
 
@@ -487,7 +586,19 @@ where
     }
 }
 
-impl OperationInput for EventTypesQuery {}
+impl OperationInput for EventTypesQueryParams {
+    fn operation_input(ctx: &mut aide::gen::GenContext, operation: &mut aide::openapi::Operation) {
+        // This struct must match what `EventTypesQuery` would be if we used a
+        // simple `#[derive(Deserialize)]` on it.
+        #[derive(JsonSchema)]
+        struct EventTypesQueryParams {
+            #[allow(unused)]
+            event_types: Option<EventTypeNameSet>,
+        }
+
+        Query::<EventTypesQueryParams>::operation_input(ctx, operation);
+    }
+}
 
 pub async fn api_not_implemented() -> Result<()> {
     Err(HttpError::not_implemented(None, None).into())
