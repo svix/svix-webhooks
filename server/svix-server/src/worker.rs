@@ -27,7 +27,6 @@ use chrono::Utc;
 
 use futures::future;
 use http::{HeaderValue, StatusCode, Version};
-use ipnet::IpNet;
 use lazy_static::lazy_static;
 use rand::Rng;
 
@@ -249,6 +248,7 @@ struct WorkerContext<'a> {
     db: &'a DatabaseConnection,
     queue_tx: &'a TaskQueueProducer,
     op_webhook_sender: &'a OperationalWebhookSender,
+    webhook_client: &'a WebhookClient,
 }
 
 struct FailedDispatch(messageattempt::ActiveModel, Error);
@@ -330,12 +330,8 @@ async fn make_http_call(
         created_at,
     }: PendingDispatch,
     msg_dest: &messagedestination::Model,
-    whitelist_subnets: &Option<Arc<Vec<IpNet>>>,
+    client: &WebhookClient,
 ) -> Result<CompletedDispatch> {
-    let client = WebhookClient::new(
-        whitelist_subnets.clone(),
-        Some(Arc::new(vec!["backend".to_owned()])),
-    );
     let req = RequestBuilder::new()
         .method(method)
         .uri_str(&url)
@@ -645,7 +641,7 @@ async fn dispatch_message_task(
     endp: CreateMessageEndpoint,
     msg_dest: messagedestination::Model,
 ) -> Result<()> {
-    let WorkerContext { cfg, .. } = worker_context;
+    let WorkerContext { webhook_client, .. } = worker_context;
 
     tracing::trace!("Dispatch start");
 
@@ -674,13 +670,7 @@ async fn dispatch_message_task(
     let dispatch = prepare_dispatch(worker_context, dispatch_context.clone()).await?;
     let completed = match dispatch {
         IncompleteDispatch::Pending(pending) => {
-            make_http_call(
-                dispatch_context.clone(),
-                pending,
-                &msg_dest,
-                &cfg.whitelist_subnets,
-            )
-            .await?
+            make_http_call(dispatch_context.clone(), pending, &msg_dest, webhook_client).await?
         }
         IncompleteDispatch::Failed(failed) => CompletedDispatch::Failed(failed),
     };
@@ -895,6 +885,11 @@ pub async fn queue_handler(
         tracing::info!("Worker concurrent task limit: {}", task_limit);
     }
 
+    let webhook_client = WebhookClient::new(
+        cfg.whitelist_subnets.clone(),
+        Some(Arc::new(vec!["backend".to_owned()])),
+    );
+
     tokio::spawn(
         async move {
             let mut interval = tokio::time::interval(Duration::from_millis(500));
@@ -950,6 +945,7 @@ pub async fn queue_handler(
                     let queue_tx = queue_tx.clone();
                     let queue_task = delivery.task.clone();
                     let op_webhook_sender = op_webhook_sender.clone();
+                    let webhook_client = webhook_client.clone();
 
                     tokio::spawn(async move {
                         NUM_WORKERS.fetch_add(1, Ordering::Relaxed);
@@ -959,6 +955,7 @@ pub async fn queue_handler(
                             cache: &cache,
                             op_webhook_sender: &op_webhook_sender,
                             queue_tx: &queue_tx,
+                            webhook_client: &webhook_client,
                         };
 
                         let queue_task =
