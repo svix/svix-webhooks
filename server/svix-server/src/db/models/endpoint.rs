@@ -3,7 +3,7 @@
 
 use crate::core::types::{
     ApplicationId, BaseId, EndpointHeaders, EndpointId, EndpointIdOrUid, EndpointSecretInternal,
-    EndpointUid, EventChannelSet, EventTypeNameSet, ExpiringSigningKeys,
+    EndpointUid, EventChannelSet, EventTypeNameSet, ExpiringSigningKeys, SanitizedHeaders,
 };
 use crate::{ctx, error};
 use chrono::Utc;
@@ -33,7 +33,18 @@ pub struct Model {
     pub uid: Option<EndpointUid>,
     pub old_keys: Option<ExpiringSigningKeys>,
     pub channels: Option<EventChannelSet>,
-    pub headers: Option<EndpointHeaders>,
+    #[sea_orm(column_name = "headers")]
+    // This field could contain sensitive information and should
+    // not be exposed or accessed casually:
+    pub headers_dangerous: Option<EndpointHeaders>,
+}
+
+impl Model {
+    pub fn sanitized_headers(&self) -> Option<SanitizedHeaders> {
+        self.headers_dangerous
+            .as_ref()
+            .map(|hdrs| hdrs.clone().into())
+    }
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

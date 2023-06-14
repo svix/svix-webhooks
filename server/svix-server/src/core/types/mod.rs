@@ -5,6 +5,7 @@ use std::collections::{HashMap, HashSet};
 use std::time::Duration;
 
 use chrono::{DateTime, Utc};
+use http::HeaderValue;
 use lazy_static::lazy_static;
 use num_enum::{IntoPrimitive, TryFromPrimitive};
 use p256::ecdsa::{
@@ -1426,6 +1427,58 @@ impl<'de> Deserialize<'de> for FeatureFlag {
 }
 
 pub type FeatureFlagSet = HashSet<FeatureFlag>;
+
+pub struct SanitizedHeaders {
+    pub headers: HashMap<String, String>,
+    pub sensitive: HashSet<String>,
+}
+
+impl SanitizedHeaders {
+    const SENSITIVE_HEADERS: &'static [&'static str] = &[
+        "x-auth-token",
+        "www-authenticate",
+        "authorization",
+        "proxy-authenticate",
+        "proxy-authorization",
+    ];
+}
+
+impl From<EndpointHeaders> for SanitizedHeaders {
+    fn from(hdr: EndpointHeaders) -> Self {
+        let (sens, remaining) = hdr.0.into_iter().partition(|(k, _)| {
+            let k = k.to_lowercase();
+            Self::SENSITIVE_HEADERS.iter().any(|&x| x == k)
+        });
+
+        Self {
+            headers: remaining,
+            sensitive: sens.into_keys().collect(),
+        }
+    }
+}
+
+impl TryFrom<HashMap<String, HeaderValue>> for SanitizedHeaders {
+    type Error = crate::error::Error;
+    fn try_from(hdr: HashMap<String, HeaderValue>) -> Result<Self, Self::Error> {
+        let (sens, remaining): (HashMap<String, HeaderValue>, HashMap<String, HeaderValue>) =
+            hdr.into_iter().partition(|(k, _)| {
+                let k = k.to_lowercase();
+                Self::SENSITIVE_HEADERS.iter().any(|&x| x == k)
+            });
+
+        Ok(Self {
+            headers: remaining
+                .into_iter()
+                .map(|(k, v)| {
+                    v.to_str()
+                        .map(|v| (k, v.to_owned()))
+                        .map_err(|_| err_generic!("Failed to sanitize headers"))
+                })
+                .collect::<Result<_, _>>()?,
+            sensitive: sens.into_keys().collect(),
+        })
+    }
+}
 
 #[cfg(test)]
 mod tests {

@@ -202,7 +202,7 @@ impl TryFrom<endpoint::Model> for CreateMessageEndpoint {
                 .transpose()
                 .map_err(|_| err_validation!("Endpoint rate limit out of bounds"))?,
             first_failure_at: m.first_failure_at,
-            headers: m.headers,
+            headers: m.headers_dangerous,
             disabled: m.disabled,
             deleted: m.deleted,
         })

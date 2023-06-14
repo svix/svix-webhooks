@@ -12,7 +12,7 @@ use crate::{
         permissions,
         types::{
             metadata::Metadata, BaseId, EndpointId, EndpointSecretInternal, EndpointUid,
-            EventChannelSet, EventTypeNameSet, MessageEndpointId, MessageStatus,
+            EventChannelSet, EventTypeNameSet, MessageEndpointId, MessageStatus, SanitizedHeaders,
         },
     },
     ctx,
@@ -551,7 +551,7 @@ impl ModelIn for EndpointHeadersIn {
 
     fn update_model(self, model: &mut Self::ActiveModel) {
         let EndpointHeadersIn { headers } = self;
-        model.headers = Set(Some(headers));
+        model.headers_dangerous = Set(Some(headers));
     }
 }
 
@@ -571,26 +571,11 @@ pub struct EndpointHeadersOut {
     pub sensitive: HashSet<String>,
 }
 
-impl EndpointHeadersOut {
-    const SENSITIVE_HEADERS: &'static [&'static str] = &[
-        "x-auth-token",
-        "www-authenticate",
-        "authorization",
-        "proxy-authenticate",
-        "proxy-authorization",
-    ];
-}
-
-impl From<EndpointHeaders> for EndpointHeadersOut {
-    fn from(hdr: EndpointHeaders) -> Self {
-        let (sens, remaining) = hdr.0.into_iter().partition(|(k, _)| {
-            let k = k.to_lowercase();
-            Self::SENSITIVE_HEADERS.iter().any(|&x| x == k)
-        });
-
+impl From<SanitizedHeaders> for EndpointHeadersOut {
+    fn from(value: SanitizedHeaders) -> Self {
         Self {
-            headers: remaining,
-            sensitive: sens.into_keys().collect(),
+            headers: value.headers,
+            sensitive: value.sensitive,
         }
     }
 }
@@ -616,7 +601,7 @@ impl ModelIn for EndpointHeadersPatchIn {
     fn update_model(self, model: &mut Self::ActiveModel) {
         let EndpointHeadersPatchIn { headers } = self;
 
-        model.headers = if let Some(Some(mut hdrs)) = model.headers.take() {
+        model.headers_dangerous = if let Some(Some(mut hdrs)) = model.headers_dangerous.take() {
             for (k, v) in headers.0 {
                 if let Some(v) = v {
                     hdrs.0.insert(k, v);
@@ -804,7 +789,7 @@ pub fn router() -> ApiRouter<AppState> {
 #[cfg(test)]
 mod tests {
 
-    use crate::core::types::EndpointHeaders;
+    use crate::core::types::{EndpointHeaders, SanitizedHeaders};
 
     use super::{validate_url, EndpointHeadersOut, EndpointHeadersPatchIn, EndpointIn};
     use reqwest::Url;
@@ -891,7 +876,8 @@ mod tests {
             ("X-Auth-Token".to_string(), "test2".to_string()),
         ]));
 
-        let headers_out: EndpointHeadersOut = headers.into();
+        let sanitized_headers: SanitizedHeaders = headers.into();
+        let headers_out: EndpointHeadersOut = sanitized_headers.into();
 
         assert_eq!(
             headers_out.headers,
