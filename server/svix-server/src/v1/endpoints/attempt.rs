@@ -1,20 +1,21 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use crate::{
     core::{
+        message_app::CreateMessageEndpoint,
         permissions,
         types::{
             EndpointId, EndpointIdOrUid, EventChannel, EventTypeNameSet, MessageAttemptId,
             MessageAttemptTriggerType, MessageEndpointId, MessageId, MessageStatus,
-            StatusCodeClass,
+            SanitizedHeaders, StatusCodeClass,
         },
     },
     ctx,
     db::models::{endpoint, message, messagedestination},
-    err_database,
+    err_database, err_generic,
     error::{Error, HttpError, Result},
     queue::MessageTask,
     v1::{
@@ -26,6 +27,7 @@ use crate::{
             PaginationDescending, PaginationLimit, ReversibleIterator, ValidatedQuery,
         },
     },
+    worker::{generate_msg_headers, sign_msg},
     AppState,
 };
 use aide::axum::{
@@ -802,6 +804,95 @@ async fn expunge_attempt_content(
     Ok(StatusCode::NO_CONTENT)
 }
 
+#[derive(Serialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+struct MessageAttemptHeadersOut {
+    pub sent_headers: HashMap<String, String>,
+    pub sensitive: HashSet<String>,
+}
+
+impl From<SanitizedHeaders> for MessageAttemptHeadersOut {
+    fn from(value: SanitizedHeaders) -> Self {
+        Self {
+            sent_headers: value.headers,
+            sensitive: value.sensitive,
+        }
+    }
+}
+
+/// Calculate and return headers used on a given message attempt
+#[aide_annotate(op_id = "v1.message-attempt.get-headers")]
+async fn get_attempt_headers(
+    State(AppState {
+        ref cfg, ref db, ..
+    }): State<AppState>,
+    Path(ApplicationMsgAttemptPath {
+        msg_id, attempt_id, ..
+    }): Path<ApplicationMsgAttemptPath>,
+    permissions::Application { app }: permissions::Application,
+) -> Result<Json<MessageAttemptHeadersOut>> {
+    let msg = ctx!(
+        message::Entity::secure_find_by_id_or_uid(app.id.clone(), msg_id.clone())
+            .one(db)
+            .await
+    )?
+    .ok_or_else(|| HttpError::not_found(None, Some("message not found".into())))?;
+
+    let payload = if let Some(msg_content) = msg.payload {
+        msg_content
+    } else {
+        return Ok(Json(MessageAttemptHeadersOut {
+            sent_headers: HashMap::default(),
+            sensitive: HashSet::default(),
+        }));
+    };
+
+    let attempt = ctx!(
+        messageattempt::Entity::secure_find_by_id(attempt_id)
+            .one(db)
+            .await
+    )?
+    .ok_or_else(|| HttpError::not_found(None, Some("Message attempt not found".to_string())))?;
+
+    let endp: CreateMessageEndpoint = ctx!(
+        endpoint::Entity::secure_find_by_id(app.id.clone(), attempt.endp_id.clone())
+            .one(db)
+            .await
+    )?
+    .ok_or_else(|| {
+        HttpError::not_found(
+            None,
+            Some("Endpoint data for attempt not found".to_string()),
+        )
+    })?
+    .try_into()?;
+
+    let keys = endp.valid_signing_keys();
+
+    let payload = ctx!(serde_json::to_string(&payload)
+        .map_err(|e| err_generic!(format!("Unable to serialize payload: {e:?}"))))?;
+
+    let signatures = sign_msg(
+        &cfg.encryption,
+        attempt.created_at.timestamp(),
+        &payload,
+        &msg.id,
+        &keys,
+    );
+
+    let generated_headers = ctx!(generate_msg_headers(
+        attempt.created_at.timestamp(),
+        &attempt.msg_id,
+        signatures,
+        cfg.whitelabel_headers,
+        endp.headers.as_ref(),
+        &endp.url,
+    ))?;
+
+    let headers = SanitizedHeaders::try_from(generated_headers)?;
+    Ok(Json(headers.into()))
+}
+
 pub fn router() -> ApiRouter<AppState> {
     let tag = openapi_tag("Message Attempt");
     ApiRouter::new()
@@ -810,6 +901,11 @@ pub fn router() -> ApiRouter<AppState> {
             "/app/:app_id/msg/:msg_id/attempt/",
             get_with(list_messageattempts, list_messageattempts_operation),
             &tag,
+        )
+        .api_route_with(
+            "/app/:app_id/msg/:msg_id/attempt/:attempt_id/headers/",
+            get_with(get_attempt_headers, get_attempt_headers_operation),
+            |op| op.hidden(true).with(&tag),
         )
         .api_route_with(
             "/app/:app_id/msg/:msg_id/attempt/:attempt_id/",

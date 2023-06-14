@@ -1652,6 +1652,28 @@
                 ],
                 "type": "object"
             },
+            "MessageAttemptHeadersOut": {
+                "properties": {
+                    "sensitive": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "uniqueItems": true
+                    },
+                    "sentHeaders": {
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "type": "object"
+                    }
+                },
+                "required": [
+                    "sensitive",
+                    "sentHeaders"
+                ],
+                "type": "object"
+            },
             "MessageAttemptOut": {
                 "properties": {
                     "endpointId": {
