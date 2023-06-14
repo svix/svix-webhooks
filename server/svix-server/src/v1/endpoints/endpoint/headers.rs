@@ -29,7 +29,7 @@ pub(super) async fn get_endpoint_headers(
     )?
     .ok_or_else(|| HttpError::not_found(None, None))?;
 
-    match endp.headers {
+    match endp.sanitized_headers() {
         Some(h) => Ok(Json(h.into())),
         None => Ok(Json(EndpointHeadersOut::default())),
     }
@@ -87,7 +87,7 @@ mod tests {
     use sea_orm::ActiveValue::Set;
 
     use crate::{
-        core::types::{EndpointHeaders, EndpointHeadersPatch},
+        core::types::{EndpointHeaders, EndpointHeadersPatch, SanitizedHeaders},
         db::models::endpoint,
         v1::{
             endpoints::endpoint::{EndpointHeadersOut, EndpointHeadersPatchIn},
@@ -102,7 +102,8 @@ mod tests {
             ("authorization".to_owned(), "should-be-omitted".to_owned()),
         ]));
 
-        let epo: EndpointHeadersOut = ep.into();
+        let sanitized: SanitizedHeaders = ep.into();
+        let epo: EndpointHeadersOut = sanitized.into();
         assert_eq!(
             HashMap::from([("x-non-sensitive".to_owned(), "all-clear".to_owned())]),
             epo.headers
@@ -128,11 +129,11 @@ mod tests {
             ("x-3".to_owned(), "123".to_owned()),
         ]));
         let mut model = endpoint::ActiveModel {
-            headers: Set(Some(existing_hdrs)),
+            headers_dangerous: Set(Some(existing_hdrs)),
             ..Default::default()
         };
 
         patched_hdrs.update_model(&mut model);
-        assert_eq!(model.headers, Set(Some(updated_hdrs)));
+        assert_eq!(model.headers_dangerous, Set(Some(updated_hdrs)));
     }
 }
