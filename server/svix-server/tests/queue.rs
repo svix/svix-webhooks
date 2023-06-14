@@ -90,9 +90,12 @@ async fn test_many_queue_consumers_inner(prefix: &str, delay: Option<Duration>) 
                 loop {
                     tokio::select! {
                         recv = c.receive_all() => {
-                            let mut recv = recv.unwrap();
+                            let recv = recv.unwrap();
                             read += recv.len();
-                            out.append(&mut recv);
+                            for r in recv {
+                                out.push(task_queue_delivery_to_u16(&r));
+                                r.ack().await.unwrap();
+                            }
                         }
                         _ = tokio::time::sleep(Duration::from_millis(1000)) => {
                             break;
@@ -108,7 +111,7 @@ async fn test_many_queue_consumers_inner(prefix: &str, delay: Option<Duration>) 
     // Create a Vec with all the threads' outputs
     let mut out = Vec::new();
     for jh in join_handles {
-        let (mut jh_out, read): (Vec<TaskQueueDelivery>, usize) = jh.join().unwrap();
+        let (mut jh_out, read): (Vec<u16>, usize) = jh.join().unwrap();
         out.append(&mut jh_out);
 
         if read < 5 {
@@ -117,11 +120,7 @@ async fn test_many_queue_consumers_inner(prefix: &str, delay: Option<Duration>) 
     }
 
     // Sort it by the message ID
-    out.sort_by(|a: &TaskQueueDelivery, b: &TaskQueueDelivery| {
-        let a = task_queue_delivery_to_u16(a);
-        let b = task_queue_delivery_to_u16(b);
-        a.cmp(&b)
-    });
+    out.sort();
 
     // Then assert that all the messages are there
 
@@ -130,7 +129,7 @@ async fn test_many_queue_consumers_inner(prefix: &str, delay: Option<Duration>) 
     // Genreally, however, this lint is actually good practice.
     #[allow(clippy::needless_range_loop)]
     for index in 0..1000 {
-        assert_eq!(task_queue_delivery_to_u16(&out[index]) as usize, index + 1);
+        assert_eq!(out[index] as usize, index + 1);
     }
 }
 

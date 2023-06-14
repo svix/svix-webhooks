@@ -13,35 +13,35 @@ module Svix
     end
 
     def list_by_msg(app_id, msg_id, options = {})
-      return @api.list_attempts_by_msg_api_v1_app_app_id_attempt_msg_msg_id_get(app_id, msg_id, options)
+      return @api.v1_message_attempt_list_by_msg(app_id, msg_id, options)
     end
 
     def list_by_endpoint(app_id, endpoint_id, options = {})
-      return @api.list_attempts_by_endpoint_api_v1_app_app_id_attempt_endpoint_endpoint_id_get(app_id, endpoint_id, options)
+      return @api.v1_message_attempt_list_by_endpoint(app_id, endpoint_id, options)
     end
 
     def get(app_id, msg_id, attempt_id)
-      return @api.get_attempt_api_v1_app_app_id_msg_msg_id_attempt_attempt_id_get(attempt_id, msg_id, app_id)
+      return @api.v1_message_attempt_get(app_id, msg_id, attempt_id)
     end
 
     def resend(app_id, msg_id, endpoint_id, options = {})
-      return @api.resend_webhook_api_v1_app_app_id_msg_msg_id_endpoint_endpoint_id_resend_post(endpoint_id, msg_id, app_id, options)
+      return @api.v1_message_attempt_resend(app_id, msg_id, endpoint_id, options)
     end
 
     def list_attempted_messages(app_id, endpoint_id, options = {})
-      return @api.list_attempted_messages_api_v1_app_app_id_endpoint_endpoint_id_msg_get(endpoint_id, app_id, options)
+      return @api.v1_message_attempt_list_attempted_messages(app_id, endpoint_id, options)
     end
 
     def list_attempted_destinations(app_id, msg_id, options = {})
-      return @api.list_attempted_destinations_api_v1_app_app_id_msg_msg_id_endpoint_get(msg_id, app_id, options)
+      return @api.v1_message_attempt_list_attempted_destinations(app_id, msg_id, options)
     end
 
     def list_attempts_for_endpoint(app_id, endpoint_id, msg_id, options = {})
-      return @api.list_attempts_for_endpoint_api_v1_app_app_id_msg_msg_id_endpoint_endpoint_id_attempt_get(msg_id, app_id, endpoint_id, options)
+      return @api.v1_message_attempt_list_by_endpoint_deprecated(app_id, msg_id, endpoint_id, options)
     end
 
     def expunge_content(app_id, msg_id, attempt_id)
-      return @api.expunge_attempt_content_api_v1_app_app_id_msg_msg_id_attempt_attempt_id_content_delete(attempt_id, msg_id, app_id)
+      return @api.v1_message_attempt_expunge_content(app_id, msg_id, attempt_id)
     end
   end
 end

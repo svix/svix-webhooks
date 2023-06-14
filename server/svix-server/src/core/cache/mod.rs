@@ -26,10 +26,10 @@ pub enum Error {
     #[error("error deserializing byte array")]
     DeserializationBytes(#[from] FromUtf8Error),
 
-    #[error("Redis pool error")]
+    #[error("Redis pool error: {0}")]
     Pool(#[from] bb8::RunError<RedisError>),
 
-    #[error("Redis database error")]
+    #[error("Redis database error: {0}")]
     Database(#[from] RedisError),
 
     #[error("input error: {0}")]

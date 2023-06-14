@@ -2,6 +2,7 @@ use std::{sync::Arc, time::Duration};
 
 use axum::async_trait;
 use chrono::{DateTime, Utc};
+use lapin::options::{BasicAckOptions, BasicNackOptions};
 use serde::{Deserialize, Serialize};
 use strum::Display;
 use svix_ksuid::*;
@@ -12,10 +13,17 @@ use crate::{
         run_with_retries::run_with_retries,
         types::{ApplicationId, EndpointId, MessageAttemptTriggerType, MessageId},
     },
+    ctx,
     error::{Error, ErrorType, Result},
 };
 
+use self::{
+    memory::{MemoryQueueConsumer, MemoryQueueProducer},
+    redis::{RedisQueueConsumer, RedisQueueInner, RedisQueueProducer},
+};
+
 pub mod memory;
+pub mod rabbitmq;
 pub mod redis;
 
 const RETRY_SCHEDULE: &[Duration] = &[
@@ -42,6 +50,15 @@ pub async fn new_pair(
             redis::new_pair(pool, prefix).await
         }
         QueueBackend::Memory => memory::new_pair().await,
+        QueueBackend::RabbitMq(dsn) => {
+            let prefix = prefix.unwrap_or("");
+            let queue = format!("{prefix}-message-queue");
+            // Default to a prefetch_size of 1, as it's the safest (least likely to starve consumers)
+            let prefetch_size = cfg.rabbit_consumer_prefetch_size.unwrap_or(1);
+            rabbitmq::new_pair(dsn, queue, prefetch_size)
+                .await
+                .expect("can't connect to rabbit")
+        }
     }
 }
 
@@ -103,39 +120,24 @@ pub enum QueueTask {
     MessageBatch(MessageTaskBatch),
 }
 
-pub struct TaskQueueProducer(Box<dyn TaskQueueSend>);
-
-impl Clone for TaskQueueProducer {
-    fn clone(&self) -> Self {
-        Self(self.0.clone_box())
-    }
+#[derive(Clone)]
+pub enum TaskQueueProducer {
+    Memory(MemoryQueueProducer),
+    Redis(RedisQueueProducer),
+    RabbitMq(rabbitmq::Producer),
 }
 
 impl TaskQueueProducer {
     pub async fn send(&self, task: QueueTask, delay: Option<Duration>) -> Result<()> {
         let task = Arc::new(task);
         run_with_retries(
-            || async { self.0.send(task.clone(), delay).await },
-            should_retry,
-            RETRY_SCHEDULE,
-        )
-        .await
-    }
-
-    pub async fn ack(&self, delivery: TaskQueueDelivery) -> Result<()> {
-        tracing::trace!("ack {}", delivery.id);
-        run_with_retries(
-            || async { self.0.ack(&delivery).await },
-            should_retry,
-            RETRY_SCHEDULE,
-        )
-        .await
-    }
-
-    pub async fn nack(&self, delivery: TaskQueueDelivery) -> Result<()> {
-        tracing::trace!("nack {}", delivery.id);
-        run_with_retries(
-            || async { self.0.nack(&delivery).await },
+            || async {
+                match self {
+                    TaskQueueProducer::Memory(q) => q.send(task.clone(), delay).await,
+                    TaskQueueProducer::Redis(q) => q.send(task.clone(), delay).await,
+                    TaskQueueProducer::RabbitMq(q) => q.send(task.clone(), delay).await,
+                }
+            },
             should_retry,
             RETRY_SCHEDULE,
         )
@@ -143,51 +145,109 @@ impl TaskQueueProducer {
     }
 }
 
-pub struct TaskQueueConsumer(Box<dyn TaskQueueReceive + Send + Sync>);
+pub enum TaskQueueConsumer {
+    Redis(RedisQueueConsumer),
+    Memory(MemoryQueueConsumer),
+    RabbitMq(rabbitmq::Consumer),
+}
 
 impl TaskQueueConsumer {
     pub async fn receive_all(&mut self) -> Result<Vec<TaskQueueDelivery>> {
-        self.0.receive_all().await
+        match self {
+            TaskQueueConsumer::Redis(q) => ctx!(q.receive_all().await),
+            TaskQueueConsumer::Memory(q) => ctx!(q.receive_all().await),
+            TaskQueueConsumer::RabbitMq(q) => ctx!(q.receive_all().await),
+        }
     }
 }
 
+/// Used by TaskQueueDeliveries to Ack/Nack itself
+#[derive(Debug)]
+enum Acker {
+    Memory(MemoryQueueProducer),
+    Redis(Arc<RedisQueueInner>),
+    RabbitMQ(lapin::message::Delivery),
+}
+
+#[derive(Debug)]
 pub struct TaskQueueDelivery {
     pub id: String,
     pub task: Arc<QueueTask>,
+    acker: Acker,
 }
 
 impl TaskQueueDelivery {
     /// The `timestamp` is when this message will be delivered at
-    fn from_arc(task: Arc<QueueTask>, timestamp: Option<DateTime<Utc>>) -> Self {
+    fn from_arc(task: Arc<QueueTask>, timestamp: Option<DateTime<Utc>>, acker: Acker) -> Self {
         let ksuid = KsuidMs::new(timestamp, None);
         Self {
             id: ksuid.to_string(),
             task,
+            acker,
         }
+    }
+
+    pub async fn ack(self) -> Result<()> {
+        tracing::trace!("ack {}", self.id);
+        run_with_retries(
+            || async {
+                match &self.acker {
+                    Acker::Memory(_) => Ok(()), // nothing to do
+                    Acker::Redis(q) => {
+                        ctx!(q.ack(&self).await)
+                    }
+                    Acker::RabbitMQ(delivery) => {
+                        ctx!(
+                            delivery
+                                .ack(BasicAckOptions {
+                                    multiple: false // Only ack this message, not others
+                                })
+                                .await
+                        )
+                    }
+                }
+            },
+            should_retry,
+            RETRY_SCHEDULE,
+        )
+        .await
+    }
+
+    pub async fn nack(self) -> Result<()> {
+        tracing::trace!("nack {}", self.id);
+        run_with_retries(
+            || async {
+                match &self.acker {
+                    Acker::Memory(q) => {
+                        tracing::debug!("nack {}", self.id);
+                        ctx!(q.send(self.task.clone(), None).await)
+                    }
+                    Acker::Redis(q) => {
+                        ctx!(q.nack(&self).await)
+                    }
+                    Acker::RabbitMQ(delivery) => {
+                        // See https://www.rabbitmq.com/confirms.html#consumer-nacks-requeue
+                        ctx!(
+                            delivery
+                                .nack(BasicNackOptions {
+                                    requeue: true,
+                                    multiple: false // Only nack this message, not others
+                                })
+                                .await
+                        )
+                    }
+                }
+            },
+            should_retry,
+            RETRY_SCHEDULE,
+        )
+        .await
     }
 }
 
 #[async_trait]
 trait TaskQueueSend: Sync + Send {
     async fn send(&self, task: Arc<QueueTask>, delay: Option<Duration>) -> Result<()>;
-    fn clone_box(&self) -> Box<dyn TaskQueueSend>;
-
-    async fn ack(&self, delivery: &TaskQueueDelivery) -> Result<()>;
-
-    /// By default NACKing a [`TaskQueueDelivery`] simply reinserts it in the back of the queue
-    /// without any delay. Additionally it `ack`s the orignal, now duplicated task, such as to
-    /// avoid memory leaks in persistent implementations of the queue.
-    async fn nack(&self, delivery: &TaskQueueDelivery) -> Result<()> {
-        tracing::debug!("nack {}", delivery.id);
-        self.send(delivery.task.clone(), None).await?;
-        self.ack(delivery).await
-    }
-}
-
-impl Clone for Box<dyn TaskQueueSend> {
-    fn clone(&self) -> Box<dyn TaskQueueSend> {
-        self.clone_box()
-    }
 }
 
 #[async_trait]
@@ -255,8 +315,9 @@ mod tests {
             assert_send(&tx_mem, msg_2).await;
         });
 
-        assert_recv(&mut rx_mem, msg_1).await;
-        assert_recv(&mut rx_mem, msg_2).await;
+        let tasks = rx_mem.receive_all().await.unwrap();
+        assert_eq!(*tasks[0].task, mock_message(msg_1.to_owned()));
+        assert_eq!(*tasks[1].task, mock_message(msg_2.to_owned()));
     }
 
     #[tokio::test]
@@ -297,7 +358,7 @@ mod tests {
 
         assert_eq!(*recv.task, mock_message("test".to_owned()));
 
-        assert!(tx_mem.ack(recv).await.is_ok());
+        assert!(recv.ack().await.is_ok());
 
         tokio::select! {
             _ = rx_mem.receive_all() => {
@@ -326,7 +387,7 @@ mod tests {
             .unwrap();
         assert_eq!(*recv.task, mock_message("test".to_owned()));
 
-        assert!(tx_mem.nack(recv).await.is_ok());
+        assert!(recv.nack().await.is_ok());
 
         tokio::select! {
             _ = rx_mem.receive_all() => {}

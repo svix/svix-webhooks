@@ -5,7 +5,7 @@ flake8
 flake8-print
 pep8-naming
 mypy
-pip-tools
+pip-tools>=6.13.0
 pytest
 httpx>=0.23.0
-openapi-python-client>=0.11.4
+openapi-python-client>=0.14.0

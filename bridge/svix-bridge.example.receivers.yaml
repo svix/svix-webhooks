@@ -1,0 +1,110 @@
+# Svix Bridge Example Configuration
+
+# Set the log level for the service. Supported: error, info, warn, debug, trace. Default: info
+#log_level: "debug"
+
+# The log format that all output will follow. Supported: default, json
+#log_format: "json"
+
+# Optional: configures an OTEL exporter forwarding spans to the specified collector
+opentelemetry:
+  address: "http://localhost:1234"
+  sample_ratio: 0.5
+  # Optional: default "svix-bridge"
+  service_name: "my-bridge"
+
+
+# The host/port to bind to for incoming HTTP requests.
+# Optional: default "0.0.0.0:5000"
+# http_listen_address: "0.0.0.0:5000"
+
+# Receivers are HTTP endpoints that can have webhooks sent to them.
+# When a webhook is POST'ed to a matching URL, it is (optionally) verified,
+# (optionally) transformed via a js function, then forwarded to an "output."
+#
+# Inputs types are "webhook" which allows you to configure a verification scheme
+# (either "svix" or "none") or "svix-webhook" which is a shorthand version.
+#
+# ```
+#   input:
+#     type: "webhook"
+#     path_id: "long-hand"
+#     verification:
+#       type: "svix"
+#       endpoint_secret: "whsec_XXXXX="
+#   # same as...
+#   input:
+#     type: "svix-webhook"
+#     path_id: "shorthand"
+#     endpoint_secret: "whsec_XXXXX="
+# ```
+#
+# The `path_id` in webhook and svix-webhook inputs represents the trailing
+# path segment that will connect to the given output.
+# For example, running bridge with the HTTP listen address set to
+# `localhost:5000`, the above examples would map to the following URLS:
+# - http://localhost:5000/webhook/long-hand
+# - http://localhost:5000/webhook/shorthand
+#
+receivers:
+  - name: "forward-to-gcp-example"
+    input:
+      type: "webhook"
+      path_id: "gcp"
+      verification:
+        type: "svix"
+        endpoint_secret: "whsec_XXXXX="
+    # Optional - when unset, webhooks received will be forwarded to the output as-is.
+    transformation: |
+      function handler(input) {
+        let event_type = input.eventType;
+        delete input.eventType;
+        return { event_type, ...input };
+      }
+    output:
+      type: "gcp-pubsub"
+      topic: "example"
+      # Optional - falls back to env otherwise, eg.
+      # - `GOOGLE_APPLICATION_CREDENTIALS`
+      # - `GOOGLE_APPLICATION_CREDENTIALS_JSON`
+      credentials_file: "/path/to/creds.json"
+
+  - name: "forward-to-rabbitmq-example"
+    input:
+      type: "webhook"
+      path_id: "rabbit"
+      verification:
+        type: "svix"
+        endpoint_secret: "whsec_XXXXX="
+    output:
+      type: "rabbitmq"
+      uri: "amqp://guest:guest@localhost:5672/%2f"
+      exchange: ""
+      routing_key: "example"
+
+  - name: "forward-to-redis-example"
+    input:
+      type: "webhook"
+      path_id: "redis"
+      verification:
+        type: "svix"
+        endpoint_secret: "whsec_XXXXX="
+    output:
+      type: "redis"
+      dsn: "redis://localhost:1234"
+      max_connections: 4
+      queue_key: "my_queue"
+
+  - name: "forward-to-sqs-example"
+    input:
+      type: "webhook"
+      path_id: "sqs"
+      verification:
+        type: "none"
+    output:
+      # Note that the SQS forwarder requires credentials to be set as environment vars:
+      # - `AWS_DEFAULT_REGION`
+      # - `AWS_ACCESS_KEY_ID`
+      # - `AWS_SECRET_ACCESS_KEY`
+      type: "sqs"
+      queue_dsn: "https://aws.example.com/my-queue"

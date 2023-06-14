@@ -5,6 +5,7 @@ use sea_orm::{DatabaseConnection, QuerySelect};
 use svix_server_derive::aide_annotate;
 
 use super::RecoverIn;
+use crate::v1::utils::NoContentWithCode;
 use crate::{
     core::{
         permissions,
@@ -14,7 +15,7 @@ use crate::{
     db::models::{application, endpoint, messagedestination},
     error::{HttpError, Result, ValidationErrorItem},
     queue::{MessageTask, TaskQueueProducer},
-    v1::utils::{ApplicationEndpointPath, EmptyResponse, JsonStatus, ValidatedJson},
+    v1::utils::{ApplicationEndpointPath, ValidatedJson},
     AppState,
 };
 
@@ -69,9 +70,7 @@ async fn bulk_recover_failed_messages(
 }
 
 /// Resend all failed messages since a given time.
-#[aide_annotate(
-    op_id = "recover_failed_webhooks_api_v1_app__app_id__endpoint__endpoint_id__recover__post"
-)]
+#[aide_annotate(op_id = "v1.endpoint.recover")]
 pub(super) async fn recover_failed_webhooks(
     State(AppState {
         ref db, queue_tx, ..
@@ -79,7 +78,7 @@ pub(super) async fn recover_failed_webhooks(
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
     ValidatedJson(data): ValidatedJson<RecoverIn>,
-) -> Result<JsonStatus<202, EmptyResponse>> {
+) -> Result<NoContentWithCode<202>> {
     // Add five minutes so that people can easily just do `now() - two_weeks` without having to worry about clock sync
     let timeframe = chrono::Duration::days(14);
     let timeframe = timeframe + chrono::Duration::minutes(5);
@@ -106,5 +105,5 @@ pub(super) async fn recover_failed_webhooks(
         async move { bulk_recover_failed_messages(db, queue_tx, app, endp, data.since).await },
     );
 
-    Ok(JsonStatus(EmptyResponse {}))
+    Ok(NoContentWithCode)
 }

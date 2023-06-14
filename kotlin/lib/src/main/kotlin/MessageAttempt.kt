@@ -28,19 +28,18 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
 
     suspend fun listByMsg(appId: String, msgId: String, options: MessageAttemptListOptions = MessageAttemptListOptions()): ListResponseMessageAttemptOut {
         try {
-            return api.listAttemptsByMsgApiV1AppAppIdAttemptMsgMsgIdGet(
+            return api.v1MessageAttemptListByMsg(
                 appId,
                 msgId,
-                null,
-                options.iterator,
                 options.limit,
+                options.iterator,
                 options.messageStatus,
                 options.statusCodeClass,
-                options.eventTypes,
                 options.channel,
+                options.endpointId,
                 options.before,
                 options.after,
-                null
+                HashSet(options.eventTypes)
             )
         } catch (e: Exception) {
             throw ApiException.wrap(e)
@@ -49,18 +48,17 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
 
     suspend fun listByEndpoint(appId: String, endpointId: String, options: MessageAttemptListOptions = MessageAttemptListOptions()): ListResponseMessageAttemptOut {
         try {
-            return api.listAttemptsByEndpointApiV1AppAppIdAttemptEndpointEndpointIdGet(
+            return api.v1MessageAttemptListByEndpoint(
                 appId,
                 endpointId,
-                options.iterator,
                 options.limit,
+                options.iterator,
                 options.messageStatus,
                 options.statusCodeClass,
-                options.eventTypes,
                 options.channel,
                 options.before,
                 options.after,
-                null
+                HashSet(options.eventTypes)
             )
         } catch (e: Exception) {
             throw ApiException.wrap(e)
@@ -69,7 +67,7 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
 
     suspend fun get(appId: String, msgId: String, attemptId: String): MessageAttemptOut {
         try {
-            return api.getAttemptApiV1AppAppIdMsgMsgIdAttemptAttemptIdGet(attemptId, msgId, appId, null)
+            return api.v1MessageAttemptGet(appId, msgId, attemptId)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -77,10 +75,10 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
 
     suspend fun resend(appId: String, msgId: String, endpointId: String, options: PostOptions = PostOptions()) {
         try {
-            api.resendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPost(
-                endpointId,
-                msgId,
+            api.v1MessageAttemptResend(
                 appId,
+                msgId,
+                endpointId,
                 options.idempotencyKey
             )
         } catch (e: Exception) {
@@ -94,16 +92,16 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
         options: MessageAttemptListOptions = MessageAttemptListOptions()
     ): ListResponseEndpointMessageOut {
         try {
-            return api.listAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGet(
-                endpointId,
+            return api.v1MessageAttemptListAttemptedMessages(
                 appId,
-                options.iterator,
+                endpointId,
                 options.limit,
+                options.iterator,
                 options.channel,
                 options.messageStatus,
                 options.before,
                 options.after,
-                null
+                options.withContent
             )
         } catch (e: Exception) {
             throw ApiException.wrap(e)
@@ -116,12 +114,11 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
         options: MessageAttemptListOptions = MessageAttemptListOptions()
     ): ListResponseMessageEndpointOut {
         try {
-            return api.listAttemptedDestinationsApiV1AppAppIdMsgMsgIdEndpointGet(
-                msgId,
+            return api.v1MessageAttemptListAttemptedDestinations(
                 appId,
-                options.iterator,
+                msgId,
                 options.limit,
-                null
+                options.iterator
             )
         } catch (e: Exception) {
             throw ApiException.wrap(e)
@@ -135,18 +132,17 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
         options: MessageAttemptListOptions = MessageAttemptListOptions()
     ): ListResponseMessageAttemptEndpointOut {
         return try {
-            api.listAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGet(
-                msgId,
+            api.v1MessageAttemptListByEndpointDeprecated(
                 appId,
+                msgId,
                 endpointId,
-                options.iterator,
                 options.limit,
-                options.eventTypes,
+                options.iterator,
                 options.channel,
                 options.messageStatus,
                 options.before,
                 options.after,
-                null
+                HashSet(options.eventTypes)
             )
         } catch (e: Exception) {
             throw ApiException.wrap(e)
@@ -155,7 +151,7 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
 
     suspend fun expungeContent(appId: String, msgId: String, attemptId: String) {
         try {
-            return api.expungeAttemptContentApiV1AppAppIdMsgMsgIdAttemptAttemptIdContentDelete(attemptId, msgId, appId, null)
+            return api.v1MessageAttemptExpungeContent(appId, msgId, attemptId)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }

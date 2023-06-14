@@ -26,10 +26,9 @@ namespace Svix
         {
             try
             {
-                var lResponse = _eventTypeApi.DeleteEventTypeApiV1EventTypeEventTypeNameDeleteWithHttpInfo(
+                var lResponse = _eventTypeApi.V1EventTypeDeleteWithHttpInfo(
                     eventType,
-                    null,
-                    idempotencyKey);
+                    null);
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
             }
@@ -48,10 +47,9 @@ namespace Svix
         {
             try
             {
-                var lResponse = await _eventTypeApi.DeleteEventTypeApiV1EventTypeEventTypeNameDeleteWithHttpInfoAsync(
+                var lResponse = await _eventTypeApi.V1EventTypeDeleteWithHttpInfoAsync(
                     eventType,
                     null,
-                    idempotencyKey,
                     cancellationToken);
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
@@ -71,7 +69,7 @@ namespace Svix
         {
             try
             {
-                var lEventType = _eventTypeApi.CreateEventTypeApiV1EventTypePost(
+                var lEventType = _eventTypeApi.V1EventTypeCreate(
                     eventType,
                     idempotencyKey);
 
@@ -92,7 +90,7 @@ namespace Svix
         {
             try
             {
-                var lEventType = await _eventTypeApi.CreateEventTypeApiV1EventTypePostAsync(
+                var lEventType = await _eventTypeApi.V1EventTypeCreateAsync(
                     eventType,
                     idempotencyKey,
                     cancellationToken);
@@ -114,9 +112,7 @@ namespace Svix
         {
             try
             {
-                var lEventType = _eventTypeApi.GetEventTypeApiV1EventTypeEventTypeNameGet(
-                    eventType,
-                    idempotencyKey);
+                var lEventType = _eventTypeApi.V1EventTypeGet(eventType);
 
                 return lEventType;
             }
@@ -135,9 +131,8 @@ namespace Svix
         {
             try
             {
-                var lEventType = await _eventTypeApi.GetEventTypeApiV1EventTypeEventTypeNameGetAsync(
+                var lEventType = await _eventTypeApi.V1EventTypeGetAsync(
                     eventType,
-                    idempotencyKey,
                     cancellationToken);
 
                 return lEventType;
@@ -157,12 +152,12 @@ namespace Svix
         {
             try
             {
-                var lResults = _eventTypeApi.ListEventTypesApiV1EventTypeGet(
-                    options?.Iterator,
+                var lResults = _eventTypeApi.V1EventTypeList(
                     options?.Limit,
-                    options?.WithContent,
+                    options?.Iterator,
+                    null,
                     options?.IncludeArchived,
-                    idempotencyKey);
+                    options?.WithContent);
 
                 return lResults?.Data;
             }
@@ -182,12 +177,12 @@ namespace Svix
         {
             try
             {
-                var lResults = await _eventTypeApi.ListEventTypesApiV1EventTypeGetAsync(
-                    options?.Iterator,
+                var lResults = await _eventTypeApi.V1EventTypeListAsync(
                     options?.Limit,
-                    options?.WithContent,
+                    options?.Iterator,
+                    null,
                     options?.IncludeArchived,
-                    idempotencyKey,
+                    options?.WithContent,
                     cancellationToken);
 
                 return lResults?.Data;
@@ -207,10 +202,9 @@ namespace Svix
         {
             try
             {
-                var lEventType = _eventTypeApi.UpdateEventTypeApiV1EventTypeEventTypeNamePut(
+                var lEventType = _eventTypeApi.V1EventTypeUpdate(
                     eventType,
-                    update,
-                    idempotencyKey);
+                    update);
 
                 return lEventType;
             }
@@ -230,10 +224,9 @@ namespace Svix
         {
             try
             {
-                var lEventType = await _eventTypeApi.UpdateEventTypeApiV1EventTypeEventTypeNamePutAsync(
+                var lEventType = await _eventTypeApi.V1EventTypeUpdateAsync(
                     eventType,
                     update,
-                    idempotencyKey,
                     cancellationToken);
 
                 return lEventType;

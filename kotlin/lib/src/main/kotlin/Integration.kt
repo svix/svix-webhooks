@@ -20,7 +20,7 @@ class Integration internal constructor(token: String, options: SvixOptions) {
 
     suspend fun list(appId: String, options: IntegrationListOptions = IntegrationListOptions()): ListResponseIntegrationOut {
         try {
-            return api.listIntegrationsApiV1AppAppIdIntegrationGet(appId, options.iterator, options.limit, null)
+            return api.v1IntegrationList(appId, options.limit, options.iterator)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -28,7 +28,7 @@ class Integration internal constructor(token: String, options: SvixOptions) {
 
     suspend fun create(appId: String, integIn: IntegrationIn, options: PostOptions = PostOptions()): IntegrationOut {
         try {
-            return api.createIntegrationApiV1AppAppIdIntegrationPost(appId, integIn, options.idempotencyKey)
+            return api.v1IntegrationCreate(appId, integIn, options.idempotencyKey)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -36,7 +36,7 @@ class Integration internal constructor(token: String, options: SvixOptions) {
 
     suspend fun get(appId: String, integId: String): IntegrationOut {
         try {
-            return api.getIntegrationApiV1AppAppIdIntegrationIntegIdGet(integId, appId, null)
+            return api.v1IntegrationGet(appId, integId)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -44,7 +44,7 @@ class Integration internal constructor(token: String, options: SvixOptions) {
 
     suspend fun update(appId: String, integId: String, integUpdate: IntegrationUpdate): IntegrationOut {
         try {
-            return api.updateIntegrationApiV1AppAppIdIntegrationIntegIdPut(integId, appId, integUpdate, null)
+            return api.v1IntegrationUpdate(appId, integId, integUpdate)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -52,7 +52,7 @@ class Integration internal constructor(token: String, options: SvixOptions) {
 
     suspend fun delete(appId: String, integId: String) {
         try {
-            api.deleteIntegrationApiV1AppAppIdIntegrationIntegIdDelete(integId, appId, null)
+            api.v1IntegrationDelete(appId, integId)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -60,7 +60,7 @@ class Integration internal constructor(token: String, options: SvixOptions) {
 
     suspend fun getKey(appId: String, integId: String): IntegrationKeyOut {
         try {
-            return api.getIntegrationKeyApiV1AppAppIdIntegrationIntegIdKeyGet(integId, appId, null)
+            return api.v1IntegrationGetKey(appId, integId)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -68,9 +68,9 @@ class Integration internal constructor(token: String, options: SvixOptions) {
 
     suspend fun rotateKey(appId: String, integId: String, options: PostOptions = PostOptions()): IntegrationKeyOut {
         try {
-            return api.rotateIntegrationKeyApiV1AppAppIdIntegrationIntegIdKeyRotatePost(
-                integId,
+            return api.v1IntegrationRotateKey(
                 appId,
+                integId,
                 options.idempotencyKey
             )
         } catch (e: Exception) {

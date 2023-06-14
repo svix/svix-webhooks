@@ -49,10 +49,10 @@ db_dsn = "postgresql://postgres:postgres@pgbouncer/postgres"
 # Higher values can significantly increase performance if your database can handle it.
 db_pool_max_size = 20
 
-# The defualt DSN for redis. `queue_dsn` and `cache_dsn` with take precedence over this value.
+# The default DSN for redis. `queue_dsn` and `cache_dsn` with take precedence over this value.
 # (can be left empty if not using redis or if Redis is configured through the queue and/or cache
 # specific DSNs)
-redis_dsn = "redis://redis:6379"
+# redis_dsn = "redis://redis:6379"
 
 # The maximum number of connections for the Redis pool. Minimum value of 10
 # Higher values can significantly increase performance if your database can handle it.

@@ -7,6 +7,7 @@ class MessageListOptions : ListOptions() {
     var before: OffsetDateTime? = null
     var after: OffsetDateTime? = null
     var channel: String? = null
+    var withContent: Boolean? = null
 
     fun eventTypes(eventTypes: List<String>) = apply { this.eventTypes = eventTypes }
 
@@ -18,4 +19,6 @@ class MessageListOptions : ListOptions() {
     override fun iterator(iterator: String) = apply { super.iterator(iterator) }
 
     override fun limit(limit: Int) = apply { super.limit(limit) }
+
+    fun withContent(withContent: Boolean) = apply { this.withContent = withContent }
 }

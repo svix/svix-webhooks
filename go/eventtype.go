@@ -25,7 +25,7 @@ type EventTypeListOptions struct {
 }
 
 func (e *EventType) List(ctx context.Context, options *EventTypeListOptions) (*ListResponseEventTypeOut, error) {
-	req := e.api.EventTypeApi.ListEventTypesApiV1EventTypeGet(ctx)
+	req := e.api.EventTypeApi.V1EventTypeList(ctx)
 	if options != nil {
 		if options.Iterator != nil {
 			req = req.Iterator(*options.Iterator)
@@ -53,7 +53,7 @@ func (e *EventType) Create(ctx context.Context, eventTypeIn *EventTypeIn) (*Even
 }
 
 func (e *EventType) CreateWithOptions(ctx context.Context, eventTypeIn *EventTypeIn, options *PostOptions) (*EventTypeOut, error) {
-	req := e.api.EventTypeApi.CreateEventTypeApiV1EventTypePost(ctx)
+	req := e.api.EventTypeApi.V1EventTypeCreate(ctx)
 	req = req.EventTypeIn(openapi.EventTypeIn(*eventTypeIn))
 	if options != nil {
 		if options.IdempotencyKey != nil {
@@ -69,7 +69,7 @@ func (e *EventType) CreateWithOptions(ctx context.Context, eventTypeIn *EventTyp
 }
 
 func (e *EventType) Get(ctx context.Context, eventTypeName string) (*EventTypeOut, error) {
-	req := e.api.EventTypeApi.GetEventTypeApiV1EventTypeEventTypeNameGet(ctx, eventTypeName)
+	req := e.api.EventTypeApi.V1EventTypeGet(ctx, eventTypeName)
 	out, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)
@@ -79,7 +79,7 @@ func (e *EventType) Get(ctx context.Context, eventTypeName string) (*EventTypeOu
 }
 
 func (e *EventType) Update(ctx context.Context, eventTypeName string, eventTypeUpdate *EventTypeUpdate) (*EventTypeOut, error) {
-	req := e.api.EventTypeApi.UpdateEventTypeApiV1EventTypeEventTypeNamePut(ctx, eventTypeName)
+	req := e.api.EventTypeApi.V1EventTypeUpdate(ctx, eventTypeName)
 	req = req.EventTypeUpdate(openapi.EventTypeUpdate(*eventTypeUpdate))
 	out, res, err := req.Execute()
 	if err != nil {
@@ -90,7 +90,7 @@ func (e *EventType) Update(ctx context.Context, eventTypeName string, eventTypeU
 }
 
 func (e *EventType) Delete(ctx context.Context, eventTypeName string) error {
-	req := e.api.EventTypeApi.DeleteEventTypeApiV1EventTypeEventTypeNameDelete(ctx, eventTypeName)
+	req := e.api.EventTypeApi.V1EventTypeDelete(ctx, eventTypeName)
 	res, err := req.Execute()
 	return wrapError(err, res)
 }

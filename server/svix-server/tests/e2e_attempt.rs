@@ -7,7 +7,7 @@ use svix_server::{
     core::types::{EndpointUid, MessageStatus},
     v1::{
         endpoints::{
-            attempt::{AttemptedMessageOut, MessageAttemptOut},
+            attempt::{EndpointMessageOut, MessageAttemptOut},
             endpoint::{EndpointIn, EndpointOut},
         },
         utils::ListResponse,
@@ -131,14 +131,14 @@ async fn test_list_attempted_messages() {
     .await;
 
     run_with_retries(|| async {
-        let list_1: ListResponse<AttemptedMessageOut> = client
+        let list_1: ListResponse<EndpointMessageOut> = client
             .get(
                 &format!("api/v1/app/{app_id}/endpoint/{endp_id_1}/msg/"),
                 StatusCode::OK,
             )
             .await
             .unwrap();
-        let list_2: ListResponse<AttemptedMessageOut> = client
+        let list_2: ListResponse<EndpointMessageOut> = client
             .get(
                 &format!("api/v1/app/{app_id}/endpoint/{endp_id_2}/msg/"),
                 StatusCode::OK,
@@ -146,7 +146,7 @@ async fn test_list_attempted_messages() {
             .await
             .unwrap();
 
-        let list_2_uid: ListResponse<AttemptedMessageOut> = client
+        let list_2_uid: ListResponse<EndpointMessageOut> = client
             .get(
                 &format!("api/v1/app/{}/endpoint/{}/msg/", app_id, "test"),
                 StatusCode::OK,
@@ -169,7 +169,7 @@ async fn test_list_attempted_messages() {
     .await
     .unwrap();
 
-    let list_filtered: ListResponse<AttemptedMessageOut> = client
+    let list_filtered: ListResponse<EndpointMessageOut> = client
         .get(
             &format!("api/v1/app/{app_id}/endpoint/{endp_id_1}/msg/?channel=news"),
             StatusCode::OK,
@@ -295,14 +295,23 @@ async fn test_list_attempts_by_endpoint() {
         .unwrap();
     assert_eq!(regular_attempts.data.len(), 2);
 
-    let all_attempts: ListResponse<MessageAttemptOut> = client
+    let all_attempts_1: ListResponse<MessageAttemptOut> = client
     .get(
         &format!("api/v1/app/{app_id}/attempt/endpoint/{endp_id_2}/?event_types[0]=event.type&event_types[1]=user.exploded"),
         StatusCode::OK,
     )
     .await
     .unwrap();
-    assert_eq!(all_attempts.data.len(), 3);
+    assert_eq!(all_attempts_1.data.len(), 3);
+
+    let all_attempts_2: ListResponse<MessageAttemptOut> = client
+    .get(
+        &format!("api/v1/app/{app_id}/attempt/endpoint/{endp_id_2}/?event_types=event.type,user.exploded"),
+        StatusCode::OK,
+    )
+    .await
+    .unwrap();
+    assert_eq!(all_attempts_2.data.len(), 3);
 
     receiver_1.jh.abort();
     receiver_2.jh.abort();

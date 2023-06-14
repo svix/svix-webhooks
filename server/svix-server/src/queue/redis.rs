@@ -41,6 +41,7 @@ use tokio::time::sleep;
 use crate::{
     ctx, err_generic,
     error::Result,
+    queue::Acker,
     redis::{PoolLike, PooledConnection, PooledConnectionLike, RedisPool},
 };
 
@@ -403,18 +404,19 @@ async fn new_pair_inner(
         }
     });
 
+    let inner = Arc::new(RedisQueueInner {
+        pool: worker_pool,
+        main_queue_name,
+    });
+
     // Once the background thread has been started, simply return the [`TaskQueueProducer`] and
     // [`TaskQueueConsumer`]
     (
-        TaskQueueProducer(Box::new(RedisQueueProducer {
-            pool: worker_pool.clone(),
-            main_queue_name: main_queue_name.clone(),
-            delayed_queue_name,
-        })),
-        TaskQueueConsumer(Box::new(RedisQueueConsumer {
-            pool: worker_pool,
-            main_queue_name,
-        })),
+        TaskQueueProducer::Redis(RedisQueueProducer {
+            inner: inner.clone(),
+            delayed_queue_name: Arc::new(delayed_queue_name),
+        }),
+        TaskQueueConsumer::Redis(RedisQueueConsumer(inner)),
     )
 }
 
@@ -437,11 +439,16 @@ impl ToRedisArgs for Direction {
     }
 }
 
-#[derive(Clone)]
-pub struct RedisQueueProducer {
+#[derive(Debug)]
+pub(super) struct RedisQueueInner {
     pool: RedisPool,
     main_queue_name: String,
-    delayed_queue_name: String,
+}
+
+#[derive(Clone)]
+pub struct RedisQueueProducer {
+    inner: Arc<RedisQueueInner>,
+    delayed_queue_name: Arc<String>,
 }
 
 fn to_redis_key(delivery: &TaskQueueDelivery) -> String {
@@ -452,57 +459,36 @@ fn to_redis_key(delivery: &TaskQueueDelivery) -> String {
     )
 }
 
-fn from_redis_key(key: &str) -> TaskQueueDelivery {
+fn from_redis_key(key: &str) -> (String, Arc<QueueTask>) {
     // Get the first delimiter -> it has to have the |
     let pos = key.find('|').unwrap();
     let id = key[..pos].to_string();
     let task = serde_json::from_str(&key[pos + 1..]).unwrap();
-    TaskQueueDelivery { id, task }
+    (id, task)
 }
 
-#[async_trait]
-impl TaskQueueSend for RedisQueueProducer {
-    async fn send(&self, task: Arc<QueueTask>, delay: Option<Duration>) -> Result<()> {
+impl RedisQueueInner {
+    async fn send_immedietly(&self, task: Arc<QueueTask>) -> Result<()> {
         let mut pool = ctx!(self.pool.get().await)?;
 
-        // If there's a delay, compute the timestamp at which the delay is up
-        let timestamp = delay.map(|delay| -> Result<_> {
-            Ok(Utc::now()
-                + chrono::Duration::from_std(delay)
-                    .map_err(|_| err_generic!("Duration out of bounds"))?)
-        });
+        let _: () = ctx!(
+            pool.query_async(Cmd::xadd(
+                &self.main_queue_name,
+                GENERATE_STREAM_ID,
+                &[(
+                    QUEUE_KV_KEY,
+                    serde_json::to_string(&task)
+                        .map_err(|e| err_generic!("serialization error: {}", e))?,
+                )],
+            ))
+            .await
+        )?;
 
-        if let Some(timestamp) = timestamp {
-            let timestamp = timestamp?;
-            // If there's a delay, add it to the DELAYED queue by ZADDING the Redis-key-ified
-            // delivery
-            let delivery = TaskQueueDelivery::from_arc(task.clone(), Some(timestamp));
-            let key = to_redis_key(&delivery);
-            let _: () = ctx!(
-                pool.zadd(&self.delayed_queue_name, key, timestamp.timestamp())
-                    .await
-            )?;
-        } else {
-            // If there is no delay simply XADD the task to the MAIN queue
-            let _: () = ctx!(
-                pool.query_async(Cmd::xadd(
-                    &self.main_queue_name,
-                    GENERATE_STREAM_ID,
-                    &[(
-                        QUEUE_KV_KEY,
-                        serde_json::to_string(&*task)
-                            .map_err(|e| err_generic!("serialization error: {}", e))?,
-                    )],
-                ))
-                .await
-            )?;
-        }
-        tracing::trace!("RedisQueue: event sent > (delay: {:?})", delay);
         Ok(())
     }
 
     /// ACKing the delivery, XACKs the message in the queue so it will no longer be retried
-    async fn ack(&self, delivery: &TaskQueueDelivery) -> Result<()> {
+    pub(super) async fn ack(&self, delivery: &TaskQueueDelivery) -> Result<()> {
         let mut pool = ctx!(self.pool.get().await)?;
 
         let mut pipe = redis::pipe();
@@ -529,31 +515,61 @@ impl TaskQueueSend for RedisQueueProducer {
         Ok(())
     }
 
-    fn clone_box(&self) -> Box<dyn TaskQueueSend> {
-        Box::new(self.clone())
+    pub(super) async fn nack(&self, delivery: &TaskQueueDelivery) -> Result<()> {
+        tracing::debug!("nack {}", delivery.id);
+        self.send_immedietly(delivery.task.clone()).await?;
+        self.ack(delivery).await
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct RedisQueueConsumer {
-    pool: RedisPool,
-    main_queue_name: String,
+#[async_trait]
+impl TaskQueueSend for RedisQueueProducer {
+    async fn send(&self, task: Arc<QueueTask>, delay: Option<Duration>) -> Result<()> {
+        let timestamp = if let Some(delay) = delay {
+            Utc::now()
+                + chrono::Duration::from_std(delay)
+                    .map_err(|_| err_generic!("Duration out of bounds"))?
+        } else {
+            tracing::trace!("RedisQueue: event sent (no delay)");
+            return self.inner.send_immedietly(task).await;
+        };
+
+        // If there's a delay, add it to the DELAYED queue by ZADDING the Redis-key-ified
+        // delivery
+        let mut pool = ctx!(self.inner.pool.get().await)?;
+        let delivery = TaskQueueDelivery::from_arc(
+            task.clone(),
+            Some(timestamp),
+            Acker::Redis(self.inner.clone()),
+        );
+        let key = to_redis_key(&delivery);
+        let delayed_queue_name: &str = &self.delayed_queue_name;
+        let _: () = ctx!(
+            pool.zadd(delayed_queue_name, key, timestamp.timestamp())
+                .await
+        )?;
+
+        tracing::trace!("RedisQueue: event sent > (delay: {:?})", delay);
+        Ok(())
+    }
 }
+
+#[derive(Clone)]
+pub struct RedisQueueConsumer(Arc<RedisQueueInner>);
 
 #[async_trait]
 impl TaskQueueReceive for RedisQueueConsumer {
     async fn receive_all(&mut self) -> Result<Vec<TaskQueueDelivery>> {
-        let pool = self.pool.clone();
-        let main_queue_name = self.main_queue_name.clone();
+        let consumer = self.clone();
         tokio::spawn(async move {
             // TODO: Receive messages in batches so it's not always a Vec with one member
-            let mut pool = ctx!(pool.get().await)?;
+            let mut pool = ctx!(consumer.0.pool.get().await)?;
 
             // There is no way to make it await a message for unbounded times, so simply block for a short
             // amount of time (to avoid locking) and loop if no messages were retreived
             let resp: StreamReadReply = ctx!(
                 pool.query_async(Cmd::xread_options(
-                    &[&main_queue_name],
+                    &[&consumer.0.main_queue_name],
                     &[LISTEN_STREAM_ID],
                     &StreamReadOptions::default()
                         .group(WORKERS_GROUP, WORKER_CONSUMER)
@@ -579,6 +595,7 @@ impl TaskQueueReceive for RedisQueueConsumer {
                 Ok(vec![TaskQueueDelivery {
                     id,
                     task: Arc::new(task),
+                    acker: Acker::Redis(consumer.0.clone()),
                 }])
             } else {
                 Ok(Vec::new())
@@ -616,11 +633,11 @@ async fn migrate_list_to_stream(
 
         let mut pipe = redis::pipe();
         for key in legacy_keys {
-            let delivery = from_redis_key(&key);
+            let (_, task) = from_redis_key(&key);
             let _ = pipe.xadd(
                 queue,
                 GENERATE_STREAM_ID,
-                &[(QUEUE_KV_KEY, serde_json::to_string(&delivery.task).unwrap())],
+                &[(QUEUE_KV_KEY, serde_json::to_string(&task).unwrap())],
             );
         }
 
@@ -698,7 +715,10 @@ pub mod tests {
     use crate::{
         cfg::{CacheType, Configuration},
         core::types::{ApplicationId, EndpointId, MessageAttemptTriggerType, MessageId},
-        queue::{MessageTask, QueueTask, TaskQueueConsumer, TaskQueueDelivery, TaskQueueProducer},
+        queue::{
+            redis::RedisQueueInner, Acker, MessageTask, QueueTask, TaskQueueConsumer,
+            TaskQueueDelivery, TaskQueueProducer,
+        },
         redis::{PoolLike, PooledConnectionLike, RedisPool},
     };
 
@@ -781,12 +801,12 @@ pub mod tests {
 
     /// Reads and acknowledges all items in the queue with the given name for clearing out entries
     /// from previous test runs
-    async fn flush_stale_queue_items(p: TaskQueueProducer, c: &mut TaskQueueConsumer) {
+    async fn flush_stale_queue_items(_p: TaskQueueProducer, c: &mut TaskQueueConsumer) {
         loop {
             tokio::select! {
                 recv = c.receive_all() => {
                     let recv = recv.unwrap().pop().unwrap();
-                    p.ack(recv).await.unwrap();
+                    recv.ack().await.unwrap();
                 }
 
                 _ = tokio::time::sleep(Duration::from_millis(100)) => {
@@ -840,7 +860,7 @@ pub mod tests {
                 let recv = recv.unwrap().pop().unwrap();
                 assert_eq!(*recv.task, mt);
                 // Acknowledge so the queue isn't further polluted
-                p.ack(recv).await.unwrap();
+                recv.ack().await.unwrap();
             }
 
             _ = tokio::time::sleep(Duration::from_secs(5)) => {
@@ -900,7 +920,7 @@ pub mod tests {
 
         let recv = c.receive_all().await.unwrap().pop().unwrap();
         assert_eq!(*recv.task, mt);
-        p.ack(recv).await.unwrap();
+        recv.ack().await.unwrap();
 
         tokio::select! {
             recv = c.receive_all() => {
@@ -949,7 +969,7 @@ pub mod tests {
 
         let recv = c.receive_all().await.unwrap().pop().unwrap();
         assert_eq!(*recv.task, mt);
-        p.nack(recv).await.unwrap();
+        recv.nack().await.unwrap();
 
         tokio::select! {
             recv = c.receive_all() => {
@@ -1003,11 +1023,11 @@ pub mod tests {
 
         let recv2 = c.receive_all().await.unwrap().pop().unwrap();
         assert_eq!(*recv2.task, mt2);
-        p.ack(recv2).await.unwrap();
+        recv2.ack().await.unwrap();
 
         let recv1 = c.receive_all().await.unwrap().pop().unwrap();
         assert_eq!(*recv1.task, mt1);
-        p.ack(recv1).await.unwrap();
+        recv1.ack().await.unwrap();
     }
 
     #[tokio::test]
@@ -1070,6 +1090,10 @@ pub mod tests {
                                 trigger_type: MessageAttemptTriggerType::Manual,
                                 attempt_count: 0,
                             })),
+                            acker: Acker::Redis(Arc::new(RedisQueueInner {
+                                pool: pool.clone(),
+                                main_queue_name: v1_main.to_owned(),
+                            })),
                         }),
                     ))
                     .await
@@ -1088,6 +1112,10 @@ pub mod tests {
                                 endpoint_id: EndpointId("TestEndpointID".to_owned()),
                                 trigger_type: MessageAttemptTriggerType::Manual,
                                 attempt_count: 0,
+                            })),
+                            acker: Acker::Redis(Arc::new(RedisQueueInner {
+                                pool: pool.clone(),
+                                main_queue_name: v1_main.to_owned(),
                             })),
                         }),
                         Utc::now().timestamp() + 2,
@@ -1127,7 +1155,7 @@ pub mod tests {
         }
 
         // Read
-        let (p, mut c) = new_pair_inner(
+        let (_p, mut c) = new_pair_inner(
             pool,
             Duration::from_secs(5),
             "",
@@ -1152,7 +1180,7 @@ pub mod tests {
                     attempt_count: 0,
                 })
             );
-            p.ack(recv).await.unwrap();
+            recv.ack().await.unwrap();
         }
         for num in 1..=5 {
             let recv = c.receive_all().await.unwrap().pop().unwrap();
@@ -1166,7 +1194,7 @@ pub mod tests {
                     attempt_count: 0,
                 })
             );
-            p.ack(recv).await.unwrap();
+            recv.ack().await.unwrap();
         }
         for num in 11..=15 {
             let recv = c.receive_all().await.unwrap().pop().unwrap();
@@ -1180,7 +1208,7 @@ pub mod tests {
                     attempt_count: 0,
                 })
             );
-            p.ack(recv).await.unwrap();
+            recv.ack().await.unwrap();
         }
     }
 }
