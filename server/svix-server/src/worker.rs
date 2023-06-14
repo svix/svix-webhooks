@@ -825,7 +825,7 @@ async fn process_queue_task_inner(
         QueueTask::MessageBatch(task) => {
             let msg = ctx!(message::Entity::find_by_id(task.msg_id).one(db).await)?
                 .ok_or_else(|| err_generic!("Unexpected: message doesn't exist"))?;
-            (msg, None, None, task.trigger_type, 0)
+            (msg, task.force_endpoint, None, task.trigger_type, 0)
         }
     };
 

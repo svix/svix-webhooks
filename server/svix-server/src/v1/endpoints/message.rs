@@ -6,11 +6,13 @@ use crate::{
         message_app::CreateMessageApp,
         permissions,
         types::{
-            EventChannel, EventChannelSet, EventTypeName, EventTypeNameSet,
+            EndpointId, EventChannel, EventChannelSet, EventTypeName, EventTypeNameSet,
             MessageAttemptTriggerType, MessageId, MessageUid,
         },
     },
-    ctx, err_generic,
+    ctx,
+    db::models::application,
+    err_generic,
     error::{HttpError, Result},
     queue::MessageTaskBatch,
     v1::utils::{
@@ -276,35 +278,18 @@ async fn list_messages(
     )))
 }
 
-#[derive(Debug, Deserialize, Validate, JsonSchema)]
-pub struct CreateMessageQueryParams {
-    #[serde(default = "default_true")]
-    with_content: bool,
-}
-
-/// Creates a new message and dispatches it to all of the application's endpoints.
-///
-/// The `eventId` is an optional custom unique ID. It's verified to be unique only up to a day, after that no verification will be made.
-/// If a message with the same `eventId` already exists for any application in your environment, a 409 conflict error will be returned.
-///
-/// The `eventType` indicates the type and schema of the event. All messages of a certain `eventType` are expected to have the same schema. Endpoints can choose to only listen to specific event types.
-/// Messages can also have `channels`, which similar to event types let endpoints filter by them. Unlike event types, messages can have multiple channels, and channels don't imply a specific message content or schema.
-///
-/// The `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to ~350kb, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb.
-#[aide_annotate(op_id = "v1.message.create")]
-async fn create_message(
+pub async fn create_message_inner(
     State(AppState {
         ref db,
         queue_tx,
         cache,
         ..
     }): State<AppState>,
-    ValidatedQuery(CreateMessageQueryParams { with_content }): ValidatedQuery<
-        CreateMessageQueryParams,
-    >,
-    permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
-    ValidatedJson(data): ValidatedJson<MessageIn>,
-) -> Result<JsonStatus<202, MessageOut>> {
+    app: application::Model,
+    msg_in: MessageIn,
+    force_endpoint: Option<EndpointId>,
+    with_content: bool,
+) -> Result<MessageOut> {
     let create_message_app = CreateMessageApp::layered_fetch(
         &cache,
         db,
@@ -320,7 +305,7 @@ async fn create_message(
     let msg = message::ActiveModel {
         app_id: Set(app.id.clone()),
         org_id: Set(app.org_id),
-        ..data.into()
+        ..msg_in.into()
     };
     let msg = ctx!(msg.insert(db).await)?;
 
@@ -334,6 +319,7 @@ async fn create_message(
                 MessageTaskBatch::new_task(
                     msg.id.clone(),
                     app.id.clone(),
+                    force_endpoint,
                     MessageAttemptTriggerType::Scheduled,
                 ),
                 None,
@@ -347,7 +333,36 @@ async fn create_message(
         MessageOut::without_payload(msg)
     };
 
-    Ok(JsonStatus(msg_out))
+    Ok(msg_out)
+}
+
+#[derive(Debug, Deserialize, Validate, JsonSchema)]
+pub struct CreateMessageQueryParams {
+    #[serde(default = "default_true")]
+    pub with_content: bool,
+}
+
+/// Creates a new message and dispatches it to all of the application's endpoints.
+///
+/// The `eventId` is an optional custom unique ID. It's verified to be unique only up to a day, after that no verification will be made.
+/// If a message with the same `eventId` already exists for any application in your environment, a 409 conflict error will be returned.
+///
+/// The `eventType` indicates the type and schema of the event. All messages of a certain `eventType` are expected to have the same schema. Endpoints can choose to only listen to specific event types.
+/// Messages can also have `channels`, which similar to event types let endpoints filter by them. Unlike event types, messages can have multiple channels, and channels don't imply a specific message content or schema.
+///
+/// The `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to ~350kb, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb.
+#[aide_annotate(op_id = "v1.message.create")]
+pub async fn create_message(
+    state: State<AppState>,
+    ValidatedQuery(CreateMessageQueryParams { with_content }): ValidatedQuery<
+        CreateMessageQueryParams,
+    >,
+    permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
+    ValidatedJson(data): ValidatedJson<MessageIn>,
+) -> Result<JsonStatus<202, MessageOut>> {
+    Ok(JsonStatus(
+        create_message_inner(state, app, data, None, with_content).await?,
+    ))
 }
 
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
