@@ -184,7 +184,7 @@ async fn process_endpoint_failure(
 }
 
 /// Sign a message
-fn sign_msg(
+pub fn sign_msg(
     main_secret: &Encryption,
     timestamp: i64,
     body: &str,
@@ -222,7 +222,7 @@ fn sign_msg(
 }
 
 /// Generates a set of headers for any one webhook event
-fn generate_msg_headers(
+pub fn generate_msg_headers(
     timestamp: i64,
     msg_id: &MessageId,
     signatures: String,

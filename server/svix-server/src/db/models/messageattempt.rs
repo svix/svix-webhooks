@@ -58,6 +58,10 @@ impl ActiveModelBehavior for ActiveModel {
 }
 
 impl Entity {
+    pub fn secure_find_by_id(attempt_id: MessageAttemptId) -> Select<Entity> {
+        Self::find().filter(Column::Id.eq(attempt_id))
+    }
+
     pub fn secure_find_by_msg(msg_id: MessageId) -> Select<Entity> {
         Self::find().filter(Column::MsgId.eq(msg_id))
     }
