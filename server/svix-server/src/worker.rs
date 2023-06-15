@@ -7,7 +7,7 @@ use crate::core::cache::{kv_def, Cache, CacheBehavior, CacheKey, CacheValue};
 use crate::core::cryptography::Encryption;
 use crate::core::message_app::{CreateMessageApp, CreateMessageEndpoint};
 use crate::core::operational_webhooks::{
-    EndpointDisabledEvent, MessageAttemptEvent, OperationalWebhook, OperationalWebhookSender,
+    EndpointDisabledEventData, MessageAttemptEvent, OperationalWebhook, OperationalWebhookSender,
 };
 use crate::core::types::{
     ApplicationId, ApplicationUid, BaseId, EndpointHeaders, EndpointId, EndpointSecretInternal,
@@ -19,9 +19,7 @@ use crate::core::webhook_http_client::{
 };
 use crate::db::models::{endpoint, eventtype, message, messageattempt, messagedestination};
 use crate::error::{Error, ErrorType, HttpError, Result};
-use crate::queue::{
-    MessageTask, MessageTaskBatch, QueueTask, TaskQueueConsumer, TaskQueueProducer,
-};
+use crate::queue::{MessageTask, QueueTask, TaskQueueConsumer, TaskQueueProducer};
 use crate::v1::utils::get_unix_timestamp;
 use crate::{ctx, err_cache, err_generic, err_validation};
 
@@ -29,14 +27,14 @@ use chrono::Utc;
 
 use futures::future;
 use http::{HeaderValue, StatusCode, Version};
-use ipnet::IpNet;
 use lazy_static::lazy_static;
 use p256::ecdsa::{signature, Signature};
 use rand::Rng;
 
 use sea_orm::prelude::DateTimeUtc;
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, Set, TryIntoModel,
+    ActiveModelBehavior, ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait,
+    QueryFilter, Set, TryIntoModel,
 };
 use serde::{Deserialize, Serialize};
 use tokio::time::sleep;
@@ -284,6 +282,7 @@ struct WorkerContext<'a> {
     db: &'a DatabaseConnection,
     queue_tx: &'a TaskQueueProducer,
     op_webhook_sender: &'a OperationalWebhookSender,
+    webhook_client: &'a WebhookClient,
 }
 
 struct FailedDispatch(messageattempt::ActiveModel, Error);
@@ -365,12 +364,8 @@ async fn make_http_call(
         created_at,
     }: PendingDispatch,
     msg_dest: &messagedestination::Model,
-    whitelist_subnets: &Option<Arc<Vec<IpNet>>>,
+    client: &WebhookClient,
 ) -> Result<CompletedDispatch> {
-    let client = WebhookClient::new(
-        whitelist_subnets.clone(),
-        Some(Arc::new(vec!["backend".to_owned()])),
-    );
     let req = RequestBuilder::new()
         .method(method)
         .uri_str(&url)
@@ -643,7 +638,7 @@ async fn handle_failed_dispatch(
                 op_webhook_sender
                     .send_operational_webhook(
                         org_id,
-                        OperationalWebhook::EndpointDisabled(EndpointDisabledEvent {
+                        OperationalWebhook::EndpointDisabled(EndpointDisabledEventData {
                             app_id: app_id.clone(),
                             app_uid: app_uid.cloned(),
                             endpoint_id: msg_task.endpoint_id.clone(),
@@ -685,23 +680,11 @@ async fn dispatch_message_task(
     msg_task: MessageTask,
     payload: &str,
     endp: CreateMessageEndpoint,
-    msg_dest: Option<messagedestination::Model>,
+    msg_dest: messagedestination::Model,
 ) -> Result<()> {
-    let WorkerContext { cfg, db, .. } = worker_context;
+    let WorkerContext { webhook_client, .. } = worker_context;
 
     tracing::trace!("Dispatch start");
-
-    let msg_dest = if let Some(msg_dest) = msg_dest {
-        msg_dest
-    } else {
-        ctx!(
-            messagedestination::Entity::secure_find_by_msg(msg_task.msg_id.clone())
-                .filter(messagedestination::Column::EndpId.eq(endp.id.clone()))
-                .one(*db)
-                .await
-        )?
-        .ok_or_else(|| err_generic!("Msg dest not found {} {}", msg_task.msg_id, endp.id))?
-    };
 
     if (msg_dest.status != MessageStatus::Pending && msg_dest.status != MessageStatus::Sending)
         && (msg_task.trigger_type != MessageAttemptTriggerType::Manual)
@@ -729,13 +712,7 @@ async fn dispatch_message_task(
     let dispatch = prepare_dispatch(worker_context, dispatch_context.clone()).await?;
     let completed = match dispatch {
         IncompleteDispatch::Pending(pending) => {
-            make_http_call(
-                dispatch_context.clone(),
-                pending,
-                &msg_dest,
-                &cfg.whitelist_subnets,
-            )
-            .await?
+            make_http_call(dispatch_context.clone(), pending, &msg_dest, webhook_client).await?
         }
         IncompleteDispatch::Failed(failed) => CompletedDispatch::Failed(failed),
     };
@@ -812,32 +789,50 @@ async fn process_queue_task_inner(
     queue_task: QueueTask,
 ) -> Result<()> {
     let WorkerContext { db, cache, .. }: WorkerContext<'_> = worker_context;
-
-    if queue_task == QueueTask::HealthCheck {
-        return Ok(());
-    }
-
     let span = tracing::Span::current();
 
-    let (msg_id, trigger_type) = match &queue_task {
-        QueueTask::MessageBatch(MessageTaskBatch {
-            msg_id,
-            trigger_type,
-            ..
-        }) => (msg_id, trigger_type),
-        QueueTask::MessageV1(MessageTask {
-            msg_id,
-            trigger_type,
-            ..
-        }) => (msg_id, trigger_type),
+    let (msg, force_endpoint, destination, trigger_type, attempt_count) = match queue_task {
+        QueueTask::HealthCheck => return Ok(()),
+        QueueTask::MessageV1(task) => {
+            let msg = ctx!(
+                message::Entity::find_by_id(task.msg_id.clone())
+                    .one(db)
+                    .await
+            )?
+            .ok_or_else(|| err_generic!("Unexpected: message doesn't exist"))?;
 
-        QueueTask::HealthCheck => unreachable!(),
+            let destination = ctx!(
+                messagedestination::Entity::secure_find_by_msg(task.msg_id.clone())
+                    .filter(messagedestination::Column::EndpId.eq(task.endpoint_id.clone()))
+                    .one(db)
+                    .await
+            )?
+            .ok_or_else(|| {
+                err_generic!(format!(
+                    "MessageDestination not found for message {}",
+                    &task.msg_id
+                ))
+            })?;
+
+            (
+                msg,
+                Some(task.endpoint_id),
+                Some(destination),
+                task.trigger_type,
+                task.attempt_count,
+            )
+        }
+        QueueTask::MessageBatch(task) => {
+            let msg = ctx!(message::Entity::find_by_id(task.msg_id).one(db).await)?
+                .ok_or_else(|| err_generic!("Unexpected: message doesn't exist"))?;
+            (msg, None, None, task.trigger_type, 0)
+        }
     };
 
-    span.record("msg_id", &msg_id.0);
+    span.record("msg_id", &msg.id.0);
+    span.record("app_id", &msg.app_id.0);
+    span.record("org_id", &msg.org_id.0);
 
-    let msg = ctx!(message::Entity::find_by_id(msg_id.clone()).one(db).await)?
-        .ok_or_else(|| err_generic!("Unexpected: message doesn't exist"))?;
     let payload = match msg
         .payload
         .as_ref()
@@ -849,9 +844,6 @@ async fn process_queue_task_inner(
             return Ok(());
         }
     };
-
-    span.record("app_id", &msg.app_id.0);
-    span.record("org_id", &msg.org_id.0);
 
     let create_message_app = match CreateMessageApp::layered_fetch(
         cache,
@@ -871,52 +863,18 @@ async fn process_queue_task_inner(
     };
 
     let endpoints: Vec<CreateMessageEndpoint> = create_message_app
-        .filtered_endpoints(*trigger_type, &msg.event_type, msg.channels.as_ref())
+        .filtered_endpoints(trigger_type, &msg.event_type, msg.channels.as_ref())
         .iter()
-        .filter(|endpoint| match &queue_task {
-            QueueTask::HealthCheck => unreachable!(),
-            QueueTask::MessageV1(task) => task.endpoint_id == endpoint.id,
-            QueueTask::MessageBatch(_) => true,
+        .filter(|endpoint| match force_endpoint.as_ref() {
+            Some(endp_id) => endp_id == &endpoint.id,
+            None => true,
         })
         .cloned()
         .collect();
 
-    let futures: Vec<_> = match &queue_task {
-        QueueTask::HealthCheck => unreachable!(),
-
-        QueueTask::MessageV1(task) => {
-            let endpoint = match endpoints.into_iter().next() {
-                Some(ep) => ep,
-                None => {
-                    return Ok(());
-                }
-            };
-
-            let destination = ctx!(
-                messagedestination::Entity::secure_find_by_msg(task.msg_id.clone())
-                    .filter(messagedestination::Column::EndpId.eq(endpoint.id.clone()))
-                    .one(db)
-                    .await
-            )?
-            .ok_or_else(|| {
-                err_generic!(format!(
-                    "MessageDestination not found for message {}",
-                    &task.msg_id
-                ))
-            })?;
-
-            vec![dispatch_message_task(
-                &worker_context,
-                &msg,
-                &create_message_app,
-                task.clone(),
-                &payload,
-                endpoint,
-                Some(destination),
-            )]
-        }
-
-        QueueTask::MessageBatch(task) => {
+    let destinations = match destination {
+        Some(d) => vec![d],
+        None => {
             let destinations: Vec<_> = endpoints
                 .iter()
                 .map(|endpoint| messagedestination::ActiveModel {
@@ -924,7 +882,7 @@ async fn process_queue_task_inner(
                     endp_id: Set(endpoint.id.clone()),
                     next_attempt: Set(Some(Utc::now().into())),
                     status: Set(MessageStatus::Sending),
-                    ..Default::default()
+                    ..messagedestination::ActiveModel::new()
                 })
                 .collect();
 
@@ -934,31 +892,36 @@ async fn process_queue_task_inner(
                     .await
             )?;
 
-            endpoints
+            let dests: std::result::Result<_, _> = destinations
                 .into_iter()
-                .zip(destinations)
-                .map(|(endpoint, destination)| {
-                    let task = MessageTask {
-                        msg_id: msg_id.clone(),
-                        app_id: task.app_id.clone(),
-                        endpoint_id: endpoint.id.clone(),
-                        attempt_count: 0,
-                        trigger_type: *trigger_type,
-                    };
-
-                    dispatch_message_task(
-                        &worker_context,
-                        &msg,
-                        &create_message_app,
-                        task,
-                        &payload,
-                        endpoint,
-                        destination.try_into_model().ok(),
-                    )
-                })
-                .collect()
+                .map(|d| d.try_into_model())
+                .collect();
+            ctx!(dests)?
         }
     };
+
+    let futures = endpoints
+        .into_iter()
+        .zip(destinations)
+        .map(|(endpoint, destination)| {
+            let task = MessageTask {
+                msg_id: msg.id.clone(),
+                app_id: create_message_app.id.clone(),
+                endpoint_id: endpoint.id.clone(),
+                attempt_count,
+                trigger_type,
+            };
+
+            dispatch_message_task(
+                &worker_context,
+                &msg,
+                &create_message_app,
+                task,
+                &payload,
+                endpoint,
+                destination,
+            )
+        });
 
     let join = future::join_all(futures).await;
 
@@ -998,6 +961,11 @@ pub async fn queue_handler(
     } else {
         tracing::info!("Worker concurrent task limit: {}", task_limit);
     }
+
+    let webhook_client = WebhookClient::new(
+        cfg.whitelist_subnets.clone(),
+        Some(Arc::new(vec!["backend".to_owned()])),
+    );
 
     tokio::spawn(
         async move {
@@ -1054,6 +1022,7 @@ pub async fn queue_handler(
                     let queue_tx = queue_tx.clone();
                     let queue_task = delivery.task.clone();
                     let op_webhook_sender = op_webhook_sender.clone();
+                    let webhook_client = webhook_client.clone();
 
                     tokio::spawn(async move {
                         NUM_WORKERS.fetch_add(1, Ordering::Relaxed);
@@ -1063,6 +1032,7 @@ pub async fn queue_handler(
                             cache: &cache,
                             op_webhook_sender: &op_webhook_sender,
                             queue_tx: &queue_tx,
+                            webhook_client: &webhook_client,
                         };
 
                         let queue_task =
@@ -1071,13 +1041,13 @@ pub async fn queue_handler(
                             .await
                             .is_err()
                         {
-                            if let Err(err) = queue_tx.nack(delivery).await {
+                            if let Err(err) = delivery.nack().await {
                                 tracing::error!(
                                     "Error sending 'nack' to Redis after task execution error: {}",
                                     err
                                 );
                             }
-                        } else if let Err(err) = queue_tx.ack(delivery).await {
+                        } else if let Err(err) = delivery.ack().await {
                             tracing::error!(
                                 "Error sending 'ack' to Redis after successful task execution: {}",
                                 err

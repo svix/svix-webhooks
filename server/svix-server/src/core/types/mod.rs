@@ -202,7 +202,15 @@ fn validate_limited_str(s: &str) -> std::result::Result<(), ValidationErrors> {
         static ref RE: Regex = Regex::new(r"^[a-zA-Z0-9\-_.]+$").unwrap();
     }
     let mut errors = ValidationErrors::new();
-    if s.len() > MAX_LENGTH {
+    if s.is_empty() {
+        errors.add(
+            ALL_ERROR,
+            validation_error(
+                Some("length"),
+                Some("String must be at least one character"),
+            ),
+        );
+    } else if s.len() > MAX_LENGTH {
         errors.add(
             ALL_ERROR,
             validation_error(Some("length"), Some("String too long")),
@@ -250,10 +258,15 @@ pub trait BaseUid: Deref<Target = String> {
 
 macro_rules! string_wrapper {
     ($name_id:ident) => {
-        #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize, JsonSchema)]
+        #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
         pub struct $name_id(pub String);
 
         string_wrapper_impl!($name_id);
+    };
+    ($name_id:ident, $string_schema:expr) => {
+        string_wrapper!($name_id);
+
+        common_jsonschema_impl!($name_id, $string_schema);
     };
 }
 
@@ -334,9 +347,79 @@ macro_rules! string_wrapper_impl {
     };
 }
 
+/// A container type for storing schema information commonly used by string
+/// wrapper types.
+#[derive(Default)]
+pub struct StringSchema {
+    pub string_validation: Option<schemars::schema::StringValidation>,
+    pub example: Option<String>,
+}
+
+impl StringSchema {
+    pub fn schema_for_ids(prefix: &'static str) -> Self {
+        Self {
+            string_validation: None,
+            example: Some(format!("{prefix}1srOrx2ZWZBpBUvZwXKQmoEYga2")),
+        }
+    }
+
+    pub fn schema_for_uids(prefix: &'static str) -> Self {
+        Self {
+            string_validation: Some(schemars::schema::StringValidation {
+                min_length: Some(1),
+                max_length: Some(256),
+                pattern: Some(r"^[a-zA-Z0-9\-_.]+$".to_string()),
+            }),
+            example: Some(format!("unique-{prefix}identifier").replace('_', "-")),
+        }
+    }
+}
+
+/// Macro to generate a [`JsonSchema`] impl for string wrapper types.
+/// * `name_id` is the name of the identifier for which the impl is generated.
+/// * `string_schema` is a [`StringSchema`] to enrich the generated schema with
+///   more information.
+macro_rules! common_jsonschema_impl {
+    ($name_id:ident, $string_schema:expr) => {
+        impl ::schemars::JsonSchema for $name_id {
+            fn schema_name() -> String {
+                stringify!($name_id).to_string()
+            }
+
+            fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
+                let mut schema = String::json_schema(gen);
+
+                if let schemars::schema::Schema::Object(obj) = &mut schema {
+                    // This is just to help with type hints when the macro is expanded.
+                    let options: $crate::core::types::StringSchema = $string_schema;
+
+                    obj.string = options.string_validation.map(Box::new);
+                    if let Some(example) = options.example {
+                        obj.extensions
+                            .insert("example".to_string(), serde_json::Value::String(example));
+                    }
+                }
+
+                schema
+            }
+
+            fn is_referenceable() -> bool {
+                false
+            }
+        }
+    };
+}
+
 macro_rules! create_id_type {
     ($name_id:ident, $key_prefix:literal) => {
-        string_wrapper!($name_id);
+        create_id_type!(
+            $name_id,
+            $key_prefix,
+            $crate::core::types::StringSchema::default()
+        );
+    };
+    ($name_id:ident, $key_prefix:literal, $string_schema:expr) => {
+        string_wrapper!($name_id, $string_schema);
 
         impl BaseId for $name_id {
             const PREFIX: &'static str = $key_prefix;
@@ -366,10 +449,17 @@ macro_rules! create_id_type {
 macro_rules! create_all_id_types {
     ($name_id:ident, $name_uid:ident, $name_id_or_uid:ident, $key_prefix:literal) => {
         // Id
-        create_id_type!($name_id, $key_prefix);
+        create_id_type!(
+            $name_id,
+            $key_prefix,
+            $crate::core::types::StringSchema::schema_for_ids($key_prefix)
+        );
 
         // Uid
-        string_wrapper!($name_uid);
+        string_wrapper!(
+            $name_uid,
+            $crate::core::types::StringSchema::schema_for_uids($key_prefix)
+        );
 
         impl BaseUid for $name_uid {
             const ID_PREFIX: &'static str = $key_prefix;
@@ -388,8 +478,13 @@ macro_rules! create_all_id_types {
         }
 
         // Id or uid
-        #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+        #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
         pub struct $name_id_or_uid(pub String);
+
+        common_jsonschema_impl!(
+            $name_id_or_uid,
+            $crate::core::types::StringSchema::schema_for_uids($key_prefix)
+        );
 
         impl From<$name_id_or_uid> for $name_uid {
             fn from(v: $name_id_or_uid) -> Self {
@@ -418,7 +513,14 @@ macro_rules! create_all_id_types {
 }
 
 create_id_type!(OrganizationId, "org_");
-create_id_type!(MessageAttemptId, "atmpt_");
+create_id_type!(
+    MessageAttemptId,
+    "atmpt_",
+    crate::core::types::StringSchema {
+        string_validation: None,
+        example: Some("atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2".to_string()),
+    }
+);
 create_id_type!(MessageEndpointId, "msgep_");
 create_id_type!(EventTypeId, "evtype_");
 
@@ -426,7 +528,17 @@ create_all_id_types!(ApplicationId, ApplicationUid, ApplicationIdOrUid, "app_");
 create_all_id_types!(EndpointId, EndpointUid, EndpointIdOrUid, "ep_");
 create_all_id_types!(MessageId, MessageUid, MessageIdOrUid, "msg_");
 
-string_wrapper!(EventTypeName);
+string_wrapper!(
+    EventTypeName,
+    crate::core::types::StringSchema {
+        string_validation: Some(schemars::schema::StringValidation {
+            max_length: Some(256),
+            min_length: None,
+            pattern: Some(r"^[a-zA-Z0-9\-_.]+$".to_string()),
+        }),
+        example: Some("user.signup".to_string()),
+    }
+);
 
 impl Validate for EventTypeName {
     fn validate(&self) -> Result<(), validator::ValidationErrors> {
@@ -434,7 +546,17 @@ impl Validate for EventTypeName {
     }
 }
 
-string_wrapper!(EventChannel);
+string_wrapper!(
+    EventChannel,
+    crate::core::types::StringSchema {
+        string_validation: Some(schemars::schema::StringValidation {
+            max_length: Some(128),
+            min_length: None,
+            pattern: Some(r"^[a-zA-Z0-9\-_.]+$".to_string()),
+        }),
+        example: Some("project_1337".to_string()),
+    }
+);
 
 impl Validate for EventChannel {
     fn validate(&self) -> Result<(), validator::ValidationErrors> {
@@ -443,6 +565,7 @@ impl Validate for EventChannel {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize, JsonSchema)]
+#[schemars(transparent)]
 pub struct EventChannelSet(pub HashSet<EventChannel>);
 json_wrapper!(EventChannelSet);
 
@@ -456,6 +579,7 @@ impl Validate for EventChannelSet {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize, JsonSchema)]
+#[schemars(transparent)]
 pub struct EventTypeNameSet(pub HashSet<EventTypeName>);
 json_wrapper!(EventTypeNameSet);
 
@@ -993,8 +1117,20 @@ impl JsonSchema for EndpointSecret {
                 pattern: Some(KEY_PATTERN.to_string()),
                 ..Default::default()
             }));
+            obj.metadata = Some(Box::new(schemars::schema::Metadata{
+                description: Some("The endpoint's verification secret. If `null` is passed, a secret is automatically generated. Format: `base64` encoded random bytes optionally prefixed with `whsec_`. Recommended size: 24.".to_string()),
+                .. Default::default()
+            }));
+            obj.extensions.insert(
+                "example".to_string(),
+                serde_json::Value::String("whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD".to_string()),
+            );
         }
         schema
+    }
+
+    fn is_referenceable() -> bool {
+        false
     }
 }
 
@@ -1060,6 +1196,7 @@ fn validate_header_key(k: &str, errors: &mut ValidationErrors) {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Default, JsonSchema)]
+#[schemars(transparent)]
 pub struct EndpointHeaders(pub HashMap<String, String>);
 json_wrapper!(EndpointHeaders);
 
@@ -1107,6 +1244,7 @@ fn validate_header_map(
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Default, JsonSchema)]
+#[schemars(transparent)]
 pub struct EndpointHeadersPatch(pub HashMap<String, Option<String>>);
 json_wrapper!(EndpointHeadersPatch);
 
@@ -1135,15 +1273,93 @@ impl Validate for EndpointHeadersPatch {
     }
 }
 
+/// A macro to which you pass the list of variants of an enum using `repr(N)`
+/// and it returns a `Vec<(N, String)>`, where each element is `(value, "VariantStringified")`
+macro_rules! repr_enum {
+    ($($variant:ident),+) => {
+        vec![
+            $(($variant.into(), stringify!($variant).to_string())),+
+        ]
+    }
+}
+
+/// Generates a `JsonSchema` implementation for an enum using `repr(N)`. The
+/// enum must also derive `IntoPrimitive`.
+///
+/// Arguments are:
+/// 1. Name of the enum type, `Foo`
+/// 2. The repr type used, e.g. in case of `repr(i16)` it must be `i16`
+/// 3. The string description to be used in the docs.
+/// Remaining arguments must be the variants in order. For example:
+///
+/// ```
+/// #[derive(IntoPrimitive)]
+/// #[repr(u8)]
+/// enum MyEnum {
+///     Foo = 0,
+///     Bar = 1,
+///     Qux = 5,
+/// }
+///
+/// jsonschema_for_repr_enum{
+///     MyEnum,
+///     u8,
+///     "My nice little enum",
+///     Foo, Bar, Qux
+/// }
+/// ```
+macro_rules! jsonschema_for_repr_enum {
+    ($tyname:ty, $repr_ty:ty, $descr:expr, $($variant:ident),+) => {
+        impl JsonSchema for $tyname {
+            fn schema_name() -> String {
+                stringify!($tyname).to_string()
+            }
+
+            fn json_schema(_: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
+                use schemars::schema::{InstanceType, Metadata, Schema, SchemaObject, SingleOrVec};
+                use $tyname::*;
+
+                // A list of variant values and their corresponding name.
+                let variants: Vec<($repr_ty, String)> = repr_enum!($($variant),+);
+                // The list of possible enum primitive values.
+                let values = variants.iter().map(|(value, _)| serde_json::json!(value)).collect();
+                // The list of nice variant names the above values correspond to.
+                let variant_names = variants.iter().map(|(_, name)| serde_json::Value::String(name.clone())).collect();
+
+                Schema::Object(SchemaObject{
+                    metadata: Some(Box::new(Metadata {
+                        title: Some(Self::schema_name()),
+                        description: Some($descr.to_string()),
+                        ..Default::default()
+                    })),
+                    instance_type: Some(SingleOrVec::Single(Box::new(InstanceType::Integer))),
+                    enum_values: Some(values),
+                    extensions: indexmap::indexmap!{
+                        "x-enum-varnames".to_string() => serde_json::Value::Array(variant_names),
+                    },
+                    ..Default::default()
+                })
+            }
+        }
+    }
+}
+
 #[repr(i16)]
-#[derive(Clone, Debug, Copy, PartialEq, Eq, IntoPrimitive, TryFromPrimitive, JsonSchema)]
+#[derive(Clone, Debug, Copy, PartialEq, Eq, IntoPrimitive, TryFromPrimitive)]
 pub enum MessageAttemptTriggerType {
     Scheduled = 0,
     Manual = 1,
 }
 
+jsonschema_for_repr_enum! {
+    MessageAttemptTriggerType,
+    i16,
+    "The reason an attempt was made:\n- Scheduled = 0\n- Manual = 1",
+    Scheduled, Manual
+}
+
 #[repr(i16)]
-#[derive(Clone, Debug, Copy, PartialEq, IntoPrimitive, TryFromPrimitive, Hash, Eq, JsonSchema)]
+#[derive(Clone, Debug, Copy, PartialEq, IntoPrimitive, TryFromPrimitive, Hash, Eq)]
 pub enum MessageStatus {
     Success = 0,
     Pending = 1,
@@ -1151,8 +1367,15 @@ pub enum MessageStatus {
     Sending = 3,
 }
 
+jsonschema_for_repr_enum! {
+    MessageStatus,
+    i16,
+    "The sending status of the message:\n- Success = 0\n- Pending = 1\n- Fail = 2\n- Sending = 3",
+    Success, Pending, Fail, Sending
+}
+
 #[repr(i16)]
-#[derive(Clone, Debug, Copy, PartialEq, Eq, IntoPrimitive, TryFromPrimitive, JsonSchema)]
+#[derive(Clone, Debug, Copy, PartialEq, Eq, IntoPrimitive, TryFromPrimitive)]
 pub enum StatusCodeClass {
     CodeNone = 0,
     Code1xx = 100,
@@ -1162,12 +1385,31 @@ pub enum StatusCodeClass {
     Code5xx = 500,
 }
 
+jsonschema_for_repr_enum! {
+    StatusCodeClass,
+    i16,
+    "The different classes of HTTP status codes:\n- CodeNone = 0\n- Code1xx = 100\n- Code2xx = 200\n- Code3xx = 300\n- Code4xx = 400\n- Code5xx = 500",
+    CodeNone, Code1xx, Code2xx, Code3xx, Code4xx, Code5xx
+}
+
 enum_wrapper!(MessageAttemptTriggerType);
 enum_wrapper!(MessageStatus);
 enum_wrapper!(StatusCodeClass);
 
-#[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, JsonSchema)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize)]
 pub struct FeatureFlag(pub String);
+
+common_jsonschema_impl!(
+    FeatureFlag,
+    crate::core::types::StringSchema {
+        string_validation: Some(schemars::schema::StringValidation {
+            min_length: None,
+            max_length: Some(256),
+            pattern: Some(r"^[a-zA-Z0-9\-_.]+$".to_string()),
+        }),
+        example: Some("cool-new-feature".to_string()),
+    }
+);
 
 string_wrapper_impl!(FeatureFlag);
 
@@ -1217,9 +1459,15 @@ mod tests {
 
         // Check length
         let long_str: String = "X".repeat(300);
-        let app_id = ApplicationUid(long_str.clone());
+        let app_id = ApplicationId(long_str.clone());
         assert!(app_id.validate().is_err());
         let app_uid = ApplicationUid(long_str);
+        assert!(app_uid.validate().is_err());
+
+        let empty_str: String = "".to_owned();
+        let app_id = ApplicationId(empty_str.clone());
+        assert!(app_id.validate().is_err());
+        let app_uid = ApplicationUid(empty_str);
         assert!(app_uid.validate().is_err());
     }
 
@@ -1236,6 +1484,10 @@ mod tests {
         // Check length
         let long_str: String = "X".repeat(300);
         let evt_name = EventTypeName(long_str);
+        assert!(evt_name.validate().is_err());
+
+        let empty_str = "".to_owned();
+        let evt_name = EventTypeName(empty_str);
         assert!(evt_name.validate().is_err());
     }
 

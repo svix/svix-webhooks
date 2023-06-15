@@ -29,7 +29,7 @@ namespace Svix
             {
                 message = message ?? throw new ArgumentNullException(nameof(message));
 
-                var lApplication = _messageApi.CreateMessageApiV1AppAppIdMsgPost(
+                var lApplication = _messageApi.V1MessageCreate(
                     appId,
                     message,
                     options?.WithContent,
@@ -54,7 +54,7 @@ namespace Svix
             {
                 message = message ?? throw new ArgumentNullException(nameof(message));
 
-                var lApplication = await _messageApi.CreateMessageApiV1AppAppIdMsgPostAsync(
+                var lApplication = await _messageApi.V1MessageCreateAsync(
                     appId,
                     message,
                     options?.WithContent,
@@ -78,10 +78,9 @@ namespace Svix
         {
             try
             {
-                var lMessage = _messageApi.GetMessageApiV1AppAppIdMsgMsgIdGet(
-                    messageId,
+                var lMessage = _messageApi.V1MessageGet(
                     appId,
-                    idempotencyKey);
+                    messageId);
 
                 return lMessage;
             }
@@ -100,10 +99,9 @@ namespace Svix
         {
             try
             {
-                var lMessage = await _messageApi.GetMessageApiV1AppAppIdMsgMsgIdGetAsync(
-                    messageId,
+                var lMessage = await _messageApi.V1MessageGetAsync(
                     appId,
-                    idempotencyKey);
+                    messageId);
 
                 return lMessage;
             }
@@ -122,15 +120,16 @@ namespace Svix
         {
             try
             {
-                var lResponse = _messageApi.ListMessagesApiV1AppAppIdMsgGet(
+                var lResponse = _messageApi.V1MessageList(
                     appId,
-                    options?.Iterator,
                     options?.Limit,
-                    options?.EventTypes,
+                    options?.Iterator,
                     options?.Channel,
                     options?.Before,
                     options?.After,
-                    idempotencyKey);
+                    options?.WithContent,
+                    options?.EventTypes
+                    );
 
                 return lResponse?.Data;
             }
@@ -149,15 +148,15 @@ namespace Svix
         {
             try
             {
-                var lResponse = await _messageApi.ListMessagesApiV1AppAppIdMsgGetAsync(
+                var lResponse = await _messageApi.V1MessageListAsync(
                     appId,
-                    options?.Iterator,
                     options?.Limit,
-                    options?.EventTypes,
+                    options?.Iterator,
                     options?.Channel,
                     options?.Before,
                     options?.After,
-                    idempotencyKey,
+                    options?.WithContent,
+                    options?.EventTypes,
                     cancellationToken);
 
                 return lResponse?.Data;
@@ -177,10 +176,9 @@ namespace Svix
         {
             try
             {
-                var lResponse = _messageApi.ExpungeMessagePayloadApiV1AppAppIdMsgMsgIdContentDeleteWithHttpInfo(
-                    messageId,
+                var lResponse = _messageApi.V1MessageExpungeContentWithHttpInfo(
                     appId,
-                    idempotencyKey);
+                    messageId);
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
             }
@@ -199,10 +197,9 @@ namespace Svix
         {
             try
             {
-                var lResponse = await _messageApi.ExpungeMessagePayloadApiV1AppAppIdMsgMsgIdContentDeleteWithHttpInfoAsync(
-                    messageId,
+                var lResponse = await _messageApi.V1MessageExpungeContentWithHttpInfoAsync(
                     appId,
-                    idempotencyKey,
+                    messageId,
                     cancellationToken);
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;

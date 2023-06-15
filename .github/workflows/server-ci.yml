@@ -43,6 +43,13 @@ jobs:
         command: build
         args: --manifest-path server/Cargo.toml --all --locked
 
+    - name: Install dependencies
+      run: sudo apt-get install -y jq
+
+    - name: Check for uncommited OpenAPI changes
+      working-directory: ./server
+      run: ./generate-openapi.sh --check
+
     - name: Start dependencies
       run: docker-compose -f "server/testing-docker-compose.yml" up -d
 

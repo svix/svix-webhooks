@@ -20,6 +20,7 @@ import {
   EndpointHeadersPatchIn,
   EndpointHeadersOut,
   EndpointStats,
+  EventExampleIn,
   RecoverIn,
   ReplayIn,
   IntegrationApi,
@@ -53,6 +54,11 @@ import {
   AppPortalAccessOut,
   AppPortalAccessIn,
   Ordering,
+  BackgroundTaskStatus,
+  BackgroundTaskType,
+  BackgroundTaskOut,
+  ListResponseBackgroundTaskOut,
+  BackgroundTasksApi,
 } from "./openapi/index";
 export * from "./openapi/models/all";
 export * from "./openapi/apis/exception";
@@ -61,7 +67,7 @@ import * as base64 from "@stablelib/base64";
 import * as sha256 from "fast-sha256";
 
 const WEBHOOK_TOLERANCE_IN_SECONDS = 5 * 60; // 5 minutes
-const VERSION = "0.81.0";
+const VERSION = "1.4.12";
 
 class UserAgentMiddleware implements Middleware {
   public pre(context: RequestContext): Promise<RequestContext> {
@@ -94,6 +100,7 @@ export class Svix {
   public readonly integration: Integration;
   public readonly message: Message;
   public readonly messageAttempt: MessageAttempt;
+  public readonly backgroundTask: BackgroundTask;
 
   public constructor(token: string, options: SvixOptions = {}) {
     const regionalUrl = REGIONS.find((x) => x.region === token.split(".")[1])?.url;
@@ -122,6 +129,7 @@ export class Svix {
     this.integration = new Integration(config);
     this.message = new Message(config);
     this.messageAttempt = new MessageAttempt(config);
+    this.backgroundTask = new BackgroundTask(config);
   }
 }
 export interface PostOptions {
@@ -139,7 +147,7 @@ class Authentication {
     appPortalAccessIn: AppPortalAccessIn,
     options?: PostOptions
   ): Promise<AppPortalAccessOut> {
-    return this.api.getAppPortalAccessApiV1AuthAppPortalAccessAppIdPost({
+    return this.api.v1AuthenticationAppPortalAccess({
       appId,
       appPortalAccessIn,
       ...options,
@@ -150,14 +158,14 @@ class Authentication {
     appId: string,
     options?: PostOptions
   ): Promise<DashboardAccessOut> {
-    return this.api.getDashboardAccessApiV1AuthDashboardAccessAppIdPost({
+    return this.api.v1AuthenticationDashboardAccess({
       appId,
       ...options,
     });
   }
 
   public logout(options?: PostOptions): Promise<void> {
-    return this.api.logoutApiV1AuthLogoutPost({ ...options });
+    return this.api.v1AuthenticationLogout({ ...options });
   }
 }
 
@@ -174,6 +182,11 @@ export interface EndpointListOptions extends ListOptions {
   order?: Ordering;
 }
 
+export interface EndpointStatsOptions {
+  since?: Date;
+  until?: Date;
+}
+
 export type IntegrationListOptions = ListOptions;
 
 export interface EventTypeListOptions extends ListOptions {
@@ -186,6 +199,7 @@ export interface MessageListOptions extends ListOptions {
   before?: Date;
   after?: Date;
   channel?: string;
+  withContent?: boolean;
 }
 
 export interface MessageAttemptListOptions extends ListOptions {
@@ -197,6 +211,11 @@ export interface MessageAttemptListOptions extends ListOptions {
   channel?: string;
 }
 
+export interface BackgroundTaskListOptions extends ListOptions {
+  status?: BackgroundTaskStatus;
+  task?: BackgroundTaskType;
+}
+
 class Application {
   private readonly api: ApplicationApi;
 
@@ -205,21 +224,21 @@ class Application {
   }
 
   public list(options?: ApplicationListOptions): Promise<ListResponseApplicationOut> {
-    return this.api.listApplicationsApiV1AppGet({ ...options });
+    return this.api.v1ApplicationList({ ...options });
   }
 
   public create(
     applicationIn: ApplicationIn,
     options?: PostOptions
   ): Promise<ApplicationOut> {
-    return this.api.createApplicationApiV1AppPost({ applicationIn, ...options });
+    return this.api.v1ApplicationCreate({ applicationIn, ...options });
   }
 
   public getOrCreate(
     applicationIn: ApplicationIn,
     options?: PostOptions
   ): Promise<ApplicationOut> {
-    return this.api.createApplicationApiV1AppPost({
+    return this.api.v1ApplicationCreate({
       applicationIn,
       ...options,
       getIfExists: true,
@@ -227,15 +246,15 @@ class Application {
   }
 
   public get(appId: string): Promise<ApplicationOut> {
-    return this.api.getApplicationApiV1AppAppIdGet({ appId });
+    return this.api.v1ApplicationGet({ appId });
   }
 
   public update(appId: string, applicationIn: ApplicationIn): Promise<ApplicationOut> {
-    return this.api.updateApplicationApiV1AppAppIdPut({ appId, applicationIn });
+    return this.api.v1ApplicationUpdate({ appId, applicationIn });
   }
 
   public delete(appId: string): Promise<void> {
-    return this.api.deleteApplicationApiV1AppAppIdDelete({ appId });
+    return this.api.v1ApplicationDelete({ appId });
   }
 }
 
@@ -250,7 +269,7 @@ class Endpoint {
     appId: string,
     options?: EndpointListOptions
   ): Promise<ListResponseEndpointOut> {
-    return this.api.listEndpointsApiV1AppAppIdEndpointGet({ appId, ...options });
+    return this.api.v1EndpointList({ appId, ...options });
   }
 
   public create(
@@ -258,7 +277,7 @@ class Endpoint {
     endpointIn: EndpointIn,
     options?: PostOptions
   ): Promise<EndpointOut> {
-    return this.api.createEndpointApiV1AppAppIdEndpointPost({
+    return this.api.v1EndpointCreate({
       appId,
       endpointIn,
       ...options,
@@ -266,7 +285,7 @@ class Endpoint {
   }
 
   public get(appId: string, endpointId: string): Promise<EndpointOut> {
-    return this.api.getEndpointApiV1AppAppIdEndpointEndpointIdGet({ endpointId, appId });
+    return this.api.v1EndpointGet({ endpointId, appId });
   }
 
   public update(
@@ -274,7 +293,7 @@ class Endpoint {
     endpointId: string,
     endpointUpdate: EndpointUpdate
   ): Promise<EndpointOut> {
-    return this.api.updateEndpointApiV1AppAppIdEndpointEndpointIdPut({
+    return this.api.v1EndpointUpdate({
       appId,
       endpointId,
       endpointUpdate,
@@ -282,14 +301,14 @@ class Endpoint {
   }
 
   public delete(appId: string, endpointId: string): Promise<void> {
-    return this.api.deleteEndpointApiV1AppAppIdEndpointEndpointIdDelete({
+    return this.api.v1EndpointDelete({
       endpointId,
       appId,
     });
   }
 
   public getSecret(appId: string, endpointId: string): Promise<EndpointSecretOut> {
-    return this.api.getEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretGet({
+    return this.api.v1EndpointGetSecret({
       endpointId,
       appId,
     });
@@ -301,7 +320,7 @@ class Endpoint {
     endpointSecretRotateIn: EndpointSecretRotateIn,
     options?: PostOptions
   ): Promise<void> {
-    return this.api.rotateEndpointSecretApiV1AppAppIdEndpointEndpointIdSecretRotatePost({
+    return this.api.v1EndpointRotateSecret({
       endpointId,
       appId,
       endpointSecretRotateIn,
@@ -316,7 +335,7 @@ class Endpoint {
     options?: PostOptions
   ): Promise<void> {
     return this.api
-      .recoverFailedWebhooksApiV1AppAppIdEndpointEndpointIdRecoverPost({
+      .v1EndpointRecover({
         appId,
         endpointId,
         recoverIn,
@@ -332,7 +351,7 @@ class Endpoint {
     options?: PostOptions
   ): Promise<void> {
     return this.api
-      .replayMissingWebhooksApiV1AppAppIdEndpointEndpointIdReplayMissingPost({
+      .v1EndpointReplay({
         appId,
         endpointId,
         replayIn,
@@ -342,7 +361,7 @@ class Endpoint {
   }
 
   public getHeaders(appId: string, endpointId: string): Promise<EndpointHeadersOut> {
-    return this.api.getEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersGet({
+    return this.api.v1EndpointGetHeaders({
       appId,
       endpointId,
     });
@@ -353,7 +372,7 @@ class Endpoint {
     endpointId: string,
     endpointHeadersIn: EndpointHeadersIn
   ): Promise<void> {
-    return this.api.updateEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPut({
+    return this.api.v1EndpointUpdateHeaders({
       appId,
       endpointId,
       endpointHeadersIn,
@@ -365,17 +384,18 @@ class Endpoint {
     endpointId: string,
     endpointHeadersPatchIn: EndpointHeadersPatchIn
   ): Promise<void> {
-    return this.api.patchEndpointHeadersApiV1AppAppIdEndpointEndpointIdHeadersPatch({
+    return this.api.v1EndpointPatchHeaders({
       appId,
       endpointId,
       endpointHeadersPatchIn,
     });
   }
 
-  public getStats(appId: string, endpointId: string): Promise<EndpointStats> {
-    return this.api.getEndpointStatsApiV1AppAppIdEndpointEndpointIdStatsGet({
+  public getStats(appId: string, endpointId: string, options?: EndpointStatsOptions): Promise<EndpointStats> {
+    return this.api.v1EndpointGetStats({
       appId,
       endpointId,
+      ...options
     });
   }
 
@@ -383,7 +403,7 @@ class Endpoint {
     appId: string,
     endpointId: string
   ): Promise<EndpointTransformationOut> {
-    return this.api.getEndpointTransformationApiV1AppAppIdEndpointEndpointIdTransformationGet(
+    return this.api.v1EndpointTransformationGet(
       { endpointId, appId }
     );
   }
@@ -393,8 +413,19 @@ class Endpoint {
     endpointId: string,
     endpointTransformationIn: EndpointTransformationIn
   ): Promise<void> {
-    return this.api.setEndpointTransformationApiV1AppAppIdEndpointEndpointIdTransformationPatch(
+    return this.api.v1EndpointTransformationPartialUpdate(
       { appId, endpointId, endpointTransformationIn }
+    );
+  }
+
+  public sendExample(
+    appId: string,
+    endpointId: string,
+    eventExampleIn: EventExampleIn,
+    options?: PostOptions,
+  ): Promise<MessageOut> {
+    return this.api.v1EndpointSendExample(
+      { appId, endpointId, eventExampleIn, ...options }
     );
   }
 }
@@ -407,29 +438,29 @@ class EventType {
   }
 
   public list(options?: EventTypeListOptions): Promise<ListResponseEventTypeOut> {
-    return this.api.listEventTypesApiV1EventTypeGet({ ...options });
+    return this.api.v1EventTypeList({ ...options });
   }
 
   public get(eventTypeName: string): Promise<EventTypeOut> {
-    return this.api.getEventTypeApiV1EventTypeEventTypeNameGet({ eventTypeName });
+    return this.api.v1EventTypeGet({ eventTypeName });
   }
 
   public create(eventTypeIn: EventTypeIn, options?: PostOptions): Promise<EventTypeOut> {
-    return this.api.createEventTypeApiV1EventTypePost({ eventTypeIn, ...options });
+    return this.api.v1EventTypeCreate({ eventTypeIn, ...options });
   }
 
   public update(
     eventTypeName: string,
     eventTypeUpdate: EventTypeUpdate
   ): Promise<EventTypeOut> {
-    return this.api.updateEventTypeApiV1EventTypeEventTypeNamePut({
+    return this.api.v1EventTypeUpdate({
       eventTypeName,
       eventTypeUpdate,
     });
   }
 
   public delete(eventTypeName: string): Promise<void> {
-    return this.api.deleteEventTypeApiV1EventTypeEventTypeNameDelete({ eventTypeName });
+    return this.api.v1EventTypeDelete({ eventTypeName });
   }
 }
 
@@ -444,7 +475,7 @@ class Integration {
     appId: string,
     options?: IntegrationListOptions
   ): Promise<ListResponseIntegrationOut> {
-    return this.api.listIntegrationsApiV1AppAppIdIntegrationGet({ appId, ...options });
+    return this.api.v1IntegrationList({ appId, ...options });
   }
 
   public create(
@@ -452,7 +483,7 @@ class Integration {
     integrationIn: IntegrationIn,
     options?: PostOptions
   ): Promise<IntegrationOut> {
-    return this.api.createIntegrationApiV1AppAppIdIntegrationPost({
+    return this.api.v1IntegrationCreate({
       appId,
       integrationIn,
       ...options,
@@ -460,7 +491,7 @@ class Integration {
   }
 
   public get(appId: string, integId: string): Promise<IntegrationOut> {
-    return this.api.getIntegrationApiV1AppAppIdIntegrationIntegIdGet({ integId, appId });
+    return this.api.v1IntegrationGet({ integId, appId });
   }
 
   public update(
@@ -468,7 +499,7 @@ class Integration {
     integId: string,
     integrationUpdate: IntegrationUpdate
   ): Promise<IntegrationOut> {
-    return this.api.updateIntegrationApiV1AppAppIdIntegrationIntegIdPut({
+    return this.api.v1IntegrationUpdate({
       appId,
       integId,
       integrationUpdate,
@@ -476,14 +507,14 @@ class Integration {
   }
 
   public delete(appId: string, integId: string): Promise<void> {
-    return this.api.deleteIntegrationApiV1AppAppIdIntegrationIntegIdDelete({
+    return this.api.v1IntegrationDelete({
       integId,
       appId,
     });
   }
 
   public getKey(appId: string, integId: string): Promise<IntegrationKeyOut> {
-    return this.api.getIntegrationKeyApiV1AppAppIdIntegrationIntegIdKeyGet({
+    return this.api.v1IntegrationGetKey({
       integId,
       appId,
     });
@@ -494,7 +525,7 @@ class Integration {
     integId: string,
     options?: PostOptions
   ): Promise<IntegrationKeyOut> {
-    return this.api.rotateIntegrationKeyApiV1AppAppIdIntegrationIntegIdKeyRotatePost({
+    return this.api.v1IntegrationRotateKey({
       integId,
       appId,
       ...options,
@@ -513,7 +544,7 @@ class Message {
     appId: string,
     options?: MessageListOptions
   ): Promise<ListResponseMessageOut> {
-    return this.api.listMessagesApiV1AppAppIdMsgGet({ appId, ...options });
+    return this.api.v1MessageList({ appId, ...options });
   }
 
   public create(
@@ -521,15 +552,15 @@ class Message {
     messageIn: MessageIn,
     options?: PostOptions
   ): Promise<MessageOut> {
-    return this.api.createMessageApiV1AppAppIdMsgPost({ appId, messageIn, ...options });
+    return this.api.v1MessageCreate({ appId, messageIn, ...options });
   }
 
   public get(appId: string, msgId: string): Promise<MessageOut> {
-    return this.api.getMessageApiV1AppAppIdMsgMsgIdGet({ msgId, appId });
+    return this.api.v1MessageGet({ msgId, appId });
   }
 
   public expungeContent(appId: string, msgId: string): Promise<void> {
-    return this.api.expungeMessagePayloadApiV1AppAppIdMsgMsgIdContentDelete({ appId, msgId });
+    return this.api.v1MessageExpungeContent({ appId, msgId });
   }
 }
 
@@ -556,7 +587,7 @@ class MessageAttempt {
     msgId: string,
     options?: MessageAttemptListOptions
   ): Promise<ListResponseMessageAttemptOut> {
-    return this.api.listAttemptsByMsgApiV1AppAppIdAttemptMsgMsgIdGet({
+    return this.api.v1MessageAttemptListByMsg({
       appId,
       msgId,
       ...options,
@@ -568,7 +599,7 @@ class MessageAttempt {
     endpointId: string,
     options?: MessageAttemptListOptions
   ): Promise<ListResponseMessageAttemptOut> {
-    return this.api.listAttemptsByEndpointApiV1AppAppIdAttemptEndpointEndpointIdGet({
+    return this.api.v1MessageAttemptListByEndpoint({
       appId,
       endpointId,
       ...options,
@@ -580,7 +611,7 @@ class MessageAttempt {
     msgId: string,
     attemptId: string
   ): Promise<MessageAttemptOut> {
-    return this.api.getAttemptApiV1AppAppIdMsgMsgIdAttemptAttemptIdGet({
+    return this.api.v1MessageAttemptGet({
       attemptId,
       msgId,
       appId,
@@ -593,7 +624,7 @@ class MessageAttempt {
     endpointId: string,
     options?: PostOptions
   ): Promise<void> {
-    return this.api.resendWebhookApiV1AppAppIdMsgMsgIdEndpointEndpointIdResendPost({
+    return this.api.v1MessageAttemptResend({
       endpointId,
       msgId,
       appId,
@@ -606,7 +637,7 @@ class MessageAttempt {
     endpointId: string,
     options?: MessageAttemptListOptions
   ): Promise<ListResponseEndpointMessageOut> {
-    return this.api.listAttemptedMessagesApiV1AppAppIdEndpointEndpointIdMsgGet({
+    return this.api.v1MessageAttemptListAttemptedMessages({
       appId,
       endpointId,
       ...options,
@@ -618,7 +649,7 @@ class MessageAttempt {
     msgId: string,
     options?: MessageAttemptListOptions
   ): Promise<ListResponseMessageEndpointOut> {
-    return this.api.listAttemptedDestinationsApiV1AppAppIdMsgMsgIdEndpointGet({
+    return this.api.v1MessageAttemptListAttemptedDestinations({
       appId,
       msgId,
       ...options,
@@ -631,7 +662,7 @@ class MessageAttempt {
     endpointId: string,
     options?: MessageAttemptListOptions
   ): Promise<ListResponseMessageAttemptEndpointOut> {
-    return this.api.listAttemptsForEndpointApiV1AppAppIdMsgMsgIdEndpointEndpointIdAttemptGet(
+    return this.api.v1MessageAttemptListByEndpointDeprecated(
       { appId, msgId, endpointId, ...options }
     );
   }
@@ -641,10 +672,35 @@ class MessageAttempt {
     msgId: string,
     attemptId: string
   ): Promise<void> {
-    return this.api.expungeAttemptContentApiV1AppAppIdMsgMsgIdAttemptAttemptIdContentDelete({
+    return this.api.v1MessageAttemptExpungeContent({
       appId, msgId, attemptId
     })
   }
+}
+
+class BackgroundTask {
+  private readonly api: BackgroundTasksApi;
+
+  public constructor(config: Configuration) {
+    this.api = new BackgroundTasksApi(config);
+  }
+
+  public listByEndpoint(
+    options?: BackgroundTaskListOptions
+  ): Promise<ListResponseBackgroundTaskOut> {
+    return this.api.listBackgroundTasks({
+      ...options,
+    });
+  }
+
+  public get(
+    taskId: string,
+  ): Promise<BackgroundTaskOut> {
+    return this.api.getBackgroundTask({
+      taskId
+    });
+  }
+
 }
 
 class ExtendableError extends Error {

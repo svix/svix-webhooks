@@ -19,7 +19,7 @@ public final class Authentication {
 
 	public AppPortalAccessOut appPortalAccess(final String appId, final AppPortalAccessIn appPortalAccessIn, final PostOptions options) throws ApiException {
 		try {
-			return api.getAppPortalAccessApiV1AuthAppPortalAccessAppIdPost(appId, appPortalAccessIn, options.getIdempotencyKey());
+			return api.v1AuthenticationAppPortalAccess(appId, appPortalAccessIn, options.getIdempotencyKey());
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
@@ -31,7 +31,7 @@ public final class Authentication {
 
 	public DashboardAccessOut dashboardAccess(final String appId, final PostOptions options) throws ApiException {
 		try {
-			return api.getDashboardAccessApiV1AuthDashboardAccessAppIdPost(appId, options.getIdempotencyKey());
+			return api.v1AuthenticationDashboardAccess(appId, options.getIdempotencyKey());
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
@@ -43,7 +43,7 @@ public final class Authentication {
 
 	public void logout(final PostOptions options) throws ApiException {
 		try {
-			api.logoutApiV1AuthLogoutPost(options.getIdempotencyKey());
+			api.v1AuthenticationLogout(options.getIdempotencyKey());
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}

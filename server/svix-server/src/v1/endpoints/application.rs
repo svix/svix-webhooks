@@ -17,9 +17,9 @@ use crate::{
             UnrequiredNullableField,
         },
         validate_no_control_characters, validate_no_control_characters_unrequired,
-        validation_error, ApplicationPath, EmptyResponse, JsonStatus, JsonStatusUpsert,
-        ListOrdering, ListResponse, ModelIn, ModelOut, Pagination, PaginationLimit,
-        ReversibleIterator, ValidatedJson, ValidatedQuery,
+        validation_error, ApplicationPath, JsonStatusUpsert, ListResponse, ModelIn, ModelOut,
+        NoContent, Ordering, Pagination, PaginationLimit, ReversibleIterator, ValidatedJson,
+        ValidatedQuery,
     },
     AppState,
 };
@@ -39,6 +39,10 @@ use serde::{Deserialize, Serialize};
 use svix_server_derive::{aide_annotate, ModelOut};
 use validator::{Validate, ValidationError};
 
+fn application_name_example() -> &'static str {
+    "My first application"
+}
+
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Validate, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct ApplicationIn {
@@ -46,6 +50,7 @@ pub struct ApplicationIn {
         length(min = 1, message = "Application names must be at least one character"),
         custom = "validate_no_control_characters"
     )]
+    #[schemars(example = "application_name_example")]
     pub name: String,
 
     #[validate(range(min = 1, message = "Application rate limits must be at least 1 if set"))]
@@ -165,6 +170,7 @@ pub struct ApplicationOut {
     // FIXME: Do we want to use serde(flatten) or just duplicate the keys?
     #[serde(skip_serializing_if = "Option::is_none")]
     pub uid: Option<ApplicationUid>,
+    #[schemars(example = "application_name_example")]
     pub name: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub rate_limit: Option<u16>,
@@ -189,8 +195,8 @@ impl From<(application::Model, applicationmetadata::Model)> for ApplicationOut {
     }
 }
 
-/// List all of the organization's applications.
-#[aide_annotate(op_id = "list_applications_api_v1_app__get")]
+/// List of all the organization's applications.
+#[aide_annotate(op_id = "v1.application.list")]
 async fn list_applications(
     State(AppState { ref db, .. }): State<AppState>,
     ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<ApplicationId>>>,
@@ -205,7 +211,7 @@ async fn list_applications(
         application::Column::Id,
         limit,
         iterator,
-        pagination.order.unwrap_or(ListOrdering::Ascending),
+        pagination.order.unwrap_or(Ordering::Ascending),
     );
 
     let results: Vec<ApplicationOut> = ctx!(
@@ -234,16 +240,17 @@ fn default_as_false() -> bool {
 }
 
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
-pub struct CreateApplicationQuery {
+pub struct CreateApplicationQueryParams {
+    /// Get an existing application, or create a new one if doesn't exist. It's two separate functions in the libs.
     #[serde(default = "default_as_false")]
     get_if_exists: bool,
 }
 
 /// Create a new application.
-#[aide_annotate(op_id = "create_application_api_v1_app__post")]
+#[aide_annotate(op_id = "v1.application.create")]
 async fn create_application(
     State(AppState { ref db, .. }): State<AppState>,
-    query: ValidatedQuery<CreateApplicationQuery>,
+    query: ValidatedQuery<CreateApplicationQueryParams>,
     permissions::Organization { org_id }: permissions::Organization,
     ValidatedJson(data): ValidatedJson<ApplicationIn>,
 ) -> Result<JsonStatusUpsert<ApplicationOut>> {
@@ -280,7 +287,7 @@ async fn create_application(
 }
 
 /// Get an application.
-#[aide_annotate(op_id = "get_application_api_v1_app__app_id___get")]
+#[aide_annotate(op_id = "v1.application.get")]
 async fn get_application(
     permissions::ApplicationWithMetadata { app, metadata }: permissions::ApplicationWithMetadata,
 ) -> Result<Json<ApplicationOut>> {
@@ -288,7 +295,7 @@ async fn get_application(
 }
 
 /// Update an application.
-#[aide_annotate(op_id = "update_application_api_v1_app__app_id___put")]
+#[aide_annotate(op_id = "v1.application.update")]
 async fn update_application(
     State(AppState { ref db, .. }): State<AppState>,
     Path(ApplicationPath { app_id }): Path<ApplicationPath>,
@@ -350,16 +357,16 @@ async fn patch_application(
 }
 
 /// Delete an application.
-#[aide_annotate(op_id = "delete_application_api_v1_app__app_id___delete")]
+#[aide_annotate(op_id = "v1.application.delete")]
 async fn delete_application(
     State(AppState { ref db, .. }): State<AppState>,
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
-) -> Result<JsonStatus<204, EmptyResponse>> {
+) -> Result<NoContent> {
     let mut app: application::ActiveModel = app.into();
     app.deleted = Set(true);
     app.uid = Set(None); // We don't want deleted UIDs to clash
     ctx!(app.update(db).await)?;
-    Ok(JsonStatus(EmptyResponse {}))
+    Ok(NoContent)
 }
 
 pub fn router() -> ApiRouter<AppState> {

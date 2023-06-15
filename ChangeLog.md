@@ -1,7 +1,54 @@
 # Changelog
 
 ## Next
-* Server: refactor expired message cleaner to be incremental
+*
+
+## Version 1.4.12
+* Sync OSS package version with our internal version.
+* Server: support comma separated array query params
+* Bridge: initial release
+* Libs: update OpenAPI spec
+* Libs: add support for "Background Task" endpoints
+* Libs: add support for since/until to endpoint stats
+* Libs/Go: add missing `endpoint_id` option to list attempts by msg.
+* Libs/JavaScript: add missing `withContent` field to `MessageListOptions`.
+* Libs/Rust: fix typo in error handling message
+
+## Version 0.85.1
+* Libs: update OpenAPI spec
+
+## Version 0.85.0
+* Server: add a missing migration for operational webhooks event types.
+* Libs/Ruby: fix the library failing to load due to missing dependency.
+* Libs: **[Semi-breaking]** we changed the return value of the transformation simulation endpoint. It's technically a breaking page, though the API is private so it shouldn't affect people.
+
+## Version 0.84.1
+* Libs: regenerate libs from the correct openapi spec (could have caused potential authentication issues)
+
+## Version 0.84.0
+* Server: add (beta) RabbitMQ implementation
+* Server: upgrade redis-rs and a few other dependencies
+* Server: improve OpenAPI generation
+* Server: fix issue with Redis being required in the docker image
+* Libs/Rust: support choosing the wanted TLS implementation
+
+## Version 0.83.1
+* Libs: update OpenAPI spec
+
+## Version 0.83.0
+* Server: bump deps
+* Libs: Add `send-example` wrapper to libraries
+* Libs/Go: alias missing types from internal dir / openapi package
+
+## Version 0.82.1
+* Libs/Java: serialize nulls when making HTTP requests
+
+## Version 0.82.0
+* Server: refactor expired message cleaner to be incremental (prevent locks)
+* Server: improve OpenAPI generation
+* Server: Fix handling of very large numbers in json (larger than i64)
+* Server: do not throw error on missing payload in worker
+* Server: update dependencies
 
 ## Version 0.81.0
 * Libs: add support for creating application when creating a message

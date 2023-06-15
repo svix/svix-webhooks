@@ -3,19 +3,24 @@
 
 use std::time::Duration;
 
-use aide::axum::ApiRouter;
-use axum::{extract::State, http::StatusCode, routing::get, Json};
+use aide::axum::{
+    routing::{get, get_with},
+    ApiRouter,
+};
+use axum::{extract::State, http::StatusCode, Json};
 use sea_orm::{query::Statement, ConnectionTrait, DatabaseBackend};
 use serde::{Deserialize, Serialize};
+use svix_server_derive::aide_annotate;
 
 use crate::{
     core::cache::{kv_def, CacheBehavior, CacheKey, CacheValue},
     queue::QueueTask,
+    v1::utils::{openapi_tag, NoContent},
     AppState,
 };
 
-async fn ping() -> StatusCode {
-    StatusCode::NO_CONTENT
+async fn ping() -> NoContent {
+    NoContent
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -75,6 +80,8 @@ pub struct HealthReport {
 struct HealthCheckCacheValue(());
 kv_def!(HealthCheckCacheKey, HealthCheckCacheValue);
 
+/// Verify the API server is up and running.
+#[aide_annotate(op_id = "v1.health.get")]
 async fn health(
     State(AppState {
         ref db,
@@ -123,7 +130,14 @@ async fn health(
 }
 
 pub fn router() -> ApiRouter<AppState> {
+    let tag = openapi_tag("Health");
+
     ApiRouter::new()
-        .route("/health/ping/", get(ping).head(ping))
-        .route("/health/", get(health).head(health))
+        .api_route("/health/ping/", get(ping).head(ping))
+        .api_route_with(
+            "/health/",
+            get_with(health, |op| op.response::<204, ()>().with(health_operation))
+                .head_with(health, health_operation),
+            tag,
+        )
 }

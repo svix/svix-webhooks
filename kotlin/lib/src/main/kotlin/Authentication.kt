@@ -22,7 +22,7 @@ class Authentication internal constructor(token: String, options: SvixOptions) {
         options: PostOptions = PostOptions()
     ): AppPortalAccessOut {
         try {
-            return api.getAppPortalAccessApiV1AuthAppPortalAccessAppIdPost(appId, appPortalAccessIn, options.idempotencyKey)
+            return api.v1AuthenticationAppPortalAccess(appId, appPortalAccessIn, options.idempotencyKey)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -30,7 +30,7 @@ class Authentication internal constructor(token: String, options: SvixOptions) {
 
     suspend fun dashboardAccess(appId: String, options: PostOptions = PostOptions()): DashboardAccessOut {
         try {
-            return api.getDashboardAccessApiV1AuthDashboardAccessAppIdPost(appId, options.idempotencyKey)
+            return api.v1AuthenticationDashboardAccess(appId, options.idempotencyKey)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -38,7 +38,7 @@ class Authentication internal constructor(token: String, options: SvixOptions) {
 
     suspend fun logout(options: PostOptions = PostOptions()) {
         try {
-            api.logoutApiV1AuthLogoutPost(options.idempotencyKey)
+            api.v1AuthenticationLogout(options.idempotencyKey)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }

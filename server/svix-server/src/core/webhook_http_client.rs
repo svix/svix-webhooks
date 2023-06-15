@@ -52,6 +52,7 @@ pub enum Error {
     FailedRequest(hyper::Error),
 }
 
+#[derive(Clone)]
 pub struct WebhookClient {
     client: Client<HttpsConnector<NonLocalConnector>, Body>,
     whitelist_nets: Arc<Vec<IpNet>>,

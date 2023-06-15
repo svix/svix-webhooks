@@ -9,7 +9,7 @@ use sea_orm::{ActiveModelTrait, DatabaseConnection, QuerySelect};
 use svix_server_derive::aide_annotate;
 use url::Url;
 
-use super::{EndpointIn, EndpointOut, EndpointPatch};
+use super::{EndpointIn, EndpointOut, EndpointPatch, EndpointUpdate};
 use crate::{
     cfg::Configuration,
     core::{
@@ -23,8 +23,8 @@ use crate::{
     v1::utils::{
         apply_pagination,
         patch::{patch_field_non_nullable, UnrequiredField, UnrequiredNullableField},
-        ApplicationEndpointPath, EmptyResponse, JsonStatus, JsonStatusUpsert, ListOrdering,
-        ListResponse, ModelIn, ModelOut, Pagination, PaginationLimit, ReversibleIterator,
+        ApplicationEndpointPath, ApplicationPath, JsonStatus, JsonStatusUpsert, ListResponse,
+        ModelIn, ModelOut, NoContent, Ordering, Pagination, PaginationLimit, ReversibleIterator,
         ValidatedJson, ValidatedQuery,
     },
     AppState,
@@ -32,9 +32,10 @@ use crate::{
 use hack::EventTypeNameResult;
 
 /// List the application's endpoints.
-#[aide_annotate(op_id = "list_endpoints_api_v1_app__app_id__endpoint__get")]
+#[aide_annotate(op_id = "v1.endpoint.list")]
 pub(super) async fn list_endpoints(
     State(AppState { ref db, .. }): State<AppState>,
+    _: Path<ApplicationPath>,
     ValidatedQuery(pagination): ValidatedQuery<Pagination<ReversibleIterator<EndpointId>>>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<ListResponse<EndpointOut>>> {
@@ -47,7 +48,7 @@ pub(super) async fn list_endpoints(
         endpoint::Column::Id,
         limit,
         iterator,
-        pagination.order.unwrap_or(ListOrdering::Descending),
+        pagination.order.unwrap_or(Ordering::Descending),
     );
 
     let results = ctx!(
@@ -105,7 +106,7 @@ async fn create_endp_from_data(
 /// Create a new endpoint for the application.
 ///
 /// When `secret` is `null` the secret is automatically generated (recommended)
-#[aide_annotate(op_id = "create_endpoint_api_v1_app__app_id__endpoint__post")]
+#[aide_annotate(op_id = "v1.endpoint.create")]
 pub(super) async fn create_endpoint(
     State(AppState {
         ref db,
@@ -113,6 +114,7 @@ pub(super) async fn create_endpoint(
         op_webhooks,
         ..
     }): State<AppState>,
+    _: Path<ApplicationPath>,
     permissions::Application { app }: permissions::Application,
     ValidatedJson(data): ValidatedJson<EndpointIn>,
 ) -> Result<JsonStatus<201, EndpointOut>> {
@@ -127,7 +129,7 @@ pub(super) async fn create_endpoint(
 }
 
 /// Get an endpoint.
-#[aide_annotate(op_id = "get_endpoint_api_v1_app__app_id__endpoint__endpoint_id___get")]
+#[aide_annotate(op_id = "v1.endpoint.get")]
 pub(super) async fn get_endpoint(
     State(AppState { ref db, .. }): State<AppState>,
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
@@ -173,7 +175,7 @@ async fn update_endp_from_data(
 }
 
 /// Update an endpoint.
-#[aide_annotate(op_id = "update_endpoint_api_v1_app__app_id__endpoint__endpoint_id___put")]
+#[aide_annotate(op_id = "v1.endpoint.update")]
 pub(super) async fn update_endpoint(
     State(AppState {
         ref db,
@@ -183,7 +185,7 @@ pub(super) async fn update_endpoint(
     }): State<AppState>,
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
-    ValidatedJson(mut data): ValidatedJson<EndpointIn>,
+    ValidatedJson(mut data): ValidatedJson<EndpointUpdate>,
 ) -> Result<JsonStatusUpsert<EndpointOut>> {
     if let Some(ref event_types_ids) = data.event_types_ids {
         validate_event_types(db, event_types_ids, &app.org_id).await?;
@@ -200,6 +202,7 @@ pub(super) async fn update_endpoint(
             ctx!(update_endp_from_data(db, op_webhooks, app, endp, metadata).await)?;
         Ok(JsonStatusUpsert::Updated((endp, metadata.data).into()))
     } else {
+        let data = data.into_in_with_default_key();
         let (endp, metadata) = ctx!(create_endp_from_data(db, cfg, op_webhooks, app, data).await)?;
         Ok(JsonStatusUpsert::Created((endp, metadata.data).into()))
     }
@@ -240,7 +243,7 @@ pub(super) async fn patch_endpoint(
 }
 
 /// Delete an endpoint.
-#[aide_annotate(op_id = "delete_endpoint_api_v1_app__app_id__endpoint__endpoint_id___delete")]
+#[aide_annotate(op_id = "v1.endpoint.delete")]
 pub(super) async fn delete_endpoint(
     State(AppState {
         ref db,
@@ -249,7 +252,7 @@ pub(super) async fn delete_endpoint(
     }): State<AppState>,
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
-) -> Result<JsonStatus<204, EmptyResponse>> {
+) -> Result<NoContent> {
     let endp = ctx!(
         endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endpoint_id)
             .one(db)
@@ -278,7 +281,7 @@ pub(super) async fn delete_endpoint(
         )
         .await?;
 
-    Ok(JsonStatus(EmptyResponse {}))
+    Ok(NoContent)
 }
 
 /// This module is here so that our Result override doesn't conflict
