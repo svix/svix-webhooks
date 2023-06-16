@@ -12,20 +12,24 @@ use crate::{
         permissions,
         types::{
             metadata::Metadata, BaseId, EndpointId, EndpointSecretInternal, EndpointUid,
-            EventChannelSet, EventTypeNameSet, MessageEndpointId, MessageStatus, SanitizedHeaders,
+            EventChannelSet, EventTypeName, EventTypeNameSet, MessageEndpointId, MessageStatus,
+            SanitizedHeaders,
         },
     },
     ctx,
-    db::models::messagedestination,
+    db::models::{
+        eventtype::{self},
+        messagedestination,
+    },
     error::{self, HttpError},
     v1::utils::{
-        api_not_implemented, openapi_desc, openapi_tag,
+        openapi_tag,
         patch::{
             patch_field_non_nullable, patch_field_nullable, UnrequiredField,
             UnrequiredNullableField,
         },
         validate_no_control_characters, validate_no_control_characters_unrequired,
-        validation_error, ApplicationEndpointPath, ModelIn,
+        validation_error, ApplicationEndpointPath, ModelIn, ValidatedJson,
     },
     AppState,
 };
@@ -52,6 +56,8 @@ use crate::core::types::{EndpointHeaders, EndpointHeadersPatch, EndpointSecret};
 use crate::db::models::endpoint;
 
 use self::secrets::generate_secret;
+
+use super::message::{create_message_inner, MessageIn, MessageOut, RawPayload};
 
 pub fn validate_event_types_ids(
     event_types_ids: &EventTypeNameSet,
@@ -715,7 +721,74 @@ async fn endpoint_stats(
     }))
 }
 
-const SEND_EXAMPLE_DESCRIPTION: &str = "Send an example message for event";
+#[derive(Deserialize, JsonSchema, Validate)]
+struct EventExampleIn {
+    event_type: EventTypeName,
+}
+
+const SVIX_PING_EVENT_TYPE_NAME: &str = "svix.ping";
+const SVIX_PING_EVENT_TYPE_PAYLOAD: &str = r#"{"success": true}"#;
+
+/// Send an example message for event
+#[aide_annotate(
+    op_id = "v1.endpoint.send-example",
+    op_summary = "Send Event Type Example Message"
+)]
+async fn send_example(
+    state: State<AppState>,
+    Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
+    permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
+    ValidatedJson(data): ValidatedJson<EventExampleIn>,
+) -> error::Result<Json<MessageOut>> {
+    let State(AppState { ref db, .. }) = state;
+
+    let endpoint = ctx!(
+        endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endpoint_id)
+            .one(db)
+            .await
+    )?
+    .ok_or_else(|| HttpError::not_found(None, None))?;
+
+    let example = if data.event_type == EventTypeName(SVIX_PING_EVENT_TYPE_NAME.to_owned()) {
+        SVIX_PING_EVENT_TYPE_PAYLOAD.to_string()
+    } else {
+        let event_type = ctx!(
+            eventtype::Entity::secure_find_by_name(app.org_id.clone(), data.event_type.clone())
+                .one(db)
+                .await
+        )?
+        .ok_or_else(|| HttpError::not_found(None, None))?;
+
+        let example = event_type.schemas.and_then(|schema| {
+            schema
+                .example()
+                .and_then(|ex| serde_json::to_string(ex).ok())
+        });
+
+        match example {
+            Some(example) => example,
+            None => {
+                return Err(HttpError::bad_request(
+                    Some("invalid_schema".to_owned()),
+                    Some("Unable to generate example message from event-type schema.".to_owned()),
+                )
+                .into());
+            }
+        }
+    };
+
+    let msg_in = MessageIn {
+        channels: None,
+        event_type: data.event_type,
+        payload: RawPayload::from_string(example).unwrap(),
+        uid: None,
+        payload_retention_period: 90,
+    };
+
+    let create_message = create_message_inner(state, app, msg_in, Some(endpoint.id), false).await?;
+
+    Ok(Json(create_message))
+}
 
 pub fn router() -> ApiRouter<AppState> {
     let tag = openapi_tag("Endpoint");
@@ -757,7 +830,7 @@ pub fn router() -> ApiRouter<AppState> {
         )
         .api_route_with(
             "/app/:app_id/endpoint/:endpoint_id/send-example/",
-            post_with(api_not_implemented, openapi_desc(SEND_EXAMPLE_DESCRIPTION)),
+            post_with(send_example, send_example_operation),
             &tag,
         )
         .api_route_with(
