@@ -2111,6 +2111,28 @@
                     "Sending"
                 ]
             },
+            "OneTimeTokenIn": {
+                "properties": {
+                    "oneTimeToken": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "oneTimeToken"
+                ],
+                "type": "object"
+            },
+            "OneTimeTokenOut": {
+                "properties": {
+                    "token": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "token"
+                ],
+                "type": "object"
+            },
             "Ordering": {
                 "description": "Defines the ordering in a listing of results.",
                 "enum": [

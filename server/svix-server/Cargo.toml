@@ -56,6 +56,7 @@ thiserror = "1.0.30"
 bytes = "1.1.0"
 blake2 = "0.10.4"
 chacha20poly1305 = "0.9.0"
+getrandom = "0.2.4"
 # sea orm
 sea-orm = { version = "0.10.2", features = [ "sqlx-postgres", "runtime-tokio-rustls", "macros", "with-chrono", "with-json" ], default-features = false }
 sqlx = { version = "0.6.2", features = [ "runtime-tokio-rustls", "postgres", "migrate" ] }
