@@ -722,6 +722,7 @@ async fn endpoint_stats(
 }
 
 #[derive(Deserialize, JsonSchema, Validate)]
+#[serde(rename_all = "camelCase")]
 struct EventExampleIn {
     event_type: EventTypeName,
 }
@@ -737,7 +738,7 @@ const SVIX_PING_EVENT_TYPE_PAYLOAD: &str = r#"{"success": true}"#;
 async fn send_example(
     state: State<AppState>,
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
-    permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
+    permissions::Application { app }: permissions::Application,
     ValidatedJson(data): ValidatedJson<EventExampleIn>,
 ) -> error::Result<Json<MessageOut>> {
     let State(AppState { ref db, .. }) = state;

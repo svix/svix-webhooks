@@ -1093,7 +1093,7 @@
             },
             "EventExampleIn": {
                 "properties": {
-                    "event_type": {
+                    "eventType": {
                         "example": "user.signup",
                         "maxLength": 256,
                         "pattern": "^[a-zA-Z0-9\\-_.]+$",
@@ -1101,7 +1101,7 @@
                     }
                 },
                 "required": [
-                    "event_type"
+                    "eventType"
                 ],
                 "type": "object"
             },
