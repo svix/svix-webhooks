@@ -9,3 +9,4 @@ pub mod environment_settings;
 pub mod event_type;
 pub mod health;
 pub mod message;
+pub mod stats;
