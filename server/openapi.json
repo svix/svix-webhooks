@@ -149,6 +149,52 @@
                 },
                 "type": "object"
             },
+            "AttemptStatisticsData": {
+                "properties": {
+                    "failureCount": {
+                        "items": {
+                            "format": "int64",
+                            "type": "integer"
+                        },
+                        "nullable": true,
+                        "type": "array"
+                    },
+                    "successCount": {
+                        "items": {
+                            "format": "int64",
+                            "type": "integer"
+                        },
+                        "nullable": true,
+                        "type": "array"
+                    }
+                },
+                "type": "object"
+            },
+            "AttemptStatisticsResponse": {
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/AttemptStatisticsData"
+                    },
+                    "endDate": {
+                        "format": "date-time",
+                        "type": "string"
+                    },
+                    "period": {
+                        "$ref": "#/components/schemas/StatisticsPeriod"
+                    },
+                    "startDate": {
+                        "format": "date-time",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "data",
+                    "endDate",
+                    "period",
+                    "startDate"
+                ],
+                "type": "object"
+            },
             "BorderRadiusConfig": {
                 "properties": {
                     "button": {
@@ -2181,6 +2227,14 @@
                     }
                 },
                 "type": "object"
+            },
+            "StatisticsPeriod": {
+                "description": "Period length for a statistics data point",
+                "enum": [
+                    "OneDay",
+                    "FiveMinutes"
+                ],
+                "type": "string"
             },
             "StatusCodeClass": {
                 "description": "The different classes of HTTP status codes:\n- CodeNone = 0\n- Code1xx = 100\n- Code2xx = 200\n- Code3xx = 300\n- Code4xx = 400\n- Code5xx = 500",

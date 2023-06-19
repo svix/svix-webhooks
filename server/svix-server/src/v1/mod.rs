@@ -28,6 +28,7 @@ pub fn router() -> ApiRouter<AppState> {
         .merge(endpoints::message::router())
         .merge(endpoints::attempt::router())
         .merge(endpoints::environment_settings::router(true))
+        .merge(endpoints::stats::router(true))
         .layer(
             TraceLayer::new_for_http()
                 .make_span_with(AxumOtelSpanCreator)
