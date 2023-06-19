@@ -73,6 +73,11 @@ jobs:
 
     - name: Run tests
       working-directory: ./server
+      env:
+        # Timing sensitive tests can flake if the docker-compose services get overwhelmed.
+        # Restrict test execution to help avoid this.
+        # `test_endpoint_disable_on_repeated_failure` specifically benefits.
+        RUST_TEST_THREADS: 1
       run: ./run-tests.sh
 
     - name: Stop dependencies

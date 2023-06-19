@@ -466,15 +466,22 @@ async fn test_pagination_by_endpoint() {
     let mut messages = Vec::new();
     for i in 1..=6usize {
         messages.push(
-            create_test_message(
-                &client,
-                &app.id,
-                serde_json::json!({
-                    "test": i,
-                }),
-            )
-            .await
-            .unwrap(),
+            async {
+                // the requests that depend on time (ie, `before` and `after`) can flake if too many
+                // messages are created too close together.
+                // This short sleep aims to separate them a little so we can get clean counts.
+                tokio::time::sleep(Duration::from_millis(10)).await;
+                create_test_message(
+                    &client,
+                    &app.id,
+                    serde_json::json!({
+                        "test": i,
+                    }),
+                )
+                .await
+                .unwrap()
+            }
+            .await,
         );
     }
 
