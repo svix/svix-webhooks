@@ -130,7 +130,7 @@ async fn test_no_redirects_policy() {
 
 /// This tests that endpoints are successfully disabled after the retry schedule is exhausted
 /// multiple times without intermittent success over a period exceeding the grace period. So the
-/// tests don't take too long, thes grace period and expiration period will be reconfigured to be
+/// tests don't take too long, these grace period and expiration period will be reconfigured to be
 /// on the order of seconds
 #[tokio::test]
 async fn test_endpoint_disable_on_repeated_failure() {
@@ -138,7 +138,7 @@ async fn test_endpoint_disable_on_repeated_failure() {
 
     if !matches!(cfg.cache_type, svix_server::cfg::CacheType::None) {
         cfg.retry_schedule = vec![];
-        cfg.endpoint_failure_disable_after = Duration::from_secs(1);
+        cfg.endpoint_failure_disable_after = Duration::from_secs(2);
 
         let (client, _jh) = start_svix_server_with_cfg(&cfg).await;
 
@@ -153,7 +153,7 @@ async fn test_endpoint_disable_on_repeated_failure() {
             .unwrap()
             .id;
 
-        tokio::time::sleep(Duration::from_millis(1200)).await;
+        tokio::time::sleep(Duration::from_millis(2_500)).await;
 
         let _msg_id = create_test_message(&client, &app_id, serde_json::json!({}))
             .await

@@ -3,6 +3,8 @@
 
 use crate::utils::common_calls::metadata;
 use reqwest::StatusCode;
+use svix_server::core::security::generate_org_token;
+use svix_server::core::types::{BaseId, OrganizationId};
 use svix_server::{
     cfg::CacheType, core::types::ApplicationUid, v1::endpoints::application::ApplicationIn,
     v1::endpoints::application::ApplicationOut,
@@ -10,6 +12,7 @@ use svix_server::{
 
 mod utils;
 
+use crate::utils::get_default_test_config;
 use utils::{
     common_calls::{application_in, common_test_list},
     start_svix_server, IgnoredResponse,
@@ -549,11 +552,8 @@ async fn test_uid() {
 
 #[tokio::test]
 async fn test_uid_across_users() {
-    let (client, _jh) = start_svix_server().await;
-    let (client2, _jh2) = start_svix_server().await;
-
+    let (mut client, _jh) = start_svix_server().await;
     // Make sure that uids aren't unique across different users
-
     let _app: ApplicationOut = client
         .post(
             "api/v1/app/",
@@ -567,7 +567,15 @@ async fn test_uid_across_users() {
         .await
         .unwrap();
 
-    let _app2: ApplicationOut = client2
+    // N.b. previously we made a 2nd call to `start_svix_server()` just to create a 2nd client with
+    // a fresh token.
+    // It started deadlocking on that 2nd server call, so instead just make a new token and update
+    // the auth header on the existing client.
+    let cfg = get_default_test_config();
+    let other_token = generate_org_token(&cfg.jwt_secret, OrganizationId::new(None, None)).unwrap();
+    client.set_auth_header(other_token);
+
+    let _app2: ApplicationOut = client
         .post(
             "api/v1/app/",
             ApplicationIn {

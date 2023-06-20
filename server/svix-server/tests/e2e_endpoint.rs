@@ -982,6 +982,7 @@ async fn test_recovery_expected_retry_counts() {
         .await
         .unwrap();
 
+    tokio::time::sleep(Duration::from_millis(10)).await;
     let after_msg = Utc::now();
 
     // recovery time after msg -- should be no additional attempts
@@ -1343,14 +1344,14 @@ async fn test_custom_endpoint_secret() {
 #[tokio::test]
 async fn test_endpoint_secret_encryption() {
     let org_id = OrganizationId::new(None, None);
-    let cfg = get_default_test_config();
-    let (client, _jh) = start_svix_server_with_cfg_and_org_id(&cfg, org_id.clone()).await;
 
     #[derive(Deserialize)]
     pub struct EndpointSecretOutTest {
         pub key: String,
     }
 
+    let cfg = get_default_test_config();
+    let (client, jh) = start_svix_server_with_cfg_and_org_id(&cfg, org_id.clone()).await;
     let app_id = create_test_app(&client, "app1").await.unwrap().id;
 
     let ep_in = default_test_endpoint();
@@ -1367,11 +1368,12 @@ async fn test_endpoint_secret_encryption() {
         .await
         .unwrap()
         .key;
+    jh.abort();
 
     // Now add encryption and check the secret is still fine
     let mut cfg = get_default_test_config();
     cfg.encryption = Encryption::new([1; 32]);
-    let (client, _jh) = start_svix_server_with_cfg_and_org_id(&cfg, org_id.clone()).await;
+    let (client, jh) = start_svix_server_with_cfg_and_org_id(&cfg, org_id.clone()).await;
 
     let secret2 = client
         .get::<EndpointSecretOutTest>(
@@ -1406,6 +1408,7 @@ async fn test_endpoint_secret_encryption() {
 
     // Ensure loading and saving works for encrypted
     assert_eq!(secret, secret2);
+    jh.abort();
 
     // Make sure we can't read it with the secret unset
     let cfg = get_default_test_config();

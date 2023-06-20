@@ -115,10 +115,10 @@ async fn process_endpoint_success(
 /// If no failure has previously been reported, then now is cached as the time of first failure and
 /// the endpoint is not disabled.
 ///
-/// If there has been a  preivous failure, then it is compared to the configured grace period, where
+/// If there has been a  previous failure, then it is compared to the configured grace period, where
 /// if there have been only failures within the grace period, then the endpoint is disabled.
 ///
-/// All cache values are set with an expiration time greater thah the grace period, so occasional
+/// All cache values are set with an expiration time greater that the grace period, so occasional
 /// failures will not cause an endpoint to be disabled.
 #[tracing::instrument(skip_all)]
 async fn process_endpoint_failure(
@@ -131,7 +131,7 @@ async fn process_endpoint_failure(
     let key = FailureCacheKey::new(org_id, app_id, &endp.id);
     let now = Utc::now();
 
-    // If it already exists in the cache, see if the grace preiod has already elapsed
+    // If it already exists in the cache, see if the grace period has already elapsed
     if let Some(FailureCacheValue { first_failure_at }) = cache
         .get::<FailureCacheValue>(&key)
         .await
