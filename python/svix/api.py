@@ -993,6 +993,8 @@ class ClientBase:
             headers={"user-agent": f"svix-libs/{__version__}/python"},
             verify_ssl=True,
             timeout=15,
+            follow_redirects=False,
+            raise_on_unexpected_status=True,
         )
         self._client = client
 
