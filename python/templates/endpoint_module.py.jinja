@@ -13,8 +13,8 @@ from ... import errors
 {{ relative }}
 {% endfor %}
 
-sleep_time = 0.05
-num_retries = 3
+SLEEP_TIME = 0.05
+NUM_RETRIES = 3
 
 {% from "endpoint_macros.py.jinja" import header_params, cookie_params, query_params, json_body, multipart_body,
     arguments, client, kwargs, parse_response, docstring %}
@@ -103,17 +103,14 @@ def sync_detailed(
 
     kwargs['headers'] = {'svix-req-id':f"{random.getrandbits(32)}", **kwargs['headers']}
 
-    retry_count = 0
-    for retry in range(num_retries):
+    for retry_count in range(NUM_RETRIES):
         response = httpx.request(
                 verify=client.verify_ssl,
                 **kwargs,
             )
-        if response.status_code >= 500 and retry < num_retries:
-            retry_count +=1
-            kwargs['headers']['svix-retry-count']= str(retry_count)
-            sleep(sleep_time)
-            sleep_time = sleep_time * 2
+        if response.status_code >= 500:
+            kwargs['headers']['svix-retry-count'] = str(retry_count)
+            sleep(SLEEP_TIME * (2 ** retry_count))
         else:
             break
 
@@ -142,16 +139,13 @@ async def asyncio_detailed(
     kwargs['headers'] = {'svix-req-id':f"{random.getrandbits(32)}", **kwargs['headers']}
 
     async with httpx.AsyncClient(verify=client.verify_ssl) as _client:
-        retry_count = 0
-        for retry in range(num_retries):
+        for retry_count in range(NUM_RETRIES):
             response = await _client.request(
                 **kwargs
             )
-            if response.status_code >= 500 and retry < num_retries:
-                retry_count +=1
-                kwargs['headers']['svix-retry-count']= str(retry_count)
-                sleep(sleep_time)
-                sleep_time = sleep_time * 2
+            if response.status_code >= 500:
+                kwargs['headers']['svix-retry-count'] = str(retry_count)
+                sleep(SLEEP_TIME * (2 ** retry_count))
             else:
                 break
 
