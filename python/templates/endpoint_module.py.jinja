@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import Any, Dict, List, Optional, Union, cast
+from typing import Any, Dict, List, Union, cast
 from time import sleep
 import random
 
@@ -7,17 +7,20 @@ import httpx
 
 from ...client import AuthenticatedClient, Client
 from ...types import Response, UNSET
+from ... import errors
 
 {% for relative in endpoint.relative_imports %}
 {{ relative }}
 {% endfor %}
 
+sleep_time = 0.05
+num_retries = 3
+
 {% from "endpoint_macros.py.jinja" import header_params, cookie_params, query_params, json_body, multipart_body,
     arguments, client, kwargs, parse_response, docstring %}
 
-{% set return_string = endpoint.response_type() %}
-{% set return_type = endpoint.responses[0].prop.get_type_string() if endpoint.responses[0].prop.get_type_string() != "Any" else None%}
-{% set parsed_responses = (endpoint.responses | length > 0) and return_string != "Any" %}
+{% set return_string = endpoint.responses[0].prop.get_type_string() if endpoint.responses[0].prop.get_type_string() != "Any" else "None" %}
+{% set parsed_responses = (endpoint.responses | length > 0) %}
 
 def _get_kwargs(
     {{ arguments(endpoint) | indent(4) }}
@@ -48,7 +51,8 @@ def _get_kwargs(
         "headers": headers,
         "cookies": cookies,
         "timeout": client.get_timeout(),
-        {% if endpoint.form_body_class %}
+        "follow_redirects": client.follow_redirects,
+        {% if endpoint.form_body %}
         "data": form_data.to_dict(),
         {% elif endpoint.multipart_body %}
         "files": {{ "multipart_" + endpoint.multipart_body.python_name }},
@@ -61,31 +65,37 @@ def _get_kwargs(
     }
 
 
-{% if parsed_responses %}
-def _parse_response(*, response: httpx.Response) -> {{ return_type }}:
-    {% for response in endpoint.responses if response.status_code >= 299 %}
-    if response.status_code == {{ response.status_code }}:
-        raise {{ response.prop.class_info.name }}({{ response.source }}, response.status_code)
+def _parse_response(*, client: Client, response: httpx.Response) -> {% if return_string == "None" %}Any{% else %}{{ return_string }}{% endif %}:
+    {% for response in endpoint.responses %}
+    if response.status_code == HTTPStatus.{{ response.status_code.name }}:
+        {% import "property_templates/" + response.prop.template as prop_template %}
+        {% if 200 <= response.status_code <= 299 %}
+        {% if prop_template.construct %}
+        {{ prop_template.construct(response.prop, response.source) | indent(8) }}
+        {% else %}
+        {{ response.prop.python_name }} = cast({{ response.prop.get_type_string() }}, {{ response.source }})
+        {% endif %}
+        return {{ response.prop.python_name }}
+        {% else %}
+        raise {{ response.prop.get_type_string() }}.init_exception({{ response.source }}, response.status_code)
+        {% endif %}
     {% endfor %}
-    {%set ok_response = endpoint.responses[0]%}
-    {% import "property_templates/" + ok_response.prop.template as ok_response_prop_template %}
-    {% if ok_response.prop and ok_response.prop.required_properties == [] and ok_response.prop.optional_properties == [] %}
-    {{ ok_response.prop.python_name }} = {{ ok_response.prop.class_info.name }}({{ ok_response.source }})
-    {% elif ok_response_prop_template.construct %}
-    {{ ok_response_prop_template.construct(ok_response.prop, ok_response.source) | indent(8) }}
-    {% else %}
-    {{ ok_response.prop.python_name }} = None
-    {% endif %}
-    return {{ok_response.prop.python_name}}
-{% endif %}
+    raise errors.UnexpectedStatus(response.status_code, response.content)
 
-sleep_time = 0.05
-num_retries = 3
+
+def _build_response(*, client: Client, response: httpx.Response) -> Response[{{ return_string }}]:
+    return Response(
+        status_code=HTTPStatus(response.status_code),
+        content=response.content,
+        headers=response.headers,
+        parsed=_parse_response(client=client, response=response),
+    )
+
 
 def sync_detailed(
     {{ arguments(endpoint) | indent(4) }}
-) -> {{return_type}}:
-    {{ docstring(endpoint, return_type) | indent(4) }}
+) -> Response[{{ return_string }}]:
+    {{ docstring(endpoint, return_string, is_detailed=true) | indent(4) }}
 
     kwargs = _get_kwargs(
         {{ kwargs(endpoint) }}
@@ -107,24 +117,23 @@ def sync_detailed(
         else:
             break
 
-    
-    return _parse_response(response=response)
+    return _build_response(client=client, response=response)
 
 {% if parsed_responses %}
 def sync(
     {{ arguments(endpoint) | indent(4) }}
-) -> {{ return_type }}:
-    {{ docstring(endpoint, return_type) | indent(4) }}
+) -> {{ return_string }}:
+    {{ docstring(endpoint, return_string, is_detailed=false) | indent(4) }}
 
     return sync_detailed(
         {{ kwargs(endpoint) }}
-    )
+    ).parsed
 {% endif %}
 
 async def asyncio_detailed(
     {{ arguments(endpoint) | indent(4) }}
-) -> {{ return_type }}:
-    {{ docstring(endpoint, return_type) | indent(4) }}
+) -> Response[{{ return_string }}]:
+    {{ docstring(endpoint, return_string, is_detailed=true) | indent(4) }}
 
     kwargs = _get_kwargs(
         {{ kwargs(endpoint) }}
@@ -146,15 +155,15 @@ async def asyncio_detailed(
             else:
                 break
 
-    return _parse_response(response=response)
+    return _build_response(client=client, response=response)
 
 {% if parsed_responses %}
 async def asyncio(
     {{ arguments(endpoint) | indent(4) }}
-) -> {{ return_type }}:
-    {{ docstring(endpoint, return_type) | indent(4) }}
+) -> {{ return_string }}:
+    {{ docstring(endpoint, return_string, is_detailed=false) | indent(4) }}
 
     return (await asyncio_detailed(
         {{ kwargs(endpoint) }}
-    ))
+    )).parsed
 {% endif %}
