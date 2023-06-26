@@ -1,7 +1,12 @@
 # Changelog
 
 ## Next
-*
+* 
+
+## Version 1.5.0
+* Server: update OpenSSL dep and fix an incredibly slow memory leak.
+* Libs/Go: support passing `WithContent` to `List Attepmted Messages`
+* Libs/Python: fix regression in Python library (causing some functions not to work).
 
 ## Version 1.4.12
 * Sync OSS package version with our internal version.
