@@ -102,6 +102,21 @@ pub fn schema_example() -> serde_json::Value {
 pub struct Schema(HashMap<String, Json>);
 json_wrapper!(Schema);
 
+impl Schema {
+    pub fn example(&self) -> Option<&serde_json::Value> {
+        self.0
+            .get("1")
+            .and_then(|version| match version {
+                serde_json::Value::Object(obj) => obj.get("examples"),
+                _ => None,
+            })
+            .and_then(|examples| match examples {
+                serde_json::Value::Array(arr) => arr.iter().next(),
+                _ => None,
+            })
+    }
+}
+
 impl JsonSchema for Schema {
     fn schema_name() -> String {
         stringify!(Schema).to_string()

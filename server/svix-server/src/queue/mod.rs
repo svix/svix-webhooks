@@ -94,6 +94,7 @@ impl MessageTask {
 pub struct MessageTaskBatch {
     pub msg_id: MessageId,
     pub app_id: ApplicationId,
+    pub force_endpoint: Option<EndpointId>,
     pub trigger_type: MessageAttemptTriggerType,
 }
 
@@ -101,11 +102,13 @@ impl MessageTaskBatch {
     pub fn new_task(
         msg_id: MessageId,
         app_id: ApplicationId,
+        force_endpoint: Option<EndpointId>,
         trigger_type: MessageAttemptTriggerType,
     ) -> QueueTask {
         QueueTask::MessageBatch(Self {
             msg_id,
             app_id,
+            force_endpoint,
             trigger_type,
         })
     }
