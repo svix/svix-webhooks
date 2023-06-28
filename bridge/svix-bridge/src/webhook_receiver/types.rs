@@ -11,7 +11,7 @@ use http::{HeaderMap, HeaderValue, Request};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, marker::PhantomData, sync::Arc};
 use svix_bridge_types::{
-    svix, JsObject, ReceiverInputOpts, ReceiverOutput, TransformerTx, WebhookVerifier,
+    svix, ReceiverInputOpts, ReceiverOutput, TransformationConfig, TransformerTx, WebhookVerifier,
 };
 
 #[derive(Clone)]
@@ -20,6 +20,12 @@ use svix_bridge_types::{
 pub struct InternalState {
     pub routes: Arc<HashMap<IntegrationId, IntegrationState>>,
     pub transformer_tx: TransformerTx,
+}
+
+impl std::fmt::Debug for InternalState {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("InternalState").finish()
+    }
 }
 
 impl InternalState {
@@ -125,7 +131,7 @@ impl AsRef<str> for IntegrationId {
 pub struct IntegrationState {
     pub verifier: Verifier,
     pub output: Arc<Box<dyn ReceiverOutput>>,
-    pub transformation: Option<String>,
+    pub transformation: Option<TransformationConfig>,
 }
 
 /// The [`RequestFromParts`] is a structure consisting of all relevant parts of the HTTP request to
@@ -372,10 +378,17 @@ impl SerializablePayload {
         }
     }
 
-    pub fn as_js_object(&self) -> Result<JsObject> {
+    pub fn as_json(&self) -> Result<serde_json::Value> {
         Ok(match self {
             Self::Standard(v) => serde_json::from_slice(v)?,
             Self::StringSerializable(s) => serde_json::from_str(s)?,
         })
+    }
+
+    pub fn as_string(&self) -> Result<String> {
+        match self {
+            Self::Standard(v) => Ok(String::from_utf8(v.clone())?),
+            Self::StringSerializable(s) => Ok(s.clone()),
+        }
     }
 }

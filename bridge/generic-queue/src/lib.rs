@@ -98,14 +98,15 @@ pub trait TaskQueueBackend<T: Send + Sync> {
 pub trait Delivery<T: Send + Sync> {
     /// Returns a freshly deserialized instance of the contained payload.
     fn payload(&self) -> Result<T, QueueError>;
+    fn raw_payload(&self) -> Result<&str, QueueError>;
 
     /// ACKs this message, which, depending on what backend you are using, may be a NOOP, or it may
-    /// explicity acknowledge the successful processing the message.
+    /// explicitly acknowledge the successful processing the message.
     ///
     /// When ACKed, consumers will not see this exact message again.
     async fn ack(self) -> Result<(), QueueError>;
     /// NACKs this message, which, depending on what backend you are using, may be a NOOP, it may
-    /// explicitly mark a messaege as not acknowledged, or it may reinsert the message back into the
+    /// explicitly mark a message as not acknowledged, or it may reinsert the message back into the
     /// end of the queue.
     ///
     /// When NACKed, consumers of this queue will process the message again at some point.

@@ -183,14 +183,14 @@ async fn main() -> Result<()> {
     tokio::spawn(async move {
         let tp = runtime::TpHandle::new();
         while let Some(TransformerJob {
-            payload,
+            input,
             script,
             callback_tx,
         }) = xform_rx.recv().await
         {
             let tp = tp.clone();
             tokio::spawn(async move {
-                let out = tp.run_script(payload.into(), script).await;
+                let out = tp.run_script(input, script).await;
                 if callback_tx
                     .send(out.map_err(|e| tracing::error!("{}", e)))
                     .is_err()
@@ -205,7 +205,8 @@ async fn main() -> Result<()> {
 
     let mut senders = Vec::with_capacity(cfg.senders.len());
     for sc in cfg.senders {
-        let mut sender: Box<dyn SenderInput> = sc.into();
+        let mut sender: Box<dyn SenderInput> =
+            sc.try_into().map_err(|e| Error::new(ErrorKind::Other, e))?;
         sender.set_transformer(Some(xform_tx.clone()));
         senders.push(sender);
     }

@@ -55,6 +55,11 @@ impl<T: 'static + Clone + Debug + DeserializeOwned + Send + Serialize + Sync> De
         Ok(self.payload.clone())
     }
 
+    fn raw_payload(&self) -> Result<&str, QueueError> {
+        // this backend is not used in bridge, and we will migrate to omniqueue anyway...
+        unimplemented!("not supported");
+    }
+
     async fn ack(self) -> Result<(), QueueError> {
         Ok(())
     }

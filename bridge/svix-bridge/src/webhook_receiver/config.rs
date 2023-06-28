@@ -1,6 +1,6 @@
 use crate::config::ReceiverConfig;
 use serde::Deserialize;
-use svix_bridge_types::WebhookVerifier;
+use svix_bridge_types::{TransformationConfig, WebhookVerifier};
 
 /// The [`IntegrationConfig`] is the struct associated with a given [`IntegrationId`]. When the route
 /// associated with an [`IntegrationId`] receives a webhook, or any other HTTP request, then it will
@@ -12,5 +12,5 @@ pub struct IntegrationConfig {
     pub receiver_cfg: ReceiverConfig,
     pub verification: WebhookVerifier,
     #[serde(default)]
-    pub transformation: Option<String>,
+    pub transformation: Option<TransformationConfig>,
 }

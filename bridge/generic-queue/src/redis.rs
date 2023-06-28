@@ -180,6 +180,15 @@ impl<
     fn payload(&self) -> Result<T, QueueError> {
         T::from_redis_stream_map(&self.body.map).map_err(Into::into)
     }
+    // FIXME: the redis stream queue impl requires values to be encoded a certain way (eg. inside
+    //   a "payload" key in a map).
+    //   This means producers and consumers need to agree on the encoding.
+    //   This also means we can't just accept raw messages published by other systems (as is the
+    //   expectation with these raw payloads).
+    //   Leaving unsupported until we migrate to `omniqueue`.
+    fn raw_payload(&self) -> Result<&str, QueueError> {
+        unimplemented!("raw payload not supported with redis backend")
+    }
 
     async fn ack(self) -> Result<(), QueueError> {
         let mut conn = self.redis.get().await.map_err(QueueError::generic)?;

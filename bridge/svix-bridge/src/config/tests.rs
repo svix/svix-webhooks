@@ -263,6 +263,7 @@ fn test_senders_parses_ok() {
     type: "rabbitmq"
     queue_name: "local"
     uri: "amqp://example.com/%2f"
+  # Implicit json transformation
   transformation: |
     handler = (x) => ({ app_id: "app_1234", message: { eventType: "foo.bar", payload: x }})
   output:
@@ -272,8 +273,13 @@ fn test_senders_parses_ok() {
   input:
     type: "sqs"
     queue_dsn: "http://sqs.example.com/foo/bar"
-  transformation: |
-    handler = (x) => ({ app_id: "app_1234", message: { eventType: "foo.bar", payload: x }})
+  # Explicit string transformation
+  transformation:
+    format: string
+    src: |
+        function handler(x) {
+            return { app_id: "app_1234", message: { eventType: "foo.bar", payload: x }}
+        }
   output:
     type: "svix"
     token: "YYYY"

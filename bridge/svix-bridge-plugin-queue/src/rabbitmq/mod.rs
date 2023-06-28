@@ -11,7 +11,8 @@ use generic_queue::{
 };
 use serde::Deserialize;
 use svix_bridge_types::{
-    async_trait, svix::api::Svix, JsObject, SenderInput, SenderOutputOpts, TransformerTx,
+    async_trait, svix::api::Svix, JsObject, SenderInput, SenderOutputOpts, TransformationConfig,
+    TransformerTx,
 };
 
 #[derive(Debug, Deserialize)]
@@ -41,14 +42,14 @@ pub struct RabbitMqConsumerPlugin {
     input_options: RabbitMqInputOpts,
     svix_client: Svix,
     transformer_tx: Option<TransformerTx>,
-    transformation: Option<String>,
+    transformation: Option<TransformationConfig>,
 }
 
 impl RabbitMqConsumerPlugin {
     pub fn new(
         name: String,
         input: RabbitMqInputOpts,
-        transformation: Option<String>,
+        transformation: Option<TransformationConfig>,
         output: SenderOutputOpts,
     ) -> Self {
         Self {
@@ -79,7 +80,7 @@ impl Consumer for RabbitMqConsumerPlugin {
         &self.transformer_tx
     }
 
-    fn transformation(&self) -> &Option<String> {
+    fn transformation(&self) -> &Option<TransformationConfig> {
         &self.transformation
     }
 

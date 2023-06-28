@@ -128,6 +128,9 @@ impl<T: DeserializeOwned + Send + Serialize + Sync> Delivery<T> for RabbitMqDeli
         serde_json::from_slice(&self.body).map_err(Into::into)
     }
 
+    fn raw_payload(&self) -> Result<&str, QueueError> {
+        std::str::from_utf8(&self.body).map_err(QueueError::generic)
+    }
     async fn ack(self) -> Result<(), QueueError> {
         self.acker
             .ack(BasicAckOptions { multiple: false })

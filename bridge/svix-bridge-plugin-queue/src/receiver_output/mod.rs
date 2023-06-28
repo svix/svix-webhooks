@@ -17,7 +17,8 @@ type Result<T> = std::result::Result<T, Error>;
 pub struct QueueForwarder {
     name: String,
     // FIXME: if we retain things like the queue name we can show this in the Debug impl
-    sender: Arc<Box<dyn TaskQueueSend<JsObject>>>,
+    // FIXME: raw payloads not yet supported for receivers, but probably should be.
+    sender: Arc<Box<dyn TaskQueueSend<serde_json::Value>>>,
 }
 
 impl QueueForwarder {
@@ -25,8 +26,8 @@ impl QueueForwarder {
         name: String,
         cfg: RabbitMqOutputOpts,
     ) -> Result<QueueForwarder> {
-        let sender =
-            <RabbitMqBackend as TaskQueueBackend<JsObject>>::producing_half(RabbitMqConfig {
+        let sender = <RabbitMqBackend as TaskQueueBackend<serde_json::Value>>::producing_half(
+            RabbitMqConfig {
                 uri: cfg.uri,
                 // N.b the connection properties type is not serde-friendly. If we want to expose some
                 // of these settings we'll probably need to provide our own type and build the real one
@@ -42,8 +43,9 @@ impl QueueForwarder {
                 consume_options: Default::default(),
                 consume_arguments: Default::default(),
                 requeue_on_nack: false,
-            })
-            .await?;
+            },
+        )
+        .await?;
 
         Ok(QueueForwarder {
             name,
@@ -52,8 +54,8 @@ impl QueueForwarder {
     }
 
     pub async fn from_redis_cfg(name: String, cfg: RedisOutputOpts) -> Result<QueueForwarder> {
-        let sender =
-            <RedisQueueBackend as TaskQueueBackend<JsObject>>::producing_half(RedisConfig {
+        let sender = <RedisQueueBackend as TaskQueueBackend<serde_json::Value>>::producing_half(
+            RedisConfig {
                 dsn: cfg.dsn,
                 max_connections: cfg.max_connections,
                 queue_key: cfg.queue_key,
@@ -61,8 +63,9 @@ impl QueueForwarder {
                 reinsert_on_nack: false,
                 consumer_group: "".to_string(),
                 consumer_name: "".to_string(),
-            })
-            .await?;
+            },
+        )
+        .await?;
 
         Ok(QueueForwarder {
             name,
@@ -71,11 +74,12 @@ impl QueueForwarder {
     }
 
     pub async fn from_sqs_cfg(name: String, cfg: SqsOutputOpts) -> Result<QueueForwarder> {
-        let sender = <SqsQueueBackend as TaskQueueBackend<JsObject>>::producing_half(SqsConfig {
-            queue_dsn: cfg.queue_dsn,
-            override_endpoint: cfg.override_endpoint,
-        })
-        .await?;
+        let sender =
+            <SqsQueueBackend as TaskQueueBackend<serde_json::Value>>::producing_half(SqsConfig {
+                queue_dsn: cfg.queue_dsn,
+                override_endpoint: cfg.override_endpoint,
+            })
+            .await?;
 
         Ok(QueueForwarder {
             name,
@@ -87,15 +91,16 @@ impl QueueForwarder {
         name: String,
         cfg: GCPPubSubOutputOpts,
     ) -> Result<QueueForwarder> {
-        let sender = <GCPPubSubQueueBackend as TaskQueueBackend<JsObject>>::producing_half(
-            GCPPubSubConfig {
-                topic: cfg.topic,
-                credentials_file: cfg.credentials_file,
-                // Don't need this. Subscriptions are for consumers only.
-                subscription_id: String::new(),
-            },
-        )
-        .await?;
+        let sender =
+            <GCPPubSubQueueBackend as TaskQueueBackend<serde_json::Value>>::producing_half(
+                GCPPubSubConfig {
+                    topic: cfg.topic,
+                    credentials_file: cfg.credentials_file,
+                    // Don't need this. Subscriptions are for consumers only.
+                    subscription_id: String::new(),
+                },
+            )
+            .await?;
 
         Ok(QueueForwarder {
             name,
@@ -117,7 +122,9 @@ impl ReceiverOutput for QueueForwarder {
     }
     async fn handle(&self, payload: JsObject) -> std::io::Result<()> {
         self.sender
-            .send(payload)
+            // FIXME(#5762): the payload to publish should be coming from a specific field in the
+            //   Object, not the whole thing.
+            .send(serde_json::Value::Object(payload))
             .await
             .map_err(crate::Error::from)?;
         Ok(())

@@ -1,9 +1,86 @@
 pub use async_trait::async_trait;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 pub use svix;
 use svix::api::SvixOptions as _SvixOptions;
 use tokio::sync::mpsc;
 use tokio::sync::oneshot;
+
+#[derive(Deserialize, Default, Eq, PartialEq, Copy, Clone)]
+#[serde(rename_all = "lowercase")]
+pub enum TransformerInputFormat {
+    String,
+    #[default]
+    Json,
+}
+
+#[derive(Deserialize, Clone)]
+#[serde(untagged)]
+pub enum TransformationConfig {
+    /// If the config has a string value, we assume it expects the input parsed as json
+    /// ```yaml
+    /// transformation: function handler(x) {return { payload: x.foobar }; }
+    /// ```
+    ImplicitJson(String),
+    /// When the config has format/src fields, then you can optionally set the format to `string`,
+    /// in which case you have to parse it yourself inside the transformation.
+    /// ```yaml
+    /// transformation:
+    ///   format: string
+    ///   src: function handler(x) { return { payload: JSON.parse(x).foobar }; }
+    /// ```
+    Explicit {
+        format: TransformerInputFormat,
+        src: String,
+    },
+}
+
+impl TransformationConfig {
+    pub fn source(&self) -> &String {
+        match self {
+            TransformationConfig::ImplicitJson(src) => src,
+            TransformationConfig::Explicit { src, .. } => src,
+        }
+    }
+
+    pub fn format(&self) -> TransformerInputFormat {
+        match self {
+            TransformationConfig::ImplicitJson(_) => TransformerInputFormat::Json,
+            TransformationConfig::Explicit { format, .. } => *format,
+        }
+    }
+}
+
+impl<S> From<S> for TransformationConfig
+where
+    S: Into<String>,
+{
+    fn from(value: S) -> Self {
+        Self::ImplicitJson(value.into())
+    }
+}
+
+#[derive(Serialize)]
+#[serde(untagged)]
+pub enum TransformerInput {
+    /// Transformations accept arbitrary json here, not restricted to an Object type.
+    /// The thing receiving the value will error if it can't marshall into a type it needs.
+    JSON(serde_json::Value),
+    /// Aka "raw", we take the input as a utf-8 string and the transformation does whatever it
+    /// wants with it.
+    String(String),
+}
+
+impl From<serde_json::Value> for TransformerInput {
+    fn from(value: serde_json::Value) -> Self {
+        Self::JSON(value)
+    }
+}
+
+impl From<String> for TransformerInput {
+    fn from(value: String) -> Self {
+        Self::String(value)
+    }
+}
 
 /// Plain old JSON objects are what the transformations expect to receive and produce.
 pub type JsObject = serde_json::Map<String, serde_json::Value>;
@@ -13,34 +90,38 @@ pub type TransformerTx = mpsc::UnboundedSender<TransformerJob>;
 pub type TransformerRx = mpsc::UnboundedReceiver<TransformerJob>;
 /// A oneshot channel for the JS executor to "publish" return values to once complete.
 // FIXME: better error type?
-pub type TransformerCallbackTx = oneshot::Sender<Result<JsReturn, ()>>;
+pub type TransformerCallbackTx = oneshot::Sender<Result<TransformerOutput, ()>>;
 /// Used by the caller of the transformer to await the execution's output.
 // FIXME: better error type?
-pub type TransformerCallbackRx = oneshot::Receiver<Result<JsReturn, ()>>;
+pub type TransformerCallbackRx = oneshot::Receiver<Result<TransformerOutput, ()>>;
 
 /// A transformation job sent to the JS executor.
 /// Once the script has been run on the payload, the transformed payload is sent back through the
 /// callback channel.
 pub struct TransformerJob {
     pub callback_tx: TransformerCallbackTx,
-    pub payload: JsObject,
+    pub input: TransformerInput,
     pub script: String,
 }
 
-pub enum JsReturn {
+pub enum TransformerOutput {
     /// A successfully transformed payload.
     // XXX: not sure if there's a cheaper way to deserialize the output while requiring an Object.
+    // FIXME(#5762): We can define a fixed type here as the expected output for a transformation.
+    //   It think it'll always be json, but the `payload` field can be any json-encoded type.
+    //   That type, whatever it is, will be required as output regardless of if a transformation is
+    //   used or not, probably, replacing `JsObject` as the interchange value.
     Object(JsObject),
     /// For cases where the JS script executes successfully but produces an unexpected output.
     Invalid,
 }
 
 impl TransformerJob {
-    pub fn new(script: String, payload: JsObject) -> (Self, TransformerCallbackRx) {
+    pub fn new(script: String, input: TransformerInput) -> (Self, TransformerCallbackRx) {
         let (callback_tx, callback_rx) = oneshot::channel();
         (
             Self {
-                payload,
+                input,
                 script,
                 callback_tx,
             },
