@@ -2353,3 +2353,29 @@ async fn test_endpoint_https_only() {
         .await
         .unwrap();
 }
+
+#[tokio::test]
+async fn test_send_example() {
+    let cfg = get_default_test_config();
+    let (client, _jh) = start_svix_server_with_cfg(&cfg).await;
+
+    let mut receiver = TestReceiver::start(StatusCode::OK);
+
+    let app_id = create_test_app(&client, "Test App").await.unwrap().id;
+    let endp_id = create_test_endpoint(&client, &app_id, &receiver.endpoint)
+        .await
+        .unwrap()
+        .id;
+
+    let _: IgnoredResponse = client
+        .post(
+            &format!("api/v1/app/{app_id}/endpoint/{endp_id}/send-example/"),
+            serde_json::json!({"eventType": "svix.ping"}),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    let msg = receiver.data_recv.recv().await.unwrap();
+    assert_eq!(msg, serde_json::json!({"success": true}));
+}

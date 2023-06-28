@@ -3,16 +3,19 @@
 
 use crate::{
     core::{
+        cache::Cache,
         message_app::CreateMessageApp,
         permissions,
         types::{
-            EventChannel, EventChannelSet, EventTypeName, EventTypeNameSet,
+            EndpointId, EventChannel, EventChannelSet, EventTypeName, EventTypeNameSet,
             MessageAttemptTriggerType, MessageId, MessageUid,
         },
     },
-    ctx, err_generic,
+    ctx,
+    db::models::application,
+    err_generic,
     error::{HttpError, Result},
-    queue::MessageTaskBatch,
+    queue::{MessageTaskBatch, TaskQueueProducer},
     v1::utils::{
         apply_pagination_desc, iterator_from_before_or_after, openapi_tag, validation_error,
         ApplicationMsgPath, EventTypesQueryParams, JsonStatus, ListResponse, ModelIn, ModelOut,
@@ -305,6 +308,20 @@ async fn create_message(
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
     ValidatedJson(data): ValidatedJson<MessageIn>,
 ) -> Result<JsonStatus<202, MessageOut>> {
+    Ok(JsonStatus(
+        create_message_inner(db, queue_tx, cache, with_content, None, data, app).await?,
+    ))
+}
+
+pub(crate) async fn create_message_inner(
+    db: &DatabaseConnection,
+    queue_tx: TaskQueueProducer,
+    cache: Cache,
+    with_content: bool,
+    force_endpoint: Option<EndpointId>,
+    data: MessageIn,
+    app: application::Model,
+) -> Result<MessageOut> {
     let create_message_app = CreateMessageApp::layered_fetch(
         &cache,
         db,
@@ -334,6 +351,7 @@ async fn create_message(
                 MessageTaskBatch::new_task(
                     msg.id.clone(),
                     app.id.clone(),
+                    force_endpoint,
                     MessageAttemptTriggerType::Scheduled,
                 ),
                 None,
@@ -347,7 +365,7 @@ async fn create_message(
         MessageOut::without_payload(msg)
     };
 
-    Ok(JsonStatus(msg_out))
+    Ok(msg_out)
 }
 
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
