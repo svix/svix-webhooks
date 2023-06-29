@@ -8,7 +8,8 @@ use std::time::{Duration, Instant};
 use svix_bridge_types::{
     async_trait,
     svix::api::{MessageIn, PostOptions as PostOptions_, Svix},
-    JsObject, JsReturn, TransformerJob, TransformerTx,
+    JsObject, TransformationConfig, TransformerInput, TransformerInputFormat, TransformerJob,
+    TransformerOutput, TransformerTx,
 };
 use tracing::instrument;
 
@@ -31,10 +32,10 @@ pub use self::{
 /// payload (or more).
 /// This wrapper hides the inner types so the calling code can be generalized more trivially.
 pub enum DeliveryWrapper {
-    GCPPubSub(GCPPubSubDelivery<JsObject>),
-    RabbitMQ(RabbitMqDelivery<JsObject>),
-    Redis(RedisStreamDelivery<JsObject, RedisStreamJsonSerde>),
-    SQS(SqsDelivery<JsObject>),
+    GCPPubSub(GCPPubSubDelivery<serde_json::Value>),
+    RabbitMQ(RabbitMqDelivery<serde_json::Value>),
+    Redis(RedisStreamDelivery<serde_json::Value, RedisStreamJsonSerde>),
+    SQS(SqsDelivery<serde_json::Value>),
 }
 
 impl DeliveryWrapper {
@@ -57,13 +58,23 @@ impl DeliveryWrapper {
         }
     }
 
-    /// Decodes the inner delivery as JsObject.
-    fn payload(&self) -> Result<JsObject, QueueError> {
+    /// Decodes the inner delivery as String.
+    fn raw_payload(&self) -> Result<&str, QueueError> {
         match self {
-            DeliveryWrapper::GCPPubSub(x) => Delivery::<JsObject>::payload(x),
-            DeliveryWrapper::RabbitMQ(x) => Delivery::<JsObject>::payload(x),
-            DeliveryWrapper::Redis(x) => Delivery::<JsObject>::payload(x),
-            DeliveryWrapper::SQS(x) => Delivery::<JsObject>::payload(x),
+            DeliveryWrapper::GCPPubSub(x) => Delivery::raw_payload(x),
+            DeliveryWrapper::RabbitMQ(x) => Delivery::raw_payload(x),
+            DeliveryWrapper::Redis(_) => unimplemented!("string payloads unsupported by redis"),
+            DeliveryWrapper::SQS(x) => Delivery::raw_payload(x),
+        }
+    }
+
+    /// Decodes the inner delivery as `serde_json::Value`.
+    fn payload(&self) -> Result<serde_json::Value, QueueError> {
+        match self {
+            DeliveryWrapper::GCPPubSub(x) => Delivery::payload(x),
+            DeliveryWrapper::RabbitMQ(x) => Delivery::payload(x),
+            DeliveryWrapper::Redis(x) => Delivery::payload(x),
+            DeliveryWrapper::SQS(x) => Delivery::payload(x),
         }
     }
 }
@@ -125,13 +136,17 @@ trait Consumer {
     /// Gets the channel sender for running transformations.
     fn transformer_tx(&self) -> &Option<TransformerTx>;
     /// The js source for the transformation to run on each payload.
-    fn transformation(&self) -> &Option<String>;
+    fn transformation(&self) -> &Option<TransformationConfig>;
 
     /// The client to use when creating messages in svix.
     fn svix_client(&self) -> &Svix;
 
-    async fn transform(&self, script: String, payload: JsObject) -> std::io::Result<JsObject> {
-        let (job, rx) = TransformerJob::new(script.clone(), payload);
+    async fn transform(
+        &self,
+        script: String,
+        input: TransformerInput,
+    ) -> std::io::Result<JsObject> {
+        let (job, rx) = TransformerJob::new(script, input);
         self.transformer_tx()
             .as_ref()
             .expect("transformations not configured")
@@ -146,8 +161,8 @@ trait Consumer {
             })?;
 
         match ret {
-            JsReturn::Object(v) => Ok(v),
-            JsReturn::Invalid => {
+            TransformerOutput::Object(v) => Ok(v),
+            TransformerOutput::Invalid => {
                 Err(Error::Generic("transformation produced unexpected value".to_string()).into())
             }
         }
@@ -192,17 +207,38 @@ trait Consumer {
     /// Will nack the delivery if either the JSON parse, transformation, or the request to svix fails.
     #[instrument(skip_all, fields(messaging.operation = "process"))]
     async fn process(&self, delivery: DeliveryWrapper) -> std::io::Result<()> {
-        let payload = match delivery.payload() {
-            Ok(p) => p,
-            Err(e) => {
-                tracing::warn!("{e}");
-                delivery.nack().await.map_err(Error::from)?;
-                return Ok(());
-            }
-        };
-
-        let payload = if let Some(script) = self.transformation() {
-            match self.transform(script.clone(), payload).await {
+        let payload = if let Some(xform_cfg) = self.transformation() {
+            let input = match xform_cfg.format() {
+                TransformerInputFormat::Json => {
+                    let json_payload = match delivery.payload() {
+                        Ok(p) => p,
+                        Err(e) => {
+                            tracing::warn!("{e}");
+                            delivery.nack().await.map_err(Error::from)?;
+                            return Ok(());
+                        }
+                    };
+                    TransformerInput::JSON(json_payload)
+                }
+                TransformerInputFormat::String => {
+                    // N.b. our redis backend doesn't support string payloads, but higher up in the
+                    // call stack, during the plugin construction, we should be catching this and
+                    // giving an error about bad config.
+                    // If we get here somehow with a redis delivery, this call will panic.
+                    let raw_payload = match delivery.raw_payload() {
+                        Ok(p) => p,
+                        Err(e) => {
+                            tracing::warn!("{e}");
+                            delivery.nack().await.map_err(Error::from)?;
+                            return Ok(());
+                        }
+                    };
+                    // FIXME: if we add a lifetime to `TransformerInput` we might avoid this allocation.
+                    TransformerInput::String(raw_payload.to_string())
+                }
+            };
+            let script = xform_cfg.source().clone();
+            match self.transform(script, input).await {
                 Err(e) => {
                     tracing::error!("nack: {e}");
                     delivery.nack().await.map_err(Error::from)?;
@@ -211,7 +247,17 @@ trait Consumer {
                 Ok(x) => x,
             }
         } else {
-            payload
+            // Parse as JSON when not using a transformation because Create Message requires JSON.
+            // If this fails, the config needs to change.
+            let json_payload = match delivery.payload() {
+                Ok(p) => p,
+                Err(e) => {
+                    tracing::warn!("{e}");
+                    delivery.nack().await.map_err(Error::from)?;
+                    return Ok(());
+                }
+            };
+            serde_json::from_value(json_payload)?
         };
 
         match create_svix_message(self.svix_client(), payload).await {

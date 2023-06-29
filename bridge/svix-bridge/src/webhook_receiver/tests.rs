@@ -10,17 +10,21 @@ use axum::{
 use serde_json::json;
 use std::sync::Arc;
 use svix_bridge_types::{
-    async_trait, svix::webhooks::Webhook, JsObject, JsReturn, ReceiverOutput, TransformerJob,
+    async_trait, svix::webhooks::Webhook, JsObject, ReceiverOutput, TransformationConfig,
+    TransformerInput, TransformerInputFormat, TransformerJob, TransformerOutput,
 };
 use tower::Service;
 use tower::ServiceExt;
 
 struct FakeReceiverOutput {
-    tx: tokio::sync::mpsc::UnboundedSender<JsObject>,
+    tx: tokio::sync::mpsc::UnboundedSender<serde_json::Value>,
 }
 
 impl FakeReceiverOutput {
-    pub fn new() -> (Self, tokio::sync::mpsc::UnboundedReceiver<JsObject>) {
+    pub fn new() -> (
+        Self,
+        tokio::sync::mpsc::UnboundedReceiver<serde_json::Value>,
+    ) {
         let (tx, rx) = tokio::sync::mpsc::unbounded_channel();
         (Self { tx }, rx)
     }
@@ -33,7 +37,7 @@ impl ReceiverOutput for FakeReceiverOutput {
     }
 
     async fn handle(&self, payload: JsObject) -> std::io::Result<()> {
-        self.tx.send(payload).unwrap();
+        self.tx.send(serde_json::Value::Object(payload)).unwrap();
         Ok(())
     }
 }
@@ -143,13 +147,16 @@ async fn test_forwarding_multiple_receivers() {
 
 /// Registers 2 receivers, one with a transformation and one without.Sends 1 request to each.
 #[tokio::test]
-async fn test_transformation() {
+async fn test_transformation_json() {
     let (tx, mut rx) = tokio::sync::mpsc::unbounded_channel::<TransformerJob>();
     let _handle = tokio::spawn(async move {
         while let Some(x) = rx.recv().await {
-            let mut out = x.payload;
+            let mut out = match x.input {
+                TransformerInput::JSON(input) => input.as_object().unwrap().clone(),
+                _ => unreachable!(),
+            };
             out.insert("__TRANSFORMED__".into(), json!(true));
-            x.callback_tx.send(Ok(JsReturn::Object(out))).ok();
+            x.callback_tx.send(Ok(TransformerOutput::Object(out))).ok();
         }
     });
 
@@ -223,6 +230,61 @@ async fn test_transformation() {
     // Both channels should be empty at this point.
     assert!(a_rx.try_recv().is_err());
     assert!(b_rx.try_recv().is_err());
+}
+
+#[tokio::test]
+async fn test_transformation_string() {
+    let (tx, mut rx) = tokio::sync::mpsc::unbounded_channel::<TransformerJob>();
+    let _handle = tokio::spawn(async move {
+        while let Some(x) = rx.recv().await {
+            let out = match x.input {
+                TransformerInput::String(input) => {
+                    json!({ "got": input }).as_object().cloned().unwrap()
+                }
+                _ => unreachable!(),
+            };
+            x.callback_tx.send(Ok(TransformerOutput::Object(out))).ok();
+        }
+    });
+
+    let (a_output, mut a_rx) = FakeReceiverOutput::new();
+    let state_map = [(
+        "transformed".into(),
+        IntegrationState {
+            verifier: NoVerifier.into(),
+            output: Arc::new(Box::new(a_output)),
+            transformation: Some(TransformationConfig::Explicit {
+                format: TransformerInputFormat::String,
+                src: String::from("handler = (x) => ({ got: x })"),
+            }),
+        },
+    )]
+    .into_iter()
+    .collect();
+    let state = InternalState::new(state_map, tx);
+
+    let mut app = router().with_state(state);
+
+    let request = Request::builder()
+        .uri("/webhook/transformed")
+        .method("POST")
+        .header("content-type", "text/plain")
+        .body("plain text".as_bytes().into())
+        .unwrap();
+
+    let response = ServiceExt::<Request<Body>>::ready(&mut app)
+        .await
+        .unwrap()
+        .call(request)
+        .await
+        .unwrap();
+
+    assert_eq!(response.status(), StatusCode::NO_CONTENT);
+    let forwarded = a_rx.try_recv().unwrap();
+    // The plain text message should have been added in the key "got"
+    assert_eq!(json!(forwarded), json!({"got": "plain text"}));
+
+    assert!(a_rx.try_recv().is_err());
 }
 
 // Two different bodies - one used during signing, then the other is what we send in the request.

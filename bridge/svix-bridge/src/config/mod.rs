@@ -3,7 +3,7 @@ use std::net::SocketAddr;
 use svix_bridge_plugin_queue::config::{
     into_receiver_output, QueueConsumerConfig, ReceiverOutputOpts as QueueOutOpts,
 };
-use svix_bridge_types::{ReceiverInputOpts, ReceiverOutput, SenderInput};
+use svix_bridge_types::{ReceiverInputOpts, ReceiverOutput, SenderInput, TransformationConfig};
 use tracing::Level;
 
 #[derive(Deserialize)]
@@ -81,8 +81,9 @@ pub enum SenderConfig {
     QueueConsumer(QueueConsumerConfig),
 }
 
-impl From<SenderConfig> for Box<dyn SenderInput> {
-    fn from(value: SenderConfig) -> Self {
+impl TryFrom<SenderConfig> for Box<dyn SenderInput> {
+    type Error = &'static str;
+    fn try_from(value: SenderConfig) -> Result<Self, Self::Error> {
         match value {
             #[cfg(any(
                 feature = "gcp-pubsub",
@@ -100,7 +101,7 @@ pub struct ReceiverConfig {
     pub name: String,
     pub input: ReceiverInputOpts,
     #[serde(default)]
-    pub transformation: Option<String>,
+    pub transformation: Option<TransformationConfig>,
     pub output: ReceiverOut,
 }
 
@@ -119,9 +120,11 @@ pub enum ReceiverOut {
 impl ReceiverConfig {
     pub async fn into_receiver_output(self) -> std::io::Result<Box<dyn ReceiverOutput>> {
         match self.output {
-            ReceiverOut::QueueProducer(x) => into_receiver_output(self.name.clone(), x)
-                .await
-                .map_err(Into::into),
+            ReceiverOut::QueueProducer(x) => {
+                into_receiver_output(self.name.clone(), x, &self.transformation)
+                    .await
+                    .map_err(Into::into)
+            }
         }
     }
 }

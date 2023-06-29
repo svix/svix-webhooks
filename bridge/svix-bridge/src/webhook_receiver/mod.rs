@@ -1,4 +1,5 @@
 use crate::config::ReceiverConfig;
+use crate::webhook_receiver::types::SerializablePayload;
 use axum::{
     body::Body,
     extract::{Path, State},
@@ -6,7 +7,10 @@ use axum::{
     Router,
 };
 use std::net::SocketAddr;
-use svix_bridge_types::{JsObject, JsReturn, TransformerJob, TransformerTx};
+use svix_bridge_types::{
+    JsObject, TransformationConfig, TransformerInput, TransformerInputFormat, TransformerJob,
+    TransformerOutput, TransformerTx,
+};
 use tracing::instrument;
 use types::{IntegrationId, IntegrationState, InternalState, SerializableRequest, Unvalidated};
 
@@ -67,25 +71,17 @@ async fn route(
     {
         match req.validate(verifier).await {
             Ok(req) => {
-                let payload = match req.payload().as_js_object() {
-                    Ok(payload) => match transformation.clone() {
-                        Some(script) => {
-                            match transform(payload, script, transformer_tx.clone()).await {
-                                Ok(transformed_payload) => transformed_payload,
-                                Err(c) => return c,
-                            }
-                        }
-                        // Keep the original payload as-is if there's no transformation specified.
-                        None => payload,
-                    },
-                    Err(e) => {
-                        tracing::error!("failed to parse payload as json object: {}", e);
-                        return http::StatusCode::BAD_REQUEST;
-                    }
+                let payload = match parse_payload(
+                    req.payload(),
+                    transformation,
+                    transformer_tx.clone(),
+                )
+                .await
+                {
+                    Err(e) => return e,
+                    Ok(p) => p,
                 };
-
                 tracing::debug!("forwarding request");
-
                 match output.handle(payload).await {
                     Ok(_) => http::StatusCode::NO_CONTENT,
                     Err(e) => {
@@ -105,13 +101,60 @@ async fn route(
     }
 }
 
+/// Figures out how to build a JSON object from the payload, optionally running it through a
+/// transformation.
+///
+/// WRT "raw" payloads, the return value here is going to be a JSON object regardless of whether
+/// or not the queue producer wants "raw" data.
+/// #5762 will introduce a named field that will hold the actual payload we give to the producer,
+/// and it could be json or a string (or something else as support is added).
+/// At this stage in the flow, however, we require the output to be JSON.
+///
+/// When there's no transformation defined we therefore attempt to parse the body as json.
+/// When a transformation is defined, we branch to see if it expects string or json input.
+async fn parse_payload(
+    payload: &SerializablePayload,
+    transformation: &Option<TransformationConfig>,
+    transformer_tx: TransformerTx,
+) -> Result<JsObject, http::StatusCode> {
+    match transformation {
+        Some(xform) => {
+            let input = match xform.format() {
+                TransformerInputFormat::String => {
+                    TransformerInput::String(payload.as_string().map_err(|_| {
+                        tracing::error!("Unable to parse request body as string");
+                        http::StatusCode::BAD_REQUEST
+                    })?)
+                }
+                TransformerInputFormat::Json => {
+                    TransformerInput::JSON(payload.as_json().map_err(|_| {
+                        tracing::error!("Unable to parse request body as json");
+                        http::StatusCode::BAD_REQUEST
+                    })?)
+                }
+            };
+            transform(input, xform.source().clone(), transformer_tx).await
+        }
+        // Keep the original payload as-is if there's no transformation specified.
+        // The as_json() only gets us to `Value`, so we also need a `from_value` call to marshal into a Map type.
+        None => serde_json::from_value(payload.as_json().map_err(|_| {
+            tracing::error!("Unable to parse request body as json");
+            http::StatusCode::BAD_REQUEST
+        })?)
+        .map_err(|e| {
+            tracing::error!("Error forwarding request: {}", e);
+            http::StatusCode::INTERNAL_SERVER_ERROR
+        }),
+    }
+}
+
 /// Attempts to run the payload through a js transformation.
 async fn transform(
-    payload: JsObject,
+    input: TransformerInput,
     script: String,
     tx: TransformerTx,
 ) -> Result<JsObject, http::StatusCode> {
-    let (job, callback) = TransformerJob::new(script.clone(), payload);
+    let (job, callback) = TransformerJob::new(script, input);
     if let Err(e) = tx.send(job) {
         tracing::error!("transformations are not available: {}", e);
         return Err(http::StatusCode::INTERNAL_SERVER_ERROR);
@@ -120,8 +163,8 @@ async fn transform(
     match callback.await {
         // This is the only "good" outcome giving a RHS value for the assignment.
         // All other match arms should bail with a non-2xx status.
-        Ok(Ok(JsReturn::Object(obj))) => Ok(obj),
-        Ok(Ok(JsReturn::Invalid)) => {
+        Ok(Ok(TransformerOutput::Object(obj))) => Ok(obj),
+        Ok(Ok(TransformerOutput::Invalid)) => {
             tracing::error!("transformation produced invalid payload");
             Err(http::StatusCode::INTERNAL_SERVER_ERROR)
         }

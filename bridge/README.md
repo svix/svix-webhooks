@@ -27,6 +27,75 @@ publish the payload on to a specified "output."
 
 Both **senders** and **receivers** are defined in terms of their input, and optional JavaScript transformation, and their output.
 
+---
+
+Transformations are configured as either a single string of JS source code:
+
+```yaml
+transformation: |
+    function handler(input) {
+      return {
+        app_id: input.key,
+        message: {
+          eventType: input.event_type,
+          payload: input.data
+        }
+      };
+    }
+```
+In this situation, the input value will be pre-parsed as JSON.
+
+You can also configure transformations using the verbose form, allowing control of the `format`:
+```yaml
+transformation:
+  format: "json"
+  src: |
+    function handler(input) {
+      return {
+        app_id: input.key,
+        message: {
+          eventType: input.event_type,
+          payload: input.data
+        }
+      };
+    }
+```
+The `format` field can be set to either `string` (ie. the _raw payload_) or `json` (the default behavior).
+
+For example, using the string `format` you can parse data out of the input using whatever method you like:
+
+```yaml
+transformation:
+  # Let's say the input is an XML message like:
+  # `<msg appId="app_123" eventType="a.b"><payload>{"x": 123}</payload></msg>`
+
+  format: "string"
+  src: |
+    function handler(input) {
+      let parser = new DOMParser();
+      let doc = parser.parseFromString(input, "text/xml");
+      let msg = doc.firstChild;
+      let payload = JSON.parse(msg.getElementsByTagName("payload")[0].textContent)
+
+      return {
+        app_id: msg.attributes.appId,
+        message: {
+          eventType: msg.attributes.eventType,
+          payload,
+        }
+      };
+    }
+```
+Transformations must define a function named `handler` which receives a single argument, the type of which is controlled
+by the configured `format` field.
+
+Note that regardless of the `format`, the return type of `handler` must be an `Object`.
+
+> N.b. at time of writing, `format: string` is currently unsupported for `senders` and `receivers` configured with
+> a `redis` input or output.
+
+---
+
 Currently the supported Sender inputs and Receiver outputs are the following
 messaging systems:
 

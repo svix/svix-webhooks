@@ -31,16 +31,18 @@ senders:
       # Optional - will fallback to looking at env vars when left unset.
       credentials_file: "/path/to/credentials.json"
     # Optional - when unset, messages from the queue will be sent to Svix as-is.
-    transformation: |
-      function handler(input) {
-        return {
-          app_id: input.key,
-          message: {
-            eventType: input.event_type,
-            payload: input.data
-          }
-        };
-      }
+    transformation:
+      format: "json"
+      src: |
+        function handler(input) {
+          return {
+            app_id: input.key,
+            message: {
+              eventType: input.event_type,
+              payload: input.data
+            }
+          };
+        }
     output:
       type: "svix"
       # Required (the Svix token to use when creating messages with this consumer)

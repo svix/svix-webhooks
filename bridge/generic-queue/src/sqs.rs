@@ -106,6 +106,10 @@ impl<T: DeserializeOwned + Send + Serialize + Sync> Delivery<T> for SqsDelivery<
         serde_json::from_str(&self.body).map_err(Into::into)
     }
 
+    fn raw_payload(&self) -> Result<&str, QueueError> {
+        Ok(&self.body)
+    }
+
     async fn ack(self) -> Result<(), QueueError> {
         if let Some(receipt_handle) = self.receipt_handle {
             self.ack_client

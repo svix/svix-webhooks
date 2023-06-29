@@ -186,6 +186,10 @@ impl<T: DeserializeOwned + Send + Serialize + Sync> Delivery<T> for GCPPubSubDel
         serde_json::from_slice(&self.message.message.data).map_err(Into::into)
     }
 
+    fn raw_payload(&self) -> Result<&str, QueueError> {
+        std::str::from_utf8(&self.message.message.data).map_err(QueueError::generic)
+    }
+
     async fn ack(self) -> Result<(), QueueError> {
         self.message.ack().await.map_err(QueueError::generic)
     }

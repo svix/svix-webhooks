@@ -55,6 +55,7 @@ receivers:
         type: "svix"
         endpoint_secret: "whsec_XXXXX="
     # Optional - when unset, webhooks received will be forwarded to the output as-is.
+    # N.b. only `json` formatted transformations (the default) are allowed for receivers.
     transformation: |
       function handler(input) {
         let event_type = input.eventType;
