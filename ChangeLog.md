@@ -3,6 +3,11 @@
 ## Next
 * 
 
+## Version 1.5.1
+* Server: Implement the send-example route.
+* Libs/JavaScript: Add an explicit check that payload is a string.
+* Libs: Fix a bug with integration key creation.
+
 ## Version 1.5.0
 * Server: update OpenSSL dep and fix an incredibly slow memory leak.
 * Libs/Go: support passing `WithContent` to `List Attepmted Messages`
