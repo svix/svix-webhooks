@@ -6,13 +6,11 @@ use generic_queue::rabbitmq::FieldTable;
 use lapin::{options::QueueDeclareOptions, Channel, Connection, ConnectionProperties, Queue};
 use serde_json::json;
 use std::time::Duration;
-use svix_bridge_plugin_queue::{
-    config::RabbitMqInputOpts, CreateMessageRequest, RabbitMqConsumerPlugin,
-};
+use svix_bridge_plugin_queue::{config::RabbitMqInputOpts, RabbitMqConsumerPlugin};
 use svix_bridge_types::{
-    svix::api::MessageIn, SenderInput, SenderOutputOpts, SvixOptions, SvixSenderOutputOpts,
-    TransformationConfig, TransformerInput, TransformerInputFormat, TransformerJob,
-    TransformerOutput,
+    svix::api::MessageIn, CreateMessageRequest, SenderInput, SenderOutputOpts, SvixOptions,
+    SvixSenderOutputOpts, TransformationConfig, TransformerInput, TransformerInputFormat,
+    TransformerJob, TransformerOutput,
 };
 use wiremock::matchers::{body_partial_json, method};
 use wiremock::{Mock, MockServer, ResponseTemplate};
@@ -270,7 +268,7 @@ async fn test_consume_transformed_string_ok() {
             };
             // Build a create-message-compatible object, using the string input as a field in the payload.
             let out = json!({
-                "app_id": "app_1234",
+                "appId": "app_1234",
                 "message": {
                     "eventType": "testing.things",
                     "payload": {
@@ -390,7 +388,7 @@ async fn test_missing_event_type_nack() {
         &channel,
         queue_name,
         &serde_json::to_vec(&json!({
-            "app_id": "app_1234",
+            "appId": "app_1234",
             "message": {
                 // No event type
                 "payload": {

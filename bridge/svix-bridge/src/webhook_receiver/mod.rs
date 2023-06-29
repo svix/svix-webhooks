@@ -8,7 +8,7 @@ use axum::{
 };
 use std::net::SocketAddr;
 use svix_bridge_types::{
-    JsObject, TransformationConfig, TransformerInput, TransformerInputFormat, TransformerJob,
+    ForwardRequest, TransformationConfig, TransformerInput, TransformerInputFormat, TransformerJob,
     TransformerOutput, TransformerTx,
 };
 use tracing::instrument;
@@ -106,17 +106,16 @@ async fn route(
 ///
 /// WRT "raw" payloads, the return value here is going to be a JSON object regardless of whether
 /// or not the queue producer wants "raw" data.
-/// #5762 will introduce a named field that will hold the actual payload we give to the producer,
-/// and it could be json or a string (or something else as support is added).
-/// At this stage in the flow, however, we require the output to be JSON.
 ///
 /// When there's no transformation defined we therefore attempt to parse the body as json.
 /// When a transformation is defined, we branch to see if it expects string or json input.
+///
+/// For either case, we expect the value produced to match the schema of a [`ForwardRequest`].
 async fn parse_payload(
     payload: &SerializablePayload,
     transformation: &Option<TransformationConfig>,
     transformer_tx: TransformerTx,
-) -> Result<JsObject, http::StatusCode> {
+) -> Result<ForwardRequest, http::StatusCode> {
     match transformation {
         Some(xform) => {
             let input = match xform.format() {
@@ -136,7 +135,8 @@ async fn parse_payload(
             transform(input, xform.source().clone(), transformer_tx).await
         }
         // Keep the original payload as-is if there's no transformation specified.
-        // The as_json() only gets us to `Value`, so we also need a `from_value` call to marshal into a Map type.
+        // The as_json() only gets us to `Value`, so we also need a `from_value` call to marshal
+        // into a [`ForwardRequest`] type.
         None => serde_json::from_value(payload.as_json().map_err(|_| {
             tracing::error!("Unable to parse request body as json");
             http::StatusCode::BAD_REQUEST
@@ -153,7 +153,7 @@ async fn transform(
     input: TransformerInput,
     script: String,
     tx: TransformerTx,
-) -> Result<JsObject, http::StatusCode> {
+) -> Result<ForwardRequest, http::StatusCode> {
     let (job, callback) = TransformerJob::new(script, input);
     if let Err(e) = tx.send(job) {
         tracing::error!("transformations are not available: {}", e);
@@ -163,7 +163,13 @@ async fn transform(
     match callback.await {
         // This is the only "good" outcome giving a RHS value for the assignment.
         // All other match arms should bail with a non-2xx status.
-        Ok(Ok(TransformerOutput::Object(obj))) => Ok(obj),
+        Ok(Ok(TransformerOutput::Object(obj))) => Ok(serde_json::from_value(
+            serde_json::Value::Object(obj),
+        )
+        .map_err(|e| {
+            tracing::error!("transformation produced invalid payload: {}", e);
+            http::StatusCode::INTERNAL_SERVER_ERROR
+        })?),
         Ok(Ok(TransformerOutput::Invalid)) => {
             tracing::error!("transformation produced invalid payload");
             Err(http::StatusCode::INTERNAL_SERVER_ERROR)

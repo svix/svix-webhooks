@@ -1,7 +1,7 @@
 pub use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 pub use svix;
-use svix::api::SvixOptions as _SvixOptions;
+use svix::api::{MessageIn, PostOptions as PostOptions_, SvixOptions as _SvixOptions};
 use tokio::sync::mpsc;
 use tokio::sync::oneshot;
 
@@ -106,11 +106,8 @@ pub struct TransformerJob {
 
 pub enum TransformerOutput {
     /// A successfully transformed payload.
-    // XXX: not sure if there's a cheaper way to deserialize the output while requiring an Object.
-    // FIXME(#5762): We can define a fixed type here as the expected output for a transformation.
-    //   It think it'll always be json, but the `payload` field can be any json-encoded type.
-    //   That type, whatever it is, will be required as output regardless of if a transformation is
-    //   used or not, probably, replacing `JsObject` as the interchange value.
+    // Both senders and receivers require a map type (Object) but have different requirements which
+    // are best validated after the fact. For now, we validate only that we get a map type back.
     Object(JsObject),
     /// For cases where the JS script executes successfully but produces an unexpected output.
     Invalid,
@@ -149,7 +146,7 @@ pub trait SenderInput: Send {
 #[async_trait]
 pub trait ReceiverOutput: Send + Sync {
     fn name(&self) -> &str;
-    async fn handle(&self, payload: JsObject) -> std::io::Result<()>;
+    async fn handle(&self, request: ForwardRequest) -> std::io::Result<()>;
 }
 
 #[derive(Deserialize, Debug, Clone, Default)]
@@ -213,4 +210,42 @@ pub struct SvixSenderOutputOpts {
     /// Options for the Svix client.
     #[serde(default)]
     pub options: Option<SvixOptions>,
+}
+
+#[derive(Clone, Default, Deserialize, Serialize)]
+pub struct PostOptions {
+    idempotency_key: Option<String>,
+}
+
+impl From<PostOptions> for PostOptions_ {
+    fn from(value: PostOptions) -> Self {
+        PostOptions_ {
+            idempotency_key: value.idempotency_key,
+        }
+    }
+}
+
+/// Senders convert messages into Create Message API calls so the JSON pulled out of message queues
+/// or produced by transformations need to conform to this shape.
+#[derive(Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CreateMessageRequest {
+    pub app_id: String,
+    pub message: MessageIn,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub post_options: Option<PostOptions>,
+}
+
+/// Receivers convert HTTP bodies into messages forwarded to (currently only) message queues, etc.
+/// The `payload` field represents the message body given to the producer, and other fields may be
+/// added in the future allowing transformations to dynamically customize the producer behavior.
+#[derive(Clone, Deserialize, Serialize)]
+pub struct ForwardRequest {
+    /// This is the payload that will be fed into a Receiver Output
+    // XXX: right now I think any arbitrary json value can work, but individual outputs may have
+    // more strict requirements.
+    // The fact this is represented as a field on a json object demands at least that the value can
+    // be represented in json.
+    // FIXME: can we leverage RawValue here?
+    pub payload: serde_json::Value,
 }
