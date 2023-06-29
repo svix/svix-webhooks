@@ -768,6 +768,10 @@ export class Webhook {
       | WebhookUnbrandedRequiredHeaders
       | Record<string, string>
   ): unknown {
+    if (typeof payload !== "string") {
+      throw new Error("Expected payload to be of type string. Please refer to https://docs.svix.com/receiving/verifying-payloads/how for more information.");
+    }
+
     const headers: Record<string, string> = {};
     for (const key of Object.keys(headers_)) {
       headers[key.toLowerCase()] = (headers_ as Record<string, string>)[key];
