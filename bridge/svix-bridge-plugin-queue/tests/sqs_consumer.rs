@@ -7,11 +7,12 @@ use std::time::Duration;
 
 use aws_sdk_sqs::Client;
 use serde_json::json;
-use svix_bridge_plugin_queue::{config::SqsInputOpts, CreateMessageRequest, SqsConsumerPlugin};
+use svix_bridge_plugin_queue::{config::SqsInputOpts, SqsConsumerPlugin};
 use svix_bridge_types::svix::api::MessageIn;
 use svix_bridge_types::{
-    SenderInput, SenderOutputOpts, SvixOptions, SvixSenderOutputOpts, TransformationConfig,
-    TransformerInput, TransformerInputFormat, TransformerJob, TransformerOutput,
+    CreateMessageRequest, SenderInput, SenderOutputOpts, SvixOptions, SvixSenderOutputOpts,
+    TransformationConfig, TransformerInput, TransformerInputFormat, TransformerJob,
+    TransformerOutput,
 };
 use wiremock::matchers::{body_partial_json, method};
 use wiremock::{Mock, MockServer, ResponseTemplate};
@@ -261,7 +262,7 @@ async fn test_consume_transformed_string_ok() {
             };
             // Build a create-message-compatible object, using the string input as a field in the payload.
             let out = json!({
-                "app_id": "app_1234",
+                "appId": "app_1234",
                 "message": {
                     "eventType": "testing.things",
                     "payload": {
@@ -385,7 +386,7 @@ async fn test_missing_event_type_nack() {
         &client,
         &queue_url,
         &serde_json::to_string(&json!({
-            "app_id": "app_1234",
+            "appId": "app_1234",
             "message": {
                 // No event type
                 "payload": {

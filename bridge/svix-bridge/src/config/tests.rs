@@ -41,7 +41,7 @@ senders:
     transformation: |
       function handler(input) {
         return {
-          app_id: input.key,
+          appId: input.key,
           message: {
             eventType: input.event_type,
             payload: input.data
@@ -69,7 +69,7 @@ senders:
     transformation: |
       function handler(input) {
         return {
-          app_id: input.key,
+          appId: input.key,
           message: {
             eventType: input.event_type,
             payload: input.data
@@ -101,7 +101,7 @@ senders:
     transformation: |
       function handler(input) {
         return {
-          app_id: input.key,
+          appId: input.key,
           message: {
             eventType: input.event_type,
             payload: input.data
@@ -129,7 +129,7 @@ senders:
     transformation: |
       function handler(input) {
         return {
-          app_id: input.key,
+          appId: input.key,
           message: {
             eventType: input.event_type,
             payload: input.data
@@ -244,7 +244,7 @@ input:
     queue_name: "local"
     uri: "amqp://example.com/%2f"
 transformation: |
-    handler = (x) => ({ app_id: "app_1234", message: { eventType: "foo.bar", payload: x }})
+    handler = (x) => ({ appId: "app_1234", message: { eventType: "foo.bar", payload: x }})
 output:
     type: "svix"
     token: "XXXX"
@@ -265,7 +265,7 @@ fn test_senders_parses_ok() {
     uri: "amqp://example.com/%2f"
   # Implicit json transformation
   transformation: |
-    handler = (x) => ({ app_id: "app_1234", message: { eventType: "foo.bar", payload: x }})
+    handler = (x) => ({ appId: "app_1234", message: { eventType: "foo.bar", payload: x }})
   output:
     type: "svix"
     token: "XXXX"
@@ -278,7 +278,7 @@ fn test_senders_parses_ok() {
     format: string
     src: |
         function handler(x) {
-            return { app_id: "app_1234", message: { eventType: "foo.bar", payload: x }}
+            return { appId: "app_1234", message: { eventType: "foo.bar", payload: x }}
         }
   output:
     type: "svix"

@@ -10,7 +10,7 @@ use axum::{
 use serde_json::json;
 use std::sync::Arc;
 use svix_bridge_types::{
-    async_trait, svix::webhooks::Webhook, JsObject, ReceiverOutput, TransformationConfig,
+    async_trait, svix::webhooks::Webhook, ForwardRequest, ReceiverOutput, TransformationConfig,
     TransformerInput, TransformerInputFormat, TransformerJob, TransformerOutput,
 };
 use tower::Service;
@@ -36,8 +36,8 @@ impl ReceiverOutput for FakeReceiverOutput {
         "fake output"
     }
 
-    async fn handle(&self, payload: JsObject) -> std::io::Result<()> {
-        self.tx.send(serde_json::Value::Object(payload)).unwrap();
+    async fn handle(&self, request: ForwardRequest) -> std::io::Result<()> {
+        self.tx.send(request.payload).unwrap();
         Ok(())
     }
 }
@@ -64,7 +64,11 @@ async fn test_forwarding_no_verification() {
                 .uri("/webhook/a")
                 .method("POST")
                 .header("content-type", "application/json")
-                .body(serde_json::to_vec(&json!({"a": true})).unwrap().into())
+                .body(
+                    serde_json::to_vec(&json!({"payload": {"a": true}}))
+                        .unwrap()
+                        .into(),
+                )
                 .unwrap(),
         )
         .await
@@ -108,7 +112,11 @@ async fn test_forwarding_multiple_receivers() {
         .uri("/webhook/a")
         .method("POST")
         .header("content-type", "application/json")
-        .body(serde_json::to_vec(&json!({"a": true})).unwrap().into())
+        .body(
+            serde_json::to_vec(&json!({"payload": {"a": true}}))
+                .unwrap()
+                .into(),
+        )
         .unwrap();
 
     let response = ServiceExt::<Request<Body>>::ready(&mut app)
@@ -126,7 +134,11 @@ async fn test_forwarding_multiple_receivers() {
         .uri("/webhook/b")
         .method("POST")
         .header("content-type", "application/json")
-        .body(serde_json::to_vec(&json!({"b": true})).unwrap().into())
+        .body(
+            serde_json::to_vec(&json!({"payload": {"b": true}}))
+                .unwrap()
+                .into(),
+        )
         .unwrap();
 
     let response = ServiceExt::<Request<Body>>::ready(&mut app)
@@ -145,7 +157,7 @@ async fn test_forwarding_multiple_receivers() {
     assert!(b_rx.try_recv().is_err());
 }
 
-/// Registers 2 receivers, one with a transformation and one without.Sends 1 request to each.
+/// Registers 2 receivers, one with a transformation and one without. Sends 1 request to each.
 #[tokio::test]
 async fn test_transformation_json() {
     let (tx, mut rx) = tokio::sync::mpsc::unbounded_channel::<TransformerJob>();
@@ -155,7 +167,10 @@ async fn test_transformation_json() {
                 TransformerInput::JSON(input) => input.as_object().unwrap().clone(),
                 _ => unreachable!(),
             };
-            out.insert("__TRANSFORMED__".into(), json!(true));
+            out["payload"]
+                .as_object_mut()
+                .unwrap()
+                .insert("__TRANSFORMED__".into(), json!(true));
             x.callback_tx.send(Ok(TransformerOutput::Object(out))).ok();
         }
     });
@@ -168,7 +183,9 @@ async fn test_transformation_json() {
             IntegrationState {
                 verifier: NoVerifier.into(),
                 output: Arc::new(Box::new(a_output)),
-                transformation: Some("handler = (x) => ({ __TRANSFORMED__: true, ...x})".into()),
+                transformation: Some(
+                    "handler = (x) => ({ payload: {__TRANSFORMED__: true, ...x.payload }})".into(),
+                ),
             },
         ),
         (
@@ -190,7 +207,11 @@ async fn test_transformation_json() {
         .uri("/webhook/transformed")
         .method("POST")
         .header("content-type", "application/json")
-        .body(serde_json::to_vec(&json!({"a": true})).unwrap().into())
+        .body(
+            serde_json::to_vec(&json!({"payload": {"a": true}}))
+                .unwrap()
+                .into(),
+        )
         .unwrap();
 
     let response = ServiceExt::<Request<Body>>::ready(&mut app)
@@ -212,7 +233,11 @@ async fn test_transformation_json() {
         .uri("/webhook/as-is")
         .method("POST")
         .header("content-type", "application/json")
-        .body(serde_json::to_vec(&json!({"b": true})).unwrap().into())
+        .body(
+            serde_json::to_vec(&json!({"payload": {"b": true}}))
+                .unwrap()
+                .into(),
+        )
         .unwrap();
 
     let response = ServiceExt::<Request<Body>>::ready(&mut app)
@@ -238,9 +263,10 @@ async fn test_transformation_string() {
     let _handle = tokio::spawn(async move {
         while let Some(x) = rx.recv().await {
             let out = match x.input {
-                TransformerInput::String(input) => {
-                    json!({ "got": input }).as_object().cloned().unwrap()
-                }
+                TransformerInput::String(input) => json!({"payload": { "got": input }})
+                    .as_object()
+                    .cloned()
+                    .unwrap(),
                 _ => unreachable!(),
             };
             x.callback_tx.send(Ok(TransformerOutput::Object(out))).ok();
@@ -255,7 +281,7 @@ async fn test_transformation_string() {
             output: Arc::new(Box::new(a_output)),
             transformation: Some(TransformationConfig::Explicit {
                 format: TransformerInputFormat::String,
-                src: String::from("handler = (x) => ({ got: x })"),
+                src: String::from("handler = (x) => ({ payload: { got: x }})"),
             }),
         },
     )]
@@ -345,7 +371,7 @@ async fn test_forwarding_svix_verification_match() {
 
     let webhook = Arc::new(Webhook::new("whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD").unwrap());
 
-    let payload = json!({"a": true});
+    let payload = json!({"payload": {"a": true}});
     let payload_bytes = serde_json::to_vec(&payload).unwrap();
     let timestamp = chrono::Utc::now().timestamp();
     let signature = webhook

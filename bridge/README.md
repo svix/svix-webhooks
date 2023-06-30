@@ -35,7 +35,7 @@ Transformations are configured as either a single string of JS source code:
 transformation: |
     function handler(input) {
       return {
-        app_id: input.key,
+        appId: input.key,
         message: {
           eventType: input.event_type,
           payload: input.data
@@ -52,7 +52,7 @@ transformation:
   src: |
     function handler(input) {
       return {
-        app_id: input.key,
+        appId: input.key,
         message: {
           eventType: input.event_type,
           payload: input.data
@@ -78,7 +78,7 @@ transformation:
       let payload = JSON.parse(msg.getElementsByTagName("payload")[0].textContent)
 
       return {
-        app_id: msg.attributes.appId,
+        appId: msg.attributes.appId,
         message: {
           eventType: msg.attributes.eventType,
           payload,
@@ -91,7 +91,7 @@ by the configured `format` field.
 
 Note that regardless of the `format`, the return type of `handler` must be an `Object`.
 
-> N.b. at time of writing, `format: string` is currently unsupported for `senders` and `receivers` configured with
+> N.b. at time of writing, `format: string` is unsupported for `senders` and `receivers` configured with
 > a `redis` input or output.
 
 ---
@@ -137,24 +137,29 @@ Each sender and receiver can optionally specify a `transformation`.
 Transformations should define a function called `handler` that accepts an object and returns an object.
 
 Senders should produce JSON following an expected shape:
-```
+```json
 {
-    // This indicates which Svix application to send the message to
-    "app_id": "app_XYZ",
-    
-    // The `message` field has the same requirements as the standard `MessageIn`
-    // used for Create Message API requests
+    "appId": "app_XYZ",
     "message": {
         "eventType": "my.event",
-        "payload": {"abc": 123}
+        "payload": {"code": 123, "message": "something happened..."}
     }
 }
 ```
 
-> The comments in the above JSON are for illustrative purposes only ;)
-> That's not valid JSON! Sorry!
-
 For detail on the `message` field, see: <https://api.svix.com/docs#tag/Message/operation/v1.message.create>
+
+Receivers can accept arbitrary body data but their outputs require a JSON object with a `payload` field representing the
+message to publish.
+
+```json
+{
+    "payload": {"msg": "my cool message, published by svix-bridge!"}
+}
+```
+
+By configuring a transformation, you should be able to consume a variety of `POST` bodies and
+produce a valid output.
 
 See the example configs for how to configure each input and output in more detail:
 - [senders](./svix-bridge.example.senders.yaml)

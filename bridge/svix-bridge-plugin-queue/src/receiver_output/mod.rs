@@ -9,7 +9,7 @@ use generic_queue::redis::{RedisConfig, RedisQueueBackend};
 use generic_queue::sqs::{SqsConfig, SqsQueueBackend};
 use generic_queue::{TaskQueueBackend, TaskQueueSend};
 use std::sync::Arc;
-use svix_bridge_types::{async_trait, JsObject, ReceiverOutput};
+use svix_bridge_types::{async_trait, ForwardRequest, ReceiverOutput};
 
 type Result<T> = std::result::Result<T, Error>;
 
@@ -120,11 +120,9 @@ impl ReceiverOutput for QueueForwarder {
     fn name(&self) -> &str {
         &self.name
     }
-    async fn handle(&self, payload: JsObject) -> std::io::Result<()> {
+    async fn handle(&self, request: ForwardRequest) -> std::io::Result<()> {
         self.sender
-            // FIXME(#5762): the payload to publish should be coming from a specific field in the
-            //   Object, not the whole thing.
-            .send(serde_json::Value::Object(payload))
+            .send(request.payload)
             .await
             .map_err(crate::Error::from)?;
         Ok(())

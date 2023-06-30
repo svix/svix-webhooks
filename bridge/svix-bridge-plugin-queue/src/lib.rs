@@ -3,13 +3,10 @@ use generic_queue::rabbitmq::{RabbitMqConsumer, RabbitMqDelivery};
 use generic_queue::redis::{RedisStreamConsumer, RedisStreamDelivery, RedisStreamJsonSerde};
 use generic_queue::sqs::{SqsDelivery, SqsQueueConsumer};
 use generic_queue::{Delivery, QueueError, TaskQueueReceive};
-use serde::{Deserialize, Serialize};
 use std::time::{Duration, Instant};
 use svix_bridge_types::{
-    async_trait,
-    svix::api::{MessageIn, PostOptions as PostOptions_, Svix},
-    JsObject, TransformationConfig, TransformerInput, TransformerInputFormat, TransformerJob,
-    TransformerOutput, TransformerTx,
+    async_trait, svix::api::Svix, CreateMessageRequest, JsObject, TransformationConfig,
+    TransformerInput, TransformerInputFormat, TransformerJob, TransformerOutput, TransformerTx,
 };
 use tracing::instrument;
 
@@ -244,7 +241,7 @@ trait Consumer {
                     delivery.nack().await.map_err(Error::from)?;
                     return Ok(());
                 }
-                Ok(x) => x,
+                Ok(x) => serde_json::from_value(serde_json::Value::Object(x))?,
             }
         } else {
             // Parse as JSON when not using a transformation because Create Message requires JSON.
@@ -302,40 +299,18 @@ async fn run_inner(consumer: &(impl Consumer + Send + Sync)) -> std::io::Result<
     }
 }
 
-#[derive(Clone, Default, Deserialize, Serialize)]
-pub struct PostOptions {
-    idempotency_key: Option<String>,
-}
-
-impl From<PostOptions> for PostOptions_ {
-    fn from(value: PostOptions) -> Self {
-        PostOptions_ {
-            idempotency_key: value.idempotency_key,
-        }
-    }
-}
-
-#[derive(Clone, Deserialize, Serialize)]
-pub struct CreateMessageRequest {
-    pub app_id: String,
-    pub message: MessageIn,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub post_options: Option<PostOptions>,
-}
-
-async fn create_svix_message(svix: &Svix, value: JsObject) -> std::io::Result<()> {
-    let CreateMessageRequest {
+#[instrument(skip_all, level="error", fields(
+    app_id = app_id,
+    event_type = message.event_type
+))]
+async fn create_svix_message(
+    svix: &Svix,
+    CreateMessageRequest {
         app_id,
         message,
         post_options,
-    }: CreateMessageRequest = serde_json::from_value(value.into())?;
-    let span = tracing::error_span!(
-        "create_svix_message",
-        app_id = app_id,
-        event_type = message.event_type
-    );
-    let _enter = span.enter();
-
+    }: CreateMessageRequest,
+) -> std::io::Result<()> {
     svix.message()
         .create(app_id, message, post_options.map(Into::into))
         .await

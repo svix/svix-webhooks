@@ -36,7 +36,7 @@ senders:
       src: |
         function handler(input) {
           return {
-            app_id: input.key,
+            appId: input.key,
             message: {
               eventType: input.event_type,
               payload: input.data
@@ -64,7 +64,7 @@ senders:
     transformation: |
       function handler(input) {
         return {
-          app_id: input.key,
+          appId: input.key,
           message: {
             eventType: input.event_type,
             payload: input.data
@@ -96,7 +96,7 @@ senders:
     transformation: |
       function handler(input) {
         return {
-          app_id: input.key,
+          appId: input.key,
           message: {
             eventType: input.event_type,
             payload: input.data
@@ -124,7 +124,7 @@ senders:
     transformation: |
       function handler(input) {
         return {
-          app_id: input.key,
+          appId: input.key,
           message: {
             eventType: input.event_type,
             payload: input.data
