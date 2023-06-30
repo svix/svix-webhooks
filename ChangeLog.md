@@ -3,6 +3,9 @@
 ## Next
 * 
 
+## Version 1.5.2
+* Libs/JavaScript: Fix regression in previous release and allow passing `Buffer` to sign/verify.
+
 ## Version 1.5.1
 * Server: Implement the send-example route.
 * Libs/JavaScript: Add an explicit check that payload is a string.
