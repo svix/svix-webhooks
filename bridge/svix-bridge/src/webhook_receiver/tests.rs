@@ -64,11 +64,7 @@ async fn test_forwarding_no_verification() {
                 .uri("/webhook/a")
                 .method("POST")
                 .header("content-type", "application/json")
-                .body(
-                    serde_json::to_vec(&json!({"payload": {"a": true}}))
-                        .unwrap()
-                        .into(),
-                )
+                .body(serde_json::to_vec(&json!({"a": true})).unwrap().into())
                 .unwrap(),
         )
         .await
@@ -112,11 +108,7 @@ async fn test_forwarding_multiple_receivers() {
         .uri("/webhook/a")
         .method("POST")
         .header("content-type", "application/json")
-        .body(
-            serde_json::to_vec(&json!({"payload": {"a": true}}))
-                .unwrap()
-                .into(),
-        )
+        .body(serde_json::to_vec(&json!({"a": true})).unwrap().into())
         .unwrap();
 
     let response = ServiceExt::<Request<Body>>::ready(&mut app)
@@ -134,11 +126,7 @@ async fn test_forwarding_multiple_receivers() {
         .uri("/webhook/b")
         .method("POST")
         .header("content-type", "application/json")
-        .body(
-            serde_json::to_vec(&json!({"payload": {"b": true}}))
-                .unwrap()
-                .into(),
-        )
+        .body(serde_json::to_vec(&json!({"b": true})).unwrap().into())
         .unwrap();
 
     let response = ServiceExt::<Request<Body>>::ready(&mut app)
@@ -163,15 +151,18 @@ async fn test_transformation_json() {
     let (tx, mut rx) = tokio::sync::mpsc::unbounded_channel::<TransformerJob>();
     let _handle = tokio::spawn(async move {
         while let Some(x) = rx.recv().await {
-            let mut out = match x.input {
+            let mut input = match x.input {
                 TransformerInput::JSON(input) => input.as_object().unwrap().clone(),
                 _ => unreachable!(),
             };
-            out["payload"]
-                .as_object_mut()
-                .unwrap()
-                .insert("__TRANSFORMED__".into(), json!(true));
-            x.callback_tx.send(Ok(TransformerOutput::Object(out))).ok();
+            input.insert("__TRANSFORMED__".into(), json!(true));
+            let out = json!({ "payload": input });
+
+            x.callback_tx
+                .send(Ok(TransformerOutput::Object(
+                    out.as_object().unwrap().clone(),
+                )))
+                .ok();
         }
     });
 
@@ -184,7 +175,7 @@ async fn test_transformation_json() {
                 verifier: NoVerifier.into(),
                 output: Arc::new(Box::new(a_output)),
                 transformation: Some(
-                    "handler = (x) => ({ payload: {__TRANSFORMED__: true, ...x.payload }})".into(),
+                    "handler = (x) => ({ payload: {__TRANSFORMED__: true, ...x }})".into(),
                 ),
             },
         ),
@@ -207,11 +198,7 @@ async fn test_transformation_json() {
         .uri("/webhook/transformed")
         .method("POST")
         .header("content-type", "application/json")
-        .body(
-            serde_json::to_vec(&json!({"payload": {"a": true}}))
-                .unwrap()
-                .into(),
-        )
+        .body(serde_json::to_vec(&json!({"a": true})).unwrap().into())
         .unwrap();
 
     let response = ServiceExt::<Request<Body>>::ready(&mut app)
@@ -233,11 +220,7 @@ async fn test_transformation_json() {
         .uri("/webhook/as-is")
         .method("POST")
         .header("content-type", "application/json")
-        .body(
-            serde_json::to_vec(&json!({"payload": {"b": true}}))
-                .unwrap()
-                .into(),
-        )
+        .body(serde_json::to_vec(&json!({"b": true})).unwrap().into())
         .unwrap();
 
     let response = ServiceExt::<Request<Body>>::ready(&mut app)
@@ -371,7 +354,7 @@ async fn test_forwarding_svix_verification_match() {
 
     let webhook = Arc::new(Webhook::new("whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD").unwrap());
 
-    let payload = json!({"payload": {"a": true}});
+    let payload = json!({"a": true});
     let payload_bytes = serde_json::to_vec(&payload).unwrap();
     let timestamp = chrono::Utc::now().timestamp();
     let signature = webhook

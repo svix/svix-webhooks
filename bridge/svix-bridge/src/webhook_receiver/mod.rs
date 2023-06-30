@@ -134,16 +134,15 @@ async fn parse_payload(
             };
             transform(input, xform.source().clone(), transformer_tx).await
         }
-        // Keep the original payload as-is if there's no transformation specified.
+        // Keep the original payload as-is if there's no transformation specified, but stuff the
+        // whole thing into the payload field.
         // The as_json() only gets us to `Value`, so we also need a `from_value` call to marshal
         // into a [`ForwardRequest`] type.
-        None => serde_json::from_value(payload.as_json().map_err(|_| {
-            tracing::error!("Unable to parse request body as json");
-            http::StatusCode::BAD_REQUEST
-        })?)
-        .map_err(|e| {
-            tracing::error!("Error forwarding request: {}", e);
-            http::StatusCode::INTERNAL_SERVER_ERROR
+        None => Ok(ForwardRequest {
+            payload: payload.as_json().map_err(|_| {
+                tracing::error!("Unable to parse request body as json");
+                http::StatusCode::BAD_REQUEST
+            })?,
         }),
     }
 }
