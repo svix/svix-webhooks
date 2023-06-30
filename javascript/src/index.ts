@@ -762,16 +762,12 @@ export class Webhook {
   }
 
   public verify(
-    payload: string,
+    payload: string | Buffer,
     headers_:
       | WebhookRequiredHeaders
       | WebhookUnbrandedRequiredHeaders
       | Record<string, string>
   ): unknown {
-    if (typeof payload !== "string") {
-      throw new Error("Expected payload to be of type string. Please refer to https://docs.svix.com/receiving/verifying-payloads/how for more information.");
-    }
-
     const headers: Record<string, string> = {};
     for (const key of Object.keys(headers_)) {
       headers[key.toLowerCase()] = (headers_ as Record<string, string>)[key];
@@ -806,13 +802,21 @@ export class Webhook {
       }
 
       if (timingSafeEqual(encoder.encode(signature), encoder.encode(expectedSignature))) {
-        return JSON.parse(payload);
+        return JSON.parse(payload.toString());
       }
     }
     throw new WebhookVerificationError("No matching signature found");
   }
 
-  public sign(msgId: string, timestamp: Date, payload: string): string {
+  public sign(msgId: string, timestamp: Date, payload: string | Buffer): string {
+    if (typeof payload === "string") {
+      // Do nothing, already a string
+    } else if (payload.constructor.name === "Buffer") {
+      payload = payload.toString();
+    } else {
+      throw new Error("Expected payload to be of type string or Buffer. Please refer to https://docs.svix.com/receiving/verifying-payloads/how for more information.");
+    }
+
     const encoder = new TextEncoder();
     const timestampNumber = Math.floor(timestamp.getTime() / 1000);
     const toSign = encoder.encode(`${msgId}.${timestampNumber}.${payload}`);
