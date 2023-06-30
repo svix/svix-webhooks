@@ -149,7 +149,7 @@ Senders should produce JSON following an expected shape:
 
 For detail on the `message` field, see: <https://api.svix.com/docs#tag/Message/operation/v1.message.create>
 
-Receivers can accept arbitrary body data but their outputs require a JSON object with a `payload` field representing the
+Receivers can accept arbitrary body data but the outputs require a JSON object with a `payload` field representing the
 message to publish.
 
 ```json
@@ -158,8 +158,12 @@ message to publish.
 }
 ```
 
+When a transformation is _not configured_, the default behavior is to parse the request body as JSON and set this value
+as the `payload` field before forwarding to the output.
+
 By configuring a transformation, you should be able to consume a variety of `POST` bodies and
-produce a valid output.
+produce a valid output, but just remember to make sure the _return value_ has your data attached to the `payload` field.
+
 
 See the example configs for how to configure each input and output in more detail:
 - [senders](./svix-bridge.example.senders.yaml)
