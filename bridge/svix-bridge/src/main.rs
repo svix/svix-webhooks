@@ -155,18 +155,23 @@ pub struct Args {
 async fn main() -> Result<()> {
     let args = Args::parse();
 
-    let config = args.cfg.unwrap_or_else(|| {
+    let config_path = args.cfg.unwrap_or_else(|| {
         std::env::current_dir()
             .expect("current dir")
             .join("svix-bridge.yaml")
     });
-    let cfg: Config = serde_yaml::from_str(&std::fs::read_to_string(&config).map_err(|e| {
-        let p = config.into_os_string().into_string().expect("config path");
-        Error::new(ErrorKind::Other, format!("Failed to read {p}: {e}"))
-    })?)
-    .map_err(|e| Error::new(ErrorKind::Other, format!("Failed to parse config: {}", e)))?;
-    setup_tracing(&cfg);
 
+    let cfg_source = std::fs::read_to_string(&config_path).map_err(|e| {
+        let p = config_path
+            .into_os_string()
+            .into_string()
+            .expect("config path");
+        Error::new(ErrorKind::Other, format!("Failed to read {p}: {e}"))
+    })?;
+
+    let vars = std::env::vars().collect();
+    let cfg = Config::from_src(&cfg_source, Some(vars).as_ref())?;
+    setup_tracing(&cfg);
     tracing::info!("starting");
 
     let (xform_tx, mut xform_rx) = tokio::sync::mpsc::unbounded_channel::<TransformerJob>();

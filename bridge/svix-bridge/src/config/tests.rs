@@ -1,5 +1,8 @@
 use super::Config;
 use crate::config::{LogFormat, LogLevel, SenderConfig};
+use std::collections::HashMap;
+use svix_bridge_plugin_queue::config::{QueueConsumerConfig, RabbitMqInputOpts, SenderInputOpts};
+use svix_bridge_types::{SenderOutputOpts, SvixSenderOutputOpts};
 
 /// This is meant to be a kitchen sink config, hitting as many possible
 /// configuration options as possible to ensure they parse correctly.
@@ -330,4 +333,155 @@ fn test_senders_example() {
     let conf: Config = serde_yaml::from_slice(&std::fs::read(fp).unwrap()).unwrap();
     assert!(!conf.senders.is_empty());
     assert!(conf.receivers.is_empty());
+}
+
+#[test]
+fn test_variable_substitution_missing_vars() {
+    let src = r#"
+    opentelemetry: 
+        address: "${OTEL_ADDR}"
+    "#;
+    let vars = HashMap::new();
+    let cfg = Config::from_src(src, Some(&vars)).unwrap();
+    let otel = cfg.opentelemetry.unwrap();
+    // when lookups in the vars map fail, the original token text is preserved.
+    assert_eq!(&otel.address, "${OTEL_ADDR}");
+}
+
+#[test]
+fn test_variable_substitution_available_vars() {
+    let src = r#"
+    opentelemetry:
+        address: "${OTEL_ADDR}"
+        sample_ratio: ${OTEL_SAMPLE_RATIO}
+    "#;
+    let mut vars = HashMap::new();
+    vars.insert(
+        String::from("OTEL_ADDR"),
+        String::from("http://127.0.0.1:8080"),
+    );
+    vars.insert(String::from("OTEL_SAMPLE_RATIO"), String::from("0.25"));
+    let cfg = Config::from_src(src, Some(&vars)).unwrap();
+    // when lookups succeed, the token should be replaced.
+    let otel = cfg.opentelemetry.unwrap();
+    assert_eq!(&otel.address, "http://127.0.0.1:8080");
+    assert_eq!(otel.sample_ratio, Some(0.25));
+}
+
+#[test]
+fn test_variable_substitution_requires_braces() {
+    let src = r#"
+    opentelemetry:
+        # Neglecting to use ${} notation means the port number will not be substituted. 
+        address: "${OTEL_SCHEME}://${OTEL_HOST}:$OTEL_PORT"
+    "#;
+    let mut vars = HashMap::new();
+    vars.insert(String::from("OTEL_SCHEME"), String::from("https"));
+    vars.insert(String::from("OTEL_HOST"), String::from("127.0.0.1"));
+    vars.insert(String::from("OTEL_PORT"), String::from("9999"));
+    let cfg = Config::from_src(src, Some(&vars)).unwrap();
+    // when lookups succeed, the token should be replaced.
+    let otel = cfg.opentelemetry.unwrap();
+    // Not the user-intended outcome, but it simplifies the parsing requirements.
+    assert_eq!(&otel.address, "https://127.0.0.1:$OTEL_PORT");
+}
+
+#[test]
+fn test_variable_substitution_missing_numeric_var_is_err() {
+    // Unfortunate side-effect of templating yaml.
+    //
+    // If the variable is missing, usually you've got three options:
+    // - retain the token text that failed the lookup (envsubst-rs does this)
+    // - replace the token with an empty string (the CLI `envsubst` does this)
+    // - mark it an error (neither do this, but we can if we roll our own impl)
+    //
+    // For yaml, the field typings are heavily/poorly inferred so for an optional float like
+    // `sample_ratio` an empty string would parse as a `None`, which could be a bad fallback since
+    // otel considers this a 1.0 ratio (send everything).
+    //
+    // For this specific case, retaining the token text produces an error, which happens to be useful.
+    // For fields that happen to be strings anyway, errors may show up later (after the config parsing).
+    // Ex: using `${QUEUE_NAME}` in a rabbit sender input will surface in logs as an error when we
+    // try to connect: "no such queue '${QUEUE_NAME}'".
+
+    let src = r#"
+    opentelemetry:
+        address: "${OTEL_ADDR}"
+        # This var will be missing, causing the template token to
+        # be retained causing a parse failure :(
+        sample_ratio: ${OTEL_SAMPLE_RATIO}
+    "#;
+    let vars = HashMap::new();
+    let err = Config::from_src(src, Some(&vars)).err().unwrap();
+    let want = "Failed to parse config: opentelemetry.sample_ratio: invalid type: \
+                    string \"${OTEL_SAMPLE_RATIO}\", expected f64 at line 6 column 23";
+    assert_eq!(want, err.to_string());
+}
+
+#[test]
+fn test_variable_substitution_repeated_lookups() {
+    // This is probably a given, but we should expect a single variable can be referenced multiple
+    // times within the config.
+    // The concrete use case: auth tokens.
+
+    let src = r#"
+    senders:
+      - name: "rabbitmq-1"
+        input:
+          type: "rabbitmq"
+          uri: "${RABBIT_URI}"
+          queue_name: "${QUEUE_NAME_1}"
+        output:
+          type: "svix"
+          token: "${SVIX_TOKEN}"
+      - name: "rabbitmq-2"
+        input:
+          type: "rabbitmq"
+          uri: "${RABBIT_URI}"
+          queue_name: "${QUEUE_NAME_2}"
+        output:
+          type: "svix"
+          token: "${SVIX_TOKEN}"
+    "#;
+    let mut vars = HashMap::new();
+    vars.insert(
+        String::from("RABBIT_URI"),
+        String::from("amqp://guest:guest@localhost:5672/%2f"),
+    );
+    vars.insert(String::from("QUEUE_NAME_1"), String::from("one"));
+    vars.insert(String::from("QUEUE_NAME_2"), String::from("two"));
+    vars.insert(String::from("SVIX_TOKEN"), String::from("x"));
+    let cfg = Config::from_src(src, Some(&vars)).unwrap();
+
+    if let SenderConfig::QueueConsumer(QueueConsumerConfig {
+        input:
+            SenderInputOpts::RabbitMQ(RabbitMqInputOpts {
+                uri, queue_name, ..
+            }),
+        output: SenderOutputOpts::Svix(SvixSenderOutputOpts { token, .. }),
+        ..
+    }) = &cfg.senders[0]
+    {
+        assert_eq!(uri, "amqp://guest:guest@localhost:5672/%2f");
+        assert_eq!(queue_name, "one");
+        assert_eq!(token, "x");
+    } else {
+        panic!("sender did not match expected pattern");
+    }
+
+    if let SenderConfig::QueueConsumer(QueueConsumerConfig {
+        input:
+            SenderInputOpts::RabbitMQ(RabbitMqInputOpts {
+                uri, queue_name, ..
+            }),
+        output: SenderOutputOpts::Svix(SvixSenderOutputOpts { token, .. }),
+        ..
+    }) = &cfg.senders[1]
+    {
+        assert_eq!(uri, "amqp://guest:guest@localhost:5672/%2f");
+        assert_eq!(queue_name, "two");
+        assert_eq!(token, "x");
+    } else {
+        panic!("sender did not match expected pattern");
+    }
 }

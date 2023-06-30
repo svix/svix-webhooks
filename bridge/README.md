@@ -133,6 +133,27 @@ The config file itself does the heavy lifting.
 
 When unset, the current working directory is checked for a file named `svix-bridge.yaml`.
 
+## Variable Expansion
+
+`svix-bridge` supports environment variable expansion inside the config file.
+
+Using "dollar brace" notation, e.g. `${MY_VARIABLE}`, a substitution will be made from the environment.
+If the variable lookup fails, the raw variable text is left in the config as-is.
+
+As an example, here's a RabbitMQ sender configured with environment variables:
+
+```yaml
+senders:
+  - name: "send-webhooks-from-${QUEUE_NAME}"
+    input:
+      type: "rabbitmq"
+      uri: "${MQ_URI}"
+      queue_name: "${QUEUE_NAME}"
+    output:
+      type: "svix"
+      token: "${SVIX_TOKEN}"
+```
+
 Each sender and receiver can optionally specify a `transformation`.
 Transformations should define a function called `handler` that accepts an object and returns an object.
 

@@ -1122,6 +1122,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "envsubst"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cf2f29f6ee674d1229e5715dfc7e24f14395a20d66949e36032de68b31542643"
+dependencies = [
+ "thiserror",
+]
+
+[[package]]
 name = "errno"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3137,6 +3146,7 @@ dependencies = [
  "clap",
  "deno_core",
  "enum_dispatch",
+ "envsubst",
  "http",
  "hyper",
  "lazy_static",

@@ -1,4 +1,7 @@
 use serde::Deserialize;
+use std::borrow::Cow;
+use std::collections::HashMap;
+use std::io::{Error, ErrorKind};
 use std::net::SocketAddr;
 use svix_bridge_plugin_queue::config::{
     into_receiver_output, QueueConsumerConfig, ReceiverOutputOpts as QueueOutOpts,
@@ -24,6 +27,28 @@ pub struct Config {
     pub opentelemetry: Option<OtelExporterConfig>,
     #[serde(default = "default_http_listen_address")]
     pub http_listen_address: SocketAddr,
+}
+
+impl Config {
+    /// Build a Config from yaml source.
+    /// Optionally accepts a map to perform variable substitution with.
+    pub fn from_src(
+        raw_src: &str,
+        vars: Option<&HashMap<String, String>>,
+    ) -> std::io::Result<Self> {
+        let src = if let Some(vars) = vars {
+            Cow::Owned(envsubst::substitute(raw_src, vars).map_err(|e| {
+                Error::new(
+                    ErrorKind::Other,
+                    format!("Variable substitution failed: {e}"),
+                )
+            })?)
+        } else {
+            Cow::Borrowed(raw_src)
+        };
+        serde_yaml::from_str(&src)
+            .map_err(|e| Error::new(ErrorKind::Other, format!("Failed to parse config: {}", e)))
+    }
 }
 
 fn default_http_listen_address() -> SocketAddr {
