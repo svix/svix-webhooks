@@ -22,6 +22,10 @@ module Svix
       return @api.v1_endpoint_update(app_id, endpoint_id, endpoint_update)
     end
 
+    def patch(app_id, endpoint_id, endpoint_patch)
+      return @api.v1_endpoint_patch(app_id, endpoint_id, endpoint_patch)
+    end
+
     def delete(app_id, endpoint_id)
       return @api.v1_endpoint_delete(app_id, endpoint_id)
     end

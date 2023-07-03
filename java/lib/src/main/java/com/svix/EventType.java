@@ -4,6 +4,7 @@ import com.svix.exceptions.ApiException;
 import com.svix.internal.api.EventTypeApi;
 import com.svix.models.EventTypeIn;
 import com.svix.models.EventTypeOut;
+import com.svix.models.EventTypePatch;
 import com.svix.models.EventTypeUpdate;
 import com.svix.models.ListResponseEventTypeOut;
 
@@ -45,6 +46,14 @@ public final class EventType {
 	public EventTypeOut update(final String eventTypeName, final EventTypeUpdate eventTypeUpdate) throws ApiException {
 		try {
 			return api.v1EventTypeUpdate(eventTypeName, eventTypeUpdate);
+		} catch (com.svix.internal.ApiException e) {
+			throw Utils.wrapInternalApiException(e);
+		}
+	}
+
+	public EventTypeOut patch(final String eventTypeName, final EventTypePatch eventTypePatch) throws ApiException {
+		try {
+			return api.v1EventTypePatch(eventTypeName, eventTypePatch);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}

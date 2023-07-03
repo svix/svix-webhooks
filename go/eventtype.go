@@ -14,6 +14,7 @@ type (
 	ListResponseEventTypeOut openapi.ListResponseEventTypeOut
 	EventTypeIn              openapi.EventTypeIn
 	EventTypeOut             openapi.EventTypeOut
+	EventTypePatch           openapi.EventTypePatch
 	EventTypeUpdate          openapi.EventTypeUpdate
 )
 
@@ -81,6 +82,17 @@ func (e *EventType) Get(ctx context.Context, eventTypeName string) (*EventTypeOu
 func (e *EventType) Update(ctx context.Context, eventTypeName string, eventTypeUpdate *EventTypeUpdate) (*EventTypeOut, error) {
 	req := e.api.EventTypeApi.V1EventTypeUpdate(ctx, eventTypeName)
 	req = req.EventTypeUpdate(openapi.EventTypeUpdate(*eventTypeUpdate))
+	out, res, err := req.Execute()
+	if err != nil {
+		return nil, wrapError(err, res)
+	}
+	ret := EventTypeOut(out)
+	return &ret, nil
+}
+
+func (e *EventType) Patch(ctx context.Context, eventTypeName string, eventTypePatch *EventTypePatch) (*EventTypeOut, error) {
+	req := e.api.EventTypeApi.V1EventTypePatch(ctx, eventTypeName)
+	req = req.EventTypePatch(openapi.EventTypePatch(*eventTypePatch))
 	out, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)

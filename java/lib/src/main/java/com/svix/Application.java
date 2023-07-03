@@ -4,6 +4,7 @@ import com.svix.exceptions.ApiException;
 import com.svix.internal.api.ApplicationApi;
 import com.svix.models.ApplicationIn;
 import com.svix.models.ApplicationOut;
+import com.svix.models.ApplicationPatch;
 import com.svix.models.ListResponseApplicationOut;
 
 public final class Application {
@@ -56,6 +57,14 @@ public final class Application {
 	public ApplicationOut update(final String appId, final ApplicationIn applicationIn) throws ApiException {
 		try {
 			return api.v1ApplicationUpdate(appId, applicationIn);
+		} catch (com.svix.internal.ApiException e) {
+			throw Utils.wrapInternalApiException(e);
+		}
+	}
+
+	public ApplicationOut patch(final String appId, final ApplicationPatch applicationPatch) throws ApiException {
+		try {
+			return api.v1ApplicationPatch(appId, applicationPatch);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}

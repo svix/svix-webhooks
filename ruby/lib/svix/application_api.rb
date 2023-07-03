@@ -24,6 +24,10 @@ module Svix
       return @api.v1_application_update(app_id, application_in)
     end
 
+    def patch(app_id, application_patch)
+      return @api.v1_application_patch(app_id, application_patch)
+    end
+
     def delete(app_id)
       return @api.v1_application_delete(app_id)
     end

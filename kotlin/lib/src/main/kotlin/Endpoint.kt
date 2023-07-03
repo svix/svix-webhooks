@@ -7,6 +7,7 @@ import com.svix.kotlin.models.EndpointHeadersOut
 import com.svix.kotlin.models.EndpointHeadersPatchIn
 import com.svix.kotlin.models.EndpointIn
 import com.svix.kotlin.models.EndpointOut
+import com.svix.kotlin.models.EndpointPatch
 import com.svix.kotlin.models.EndpointSecretOut
 import com.svix.kotlin.models.EndpointSecretRotateIn
 import com.svix.kotlin.models.EndpointStats
@@ -78,6 +79,22 @@ class Endpoint internal constructor(token: String, options: SvixOptions) {
                 appId,
                 endpointId,
                 endpointUpdate
+            )
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
+
+    suspend fun patch(
+        appId: String,
+        endpointId: String,
+        endpointPatch: EndpointPatch
+    ): EndpointOut {
+        try {
+            return api.v1EndpointPatch(
+                appId,
+                endpointId,
+                endpointPatch
             )
         } catch (e: Exception) {
             throw ApiException.wrap(e)

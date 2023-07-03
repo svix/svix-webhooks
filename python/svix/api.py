@@ -9,6 +9,7 @@ from .internal.openapi_client.api.application import (
     v1_application_delete,
     v1_application_get,
     v1_application_list,
+    v1_application_patch,
     v1_application_update,
 )
 from .internal.openapi_client.api.authentication import (
@@ -25,6 +26,7 @@ from .internal.openapi_client.api.endpoint import (
     v1_endpoint_get_secret,
     v1_endpoint_get_stats,
     v1_endpoint_list,
+    v1_endpoint_patch,
     v1_endpoint_patch_headers,
     v1_endpoint_recover,
     v1_endpoint_replay,
@@ -40,6 +42,7 @@ from .internal.openapi_client.api.event_type import (
     v1_event_type_delete,
     v1_event_type_get,
     v1_event_type_list,
+    v1_event_type_patch,
     v1_event_type_update,
 )
 from .internal.openapi_client.api.integration import (
@@ -72,6 +75,7 @@ from .internal.openapi_client.models.app_portal_access_in import AppPortalAccess
 from .internal.openapi_client.models.app_portal_access_out import AppPortalAccessOut
 from .internal.openapi_client.models.application_in import ApplicationIn
 from .internal.openapi_client.models.application_out import ApplicationOut
+from .internal.openapi_client.models.application_patch import ApplicationPatch
 from .internal.openapi_client.models.background_task_out import BackgroundTaskOut
 from .internal.openapi_client.models.background_task_status import BackgroundTaskStatus
 from .internal.openapi_client.models.background_task_type import BackgroundTaskType
@@ -82,6 +86,7 @@ from .internal.openapi_client.models.endpoint_headers_patch_in import EndpointHe
 from .internal.openapi_client.models.endpoint_in import EndpointIn
 from .internal.openapi_client.models.endpoint_message_out_payload import EndpointMessageOutPayload
 from .internal.openapi_client.models.endpoint_out import EndpointOut
+from .internal.openapi_client.models.endpoint_patch import EndpointPatch
 from .internal.openapi_client.models.endpoint_secret_out import EndpointSecretOut
 from .internal.openapi_client.models.endpoint_secret_rotate_in import EndpointSecretRotateIn
 from .internal.openapi_client.models.endpoint_stats import EndpointStats
@@ -91,6 +96,7 @@ from .internal.openapi_client.models.endpoint_update import EndpointUpdate
 from .internal.openapi_client.models.event_example_in import EventExampleIn
 from .internal.openapi_client.models.event_type_in import EventTypeIn
 from .internal.openapi_client.models.event_type_out import EventTypeOut
+from .internal.openapi_client.models.event_type_patch import EventTypePatch
 from .internal.openapi_client.models.event_type_update import EventTypeUpdate
 from .internal.openapi_client.models.integration_in import IntegrationIn
 from .internal.openapi_client.models.integration_key_out import IntegrationKeyOut
@@ -254,6 +260,9 @@ class ApplicationAsync(ApiBase):
     async def update(self, app_id: str, application_in: ApplicationIn) -> ApplicationOut:
         return await v1_application_update.asyncio(client=self._client, app_id=app_id, json_body=application_in)
 
+    async def patch(self, app_id: str, application_patch: ApplicationPatch) -> ApplicationOut:
+        return await v1_application_patch.asyncio(client=self._client, app_id=app_id, json_body=application_patch)
+
     async def delete(self, app_id: str) -> None:
         return await v1_application_delete.asyncio(client=self._client, app_id=app_id)
 
@@ -275,6 +284,9 @@ class Application(ApiBase):
 
     def update(self, app_id: str, application_in: ApplicationIn) -> ApplicationOut:
         return v1_application_update.sync(client=self._client, app_id=app_id, json_body=application_in)
+
+    def patch(self, app_id: str, application_patch: ApplicationPatch) -> ApplicationOut:
+        return v1_application_patch.sync(client=self._client, app_id=app_id, json_body=application_patch)
 
     def delete(self, app_id: str) -> None:
         return v1_application_delete.sync(client=self._client, app_id=app_id)
@@ -305,6 +317,14 @@ class EndpointAsync(ApiBase):
             app_id=app_id,
             endpoint_id=endpoint_id,
             json_body=endpoint_update,
+        )
+
+    async def patch(self, app_id: str, endpoint_id: str, endpoint_patch: EndpointPatch) -> EndpointOut:
+        return await v1_endpoint_patch.asyncio(
+            client=self._client,
+            app_id=app_id,
+            endpoint_id=endpoint_id,
+            json_body=endpoint_patch,
         )
 
     async def delete(self, app_id: str, endpoint_id: str) -> None:
@@ -427,6 +447,14 @@ class Endpoint(ApiBase):
             app_id=app_id,
             endpoint_id=endpoint_id,
             json_body=endpoint_update,
+        )
+
+    def patch(self, app_id: str, endpoint_id: str, endpoint_patch: EndpointPatch) -> EndpointOut:
+        return v1_endpoint_patch.sync(
+            client=self._client,
+            app_id=app_id,
+            endpoint_id=endpoint_id,
+            json_body=endpoint_patch,
         )
 
     def delete(self, app_id: str, endpoint_id: str) -> None:
@@ -562,6 +590,13 @@ class EventTypeAsync(ApiBase):
             json_body=event_type_update,
         )
 
+    async def patch(self, event_type_name: str, event_type_patch: EventTypePatch) -> EventTypeOut:
+        return await v1_event_type_patch.asyncio(
+            client=self._client,
+            event_type_name=event_type_name,
+            json_body=event_type_patch,
+        )
+
     async def delete(self, event_type_name: str) -> None:
         return await v1_event_type_delete.asyncio(
             client=self._client,
@@ -594,6 +629,13 @@ class EventType(ApiBase):
             client=self._client,
             event_type_name=event_type_name,
             json_body=event_type_update,
+        )
+
+    def patch(self, event_type_name: str, event_type_patch: EventTypePatch) -> EventTypeOut:
+        return v1_event_type_patch.sync(
+            client=self._client,
+            event_type_name=event_type_name,
+            json_body=event_type_patch,
         )
 
     def delete(self, event_type_name: str) -> None:
@@ -1062,6 +1104,7 @@ class Svix(ClientBase):
 __all__ = [
     "ApplicationIn",
     "ApplicationOut",
+    "ApplicationPatch",
     "ListResponseApplicationOut",
     "DashboardAccessOut",
     "EndpointHeadersIn",
@@ -1069,11 +1112,13 @@ __all__ = [
     "EndpointHeadersOut",
     "EndpointIn",
     "EndpointOut",
+    "EndpointPatch",
     "EndpointSecretOut",
     "EndpointSecretRotateIn",
     "ListResponseEndpointOut",
     "EventTypeIn",
     "EventTypeOut",
+    "EventTypePatch",
     "EventTypeUpdate",
     "ListResponseEventTypeOut",
     "ListResponseMessageOut",

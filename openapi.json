@@ -4015,7 +4015,7 @@
             },
             "patch": {
                 "description": "Partially update an application.",
-                "operationId": "v1.application.partial-update",
+                "operationId": "v1.application.patch",
                 "parameters": [
                     {
                         "description": "The app's ID or UID",
@@ -4138,57 +4138,57 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const applicationOut = await svix.application.partialUpdate(\"app_id\", {\n    rateLimit: null,\n    uid: \"unique-app-identifier\"\n});"
+                        "source": "const applicationOut = await svix.application.patch(\"app_id\", {\n    rateLimit: null,\n    uid: \"unique-app-identifier\"\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const applicationOut = await svix.application.partialUpdate(\"app_id\", {\n    rateLimit: null,\n    uid: \"unique-app-identifier\"\n});"
+                        "source": "const applicationOut = await svix.application.patch(\"app_id\", {\n    rateLimit: null,\n    uid: \"unique-app-identifier\"\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "application_out = svix.application.partial_update(\"app_id\", ApplicationPatch(\n    rate_limit=None,\n    uid=\"unique-app-identifier\"\n))"
+                        "source": "application_out = svix.application.patch(\"app_id\", ApplicationPatch(\n    rate_limit=None,\n    uid=\"unique-app-identifier\"\n))"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "application_out = await svix.application.partial_update(\"app_id\", ApplicationPatch(\n    rate_limit=None,\n    uid=\"unique-app-identifier\"\n))"
+                        "source": "application_out = await svix.application.patch(\"app_id\", ApplicationPatch(\n    rate_limit=None,\n    uid=\"unique-app-identifier\"\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "applicationOut, err := svixClient.Application.PartialUpdate(ctx, \"app_id\", &ApplicationPatch{\n    RateLimit: nil,\n    Uid: \"unique-app-identifier\",\n})"
+                        "source": "applicationOut, err := svixClient.Application.Patch(ctx, \"app_id\", &ApplicationPatch{\n    RateLimit: nil,\n    Uid: \"unique-app-identifier\",\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val applicationOut = svix.application.partialUpdate(\"app_id\", ApplicationPatch()\n    .rateLimit(null)\n    .uid(\"unique-app-identifier\")\n)"
+                        "source": "val applicationOut = svix.application.patch(\"app_id\", ApplicationPatch()\n    .rateLimit(null)\n    .uid(\"unique-app-identifier\")\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "ApplicationOut applicationOut = svix.getApplication().partialUpdate(\"app_id\", new ApplicationPatch()\n    .rateLimit(null)\n    .uid(\"unique-app-identifier\")\n)"
+                        "source": "ApplicationOut applicationOut = svix.getApplication().patch(\"app_id\", new ApplicationPatch()\n    .rateLimit(null)\n    .uid(\"unique-app-identifier\")\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "application_out = svix.application.partial_update(\"app_id\", Svix::ApplicationPatch.new({\n    \"rate_limit\": nil,\n    \"uid\": \"unique-app-identifier\"\n}))"
+                        "source": "application_out = svix.application.patch(\"app_id\", Svix::ApplicationPatch.new({\n    \"rate_limit\": nil,\n    \"uid\": \"unique-app-identifier\"\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let application_out = svix.application().partial_update(\"app_id\", ApplicationPatch {\n    rate_limit: None,\n    uid: Some(\"unique-app-identifier\".to_string()),\n}).await?;"
+                        "source": "let application_out = svix.application().patch(\"app_id\", ApplicationPatch {\n    rate_limit: None,\n    uid: Some(\"unique-app-identifier\".to_string()),\n}).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var applicationOut = await svix.Application.PartialUpdateAsync(\"app_id\", new ApplicationPatch{\n    rateLimit: null,\n    uid: \"unique-app-identifier\"\n})"
+                        "source": "var applicationOut = await svix.Application.PatchAsync(\"app_id\", new ApplicationPatch{\n    rateLimit: null,\n    uid: \"unique-app-identifier\"\n})"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix application partial-update \"app_id\" '{\n    \"rateLimit\": null,\n    \"uid\": \"unique-app-identifier\"\n}'"
+                        "source": "svix application patch \"app_id\" '{\n    \"rateLimit\": null,\n    \"uid\": \"unique-app-identifier\"\n}'"
                     },
                     {
                         "label": "cURL",
@@ -5744,7 +5744,7 @@
             },
             "patch": {
                 "description": "Partially update an endpoint.",
-                "operationId": "v1.endpoint.partial-update",
+                "operationId": "v1.endpoint.patch",
                 "parameters": [
                     {
                         "description": "The app's ID or UID",
@@ -5882,57 +5882,57 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const endpointOut = await svix.endpoint.partialUpdate(\"app_id\", \"endpoint_id\", {\n    rateLimit: null,\n    uid: \"unique-ep-identifier\",\n    filterTypes: null,\n    channels: null,\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
+                        "source": "const endpointOut = await svix.endpoint.patch(\"app_id\", \"endpoint_id\", {\n    rateLimit: null,\n    uid: \"unique-ep-identifier\",\n    filterTypes: null,\n    channels: null,\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const endpointOut = await svix.endpoint.partialUpdate(\"app_id\", \"endpoint_id\", {\n    rateLimit: null,\n    uid: \"unique-ep-identifier\",\n    filterTypes: null,\n    channels: null,\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
+                        "source": "const endpointOut = await svix.endpoint.patch(\"app_id\", \"endpoint_id\", {\n    rateLimit: null,\n    uid: \"unique-ep-identifier\",\n    filterTypes: null,\n    channels: null,\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "endpoint_out = svix.endpoint.partial_update(\"app_id\", \"endpoint_id\", EndpointPatch(\n    rate_limit=None,\n    uid=\"unique-ep-identifier\",\n    filter_types=None,\n    channels=None,\n    secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n))"
+                        "source": "endpoint_out = svix.endpoint.patch(\"app_id\", \"endpoint_id\", EndpointPatch(\n    rate_limit=None,\n    uid=\"unique-ep-identifier\",\n    filter_types=None,\n    channels=None,\n    secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n))"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "endpoint_out = await svix.endpoint.partial_update(\"app_id\", \"endpoint_id\", EndpointPatch(\n    rate_limit=None,\n    uid=\"unique-ep-identifier\",\n    filter_types=None,\n    channels=None,\n    secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n))"
+                        "source": "endpoint_out = await svix.endpoint.patch(\"app_id\", \"endpoint_id\", EndpointPatch(\n    rate_limit=None,\n    uid=\"unique-ep-identifier\",\n    filter_types=None,\n    channels=None,\n    secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "endpointOut, err := svixClient.Endpoint.PartialUpdate(ctx, \"app_id\", \"endpoint_id\", &EndpointPatch{\n    RateLimit: nil,\n    Uid: \"unique-ep-identifier\",\n    FilterTypes: nil,\n    Channels: nil,\n    Secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n})"
+                        "source": "endpointOut, err := svixClient.Endpoint.Patch(ctx, \"app_id\", \"endpoint_id\", &EndpointPatch{\n    RateLimit: nil,\n    Uid: \"unique-ep-identifier\",\n    FilterTypes: nil,\n    Channels: nil,\n    Secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val endpointOut = svix.endpoint.partialUpdate(\"app_id\", \"endpoint_id\", EndpointPatch()\n    .rateLimit(null)\n    .uid(\"unique-ep-identifier\")\n    .filterTypes(null)\n    .channels(null)\n    .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n)"
+                        "source": "val endpointOut = svix.endpoint.patch(\"app_id\", \"endpoint_id\", EndpointPatch()\n    .rateLimit(null)\n    .uid(\"unique-ep-identifier\")\n    .filterTypes(null)\n    .channels(null)\n    .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "EndpointOut endpointOut = svix.getEndpoint().partialUpdate(\"app_id\", \"endpoint_id\", new EndpointPatch()\n    .rateLimit(null)\n    .uid(\"unique-ep-identifier\")\n    .filterTypes(null)\n    .channels(null)\n    .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n)"
+                        "source": "EndpointOut endpointOut = svix.getEndpoint().patch(\"app_id\", \"endpoint_id\", new EndpointPatch()\n    .rateLimit(null)\n    .uid(\"unique-ep-identifier\")\n    .filterTypes(null)\n    .channels(null)\n    .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "endpoint_out = svix.endpoint.partial_update(\"app_id\", \"endpoint_id\", Svix::EndpointPatch.new({\n    \"rate_limit\": nil,\n    \"uid\": \"unique-ep-identifier\",\n    \"filter_types\": nil,\n    \"channels\": nil,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}))"
+                        "source": "endpoint_out = svix.endpoint.patch(\"app_id\", \"endpoint_id\", Svix::EndpointPatch.new({\n    \"rate_limit\": nil,\n    \"uid\": \"unique-ep-identifier\",\n    \"filter_types\": nil,\n    \"channels\": nil,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let endpoint_out = svix.endpoint().partial_update(\"app_id\", \"endpoint_id\", EndpointPatch {\n    rate_limit: None,\n    uid: Some(\"unique-ep-identifier\".to_string()),\n    filter_types: None,\n    channels: None,\n    secret: Some(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\".to_string()),\n}).await?;"
+                        "source": "let endpoint_out = svix.endpoint().patch(\"app_id\", \"endpoint_id\", EndpointPatch {\n    rate_limit: None,\n    uid: Some(\"unique-ep-identifier\".to_string()),\n    filter_types: None,\n    channels: None,\n    secret: Some(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\".to_string()),\n}).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var endpointOut = await svix.Endpoint.PartialUpdateAsync(\"app_id\", \"endpoint_id\", new EndpointPatch{\n    rateLimit: null,\n    uid: \"unique-ep-identifier\",\n    filterTypes: null,\n    channels: null,\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n})"
+                        "source": "var endpointOut = await svix.Endpoint.PatchAsync(\"app_id\", \"endpoint_id\", new EndpointPatch{\n    rateLimit: null,\n    uid: \"unique-ep-identifier\",\n    filterTypes: null,\n    channels: null,\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n})"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix endpoint partial-update \"app_id\" \"endpoint_id\" '{\n    \"rateLimit\": null,\n    \"uid\": \"unique-ep-identifier\",\n    \"filterTypes\": null,\n    \"channels\": null,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}'"
+                        "source": "svix endpoint patch \"app_id\" \"endpoint_id\" '{\n    \"rateLimit\": null,\n    \"uid\": \"unique-ep-identifier\",\n    \"filterTypes\": null,\n    \"channels\": null,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}'"
                     },
                     {
                         "label": "cURL",
@@ -15551,7 +15551,7 @@
             },
             "patch": {
                 "description": "Partially update an event type.",
-                "operationId": "v1.event-type.partial-update",
+                "operationId": "v1.event-type.patch",
                 "parameters": [
                     {
                         "description": "The event type's name",
@@ -15673,57 +15673,57 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const eventTypeOut = await svix.eventType.partialUpdate(\"event_type_name\", {\n    schemas: {\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"},\n    featureFlag: \"cool-new-feature\"\n});"
+                        "source": "const eventTypeOut = await svix.eventType.patch(\"event_type_name\", {\n    schemas: {\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"},\n    featureFlag: \"cool-new-feature\"\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const eventTypeOut = await svix.eventType.partialUpdate(\"event_type_name\", {\n    schemas: {\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"},\n    featureFlag: \"cool-new-feature\"\n});"
+                        "source": "const eventTypeOut = await svix.eventType.patch(\"event_type_name\", {\n    schemas: {\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"},\n    featureFlag: \"cool-new-feature\"\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "event_type_out = svix.event_type.partial_update(\"event_type_name\", EventTypePatch(\n    schemas={\"description\": \"An invoice was paid by a user\", \"properties\": {\"invoiceId\": {\"description\": \"The invoice id\", \"type\": \"string\"}, \"userId\": {\"description\": \"The user id\", \"type\": \"string\"}}, \"required\": [\"invoiceId\", \"userId\"], \"title\": \"Invoice Paid Event\", \"type\": \"object\"},\n    feature_flag=\"cool-new-feature\"\n))"
+                        "source": "event_type_out = svix.event_type.patch(\"event_type_name\", EventTypePatch(\n    schemas={\"description\": \"An invoice was paid by a user\", \"properties\": {\"invoiceId\": {\"description\": \"The invoice id\", \"type\": \"string\"}, \"userId\": {\"description\": \"The user id\", \"type\": \"string\"}}, \"required\": [\"invoiceId\", \"userId\"], \"title\": \"Invoice Paid Event\", \"type\": \"object\"},\n    feature_flag=\"cool-new-feature\"\n))"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "event_type_out = await svix.event_type.partial_update(\"event_type_name\", EventTypePatch(\n    schemas={\"description\": \"An invoice was paid by a user\", \"properties\": {\"invoiceId\": {\"description\": \"The invoice id\", \"type\": \"string\"}, \"userId\": {\"description\": \"The user id\", \"type\": \"string\"}}, \"required\": [\"invoiceId\", \"userId\"], \"title\": \"Invoice Paid Event\", \"type\": \"object\"},\n    feature_flag=\"cool-new-feature\"\n))"
+                        "source": "event_type_out = await svix.event_type.patch(\"event_type_name\", EventTypePatch(\n    schemas={\"description\": \"An invoice was paid by a user\", \"properties\": {\"invoiceId\": {\"description\": \"The invoice id\", \"type\": \"string\"}, \"userId\": {\"description\": \"The user id\", \"type\": \"string\"}}, \"required\": [\"invoiceId\", \"userId\"], \"title\": \"Invoice Paid Event\", \"type\": \"object\"},\n    feature_flag=\"cool-new-feature\"\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "eventTypeOut, err := svixClient.EventType.PartialUpdate(ctx, \"event_type_name\", &EventTypePatch{\n    Schemas: map[string]interface{}{\"description\": \"An invoice was paid by a user\", \"properties\": map[interface{}]interface{}{\"invoiceId\": map[string]interface{}{\"description\": \"The invoice id\", \"type\": \"string\"}, \"userId\": map[string]interface{}{\"description\": \"The user id\", \"type\": \"string\"}}, \"required\": []string{\"invoiceId\", \"userId\"}, \"title\": \"Invoice Paid Event\", \"type\": \"object\"},\n    FeatureFlag: \"cool-new-feature\",\n})"
+                        "source": "eventTypeOut, err := svixClient.EventType.Patch(ctx, \"event_type_name\", &EventTypePatch{\n    Schemas: map[string]interface{}{\"description\": \"An invoice was paid by a user\", \"properties\": map[interface{}]interface{}{\"invoiceId\": map[string]interface{}{\"description\": \"The invoice id\", \"type\": \"string\"}, \"userId\": map[string]interface{}{\"description\": \"The user id\", \"type\": \"string\"}}, \"required\": []string{\"invoiceId\", \"userId\"}, \"title\": \"Invoice Paid Event\", \"type\": \"object\"},\n    FeatureFlag: \"cool-new-feature\",\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val eventTypeOut = svix.eventType.partialUpdate(\"event_type_name\", EventTypePatch()\n    .schemas(\"\"\"{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}\"\"\")\n    .featureFlag(\"cool-new-feature\")\n)"
+                        "source": "val eventTypeOut = svix.eventType.patch(\"event_type_name\", EventTypePatch()\n    .schemas(\"\"\"{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}\"\"\")\n    .featureFlag(\"cool-new-feature\")\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "EventTypeOut eventTypeOut = svix.getEventType().partialUpdate(\"event_type_name\", new EventTypePatch()\n    .schemas(\"{\\\"description\\\":\\\"An invoice was paid by a user\\\",\\\"properties\\\":{\\\"invoiceId\\\":{\\\"description\\\":\\\"The invoice id\\\",\\\"type\\\":\\\"string\\\"},\\\"userId\\\":{\\\"description\\\":\\\"The user id\\\",\\\"type\\\":\\\"string\\\"}},\\\"required\\\":[\\\"invoiceId\\\",\\\"userId\\\"],\\\"title\\\":\\\"Invoice Paid Event\\\",\\\"type\\\":\\\"object\\\"}\")\n    .featureFlag(\"cool-new-feature\")\n)"
+                        "source": "EventTypeOut eventTypeOut = svix.getEventType().patch(\"event_type_name\", new EventTypePatch()\n    .schemas(\"{\\\"description\\\":\\\"An invoice was paid by a user\\\",\\\"properties\\\":{\\\"invoiceId\\\":{\\\"description\\\":\\\"The invoice id\\\",\\\"type\\\":\\\"string\\\"},\\\"userId\\\":{\\\"description\\\":\\\"The user id\\\",\\\"type\\\":\\\"string\\\"}},\\\"required\\\":[\\\"invoiceId\\\",\\\"userId\\\"],\\\"title\\\":\\\"Invoice Paid Event\\\",\\\"type\\\":\\\"object\\\"}\")\n    .featureFlag(\"cool-new-feature\")\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "event_type_out = svix.event_type.partial_update(\"event_type_name\", Svix::EventTypePatch.new({\n    \"schemas\": {\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"},\n    \"feature_flag\": \"cool-new-feature\"\n}))"
+                        "source": "event_type_out = svix.event_type.patch(\"event_type_name\", Svix::EventTypePatch.new({\n    \"schemas\": {\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"},\n    \"feature_flag\": \"cool-new-feature\"\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let event_type_out = svix.event_type().partial_update(\"event_type_name\", EventTypePatch {\n    schemas: Some(json!({\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"})),\n    feature_flag: Some(\"cool-new-feature\".to_string()),\n}).await?;"
+                        "source": "let event_type_out = svix.event_type().patch(\"event_type_name\", EventTypePatch {\n    schemas: Some(json!({\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"})),\n    feature_flag: Some(\"cool-new-feature\".to_string()),\n}).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var eventTypeOut = await svix.EventType.PartialUpdateAsync(\"event_type_name\", new EventTypePatch{\n    schemas: new {\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"},\n    featureFlag: \"cool-new-feature\"\n})"
+                        "source": "var eventTypeOut = await svix.EventType.PatchAsync(\"event_type_name\", new EventTypePatch{\n    schemas: new {\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"},\n    featureFlag: \"cool-new-feature\"\n})"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix event-type partial-update \"event_type_name\" '{\n    \"schemas\": {\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"},\n    \"featureFlag\": \"cool-new-feature\"\n}'"
+                        "source": "svix event-type patch \"event_type_name\" '{\n    \"schemas\": {\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"},\n    \"featureFlag\": \"cool-new-feature\"\n}'"
                     },
                     {
                         "label": "cURL",

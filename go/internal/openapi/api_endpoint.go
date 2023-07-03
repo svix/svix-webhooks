@@ -1397,7 +1397,7 @@ func (a *EndpointApiService) V1EndpointListExecute(r ApiV1EndpointListRequest) (
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiV1EndpointPartialUpdateRequest struct {
+type ApiV1EndpointPatchRequest struct {
 	ctx _context.Context
 	ApiService *EndpointApiService
 	appId string
@@ -1405,25 +1405,25 @@ type ApiV1EndpointPartialUpdateRequest struct {
 	endpointPatch *EndpointPatch
 }
 
-func (r ApiV1EndpointPartialUpdateRequest) EndpointPatch(endpointPatch EndpointPatch) ApiV1EndpointPartialUpdateRequest {
+func (r ApiV1EndpointPatchRequest) EndpointPatch(endpointPatch EndpointPatch) ApiV1EndpointPatchRequest {
 	r.endpointPatch = &endpointPatch
 	return r
 }
 
-func (r ApiV1EndpointPartialUpdateRequest) Execute() (EndpointOut, *_nethttp.Response, error) {
-	return r.ApiService.V1EndpointPartialUpdateExecute(r)
+func (r ApiV1EndpointPatchRequest) Execute() (EndpointOut, *_nethttp.Response, error) {
+	return r.ApiService.V1EndpointPatchExecute(r)
 }
 
 /*
- * V1EndpointPartialUpdate Patch Endpoint
+ * V1EndpointPatch Patch Endpoint
  * Partially update an endpoint.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param appId The app's ID or UID
  * @param endpointId The ep's ID or UID
- * @return ApiV1EndpointPartialUpdateRequest
+ * @return ApiV1EndpointPatchRequest
  */
-func (a *EndpointApiService) V1EndpointPartialUpdate(ctx _context.Context, appId string, endpointId string) ApiV1EndpointPartialUpdateRequest {
-	return ApiV1EndpointPartialUpdateRequest{
+func (a *EndpointApiService) V1EndpointPatch(ctx _context.Context, appId string, endpointId string) ApiV1EndpointPatchRequest {
+	return ApiV1EndpointPatchRequest{
 		ApiService: a,
 		ctx: ctx,
 		appId: appId,
@@ -1435,7 +1435,7 @@ func (a *EndpointApiService) V1EndpointPartialUpdate(ctx _context.Context, appId
  * Execute executes the request
  * @return EndpointOut
  */
-func (a *EndpointApiService) V1EndpointPartialUpdateExecute(r ApiV1EndpointPartialUpdateRequest) (EndpointOut, *_nethttp.Response, error) {
+func (a *EndpointApiService) V1EndpointPatchExecute(r ApiV1EndpointPatchRequest) (EndpointOut, *_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPatch
 		localVarPostBody     interface{}
@@ -1445,7 +1445,7 @@ func (a *EndpointApiService) V1EndpointPartialUpdateExecute(r ApiV1EndpointParti
 		localVarReturnValue  EndpointOut
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "EndpointApiService.V1EndpointPartialUpdate")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "EndpointApiService.V1EndpointPatch")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}

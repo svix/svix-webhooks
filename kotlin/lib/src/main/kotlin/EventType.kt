@@ -4,6 +4,7 @@ import com.svix.kotlin.exceptions.ApiException
 import com.svix.kotlin.internal.apis.EventTypeApi
 import com.svix.kotlin.models.EventTypeIn
 import com.svix.kotlin.models.EventTypeOut
+import com.svix.kotlin.models.EventTypePatch
 import com.svix.kotlin.models.EventTypeUpdate
 import com.svix.kotlin.models.ListResponseEventTypeOut
 
@@ -44,6 +45,14 @@ class EventType internal constructor(token: String, options: SvixOptions) {
     suspend fun update(eventTypeName: String, eventTypeUpdate: EventTypeUpdate): EventTypeOut {
         try {
             return api.v1EventTypeUpdate(eventTypeName, eventTypeUpdate)
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
+
+    suspend fun patch(eventTypeName: String, eventTypePatch: EventTypePatch): EventTypeOut {
+        try {
+            return api.v1EventTypePatch(eventTypeName, eventTypePatch)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }

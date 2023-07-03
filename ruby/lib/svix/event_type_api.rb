@@ -22,6 +22,10 @@ module Svix
       return @api.v1_event_type_update(event_type_name, event_type_update)
     end
 
+    def patch(event_type_name, event_type_patch)
+      return @api.v1_event_type_patch(event_type_name, event_type_patch)
+    end
+
     def delete(event_type_name)
       return @api.v1_event_type_delete(event_type_name)
     end

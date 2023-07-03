@@ -59,6 +59,9 @@ import {
   BackgroundTaskOut,
   ListResponseBackgroundTaskOut,
   BackgroundTasksApi,
+  ApplicationPatch,
+  EndpointPatch,
+  EventTypePatch,
 } from "./openapi/index";
 export * from "./openapi/models/all";
 export * from "./openapi/apis/exception";
@@ -253,6 +256,10 @@ class Application {
     return this.api.v1ApplicationUpdate({ appId, applicationIn });
   }
 
+  public patch(appId: string, applicationPatch: ApplicationPatch): Promise<ApplicationOut> {
+    return this.api.v1ApplicationPatch({ appId, applicationPatch });
+  }
+
   public delete(appId: string): Promise<void> {
     return this.api.v1ApplicationDelete({ appId });
   }
@@ -297,6 +304,18 @@ class Endpoint {
       appId,
       endpointId,
       endpointUpdate,
+    });
+  }
+
+  public patch(
+    appId: string,
+    endpointId: string,
+    endpointPatch: EndpointPatch
+  ): Promise<EndpointOut> {
+    return this.api.v1EndpointPatch({
+      appId,
+      endpointId,
+      endpointPatch,
     });
   }
 
@@ -456,6 +475,16 @@ class EventType {
     return this.api.v1EventTypeUpdate({
       eventTypeName,
       eventTypeUpdate,
+    });
+  }
+
+  public patch(
+    eventTypeName: string,
+    eventTypePatch: EventTypePatch
+  ): Promise<EventTypeOut> {
+    return this.api.v1EventTypePatch({
+      eventTypeName,
+      eventTypePatch,
     });
   }
 

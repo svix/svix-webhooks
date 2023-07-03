@@ -978,31 +978,31 @@ func (a *EventTypeApiService) V1EventTypeListExecute(r ApiV1EventTypeListRequest
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiV1EventTypePartialUpdateRequest struct {
+type ApiV1EventTypePatchRequest struct {
 	ctx _context.Context
 	ApiService *EventTypeApiService
 	eventTypeName string
 	eventTypePatch *EventTypePatch
 }
 
-func (r ApiV1EventTypePartialUpdateRequest) EventTypePatch(eventTypePatch EventTypePatch) ApiV1EventTypePartialUpdateRequest {
+func (r ApiV1EventTypePatchRequest) EventTypePatch(eventTypePatch EventTypePatch) ApiV1EventTypePatchRequest {
 	r.eventTypePatch = &eventTypePatch
 	return r
 }
 
-func (r ApiV1EventTypePartialUpdateRequest) Execute() (EventTypeOut, *_nethttp.Response, error) {
-	return r.ApiService.V1EventTypePartialUpdateExecute(r)
+func (r ApiV1EventTypePatchRequest) Execute() (EventTypeOut, *_nethttp.Response, error) {
+	return r.ApiService.V1EventTypePatchExecute(r)
 }
 
 /*
- * V1EventTypePartialUpdate Patch Event Type
+ * V1EventTypePatch Patch Event Type
  * Partially update an event type.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param eventTypeName The event type's name
- * @return ApiV1EventTypePartialUpdateRequest
+ * @return ApiV1EventTypePatchRequest
  */
-func (a *EventTypeApiService) V1EventTypePartialUpdate(ctx _context.Context, eventTypeName string) ApiV1EventTypePartialUpdateRequest {
-	return ApiV1EventTypePartialUpdateRequest{
+func (a *EventTypeApiService) V1EventTypePatch(ctx _context.Context, eventTypeName string) ApiV1EventTypePatchRequest {
+	return ApiV1EventTypePatchRequest{
 		ApiService: a,
 		ctx: ctx,
 		eventTypeName: eventTypeName,
@@ -1013,7 +1013,7 @@ func (a *EventTypeApiService) V1EventTypePartialUpdate(ctx _context.Context, eve
  * Execute executes the request
  * @return EventTypeOut
  */
-func (a *EventTypeApiService) V1EventTypePartialUpdateExecute(r ApiV1EventTypePartialUpdateRequest) (EventTypeOut, *_nethttp.Response, error) {
+func (a *EventTypeApiService) V1EventTypePatchExecute(r ApiV1EventTypePatchRequest) (EventTypeOut, *_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPatch
 		localVarPostBody     interface{}
@@ -1023,7 +1023,7 @@ func (a *EventTypeApiService) V1EventTypePartialUpdateExecute(r ApiV1EventTypePa
 		localVarReturnValue  EventTypeOut
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "EventTypeApiService.V1EventTypePartialUpdate")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "EventTypeApiService.V1EventTypePatch")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}

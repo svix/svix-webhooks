@@ -32,5 +32,10 @@ namespace Svix.Abstractions
 
         Task<ApplicationOut> UpdateAsync(string appId, ApplicationIn application, string idempotencyKey = default,
             CancellationToken cancellationToken = default);
+
+        ApplicationOut Patch(string appId, ApplicationPatch application, string idempotencyKey = default);
+
+        Task<ApplicationOut> PatchAsync(string appId, ApplicationPatch application, string idempotencyKey = default,
+            CancellationToken cancellationToken = default);
     }
 }
