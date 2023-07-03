@@ -10,6 +10,7 @@ anyhow = "1"
 clap = { version = "4.2.4", features = ["env", "derive"] }
 axum = { version = "0.6", features = ["macros"] }
 enum_dispatch = "0.3"
+envsubst = "0.2.1"
 http = "0.2"
 hyper = { version = "0.14", features = ["full"] }
 lazy_static = "1.4"
