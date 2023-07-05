@@ -12,6 +12,7 @@ type (
 	EndpointIn                openapi.EndpointIn
 	EndpointUpdate            openapi.EndpointUpdate
 	EndpointOut               openapi.EndpointOut
+	EndpointPatch             openapi.EndpointPatch
 	EndpointSecretOut         openapi.EndpointSecretOut
 	EndpointSecretRotateIn    openapi.EndpointSecretRotateIn
 	EndpointTransformationIn  openapi.EndpointTransformationIn
@@ -95,6 +96,17 @@ func (e *Endpoint) Get(ctx context.Context, appId string, endpointId string) (*E
 func (e *Endpoint) Update(ctx context.Context, appId string, endpointId string, endpointUpdate *EndpointUpdate) (*EndpointOut, error) {
 	req := e.api.EndpointApi.V1EndpointUpdate(ctx, appId, endpointId)
 	req = req.EndpointUpdate(openapi.EndpointUpdate(*endpointUpdate))
+	out, res, err := req.Execute()
+	if err != nil {
+		return nil, wrapError(err, res)
+	}
+	ret := EndpointOut(out)
+	return &ret, nil
+}
+
+func (e *Endpoint) Patch(ctx context.Context, appId string, endpointId string, endpointPatch *EndpointPatch) (*EndpointOut, error) {
+	req := e.api.EndpointApi.V1EndpointPatch(ctx, appId, endpointId)
+	req = req.EndpointPatch(openapi.EndpointPatch(*endpointPatch))
 	out, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)

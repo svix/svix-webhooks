@@ -10,6 +10,7 @@ type (
 	ListResponseApplicationOut openapi.ListResponseApplicationOut
 	ApplicationIn              openapi.ApplicationIn
 	ApplicationOut             openapi.ApplicationOut
+	ApplicationPatch           openapi.ApplicationPatch
 )
 
 type Application struct {
@@ -97,6 +98,17 @@ func (a *Application) Get(ctx context.Context, appId string) (*ApplicationOut, e
 func (a *Application) Update(ctx context.Context, appId string, applicationIn *ApplicationIn) (*ApplicationOut, error) {
 	req := a.api.ApplicationApi.V1ApplicationUpdate(ctx, appId)
 	req = req.ApplicationIn(openapi.ApplicationIn(*applicationIn))
+	resp, res, err := req.Execute()
+	if err != nil {
+		return nil, wrapError(err, res)
+	}
+	ret := ApplicationOut(resp)
+	return &ret, nil
+}
+
+func (a *Application) Patch(ctx context.Context, appId string, applicationPatch *ApplicationPatch) (*ApplicationOut, error) {
+	req := a.api.ApplicationApi.V1ApplicationPatch(ctx, appId)
+	req = req.ApplicationPatch(openapi.ApplicationPatch(*applicationPatch))
 	resp, res, err := req.Execute()
 	if err != nil {
 		return nil, wrapError(err, res)

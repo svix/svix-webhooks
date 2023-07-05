@@ -479,6 +479,52 @@ namespace Svix
             }
         }
 
+        public EndpointOut Patch(string appId, string endpointId, EndpointPatch endpoint, string idempotencyKey = default)
+        {
+            try
+            {
+                var lEndpoint = _endpointApi.V1EndpointPatch(
+                    appId,
+                    endpointId,
+                    endpoint);
+
+                return lEndpoint;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(Patch)} failed");
+
+                if (Throw)
+                    throw;
+
+                return null;
+            }
+        }
+
+        public async Task<EndpointOut> PatchAsync(string appId, string endpointId, EndpointPatch endpoint, string idempotencyKey = default,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var lEndpoint = await _endpointApi.V1EndpointPatchAsync(
+                    appId,
+                    endpointId,
+                    endpoint,
+                    cancellationToken);
+
+                return lEndpoint;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(PatchAsync)} failed");
+
+                if (Throw)
+                    throw;
+
+                return null;
+            }
+        }
+
         public bool UpdateHeaders(string appId, string endpointId, EndpointHeadersIn headers, string idempotencyKey = default)
         {
             try

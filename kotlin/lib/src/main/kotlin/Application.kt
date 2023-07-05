@@ -4,6 +4,7 @@ import com.svix.kotlin.exceptions.ApiException
 import com.svix.kotlin.internal.apis.ApplicationApi
 import com.svix.kotlin.models.ApplicationIn
 import com.svix.kotlin.models.ApplicationOut
+import com.svix.kotlin.models.ApplicationPatch
 import com.svix.kotlin.models.ListResponseApplicationOut
 
 class Application internal constructor(token: String, options: SvixOptions) {
@@ -51,6 +52,14 @@ class Application internal constructor(token: String, options: SvixOptions) {
     suspend fun update(appId: String, applicationIn: ApplicationIn): ApplicationOut {
         try {
             return api.v1ApplicationUpdate(appId, applicationIn)
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
+
+    suspend fun patch(appId: String, applicationPatch: ApplicationPatch): ApplicationOut {
+        try {
+            return api.v1ApplicationPatch(appId, applicationPatch)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }

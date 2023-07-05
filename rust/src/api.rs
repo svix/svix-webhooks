@@ -226,6 +226,22 @@ impl<'a> Application<'a> {
         .await?)
     }
 
+    pub async fn patch(
+        &self,
+        app_id: String,
+        application_patch: ApplicationPatch,
+        _: Option<PostOptions>,
+    ) -> Result<ApplicationOut> {
+        Ok(application_api::v1_application_patch(
+            self.cfg,
+            application_api::V1ApplicationPatchParams {
+                app_id,
+                application_patch,
+            },
+        )
+        .await?)
+    }
+
     pub async fn delete(&self, app_id: String) -> Result<()> {
         Ok(application_api::v1_application_delete(
             self.cfg,
@@ -321,6 +337,24 @@ impl<'a> Endpoint<'a> {
                 app_id,
                 endpoint_id,
                 endpoint_update,
+            },
+        )
+        .await?)
+    }
+
+    pub async fn patch(
+        &self,
+        app_id: String,
+        endpoint_id: String,
+        endpoint_patch: EndpointPatch,
+        _: Option<PostOptions>,
+    ) -> Result<EndpointOut> {
+        Ok(endpoint_api::v1_endpoint_patch(
+            self.cfg,
+            endpoint_api::V1EndpointPatchParams {
+                app_id,
+                endpoint_id,
+                endpoint_patch,
             },
         )
         .await?)
@@ -708,6 +742,22 @@ impl<'a> EventType<'a> {
             event_type_api::V1EventTypeUpdateParams {
                 event_type_name,
                 event_type_update,
+            },
+        )
+        .await?)
+    }
+
+    pub async fn patch(
+        &self,
+        event_type_name: String,
+        event_type_patch: EventTypePatch,
+        _: Option<PostOptions>,
+    ) -> Result<EventTypeOut> {
+        Ok(event_type_api::v1_event_type_patch(
+            self.cfg,
+            event_type_api::V1EventTypePatchParams {
+                event_type_name,
+                event_type_patch,
             },
         )
         .await?)

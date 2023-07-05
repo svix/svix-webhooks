@@ -58,6 +58,11 @@ namespace Svix.Abstractions
         Task<EndpointOut> UpdateAsync(string appId, string endpointId, EndpointUpdate endpoint, string idempotencyKey = default,
             CancellationToken cancellationToken = default);
 
+        EndpointOut Patch(string appId, string endpointId, EndpointPatch endpoint, string idempotencyKey = default);
+
+        Task<EndpointOut> PatchAsync(string appId, string endpointId, EndpointPatch endpoint, string idempotencyKey = default,
+            CancellationToken cancellationToken = default);
+
         bool UpdateHeaders(string appId, string endpointId, EndpointHeadersIn headers, string idempotencyKey = default);
 
         Task<bool> UpdateHeadersAsync(string appId, string endpointId, EndpointHeadersIn headers,

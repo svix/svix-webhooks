@@ -7,6 +7,7 @@ import com.svix.models.EndpointHeadersOut;
 import com.svix.models.EndpointHeadersPatchIn;
 import com.svix.models.EndpointIn;
 import com.svix.models.EndpointOut;
+import com.svix.models.EndpointPatch;
 import com.svix.models.EndpointUpdate;
 import com.svix.models.EndpointSecretOut;
 import com.svix.models.EndpointSecretRotateIn;
@@ -59,6 +60,15 @@ public final class Endpoint {
 			throws ApiException {
 		try {
 			return api.v1EndpointUpdate(appId, endpointId, endpointUpdate);
+		} catch (com.svix.internal.ApiException e) {
+			throw Utils.wrapInternalApiException(e);
+		}
+	}
+
+	public EndpointOut patch(final String appId, final String endpointId, final EndpointPatch endpointPatch)
+			throws ApiException {
+		try {
+			return api.v1EndpointPatch(appId, endpointId, endpointPatch);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}

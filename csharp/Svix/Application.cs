@@ -236,5 +236,48 @@ namespace Svix
                 return null;
             }
         }
+
+        public ApplicationOut Patch(string appId, ApplicationPatch application, string idempotencyKey = default)
+        {
+            try
+            {
+                var lApplication = _applicationApi.V1ApplicationPatch(
+                    appId,
+                    application);
+
+                return lApplication;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(Patch)} failed");
+
+                if (Throw)
+                    throw;
+
+                return null;
+            }
+        }
+
+        public async Task<ApplicationOut> PatchAsync(string appId, ApplicationPatch application, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var lApplication = await _applicationApi.V1ApplicationPatchAsync(
+                    appId,
+                    application,
+                    cancellationToken);
+
+                return lApplication;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(PatchAsync)} failed");
+
+                if (Throw)
+                    throw;
+
+                return null;
+            }
+        }
     }
 }

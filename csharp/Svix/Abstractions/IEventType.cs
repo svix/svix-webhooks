@@ -32,5 +32,10 @@ namespace Svix.Abstractions
 
         Task<EventTypeOut> UpdateAsync(string eventType, EventTypeUpdate update, string idempotencyKey = default,
             CancellationToken cancellationToken = default);
+
+        EventTypeOut Patch(string eventType, EventTypePatch update, string idempotencyKey = default);
+
+        Task<EventTypeOut> PatchAsync(string eventType, EventTypePatch update, string idempotencyKey = default,
+            CancellationToken cancellationToken = default);
     }
 }
