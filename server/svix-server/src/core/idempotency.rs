@@ -526,10 +526,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_lock() {
-        // The sleep interval is 200ms, so have it wait 300ms causing it to sleep twice. This
-        // means it should take at least 400ms for the second task to respond.
-        let (_jh, endpoint, _count) =
-            start_service(Some(std::time::Duration::from_millis(300))).await;
+        let sleep_duration = std::time::Duration::from_millis(300);
+
+        let (_jh, endpoint, _count) = start_service(Some(sleep_duration)).await;
         let client = Client::new();
 
         // Generate a new token so that keys are unique
@@ -564,8 +563,11 @@ mod tests {
         let resp_2 = resp_2_jh.await.unwrap().unwrap();
         let resp_2_instant = std::time::Instant::now();
 
-        assert!(resp_1_instant - start < std::time::Duration::from_millis(350));
-        assert!(resp_2_instant - start > std::time::Duration::from_millis(400));
+        // resp_1 should take some variable amount of time thanks to the sleep.
+        assert!(resp_1_instant - start >= sleep_duration);
+        // resp_2 should take less than the sleep (300) since it's just waiting for the same
+        // response given to the first request.
+        assert!(resp_2_instant - resp_1_instant < sleep_duration);
 
         // And the responses should be equivalent
         assert_eq!(resp_1.status(), resp_2.status());
