@@ -486,6 +486,7 @@
                         "type": "string"
                     },
                     "version": {
+                        "deprecated": true,
                         "example": 1,
                         "format": "uint16",
                         "minimum": 1,
@@ -732,6 +733,7 @@
                         "type": "string"
                     },
                     "version": {
+                        "deprecated": true,
                         "format": "uint16",
                         "minimum": 0,
                         "type": "integer"
@@ -884,6 +886,7 @@
                         "type": "string"
                     },
                     "version": {
+                        "deprecated": true,
                         "example": 1,
                         "format": "uint16",
                         "minimum": 1,

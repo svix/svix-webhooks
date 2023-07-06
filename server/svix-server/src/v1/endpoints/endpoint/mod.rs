@@ -213,6 +213,7 @@ impl EndpointIn {
 impl ModelIn for EndpointIn {
     type ActiveModel = endpoint::ActiveModel;
 
+    #[allow(deprecated)]
     fn update_model(self, model: &mut Self::ActiveModel) {
         let EndpointIn {
             description,
@@ -229,7 +230,7 @@ impl ModelIn for EndpointIn {
 
         model.description = Set(description);
         model.rate_limit = Set(rate_limit.map(|x| x.into()));
-        model.uid = Set(uid); ;ajsdkl;
+        model.uid = Set(uid);
         model.url = Set(url.into());
         model.version = Set(version.map(|x| x.into()));
         model.disabled = Set(disabled);
@@ -262,7 +263,7 @@ struct EndpointUpdate {
     #[validate(range(min = 1, message = "Endpoint versions must be at least one"))]
     #[serde(skip_serializing_if = "Option::is_none")]
     #[schemars(range(min = 1), example = "example_endpoint_version")]
-    #[allow(deprecated)]
+    #[deprecated]
     pub version: Option<u16>,
 
     #[serde(default)]
@@ -287,7 +288,8 @@ struct EndpointUpdate {
 
 impl ModelIn for EndpointUpdate {
     type ActiveModel = endpoint::ActiveModel;
-
+    
+    #[allow(deprecated)]
     fn update_model(self, model: &mut Self::ActiveModel) {
         let EndpointUpdate {
             description,
@@ -312,6 +314,7 @@ impl ModelIn for EndpointUpdate {
 }
 
 impl EndpointUpdate {
+    #[allow(deprecated)]
     pub fn into_in_with_default_key(self) -> EndpointIn {
         let EndpointUpdate {
             description,
@@ -363,7 +366,7 @@ pub struct EndpointPatch {
 
     #[validate(custom = "validate_minimum_version_patch")]
     #[serde(default)]
-    #[allow(deprecated)]
+    #[deprecated]
     pub version: UnrequiredField<u16>,
 
     #[serde(default)]
@@ -395,6 +398,7 @@ pub struct EndpointPatch {
 impl ModelIn for EndpointPatch {
     type ActiveModel = endpoint::ActiveModel;
 
+    #[allow(deprecated)]
     fn update_model(self, model: &mut Self::ActiveModel) {
         let EndpointPatch {
             description,
