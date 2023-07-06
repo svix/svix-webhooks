@@ -2,6 +2,7 @@ version: "3.7"
 services:
   postgres:
     image: postgres:13.4
+    command: postgres -c 'max_connections=500'
     volumes:
       - "postgres-data:/var/lib/postgresql/data/"
     environment:
