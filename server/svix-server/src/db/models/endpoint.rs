@@ -25,7 +25,7 @@ pub struct Model {
     pub url: String,
     pub description: String,
     pub event_types_ids: Option<EventTypeNameSet>,
-    pub version: i32,
+    pub version: Option<i32>,
     pub rate_limit: Option<i32>,
     pub deleted: bool,
     pub disabled: bool,

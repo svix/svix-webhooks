@@ -489,12 +489,12 @@
                         "example": 1,
                         "format": "uint16",
                         "minimum": 1,
+                        "nullable": true,
                         "type": "integer"
                     }
                 },
                 "required": [
-                    "url",
-                    "version"
+                    "url"
                 ],
                 "type": "object"
             },
@@ -656,6 +656,7 @@
                         "example": 1,
                         "format": "uint16",
                         "minimum": 1,
+                        "nullable": true,
                         "type": "integer"
                     }
                 },
@@ -665,8 +666,7 @@
                     "id",
                     "metadata",
                     "updatedAt",
-                    "url",
-                    "version"
+                    "url"
                 ],
                 "type": "object"
             },
@@ -887,12 +887,12 @@
                         "example": 1,
                         "format": "uint16",
                         "minimum": 1,
+                        "nullable": true,
                         "type": "integer"
                     }
                 },
                 "required": [
-                    "url",
-                    "version"
+                    "url"
                 ],
                 "type": "object"
             },
@@ -1805,6 +1805,7 @@
                         "example": 1,
                         "format": "uint16",
                         "minimum": 1,
+                        "nullable": true,
                         "type": "integer"
                     }
                 },
@@ -1814,8 +1815,7 @@
                     "id",
                     "status",
                     "updatedAt",
-                    "url",
-                    "version"
+                    "url"
                 ],
                 "type": "object"
             },

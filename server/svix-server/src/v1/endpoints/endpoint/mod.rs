@@ -162,9 +162,13 @@ pub struct EndpointIn {
     #[validate(custom = "validate_url")]
     #[schemars(url, length(min = 1, max = 65_536), example = "example_endpoint_url")]
     pub url: Url,
+    
     #[validate(range(min = 1, message = "Endpoint versions must be at least one"))]
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[schemars(range(min = 1), example = "example_endpoint_version")]
-    pub version: u16,
+    #[deprecated]
+    pub version: Option<u16>,
+    
     #[serde(default)]
     #[schemars(example = "endpoint_disabled_default")]
     pub disabled: bool,
@@ -225,9 +229,9 @@ impl ModelIn for EndpointIn {
 
         model.description = Set(description);
         model.rate_limit = Set(rate_limit.map(|x| x.into()));
-        model.uid = Set(uid);
+        model.uid = Set(uid); ;ajsdkl;
         model.url = Set(url.into());
-        model.version = Set(version.into());
+        model.version = Set(version.map(|x| x.into()));
         model.disabled = Set(disabled);
         model.event_types_ids = Set(event_types_ids);
         model.channels = Set(channels);
@@ -256,8 +260,10 @@ struct EndpointUpdate {
     pub url: Url,
 
     #[validate(range(min = 1, message = "Endpoint versions must be at least one"))]
-    #[schemars(example = "example_endpoint_version")]
-    pub version: u16,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[schemars(range(min = 1), example = "example_endpoint_version")]
+    #[allow(deprecated)]
+    pub version: Option<u16>,
 
     #[serde(default)]
     #[schemars(example = "endpoint_disabled_default")]
@@ -288,7 +294,7 @@ impl ModelIn for EndpointUpdate {
             rate_limit,
             uid,
             url,
-            version,
+            version: _,
             disabled,
             event_types_ids,
             channels,
@@ -299,7 +305,6 @@ impl ModelIn for EndpointUpdate {
         model.rate_limit = Set(rate_limit.map(|x| x.into()));
         model.uid = Set(uid);
         model.url = Set(url.into());
-        model.version = Set(version.into());
         model.disabled = Set(disabled);
         model.event_types_ids = Set(event_types_ids);
         model.channels = Set(channels);
@@ -358,6 +363,7 @@ pub struct EndpointPatch {
 
     #[validate(custom = "validate_minimum_version_patch")]
     #[serde(default)]
+    #[allow(deprecated)]
     pub version: UnrequiredField<u16>,
 
     #[serde(default)]
@@ -395,7 +401,7 @@ impl ModelIn for EndpointPatch {
             rate_limit,
             uid,
             url,
-            version,
+            version: _,
             disabled,
             event_types_ids,
             channels,
@@ -410,7 +416,6 @@ impl ModelIn for EndpointPatch {
         patch_field_nullable!(model, rate_limit, map);
         patch_field_nullable!(model, uid);
         patch_field_non_nullable!(model, url);
-        patch_field_non_nullable!(model, version, map);
         patch_field_non_nullable!(model, disabled);
         patch_field_nullable!(model, event_types_ids);
         patch_field_nullable!(model, channels);
@@ -464,7 +469,7 @@ pub struct EndpointOutCommon {
     #[schemars(url, length(min = 1, max = 65_536), example = "example_endpoint_url")]
     pub url: String,
     #[schemars(range(min = 1), example = "example_endpoint_version")]
-    pub version: u16,
+    pub version: Option<u16>,
     #[schemars(
         example = "endpoint_disabled_default",
         default = "endpoint_disabled_default"
@@ -487,7 +492,7 @@ impl From<endpoint::Model> for EndpointOutCommon {
             rate_limit: model.rate_limit.map(|x| x as u16),
             uid: model.uid,
             url: model.url,
-            version: model.version as u16,
+            version: model.version.map(|x| x as u16),
             disabled: model.disabled,
             event_types_ids: model.event_types_ids,
             channels: model.channels,
@@ -957,6 +962,16 @@ mod tests {
         }))
         .unwrap();
         valid.validate().unwrap();
+
+        let valid: EndpointIn = serde_json::from_value(json!({
+            "url": URL_VALID,
+            "rateLimit": RATE_LIMIT_VALID,
+            "uid": ENDPOINT_ID_VALID,
+            "filterTypes": EVENT_TYPES_VALID,
+            "channels": EVENT_CHANNELS_VALID
+       }))
+       .unwrap();
+       valid.validate().unwrap();
     }
 
     #[test]
