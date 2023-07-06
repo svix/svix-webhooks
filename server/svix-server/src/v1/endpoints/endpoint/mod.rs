@@ -162,13 +162,13 @@ pub struct EndpointIn {
     #[validate(custom = "validate_url")]
     #[schemars(url, length(min = 1, max = 65_536), example = "example_endpoint_url")]
     pub url: Url,
-    
+
     #[validate(range(min = 1, message = "Endpoint versions must be at least one"))]
     #[serde(skip_serializing_if = "Option::is_none")]
     #[schemars(range(min = 1), example = "example_endpoint_version")]
     #[deprecated]
     pub version: Option<u16>,
-    
+
     #[serde(default)]
     #[schemars(example = "endpoint_disabled_default")]
     pub disabled: bool,
@@ -288,7 +288,7 @@ struct EndpointUpdate {
 
 impl ModelIn for EndpointUpdate {
     type ActiveModel = endpoint::ActiveModel;
-    
+
     #[allow(deprecated)]
     fn update_model(self, model: &mut Self::ActiveModel) {
         let EndpointUpdate {
@@ -968,14 +968,14 @@ mod tests {
         valid.validate().unwrap();
 
         let valid: EndpointIn = serde_json::from_value(json!({
-            "url": URL_VALID,
-            "rateLimit": RATE_LIMIT_VALID,
-            "uid": ENDPOINT_ID_VALID,
-            "filterTypes": EVENT_TYPES_VALID,
-            "channels": EVENT_CHANNELS_VALID
-       }))
-       .unwrap();
-       valid.validate().unwrap();
+             "url": URL_VALID,
+             "rateLimit": RATE_LIMIT_VALID,
+             "uid": ENDPOINT_ID_VALID,
+             "filterTypes": EVENT_TYPES_VALID,
+             "channels": EVENT_CHANNELS_VALID
+        }))
+        .unwrap();
+        valid.validate().unwrap();
     }
 
     #[test]
