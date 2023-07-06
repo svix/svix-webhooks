@@ -4152,6 +4152,22 @@
                             "type": "string"
                         },
                         "style": "simple"
+                    },
+                    {
+                        "in": "query",
+                        "name": "event_types",
+                        "schema": {
+                            "items": {
+                                "example": "user.signup",
+                                "maxLength": 256,
+                                "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                                "type": "string"
+                            },
+                            "nullable": true,
+                            "type": "array",
+                            "uniqueItems": true
+                        },
+                        "style": "form"
                     }
                 ],
                 "responses": {
