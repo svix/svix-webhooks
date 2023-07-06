@@ -52,7 +52,7 @@ enum SerializedResponse {
     },
 }
 
-kv_def!(IdempotencyKey, SerializedResponse, "SVIX_IDEMPOTENCY_CACHE");
+kv_def!(IdempotencyKey, SerializedResponse);
 
 impl IdempotencyKey {
     fn new(auth_token: &str, key: &str, url: &str) -> IdempotencyKey {
@@ -65,6 +65,7 @@ impl IdempotencyKey {
         hasher.update(url);
 
         let res = hasher.finalize();
+        // FIXME: add (previously omitted) prefix: `SVIX_IDEMPOTENCY_CACHE`
         IdempotencyKey(base64::encode(res))
     }
 }
