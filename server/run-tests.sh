@@ -9,6 +9,8 @@ export DATABASE_URL="postgresql://postgres:postgres@localhost:5432/postgres"
 export SVIX_JWT_SECRET="test value"
 export SVIX_LOG_LEVEL="info"
 export SVIX_WHITELIST_SUBNETS="[127.0.0.1/32]"
+export SVIX_DB_POOL_MAX_SIZE="500"
+export SVIX_REDIS_POOL_MAX_SIZE="10000"
 
 echo "*********** RUN 1 ***********"
 SVIX_QUEUE_TYPE="redis" \
