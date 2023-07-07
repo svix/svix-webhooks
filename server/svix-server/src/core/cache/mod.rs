@@ -38,10 +38,9 @@ pub enum Error {
 type Result<T> = std::result::Result<T, Error>;
 
 /// A valid key value for the cache -- usually just a wrapper around a [`String`]
-pub trait CacheKey: AsRef<str> + Send + Sync {
-    const PREFIX_CACHE: &'static str = "SVIX_CACHE";
-}
-/// Any (de)serializable structure usuable as a value in the cache -- it is associated with a
+pub trait CacheKey: AsRef<str> + Send + Sync {}
+
+/// Any (de)serializable structure usable as a value in the cache -- it is associated with a
 /// given key type to ensure type checking on creation or reading of values from the cache
 pub trait CacheValue: DeserializeOwned + Serialize + Send + Sync {
     type Key: CacheKey;
@@ -74,14 +73,6 @@ pub(crate) use kv_def_inner;
 /// A macro that creates a [`CacheKey`] and ties it to any value that implements
 /// [`DeserializeOwned`] and [`Serialize`]
 macro_rules! kv_def {
-    ($key_id:ident, $val_struct:ident, $lit_prefix:literal) => {
-        crate::core::cache::kv_def_inner!($key_id, $val_struct);
-
-        impl CacheKey for $key_id {
-            const PREFIX_CACHE: &'static str = $lit_prefix;
-        }
-    };
-
     ($key_id:ident, $val_struct:ident) => {
         crate::core::cache::kv_def_inner!($key_id, $val_struct);
 
@@ -115,14 +106,6 @@ pub(crate) use string_kv_def_inner;
 // Used downstream and for testing:
 #[allow(unused_macros)]
 macro_rules! string_kv_def {
-    ($key_id:ident, $val_struct:ident, $lit_prefix:literal) => {
-        crate::core::cache::string_kv_def_inner!($key_id, $val_struct);
-
-        impl CacheKey for $key_id {
-            const PREFIX_CACHE: &'static str = $lit_prefix;
-        }
-    };
-
     ($key_id:ident, $val_struct:ident) => {
         crate::core::cache::string_kv_def_inner!($key_id, $val_struct);
 
