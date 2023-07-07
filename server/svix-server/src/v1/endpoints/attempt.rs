@@ -177,6 +177,7 @@ async fn list_attempted_messages(
     }): ValidatedQuery<ListAttemptedMessagesQueryParams>,
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
+    EventTypesQueryParams(event_types): EventTypesQueryParams,
 ) -> Result<Json<ListResponse<EndpointMessageOut>>> {
     let PaginationLimit(limit) = pagination.limit;
     let endp = ctx!(
@@ -196,6 +197,10 @@ async fn list_attempted_messages(
 
     if let Some(status) = status {
         dests_and_msgs = dests_and_msgs.filter(messagedestination::Column::Status.eq(status));
+    }
+
+    if let Some(EventTypeNameSet(event_types)) = event_types {
+        dests_and_msgs = dests_and_msgs.filter(message::Column::EventType.is_in(event_types));
     }
 
     async fn _get_msg_dest_id(

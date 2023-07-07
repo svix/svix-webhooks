@@ -178,6 +178,43 @@ async fn test_list_attempted_messages() {
         .unwrap();
     assert_eq!(list_filtered.data.len(), 1);
     assert!(list_filtered.data[0].msg == msg_3);
+
+    // Test 'event_types' query parameter
+
+    let list_balloon_popped: ListResponse<EndpointMessageOut> = client
+        .get(
+            &format!("api/v1/app/{app_id}/endpoint/{endp_id_1}/msg/?event_types=balloon.popped",),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(list_balloon_popped.data.len(), 1);
+    assert!(list_balloon_popped.data[0].msg == msg_3);
+
+    let list_event_type: ListResponse<EndpointMessageOut> = client
+        .get(
+            &format!("api/v1/app/{app_id}/endpoint/{endp_id_1}/msg/?event_types=event.type",),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+    assert_eq!(list_event_type.data.len(), 2);
+    assert!(list_event_type.data.iter().any(|x| x.msg == msg_1));
+    assert!(list_event_type.data.iter().any(|x| x.msg == msg_2));
+
+    let list_both_event_types: ListResponse<EndpointMessageOut> = client
+        .get(
+            &format!("api/v1/app/{app_id}/endpoint/{endp_id_1}/msg/?event_types=event.type,balloon.popped",),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(list_both_event_types.data.len(), 3);
+    assert!(list_both_event_types.data.iter().any(|x| x.msg == msg_1));
+    assert!(list_both_event_types.data.iter().any(|x| x.msg == msg_2));
+    assert!(list_both_event_types.data.iter().any(|x| x.msg == msg_3));
 }
 
 #[tokio::test]
