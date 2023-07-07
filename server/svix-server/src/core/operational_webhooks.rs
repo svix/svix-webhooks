@@ -12,12 +12,13 @@ use serde::Serialize;
 use svix::api::{MessageIn, Svix, SvixOptions};
 
 use super::{
-    security::{generate_management_token, Keys},
+    security::generate_management_token,
     types::{
         ApplicationId, ApplicationUid, EndpointId, EndpointUid, MessageAttemptId, MessageId,
         MessageUid, OrganizationId,
     },
 };
+use crate::core::security::JwtSigningConfig;
 use crate::{
     db::models::{endpoint, messageattempt},
     error::{HttpError, Result},
@@ -107,13 +108,16 @@ pub enum OperationalWebhook {
 pub type OperationalWebhookSender = Arc<OperationalWebhookSenderInner>;
 
 pub struct OperationalWebhookSenderInner {
-    keys: Keys,
+    signing_config: JwtSigningConfig,
     url: Option<String>,
 }
 
 impl OperationalWebhookSenderInner {
-    pub fn new(keys: Keys, url: Option<String>) -> Arc<Self> {
-        Arc::new(Self { keys, url })
+    pub fn new(keys: JwtSigningConfig, url: Option<String>) -> Arc<Self> {
+        Arc::new(Self {
+            signing_config: keys,
+            url,
+        })
     }
 
     pub async fn send_operational_webhook(
@@ -126,8 +130,8 @@ impl OperationalWebhookSenderInner {
             None => return Ok(()),
         };
 
-        let op_webhook_token =
-            generate_management_token(&self.keys).expect("Error generating Svix Management token");
+        let op_webhook_token = generate_management_token(&self.signing_config)
+            .expect("Error generating Svix Management token");
         let svix_api = Svix::new(
             op_webhook_token,
             Some(SvixOptions {

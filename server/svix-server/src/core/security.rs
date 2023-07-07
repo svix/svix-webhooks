@@ -10,6 +10,7 @@ use axum::{
 
 use http::request::Parts;
 use jwt_simple::prelude::*;
+use serde::Deserializer;
 
 use validator::Validate;
 
@@ -74,7 +75,7 @@ pub async fn permissions_from_bearer(parts: &mut Parts, state: &AppState) -> Res
     let TypedHeader(Authorization(bearer)) =
         ctx!(TypedHeader::<Authorization<Bearer>>::from_request_parts(parts, state).await)?;
 
-    let claims = parse_bearer(&state.cfg.jwt_secret, &bearer)
+    let claims = parse_bearer(&state.cfg.jwt_signing_config, &bearer)
         .ok_or_else(|| HttpError::unauthorized(None, Some("Invalid token".to_string())))?;
     let perms = permissions_from_jwt(claims)?;
 
@@ -86,10 +87,11 @@ pub async fn permissions_from_bearer(parts: &mut Parts, state: &AppState) -> Res
     Ok(perms)
 }
 
-pub fn parse_bearer(key: &Keys, bearer: &Bearer) -> Option<JWTClaims<CustomClaim>> {
-    key.key
-        .verify_token::<CustomClaim>(bearer.token(), None)
-        .ok()
+pub fn parse_bearer(
+    signing_config: &JwtSigningConfig,
+    bearer: &Bearer,
+) -> Option<JWTClaims<CustomClaim>> {
+    signing_config.verify_token(bearer.token(), None).ok()
 }
 
 pub fn permissions_from_jwt(claims: JWTClaims<CustomClaim>) -> Result<Permissions> {
@@ -147,7 +149,10 @@ pub fn permissions_from_jwt(claims: JWTClaims<CustomClaim>) -> Result<Permission
 
 const JWT_ISSUER: &str = env!("CARGO_PKG_NAME");
 
-pub fn generate_org_token(keys: &Keys, org_id: OrganizationId) -> Result<String> {
+pub fn generate_org_token(
+    signing_config: &JwtSigningConfig,
+    org_id: OrganizationId,
+) -> Result<String> {
     let claims = Claims::with_custom_claims(
         CustomClaim {
             organization: None,
@@ -157,10 +162,11 @@ pub fn generate_org_token(keys: &Keys, org_id: OrganizationId) -> Result<String>
     )
     .with_issuer(JWT_ISSUER)
     .with_subject(org_id.0);
-    Ok(keys.key.authenticate(claims).unwrap())
+
+    Ok(signing_config.generate(claims))
 }
 
-pub fn generate_management_token(keys: &Keys) -> Result<String> {
+pub fn generate_management_token(signing_config: &JwtSigningConfig) -> Result<String> {
     let claims = Claims::with_custom_claims(
         CustomClaim {
             organization: None,
@@ -170,11 +176,12 @@ pub fn generate_management_token(keys: &Keys) -> Result<String> {
     )
     .with_issuer(JWT_ISSUER)
     .with_subject(management_org_id());
-    Ok(keys.key.authenticate(claims).unwrap())
+
+    Ok(signing_config.generate(claims))
 }
 
 pub fn generate_app_token(
-    keys: &Keys,
+    keys: &JwtSigningConfig,
     org_id: OrganizationId,
     app_id: ApplicationId,
     feature_flags: FeatureFlagSet,
@@ -188,18 +195,80 @@ pub fn generate_app_token(
     )
     .with_issuer(JWT_ISSUER)
     .with_subject(app_id.0);
-    Ok(keys.key.authenticate(claims).unwrap())
+
+    Ok(keys.generate(claims))
 }
 
-#[derive(Clone, Debug)]
-pub struct Keys {
-    pub key: HS256Key,
+#[derive(Debug, Clone, Deserialize)]
+#[serde(untagged)]
+pub enum JwtSigningConfig {
+    Advanced(Advanced),
+    Default {
+        #[serde(deserialize_with = "deserialize_hs256")]
+        jwt_secret: HS256Key,
+    },
 }
 
-impl Keys {
-    pub fn new(secret: &[u8]) -> Self {
-        Self {
-            key: HS256Key::from_bytes(secret),
+#[derive(Debug, Clone, Deserialize)]
+#[serde(tag = "jwt_algorithm", content = "jwt_secret")]
+pub enum Advanced {
+    #[serde(deserialize_with = "deserialize_hs256")]
+    HS256(HS256Key),
+    #[serde(deserialize_with = "deserialize_hs384")]
+    HS384(HS384Key),
+    #[serde(deserialize_with = "deserialize_rs256")]
+    RS256(RS256KeyPair),
+}
+
+impl JwtSigningConfig {
+    pub fn generate(&self, claims: JWTClaims<CustomClaim>) -> String {
+        match self {
+            JwtSigningConfig::Advanced(a) => match a {
+                Advanced::HS256(key) => key.authenticate(claims).unwrap(),
+                Advanced::HS384(key) => key.authenticate(claims).unwrap(),
+                Advanced::RS256(key) => key.sign(claims).unwrap(),
+            },
+            JwtSigningConfig::Default { jwt_secret } => jwt_secret.authenticate(claims).unwrap(),
         }
     }
+
+    pub fn verify_token(
+        &self,
+        token: &str,
+        options: Option<VerificationOptions>,
+    ) -> std::result::Result<JWTClaims<CustomClaim>, jwt_simple::Error> {
+        match self {
+            JwtSigningConfig::Advanced(a) => match a {
+                Advanced::HS256(key) => key.verify_token(token, options),
+                Advanced::HS384(key) => key.verify_token(token, options),
+                Advanced::RS256(key) => key.public_key().verify_token(token, options),
+            },
+            JwtSigningConfig::Default { jwt_secret } => jwt_secret.verify_token(token, options),
+        }
+    }
+}
+
+fn deserialize_hs256<'de, D>(deserializer: D) -> std::result::Result<HS256Key, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    Ok(HS256Key::from_bytes(
+        String::deserialize(deserializer)?.as_bytes(),
+    ))
+}
+
+fn deserialize_hs384<'de, D>(deserializer: D) -> std::result::Result<HS384Key, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    Ok(HS384Key::from_bytes(
+        String::deserialize(deserializer)?.as_bytes(),
+    ))
+}
+
+fn deserialize_rs256<'de, D>(deserializer: D) -> std::result::Result<RS256KeyPair, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    Ok(RS256KeyPair::from_pem(&String::deserialize(deserializer)?).unwrap())
 }

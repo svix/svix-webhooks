@@ -1,28 +1,18 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use std::{borrow::Cow, collections::HashMap, net::SocketAddr, sync::Arc};
+use std::{borrow::Cow, collections::HashMap, net::SocketAddr, sync::Arc, time::Duration};
 
 use figment::{
     providers::{Env, Format, Toml},
     Figment,
 };
 use ipnet::IpNet;
-use std::time::Duration;
-
-use crate::{core::cryptography::Encryption, core::security::Keys, error::Result};
 use serde::{Deserialize, Deserializer};
 use tracing::Level;
 use validator::{Validate, ValidationError};
 
-fn deserialize_jwt_secret<'de, D>(deserializer: D) -> std::result::Result<Keys, D::Error>
-where
-    D: Deserializer<'de>,
-{
-    let buf = String::deserialize(deserializer)?;
-
-    Ok(Keys::new(buf.as_bytes()))
-}
+use crate::{core::cryptography::Encryption, core::security::JwtSigningConfig, error::Result};
 
 fn deserialize_main_secret<'de, D>(deserializer: D) -> std::result::Result<Encryption, D::Error>
 where
@@ -100,9 +90,9 @@ pub struct ConfigurationInner {
     )]
     pub encryption: Encryption,
 
-    /// The JWT secret for authentication - should be secret and securely generated
-    #[serde(deserialize_with = "deserialize_jwt_secret")]
-    pub jwt_secret: Keys,
+    /// Contains the secret and algorithm for signing JWTs
+    #[serde(flatten)]
+    pub jwt_signing_config: JwtSigningConfig,
 
     /// This determines the type of key that is generated for endpoint secrets by default (when none is set).
     /// Supported: hmac256 (default), ed25519

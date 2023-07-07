@@ -68,7 +68,7 @@ async fn app_portal_access(
     ValidatedJson(data): ValidatedJson<AppPortalAccessIn>,
 ) -> Result<Json<AppPortalAccessOut>> {
     let token = generate_app_token(
-        &cfg.jwt_secret,
+        &cfg.jwt_signing_config,
         app.org_id,
         app.id.clone(),
         data.feature_flags,
