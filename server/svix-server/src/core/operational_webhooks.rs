@@ -108,12 +108,12 @@ pub enum OperationalWebhook {
 pub type OperationalWebhookSender = Arc<OperationalWebhookSenderInner>;
 
 pub struct OperationalWebhookSenderInner {
-    signing_config: JwtSigningConfig,
+    signing_config: Arc<JwtSigningConfig>,
     url: Option<String>,
 }
 
 impl OperationalWebhookSenderInner {
-    pub fn new(keys: JwtSigningConfig, url: Option<String>) -> Arc<Self> {
+    pub fn new(keys: Arc<JwtSigningConfig>, url: Option<String>) -> Arc<Self> {
         Arc::new(Self {
             signing_config: keys,
             url,

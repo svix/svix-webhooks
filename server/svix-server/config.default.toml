@@ -18,6 +18,10 @@ listen_address = "0.0.0.0:8071"
 # The JWT secret for authentication - should be secret and securely generated
 # jwt_secret = "8KjzRXrKkd9YFcNyqLSIY8JwiaCeRc6WK4UkMnSW"
 
+# This determines the signature algorithm used when creating JWTs
+# Supported: HS256 (default), HS384, HS512, RS256, RS384, RS512, PS256, PS384, PS512, ES256, ES256K, EdDSA
+# jwt_algorithm = "HS256"
+
 # This determines the type of key that is generated for endpoint secrets by default (when none is set).
 # Supported: hmac256 (default), ed25519
 # Note: this does not affect existing keys, which will continue signing based on the type they were created with.

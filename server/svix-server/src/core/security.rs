@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use std::fmt::Debug;
+use std::fmt::{Debug, Formatter};
 
 use axum::{
     extract::{FromRequestParts, TypedHeader},
@@ -163,7 +163,7 @@ pub fn generate_org_token(
     .with_issuer(JWT_ISSUER)
     .with_subject(org_id.0);
 
-    Ok(signing_config.generate(claims))
+    Ok(signing_config.generate(claims).unwrap())
 }
 
 pub fn generate_management_token(signing_config: &JwtSigningConfig) -> Result<String> {
@@ -177,7 +177,7 @@ pub fn generate_management_token(signing_config: &JwtSigningConfig) -> Result<St
     .with_issuer(JWT_ISSUER)
     .with_subject(management_org_id());
 
-    Ok(signing_config.generate(claims))
+    Ok(signing_config.generate(claims).unwrap())
 }
 
 pub fn generate_app_token(
@@ -196,39 +196,71 @@ pub fn generate_app_token(
     .with_issuer(JWT_ISSUER)
     .with_subject(app_id.0);
 
-    Ok(keys.generate(claims))
+    Ok(keys.generate(claims).unwrap())
 }
-
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Deserialize)]
 #[serde(untagged)]
 pub enum JwtSigningConfig {
-    Advanced(Advanced),
+    /// Variants that specify both key and algorithm to use
+    Advanced(Box<JWTAlgorithm>),
+    /// The variant used when the algorithm is not specified, defaults to HS256
     Default {
         #[serde(deserialize_with = "deserialize_hs256")]
         jwt_secret: HS256Key,
     },
 }
 
-#[derive(Debug, Clone, Deserialize)]
+/// A wrapper for the available JWT signing algorithms exposed by `jwt-simple`
+#[derive(Deserialize)]
 #[serde(tag = "jwt_algorithm", content = "jwt_secret")]
-pub enum Advanced {
+pub enum JWTAlgorithm {
     #[serde(deserialize_with = "deserialize_hs256")]
     HS256(HS256Key),
     #[serde(deserialize_with = "deserialize_hs384")]
     HS384(HS384Key),
+    #[serde(deserialize_with = "deserialize_hs512")]
+    HS512(HS512Key),
     #[serde(deserialize_with = "deserialize_rs256")]
     RS256(RS256KeyPair),
+    #[serde(deserialize_with = "deserialize_rs384")]
+    RS384(RS384KeyPair),
+    #[serde(deserialize_with = "deserialize_rs512")]
+    RS512(RS512KeyPair),
+    #[serde(deserialize_with = "deserialize_ps256")]
+    PS256(PS256KeyPair),
+    #[serde(deserialize_with = "deserialize_ps384")]
+    PS384(PS384KeyPair),
+    #[serde(deserialize_with = "deserialize_ps512")]
+    PS512(PS512KeyPair),
+    #[serde(deserialize_with = "deserialize_es256")]
+    ES256(ES256KeyPair),
+    #[serde(deserialize_with = "deserialize_es256k")]
+    ES256K(ES256kKeyPair),
+    #[serde(deserialize_with = "deserialize_eddsa")]
+    EdDSA(Ed25519KeyPair),
 }
 
 impl JwtSigningConfig {
-    pub fn generate(&self, claims: JWTClaims<CustomClaim>) -> String {
+    pub fn generate(
+        &self,
+        claims: JWTClaims<CustomClaim>,
+    ) -> std::result::Result<String, jwt_simple::Error> {
         match self {
-            JwtSigningConfig::Advanced(a) => match a {
-                Advanced::HS256(key) => key.authenticate(claims).unwrap(),
-                Advanced::HS384(key) => key.authenticate(claims).unwrap(),
-                Advanced::RS256(key) => key.sign(claims).unwrap(),
+            JwtSigningConfig::Advanced(a) => match a.as_ref() {
+                JWTAlgorithm::HS256(key) => key.authenticate(claims),
+                JWTAlgorithm::HS384(key) => key.authenticate(claims),
+                JWTAlgorithm::HS512(key) => key.authenticate(claims),
+                JWTAlgorithm::RS256(key) => key.sign(claims),
+                JWTAlgorithm::RS384(key) => key.sign(claims),
+                JWTAlgorithm::RS512(key) => key.sign(claims),
+                JWTAlgorithm::PS256(key) => key.sign(claims),
+                JWTAlgorithm::PS384(key) => key.sign(claims),
+                JWTAlgorithm::PS512(key) => key.sign(claims),
+                JWTAlgorithm::ES256(key) => key.sign(claims),
+                JWTAlgorithm::ES256K(key) => key.sign(claims),
+                JWTAlgorithm::EdDSA(key) => key.sign(claims),
             },
-            JwtSigningConfig::Default { jwt_secret } => jwt_secret.authenticate(claims).unwrap(),
+            JwtSigningConfig::Default { jwt_secret } => jwt_secret.authenticate(claims),
         }
     }
 
@@ -238,13 +270,52 @@ impl JwtSigningConfig {
         options: Option<VerificationOptions>,
     ) -> std::result::Result<JWTClaims<CustomClaim>, jwt_simple::Error> {
         match self {
-            JwtSigningConfig::Advanced(a) => match a {
-                Advanced::HS256(key) => key.verify_token(token, options),
-                Advanced::HS384(key) => key.verify_token(token, options),
-                Advanced::RS256(key) => key.public_key().verify_token(token, options),
+            JwtSigningConfig::Advanced(a) => match a.as_ref() {
+                JWTAlgorithm::HS256(key) => key.verify_token(token, options),
+                JWTAlgorithm::HS384(key) => key.verify_token(token, options),
+                JWTAlgorithm::HS512(key) => key.verify_token(token, options),
+                JWTAlgorithm::RS256(key) => key.public_key().verify_token(token, options),
+                JWTAlgorithm::RS384(key) => key.public_key().verify_token(token, options),
+                JWTAlgorithm::RS512(key) => key.public_key().verify_token(token, options),
+                JWTAlgorithm::PS256(key) => key.public_key().verify_token(token, options),
+                JWTAlgorithm::PS384(key) => key.public_key().verify_token(token, options),
+                JWTAlgorithm::PS512(key) => key.public_key().verify_token(token, options),
+                JWTAlgorithm::ES256(key) => key.public_key().verify_token(token, options),
+                JWTAlgorithm::ES256K(key) => key.public_key().verify_token(token, options),
+                JWTAlgorithm::EdDSA(key) => key.public_key().verify_token(token, options),
             },
             JwtSigningConfig::Default { jwt_secret } => jwt_secret.verify_token(token, options),
         }
+    }
+}
+
+impl Debug for JwtSigningConfig {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                JwtSigningConfig::Advanced(a) => {
+                    match a.as_ref() {
+                        JWTAlgorithm::HS256(_) => "HS256",
+                        JWTAlgorithm::HS384(_) => "HS384",
+                        JWTAlgorithm::HS512(_) => "HS512",
+                        JWTAlgorithm::RS256(_) => "RS256",
+                        JWTAlgorithm::RS384(_) => "RS384",
+                        JWTAlgorithm::RS512(_) => "RS512",
+                        JWTAlgorithm::PS256(_) => "PS256",
+                        JWTAlgorithm::PS384(_) => "PS384",
+                        JWTAlgorithm::PS512(_) => "PS512",
+                        JWTAlgorithm::ES256(_) => "ES256",
+                        JWTAlgorithm::ES256K(_) => "ES256K",
+                        JWTAlgorithm::EdDSA(_) => "EdDSA",
+                    }
+                }
+                JwtSigningConfig::Default { .. } => {
+                    "HS256"
+                }
+            }
+        )
     }
 }
 
@@ -266,9 +337,74 @@ where
     ))
 }
 
+fn deserialize_hs512<'de, D>(deserializer: D) -> std::result::Result<HS512Key, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    Ok(HS512Key::from_bytes(
+        String::deserialize(deserializer)?.as_bytes(),
+    ))
+}
+
 fn deserialize_rs256<'de, D>(deserializer: D) -> std::result::Result<RS256KeyPair, D::Error>
 where
     D: Deserializer<'de>,
 {
     Ok(RS256KeyPair::from_pem(&String::deserialize(deserializer)?).unwrap())
+}
+
+fn deserialize_rs384<'de, D>(deserializer: D) -> std::result::Result<RS384KeyPair, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    Ok(RS384KeyPair::from_pem(&String::deserialize(deserializer)?).unwrap())
+}
+
+fn deserialize_rs512<'de, D>(deserializer: D) -> std::result::Result<RS512KeyPair, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    Ok(RS512KeyPair::from_pem(&String::deserialize(deserializer)?).unwrap())
+}
+
+fn deserialize_ps256<'de, D>(deserializer: D) -> std::result::Result<PS256KeyPair, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    Ok(PS256KeyPair::from_pem(&String::deserialize(deserializer)?).unwrap())
+}
+
+fn deserialize_ps384<'de, D>(deserializer: D) -> std::result::Result<PS384KeyPair, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    Ok(PS384KeyPair::from_pem(&String::deserialize(deserializer)?).unwrap())
+}
+
+fn deserialize_ps512<'de, D>(deserializer: D) -> std::result::Result<PS512KeyPair, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    Ok(PS512KeyPair::from_pem(&String::deserialize(deserializer)?).unwrap())
+}
+
+fn deserialize_es256<'de, D>(deserializer: D) -> std::result::Result<ES256KeyPair, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    Ok(ES256KeyPair::from_pem(&String::deserialize(deserializer)?).unwrap())
+}
+
+fn deserialize_es256k<'de, D>(deserializer: D) -> std::result::Result<ES256kKeyPair, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    Ok(ES256kKeyPair::from_pem(&String::deserialize(deserializer)?).unwrap())
+}
+
+fn deserialize_eddsa<'de, D>(deserializer: D) -> std::result::Result<Ed25519KeyPair, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    Ok(Ed25519KeyPair::from_pem(&String::deserialize(deserializer)?).unwrap())
 }

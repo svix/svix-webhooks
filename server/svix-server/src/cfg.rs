@@ -92,7 +92,7 @@ pub struct ConfigurationInner {
 
     /// Contains the secret and algorithm for signing JWTs
     #[serde(flatten)]
-    pub jwt_signing_config: JwtSigningConfig,
+    pub jwt_signing_config: Arc<JwtSigningConfig>,
 
     /// This determines the type of key that is generated for endpoint secrets by default (when none is set).
     /// Supported: hmac256 (default), ed25519
