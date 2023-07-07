@@ -294,7 +294,7 @@ impl ModelIn for EndpointUpdate {
             rate_limit,
             uid,
             url,
-            version: _,
+            version,
             disabled,
             event_types_ids,
             channels,
@@ -305,6 +305,7 @@ impl ModelIn for EndpointUpdate {
         model.rate_limit = Set(rate_limit.map(|x| x.into()));
         model.uid = Set(uid);
         model.url = Set(url.into());
+        model.version = Set(version.map(|x| x.into()));
         model.disabled = Set(disabled);
         model.event_types_ids = Set(event_types_ids);
         model.channels = Set(channels);
@@ -402,7 +403,7 @@ impl ModelIn for EndpointPatch {
             rate_limit,
             uid,
             url,
-            version: _,
+            version,
             disabled,
             event_types_ids,
             channels,
@@ -417,6 +418,7 @@ impl ModelIn for EndpointPatch {
         patch_field_nullable!(model, rate_limit, map);
         patch_field_nullable!(model, uid);
         patch_field_non_nullable!(model, url);
+        patch_field_non_nullable!(model, version);
         patch_field_non_nullable!(model, disabled);
         patch_field_nullable!(model, event_types_ids);
         patch_field_nullable!(model, channels);
