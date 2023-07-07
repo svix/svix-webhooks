@@ -119,6 +119,17 @@ fn validate_url_unrequired(val: &UnrequiredField<Url>) -> std::result::Result<()
     }
 }
 
+fn validate_version(version: &u16) -> std::result::Result<(), ValidationError> {
+    if *version >= 1 {
+        Ok(())
+    } else {
+        Err(validation_error(
+            Some("version"),
+            Some("Endpoint version must be at least 1 if set"),
+        ))
+    }
+}
+
 fn example_channel_set() -> Vec<&'static str> {
     vec!["project_123", "group_2"]
 }
@@ -137,6 +148,10 @@ fn endpoint_disabled_default() -> bool {
 
 fn example_endpoint_url() -> &'static str {
     "https://example.com/webhook/"
+}
+
+fn endpoint_version_default() -> Option<u16> {
+    Some(1)
 }
 
 fn example_endpoint_version() -> u16 {
@@ -164,8 +179,9 @@ pub struct EndpointIn {
     pub url: Url,
 
     #[deprecated]
-    #[serde(skip_serializing_if = "Option::is_none")]
     #[schemars(range(min = 1), example = "example_endpoint_version")]
+    #[serde(default = "endpoint_version_default")]
+    #[validate(custom = "validate_version")]
     pub version: Option<u16>,
 
     #[serde(default)]
@@ -412,13 +428,14 @@ impl ModelIn for EndpointPatch {
         } = self;
 
         let map = |x: u16| -> i32 { x.into() };
+        let map_optional = |x: u16| -> Option<i32> { Some(x.into()) };
         let url = url.map(String::from);
 
         patch_field_non_nullable!(model, description);
         patch_field_nullable!(model, rate_limit, map);
         patch_field_nullable!(model, uid);
         patch_field_non_nullable!(model, url);
-        patch_field_non_nullable!(model, version);
+        patch_field_non_nullable!(model, version, map_optional);
         patch_field_non_nullable!(model, disabled);
         patch_field_nullable!(model, event_types_ids);
         patch_field_nullable!(model, channels);
