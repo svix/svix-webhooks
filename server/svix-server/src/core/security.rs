@@ -226,16 +226,6 @@ pub enum JWTAlgorithm {
     RS384(RS384KeyPair),
     #[serde(deserialize_with = "deserialize_rs512")]
     RS512(RS512KeyPair),
-    #[serde(deserialize_with = "deserialize_ps256")]
-    PS256(PS256KeyPair),
-    #[serde(deserialize_with = "deserialize_ps384")]
-    PS384(PS384KeyPair),
-    #[serde(deserialize_with = "deserialize_ps512")]
-    PS512(PS512KeyPair),
-    #[serde(deserialize_with = "deserialize_es256")]
-    ES256(ES256KeyPair),
-    #[serde(deserialize_with = "deserialize_es256k")]
-    ES256K(ES256kKeyPair),
     #[serde(deserialize_with = "deserialize_eddsa")]
     EdDSA(Ed25519KeyPair),
 }
@@ -253,11 +243,6 @@ impl JwtSigningConfig {
                 JWTAlgorithm::RS256(key) => key.sign(claims),
                 JWTAlgorithm::RS384(key) => key.sign(claims),
                 JWTAlgorithm::RS512(key) => key.sign(claims),
-                JWTAlgorithm::PS256(key) => key.sign(claims),
-                JWTAlgorithm::PS384(key) => key.sign(claims),
-                JWTAlgorithm::PS512(key) => key.sign(claims),
-                JWTAlgorithm::ES256(key) => key.sign(claims),
-                JWTAlgorithm::ES256K(key) => key.sign(claims),
                 JWTAlgorithm::EdDSA(key) => key.sign(claims),
             },
             JwtSigningConfig::Default { jwt_secret } => jwt_secret.authenticate(claims),
@@ -277,11 +262,6 @@ impl JwtSigningConfig {
                 JWTAlgorithm::RS256(key) => key.public_key().verify_token(token, options),
                 JWTAlgorithm::RS384(key) => key.public_key().verify_token(token, options),
                 JWTAlgorithm::RS512(key) => key.public_key().verify_token(token, options),
-                JWTAlgorithm::PS256(key) => key.public_key().verify_token(token, options),
-                JWTAlgorithm::PS384(key) => key.public_key().verify_token(token, options),
-                JWTAlgorithm::PS512(key) => key.public_key().verify_token(token, options),
-                JWTAlgorithm::ES256(key) => key.public_key().verify_token(token, options),
-                JWTAlgorithm::ES256K(key) => key.public_key().verify_token(token, options),
                 JWTAlgorithm::EdDSA(key) => key.public_key().verify_token(token, options),
             },
             JwtSigningConfig::Default { jwt_secret } => jwt_secret.verify_token(token, options),
@@ -303,11 +283,6 @@ impl Debug for JwtSigningConfig {
                         JWTAlgorithm::RS256(_) => "RS256",
                         JWTAlgorithm::RS384(_) => "RS384",
                         JWTAlgorithm::RS512(_) => "RS512",
-                        JWTAlgorithm::PS256(_) => "PS256",
-                        JWTAlgorithm::PS384(_) => "PS384",
-                        JWTAlgorithm::PS512(_) => "PS512",
-                        JWTAlgorithm::ES256(_) => "ES256",
-                        JWTAlgorithm::ES256K(_) => "ES256K",
                         JWTAlgorithm::EdDSA(_) => "EdDSA",
                     }
                 }
@@ -365,41 +340,6 @@ where
     D: Deserializer<'de>,
 {
     Ok(RS512KeyPair::from_pem(&String::deserialize(deserializer)?).unwrap())
-}
-
-fn deserialize_ps256<'de, D>(deserializer: D) -> std::result::Result<PS256KeyPair, D::Error>
-where
-    D: Deserializer<'de>,
-{
-    Ok(PS256KeyPair::from_pem(&String::deserialize(deserializer)?).unwrap())
-}
-
-fn deserialize_ps384<'de, D>(deserializer: D) -> std::result::Result<PS384KeyPair, D::Error>
-where
-    D: Deserializer<'de>,
-{
-    Ok(PS384KeyPair::from_pem(&String::deserialize(deserializer)?).unwrap())
-}
-
-fn deserialize_ps512<'de, D>(deserializer: D) -> std::result::Result<PS512KeyPair, D::Error>
-where
-    D: Deserializer<'de>,
-{
-    Ok(PS512KeyPair::from_pem(&String::deserialize(deserializer)?).unwrap())
-}
-
-fn deserialize_es256<'de, D>(deserializer: D) -> std::result::Result<ES256KeyPair, D::Error>
-where
-    D: Deserializer<'de>,
-{
-    Ok(ES256KeyPair::from_pem(&String::deserialize(deserializer)?).unwrap())
-}
-
-fn deserialize_es256k<'de, D>(deserializer: D) -> std::result::Result<ES256kKeyPair, D::Error>
-where
-    D: Deserializer<'de>,
-{
-    Ok(ES256kKeyPair::from_pem(&String::deserialize(deserializer)?).unwrap())
 }
 
 fn deserialize_eddsa<'de, D>(deserializer: D) -> std::result::Result<Ed25519KeyPair, D::Error>
