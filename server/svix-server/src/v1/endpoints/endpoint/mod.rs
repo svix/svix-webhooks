@@ -163,10 +163,9 @@ pub struct EndpointIn {
     #[schemars(url, length(min = 1, max = 65_536), example = "example_endpoint_url")]
     pub url: Url,
 
-    #[validate(range(min = 1, message = "Endpoint versions must be at least one"))]
+    #[deprecated]
     #[serde(skip_serializing_if = "Option::is_none")]
     #[schemars(range(min = 1), example = "example_endpoint_version")]
-    #[deprecated]
     pub version: Option<u16>,
 
     #[serde(default)]
@@ -260,10 +259,9 @@ struct EndpointUpdate {
     #[schemars(url, length(min = 1, max = 65_536), example = "example_endpoint_url")]
     pub url: Url,
 
-    #[validate(range(min = 1, message = "Endpoint versions must be at least one"))]
+    #[deprecated]
     #[serde(skip_serializing_if = "Option::is_none")]
     #[schemars(range(min = 1), example = "example_endpoint_version")]
-    #[deprecated]
     pub version: Option<u16>,
 
     #[serde(default)]
@@ -364,7 +362,6 @@ pub struct EndpointPatch {
     #[serde(default)]
     pub url: UnrequiredField<Url>,
 
-    #[validate(custom = "validate_minimum_version_patch")]
     #[serde(default)]
     #[deprecated]
     pub version: UnrequiredField<u16>,
@@ -439,24 +436,6 @@ fn validate_rate_limit_patch(
                     Some("range"),
                     Some("Endpoint rate limits must be at least 1 if set"),
                 ))
-            }
-        }
-    }
-}
-
-fn validate_minimum_version_patch(
-    version: &UnrequiredField<u16>,
-) -> std::result::Result<(), ValidationError> {
-    match version {
-        UnrequiredField::Absent => Ok(()),
-        UnrequiredField::Some(version) => {
-            if *version == 0 {
-                Err(validation_error(
-                    Some("range"),
-                    Some("Endpoint versions must be at least one"),
-                ))
-            } else {
-                Ok(())
             }
         }
     }

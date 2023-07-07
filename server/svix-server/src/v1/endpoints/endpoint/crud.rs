@@ -78,6 +78,7 @@ async fn create_endp_from_data(
     app: application::Model,
     mut data: EndpointIn,
 ) -> Result<(endpoint::Model, endpointmetadata::Model)> {
+    println!("{:?}", data);
     let key = data.key_take_or_generate(&cfg.encryption, &cfg.default_signature_type)?;
 
     let mut endp = endpoint::ActiveModel::new(app.id, key);
