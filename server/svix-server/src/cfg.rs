@@ -370,6 +370,7 @@ pub fn load() -> Result<Arc<ConfigurationInner>> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::core::security::JWTAlgorithm;
 
     #[test]
     fn test_retry_schedule_parsing() {
@@ -438,5 +439,37 @@ mod tests {
         // Assert that the queue_dsn and cache_dsn overwrite the `redis_dsn`
         assert_eq!(cfg.queue_backend(), QueueBackend::Redis("test_a"));
         assert_eq!(cfg.cache_backend(), CacheBackend::Redis("test_b"));
+    }
+
+    #[test]
+    fn test_jwt_signing_fallback() {
+        let raw_config = r#"
+jwt_secret = "not_actually_a_secret"
+        "#;
+
+        let actual: JwtSigningConfig = Figment::new()
+            .merge(Toml::string(raw_config))
+            .extract()
+            .unwrap();
+
+        assert!(matches!(actual, JwtSigningConfig::Default { .. }));
+    }
+
+    #[test]
+    fn test_jwt_select_algorithm() {
+        let raw_config = r#"
+jwt_secret = "not_actually_a_secret"
+jwt_algorithm = "HS512"
+        "#;
+
+        let actual: JwtSigningConfig = Figment::new()
+            .merge(Toml::string(raw_config))
+            .extract()
+            .unwrap();
+
+        assert!(matches!(actual, JwtSigningConfig::Advanced(_)));
+        if let JwtSigningConfig::Advanced(algo) = actual {
+            assert!(matches!(*algo, JWTAlgorithm::HS512(_)))
+        }
     }
 }
