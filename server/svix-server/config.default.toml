@@ -1,5 +1,5 @@
 # Default configuration file
-# Values here can also be set by setting the appropriate env var, e.g. SVIX_DB_DSN for db_dsnk
+# Values here can also be set by setting the appropriate env var, e.g. SVIX_DB_DSN for db_dsn
 # The values shown below are the default values. Values commented out are not set but recommended.
 
 # The address to listen on
