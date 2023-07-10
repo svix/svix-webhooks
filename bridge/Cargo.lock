@@ -3138,7 +3138,7 @@ dependencies = [
 
 [[package]]
 name = "svix-bridge"
-version = "1.5.2"
+version = "1.6.0"
 dependencies = [
  "anyhow",
  "axum",
