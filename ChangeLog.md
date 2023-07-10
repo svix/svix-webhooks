@@ -3,6 +3,10 @@
 ## Next
 * 
 
+## Version 1.6.0
+* Server: add 'event_types' query param to 'list-attempted-messages'
+* Libs: implement the `patch` endpoints for partial updates
+
 ## Version 1.5.2
 * Libs/JavaScript: Fix regression in previous release and allow passing `Buffer` to sign/verify.
 
