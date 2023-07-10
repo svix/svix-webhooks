@@ -1,5 +1,5 @@
 # Base build
-FROM rust:1.69-slim-bullseye AS build
+FROM rust:1.70-slim-bullseye AS build
 
 RUN apt-get update && apt-get install -y \
     build-essential=12.* \
