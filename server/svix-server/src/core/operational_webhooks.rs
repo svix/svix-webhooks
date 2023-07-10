@@ -21,7 +21,8 @@ use super::{
 use crate::core::security::JwtSigningConfig;
 use crate::{
     db::models::{endpoint, messageattempt},
-    error::{HttpError, Result},
+    error::{Error, HttpError, Result},
+    location,
 };
 
 /// Sent when an endpoint has been automatically disabled after continuous failures.
@@ -131,7 +132,7 @@ impl OperationalWebhookSenderInner {
         };
 
         let op_webhook_token = generate_management_token(&self.signing_config)
-            .expect("Error generating Svix Management token");
+            .map_err(|e| Error::generic(e, location!()))?;
         let svix_api = Svix::new(
             op_webhook_token,
             Some(SvixOptions {

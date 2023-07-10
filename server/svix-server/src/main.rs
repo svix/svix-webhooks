@@ -143,10 +143,11 @@ async fn main() {
             command: JwtCommands::Generate { org_id },
         }) => {
             let org_id = org_id.unwrap_or_else(default_org_id);
-            let token = generate_org_token(&cfg.jwt_signing_config, org_id)
-                .expect("Error generating token");
-            println!("Token (Bearer): {token}");
-            exit(0);
+            match generate_org_token(&cfg.jwt_signing_config, org_id) {
+                Ok(token) => println!("Token (Bearer): {token}"),
+                Err(e) => tracing::error!("Error generating token: {e}"),
+            }
+            return;
         }
         Some(Commands::AsymmetricKey { command }) => match command {
             AsymmetricKeyCommands::Generate => {
