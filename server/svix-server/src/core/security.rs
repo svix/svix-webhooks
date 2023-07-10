@@ -14,10 +14,11 @@ use serde::Deserializer;
 
 use validator::Validate;
 
+use crate::error::Error;
 use crate::{
     ctx,
     error::{HttpError, Result},
-    AppState,
+    location, AppState,
 };
 
 use super::types::{ApplicationId, FeatureFlagSet, OrganizationId};
@@ -163,7 +164,9 @@ pub fn generate_org_token(
     .with_issuer(JWT_ISSUER)
     .with_subject(org_id.0);
 
-    Ok(signing_config.generate(claims).unwrap())
+    signing_config
+        .generate(claims)
+        .map_err(|e| Error::generic(e, location!()))
 }
 
 pub fn generate_management_token(signing_config: &JwtSigningConfig) -> Result<String> {
@@ -177,7 +180,9 @@ pub fn generate_management_token(signing_config: &JwtSigningConfig) -> Result<St
     .with_issuer(JWT_ISSUER)
     .with_subject(management_org_id());
 
-    Ok(signing_config.generate(claims).unwrap())
+    signing_config
+        .generate(claims)
+        .map_err(|e| Error::generic(e, location!()))
 }
 
 pub fn generate_app_token(
@@ -196,7 +201,8 @@ pub fn generate_app_token(
     .with_issuer(JWT_ISSUER)
     .with_subject(app_id.0);
 
-    Ok(keys.generate(claims).unwrap())
+    keys.generate(claims)
+        .map_err(|e| Error::generic(e, location!()))
 }
 #[derive(Deserialize)]
 #[serde(untagged)]
@@ -221,13 +227,33 @@ pub enum JWTAlgorithm {
     #[serde(deserialize_with = "deserialize_hs512")]
     HS512(HS512Key),
     #[serde(deserialize_with = "deserialize_rs256")]
-    RS256(RS256KeyPair),
+    RS256(RS256),
     #[serde(deserialize_with = "deserialize_rs384")]
-    RS384(RS384KeyPair),
+    RS384(RS384),
     #[serde(deserialize_with = "deserialize_rs512")]
-    RS512(RS512KeyPair),
+    RS512(RS512),
     #[serde(deserialize_with = "deserialize_eddsa")]
-    EdDSA(Ed25519KeyPair),
+    EdDSA(EdDSA),
+}
+
+pub enum RS256 {
+    Public(RS256PublicKey),
+    Pair(RS256KeyPair),
+}
+
+pub enum RS384 {
+    Public(RS384PublicKey),
+    Pair(RS384KeyPair),
+}
+
+pub enum RS512 {
+    Public(RS512PublicKey),
+    Pair(RS512KeyPair),
+}
+
+pub enum EdDSA {
+    Public(Ed25519PublicKey),
+    Pair(Ed25519KeyPair),
 }
 
 impl JwtSigningConfig {
@@ -240,10 +266,30 @@ impl JwtSigningConfig {
                 JWTAlgorithm::HS256(key) => key.authenticate(claims),
                 JWTAlgorithm::HS384(key) => key.authenticate(claims),
                 JWTAlgorithm::HS512(key) => key.authenticate(claims),
-                JWTAlgorithm::RS256(key) => key.sign(claims),
-                JWTAlgorithm::RS384(key) => key.sign(claims),
-                JWTAlgorithm::RS512(key) => key.sign(claims),
-                JWTAlgorithm::EdDSA(key) => key.sign(claims),
+                JWTAlgorithm::RS256(kind) => match kind {
+                    RS256::Public(_) => {
+                        Err(jwt_simple::Error::msg("cannot sign JWT with public key"))
+                    }
+                    RS256::Pair(key) => key.sign(claims),
+                },
+                JWTAlgorithm::RS384(kind) => match kind {
+                    RS384::Public(_) => {
+                        Err(jwt_simple::Error::msg("cannot sign JWT with public key"))
+                    }
+                    RS384::Pair(key) => key.sign(claims),
+                },
+                JWTAlgorithm::RS512(kind) => match kind {
+                    RS512::Public(_) => {
+                        Err(jwt_simple::Error::msg("cannot sign JWT with public key"))
+                    }
+                    RS512::Pair(key) => key.sign(claims),
+                },
+                JWTAlgorithm::EdDSA(kind) => match kind {
+                    EdDSA::Public(_) => {
+                        Err(jwt_simple::Error::msg("cannot sign JWT with public key"))
+                    }
+                    EdDSA::Pair(key) => key.sign(claims),
+                },
             },
             JwtSigningConfig::Default { jwt_secret } => jwt_secret.authenticate(claims),
         }
@@ -259,10 +305,22 @@ impl JwtSigningConfig {
                 JWTAlgorithm::HS256(key) => key.verify_token(token, options),
                 JWTAlgorithm::HS384(key) => key.verify_token(token, options),
                 JWTAlgorithm::HS512(key) => key.verify_token(token, options),
-                JWTAlgorithm::RS256(key) => key.public_key().verify_token(token, options),
-                JWTAlgorithm::RS384(key) => key.public_key().verify_token(token, options),
-                JWTAlgorithm::RS512(key) => key.public_key().verify_token(token, options),
-                JWTAlgorithm::EdDSA(key) => key.public_key().verify_token(token, options),
+                JWTAlgorithm::RS256(kind) => match kind {
+                    RS256::Public(key) => key.verify_token(token, options),
+                    RS256::Pair(pair) => pair.public_key().verify_token(token, options),
+                },
+                JWTAlgorithm::RS384(kind) => match kind {
+                    RS384::Public(key) => key.verify_token(token, options),
+                    RS384::Pair(pair) => pair.public_key().verify_token(token, options),
+                },
+                JWTAlgorithm::RS512(kind) => match kind {
+                    RS512::Public(key) => key.verify_token(token, options),
+                    RS512::Pair(pair) => pair.public_key().verify_token(token, options),
+                },
+                JWTAlgorithm::EdDSA(kind) => match kind {
+                    EdDSA::Public(key) => key.verify_token(token, options),
+                    EdDSA::Pair(pair) => pair.public_key().verify_token(token, options),
+                },
             },
             JwtSigningConfig::Default { jwt_secret } => jwt_secret.verify_token(token, options),
         }
@@ -321,30 +379,58 @@ where
     ))
 }
 
-fn deserialize_rs256<'de, D>(deserializer: D) -> std::result::Result<RS256KeyPair, D::Error>
+fn deserialize_rs256<'de, D>(deserializer: D) -> std::result::Result<RS256, D::Error>
 where
     D: Deserializer<'de>,
 {
-    Ok(RS256KeyPair::from_pem(&String::deserialize(deserializer)?).unwrap())
+    let key = String::deserialize(deserializer)?;
+    if let Ok(pair) = RS256KeyPair::from_pem(&key) {
+        Ok(RS256::Pair(pair))
+    } else if let Ok(public) = RS256PublicKey::from_pem(&key) {
+        Ok(RS256::Public(public))
+    } else {
+        Err(serde::de::Error::custom("could not deserialize key"))
+    }
 }
 
-fn deserialize_rs384<'de, D>(deserializer: D) -> std::result::Result<RS384KeyPair, D::Error>
+fn deserialize_rs384<'de, D>(deserializer: D) -> std::result::Result<RS384, D::Error>
 where
     D: Deserializer<'de>,
 {
-    Ok(RS384KeyPair::from_pem(&String::deserialize(deserializer)?).unwrap())
+    let key = String::deserialize(deserializer)?;
+    if let Ok(pair) = RS384KeyPair::from_pem(&key) {
+        Ok(RS384::Pair(pair))
+    } else if let Ok(public) = RS384PublicKey::from_pem(&key) {
+        Ok(RS384::Public(public))
+    } else {
+        Err(serde::de::Error::custom("could not deserialize key"))
+    }
 }
 
-fn deserialize_rs512<'de, D>(deserializer: D) -> std::result::Result<RS512KeyPair, D::Error>
+fn deserialize_rs512<'de, D>(deserializer: D) -> std::result::Result<RS512, D::Error>
 where
     D: Deserializer<'de>,
 {
-    Ok(RS512KeyPair::from_pem(&String::deserialize(deserializer)?).unwrap())
+    let key = String::deserialize(deserializer)?;
+    if let Ok(pair) = RS512KeyPair::from_pem(&key) {
+        Ok(RS512::Pair(pair))
+    } else if let Ok(public) = RS512PublicKey::from_pem(&key) {
+        Ok(RS512::Public(public))
+    } else {
+        Err(serde::de::Error::custom("could not deserialize key"))
+    }
 }
 
-fn deserialize_eddsa<'de, D>(deserializer: D) -> std::result::Result<Ed25519KeyPair, D::Error>
+fn deserialize_eddsa<'de, D>(deserializer: D) -> std::result::Result<EdDSA, D::Error>
 where
     D: Deserializer<'de>,
 {
-    Ok(Ed25519KeyPair::from_pem(&String::deserialize(deserializer)?).unwrap())
+    let key = String::deserialize(deserializer)?;
+    if let Ok(pair) = Ed25519KeyPair::from_pem(&key) {
+        Ok(EdDSA::Pair(pair))
+    } else if let Ok(public) = Ed25519PublicKey::from_pem(&key) {
+        Ok(EdDSA::Public(public))
+    } else {
+        Err(serde::de::Error::custom("could not deserialize key"))
+    }
 }
