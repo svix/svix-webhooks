@@ -208,7 +208,7 @@ pub fn generate_app_token(
 #[serde(untagged)]
 pub enum JwtSigningConfig {
     /// Variants that specify both key and algorithm to use
-    Advanced(Box<JWTAlgorithm>),
+    Advanced(JWTAlgorithm),
     /// The variant used when the algorithm is not specified, defaults to HS256
     Default {
         #[serde(deserialize_with = "deserialize_hs256")]
@@ -238,22 +238,22 @@ pub enum JWTAlgorithm {
 
 pub enum RS256 {
     Public(RS256PublicKey),
-    Pair(RS256KeyPair),
+    Pair(Box<RS256KeyPair>),
 }
 
 pub enum RS384 {
     Public(RS384PublicKey),
-    Pair(RS384KeyPair),
+    Pair(Box<RS384KeyPair>),
 }
 
 pub enum RS512 {
     Public(RS512PublicKey),
-    Pair(RS512KeyPair),
+    Pair(Box<RS512KeyPair>),
 }
 
 pub enum EdDSA {
     Public(Ed25519PublicKey),
-    Pair(Ed25519KeyPair),
+    Pair(Box<Ed25519KeyPair>),
 }
 
 impl JwtSigningConfig {
@@ -262,7 +262,7 @@ impl JwtSigningConfig {
         claims: JWTClaims<CustomClaim>,
     ) -> std::result::Result<String, jwt_simple::Error> {
         match self {
-            JwtSigningConfig::Advanced(a) => match a.as_ref() {
+            JwtSigningConfig::Advanced(a) => match a {
                 JWTAlgorithm::HS256(key) => key.authenticate(claims),
                 JWTAlgorithm::HS384(key) => key.authenticate(claims),
                 JWTAlgorithm::HS512(key) => key.authenticate(claims),
@@ -301,7 +301,7 @@ impl JwtSigningConfig {
         options: Option<VerificationOptions>,
     ) -> std::result::Result<JWTClaims<CustomClaim>, jwt_simple::Error> {
         match self {
-            JwtSigningConfig::Advanced(a) => match a.as_ref() {
+            JwtSigningConfig::Advanced(a) => match a {
                 JWTAlgorithm::HS256(key) => key.verify_token(token, options),
                 JWTAlgorithm::HS384(key) => key.verify_token(token, options),
                 JWTAlgorithm::HS512(key) => key.verify_token(token, options),
@@ -334,7 +334,7 @@ impl Debug for JwtSigningConfig {
             "{}",
             match self {
                 JwtSigningConfig::Advanced(a) => {
-                    match a.as_ref() {
+                    match a {
                         JWTAlgorithm::HS256(_) => "HS256",
                         JWTAlgorithm::HS384(_) => "HS384",
                         JWTAlgorithm::HS512(_) => "HS512",
@@ -385,7 +385,7 @@ where
 {
     let key = String::deserialize(deserializer)?;
     if let Ok(pair) = RS256KeyPair::from_pem(&key) {
-        Ok(RS256::Pair(pair))
+        Ok(RS256::Pair(Box::new(pair)))
     } else if let Ok(public) = RS256PublicKey::from_pem(&key) {
         Ok(RS256::Public(public))
     } else {
@@ -399,7 +399,7 @@ where
 {
     let key = String::deserialize(deserializer)?;
     if let Ok(pair) = RS384KeyPair::from_pem(&key) {
-        Ok(RS384::Pair(pair))
+        Ok(RS384::Pair(Box::new(pair)))
     } else if let Ok(public) = RS384PublicKey::from_pem(&key) {
         Ok(RS384::Public(public))
     } else {
@@ -413,7 +413,7 @@ where
 {
     let key = String::deserialize(deserializer)?;
     if let Ok(pair) = RS512KeyPair::from_pem(&key) {
-        Ok(RS512::Pair(pair))
+        Ok(RS512::Pair(Box::new(pair)))
     } else if let Ok(public) = RS512PublicKey::from_pem(&key) {
         Ok(RS512::Public(public))
     } else {
@@ -427,7 +427,7 @@ where
 {
     let key = String::deserialize(deserializer)?;
     if let Ok(pair) = Ed25519KeyPair::from_pem(&key) {
-        Ok(EdDSA::Pair(pair))
+        Ok(EdDSA::Pair(Box::new(pair)))
     } else if let Ok(public) = Ed25519PublicKey::from_pem(&key) {
         Ok(EdDSA::Public(public))
     } else {

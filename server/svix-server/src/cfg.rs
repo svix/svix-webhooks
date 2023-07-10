@@ -467,9 +467,9 @@ jwt_algorithm = "HS512"
             .extract()
             .unwrap();
 
-        assert!(matches!(actual, JwtSigningConfig::Advanced(_)));
-        if let JwtSigningConfig::Advanced(algo) = actual {
-            assert!(matches!(*algo, JWTAlgorithm::HS512(_)))
-        }
+        assert!(matches!(
+            actual,
+            JwtSigningConfig::Advanced(JWTAlgorithm::HS512(_))
+        ));
     }
 }
