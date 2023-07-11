@@ -70,8 +70,12 @@ impl Related<super::endpointmetadata::Entity> for Entity {
     }
 }
 
+#[axum::async_trait]
 impl ActiveModelBehavior for ActiveModel {
-    fn before_save(mut self, _insert: bool) -> Result<Self, DbErr> {
+    async fn before_save<C>(mut self, _db: &C, _insert: bool) -> Result<Self, DbErr>
+    where
+        C: ConnectionTrait,
+    {
         self.updated_at = Set(Utc::now().into());
         Ok(self)
     }

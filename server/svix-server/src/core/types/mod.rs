@@ -54,6 +54,19 @@ macro_rules! enum_wrapper {
         }
 
         impl sea_orm::TryGetable for $name_id {
+            fn try_get_by<I: sea_orm::ColIdx>(
+                res: &sea_orm::QueryResult,
+                index: I,
+            ) -> Result<Self, sea_orm::TryGetError> {
+                match i16::try_get_by(res, index) {
+                    // We are using null as a placeholder error for invalid sea_orm::Values
+                    Ok(v) => v
+                        .try_into()
+                        .map_err(|_| sea_orm::TryGetError::Null("invalid sea_orm_value".into())),
+                    Err(e) => Err(e),
+                }
+            }
+
             fn try_get(
                 res: &sea_orm::QueryResult,
                 pre: &str,
@@ -111,6 +124,17 @@ macro_rules! json_wrapper {
         }
 
         impl sea_orm::TryGetable for $name_id {
+            fn try_get_by<I: sea_orm::ColIdx>(
+                res: &sea_orm::QueryResult,
+                index: I,
+            ) -> Result<Self, sea_orm::TryGetError> {
+                match sea_orm::prelude::Json::try_get_by(res, index) {
+                    // We are using null as a placeholder error for invalid sea_orm::Values
+                    Ok(v) => Ok(serde_json::from_value(v).expect("Error deserializing JSON")),
+                    Err(e) => Err(e),
+                }
+            }
+
             fn try_get(
                 res: &sea_orm::QueryResult,
                 pre: &str,
@@ -289,6 +313,16 @@ macro_rules! string_wrapper_impl {
         }
 
         impl sea_orm::TryGetable for $name_id {
+            fn try_get_by<I: sea_orm::ColIdx>(
+                res: &sea_orm::QueryResult,
+                index: I,
+            ) -> Result<Self, sea_orm::TryGetError> {
+                match String::try_get_by(res, index) {
+                    Ok(v) => Ok($name_id(v)),
+                    Err(e) => Err(e),
+                }
+            }
+
             fn try_get(
                 res: &sea_orm::QueryResult,
                 pre: &str,
@@ -828,6 +862,17 @@ impl From<EndpointSecretInternal> for sea_orm::Value {
 }
 
 impl sea_orm::TryGetable for EndpointSecretInternal {
+    fn try_get_by<I: sea_orm::ColIdx>(
+        res: &sea_orm::QueryResult,
+        index: I,
+    ) -> Result<Self, sea_orm::TryGetError> {
+        match Vec::<u8>::try_get_by(res, index) {
+            Ok(v) => EndpointSecretInternal::from_vec(v)
+                .map_err(|x| sea_orm::TryGetError::DbErr(sea_orm::DbErr::Type(x.to_string()))),
+            Err(e) => Err(e),
+        }
+    }
+
     fn try_get(
         res: &sea_orm::QueryResult,
         pre: &str,
