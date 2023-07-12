@@ -123,15 +123,22 @@ If you don't want to use docker, see [Building from Source](../README.md#buildin
 
 # Usage and Configuration
 
-```
-$ svix-bridge -c path/to/svix-bridge.yaml
-```
+The CLI itself will look for a config file named `svix-bridge.yaml` or `svix-bridge.json` in the current working
+directory.
+Additionally, Bridge can load its configuration from a different location via `--cfg-file` (or `SVIX_BRIDGE_CFG_FILE`),
+or otherwise the config can be given as a string via `--cfg` (or `SVIX_BRIDGE_CFG`).
 
-The CLI itself exposes only a single flag (`-c`, `--cfg`) used to set the path for the config file.
-The location of the config file can also be set with the `SVIX_BRIDGE_CFG` env var.
-The config file itself does the heavy lifting.
+Examples:
+```
+# Using the default config file location
+$ svix-bridge
 
-When unset, the current working directory is checked for a file named `svix-bridge.yaml`.
+# Specifying an alternate location
+$ svix-bridge --cfg-file path/to/svix-bridge.json
+
+# Config data supplied directly
+$ svix-bridge --cfg '{"log_format": "json", "senders": []}'
+```
 
 ## Variable Expansion
 

@@ -147,27 +147,45 @@ async fn supervise_senders(inputs: Vec<Box<dyn SenderInput>>) -> Result<()> {
 
 #[derive(Parser)]
 pub struct Args {
-    #[arg(short, long, env = "SVIX_BRIDGE_CFG")]
-    cfg: Option<PathBuf>,
+    #[arg(long, env = "SVIX_BRIDGE_CFG_FILE", help = "Path to the config file.")]
+    cfg_file: Option<PathBuf>,
+    #[arg(
+        long,
+        env = "SVIX_BRIDGE_CFG",
+        help = "Config data as a string (instead of a file on disk).",
+        conflicts_with = "cfg_file"
+    )]
+    cfg: Option<String>,
 }
 
 #[tokio::main]
 async fn main() -> Result<()> {
     let args = Args::parse();
 
-    let config_path = args.cfg.unwrap_or_else(|| {
-        std::env::current_dir()
-            .expect("current dir")
-            .join("svix-bridge.yaml")
-    });
+    let mut config_search_paths = vec![];
 
-    let cfg_source = std::fs::read_to_string(&config_path).map_err(|e| {
-        let p = config_path
-            .into_os_string()
-            .into_string()
-            .expect("config path");
-        Error::new(ErrorKind::Other, format!("Failed to read {p}: {e}"))
-    })?;
+    if let Some(fp) = args.cfg_file {
+        config_search_paths.push(fp)
+    } else {
+        for name in ["svix-bridge.yaml", "svix-bridge.yml", "svix-bridge.json"] {
+            config_search_paths.push(std::env::current_dir().expect("current dir").join(name));
+        }
+    }
+
+    // Clap will ensure we have only one or the other (cfg and cfg_file can't be specified together).
+    let cfg_source = match args.cfg {
+        Some(cfg_source) => cfg_source,
+        None => {
+            let fp = config_search_paths
+                .into_iter()
+                .find(|x| x.exists())
+                .expect("config file path");
+            std::fs::read_to_string(&fp).map_err(|e| {
+                let p = fp.into_os_string().into_string().expect("config file path");
+                Error::new(ErrorKind::Other, format!("Failed to read {p}: {e}"))
+            })
+        }?,
+    };
 
     let vars = std::env::vars().collect();
     let cfg = Config::from_src(&cfg_source, Some(vars).as_ref())?;

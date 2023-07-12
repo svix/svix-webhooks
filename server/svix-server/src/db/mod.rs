@@ -124,6 +124,7 @@ pub async fn wipe_org(cfg: &Configuration, org_id: OrganizationId) {
 macro_rules! transaction {
     ($db:expr, $do:expr) => {
         $crate::ctx!(
+            #[allow(clippy::redundant_closure_call)]
             sea_orm::TransactionTrait::transaction::<_, _, $crate::error::Error>($db, |txn| {
                 std::boxed::Box::pin({ $do(txn) })
             })
