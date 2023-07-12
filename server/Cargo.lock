@@ -3186,15 +3186,14 @@ dependencies = [
 
 [[package]]
 name = "sea-orm"
-version = "0.10.7"
+version = "0.11.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "88694d01b528a94f90ad87f8d2f546d060d070eee180315c67d158cb69476034"
+checksum = "fade86e8d41fd1a4721f84cb834f4ca2783f973cc30e6212b7fafc134f169214"
 dependencies = [
  "async-stream",
  "async-trait",
  "chrono",
  "futures",
- "futures-util",
  "log",
  "ouroboros",
  "sea-orm-macros",
@@ -3208,13 +3207,14 @@ dependencies = [
  "time 0.3.20",
  "tracing",
  "url",
+ "uuid",
 ]
 
 [[package]]
 name = "sea-orm-macros"
-version = "0.10.7"
+version = "0.11.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7216195de9c6b2474fd0efab486173dccd0eff21f28cc54aa4c0205d52fb3af0"
+checksum = "28936f26d62234ff0be16f80115dbdeb3237fe9c25cf18fbcd1e3b3592360f20"
 dependencies = [
  "bae",
  "heck 0.3.3",
@@ -3225,9 +3225,9 @@ dependencies = [
 
 [[package]]
 name = "sea-query"
-version = "0.27.2"
+version = "0.28.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a4f0fc4d8e44e1d51c739a68d336252a18bc59553778075d5e32649be6ec92ed"
+checksum = "bbab99b8cd878ab7786157b7eb8df96333a6807cc6e45e8888c85b51534b401a"
 dependencies = [
  "chrono",
  "sea-query-derive",
@@ -3236,9 +3236,9 @@ dependencies = [
 
 [[package]]
 name = "sea-query-binder"
-version = "0.2.2"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9c2585b89c985cfacfe0ec9fc9e7bb055b776c1a2581c4e3c6185af2b8bf8865"
+checksum = "4cea85029985b40dfbf18318d85fe985c04db7c1b4e5e8e0a0a0cdff5f1e30f9"
 dependencies = [
  "chrono",
  "sea-query",
@@ -3248,11 +3248,11 @@ dependencies = [
 
 [[package]]
 name = "sea-query-derive"
-version = "0.2.0"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "34cdc022b4f606353fe5dc85b09713a04e433323b70163e81513b141c6ae6eb5"
+checksum = "63f62030c60f3a691f5fe251713b4e220b306e50a71e1d6f9cce1f24bb781978"
 dependencies = [
- "heck 0.3.3",
+ "heck 0.4.1",
  "proc-macro2",
  "quote",
  "syn 1.0.109",
@@ -4457,6 +4457,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1674845326ee10d37ca60470760d4288a6f80f304007d92e5c53bab78c9cfd79"
 dependencies = [
  "getrandom",
+ "serde",
 ]
 
 [[package]]

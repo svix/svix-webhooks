@@ -395,7 +395,7 @@ impl RequestBuilder {
                 .unwrap_or(HeaderValue::from_static("application/json")),
         );
 
-        headers.extend(custom_headers.into_iter());
+        headers.extend(custom_headers);
 
         if let Some(user_agent) = self.user_agent {
             headers.insert(http::header::USER_AGENT, user_agent);
