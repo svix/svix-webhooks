@@ -74,7 +74,7 @@ impl Entity {
     pub fn filter_feature_flags(query: Select<Self>, flags: FeatureFlagSet) -> Select<Self> {
         query.filter(
             sea_orm::Condition::any()
-                .add(Column::FeatureFlag.is_in(flags.into_iter()))
+                .add(Column::FeatureFlag.is_in(flags))
                 .add(Column::FeatureFlag.is_null()),
         )
     }
