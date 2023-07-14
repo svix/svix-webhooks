@@ -207,7 +207,7 @@ async fn test_endpoint_create_update_and_delete() {
             EndpointIn {
                 description: "Updated description".to_owned(),
                 url: Url::parse(&receiver.endpoint).unwrap(),
-                version: 2,
+                version: Some(2),
                 ..default_test_endpoint()
             },
             StatusCode::OK,

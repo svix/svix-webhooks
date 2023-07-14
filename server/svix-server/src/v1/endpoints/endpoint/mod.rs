@@ -143,6 +143,10 @@ fn example_endpoint_version() -> u16 {
     1
 }
 
+fn default_endpoint_version() -> Option<u16> {
+    Some(1)
+}
+
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Validate, ModelIn, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointIn {
@@ -162,9 +166,13 @@ pub struct EndpointIn {
     #[validate(custom = "validate_url")]
     #[schemars(url, length(min = 1, max = 65_536), example = "example_endpoint_url")]
     pub url: Url,
-    #[validate(range(min = 1, message = "Endpoint versions must be at least one"))]
+
+    #[deprecated]
+    #[serde(default = "default_endpoint_version")]
+    #[validate(range(min = 1, message = "Endpoint versions must be at least one if set"))]
     #[schemars(range(min = 1), example = "example_endpoint_version")]
-    pub version: u16,
+    pub version: Option<u16>,
+    
     #[serde(default)]
     #[schemars(example = "endpoint_disabled_default")]
     pub disabled: bool,
@@ -209,6 +217,7 @@ impl EndpointIn {
 impl ModelIn for EndpointIn {
     type ActiveModel = endpoint::ActiveModel;
 
+    #[allow(deprecated)]
     fn update_model(self, model: &mut Self::ActiveModel) {
         let EndpointIn {
             description,
@@ -227,7 +236,7 @@ impl ModelIn for EndpointIn {
         model.rate_limit = Set(rate_limit.map(|x| x.into()));
         model.uid = Set(uid);
         model.url = Set(url.into());
-        model.version = Set(version.into());
+        model.version = Set(version.unwrap_or(1).into());
         model.disabled = Set(disabled);
         model.event_types_ids = Set(event_types_ids);
         model.channels = Set(channels);
@@ -255,9 +264,11 @@ struct EndpointUpdate {
     #[schemars(url, length(min = 1, max = 65_536), example = "example_endpoint_url")]
     pub url: Url,
 
-    #[validate(range(min = 1, message = "Endpoint versions must be at least one"))]
-    #[schemars(example = "example_endpoint_version")]
-    pub version: u16,
+    #[deprecated]
+    #[serde(default = "default_endpoint_version")]
+    #[validate(range(min = 1, message = "Endpoint versions must be at least one if set"))]
+    #[schemars(range(min = 1), example = "example_endpoint_version")]
+    pub version: Option<u16>,
 
     #[serde(default)]
     #[schemars(example = "endpoint_disabled_default")]
@@ -282,6 +293,7 @@ struct EndpointUpdate {
 impl ModelIn for EndpointUpdate {
     type ActiveModel = endpoint::ActiveModel;
 
+    #[allow(deprecated)]
     fn update_model(self, model: &mut Self::ActiveModel) {
         let EndpointUpdate {
             description,
@@ -299,7 +311,7 @@ impl ModelIn for EndpointUpdate {
         model.rate_limit = Set(rate_limit.map(|x| x.into()));
         model.uid = Set(uid);
         model.url = Set(url.into());
-        model.version = Set(version.into());
+        model.version = Set(version.unwrap_or(1).into());
         model.disabled = Set(disabled);
         model.event_types_ids = Set(event_types_ids);
         model.channels = Set(channels);
@@ -307,6 +319,7 @@ impl ModelIn for EndpointUpdate {
 }
 
 impl EndpointUpdate {
+    #[allow(deprecated)]
     pub fn into_in_with_default_key(self) -> EndpointIn {
         let EndpointUpdate {
             description,
@@ -356,6 +369,7 @@ pub struct EndpointPatch {
     #[serde(default)]
     pub url: UnrequiredField<Url>,
 
+    #[deprecated]
     #[validate(custom = "validate_minimum_version_patch")]
     #[serde(default)]
     pub version: UnrequiredField<u16>,
@@ -389,6 +403,7 @@ pub struct EndpointPatch {
 impl ModelIn for EndpointPatch {
     type ActiveModel = endpoint::ActiveModel;
 
+    #[allow(deprecated)]
     fn update_model(self, model: &mut Self::ActiveModel) {
         let EndpointPatch {
             description,
@@ -463,6 +478,7 @@ pub struct EndpointOutCommon {
     pub uid: Option<EndpointUid>,
     #[schemars(url, length(min = 1, max = 65_536), example = "example_endpoint_url")]
     pub url: String,
+    #[deprecated]
     #[schemars(range(min = 1), example = "example_endpoint_version")]
     pub version: u16,
     #[schemars(
@@ -481,6 +497,7 @@ pub struct EndpointOutCommon {
 }
 
 impl From<endpoint::Model> for EndpointOutCommon {
+    #[allow(deprecated)]
     fn from(model: endpoint::Model) -> Self {
         Self {
             description: model.description,
@@ -901,6 +918,7 @@ mod tests {
     const ENDPOINT_ID_INVALID: &str = "$$invalid-endpoint";
     const ENDPOINT_ID_VALID: &str = "valid-endpoint";
 
+    #[allow(deprecated)]
     #[test]
     fn test_endpoint_in_validation() {
         let invalid_1: EndpointIn = serde_json::from_value(json!({
@@ -947,7 +965,7 @@ mod tests {
             assert!(e.validate().is_err());
         }
 
-        let valid: EndpointIn = serde_json::from_value(json!({
+        let valid_1: EndpointIn = serde_json::from_value(json!({
              "version": VERSION_VALID,
              "url": URL_VALID,
              "rateLimit": RATE_LIMIT_VALID,
@@ -956,7 +974,18 @@ mod tests {
              "channels": EVENT_CHANNELS_VALID
         }))
         .unwrap();
-        valid.validate().unwrap();
+        valid_1.validate().unwrap();
+
+        let valid_2: EndpointIn = serde_json::from_value(json!({
+            "url": URL_VALID,
+            "rateLimit": RATE_LIMIT_VALID,
+            "uid": ENDPOINT_ID_VALID,
+            "filterTypes": EVENT_TYPES_VALID,
+            "channels": EVENT_CHANNELS_VALID
+       }))
+       .unwrap();
+        valid_2.validate().unwrap();
+        assert_eq!(1, valid_2.version.unwrap());
     }
 
     #[test]

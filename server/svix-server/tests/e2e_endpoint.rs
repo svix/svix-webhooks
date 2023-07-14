@@ -95,6 +95,41 @@ async fn delete_endpoint(client: &TestClient, app_id: &ApplicationId, ep_id: &st
     Ok(())
 }
 
+#[allow(deprecated)]
+#[tokio::test]
+async fn test_create() {
+    let (client, _jh) = start_svix_server().await;
+
+    let app = create_test_app(&client, "v1EndpointPatchTestApp")
+        .await
+        .unwrap()
+        .id;
+    let ep = post_endpoint(&client, &app, EndpointIn {
+        url: Url::parse("http://example.com").unwrap(),
+        version: None,
+        ..default_test_endpoint()
+    })
+        .await
+        .unwrap()
+        .id;
+
+    let url = format!("api/v1/app/{app}/endpoint/{ep}/");
+
+    let out = client
+        .get::<EndpointOut>(&url, StatusCode::OK)
+        .await
+        .unwrap();
+
+    assert_eq!(out.ep.rate_limit, None);
+    assert_eq!(out.ep.uid, None);
+    assert_eq!(out.ep.url, "http://example.com/".to_owned());
+    assert_eq!(out.ep.version, 1);
+    assert!(!out.ep.disabled);
+    assert_eq!(out.ep.event_types_ids, None);
+    assert_eq!(out.ep.channels, None);
+}
+
+#[allow(deprecated)]
 #[tokio::test]
 async fn test_patch() {
     let (client, _jh) = start_svix_server().await;
@@ -459,6 +494,7 @@ async fn test_patch() {
     assert_eq!(out.ep.event_types_ids, None);
 }
 
+#[allow(deprecated)]
 #[tokio::test]
 async fn test_crud() {
     let (client, _jh) = start_svix_server().await;

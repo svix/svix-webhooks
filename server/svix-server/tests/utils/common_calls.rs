@@ -53,12 +53,13 @@ pub async fn delete_test_app(client: &TestClient, id: ApplicationId) -> Result<I
 // Endpoint
 
 pub fn default_test_endpoint() -> EndpointIn {
+    #[allow(deprecated)]
     EndpointIn {
         description: Default::default(),
         rate_limit: Default::default(),
         uid: Default::default(),
         url: Url::parse("http://example.com").unwrap(),
-        version: 1,
+        version: Default::default(),
         disabled: Default::default(),
         event_types_ids: Default::default(),
         channels: Default::default(),
