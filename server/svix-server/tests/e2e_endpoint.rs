@@ -104,14 +104,18 @@ async fn test_create() {
         .await
         .unwrap()
         .id;
-    let ep = post_endpoint(&client, &app, EndpointIn {
-        url: Url::parse("http://example.com").unwrap(),
-        version: None,
-        ..default_test_endpoint()
-    })
-        .await
-        .unwrap()
-        .id;
+    let ep = post_endpoint(
+        &client,
+        &app,
+        EndpointIn {
+            url: Url::parse("http://example.com").unwrap(),
+            version: None,
+            ..default_test_endpoint()
+        },
+    )
+    .await
+    .unwrap()
+    .id;
 
     let url = format!("api/v1/app/{app}/endpoint/{ep}/");
 

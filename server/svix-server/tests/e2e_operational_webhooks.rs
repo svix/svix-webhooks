@@ -131,6 +131,7 @@ fn start_svix_server_with_operational_webhooks(
     )
 }
 
+#[allow(deprecated)]
 #[tokio::test]
 async fn test_endpoint_create_update_and_delete() {
     let cfg = get_default_test_config();

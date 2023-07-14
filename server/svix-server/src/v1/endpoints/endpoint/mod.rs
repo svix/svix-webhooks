@@ -172,7 +172,7 @@ pub struct EndpointIn {
     #[validate(range(min = 1, message = "Endpoint versions must be at least one if set"))]
     #[schemars(range(min = 1), example = "example_endpoint_version")]
     pub version: Option<u16>,
-    
+
     #[serde(default)]
     #[schemars(example = "endpoint_disabled_default")]
     pub disabled: bool,
@@ -977,13 +977,13 @@ mod tests {
         valid_1.validate().unwrap();
 
         let valid_2: EndpointIn = serde_json::from_value(json!({
-            "url": URL_VALID,
-            "rateLimit": RATE_LIMIT_VALID,
-            "uid": ENDPOINT_ID_VALID,
-            "filterTypes": EVENT_TYPES_VALID,
-            "channels": EVENT_CHANNELS_VALID
-       }))
-       .unwrap();
+             "url": URL_VALID,
+             "rateLimit": RATE_LIMIT_VALID,
+             "uid": ENDPOINT_ID_VALID,
+             "filterTypes": EVENT_TYPES_VALID,
+             "channels": EVENT_CHANNELS_VALID
+        }))
+        .unwrap();
         valid_2.validate().unwrap();
         assert_eq!(1, valid_2.version.unwrap());
     }
