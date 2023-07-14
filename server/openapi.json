@@ -736,8 +736,9 @@
                     },
                     "version": {
                         "deprecated": true,
+                        "example": 1,
                         "format": "uint16",
-                        "minimum": 0,
+                        "minimum": 1,
                         "type": "integer"
                     }
                 },

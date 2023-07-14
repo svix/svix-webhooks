@@ -371,6 +371,7 @@ pub struct EndpointPatch {
 
     #[deprecated]
     #[validate(custom = "validate_minimum_version_patch")]
+    #[schemars(range(min = 1), example = "example_endpoint_version")]
     #[serde(default)]
     pub version: UnrequiredField<u16>,
 
