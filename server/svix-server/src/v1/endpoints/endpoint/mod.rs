@@ -119,13 +119,13 @@ fn validate_url_unrequired(val: &UnrequiredField<Url>) -> std::result::Result<()
     }
 }
 
-fn validate_version(version: &u16) -> std::result::Result<(), ValidationError> {
-    if *version >= 1 {
+fn validate_version(version: u16) -> std::result::Result<(), ValidationError> {
+    if version >= 1 {
         Ok(())
     } else {
         Err(validation_error(
             Some("version"),
-            Some("Endpoint version must be at least 1 if set"),
+            Some("Endpoint version must be 1"),
         ))
     }
 }
@@ -179,9 +179,9 @@ pub struct EndpointIn {
     pub url: Url,
 
     #[deprecated]
+    #[validate(custom = "validate_version")]
     #[schemars(range(min = 1), example = "example_endpoint_version")]
     #[serde(default = "endpoint_version_default")]
-    #[validate(custom = "validate_version")]
     pub version: Option<u16>,
 
     #[serde(default)]
