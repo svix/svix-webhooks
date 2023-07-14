@@ -3,10 +3,13 @@ use std::borrow::Cow;
 use std::collections::HashMap;
 use std::io::{Error, ErrorKind};
 use std::net::SocketAddr;
+use std::path::PathBuf;
 use svix_bridge_plugin_queue::config::{
     into_receiver_output, QueueConsumerConfig, ReceiverOutputOpts as QueueOutOpts,
 };
-use svix_bridge_types::{ReceiverInputOpts, ReceiverOutput, SenderInput, TransformationConfig};
+use svix_bridge_types::{
+    ReceiverInputOpts, ReceiverOutput, SenderInput, SenderOutputOpts, TransformationConfig,
+};
 use tracing::Level;
 
 #[derive(Deserialize)]
@@ -104,6 +107,7 @@ pub enum SenderConfig {
         feature = "sqs"
     ))]
     QueueConsumer(QueueConsumerConfig),
+    JsModule(JsModuleSenderConfig),
 }
 
 impl TryFrom<SenderConfig> for Box<dyn SenderInput> {
@@ -117,6 +121,7 @@ impl TryFrom<SenderConfig> for Box<dyn SenderInput> {
                 feature = "sqs"
             ))]
             SenderConfig::QueueConsumer(backend) => backend.into_sender_input(),
+            SenderConfig::JsModule(inner) => inner.into_sender_input(),
         }
     }
 }
@@ -152,6 +157,30 @@ impl ReceiverConfig {
             }
         }
     }
+}
+
+#[derive(Deserialize)]
+pub struct JsModuleSenderConfig {
+    pub name: String,
+    pub input: JsModuleSenderInputOpts,
+    #[serde(default)]
+    pub transformation: Option<TransformationConfig>,
+    pub output: SenderOutputOpts,
+}
+
+impl JsModuleSenderConfig {
+    fn into_sender_input(self) -> Result<Box<dyn SenderInput>, &'static str> {
+        // FIXME: need to make it so we can use latest deno for transformations before we can
+        //   connect the new module code.
+        todo!()
+    }
+}
+
+#[derive(Deserialize)]
+#[serde(tag = "type", rename_all = "lowercase")]
+pub enum JsModuleSenderInputOpts {
+    #[serde(rename = "js-module")]
+    JsModule { module_path: PathBuf },
 }
 
 #[cfg(test)]
