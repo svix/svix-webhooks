@@ -59,7 +59,7 @@ pub fn default_test_endpoint() -> EndpointIn {
         rate_limit: Default::default(),
         uid: Default::default(),
         url: Url::parse("http://example.com").unwrap(),
-        version: Default::default(),
+        version: Some(1),
         disabled: Default::default(),
         event_types_ids: Default::default(),
         channels: Default::default(),
