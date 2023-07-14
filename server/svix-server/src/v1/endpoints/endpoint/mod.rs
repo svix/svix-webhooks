@@ -125,7 +125,7 @@ fn validate_version(version: u16) -> std::result::Result<(), ValidationError> {
     } else {
         Err(validation_error(
             Some("version"),
-            Some("Endpoint version must be 1"),
+            Some("Endpoint version must be equal or greater than 1"),
         ))
     }
 }
