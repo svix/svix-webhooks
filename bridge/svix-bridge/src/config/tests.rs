@@ -1,6 +1,9 @@
 use super::Config;
-use crate::config::{LogFormat, LogLevel, SenderConfig};
+use crate::config::{
+    JsModuleSenderConfig, JsModuleSenderInputOpts, LogFormat, LogLevel, SenderConfig,
+};
 use std::collections::HashMap;
+use std::path::PathBuf;
 use svix_bridge_plugin_queue::config::{QueueConsumerConfig, RabbitMqInputOpts, SenderInputOpts};
 use svix_bridge_types::{SenderOutputOpts, SvixSenderOutputOpts};
 
@@ -480,6 +483,46 @@ fn test_variable_substitution_repeated_lookups() {
     {
         assert_eq!(uri, "amqp://guest:guest@localhost:5672/%2f");
         assert_eq!(queue_name, "two");
+        assert_eq!(token, "x");
+    } else {
+        panic!("sender did not match expected pattern");
+    }
+}
+
+#[test]
+fn test_js_module_sender_input_ok() {
+    let src = r#"
+    senders:
+        - name: "js-module-example"
+          input:
+            type: "js-module"
+            # FIXME: custom module loader needed to use yaml keys for src
+            module_path: "./my-module.js"
+          transformation: |
+            function handler(input) {
+              return {
+                appId: "xxxxx",
+                message: {
+                  eventType: "lipsum.word-lengths.changed",
+                  payload: { lengths: input.lengths }
+                }
+              };
+            }
+          output:
+            type: "svix"
+            token: "x"
+    "#;
+    let cfg = Config::from_src(src, Some(HashMap::new()).as_ref()).unwrap();
+
+    if let SenderConfig::JsModule(JsModuleSenderConfig {
+        input: JsModuleSenderInputOpts::JsModule { module_path, .. },
+        transformation,
+        output: SenderOutputOpts::Svix(SvixSenderOutputOpts { token, .. }),
+        ..
+    }) = &cfg.senders[0]
+    {
+        assert_eq!(module_path, &PathBuf::from("./my-module.js"));
+        assert!(transformation.is_some());
         assert_eq!(token, "x");
     } else {
         panic!("sender did not match expected pattern");
