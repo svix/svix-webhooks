@@ -124,7 +124,10 @@ async fn main() {
             ));
         }
 
-        futures::future::join_all(wait_for).await;
+        if let Err(e) = futures::future::try_join_all(wait_for).await {
+            tracing::error!("{e}");
+            return;
+        }
     }
 
     if args.run_migrations {
