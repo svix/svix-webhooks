@@ -123,7 +123,7 @@ pub async fn run_with_prefix(
     tracing::debug!("Queue: Started");
 
     let op_webhook_sender = OperationalWebhookSenderInner::new(
-        cfg.jwt_secret.clone(),
+        cfg.jwt_signing_config.clone(),
         cfg.operational_webhook_address.clone(),
     );
 

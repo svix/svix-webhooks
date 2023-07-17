@@ -1,28 +1,18 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use std::{borrow::Cow, collections::HashMap, net::SocketAddr, sync::Arc};
+use std::{borrow::Cow, collections::HashMap, net::SocketAddr, sync::Arc, time::Duration};
 
 use figment::{
     providers::{Env, Format, Toml},
     Figment,
 };
 use ipnet::IpNet;
-use std::time::Duration;
-
-use crate::{core::cryptography::Encryption, core::security::Keys, error::Result};
 use serde::{Deserialize, Deserializer};
 use tracing::Level;
 use validator::{Validate, ValidationError};
 
-fn deserialize_jwt_secret<'de, D>(deserializer: D) -> std::result::Result<Keys, D::Error>
-where
-    D: Deserializer<'de>,
-{
-    let buf = String::deserialize(deserializer)?;
-
-    Ok(Keys::new(buf.as_bytes()))
-}
+use crate::{core::cryptography::Encryption, core::security::JwtSigningConfig, error::Result};
 
 fn deserialize_main_secret<'de, D>(deserializer: D) -> std::result::Result<Encryption, D::Error>
 where
@@ -100,9 +90,9 @@ pub struct ConfigurationInner {
     )]
     pub encryption: Encryption,
 
-    /// The JWT secret for authentication - should be secret and securely generated
-    #[serde(deserialize_with = "deserialize_jwt_secret")]
-    pub jwt_secret: Keys,
+    /// Contains the secret and algorithm for signing JWTs
+    #[serde(flatten)]
+    pub jwt_signing_config: Arc<JwtSigningConfig>,
 
     /// This determines the type of key that is generated for endpoint secrets by default (when none is set).
     /// Supported: hmac256 (default), ed25519
@@ -380,6 +370,7 @@ pub fn load() -> Result<Arc<ConfigurationInner>> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::core::security::JWTAlgorithm;
 
     #[test]
     fn test_retry_schedule_parsing() {
@@ -448,5 +439,37 @@ mod tests {
         // Assert that the queue_dsn and cache_dsn overwrite the `redis_dsn`
         assert_eq!(cfg.queue_backend(), QueueBackend::Redis("test_a"));
         assert_eq!(cfg.cache_backend(), CacheBackend::Redis("test_b"));
+    }
+
+    #[test]
+    fn test_jwt_signing_fallback() {
+        let raw_config = r#"
+jwt_secret = "not_actually_a_secret"
+        "#;
+
+        let actual: JwtSigningConfig = Figment::new()
+            .merge(Toml::string(raw_config))
+            .extract()
+            .unwrap();
+
+        assert!(matches!(actual, JwtSigningConfig::Default { .. }));
+    }
+
+    #[test]
+    fn test_jwt_select_algorithm() {
+        let raw_config = r#"
+jwt_secret = "not_actually_a_secret"
+jwt_algorithm = "HS512"
+        "#;
+
+        let actual: JwtSigningConfig = Figment::new()
+            .merge(Toml::string(raw_config))
+            .extract()
+            .unwrap();
+
+        assert!(matches!(
+            actual,
+            JwtSigningConfig::Advanced(JWTAlgorithm::HS512(_))
+        ));
     }
 }

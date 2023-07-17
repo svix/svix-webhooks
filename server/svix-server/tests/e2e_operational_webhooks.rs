@@ -106,10 +106,10 @@ fn start_svix_server_with_operational_webhooks(
     OrganizationId,
     tokio::task::JoinHandle<()>,
 ) {
-    let op_webhook_jwt = generate_org_token(&cfg.jwt_secret, management_org_id()).unwrap();
+    let op_webhook_jwt = generate_org_token(&cfg.jwt_signing_config, management_org_id()).unwrap();
 
     let org_id = OrganizationId::new(None, None);
-    let regular_jwt = generate_org_token(&cfg.jwt_secret, org_id.clone()).unwrap();
+    let regular_jwt = generate_org_token(&cfg.jwt_signing_config, org_id.clone()).unwrap();
 
     let listener = TcpListener::bind("127.0.0.1:0").unwrap();
     let base_url = format!("http://{}", listener.local_addr().unwrap());
