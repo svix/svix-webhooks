@@ -275,7 +275,7 @@ pub async fn start_svix_server_with_cfg_and_org_id(
 
     let cfg = Arc::new(cfg.clone());
 
-    let token = generate_org_token(&cfg.jwt_secret, org_id).unwrap();
+    let token = generate_org_token(&cfg.jwt_signing_config, org_id).unwrap();
     let listener = TcpListener::bind("127.0.0.1:0").unwrap();
     let base_uri = format!("http://{}", listener.local_addr().unwrap());
 

@@ -572,7 +572,8 @@ async fn test_uid_across_users() {
     // It started deadlocking on that 2nd server call, so instead just make a new token and update
     // the auth header on the existing client.
     let cfg = get_default_test_config();
-    let other_token = generate_org_token(&cfg.jwt_secret, OrganizationId::new(None, None)).unwrap();
+    let other_token =
+        generate_org_token(&cfg.jwt_signing_config, OrganizationId::new(None, None)).unwrap();
     client.set_auth_header(other_token);
 
     let _app2: ApplicationOut = client
