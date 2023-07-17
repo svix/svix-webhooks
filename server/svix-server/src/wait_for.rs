@@ -1,14 +1,14 @@
 use std::time::Duration;
 
-const ATTEMPT_TIMEOUT: Duration = Duration::from_secs(3);
-const RETRY_WAIT: Duration = Duration::from_millis(500);
-
 pub async fn wait_for_dsn(
     dsn: &str,
     dependency_name: &str,
     default_port: u16,
     wait_for_seconds: u64,
 ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    const ATTEMPT_TIMEOUT: Duration = Duration::from_secs(3);
+    const RETRY_WAIT: Duration = Duration::from_millis(500);
+
     let dsn = url::Url::parse(dsn).map_err(|_| format!("Invalid {dependency_name} DSN"))?;
 
     let host = dsn
