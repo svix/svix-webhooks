@@ -11,7 +11,6 @@ use crate::{
         permissions,
         types::{BaseId, MessageAttemptTriggerType, MessageEndpointId, MessageStatus},
     },
-    ctx,
     db::models::{application, endpoint, messagedestination},
     error::{HttpError, Result, ValidationErrorItem},
     queue::{MessageTask, TaskQueueProducer},
@@ -42,7 +41,7 @@ async fn bulk_recover_failed_messages(
             query = query.filter(messagedestination::Column::Id.gt(iterator))
         }
 
-        let items = ctx!(query.all(&db).await)?;
+        let items = query.all(&db).await?;
         let cur_len = items.len() as u64;
         iterator = items.last().map(|x| x.id.clone());
 
@@ -92,12 +91,10 @@ pub(super) async fn recover_failed_webhooks(
         .into());
     }
 
-    let endp = ctx!(
-        endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endpoint_id)
-            .one(db)
-            .await
-    )?
-    .ok_or_else(|| HttpError::not_found(None, None))?;
+    let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endpoint_id)
+        .one(db)
+        .await?
+        .ok_or_else(|| HttpError::not_found(None, None))?;
 
     let db = db.clone();
     let queue_tx = queue_tx.clone();

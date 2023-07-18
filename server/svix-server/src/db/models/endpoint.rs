@@ -5,7 +5,7 @@ use crate::core::types::{
     ApplicationId, BaseId, EndpointHeaders, EndpointId, EndpointIdOrUid, EndpointSecretInternal,
     EndpointUid, EventChannelSet, EventTypeNameSet, ExpiringSigningKeys,
 };
-use crate::{ctx, error};
+use crate::error;
 use chrono::Utc;
 use sea_orm::ActiveValue::Set;
 use sea_orm::{entity::prelude::*, Condition};
@@ -100,12 +100,11 @@ impl ActiveModel {
         app_id: ApplicationId,
         endp_id: EndpointIdOrUid,
     ) -> error::Result<Option<(Self, endpointmetadata::ActiveModel)>> {
-        let (endp, metadata) = match ctx!(
-            Entity::secure_find_by_id_or_uid(app_id, endp_id)
-                .find_also_related(endpointmetadata::Entity)
-                .one(db)
-                .await
-        )? {
+        let (endp, metadata) = match Entity::secure_find_by_id_or_uid(app_id, endp_id)
+            .find_also_related(endpointmetadata::Entity)
+            .one(db)
+            .await?
+        {
             Some(models) => models,
             None => return Ok(None),
         };

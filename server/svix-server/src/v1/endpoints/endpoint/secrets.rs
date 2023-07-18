@@ -17,7 +17,6 @@ use crate::{
         permissions,
         types::{EndpointSecretInternal, ExpiringSigningKey, ExpiringSigningKeys},
     },
-    ctx,
     db::models::endpoint,
     error::{HttpError, Result},
     v1::utils::{ApplicationEndpointPath, NoContent, ValidatedJson},
@@ -44,12 +43,10 @@ pub(super) async fn get_endpoint_secret(
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<EndpointSecretOut>> {
-    let endp = ctx!(
-        endpoint::Entity::secure_find_by_id_or_uid(app.id, endpoint_id)
-            .one(db)
-            .await
-    )?
-    .ok_or_else(|| HttpError::not_found(None, None))?;
+    let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id, endpoint_id)
+        .one(db)
+        .await?
+        .ok_or_else(|| HttpError::not_found(None, None))?;
     Ok(Json(EndpointSecretOut {
         key: endp.key.into_endpoint_secret(&cfg.encryption)?,
     }))
@@ -68,12 +65,10 @@ pub(super) async fn rotate_endpoint_secret(
     permissions::Application { app }: permissions::Application,
     ValidatedJson(data): ValidatedJson<EndpointSecretRotateIn>,
 ) -> Result<NoContent> {
-    let mut endp = ctx!(
-        endpoint::Entity::secure_find_by_id_or_uid(app.id, endpoint_id)
-            .one(db)
-            .await
-    )?
-    .ok_or_else(|| HttpError::not_found(None, None))?;
+    let mut endp = endpoint::Entity::secure_find_by_id_or_uid(app.id, endpoint_id)
+        .one(db)
+        .await?
+        .ok_or_else(|| HttpError::not_found(None, None))?;
 
     let now = Utc::now();
     let last_key = ExpiringSigningKey {
@@ -115,7 +110,7 @@ pub(super) async fn rotate_endpoint_secret(
         ))),
         ..endp.into()
     };
-    let endp = ctx!(endp.update(db).await)?;
+    let endp = endp.update(db).await?;
 
     op_webhooks
         .send_operational_webhook(

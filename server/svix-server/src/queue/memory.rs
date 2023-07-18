@@ -4,7 +4,8 @@ use axum::async_trait;
 use chrono::Utc;
 use tokio::{sync::mpsc, time::sleep};
 
-use crate::{err_queue, error::Result};
+use crate::error::Error;
+use crate::error::Result;
 
 use super::{
     Acker, QueueTask, TaskQueueConsumer, TaskQueueDelivery, TaskQueueProducer, TaskQueueReceive,
@@ -62,7 +63,7 @@ impl TaskQueueReceive for MemoryQueueConsumer {
                     tracing::trace!("MemoryQueue: event recv <");
                     vec![delivery]
                 } else {
-                    return Err(err_queue!("Failed to fetch from queue"))
+                    return Err(Error::queue("Failed to fetch from queue"))
                 }
             }
         };

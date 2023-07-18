@@ -4,7 +4,7 @@
 use crate::core::types::{
     ApplicationId, ApplicationIdOrUid, ApplicationUid, BaseId, OrganizationId,
 };
-use crate::{ctx, error};
+use crate::error;
 use chrono::Utc;
 use sea_orm::ActiveValue::Set;
 use sea_orm::ConnectionTrait;
@@ -60,7 +60,9 @@ impl Model {
         db: &impl ConnectionTrait,
     ) -> error::Result<applicationmetadata::ActiveModel> {
         let query = applicationmetadata::Entity::secure_find(self.id.clone());
-        let metadata = ctx!(query.one(db).await)?
+        let metadata = query
+            .one(db)
+            .await?
             .map(applicationmetadata::ActiveModel::from)
             .unwrap_or_else(|| applicationmetadata::ActiveModel::new(self.id.clone(), None));
 
@@ -72,12 +74,10 @@ impl Model {
         org_id: OrganizationId,
         id_or_uid: ApplicationIdOrUid,
     ) -> error::Result<Option<(Self, applicationmetadata::Model)>> {
-        let result = ctx!(
-            Entity::secure_find_by_id_or_uid(org_id, id_or_uid)
-                .find_also_related(applicationmetadata::Entity)
-                .one(db)
-                .await
-        )?;
+        let result = Entity::secure_find_by_id_or_uid(org_id, id_or_uid)
+            .find_also_related(applicationmetadata::Entity)
+            .one(db)
+            .await?;
         Ok(result.map(|(app, metadata)| {
             let metadata =
                 metadata.unwrap_or_else(|| applicationmetadata::Model::new(app.id.clone()));

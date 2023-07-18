@@ -11,9 +11,7 @@ use crate::{
             MessageAttemptTriggerType, MessageId, MessageUid,
         },
     },
-    ctx,
     db::models::application,
-    err_generic,
     error::{HttpError, Result},
     queue::{MessageTaskBatch, TaskQueueProducer},
     v1::utils::{
@@ -44,6 +42,7 @@ use svix_server_derive::{aide_annotate, ModelIn, ModelOut};
 use validator::{Validate, ValidationError};
 
 use crate::db::models::message;
+use crate::error::Error;
 
 pub fn validate_channels_msg(
     channels: &EventChannelSet,
@@ -273,7 +272,7 @@ async fn list_messages(
         }
     };
 
-    let out = ctx!(query.all(db).await)?.into_iter().map(into).collect();
+    let out = query.all(db).await?.into_iter().map(into).collect();
 
     Ok(Json(MessageOut::list_response(
         out,
@@ -336,14 +335,14 @@ pub(crate) async fn create_message_inner(
     )
     .await?
     // Should never happen since you're giving it an existing Application, but just in case
-    .ok_or_else(|| err_generic!("Application doesn't exist: {}", app.id))?;
+    .ok_or_else(|| Error::generic(format!("Application doesn't exist: {}", app.id)))?;
 
     let msg = message::ActiveModel {
         app_id: Set(app.id.clone()),
         org_id: Set(app.org_id),
         ..data.into()
     };
-    let msg = ctx!(msg.insert(db).await)?;
+    let msg = msg.insert(db).await?;
 
     let trigger_type = MessageAttemptTriggerType::Scheduled;
     if !create_message_app
@@ -387,12 +386,10 @@ async fn get_message(
     ValidatedQuery(GetMessageQueryParams { with_content }): ValidatedQuery<GetMessageQueryParams>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<MessageOut>> {
-    let msg = ctx!(
-        message::Entity::secure_find_by_id_or_uid(app.id, msg_id)
-            .one(db)
-            .await
-    )?
-    .ok_or_else(|| HttpError::not_found(None, None))?;
+    let msg = message::Entity::secure_find_by_id_or_uid(app.id, msg_id)
+        .one(db)
+        .await?
+        .ok_or_else(|| HttpError::not_found(None, None))?;
     let msg_out = if with_content {
         msg.into()
     } else {
@@ -410,16 +407,14 @@ async fn expunge_message_content(
     Path(ApplicationMsgPath { msg_id, .. }): Path<ApplicationMsgPath>,
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
 ) -> Result<StatusCode> {
-    let mut msg = ctx!(
-        message::Entity::secure_find_by_id_or_uid(app.id, msg_id)
-            .one(db)
-            .await
-    )?
-    .ok_or_else(|| HttpError::not_found(None, None))?
-    .into_active_model();
+    let mut msg = message::Entity::secure_find_by_id_or_uid(app.id, msg_id)
+        .one(db)
+        .await?
+        .ok_or_else(|| HttpError::not_found(None, None))?
+        .into_active_model();
 
     msg.payload = Set(None);
-    ctx!(msg.update(db).await)?;
+    msg.update(db).await?;
 
     Ok(StatusCode::NO_CONTENT)
 }

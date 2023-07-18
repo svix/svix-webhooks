@@ -118,17 +118,3 @@ pub async fn wipe_org(cfg: &Configuration, org_id: OrganizationId) {
         .await
         .unwrap_or_else(|_| panic!("Error deleting event types associated with org ID {org_id}"));
 }
-
-#[macro_export]
-/// Runs an async closure inside of a DB Transaction. The closure should return an [`error::Result<T>`]. If the closure returns an error for any reason, the transaction is rolled back.
-macro_rules! transaction {
-    ($db:expr, $do:expr) => {
-        $crate::ctx!(
-            #[allow(clippy::redundant_closure_call)]
-            sea_orm::TransactionTrait::transaction::<_, _, $crate::error::Error>($db, |txn| {
-                std::boxed::Box::pin({ $do(txn) })
-            })
-            .await
-        )
-    };
-}

@@ -10,7 +10,8 @@ use lapin::{
 };
 use svix_ksuid::{KsuidLike, KsuidMs};
 
-use crate::{ctx, err_generic, err_queue, error::Result};
+use crate::error::Result;
+use crate::error::{Error, Traceable};
 use std::{sync::Arc, time::Duration};
 
 use super::{
@@ -39,14 +40,20 @@ pub async fn new_pair(
     queue_name: String,
     prefetch_size: u16,
 ) -> Result<(TaskQueueProducer, TaskQueueConsumer)> {
-    let conn = ctx!(lapin::Connection::connect(dsn, ConnectionProperties::default()).await)?;
-    let producer_chan = ctx!(conn.create_channel().await)?;
-    let consumer_chan = ctx!(conn.create_channel().await)?;
+    let conn = lapin::Connection::connect(dsn, ConnectionProperties::default()).await?;
+    let producer_chan = conn.create_channel().await?;
+    let consumer_chan = conn.create_channel().await?;
 
-    let exchange_name = ctx!(declare_delayed_message_exchange(&producer_chan).await)?;
-    ctx!(declare_bound_queue(&queue_name, &exchange_name, &producer_chan).await)?;
+    let exchange_name = declare_delayed_message_exchange(&producer_chan)
+        .await
+        .trace()?;
+    declare_bound_queue(&queue_name, &exchange_name, &producer_chan)
+        .await
+        .trace()?;
 
-    let consumer = ctx!(start_queue_consumer(&queue_name, &consumer_chan, prefetch_size).await)?;
+    let consumer = start_queue_consumer(&queue_name, &consumer_chan, prefetch_size)
+        .await
+        .trace()?;
     let consumer = Consumer { consumer };
 
     let producer = Producer(Arc::new(ProducerInner {
@@ -83,16 +90,14 @@ async fn declare_delayed_message_exchange(channel: &lapin::Channel) -> Result<St
         AMQPValue::LongString("direct".into()),
     );
 
-    ctx!(
-        channel
-            .exchange_declare(
-                exchange_name,
-                lapin::ExchangeKind::Custom("x-delayed-message".into()),
-                opts,
-                args
-            )
-            .await
-    )?;
+    channel
+        .exchange_declare(
+            exchange_name,
+            lapin::ExchangeKind::Custom("x-delayed-message".into()),
+            opts,
+            args,
+        )
+        .await?;
 
     Ok(exchange_name.to_owned())
 }
@@ -120,20 +125,19 @@ async fn declare_bound_queue(
     // Refs https://www.rabbitmq.com/maxlength.html#definition-using-x-args and https://www.rabbitmq.com/dlx.html#using-optional-queue-arguments
     // We may want to figure out what the queue length enforcement looks like and dead letter queueing at a later point in time
     let args = FieldTable::default();
-    ctx!(channel.queue_declare(queue_name, opts, args).await)?;
+    channel.queue_declare(queue_name, opts, args).await?;
 
     let routing_key = queue_name;
-    ctx!(
-        channel
-            .queue_bind(
-                queue_name,
-                exchange_name,
-                routing_key,
-                QueueBindOptions { nowait: false },
-                FieldTable::default()
-            )
-            .await
-    )?;
+
+    channel
+        .queue_bind(
+            queue_name,
+            exchange_name,
+            routing_key,
+            QueueBindOptions { nowait: false },
+            FieldTable::default(),
+        )
+        .await?;
 
     Ok(())
 }
@@ -179,31 +183,27 @@ async fn start_queue_consumer(
     //
     // "global" enforces the same limit for other consumers on the channel, which isn't necessarily
     // what we want
-    ctx!(
-        channel
-            .basic_qos(prefetch_size, BasicQosOptions { global: false })
-            .await
-    )?;
+    channel
+        .basic_qos(prefetch_size, BasicQosOptions { global: false })
+        .await?;
 
-    ctx!(
-        channel
-            .basic_consume(queue_name, &consumer_tag, opts, args)
-            .await
-    )
+    Ok(channel
+        .basic_consume(queue_name, &consumer_tag, opts, args)
+        .await?)
 }
 
 #[axum::async_trait]
 impl TaskQueueSend for Producer {
     async fn send(&self, task: Arc<QueueTask>, delay: Option<Duration>) -> Result<()> {
         let payload = serde_json::to_vec(&task)
-            .map_err(|e| err_generic!("unable to serialize queue task wtf: {:?}", e))?;
+            .map_err(|e| Error::generic(format!("unable to serialize queue task wtf: {:?}", e)))?;
 
         let mut headers = FieldTable::default();
         if let Some(delay) = delay {
             let delay_ms: u32 = delay
                 .as_millis()
                 .try_into()
-                .map_err(|_| err_queue!("message delay is too large"))?;
+                .map_err(|_| Error::queue("message delay is too large"))?;
             headers.insert("x-delay".into(), AMQPValue::LongUInt(delay_ms))
         }
 
@@ -221,20 +221,19 @@ impl TaskQueueSend for Producer {
             .with_message_id(id.into())
             .with_headers(headers);
 
-        let confirm = ctx!(
-            self.0
-                .channel
-                .basic_publish(
-                    &self.0.exchange_name,
-                    routing_key,
-                    options,
-                    &payload,
-                    properties
-                )
-                .await
-        )?;
+        let confirm = self
+            .0
+            .channel
+            .basic_publish(
+                &self.0.exchange_name,
+                routing_key,
+                options,
+                &payload,
+                properties,
+            )
+            .await?;
 
-        ctx!(confirm.await)?;
+        confirm.await?;
 
         Ok(())
     }
@@ -245,19 +244,21 @@ impl TaskQueueReceive for Consumer {
     async fn receive_all(&mut self) -> Result<Vec<TaskQueueDelivery>> {
         // Unfortunately, lapin::Consumer currently has no API for fetching a batch of messages
         // without potentially blocking for each one. So we'll always return a vec! of length 1
-        let delivery = ctx!(self.consumer.next().await.ok_or(err_generic!(
-            "rabbitmq consumer unexpectedly returned nothing!"
-        ))?)?;
+        let delivery = self.consumer.next().await.ok_or(Error::generic(
+            "rabbitmq consumer unexpectedly returned nothing!",
+        ))??;
 
         let id = delivery
             .properties
             .message_id()
             .as_ref()
-            .ok_or(err_generic!("task is missing message_id!"))?
+            .ok_or(Error::generic("task is missing message_id!"))?
             .to_string();
 
         let task: QueueTask = serde_json::from_slice(&delivery.data).map_err(|e| {
-            err_generic!("rabbitmq task deserialization unexpectedly failed?!: {e:?}")
+            Error::generic(format!(
+                "rabbitmq task deserialization unexpectedly failed?!: {e:?}"
+            ))
         })?;
 
         Ok(vec![TaskQueueDelivery {
