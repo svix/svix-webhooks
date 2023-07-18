@@ -418,12 +418,11 @@ fn test_variable_substitution_missing_numeric_var_is_err() {
     assert_eq!(want, err.to_string());
 }
 
+/// This is probably a given, but we should expect a single variable can be referenced multiple
+/// times within the config.
+/// The concrete use case: auth tokens.
 #[test]
 fn test_variable_substitution_repeated_lookups() {
-    // This is probably a given, but we should expect a single variable can be referenced multiple
-    // times within the config.
-    // The concrete use case: auth tokens.
-
     let src = r#"
     senders:
       - name: "rabbitmq-1"
@@ -484,4 +483,69 @@ fn test_variable_substitution_repeated_lookups() {
     } else {
         panic!("sender did not match expected pattern");
     }
+}
+
+/// This is to ensure the order of operations.
+/// Variables in js source code fragments could result in invalid JS source.
+/// Now that we are validating transformations parse as JS, this test aims to make sure the
+/// replacements happen before the JS parsing does.
+#[test]
+fn test_variable_substitution_in_transformations() {
+    let src = r#"
+    senders:
+      - name: "rabbitmq-1"
+        input:
+          type: "rabbitmq"
+          uri: "${RABBIT_URI}"
+          queue_name: "${QUEUE_NAME}"
+        transformation: |
+          function handler(input) {
+            return {
+                appId: "xxx",
+                message: {
+                  eventType: "queue.message.handled",
+                  payload: {
+                    queueName: "${QUEUE_NAME}",
+                    // Without the substitution for NUMBER, this expression would be invalid syntax.
+                    number: ${NUMBER} - 10,
+                    data: input,
+                  }
+                }
+            };
+          }
+        output:
+          type: "svix"
+          token: "${SVIX_TOKEN}"
+    "#;
+    let mut vars = HashMap::new();
+    vars.insert(String::from("NUMBER"), String::from("123"));
+    vars.insert(String::from("QUEUE_NAME"), String::from("one"));
+    let cfg = Config::from_src(src, Some(&vars)).unwrap();
+
+    let xform = cfg.senders[0].transformation().unwrap();
+    xform.source().contains(r#"queueName: "one""#);
+    xform.source().contains(r#"number: 123 - 10,"#);
+}
+
+/// Check that the config parser validates the JS source fragments in it.
+#[test]
+fn test_transformation_validation_bad_syntax_is_err() {
+    let src = r#"
+    senders:
+      - name: "bad xform"
+        input:
+          type: "rabbitmq"
+          uri: "xxx"
+          queue_name: "xxx"
+        transformation: |
+          // invalid syntax
+          let 123 = 456
+        output:
+          type: "svix"
+          token: "xxx"
+    "#;
+    let err = Config::from_src(src, None).err().unwrap();
+    assert!(err
+        .to_string()
+        .contains("failed to parse transformation for sender `bad xform`"))
 }

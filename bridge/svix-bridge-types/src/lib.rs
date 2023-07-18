@@ -104,6 +104,7 @@ pub struct TransformerJob {
     pub script: String,
 }
 
+#[derive(Debug)]
 pub enum TransformerOutput {
     /// A successfully transformed payload.
     // Both senders and receivers require a map type (Object) but have different requirements which
