@@ -160,6 +160,12 @@ pub struct ListAttemptedMessagesQueryParams {
     status: Option<MessageStatus>,
     before: Option<DateTime<Utc>>,
     after: Option<DateTime<Utc>>,
+    #[serde(default = "default_true")]
+    with_content: bool,
+}
+
+fn default_true() -> bool {
+    true
 }
 
 /// List messages for a particular endpoint. Additionally includes metadata about the latest message attempt.
@@ -174,6 +180,7 @@ async fn list_attempted_messages(
         status,
         before,
         after,
+        with_content,
     }): ValidatedQuery<ListAttemptedMessagesQueryParams>,
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
@@ -238,7 +245,15 @@ async fn list_attempted_messages(
     let into = |(dest, msg): (messagedestination::Model, Option<message::Model>)| {
         let msg =
             msg.ok_or_else(|| err_database!("No associated message with messagedestination"))?;
-        Ok(EndpointMessageOut::from_dest_and_msg(dest, msg))
+        Ok(EndpointMessageOut {
+            msg: if with_content {
+                msg.into()
+            } else {
+                MessageOut::without_payload(msg)
+            },
+            status: dest.status,
+            next_attempt: dest.next_attempt,
+        })
     };
 
     let out = ctx!(dests_and_msgs.all(db).await)?
