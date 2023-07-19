@@ -8,6 +8,7 @@
 {{!-- for enum schemas --}}
 {{#isEnum}}
 /// {{{description}}}
+{{#isString}}
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
 pub enum {{{classname}}} {
 {{#allowableValues}}
@@ -16,6 +17,17 @@ pub enum {{{classname}}} {
     {{{name}}},
 {{/enumVars}}{{/allowableValues}}
 }
+{{/isString}}
+{{#isInteger}}
+#[repr(i16)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize_repr, Deserialize_repr)]
+pub enum {{{classname}}} {
+{{#allowableValues}}
+{{#enumVars}}
+    {{{name}}} = {{{value}}},
+{{/enumVars}}{{/allowableValues}}
+}
+{{/isInteger}}
 
 impl ToString for {{{classname}}} {
     fn to_string(&self) -> String {
