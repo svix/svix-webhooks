@@ -119,7 +119,7 @@ impl<T: DeserializeOwned> RedisStreamDeserialize<RedisStreamJsonSerde> for T {
         let Some(payload) = map.get("payload") else {
             return Err(QueueError::Serde(serde_json::Error::missing_field(
                 "payload",
-            )))
+            )));
         };
 
         match payload {
