@@ -3,6 +3,12 @@
 ## Next
 * 
 
+## Version 1.7.0
+* Server: update Docker image to use latest Rust version
+* Server: support additional JWT signing algorithms (including asymmetric!).
+* Server: Avoid panics when using the wait-for option (better errors printing).
+* Libs/Rust: fix handling of integer enums (was causing failures for some endpoints).
+
 ## Version 1.6.0
 * Server: add 'event_types' query param to 'list-attempted-messages'
 * Libs: implement the `patch` endpoints for partial updates
