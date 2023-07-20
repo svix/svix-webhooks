@@ -3,6 +3,7 @@ use std::borrow::Cow;
 use std::collections::HashMap;
 use std::io::{Error, ErrorKind};
 use std::net::SocketAddr;
+use std::num::NonZeroUsize;
 use svix_bridge_plugin_queue::config::{
     into_receiver_output, QueueConsumerConfig, ReceiverOutputOpts as QueueOutOpts,
 };
@@ -27,6 +28,8 @@ pub struct Config {
     pub opentelemetry: Option<OtelExporterConfig>,
     #[serde(default = "default_http_listen_address")]
     pub http_listen_address: SocketAddr,
+    #[serde(default = "default_transformation_worker_count")]
+    pub transformation_worker_count: NonZeroUsize,
 }
 
 impl Config {
@@ -46,13 +49,48 @@ impl Config {
         } else {
             Cow::Borrowed(raw_src)
         };
-        serde_yaml::from_str(&src)
-            .map_err(|e| Error::new(ErrorKind::Other, format!("Failed to parse config: {}", e)))
+        let cfg: Self = serde_yaml::from_str(&src)
+            .map_err(|e| Error::new(ErrorKind::Other, format!("Failed to parse config: {}", e)))?;
+
+        for sc in &cfg.senders {
+            if let Some(tc) = sc.transformation() {
+                crate::runtime::validate_script(tc.source().as_str()).map_err(|e| {
+                    Error::new(
+                        ErrorKind::Other,
+                        format!(
+                            "failed to parse transformation for sender `{}`: {:?}",
+                            &sc.name(),
+                            e,
+                        ),
+                    )
+                })?;
+            }
+        }
+
+        for rc in &cfg.receivers {
+            if let Some(tc) = &rc.transformation {
+                crate::runtime::validate_script(tc.source().as_str()).map_err(|e| {
+                    Error::new(
+                        ErrorKind::Other,
+                        format!(
+                            "failed to parse transformation for receiver `{}`: {:?}",
+                            &rc.name, e,
+                        ),
+                    )
+                })?;
+            }
+        }
+
+        Ok(cfg)
     }
 }
 
 fn default_http_listen_address() -> SocketAddr {
     "0.0.0.0:5000".parse().expect("default http listen address")
+}
+
+fn default_transformation_worker_count() -> NonZeroUsize {
+    NonZeroUsize::new(4).expect("4 is greater than 0")
 }
 
 #[derive(Deserialize)]
@@ -104,6 +142,19 @@ pub enum SenderConfig {
         feature = "sqs"
     ))]
     QueueConsumer(QueueConsumerConfig),
+}
+
+impl SenderConfig {
+    pub fn name(&self) -> &str {
+        match self {
+            SenderConfig::QueueConsumer(cfg) => &cfg.name,
+        }
+    }
+    pub fn transformation(&self) -> Option<&TransformationConfig> {
+        match self {
+            SenderConfig::QueueConsumer(cfg) => cfg.transformation.as_ref(),
+        }
+    }
 }
 
 impl TryFrom<SenderConfig> for Box<dyn SenderInput> {

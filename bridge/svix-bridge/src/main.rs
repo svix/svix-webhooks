@@ -204,18 +204,26 @@ async fn main() -> Result<()> {
     // help keep the coupling more loose, with less stateful baggage.
     // Starting with this just to keep the JS executor stuff here in the binary.
     tokio::spawn(async move {
-        let tp = runtime::TpHandle::new();
+        tracing::info!(
+            "Starting JS Transformation Workers: {}",
+            cfg.transformation_worker_count
+        );
+        let pooler = runtime::JsPooler::new(cfg.transformation_worker_count);
         while let Some(TransformerJob {
             input,
             script,
             callback_tx,
         }) = xform_rx.recv().await
         {
-            let tp = tp.clone();
+            let tp = pooler.clone();
             tokio::spawn(async move {
                 let out = tp.run_script(input, script).await;
+                // FIXME: seeing this Err case come up during load testing.
+                //   Seems like we shouldn't be hitting this so easily while the process is not terminating.
+                //   Regularly there are group error log lines that show up right at the end of an
+                //   `oha` run, POSTing to receivers. Need to investigate why.
                 if callback_tx
-                    .send(out.map_err(|e| tracing::error!("{}", e)))
+                    .send(out.map_err(|e| tracing::error!("{:?}", e)))
                     .is_err()
                 {
                     // If the callback fails, the plugin is likely unwinding/dropping.

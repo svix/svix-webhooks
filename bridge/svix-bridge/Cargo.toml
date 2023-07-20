@@ -23,16 +23,16 @@ serde_yaml = "0.9"
 svix-ksuid = "0.7.0"
 svix-bridge-plugin-queue = { optional=true, path = "../svix-bridge-plugin-queue" }
 svix-bridge-types = { path = "../svix-bridge-types" }
-threadpool = "1"
 tokio = { version = "1", features = ["full"] }
 tower-http = { version = "0.3", features = ["trace"] }
 tracing = "0.1"
 tracing-opentelemetry = "0.18.0"
 tracing-subscriber = { version="0.3", features=["env-filter", "fmt", "json"] }
-
-[dependencies.deno_core]
-# tagged deno@1.23.3 (does not seem to leak) though quite old.
-version = "0.142.0"
+# N.b. for newer deno versions (like this) the runtimes must be retained and reused since they will leak memory if you
+# create/drop them.
+deno_runtime = "0.119.0"
+deno_ast = "0.27.2"
+deadpool = { version = "0.9.5", features = ["unmanaged", "rt_tokio_1"] }
 
 [dev-dependencies]
 chrono = "0.4"

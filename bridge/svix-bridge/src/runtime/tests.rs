@@ -1,6 +1,11 @@
-use super::run_script_inner;
+use super::{run_script_inner, validate_script};
+use deno_runtime::deno_core::JsRuntime;
 use serde_json::json;
 use svix_bridge_types::{TransformerInput, TransformerOutput};
+
+fn get_test_rt() -> JsRuntime {
+    JsRuntime::new(Default::default())
+}
 
 // Really just trying to figure out if the deno runtime is working the way I hope.
 #[test]
@@ -11,7 +16,8 @@ fn test_happy_fn() {
     }
     "#
     .to_string();
-    let res = run_script_inner(&json!({ "y": 456 }).into(), src).unwrap();
+    let mut rt = get_test_rt();
+    let res = run_script_inner(&mut rt, json!({ "y": 456 }).into(), src).unwrap();
     match res {
         TransformerOutput::Object(v) => {
             assert_eq!(v["x"].as_i64(), Some(123));
@@ -29,7 +35,9 @@ fn test_invalid_output_bool() {
     }
     "#
     .to_string();
-    let res = run_script_inner(&json!({}).into(), src).unwrap();
+
+    let mut rt = get_test_rt();
+    let res = run_script_inner(&mut rt, json!({}).into(), src).unwrap();
     match res {
         TransformerOutput::Invalid => (),
         TransformerOutput::Object(_) => panic!("got unexpected return value"),
@@ -46,7 +54,8 @@ fn test_invalid_output_array() {
     }
     "#
     .to_string();
-    let res = run_script_inner(&json!({}).into(), src).unwrap();
+    let mut rt = get_test_rt();
+    let res = run_script_inner(&mut rt, json!({}).into(), src).unwrap();
     match res {
         TransformerOutput::Invalid => (),
         TransformerOutput::Object(_) => {
@@ -64,8 +73,10 @@ fn test_string_input() {
     }
     "#
     .to_string();
+    let mut rt = get_test_rt();
     let res = run_script_inner(
-        &TransformerInput::String(String::from(r#"{"x": 123}"#)),
+        &mut rt,
+        TransformerInput::String(String::from(r#"{"x": 123}"#)),
         src,
     )
     .unwrap();
@@ -87,12 +98,39 @@ fn test_string_input2() {
     }
     "#
     .to_string();
-    let res =
-        run_script_inner(&TransformerInput::String(String::from("Hello World")), src).unwrap();
+    let mut rt = get_test_rt();
+    let res = run_script_inner(
+        &mut rt,
+        TransformerInput::String(String::from("Hello World")),
+        src,
+    )
+    .unwrap();
     match res {
         TransformerOutput::Object(v) => {
             assert_eq!(v["payload"].as_str(), Some("Hello World"));
         }
         TransformerOutput::Invalid => (),
     }
+}
+
+#[test]
+fn test_validate_script_bad_syntax_is_err() {
+    assert!(validate_script("let 123 = ';").is_err());
+}
+
+#[test]
+fn test_validate_script_empty_handler_is_ok() {
+    assert!(validate_script("function handler() { }").is_ok());
+}
+
+#[test]
+fn test_validate_script_arrow_fn_is_ok() {
+    assert!(validate_script("const handler = () => ({ a: 123 })").is_ok());
+}
+
+/// Technically, this should be legal though the utility is questionable.
+#[test]
+fn test_validate_script_empty_is_ok() {
+    assert!(validate_script("").is_ok());
+    assert!(validate_script("    ").is_ok());
 }
