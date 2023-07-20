@@ -1,6 +1,8 @@
 use aide::openapi::{self, OpenApi, Parameter, ReferenceOr};
 use schemars::{visit::Visitor, JsonSchema};
 
+const VERSION: &str = env!("CARGO_PKG_VERSION");
+
 pub fn initialize_openapi() -> OpenApi {
     aide::gen::on_error(|error| {
         tracing::error!("Aide generation error: {error}");
@@ -41,7 +43,7 @@ pub fn initialize_openapi() -> OpenApi {
     OpenApi {
         info: openapi::Info {
             title: "Svix API".to_owned(),
-            version: "1.4".to_owned(),
+            version: VERSION.to_owned(),
             extensions: indexmap::indexmap! {
                 "x-logo".to_string() => serde_json::json!({
                     "url": "https://www.svix.com/static/img/brand-padded.svg",
