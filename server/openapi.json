@@ -486,15 +486,17 @@
                         "type": "string"
                     },
                     "version": {
+                        "default": 1,
+                        "deprecated": true,
                         "example": 1,
                         "format": "uint16",
                         "minimum": 1,
+                        "nullable": true,
                         "type": "integer"
                     }
                 },
                 "required": [
-                    "url",
-                    "version"
+                    "url"
                 ],
                 "type": "object"
             },
@@ -653,6 +655,7 @@
                         "type": "string"
                     },
                     "version": {
+                        "deprecated": true,
                         "example": 1,
                         "format": "uint16",
                         "minimum": 1,
@@ -732,8 +735,10 @@
                         "type": "string"
                     },
                     "version": {
+                        "deprecated": true,
+                        "example": 1,
                         "format": "uint16",
-                        "minimum": 0,
+                        "minimum": 1,
                         "type": "integer"
                     }
                 },
@@ -884,15 +889,17 @@
                         "type": "string"
                     },
                     "version": {
+                        "default": 1,
+                        "deprecated": true,
                         "example": 1,
                         "format": "uint16",
                         "minimum": 1,
+                        "nullable": true,
                         "type": "integer"
                     }
                 },
                 "required": [
-                    "url",
-                    "version"
+                    "url"
                 ],
                 "type": "object"
             },
@@ -1802,6 +1809,7 @@
                         "type": "string"
                     },
                     "version": {
+                        "deprecated": true,
                         "example": 1,
                         "format": "uint16",
                         "minimum": 1,
