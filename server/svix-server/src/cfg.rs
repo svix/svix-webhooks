@@ -281,6 +281,10 @@ pub struct InternalConfig {
     /// The base url to use for the app portal
     #[serde(default = "default_app_portal_url")]
     pub app_portal_url: String,
+
+    /// The server url to use for the app portal
+    #[serde(default)]
+    pub app_portal_server_url: Option<String>,
 }
 
 fn default_region() -> String {

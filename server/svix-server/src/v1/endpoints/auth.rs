@@ -93,6 +93,7 @@ async fn app_portal_access(
         "appId": app.id,
         "oneTimeToken": one_time_token,
         "region": &cfg.internal.region,
+        "serverUrl": &cfg.internal.app_portal_server_url,
     }))
     .map_err(|_| HttpError::internal_server_error(None, None))?;
 
