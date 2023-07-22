@@ -40,6 +40,9 @@ func String(s string) *string {
 func NullableString(s string) *openapi.NullableString {
 	return openapi.NewNullableString(&s)
 }
+func NullableInt32(num *int32) *openapi.NullableInt32 {
+	return openapi.NewNullableInt32(num)
+}
 func Int32(i int32) *int32 {
 	return &i
 }
