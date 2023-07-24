@@ -46,7 +46,7 @@ opentelemetry-otlp = { version = "0.10" }
 validator = { version = "0.14.0", features = ["derive"] }
 jwt-simple = "0.10.8"
 ed25519-compact = "1.0.11"
-chrono = { version="0.4.19", features = ["serde"] }
+chrono = { version="0.4.26", features = ["serde"] }
 reqwest = { version = "0.11.9", features = ["json", "rustls-tls", "trust-dns"], default-features = false }
 bb8 = "0.8"
 bb8-redis = "0.13.1"
