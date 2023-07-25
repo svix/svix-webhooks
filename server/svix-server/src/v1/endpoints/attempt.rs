@@ -278,6 +278,8 @@ pub struct ListAttemptsByEndpointQueryParams {
     channel: Option<EventChannel>,
     before: Option<DateTime<Utc>>,
     after: Option<DateTime<Utc>>,
+    #[serde(default = "default_true")]
+    with_content: bool,
 }
 
 // Applies filters common to [`list_attempts_by_endpoint`] and [`list_attempts_by_msg`]
@@ -359,6 +361,7 @@ async fn list_attempts_by_endpoint(
         channel,
         before,
         after,
+        with_content,
     }): ValidatedQuery<ListAttemptsByEndpointQueryParams>,
     EventTypesQueryParams(event_types): EventTypesQueryParams,
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
@@ -387,6 +390,13 @@ async fn list_attempts_by_endpoint(
 
     let out = ctx!(query.all(db).await)?
         .into_iter()
+        .map(|mut attempt| {
+            if !with_content {
+                attempt.response = "{}".to_owned()
+            }
+
+            attempt
+        })
         .map(Into::into)
         .collect();
 
@@ -408,6 +418,8 @@ pub struct ListAttemptsByMsgQueryParams {
     endpoint_id: Option<EndpointIdOrUid>,
     before: Option<DateTime<Utc>>,
     after: Option<DateTime<Utc>>,
+    #[serde(default = "default_true")]
+    with_content: bool,
 }
 
 /// List attempts by message id
@@ -424,6 +436,7 @@ async fn list_attempts_by_msg(
         endpoint_id,
         before,
         after,
+        with_content,
     }): ValidatedQuery<ListAttemptsByMsgQueryParams>,
     Path(ApplicationMsgPath { msg_id, .. }): Path<ApplicationMsgPath>,
     EventTypesQueryParams(event_types): EventTypesQueryParams,
@@ -465,6 +478,13 @@ async fn list_attempts_by_msg(
     let query = apply_pagination_desc(query, messageattempt::Column::Id, limit, iterator);
     let out = ctx!(query.all(db).await)?
         .into_iter()
+        .map(|mut attempt| {
+            if !with_content {
+                attempt.response = "{}".to_owned()
+            }
+
+            attempt
+        })
         .map(Into::into)
         .collect();
 
