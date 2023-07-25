@@ -8,7 +8,6 @@ use aide::axum::ApiRouter;
 
 use crate::core::cache::Cache;
 use cfg::ConfigurationInner;
-use once_cell::sync::Lazy;
 use opentelemetry::runtime::Tokio;
 use opentelemetry_otlp::WithExportConfig;
 use queue::TaskQueueProducer;
@@ -47,7 +46,7 @@ pub mod worker;
 
 const CRATE_NAME: &str = env!("CARGO_CRATE_NAME");
 
-pub static SHUTTING_DOWN: Lazy<AtomicBool> = Lazy::new(|| AtomicBool::new(false));
+pub static SHUTTING_DOWN: AtomicBool = AtomicBool::new(false);
 
 async fn graceful_shutdown_handler() {
     let ctrl_c = async {
