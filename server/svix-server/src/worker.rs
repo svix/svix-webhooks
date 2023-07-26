@@ -27,7 +27,7 @@ use chrono::Utc;
 
 use futures::future;
 use http::{HeaderValue, StatusCode, Version};
-use lazy_static::lazy_static;
+use once_cell::sync::Lazy;
 use rand::Rng;
 
 use sea_orm::prelude::DateTimeUtc;
@@ -855,9 +855,7 @@ async fn process_queue_task_inner(
     Ok(())
 }
 
-lazy_static! {
-    pub static ref LAST_QUEUE_POLL: AtomicU64 = get_unix_timestamp().into();
-}
+pub static LAST_QUEUE_POLL: Lazy<AtomicU64> = Lazy::new(|| get_unix_timestamp().into());
 
 async fn update_last_poll_time() {
     LAST_QUEUE_POLL.swap(get_unix_timestamp(), Ordering::Relaxed);
