@@ -183,7 +183,7 @@ pub struct MessageOut {
 }
 
 impl MessageOut {
-    fn without_payload(model: message::Model) -> Self {
+    pub fn without_payload(model: message::Model) -> Self {
         Self {
             payload: RawPayload::from_string("{}".to_string()).expect("Can never fail"),
             ..model.into()

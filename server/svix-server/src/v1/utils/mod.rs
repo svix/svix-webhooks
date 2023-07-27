@@ -22,6 +22,7 @@ use axum::{
 };
 use chrono::{DateTime, Utc};
 use http::{request::Parts, Request, StatusCode};
+use once_cell::sync::Lazy;
 use regex::Regex;
 use schemars::JsonSchema;
 use sea_orm::{ColumnTrait, QueryFilter, QueryOrder, QuerySelect};
@@ -46,9 +47,8 @@ const fn default_limit() -> PaginationLimit {
 
 const PAGINATION_LIMIT_CAP_HARD: bool = true;
 const PAGINATION_LIMIT_CAP_LIMIT: u64 = 250;
-// TODO: Should probably use lazy_static and format! to make this instead of repeating the 250
-// figure at some point
-const PAGINATION_LIMIT_ERROR: &str = "Given limit must not exceed 250";
+static PAGINATION_LIMIT_ERROR: Lazy<String> =
+    Lazy::new(|| format!("Given limit must not exceed {PAGINATION_LIMIT_CAP_LIMIT}"));
 
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
 pub struct PaginationDescending<T: Validate + JsonSchema> {
@@ -96,7 +96,7 @@ impl Validate for PaginationLimit {
         if self.0 > PAGINATION_LIMIT_CAP_LIMIT {
             errs.add(
                 "limit",
-                validation_error(Some("pagination"), Some(PAGINATION_LIMIT_ERROR)),
+                validation_error(Some("pagination"), Some(&PAGINATION_LIMIT_ERROR)),
             );
         }
 
