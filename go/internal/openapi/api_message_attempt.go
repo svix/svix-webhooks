@@ -822,6 +822,7 @@ type ApiV1MessageAttemptListAttemptedMessagesRequest struct {
 	before *time.Time
 	after *time.Time
 	withContent *bool
+	eventTypes *[]string
 }
 
 func (r ApiV1MessageAttemptListAttemptedMessagesRequest) Limit(limit int32) ApiV1MessageAttemptListAttemptedMessagesRequest {
@@ -850,6 +851,10 @@ func (r ApiV1MessageAttemptListAttemptedMessagesRequest) After(after time.Time) 
 }
 func (r ApiV1MessageAttemptListAttemptedMessagesRequest) WithContent(withContent bool) ApiV1MessageAttemptListAttemptedMessagesRequest {
 	r.withContent = &withContent
+	return r
+}
+func (r ApiV1MessageAttemptListAttemptedMessagesRequest) EventTypes(eventTypes []string) ApiV1MessageAttemptListAttemptedMessagesRequest {
+	r.eventTypes = &eventTypes
 	return r
 }
 
@@ -935,6 +940,17 @@ func (a *MessageAttemptApiService) V1MessageAttemptListAttemptedMessagesExecute(
 	}
 	if r.withContent != nil {
 		localVarQueryParams.Add("with_content", parameterToString(*r.withContent, ""))
+	}
+	if r.eventTypes != nil {
+		t := *r.eventTypes
+		if reflect.TypeOf(t).Kind() == reflect.Slice {
+			s := reflect.ValueOf(t)
+			for i := 0; i < s.Len(); i++ {
+				localVarQueryParams.Add("event_types", parameterToString(s.Index(i), "multi"))
+			}
+		} else {
+			localVarQueryParams.Add("event_types", parameterToString(t, "multi"))
+		}
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}

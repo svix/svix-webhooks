@@ -167,6 +167,9 @@ func (m *MessageAttempt) ListAttemptedMessages(ctx context.Context, appId string
 		if options.WithContent != nil {
 			req = req.WithContent(*options.WithContent)
 		}
+		if options.EventTypes != nil {
+			req = req.EventTypes(*options.EventTypes)
+		}
 	}
 	out, res, err := req.Execute()
 	if err != nil {
