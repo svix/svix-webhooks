@@ -361,6 +361,23 @@ A quick how to for contribution:
 
 Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 
+
+# Sending guides
+
+Here is a list of guides for sending webhooks with Svix:
+
+* [Send Webhooks with Python](https://www.svix.com/guides/sending/send-webhooks-with-python/) (also w/ [Django](https://www.svix.com/guides/sending/send-webhooks-with-python-django/) & [Flask](https://www.svix.com/guides/sending/send-webhooks-with-python-flask/))
+* [Send Webhooks with JavaScript](https://www.svix.com/guides/sending/send-webhooks-with-javascript/) (also w/ [NodeJS](https://www.svix.com/guides/sending/send-webhooks-with-javascript-nodejs/) & [Express](https://www.svix.com/guides/sending/send-webhooks-with-javascript-express/))
+* [Send Webhooks with TypeScript](https://www.svix.com/guides/sending/send-webhooks-with-typescript/)
+* [Send Webhooks with Go](https://www.svix.com/guides/sending/send-webhooks-with-go/)
+* [Send Webhooks with Java](https://www.svix.com/guides/sending/send-webhooks-with-java/) (also w/ [Spring](https://www.svix.com/guides/sending/send-webhooks-with-java-spring/))
+* [Send Webhooks with Kotlin](https://www.svix.com/guides/sending/send-webhooks-with-kotlin/)
+* [Send Webhooks with Rust](https://www.svix.com/guides/sending/send-webhooks-with-rust/)
+* [Send Webhooks with C#](https://www.svix.com/guides/sending/send-webhooks-with-c-sharp/) (also w/ [ASP.NET](https://www.svix.com/guides/sending/send-webhooks-with-c-aspnet-sharp/))
+* [Send Webhooks with PHP](https://www.svix.com/guides/sending/send-webhooks-with-php/) (also w/ [Laravel](https://www.svix.com/guides/sending/send-webhooks-with-php-laravel/))
+* [Send Webhooks with Ruby](https://www.svix.com/guides/sending/send-webhooks-with-ruby/)
+* [Send Webhooks with Svix CLI](https://www.svix.com/guides/sending/send-webhooks-with-svix-cli/)
+
 # Backed By
 
 ![Backed By YC & Aleph](/static-assets/backed-by.png)
