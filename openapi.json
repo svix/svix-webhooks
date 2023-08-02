@@ -754,15 +754,17 @@
                         "type": "string"
                     },
                     "version": {
+                        "default": 1,
+                        "deprecated": true,
                         "example": 1,
                         "format": "uint16",
                         "minimum": 1,
+                        "nullable": true,
                         "type": "integer"
                     }
                 },
                 "required": [
-                    "url",
-                    "version"
+                    "url"
                 ],
                 "type": "object"
             },
@@ -816,6 +818,7 @@
                     "payload": {
                         "example": {
                             "email": "test@example.com",
+                            "type": "user.created",
                             "username": "test_user"
                         },
                         "type": "object"
@@ -925,6 +928,7 @@
                         "type": "string"
                     },
                     "version": {
+                        "deprecated": true,
                         "example": 1,
                         "format": "int32",
                         "minimum": 1,
@@ -1006,8 +1010,10 @@
                         "type": "string"
                     },
                     "version": {
+                        "deprecated": true,
+                        "example": 1,
                         "format": "uint16",
-                        "minimum": 0,
+                        "minimum": 1,
                         "type": "integer"
                     }
                 },
@@ -1231,15 +1237,17 @@
                         "type": "string"
                     },
                     "version": {
+                        "default": 1,
+                        "deprecated": true,
                         "example": 1,
                         "format": "uint16",
                         "minimum": 1,
+                        "nullable": true,
                         "type": "integer"
                     }
                 },
                 "required": [
-                    "url",
-                    "version"
+                    "url"
                 ],
                 "type": "object"
             },
@@ -2113,6 +2121,34 @@
                 ],
                 "type": "object"
             },
+            "ListResponse_TemplateOut_": {
+                "properties": {
+                    "data": {
+                        "items": {
+                            "$ref": "#/components/schemas/TemplateOut"
+                        },
+                        "type": "array"
+                    },
+                    "done": {
+                        "type": "boolean"
+                    },
+                    "iterator": {
+                        "example": "iterator",
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "prevIterator": {
+                        "example": "-iterator",
+                        "nullable": true,
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "data",
+                    "done"
+                ],
+                "type": "object"
+            },
             "MessageAttemptEndpointOut": {
                 "properties": {
                     "endpointId": {
@@ -2408,6 +2444,74 @@
                 ],
                 "type": "object"
             },
+            "MessageAttemptRecoveredEvent": {
+                "description": "Sent on a successful dispatch after an earlier failure op webhook has already been sent.",
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/MessageAttemptRecoveredEventData"
+                    },
+                    "type": {
+                        "default": "message.attempt.recovered",
+                        "enum": [
+                            "message.attempt.recovered"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "data",
+                    "type"
+                ],
+                "type": "object"
+            },
+            "MessageAttemptRecoveredEventData": {
+                "description": "Sent when a message delivery has failed (all of the retry attempts have been exhausted) as a \"message.attempt.exhausted\" type or after it's failed four times as a \"message.attempt.failing\" event.",
+                "properties": {
+                    "appId": {
+                        "description": "The app's ID",
+                        "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "type": "string"
+                    },
+                    "appUid": {
+                        "description": "The app's UID",
+                        "example": "unique-app-identifier",
+                        "maxLength": 256,
+                        "minLength": 1,
+                        "nullable": true,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "type": "string"
+                    },
+                    "endpointId": {
+                        "description": "The ep's ID",
+                        "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "type": "string"
+                    },
+                    "lastAttempt": {
+                        "$ref": "#/components/schemas/MessageAttemptFailedData"
+                    },
+                    "msgEventId": {
+                        "description": "The msg's UID",
+                        "example": "unique-msg-identifier",
+                        "maxLength": 256,
+                        "minLength": 1,
+                        "nullable": true,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "type": "string"
+                    },
+                    "msgId": {
+                        "description": "The msg's ID",
+                        "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "appId",
+                    "endpointId",
+                    "lastAttempt",
+                    "msgId"
+                ],
+                "type": "object"
+            },
             "MessageAttemptTriggerType": {
                 "description": "The reason an attempt was made:\n- Scheduled = 0\n- Manual = 1",
                 "enum": [
@@ -2460,6 +2564,7 @@
                     "payload": {
                         "example": {
                             "email": "test@example.com",
+                            "type": "user.created",
                             "username": "test_user"
                         },
                         "type": "object"
@@ -2588,6 +2693,7 @@
                         "type": "string"
                     },
                     "version": {
+                        "deprecated": true,
                         "example": 1,
                         "format": "int32",
                         "minimum": 1,
@@ -2648,6 +2754,7 @@
                     "payload": {
                         "example": {
                             "email": "test@example.com",
+                            "type": "user.created",
                             "username": "test_user"
                         },
                         "type": "object"
@@ -2711,6 +2818,7 @@
                     "payload": {
                         "example": {
                             "email": "test@example.com",
+                            "type": "user.created",
                             "username": "test_user"
                         },
                         "type": "object"
@@ -3020,10 +3128,238 @@
                     "Code5xx"
                 ]
             },
+            "TemplateIn": {
+                "properties": {
+                    "description": {
+                        "default": "",
+                        "type": "string"
+                    },
+                    "filterTypes": {
+                        "example": [
+                            "user.signup",
+                            "user.deleted"
+                        ],
+                        "items": {
+                            "description": "The event type's name",
+                            "example": "user.signup",
+                            "maxLength": 256,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "minItems": 1,
+                        "nullable": true,
+                        "type": "array",
+                        "uniqueItems": true
+                    },
+                    "instructions": {
+                        "default": "",
+                        "type": "string"
+                    },
+                    "instructionsLink": {
+                        "default": null,
+                        "format": "uri",
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "logo": {
+                        "format": "uri",
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "transformation": {
+                        "maxLength": 51200,
+                        "minLength": 10,
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "logo",
+                    "name",
+                    "transformation"
+                ],
+                "type": "object"
+            },
+            "TemplateOut": {
+                "properties": {
+                    "createdAt": {
+                        "format": "date-time",
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "filterTypes": {
+                        "example": [
+                            "user.signup",
+                            "user.deleted"
+                        ],
+                        "items": {
+                            "description": "The event type's name",
+                            "example": "user.signup",
+                            "maxLength": 256,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "minItems": 1,
+                        "nullable": true,
+                        "type": "array",
+                        "uniqueItems": true
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "instructions": {
+                        "type": "string"
+                    },
+                    "instructionsLink": {
+                        "format": "uri",
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "kind": {
+                        "$ref": "#/components/schemas/TransformationTemplateKind"
+                    },
+                    "logo": {
+                        "format": "uri",
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "orgId": {
+                        "type": "string"
+                    },
+                    "transformation": {
+                        "type": "string"
+                    },
+                    "updatedAt": {
+                        "format": "date-time",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "createdAt",
+                    "description",
+                    "id",
+                    "instructions",
+                    "kind",
+                    "logo",
+                    "name",
+                    "orgId",
+                    "transformation",
+                    "updatedAt"
+                ],
+                "type": "object"
+            },
+            "TemplatePatch": {
+                "properties": {
+                    "description": {
+                        "type": "string"
+                    },
+                    "filterTypes": {
+                        "example": [
+                            "user.signup",
+                            "user.deleted"
+                        ],
+                        "items": {
+                            "description": "The event type's name",
+                            "example": "user.signup",
+                            "maxLength": 256,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "minItems": 1,
+                        "nullable": true,
+                        "type": "array",
+                        "uniqueItems": true
+                    },
+                    "instructions": {
+                        "type": "string"
+                    },
+                    "instructionsLink": {
+                        "format": "uri",
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "logo": {
+                        "format": "uri",
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "transformation": {
+                        "maxLength": 51200,
+                        "minLength": 10,
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "TemplateUpdate": {
+                "properties": {
+                    "description": {
+                        "default": "",
+                        "type": "string"
+                    },
+                    "filterTypes": {
+                        "example": [
+                            "user.signup",
+                            "user.deleted"
+                        ],
+                        "items": {
+                            "description": "The event type's name",
+                            "example": "user.signup",
+                            "maxLength": 256,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "minItems": 1,
+                        "nullable": true,
+                        "type": "array",
+                        "uniqueItems": true
+                    },
+                    "instructions": {
+                        "default": "",
+                        "type": "string"
+                    },
+                    "instructionsLink": {
+                        "format": "uri",
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "logo": {
+                        "format": "uri",
+                        "type": "string"
+                    },
+                    "name": {
+                        "default": "",
+                        "type": "string"
+                    },
+                    "transformation": {
+                        "maxLength": 51200,
+                        "minLength": 10,
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "logo",
+                    "transformation"
+                ],
+                "type": "object"
+            },
             "TransformationHttpMethod": {
                 "enum": [
                     "POST",
                     "PUT"
+                ],
+                "type": "string"
+            },
+            "TransformationTemplateKind": {
+                "enum": [
+                    "Custom"
                 ],
                 "type": "string"
             },
@@ -3066,7 +3402,7 @@
     "info": {
         "description": "Welcome to the Svix API documentation!\n\nUseful links: [Homepage](https://www.svix.com) | [Support email](mailto:support+docs@svix.com) | [Blog](https://www.svix.com/blog/) | [Slack Community](https://www.svix.com/slack/)\n\n# Introduction\n\nThis is the reference documentation and schemas for the [Svix webhook service](https://www.svix.com) API. For tutorials and other documentation please refer to [the documentation](https://docs.svix.com).\n\n## Main concepts\n\nIn Svix you have four important entities you will be interacting with:\n\n- `messages`: these are the webhooks being sent. They can have contents and a few other properties.\n- `application`: this is where `messages` are sent to. Usually you want to create one application for each user on your platform.\n- `endpoint`: endpoints are the URLs messages will be sent to. Each application can have multiple `endpoints` and each message sent to that application will be sent to all of them (unless they are not subscribed to the sent event type).\n- `event-type`: event types are identifiers denoting the type of the message being sent. Event types are primarily used to decide which events are sent to which endpoint.\n\n\n## Authentication\n\nGet your authentication token (`AUTH_TOKEN`) from the [Svix dashboard](https://dashboard.svix.com) and use it as part of the `Authorization` header as such: `Authorization: Bearer ${AUTH_TOKEN}`. For more information on authentication, please refer to the [authentication token docs](https://docs.svix.com/api-keys).\n\n<SecurityDefinitions />\n\n\n## Code samples\n\nThe code samples assume you already have the respective libraries installed and you know how to use them. For the latest information on how to do that, please refer to [the documentation](https://docs.svix.com/).\n\n\n## Idempotency\n\nSvix supports [idempotency](https://en.wikipedia.org/wiki/Idempotence) for safely retrying requests without accidentally performing the same operation twice. This is useful when an API call is disrupted in transit and you do not receive a response.\n\nTo perform an idempotent request, pass the idempotency key in the `Idempotency-Key` header to the request. The idempotency key should be a unique value generated by the client. You can create the key in however way you like, though we suggest using UUID v4, or any other string with enough entropy to avoid collisions.\n\nSvix's idempotency works by saving the resulting status code and body of the first request made for any given idempotency key for any successful request. Subsequent requests with the same key return the same result.\n\nPlease note that idempotency is only supported for `POST` requests.\n\n\n## Cross-Origin Resource Sharing\n\nThis API features Cross-Origin Resource Sharing (CORS) implemented in compliance with [W3C spec](https://www.w3.org/TR/cors/). And that allows cross-domain communication from the browser. All responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site.\n",
         "title": "Svix API",
-        "version": "1.4.12",
+        "version": "1.7.0",
         "x-logo": {
             "altText": "Svix Logo",
             "url": "https://www.svix.com/static/img/brand-padded.svg"
@@ -4394,7 +4730,7 @@
         },
         "/api/v1/app/{app_id}/attempt/endpoint/{endpoint_id}/": {
             "get": {
-                "description": "List attempts by endpoint id",
+                "description": "List attempts by endpoint id\n\nNote that by default this endpoint is limited to retrieving 90 days' worth of data\nrelative to now or, if an iterator is provided, 90 days before/after the time indicated\nby the iterator ID. If you require data beyond those time ranges, you will need to explicitly\nset the `before` or `after` parameter as appropriate.\n",
                 "operationId": "v1.message-attempt.list-by-endpoint",
                 "parameters": [
                     {
@@ -4467,6 +4803,15 @@
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "in": "query",
+                        "name": "with_content",
+                        "schema": {
+                            "default": true,
+                            "type": "boolean"
                         },
                         "style": "form"
                     },
@@ -4675,7 +5020,7 @@
         },
         "/api/v1/app/{app_id}/attempt/msg/{msg_id}/": {
             "get": {
-                "description": "List attempts by message id",
+                "description": "List attempts by message id\n\nNote that by default this endpoint is limited to retrieving 90 days' worth of data\nrelative to now or, if an iterator is provided, 90 days before/after the time indicated\nby the iterator ID. If you require data beyond those time ranges, you will need to explicitly\nset the `before` or `after` parameter as appropriate.\n",
                 "operationId": "v1.message-attempt.list-by-msg",
                 "parameters": [
                     {
@@ -4763,6 +5108,15 @@
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "in": "query",
+                        "name": "with_content",
+                        "schema": {
+                            "default": true,
+                            "type": "boolean"
                         },
                         "style": "form"
                     },
@@ -5350,7 +5704,7 @@
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let endpoint_out = svix.endpoint().create(\"app_id\", EndpointIn {\n    description: Some(\"An example endpoint name\".to_string()),\n    rate_limit: None,\n    uid: Some(\"unique-ep-identifier\".to_string()),\n    url: \"https://example.com/webhook/\".to_string(),\n    version: 1,\n    disabled: Some(false),\n    filter_types: Some(vec![\"user.signup\".to_string(), \"user.deleted\".to_string()]),\n    channels: Some(vec![\"project_123\".to_string(), \"group_2\".to_string()]),\n    secret: Some(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\".to_string()),\n}, None).await?;"
+                        "source": "let endpoint_out = svix.endpoint().create(\"app_id\", EndpointIn {\n    description: Some(\"An example endpoint name\".to_string()),\n    rate_limit: None,\n    uid: Some(\"unique-ep-identifier\".to_string()),\n    url: \"https://example.com/webhook/\".to_string(),\n    version: Some(1),\n    disabled: Some(false),\n    filter_types: Some(vec![\"user.signup\".to_string(), \"user.deleted\".to_string()]),\n    channels: Some(vec![\"project_123\".to_string(), \"group_2\".to_string()]),\n    secret: Some(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\".to_string()),\n}, None).await?;"
                     },
                     {
                         "label": "C#",
@@ -5882,62 +6236,62 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const endpointOut = await svix.endpoint.patch(\"app_id\", \"endpoint_id\", {\n    rateLimit: null,\n    uid: \"unique-ep-identifier\",\n    filterTypes: null,\n    channels: null,\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
+                        "source": "const endpointOut = await svix.endpoint.patch(\"app_id\", \"endpoint_id\", {\n    rateLimit: null,\n    uid: \"unique-ep-identifier\",\n    version: 1,\n    filterTypes: null,\n    channels: null,\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const endpointOut = await svix.endpoint.patch(\"app_id\", \"endpoint_id\", {\n    rateLimit: null,\n    uid: \"unique-ep-identifier\",\n    filterTypes: null,\n    channels: null,\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
+                        "source": "const endpointOut = await svix.endpoint.patch(\"app_id\", \"endpoint_id\", {\n    rateLimit: null,\n    uid: \"unique-ep-identifier\",\n    version: 1,\n    filterTypes: null,\n    channels: null,\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "endpoint_out = svix.endpoint.patch(\"app_id\", \"endpoint_id\", EndpointPatch(\n    rate_limit=None,\n    uid=\"unique-ep-identifier\",\n    filter_types=None,\n    channels=None,\n    secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n))"
+                        "source": "endpoint_out = svix.endpoint.patch(\"app_id\", \"endpoint_id\", EndpointPatch(\n    rate_limit=None,\n    uid=\"unique-ep-identifier\",\n    version=1,\n    filter_types=None,\n    channels=None,\n    secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n))"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "endpoint_out = await svix.endpoint.patch(\"app_id\", \"endpoint_id\", EndpointPatch(\n    rate_limit=None,\n    uid=\"unique-ep-identifier\",\n    filter_types=None,\n    channels=None,\n    secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n))"
+                        "source": "endpoint_out = await svix.endpoint.patch(\"app_id\", \"endpoint_id\", EndpointPatch(\n    rate_limit=None,\n    uid=\"unique-ep-identifier\",\n    version=1,\n    filter_types=None,\n    channels=None,\n    secret=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "endpointOut, err := svixClient.Endpoint.Patch(ctx, \"app_id\", \"endpoint_id\", &EndpointPatch{\n    RateLimit: nil,\n    Uid: \"unique-ep-identifier\",\n    FilterTypes: nil,\n    Channels: nil,\n    Secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n})"
+                        "source": "endpointOut, err := svixClient.Endpoint.Patch(ctx, \"app_id\", \"endpoint_id\", &EndpointPatch{\n    RateLimit: nil,\n    Uid: \"unique-ep-identifier\",\n    Version: 1,\n    FilterTypes: nil,\n    Channels: nil,\n    Secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val endpointOut = svix.endpoint.patch(\"app_id\", \"endpoint_id\", EndpointPatch()\n    .rateLimit(null)\n    .uid(\"unique-ep-identifier\")\n    .filterTypes(null)\n    .channels(null)\n    .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n)"
+                        "source": "val endpointOut = svix.endpoint.patch(\"app_id\", \"endpoint_id\", EndpointPatch()\n    .rateLimit(null)\n    .uid(\"unique-ep-identifier\")\n    .version(1)\n    .filterTypes(null)\n    .channels(null)\n    .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "EndpointOut endpointOut = svix.getEndpoint().patch(\"app_id\", \"endpoint_id\", new EndpointPatch()\n    .rateLimit(null)\n    .uid(\"unique-ep-identifier\")\n    .filterTypes(null)\n    .channels(null)\n    .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n)"
+                        "source": "EndpointOut endpointOut = svix.getEndpoint().patch(\"app_id\", \"endpoint_id\", new EndpointPatch()\n    .rateLimit(null)\n    .uid(\"unique-ep-identifier\")\n    .version(1)\n    .filterTypes(null)\n    .channels(null)\n    .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "endpoint_out = svix.endpoint.patch(\"app_id\", \"endpoint_id\", Svix::EndpointPatch.new({\n    \"rate_limit\": nil,\n    \"uid\": \"unique-ep-identifier\",\n    \"filter_types\": nil,\n    \"channels\": nil,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}))"
+                        "source": "endpoint_out = svix.endpoint.patch(\"app_id\", \"endpoint_id\", Svix::EndpointPatch.new({\n    \"rate_limit\": nil,\n    \"uid\": \"unique-ep-identifier\",\n    \"version\": 1,\n    \"filter_types\": nil,\n    \"channels\": nil,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let endpoint_out = svix.endpoint().patch(\"app_id\", \"endpoint_id\", EndpointPatch {\n    rate_limit: None,\n    uid: Some(\"unique-ep-identifier\".to_string()),\n    filter_types: None,\n    channels: None,\n    secret: Some(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\".to_string()),\n}).await?;"
+                        "source": "let endpoint_out = svix.endpoint().patch(\"app_id\", \"endpoint_id\", EndpointPatch {\n    rate_limit: None,\n    uid: Some(\"unique-ep-identifier\".to_string()),\n    version: Some(1),\n    filter_types: None,\n    channels: None,\n    secret: Some(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\".to_string()),\n}).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var endpointOut = await svix.Endpoint.PatchAsync(\"app_id\", \"endpoint_id\", new EndpointPatch{\n    rateLimit: null,\n    uid: \"unique-ep-identifier\",\n    filterTypes: null,\n    channels: null,\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n})"
+                        "source": "var endpointOut = await svix.Endpoint.PatchAsync(\"app_id\", \"endpoint_id\", new EndpointPatch{\n    rateLimit: null,\n    uid: \"unique-ep-identifier\",\n    version: 1,\n    filterTypes: null,\n    channels: null,\n    secret: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n})"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix endpoint patch \"app_id\" \"endpoint_id\" '{\n    \"rateLimit\": null,\n    \"uid\": \"unique-ep-identifier\",\n    \"filterTypes\": null,\n    \"channels\": null,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}'"
+                        "source": "svix endpoint patch \"app_id\" \"endpoint_id\" '{\n    \"rateLimit\": null,\n    \"uid\": \"unique-ep-identifier\",\n    \"version\": 1,\n    \"filterTypes\": null,\n    \"channels\": null,\n    \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PATCH' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"rateLimit\": null,\n        \"uid\": \"unique-ep-identifier\",\n        \"filterTypes\": null,\n        \"channels\": null,\n        \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n    }'"
+                        "source": "curl -X 'PATCH' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"rateLimit\": null,\n        \"uid\": \"unique-ep-identifier\",\n        \"version\": 1,\n        \"filterTypes\": null,\n        \"channels\": null,\n        \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n    }'"
                     }
                 ]
             },
@@ -6131,7 +6485,7 @@
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let endpoint_out = svix.endpoint().update(\"app_id\", \"endpoint_id\", EndpointUpdate {\n    description: Some(\"An example endpoint name\".to_string()),\n    rate_limit: None,\n    uid: Some(\"unique-ep-identifier\".to_string()),\n    url: \"https://example.com/webhook/\".to_string(),\n    version: 1,\n    disabled: Some(false),\n    filter_types: Some(vec![\"user.signup\".to_string(), \"user.deleted\".to_string()]),\n    channels: Some(vec![\"project_123\".to_string(), \"group_2\".to_string()]),\n}).await?;"
+                        "source": "let endpoint_out = svix.endpoint().update(\"app_id\", \"endpoint_id\", EndpointUpdate {\n    description: Some(\"An example endpoint name\".to_string()),\n    rate_limit: None,\n    uid: Some(\"unique-ep-identifier\".to_string()),\n    url: \"https://example.com/webhook/\".to_string(),\n    version: Some(1),\n    disabled: Some(false),\n    filter_types: Some(vec![\"user.signup\".to_string(), \"user.deleted\".to_string()]),\n    channels: Some(vec![\"project_123\".to_string(), \"group_2\".to_string()]),\n}).await?;"
                     },
                     {
                         "label": "C#",
@@ -6728,7 +7082,7 @@
         },
         "/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg/": {
             "get": {
-                "description": "List messages for a particular endpoint. Additionally includes metadata about the latest message attempt.\n\nThe `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.",
+                "description": "List messages for a particular endpoint. Additionally includes metadata about the latest message attempt.\n\nThe `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.\n\nNote that by default this endpoint is limited to retrieving 90 days' worth of data\nrelative to now or, if an iterator is provided, 90 days before/after the time indicated\nby the iterator ID. If you require data beyond those time ranges, you will need to explicitly\nset the `before` or `after` parameter as appropriate.\n",
                 "operationId": "v1.message-attempt.list-attempted-messages",
                 "parameters": [
                     {
@@ -6799,7 +7153,7 @@
                         "in": "query",
                         "name": "with_content",
                         "schema": {
-                            "default": false,
+                            "default": true,
                             "type": "boolean"
                         },
                         "style": "form"
@@ -6833,6 +7187,23 @@
                             "type": "string"
                         },
                         "style": "simple"
+                    },
+                    {
+                        "in": "query",
+                        "name": "event_types",
+                        "schema": {
+                            "items": {
+                                "description": "The event type's name",
+                                "example": "user.signup",
+                                "maxLength": 256,
+                                "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                                "type": "string"
+                            },
+                            "nullable": true,
+                            "type": "array",
+                            "uniqueItems": true
+                        },
+                        "style": "form"
                     }
                 ],
                 "responses": {
@@ -10308,7 +10679,7 @@
         },
         "/api/v1/app/{app_id}/msg/": {
             "get": {
-                "description": "List all of the application's messages.\n\nThe `before` and `after` parameters let you filter all items created before or after a certain date. These can be used alongside an iterator to paginate over results\nwithin a certain window.",
+                "description": "List all of the application's messages.\n\nThe `before` and `after` parameters let you filter all items created before or after a certain date. These can be used alongside an iterator to paginate over results\nwithin a certain window.\n\nNote that by default this endpoint is limited to retrieving 90 days' worth of data\nrelative to now or, if an iterator is provided, 90 days before/after the time indicated\nby the iterator ID. If you require data beyond those time ranges, you will need to explicitly\nset the `before` or `after` parameter as appropriate.\n",
                 "operationId": "v1.message.list",
                 "parameters": [
                     {
@@ -10705,62 +11076,62 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const messageOut = await svix.message.create(\"app_id\", {\n    eventId: \"unique-msg-identifier\",\n    eventType: \"user.signup\",\n    payload: {\"email\":\"test@example.com\",\"username\":\"test_user\"},\n    channels: [\"project_123\", \"group_2\"],\n    payloadRetentionPeriod: 90,\n    application: null\n});"
+                        "source": "const messageOut = await svix.message.create(\"app_id\", {\n    eventId: \"unique-msg-identifier\",\n    eventType: \"user.signup\",\n    payload: {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    channels: [\"project_123\", \"group_2\"],\n    payloadRetentionPeriod: 90,\n    application: null\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const messageOut = await svix.message.create(\"app_id\", {\n    eventId: \"unique-msg-identifier\",\n    eventType: \"user.signup\",\n    payload: {\"email\":\"test@example.com\",\"username\":\"test_user\"},\n    channels: [\"project_123\", \"group_2\"],\n    payloadRetentionPeriod: 90,\n    application: null\n});"
+                        "source": "const messageOut = await svix.message.create(\"app_id\", {\n    eventId: \"unique-msg-identifier\",\n    eventType: \"user.signup\",\n    payload: {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    channels: [\"project_123\", \"group_2\"],\n    payloadRetentionPeriod: 90,\n    application: null\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "message_out = svix.message.create(\"app_id\", MessageIn(\n    event_id=\"unique-msg-identifier\",\n    event_type=\"user.signup\",\n    payload={\"email\": \"test@example.com\", \"username\": \"test_user\"},\n    channels=[\"project_123\", \"group_2\"],\n    payload_retention_period=90,\n    application=None\n), None)"
+                        "source": "message_out = svix.message.create(\"app_id\", MessageIn(\n    event_id=\"unique-msg-identifier\",\n    event_type=\"user.signup\",\n    payload={\"email\": \"test@example.com\", \"type\": \"user.created\", \"username\": \"test_user\"},\n    channels=[\"project_123\", \"group_2\"],\n    payload_retention_period=90,\n    application=None\n), None)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "message_out = await svix.message.create(\"app_id\", MessageIn(\n    event_id=\"unique-msg-identifier\",\n    event_type=\"user.signup\",\n    payload={\"email\": \"test@example.com\", \"username\": \"test_user\"},\n    channels=[\"project_123\", \"group_2\"],\n    payload_retention_period=90,\n    application=None\n), None)"
+                        "source": "message_out = await svix.message.create(\"app_id\", MessageIn(\n    event_id=\"unique-msg-identifier\",\n    event_type=\"user.signup\",\n    payload={\"email\": \"test@example.com\", \"type\": \"user.created\", \"username\": \"test_user\"},\n    channels=[\"project_123\", \"group_2\"],\n    payload_retention_period=90,\n    application=None\n), None)"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "messageOut, err := svixClient.Message.Create(ctx, \"app_id\", &MessageIn{\n    EventId: \"unique-msg-identifier\",\n    EventType: \"user.signup\",\n    Payload: map[string]interface{}{\"email\": \"test@example.com\", \"username\": \"test_user\"},\n    Channels: []string{\"project_123\", \"group_2\"},\n    PayloadRetentionPeriod: 90,\n    Application: nil,\n})"
+                        "source": "messageOut, err := svixClient.Message.Create(ctx, \"app_id\", &MessageIn{\n    EventId: \"unique-msg-identifier\",\n    EventType: \"user.signup\",\n    Payload: map[string]interface{}{\"email\": \"test@example.com\", \"type\": \"user.created\", \"username\": \"test_user\"},\n    Channels: []string{\"project_123\", \"group_2\"},\n    PayloadRetentionPeriod: 90,\n    Application: nil,\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val messageOut = svix.message.create(\"app_id\", MessageIn()\n    .eventId(\"unique-msg-identifier\")\n    .eventType(\"user.signup\")\n    .payload(\"\"\"{\"email\":\"test@example.com\",\"username\":\"test_user\"}\"\"\")\n    .channels(arrayOf(\"project_123\", \"group_2\"))\n    .payloadRetentionPeriod(90)\n    .application(null)\n)"
+                        "source": "val messageOut = svix.message.create(\"app_id\", MessageIn()\n    .eventId(\"unique-msg-identifier\")\n    .eventType(\"user.signup\")\n    .payload(\"\"\"{\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"}\"\"\")\n    .channels(arrayOf(\"project_123\", \"group_2\"))\n    .payloadRetentionPeriod(90)\n    .application(null)\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "MessageOut messageOut = svix.getMessage().create(\"app_id\", new MessageIn()\n    .eventId(\"unique-msg-identifier\")\n    .eventType(\"user.signup\")\n    .payload(\"{\\\"email\\\":\\\"test@example.com\\\",\\\"username\\\":\\\"test_user\\\"}\")\n    .channels(new String[]{\"project_123\", \"group_2\"})\n    .payloadRetentionPeriod(90)\n    .application(null)\n)"
+                        "source": "MessageOut messageOut = svix.getMessage().create(\"app_id\", new MessageIn()\n    .eventId(\"unique-msg-identifier\")\n    .eventType(\"user.signup\")\n    .payload(\"{\\\"email\\\":\\\"test@example.com\\\",\\\"type\\\":\\\"user.created\\\",\\\"username\\\":\\\"test_user\\\"}\")\n    .channels(new String[]{\"project_123\", \"group_2\"})\n    .payloadRetentionPeriod(90)\n    .application(null)\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "message_out = svix.message.create(\"app_id\", Svix::MessageIn.new({\n    \"event_id\": \"unique-msg-identifier\",\n    \"event_type\": \"user.signup\",\n    \"payload\": {\"email\":\"test@example.com\",\"username\":\"test_user\"},\n    \"channels\": [\"project_123\", \"group_2\"],\n    \"payload_retention_period\": 90,\n    \"application\": nil\n}))"
+                        "source": "message_out = svix.message.create(\"app_id\", Svix::MessageIn.new({\n    \"event_id\": \"unique-msg-identifier\",\n    \"event_type\": \"user.signup\",\n    \"payload\": {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    \"channels\": [\"project_123\", \"group_2\"],\n    \"payload_retention_period\": 90,\n    \"application\": nil\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let message_out = svix.message().create(\"app_id\", MessageIn {\n    event_id: Some(\"unique-msg-identifier\".to_string()),\n    event_type: \"user.signup\".to_string(),\n    payload: json!({\"email\":\"test@example.com\",\"username\":\"test_user\"}),\n    channels: Some(vec![\"project_123\".to_string(), \"group_2\".to_string()]),\n    payload_retention_period: Some(90),\n    application: None,\n}, None).await?;"
+                        "source": "let message_out = svix.message().create(\"app_id\", MessageIn {\n    event_id: Some(\"unique-msg-identifier\".to_string()),\n    event_type: \"user.signup\".to_string(),\n    payload: json!({\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"}),\n    channels: Some(vec![\"project_123\".to_string(), \"group_2\".to_string()]),\n    payload_retention_period: Some(90),\n    application: None,\n}, None).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var messageOut = await svix.Message.CreateAsync(\"app_id\", new MessageIn{\n    eventId: \"unique-msg-identifier\",\n    eventType: \"user.signup\",\n    payload: new {\"email\":\"test@example.com\",\"username\":\"test_user\"},\n    channels: new string[] {\"project_123\", \"group_2\"},\n    payloadRetentionPeriod: 90,\n    application: null\n})"
+                        "source": "var messageOut = await svix.Message.CreateAsync(\"app_id\", new MessageIn{\n    eventId: \"unique-msg-identifier\",\n    eventType: \"user.signup\",\n    payload: new {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    channels: new string[] {\"project_123\", \"group_2\"},\n    payloadRetentionPeriod: 90,\n    application: null\n})"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix message create \"app_id\" '{\n    \"eventId\": \"unique-msg-identifier\",\n    \"eventType\": \"user.signup\",\n    \"payload\": {\"email\":\"test@example.com\",\"username\":\"test_user\"},\n    \"channels\": [\"project_123\", \"group_2\"],\n    \"payloadRetentionPeriod\": 90,\n    \"application\": null\n}'"
+                        "source": "svix message create \"app_id\" '{\n    \"eventId\": \"unique-msg-identifier\",\n    \"eventType\": \"user.signup\",\n    \"payload\": {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    \"channels\": [\"project_123\", \"group_2\"],\n    \"payloadRetentionPeriod\": 90,\n    \"application\": null\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/msg/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"eventId\": \"unique-msg-identifier\",\n        \"eventType\": \"user.signup\",\n        \"payload\": {\"email\":\"test@example.com\",\"username\":\"test_user\"},\n        \"channels\": [\"project_123\", \"group_2\"],\n        \"payloadRetentionPeriod\": 90,\n        \"application\": null\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/msg/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"eventId\": \"unique-msg-identifier\",\n        \"eventType\": \"user.signup\",\n        \"payload\": {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n        \"channels\": [\"project_123\", \"group_2\"],\n        \"payloadRetentionPeriod\": 90,\n        \"application\": null\n    }'"
                     }
                 ]
             }
@@ -10968,7 +11339,7 @@
         "/api/v1/app/{app_id}/msg/{msg_id}/attempt/": {
             "get": {
                 "deprecated": true,
-                "description": "Deprecated: Please use \"List Attempts by Endpoint\" and \"List Attempts by Msg\" instead.\n\n`msg_id`: Use a message id or a message `eventId`",
+                "description": "Deprecated: Please use \"List Attempts by Endpoint\" and \"List Attempts by Msg\" instead.\n\nNote that by default this endpoint is limited to retrieving 90 days' worth of data\nrelative to now or, if an iterator is provided, 90 days before/after the time indicated\nby the iterator ID. If you require data beyond those time ranges, you will need to explicitly\nset the `before` or `after` parameter as appropriate.\n\n`msg_id`: Use a message id or a message `eventId`",
                 "operationId": "v1.message-attempt.list-by-msg-deprecated",
                 "parameters": [
                     {
@@ -12262,7 +12633,7 @@
         "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/attempt/": {
             "get": {
                 "deprecated": true,
-                "description": "DEPRECATED: please use list_attempts with endpoint_id as a query parameter instead.\n\nList the message attempts for a particular endpoint.\n\nReturning the endpoint.\n\nThe `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.",
+                "description": "DEPRECATED: please use list_attempts with endpoint_id as a query parameter instead.\n\nList the message attempts for a particular endpoint.\n\nReturning the endpoint.\n\nThe `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.\n\nNote that by default this endpoint is limited to retrieving 90 days' worth of data\nrelative to now or, if an iterator is provided, 90 days before/after the time indicated\nby the iterator ID. If you require data beyond those time ranges, you will need to explicitly\nset the `before` or `after` parameter as appropriate.\n",
                 "operationId": "v1.message-attempt.list-by-endpoint-deprecated",
                 "parameters": [
                     {
@@ -16715,6 +17086,1071 @@
                     "Statistics"
                 ]
             }
+        },
+        "/api/v1/transformation-template/": {
+            "get": {
+                "description": "List all transformation templates for an application",
+                "operationId": "v1.transformation-template.list",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "limit",
+                        "schema": {
+                            "format": "uint64",
+                            "maximum": 250,
+                            "minimum": 1,
+                            "type": "integer"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "in": "query",
+                        "name": "iterator",
+                        "schema": {
+                            "nullable": true,
+                            "type": "string"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "in": "query",
+                        "name": "order",
+                        "schema": {
+                            "$ref": "#/components/schemas/Ordering",
+                            "nullable": true
+                        },
+                        "style": "form"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListResponse_TemplateOut_"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "List Transformation Templates",
+                "tags": [
+                    "Transformation Template"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const listResponseTemplateOut = await svix.transformationTemplate.list();"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const listResponseTemplateOut = await svix.transformationTemplate.list();"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "list_response_template_out = svix.transformation_template.list(None)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "list_response_template_out = await svix.transformation_template.list(None)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "listResponseTemplateOut, err := svixClient.TransformationTemplate.List(ctx, nil)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val listResponseTemplateOut = svix.transformationTemplate.list()"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "ListResponseTemplateOut listResponseTemplateOut = svix.getTransformationTemplate().list()"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "list_response_template_out = svix.transformation_template.list()"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let list_response_template_out = svix.transformation_template().list(None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var listResponseTemplateOut = await svix.TransformationTemplate.ListAsync()"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix transformation-template list "
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/transformation-template/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            },
+            "post": {
+                "description": "Create a new transformation template",
+                "operationId": "v1.transformation-template.create",
+                "parameters": [
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TemplateIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TemplateOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Create Transformation Template",
+                "tags": [
+                    "Transformation Template"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const templateOut = await svix.transformationTemplate.create({\n    instructionsLink: null,\n    filterTypes: [\"user.signup\", \"user.deleted\"]\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const templateOut = await svix.transformationTemplate.create({\n    instructionsLink: null,\n    filterTypes: [\"user.signup\", \"user.deleted\"]\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "template_out = svix.transformation_template.create(TemplateIn(\n    instructions_link=None,\n    filter_types=[\"user.signup\", \"user.deleted\"]\n), None)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "template_out = await svix.transformation_template.create(TemplateIn(\n    instructions_link=None,\n    filter_types=[\"user.signup\", \"user.deleted\"]\n), None)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "templateOut, err := svixClient.TransformationTemplate.Create(ctx, &TemplateIn{\n    InstructionsLink: nil,\n    FilterTypes: []string{\"user.signup\", \"user.deleted\"},\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val templateOut = svix.transformationTemplate.create(TemplateIn()\n    .instructionsLink(null)\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\"))\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "TemplateOut templateOut = svix.getTransformationTemplate().create(new TemplateIn()\n    .instructionsLink(null)\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"})\n)"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "template_out = svix.transformation_template.create(Svix::TemplateIn.new({\n    \"instructions_link\": nil,\n    \"filter_types\": [\"user.signup\", \"user.deleted\"]\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let template_out = svix.transformation_template().create(TemplateIn {\n    instructions_link: None,\n    filter_types: Some(vec![\"user.signup\".to_string(), \"user.deleted\".to_string()]),\n}, None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var templateOut = await svix.TransformationTemplate.CreateAsync(new TemplateIn{\n    instructionsLink: null,\n    filterTypes: new string[] {\"user.signup\", \"user.deleted\"}\n})"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix transformation-template create '{\n    \"instructionsLink\": null,\n    \"filterTypes\": [\"user.signup\", \"user.deleted\"]\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/transformation-template/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"instructionsLink\": null,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"]\n    }'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/transformation-template/{transformation_template_id}": {
+            "delete": {
+                "description": "Delete a transformation template",
+                "operationId": "v1.transformation-template.delete",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "transformation_template_id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "no content"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Delete Transformation Template",
+                "tags": [
+                    "Transformation Template"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.transformationTemplate.delete(\"transformation_template_id\");"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.transformationTemplate.delete(\"transformation_template_id\");"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "svix.transformation_template.delete(\"transformation_template_id\")"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "await svix.transformation_template.delete(\"transformation_template_id\")"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "err := svixClient.TransformationTemplate.Delete(ctx, \"transformation_template_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "svix.transformationTemplate.delete(\"transformation_template_id\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "svix.getTransformationTemplate().delete(\"transformation_template_id\")"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "svix.transformation_template.delete(\"transformation_template_id\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "svix.transformation_template().delete(\"transformation_template_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "await svix.TransformationTemplate.DeleteAsync(\"transformation_template_id\")"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix transformation-template delete \"transformation_template_id\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'DELETE' \\\n  'https://api.svix.com/api/v1/transformation-template/{transformation_template_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            },
+            "get": {
+                "description": "Get a transformation template",
+                "operationId": "v1.transformation-template.get",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "transformation_template_id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TemplateOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Get Transformation Template",
+                "tags": [
+                    "Transformation Template"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const templateOut = await svix.transformationTemplate.get(\"transformation_template_id\");"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const templateOut = await svix.transformationTemplate.get(\"transformation_template_id\");"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "template_out = svix.transformation_template.get(\"transformation_template_id\")"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "template_out = await svix.transformation_template.get(\"transformation_template_id\")"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "templateOut, err := svixClient.TransformationTemplate.Get(ctx, \"transformation_template_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val templateOut = svix.transformationTemplate.get(\"transformation_template_id\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "TemplateOut templateOut = svix.getTransformationTemplate().get(\"transformation_template_id\")"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "template_out = svix.transformation_template.get(\"transformation_template_id\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let template_out = svix.transformation_template().get(\"transformation_template_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var templateOut = await svix.TransformationTemplate.GetAsync(\"transformation_template_id\")"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix transformation-template get \"transformation_template_id\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/transformation-template/{transformation_template_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            },
+            "patch": {
+                "description": "Partially update a transformation template",
+                "operationId": "v1.transformation-template.patch",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "transformation_template_id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TemplatePatch"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TemplateOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Patch Transformation Template",
+                "tags": [
+                    "Transformation Template"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const templateOut = await svix.transformationTemplate.patch(\"transformation_template_id\", {\n    instructionsLink: null,\n    filterTypes: [\"user.signup\", \"user.deleted\"]\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const templateOut = await svix.transformationTemplate.patch(\"transformation_template_id\", {\n    instructionsLink: null,\n    filterTypes: [\"user.signup\", \"user.deleted\"]\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "template_out = svix.transformation_template.patch(\"transformation_template_id\", TemplatePatch(\n    instructions_link=None,\n    filter_types=[\"user.signup\", \"user.deleted\"]\n))"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "template_out = await svix.transformation_template.patch(\"transformation_template_id\", TemplatePatch(\n    instructions_link=None,\n    filter_types=[\"user.signup\", \"user.deleted\"]\n))"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "templateOut, err := svixClient.TransformationTemplate.Patch(ctx, \"transformation_template_id\", &TemplatePatch{\n    InstructionsLink: nil,\n    FilterTypes: []string{\"user.signup\", \"user.deleted\"},\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val templateOut = svix.transformationTemplate.patch(\"transformation_template_id\", TemplatePatch()\n    .instructionsLink(null)\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\"))\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "TemplateOut templateOut = svix.getTransformationTemplate().patch(\"transformation_template_id\", new TemplatePatch()\n    .instructionsLink(null)\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"})\n)"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "template_out = svix.transformation_template.patch(\"transformation_template_id\", Svix::TemplatePatch.new({\n    \"instructions_link\": nil,\n    \"filter_types\": [\"user.signup\", \"user.deleted\"]\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let template_out = svix.transformation_template().patch(\"transformation_template_id\", TemplatePatch {\n    instructions_link: None,\n    filter_types: Some(vec![\"user.signup\".to_string(), \"user.deleted\".to_string()]),\n}).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var templateOut = await svix.TransformationTemplate.PatchAsync(\"transformation_template_id\", new TemplatePatch{\n    instructionsLink: null,\n    filterTypes: new string[] {\"user.signup\", \"user.deleted\"}\n})"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix transformation-template patch \"transformation_template_id\" '{\n    \"instructionsLink\": null,\n    \"filterTypes\": [\"user.signup\", \"user.deleted\"]\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'PATCH' \\\n  'https://api.svix.com/api/v1/transformation-template/{transformation_template_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"instructionsLink\": null,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"]\n    }'"
+                    }
+                ]
+            },
+            "put": {
+                "description": "Update a transformation template",
+                "operationId": "v1.transformation-template.update",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "transformation_template_id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TemplateUpdate"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TemplateOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TemplateOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Update Transformation Template",
+                "tags": [
+                    "Transformation Template"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const templateOut = await svix.transformationTemplate.update(\"transformation_template_id\", {\n    instructionsLink: null,\n    filterTypes: [\"user.signup\", \"user.deleted\"]\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const templateOut = await svix.transformationTemplate.update(\"transformation_template_id\", {\n    instructionsLink: null,\n    filterTypes: [\"user.signup\", \"user.deleted\"]\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "template_out = svix.transformation_template.update(\"transformation_template_id\", TemplateUpdate(\n    instructions_link=None,\n    filter_types=[\"user.signup\", \"user.deleted\"]\n))"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "template_out = await svix.transformation_template.update(\"transformation_template_id\", TemplateUpdate(\n    instructions_link=None,\n    filter_types=[\"user.signup\", \"user.deleted\"]\n))"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "templateOut, err := svixClient.TransformationTemplate.Update(ctx, \"transformation_template_id\", &TemplateUpdate{\n    InstructionsLink: nil,\n    FilterTypes: []string{\"user.signup\", \"user.deleted\"},\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val templateOut = svix.transformationTemplate.update(\"transformation_template_id\", TemplateUpdate()\n    .instructionsLink(null)\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\"))\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "TemplateOut templateOut = svix.getTransformationTemplate().update(\"transformation_template_id\", new TemplateUpdate()\n    .instructionsLink(null)\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"})\n)"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "template_out = svix.transformation_template.update(\"transformation_template_id\", Svix::TemplateUpdate.new({\n    \"instructions_link\": nil,\n    \"filter_types\": [\"user.signup\", \"user.deleted\"]\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let template_out = svix.transformation_template().update(\"transformation_template_id\", TemplateUpdate {\n    instructions_link: None,\n    filter_types: Some(vec![\"user.signup\".to_string(), \"user.deleted\".to_string()]),\n}).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var templateOut = await svix.TransformationTemplate.UpdateAsync(\"transformation_template_id\", new TemplateUpdate{\n    instructionsLink: null,\n    filterTypes: new string[] {\"user.signup\", \"user.deleted\"}\n})"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix transformation-template update \"transformation_template_id\" '{\n    \"instructionsLink\": null,\n    \"filterTypes\": [\"user.signup\", \"user.deleted\"]\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'PUT' \\\n  'https://api.svix.com/api/v1/transformation-template/{transformation_template_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"instructionsLink\": null,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"]\n    }'"
+                    }
+                ]
+            }
         }
     },
     "tags": [
@@ -16813,7 +18249,8 @@
                 "summary": "EndpointCreatedEvent",
                 "tags": [
                     "Webhooks"
-                ]
+                ],
+                "x-event-type": "endpoint.created"
             }
         },
         "EndpointDeletedEvent": {
@@ -16837,7 +18274,8 @@
                 "summary": "EndpointDeletedEvent",
                 "tags": [
                     "Webhooks"
-                ]
+                ],
+                "x-event-type": "endpoint.deleted"
             }
         },
         "EndpointDisabledEvent": {
@@ -16861,7 +18299,8 @@
                 "summary": "EndpointDisabledEvent",
                 "tags": [
                     "Webhooks"
-                ]
+                ],
+                "x-event-type": "endpoint.disabled"
             }
         },
         "EndpointUpdatedEvent": {
@@ -16885,7 +18324,8 @@
                 "summary": "EndpointUpdatedEvent",
                 "tags": [
                     "Webhooks"
-                ]
+                ],
+                "x-event-type": "endpoint.updated"
             }
         },
         "MessageAttemptExhaustedEvent": {
@@ -16909,7 +18349,8 @@
                 "summary": "MessageAttemptExhaustedEvent",
                 "tags": [
                     "Webhooks"
-                ]
+                ],
+                "x-event-type": "message.attempt.exhausted"
             }
         },
         "MessageAttemptFailingEvent": {
@@ -16933,7 +18374,33 @@
                 "summary": "MessageAttemptFailingEvent",
                 "tags": [
                     "Webhooks"
-                ]
+                ],
+                "x-event-type": "message.attempt.failing"
+            }
+        },
+        "MessageAttemptRecoveredEvent": {
+            "post": {
+                "description": "Sent on a successful dispatch after an earlier failure op webhook has already been sent.",
+                "operationId": "MessageAttemptRecoveredEvent",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MessageAttemptRecoveredEvent"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "2XX": {
+                        "description": "Return any 2XX status to indicate that the data was received successfully"
+                    }
+                },
+                "summary": "MessageAttemptRecoveredEvent",
+                "tags": [
+                    "Webhooks"
+                ],
+                "x-event-type": "message.attempt.recovered"
             }
         }
     }
