@@ -910,7 +910,7 @@ impl<'a> MessageAttempt<'a> {
             status,
             status_code_class,
             endpoint_id,
-            with_content: _,
+            with_content,
         } = options.unwrap_or_default();
         Ok(message_attempt_api::v1_message_attempt_list_by_msg(
             self.cfg,
@@ -926,6 +926,7 @@ impl<'a> MessageAttempt<'a> {
                 status,
                 status_code_class,
                 endpoint_id,
+                with_content
             },
         )
         .await?)
@@ -947,7 +948,7 @@ impl<'a> MessageAttempt<'a> {
             status,
             status_code_class,
             endpoint_id: _,
-            with_content: _,
+            with_content,
         } = options.unwrap_or_default();
         Ok(message_attempt_api::v1_message_attempt_list_by_endpoint(
             self.cfg,
@@ -962,6 +963,7 @@ impl<'a> MessageAttempt<'a> {
                 channel,
                 status,
                 status_code_class,
+                with_content
             },
         )
         .await?)
@@ -976,7 +978,7 @@ impl<'a> MessageAttempt<'a> {
         let MessageAttemptListOptions {
             iterator,
             limit,
-            event_types: _,
+            event_types,
             before,
             after,
             channel,
@@ -998,6 +1000,7 @@ impl<'a> MessageAttempt<'a> {
                     channel,
                     status,
                     with_content,
+                    event_types
                 },
             )
             .await?,
