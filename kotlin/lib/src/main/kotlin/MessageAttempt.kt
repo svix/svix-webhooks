@@ -39,6 +39,7 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
                 options.endpointId,
                 options.before,
                 options.after,
+                options.withContent,
                 HashSet(options.eventTypes)
             )
         } catch (e: Exception) {
@@ -58,6 +59,7 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
                 options.channel,
                 options.before,
                 options.after,
+                options.withContent,
                 HashSet(options.eventTypes)
             )
         } catch (e: Exception) {
@@ -101,7 +103,8 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
                 options.messageStatus,
                 options.before,
                 options.after,
-                options.withContent
+                options.withContent,
+                HashSet(options.eventTypes)
             )
         } catch (e: Exception) {
             throw ApiException.wrap(e)
