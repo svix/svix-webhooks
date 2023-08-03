@@ -926,7 +926,7 @@ impl<'a> MessageAttempt<'a> {
                 status,
                 status_code_class,
                 endpoint_id,
-                with_content
+                with_content,
             },
         )
         .await?)
@@ -963,7 +963,7 @@ impl<'a> MessageAttempt<'a> {
                 channel,
                 status,
                 status_code_class,
-                with_content
+                with_content,
             },
         )
         .await?)
@@ -1000,7 +1000,7 @@ impl<'a> MessageAttempt<'a> {
                     channel,
                     status,
                     with_content,
-                    event_types
+                    event_types,
                 },
             )
             .await?,
