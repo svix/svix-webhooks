@@ -17,6 +17,6 @@ namespace Svix.Models
 
         public DateTime? After { get; set; }
 
-        public bool? WithContent  { get; set; }
+        public bool? WithContent { get; set; }
     }
 }
