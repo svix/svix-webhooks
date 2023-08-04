@@ -3,6 +3,11 @@
 ## Next
 * 
 
+## Version 1.8.0
+* Libs/Go: fix behavior of `NullableInt32` and `NullableString`
+* Server: Add `with_content` to attempt listing endpoints
+* Bridge: better js transformations
+
 ## Version 1.7.0
 * Server: update Docker image to use latest Rust version
 * Server: support additional JWT signing algorithms (including asymmetric!).
