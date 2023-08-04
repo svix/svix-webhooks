@@ -38,6 +38,7 @@ public final class MessageAttempt {
 					options.getEndpointId(),
 					options.getBefore(),
 					options.getAfter(),
+					options.getWithContent(),
 					new HashSet<>(options.getEventTypes())
 			);
 		} catch (com.svix.internal.ApiException e) {
@@ -57,6 +58,7 @@ public final class MessageAttempt {
 					options.getChannel(),
 					options.getBefore(),
 					options.getAfter(),
+					options.getWithContent(),
 					new HashSet<>(options.getEventTypes())
 			);
 		} catch (com.svix.internal.ApiException e) {
@@ -95,7 +97,8 @@ public final class MessageAttempt {
 					options.getMessageStatus(),
 					options.getBefore(),
 					options.getAfter(),
-					options.getWithContent()
+					options.getWithContent(),
+					new HashSet<>(options.getEventTypes())
 			);
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);

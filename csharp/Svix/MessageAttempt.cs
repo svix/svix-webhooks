@@ -112,6 +112,7 @@ namespace Svix
                     options?.Before,
                     options?.After,
                     options?.WithContent,
+                    options?.EventTypes,
                     cancellationToken);
 
                 return lResults?.Data;
@@ -142,6 +143,7 @@ namespace Svix
                     options?.Channel,
                     options?.Before,
                     options?.After,
+                    options?.WithContent,
                     options?.EventTypes);
 
                 return lResults?.Data;
@@ -172,6 +174,7 @@ namespace Svix
                     options?.Channel,
                     options?.Before,
                     options?.After,
+                    options?.WithContent,
                     options?.EventTypes,
                     cancellationToken);
 
@@ -204,6 +207,7 @@ namespace Svix
                     options?.EndpointId,
                     options?.Before,
                     options?.After,
+                    options?.WithContent,
                     options?.EventTypes);
 
                 return lResults?.Data;
@@ -235,6 +239,7 @@ namespace Svix
                     options?.EndpointId,
                     options?.Before,
                     options?.After,
+                    options?.WithContent,
                     options?.EventTypes,
                     cancellationToken);
 
