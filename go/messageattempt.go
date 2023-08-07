@@ -73,6 +73,9 @@ func (m *MessageAttempt) ListByMsg(ctx context.Context, appId string, msgId stri
 		if options.EndpointId != nil {
 			req = req.EndpointId(*options.EndpointId)
 		}
+		if options.WithContent != nil {
+			req = req.WithContent(*options.WithContent)
+		}
 	}
 	out, res, err := req.Execute()
 	if err != nil {
@@ -108,6 +111,9 @@ func (m *MessageAttempt) ListByEndpoint(ctx context.Context, appId string, endpo
 		}
 		if options.Channel != nil {
 			req = req.Channel(*options.Channel)
+		}
+		if options.WithContent != nil {
+			req = req.WithContent(*options.WithContent)
 		}
 	}
 	out, res, err := req.Execute()
