@@ -5,7 +5,6 @@
 #![forbid(unsafe_code)]
 
 use dotenv::dotenv;
-use std::process::exit;
 use svix_server::core::types::{EndpointSecretInternal, OrganizationId};
 use svix_server::db::wipe_org;
 use validator::Validate;
@@ -140,7 +139,6 @@ async fn main() {
         Some(Commands::Migrate) => {
             db::run_migrations(&cfg).await;
             println!("Migrations: success");
-            exit(0);
         }
         Some(Commands::Jwt {
             command: JwtCommands::Generate { org_id },
@@ -150,7 +148,6 @@ async fn main() {
                 Ok(token) => println!("Token (Bearer): {token}"),
                 Err(e) => tracing::error!("Error generating token: {e}"),
             }
-            return;
         }
         Some(Commands::AsymmetricKey { command }) => match command {
             AsymmetricKeyCommands::Generate => {
@@ -160,7 +157,6 @@ async fn main() {
                     .unwrap();
                 println!("Secret key: {}", secret.serialize_secret_key());
                 println!("Public key: {}", secret.serialize_public_key());
-                exit(0);
             }
         },
         Some(Commands::Wipe {
@@ -172,8 +168,6 @@ async fn main() {
             } else {
                 println!("Please confirm you wish to wipe this organization with the `--yes-i-know-what-im-doing` flag");
             }
-
-            exit(0);
         }
         Some(Commands::GenerateOpenapi) => {
             let mut openapi = svix_server::openapi::initialize_openapi();
@@ -188,13 +182,11 @@ async fn main() {
                 "{}",
                 serde_json::to_string_pretty(&openapi).expect("Failed to serialize JSON spec")
             );
-
-            exit(0);
         }
-        None => {}
+        None => {
+            run(cfg, None).await;
+        }
     };
-
-    run(cfg, None).await;
 
     opentelemetry::global::shutdown_tracer_provider();
 }
