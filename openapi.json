@@ -3357,6 +3357,64 @@
                 ],
                 "type": "string"
             },
+            "TransformationSimulateIn": {
+                "properties": {
+                    "channels": {
+                        "items": {
+                            "example": "project_1337",
+                            "maxLength": 128,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "nullable": true,
+                        "type": "array",
+                        "uniqueItems": true
+                    },
+                    "code": {
+                        "maxLength": 51200,
+                        "minLength": 10,
+                        "type": "string"
+                    },
+                    "eventType": {
+                        "description": "The event type's name",
+                        "example": "user.signup",
+                        "maxLength": 256,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "type": "string"
+                    },
+                    "payload": {
+                        "type": "object"
+                    }
+                },
+                "required": [
+                    "code",
+                    "eventType",
+                    "payload"
+                ],
+                "type": "object"
+            },
+            "TransformationSimulateOut": {
+                "properties": {
+                    "method": {
+                        "$ref": "#/components/schemas/TransformationHttpMethod",
+                        "nullable": true
+                    },
+                    "payload": {
+                        "type": "string"
+                    },
+                    "url": {
+                        "format": "uri",
+                        "maxLength": 65536,
+                        "minLength": 1,
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "payload",
+                    "url"
+                ],
+                "type": "object"
+            },
             "TransformationTemplateKind": {
                 "enum": [
                     "Custom"
@@ -8379,7 +8437,7 @@
                     "required": true
                 },
                 "responses": {
-                    "200": {
+                    "202": {
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -17451,6 +17509,186 @@
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/transformation-template/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"instructionsLink\": null,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"]\n    }'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/transformation-template/simulate": {
+            "post": {
+                "description": "Simulate running the transformation on the payload and code",
+                "operationId": "v1.transformation-template.simulate",
+                "parameters": [
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TransformationSimulateIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransformationSimulateOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Simulate",
+                "tags": [
+                    "Transformation Template"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const transformationSimulateOut = await svix.transformationTemplate.simulate({\n    eventType: \"user.signup\",\n    channels: null\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const transformationSimulateOut = await svix.transformationTemplate.simulate({\n    eventType: \"user.signup\",\n    channels: null\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "transformation_simulate_out = svix.transformation_template.simulate(TransformationSimulateIn(\n    event_type=\"user.signup\",\n    channels=None\n), None)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "transformation_simulate_out = await svix.transformation_template.simulate(TransformationSimulateIn(\n    event_type=\"user.signup\",\n    channels=None\n), None)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "transformationSimulateOut, err := svixClient.TransformationTemplate.Simulate(ctx, &TransformationSimulateIn{\n    EventType: \"user.signup\",\n    Channels: nil,\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val transformationSimulateOut = svix.transformationTemplate.simulate(TransformationSimulateIn()\n    .eventType(\"user.signup\")\n    .channels(null)\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "TransformationSimulateOut transformationSimulateOut = svix.getTransformationTemplate().simulate(new TransformationSimulateIn()\n    .eventType(\"user.signup\")\n    .channels(null)\n)"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "transformation_simulate_out = svix.transformation_template.simulate(Svix::TransformationSimulateIn.new({\n    \"event_type\": \"user.signup\",\n    \"channels\": nil\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let transformation_simulate_out = svix.transformation_template().simulate(TransformationSimulateIn {\n    event_type: \"user.signup\".to_string(),\n    channels: None,\n}, None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var transformationSimulateOut = await svix.TransformationTemplate.SimulateAsync(new TransformationSimulateIn{\n    eventType: \"user.signup\",\n    channels: null\n})"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix transformation-template simulate '{\n    \"eventType\": \"user.signup\",\n    \"channels\": null\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/transformation-template/simulate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"eventType\": \"user.signup\",\n        \"channels\": null\n    }'"
                     }
                 ]
             }
