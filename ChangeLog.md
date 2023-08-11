@@ -3,6 +3,10 @@
 ## Next
 * 
 
+## Version 1.8.1
+* Server: correctly disconnect the tracing provider when shutting down in some rare scenarios.
+* Libs: update OpenAPI spec
+
 ## Version 1.8.0
 * Libs/Go: fix behavior of `NullableInt32` and `NullableString`
 * Server: Add `with_content` to attempt listing endpoints
