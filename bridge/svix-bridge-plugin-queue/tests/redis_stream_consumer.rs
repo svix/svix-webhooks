@@ -69,7 +69,8 @@ async fn delete_test_stream(client: &Client, key: &str) {
 
 async fn publish(client: &Client, key: &str, payload: &str) {
     let mut conn = client.get_async_connection().await.unwrap();
-
+    // N.b. the redis code relies on the messages being json with a `payload` key in there.
+    // The `payload` key can be any valid JSON value.
     let _: () = conn.xadd(key, "*", &[("payload", payload)]).await.unwrap();
 }
 
@@ -199,9 +200,6 @@ async fn test_consume_transformed_json_ok() {
     delete_test_stream(&client, &key).await;
 }
 
-// FIXME: can't support raw payload with the current redis backend impl as it requires json
-//   internally. Try again when we switch to `omniqueue`.
-#[ignore]
 #[tokio::test]
 async fn test_consume_transformed_string_ok() {
     let client = redis_connection().await;

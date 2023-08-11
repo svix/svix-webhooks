@@ -1,8 +1,8 @@
-use generic_queue::gcp_pubsub::{GCPPubSubDelivery, GCPPubSubQueueConsumer};
-use generic_queue::rabbitmq::{RabbitMqConsumer, RabbitMqDelivery};
-use generic_queue::redis::{RedisStreamConsumer, RedisStreamDelivery, RedisStreamJsonSerde};
-use generic_queue::sqs::{SqsDelivery, SqsQueueConsumer};
-use generic_queue::{Delivery, QueueError, TaskQueueReceive};
+use omniqueue::queue::consumer::DynConsumer;
+use omniqueue::{
+    queue::{consumer::QueueConsumer, Delivery},
+    QueueError,
+};
 use std::time::{Duration, Instant};
 use svix_bridge_types::{
     async_trait, svix::api::Svix, CreateMessageRequest, JsObject, TransformationConfig,
@@ -25,116 +25,51 @@ pub use self::{
     redis::RedisConsumerPlugin, sqs::SqsConsumerPlugin,
 };
 
-/// Each queue backend has a different delivery type which is also generic by the type of the
-/// payload (or more).
-/// This wrapper hides the inner types so the calling code can be generalized more trivially.
-pub enum DeliveryWrapper {
-    GCPPubSub(GCPPubSubDelivery<serde_json::Value>),
-    RabbitMQ(RabbitMqDelivery<serde_json::Value>),
-    Redis(RedisStreamDelivery<serde_json::Value, RedisStreamJsonSerde>),
-    SQS(SqsDelivery<serde_json::Value>),
+/// Newtype for [`omniqueue::queue::Delivery`].
+///
+/// Mostly vestigial at this point, though it doesn't hurt to have something to act as a facade to
+/// group helper functions for handling payload details.
+pub struct DeliveryWrapper(Delivery);
+
+impl From<Delivery> for DeliveryWrapper {
+    fn from(value: Delivery) -> Self {
+        Self(value)
+    }
 }
 
 impl DeliveryWrapper {
     /// Delegates to the inner delivery types ack method.
     async fn ack(self) -> Result<(), QueueError> {
-        match self {
-            DeliveryWrapper::GCPPubSub(x) => x.ack().await,
-            DeliveryWrapper::RabbitMQ(x) => x.ack().await,
-            DeliveryWrapper::Redis(x) => x.ack().await,
-            DeliveryWrapper::SQS(x) => x.ack().await,
-        }
+        self.0.ack().await
     }
     /// Delegates to the inner delivery types nack method.
     async fn nack(self) -> Result<(), QueueError> {
-        match self {
-            DeliveryWrapper::GCPPubSub(x) => x.nack().await,
-            DeliveryWrapper::RabbitMQ(x) => x.nack().await,
-            DeliveryWrapper::Redis(x) => x.nack().await,
-            DeliveryWrapper::SQS(x) => x.nack().await,
-        }
+        self.0.nack().await
     }
 
     /// Decodes the inner delivery as String.
     fn raw_payload(&self) -> Result<&str, QueueError> {
-        match self {
-            DeliveryWrapper::GCPPubSub(x) => Delivery::raw_payload(x),
-            DeliveryWrapper::RabbitMQ(x) => Delivery::raw_payload(x),
-            DeliveryWrapper::Redis(_) => unimplemented!("string payloads unsupported by redis"),
-            DeliveryWrapper::SQS(x) => Delivery::raw_payload(x),
-        }
+        // TODO: used to be unsupported for redis. Is it now? Check for skipped tests to prove it.
+        let bytes = self.0.borrow_payload().ok_or(QueueError::NoData)?;
+        std::str::from_utf8(bytes).map_err(QueueError::generic)
     }
 
     /// Decodes the inner delivery as `serde_json::Value`.
     fn payload(&self) -> Result<serde_json::Value, QueueError> {
-        match self {
-            DeliveryWrapper::GCPPubSub(x) => Delivery::payload(x),
-            DeliveryWrapper::RabbitMQ(x) => Delivery::payload(x),
-            DeliveryWrapper::Redis(x) => Delivery::payload(x),
-            DeliveryWrapper::SQS(x) => Delivery::payload(x),
-        }
-    }
-}
-
-/// Each queue backend has a different consumer type which is also generic by the type of the
-/// payload (or more).
-/// This wrapper hides the inner types so the calling code can be generalized more trivially.
-pub enum ConsumerWrapper {
-    GCPPubSub(GCPPubSubQueueConsumer),
-    RabbitMQ(RabbitMqConsumer),
-    Redis(RedisStreamConsumer<RedisStreamJsonSerde>),
-    SQS(SqsQueueConsumer),
-}
-
-impl ConsumerWrapper {
-    async fn receive_all(
-        &mut self,
-        max_batch_size: usize,
-        timeout: Duration,
-    ) -> Result<Vec<DeliveryWrapper>, QueueError> {
-        Ok(match self {
-            ConsumerWrapper::GCPPubSub(x) => x
-                .receive_all(max_batch_size, timeout)
-                .await?
-                .into_iter()
-                .map(DeliveryWrapper::GCPPubSub)
-                .collect(),
-            ConsumerWrapper::RabbitMQ(x) => x
-                .receive_all(max_batch_size, timeout)
-                .await?
-                .into_iter()
-                .map(DeliveryWrapper::RabbitMQ)
-                .collect(),
-            ConsumerWrapper::Redis(x) => x
-                .receive_all(max_batch_size, timeout)
-                .await?
-                .into_iter()
-                .map(DeliveryWrapper::Redis)
-                .collect(),
-            ConsumerWrapper::SQS(x) => x
-                .receive_all(max_batch_size, timeout)
-                .await?
-                .into_iter()
-                .map(DeliveryWrapper::SQS)
-                .collect(),
-        })
+        self.0.payload_serde_json()?.ok_or(QueueError::NoData)
     }
 }
 
 #[async_trait]
 trait Consumer {
-    /// The source of the stream of messages.
-    /// The name/identifier for the queue or subscription or whatever.
+    /// The source of the stream of messages, e.g. the name or id for the queue, subscription, etc.
     fn source(&self) -> &str;
-
-    /// The name of the messaging system.
+    /// The name of the messaging system, e.g. rabbitmq, sqs, etc.
     fn system(&self) -> &str;
-
     /// Gets the channel sender for running transformations.
     fn transformer_tx(&self) -> &Option<TransformerTx>;
     /// The js source for the transformation to run on each payload.
     fn transformation(&self) -> &Option<TransformationConfig>;
-
     /// The client to use when creating messages in svix.
     fn svix_client(&self) -> &Svix;
 
@@ -165,8 +100,8 @@ trait Consumer {
         }
     }
 
-    /// Gets a "wrapped" consumer, called by [`consume`].
-    async fn consumer(&self) -> std::io::Result<ConsumerWrapper>;
+    /// Gets consumer (likely based on a config value), called by [`consume`].
+    async fn consumer(&self) -> std::io::Result<DynConsumer>;
 
     /// Main consumer loop
     async fn consume(&self) -> std::io::Result<()> {
@@ -188,15 +123,10 @@ trait Consumer {
         svix_bridge_plugin.vers = crate::PLUGIN_VERS,
     )
     )]
-    async fn receive(&self, consumer: &mut ConsumerWrapper) -> std::io::Result<()> {
-        let deliveries = consumer
-            .receive_all(1, Duration::from_millis(10))
-            .await
-            .map_err(Error::from)?;
-        tracing::trace!("received: {}", deliveries.len());
-        for delivery in deliveries {
-            self.process(delivery).await?;
-        }
+    async fn receive(&self, consumer: &mut DynConsumer) -> std::io::Result<()> {
+        // FIXME: omniqueue has a fixed batch size of 1 afaict. Would be nicer to pull N at a time.
+        let delivery = consumer.receive().await.map_err(Error::from)?;
+        self.process(delivery.into()).await?;
         Ok(())
     }
 

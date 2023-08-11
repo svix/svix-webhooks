@@ -1,17 +1,13 @@
 use crate::error::Error;
 use crate::run_inner;
 use crate::Consumer;
-use crate::ConsumerWrapper;
-use generic_queue::{
-    rabbitmq::{
-        BasicConsumeOptions, BasicProperties, BasicPublishOptions, ConnectionProperties,
-        FieldTable, RabbitMqBackend, RabbitMqConfig,
-    },
-    TaskQueueBackend,
+use omniqueue::{
+    backends,
+    queue::{consumer::DynConsumer, QueueBackend},
 };
 use serde::Deserialize;
 use svix_bridge_types::{
-    async_trait, svix::api::Svix, JsObject, SenderInput, SenderOutputOpts, TransformationConfig,
+    async_trait, svix::api::Svix, SenderInput, SenderOutputOpts, TransformationConfig,
     TransformerTx,
 };
 
@@ -26,9 +22,9 @@ pub struct RabbitMqInputOpts {
     #[serde(default)]
     pub consumer_tag: Option<String>,
     #[serde(default)]
-    pub consume_opts: Option<BasicConsumeOptions>,
+    pub consume_opts: Option<backends::rabbitmq::BasicConsumeOptions>,
     #[serde(default)]
-    pub consume_args: Option<FieldTable>,
+    pub consume_args: Option<backends::rabbitmq::FieldTable>,
     #[serde(default = "default_requeue")]
     pub requeue_on_nack: bool,
 }
@@ -88,24 +84,26 @@ impl Consumer for RabbitMqConsumerPlugin {
         &self.svix_client
     }
 
-    async fn consumer(&self) -> std::io::Result<ConsumerWrapper> {
+    async fn consumer(&self) -> std::io::Result<DynConsumer> {
         let consumer =
-            <RabbitMqBackend as TaskQueueBackend<JsObject>>::consuming_half(RabbitMqConfig {
+            backends::rabbitmq::RabbitMqBackend::builder(backends::rabbitmq::RabbitMqConfig {
                 uri: self.input_options.uri.clone(),
-                connection_properties: ConnectionProperties::default(),
+                connection_properties: backends::rabbitmq::ConnectionProperties::default(),
                 publish_exchange: String::new(),
                 publish_routing_key: String::new(),
-                publish_options: BasicPublishOptions::default(),
-                publish_properites: BasicProperties::default(),
+                publish_options: backends::rabbitmq::BasicPublishOptions::default(),
+                publish_properites: backends::rabbitmq::BasicProperties::default(),
                 consume_queue: self.input_options.queue_name.clone(),
                 consumer_tag: self.input_options.consumer_tag.clone().unwrap_or_default(),
                 consume_options: self.input_options.consume_opts.unwrap_or_default(),
                 consume_arguments: self.input_options.consume_args.clone().unwrap_or_default(),
                 requeue_on_nack: self.input_options.requeue_on_nack,
             })
+            .make_dynamic()
+            .build_consumer()
             .await
             .map_err(Error::from)?;
-        Ok(ConsumerWrapper::RabbitMQ(consumer))
+        Ok(consumer)
     }
 }
 
@@ -131,7 +129,7 @@ pub struct RabbitMqOutputOpts {
     /// The routing key to publish messages to.
     pub routing_key: String,
     #[serde(default)]
-    pub publish_options: BasicPublishOptions,
+    pub publish_options: backends::rabbitmq::BasicPublishOptions,
     #[serde(default)]
-    pub publish_properties: BasicProperties,
+    pub publish_properties: backends::rabbitmq::BasicProperties,
 }

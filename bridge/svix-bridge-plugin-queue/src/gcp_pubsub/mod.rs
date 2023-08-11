@@ -1,12 +1,13 @@
 use crate::error::Error;
-use crate::ConsumerWrapper;
 use crate::{run_inner, Consumer};
-use generic_queue::gcp_pubsub::{GCPPubSubConfig, GCPPubSubQueueBackend};
-use generic_queue::TaskQueueBackend;
+use omniqueue::{
+    backends,
+    queue::{consumer::DynConsumer, QueueBackend},
+};
 use serde::Deserialize;
 use std::path::PathBuf;
 use svix_bridge_types::{
-    async_trait, svix::api::Svix, JsObject, SenderInput, SenderOutputOpts, TransformationConfig,
+    async_trait, svix::api::Svix, SenderInput, SenderOutputOpts, TransformationConfig,
     TransformerTx,
 };
 
@@ -67,18 +68,20 @@ impl Consumer for GCPPubSubConsumerPlugin {
         &self.svix_client
     }
 
-    async fn consumer(&self) -> std::io::Result<ConsumerWrapper> {
-        let consumer = <GCPPubSubQueueBackend as TaskQueueBackend<JsObject>>::consuming_half(
-            GCPPubSubConfig {
+    async fn consumer(&self) -> std::io::Result<DynConsumer> {
+        let consumer = backends::gcp_pubsub::GcpPubSubBackend::builder(
+            backends::gcp_pubsub::GcpPubSubConfig {
                 subscription_id: self.input_options.subscription_id.clone(),
                 credentials_file: self.input_options.credentials_file.clone(),
                 // Topics are for producers so we don't care
-                topic: String::new(),
+                topic_id: String::new(),
             },
         )
+        .make_dynamic()
+        .build_consumer()
         .await
         .map_err(Error::from)?;
-        Ok(ConsumerWrapper::GCPPubSub(consumer))
+        Ok(consumer)
     }
 }
 

@@ -91,9 +91,6 @@ by the configured `format` field.
 
 Note that regardless of the `format`, the return type of `handler` must be an `Object`.
 
-> N.b. at time of writing, `format: string` is unsupported for `senders` and `receivers` configured with
-> a `redis` input or output.
-
 ---
 
 Currently the supported Sender inputs and Receiver outputs are the following

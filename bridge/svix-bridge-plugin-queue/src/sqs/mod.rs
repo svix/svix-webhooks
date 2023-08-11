@@ -1,12 +1,12 @@
 use crate::error::Error;
-use crate::{run_inner, Consumer, ConsumerWrapper};
-use generic_queue::{
-    sqs::{SqsConfig, SqsQueueBackend},
-    TaskQueueBackend,
+use crate::{run_inner, Consumer};
+use omniqueue::{
+    backends,
+    queue::{consumer::DynConsumer, QueueBackend},
 };
 use serde::Deserialize;
 use svix_bridge_types::{
-    async_trait, svix::api::Svix, JsObject, SenderInput, SenderOutputOpts, TransformationConfig,
+    async_trait, svix::api::Svix, SenderInput, SenderOutputOpts, TransformationConfig,
     TransformerTx,
 };
 
@@ -68,14 +68,16 @@ impl Consumer for SqsConsumerPlugin {
         &self.svix_client
     }
 
-    async fn consumer(&self) -> std::io::Result<ConsumerWrapper> {
-        let consumer = <SqsQueueBackend as TaskQueueBackend<JsObject>>::consuming_half(SqsConfig {
+    async fn consumer(&self) -> std::io::Result<DynConsumer> {
+        let consumer = backends::sqs::SqsQueueBackend::builder(backends::sqs::SqsConfig {
             queue_dsn: self.input_options.queue_dsn.clone(),
             override_endpoint: self.input_options.override_endpoint,
         })
+        .make_dynamic()
+        .build_consumer()
         .await
         .map_err(Error::from)?;
-        Ok(ConsumerWrapper::SQS(consumer))
+        Ok(consumer)
     }
 }
 

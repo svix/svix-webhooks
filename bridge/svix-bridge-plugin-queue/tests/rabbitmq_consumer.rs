@@ -2,8 +2,10 @@
 //! default guest/guest credentials.
 //! Try using the `testing-docker-compose.yml` in the repo root to get this going.
 
-use generic_queue::rabbitmq::FieldTable;
-use lapin::{options::QueueDeclareOptions, Channel, Connection, ConnectionProperties, Queue};
+use lapin::{
+    options::QueueDeclareOptions, types::FieldTable, Channel, Connection, ConnectionProperties,
+    Queue,
+};
 use serde_json::json;
 use std::time::Duration;
 use svix_bridge_plugin_queue::{config::RabbitMqInputOpts, RabbitMqConsumerPlugin};

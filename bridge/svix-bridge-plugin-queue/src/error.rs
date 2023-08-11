@@ -1,4 +1,4 @@
-pub use generic_queue::QueueError;
+pub use omniqueue::QueueError;
 use svix_bridge_types::svix;
 
 pub enum Error {

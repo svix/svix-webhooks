@@ -18,6 +18,11 @@ use wiremock::matchers::{body_partial_json, method};
 use wiremock::{Mock, MockServer, ResponseTemplate};
 
 const ROOT_URL: &str = "http://localhost:9324";
+const DEFAULT_CFG: [(&str, &str); 3] = [
+    ("AWS_DEFAULT_REGION", "localhost"),
+    ("AWS_ACCESS_KEY_ID", "x"),
+    ("AWS_SECRET_ACCESS_KEY", "x"),
+];
 
 fn get_test_plugin(
     svix_url: String,
@@ -45,6 +50,11 @@ fn get_test_plugin(
 }
 
 async fn mq_connection() -> Client {
+    for (var, val) in &DEFAULT_CFG {
+        if std::env::var(var).is_err() {
+            std::env::set_var(var, val);
+        }
+    }
     let config = aws_config::from_env().endpoint_url(ROOT_URL).load().await;
     Client::new(&config)
 }
@@ -74,7 +84,7 @@ async fn publish(client: &Client, url: &str, payload: &str) {
 }
 
 /// General "pause while we wait for messages to travel" beat. If you're seeing flakes, bump this up.
-const WAIT_MS: u64 = 100;
+const WAIT_MS: u64 = 300;
 
 /// Push a msg on the queue.
 /// Check to see if the svix server sees a request.
