@@ -5,7 +5,9 @@ use std::time::Duration;
 
 use redis::{AsyncCommands, Client};
 use serde_json::json;
-use svix_bridge_plugin_queue::{config::RedisInputOpts, RedisConsumerPlugin};
+use svix_bridge_plugin_queue::config::RedisInputOpts;
+use svix_bridge_plugin_queue::config::SenderInputOpts;
+use svix_bridge_plugin_queue::sender_input::QueueSender;
 use svix_bridge_types::{
     svix::api::MessageIn, CreateMessageRequest, SenderInput, SenderOutputOpts, SvixOptions,
     SvixSenderOutputOpts, TransformationConfig, TransformerInput, TransformerInputFormat,
@@ -18,17 +20,17 @@ fn get_test_plugin(
     svix_url: String,
     queue_key: String,
     use_transformation: Option<TransformerInputFormat>,
-) -> RedisConsumerPlugin {
-    RedisConsumerPlugin::new(
+) -> QueueSender {
+    QueueSender::new(
         "test".into(),
-        RedisInputOpts {
+        SenderInputOpts::Redis(RedisInputOpts {
             dsn: "redis://localhost/".to_owned(),
             max_connections: 8,
             reinsert_on_nack: false,
             queue_key,
             consumer_group: "test_cg".to_owned(),
             consumer_name: "test_cn".to_owned(),
-        },
+        }),
         use_transformation.map(|format| TransformationConfig::Explicit {
             format,
             src: String::from("function handle(x) { return x; }"),

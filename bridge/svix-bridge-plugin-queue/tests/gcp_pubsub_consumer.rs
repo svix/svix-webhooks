@@ -10,7 +10,9 @@ use google_cloud_pubsub::topic::Topic;
 use std::time::Duration;
 
 use serde_json::json;
-use svix_bridge_plugin_queue::{config::GCPPubSubInputOpts, GCPPubSubConsumerPlugin};
+use svix_bridge_plugin_queue::config::GCPPubSubInputOpts;
+use svix_bridge_plugin_queue::config::SenderInputOpts;
+use svix_bridge_plugin_queue::sender_input::QueueSender;
 use svix_bridge_types::{
     svix::api::MessageIn, CreateMessageRequest, SenderInput, SenderOutputOpts, SvixOptions,
     SvixSenderOutputOpts, TransformationConfig, TransformerInput, TransformerInputFormat,
@@ -25,13 +27,13 @@ fn get_test_plugin(
     svix_url: String,
     subscription_id: String,
     use_transformation: Option<TransformerInputFormat>,
-) -> GCPPubSubConsumerPlugin {
-    GCPPubSubConsumerPlugin::new(
+) -> QueueSender {
+    QueueSender::new(
         "test".into(),
-        GCPPubSubInputOpts {
+        SenderInputOpts::GCPPubSub(GCPPubSubInputOpts {
             subscription_id,
             credentials_file: None,
-        },
+        }),
         use_transformation.map(|format| TransformationConfig::Explicit {
             format,
             src: String::from("function handle(x) { return x; }"),
