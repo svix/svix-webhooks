@@ -6,7 +6,6 @@
 resolver = "2"
 
 members = [
-    "generic-queue",
     "svix-bridge-types",
     "svix-bridge",
     "svix-bridge-plugin-queue",

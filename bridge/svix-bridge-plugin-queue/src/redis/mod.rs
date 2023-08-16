@@ -1,12 +1,14 @@
 use crate::error::Error;
 use crate::run_inner;
 use crate::Consumer;
-use crate::ConsumerWrapper;
-use generic_queue::redis::RedisConfig;
-use generic_queue::{redis::RedisQueueBackend, TaskQueueBackend};
+use omniqueue::{
+    backends,
+    queue::{consumer::DynConsumer, QueueBackend},
+};
+
 use serde::Deserialize;
 use svix_bridge_types::{
-    async_trait, svix::api::Svix, JsObject, SenderInput, SenderOutputOpts, TransformationConfig,
+    async_trait, svix::api::Svix, SenderInput, SenderOutputOpts, TransformationConfig,
     TransformerTx,
 };
 
@@ -76,19 +78,24 @@ impl Consumer for RedisConsumerPlugin {
         &self.svix_client
     }
 
-    async fn consumer(&self) -> std::io::Result<ConsumerWrapper> {
-        let consumer =
-            <RedisQueueBackend as TaskQueueBackend<JsObject>>::consuming_half(RedisConfig {
-                dsn: self.input_options.dsn.clone(),
-                max_connections: self.input_options.max_connections,
-                reinsert_on_nack: self.input_options.reinsert_on_nack,
-                queue_key: self.input_options.queue_key.clone(),
-                consumer_group: self.input_options.consumer_group.clone(),
-                consumer_name: self.input_options.consumer_name.clone(),
-            })
-            .await
-            .map_err(Error::from)?;
-        Ok(ConsumerWrapper::Redis(consumer))
+    async fn consumer(&self) -> std::io::Result<DynConsumer> {
+        let consumer = backends::redis::RedisQueueBackend::<
+            backends::redis::RedisMultiplexedConnectionManager,
+        >::builder(backends::redis::RedisConfig {
+            dsn: self.input_options.dsn.clone(),
+            max_connections: self.input_options.max_connections,
+            reinsert_on_nack: self.input_options.reinsert_on_nack,
+            queue_key: self.input_options.queue_key.clone(),
+            consumer_group: self.input_options.consumer_group.clone(),
+            consumer_name: self.input_options.consumer_name.clone(),
+            // FIXME: expose in config?
+            payload_key: "payload".to_string(),
+        })
+        .make_dynamic()
+        .build_consumer()
+        .await
+        .map_err(Error::from)?;
+        Ok(consumer)
     }
 }
 
