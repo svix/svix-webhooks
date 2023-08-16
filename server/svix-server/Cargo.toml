@@ -44,7 +44,7 @@ opentelemetry = { version= "0.17", features = ["rt-tokio"] }
 opentelemetry-http = "0.6.0"
 opentelemetry-otlp = { version = "0.10" }
 validator = { version = "0.14.0", features = ["derive"] }
-jwt-simple = "0.10.8"
+jwt-simple = "0.11.6"
 ed25519-compact = "1.0.11"
 chrono = { version="0.4.26", features = ["serde"] }
 reqwest = { version = "0.11.9", features = ["json", "rustls-tls", "trust-dns"], default-features = false }
@@ -56,8 +56,8 @@ bytes = "1.1.0"
 blake2 = "0.10.4"
 chacha20poly1305 = "0.9.0"
 # sea orm
-sea-orm = { version = "0.11.3", features = [ "sqlx-postgres", "runtime-tokio-rustls", "macros", "with-chrono", "with-json" ], default-features = false }
-sqlx = { version = "0.6.2", features = [ "runtime-tokio-rustls", "postgres", "migrate" ] }
+sea-orm = { version = "0.12.2", features = [ "sqlx-postgres", "runtime-tokio-rustls", "macros", "with-chrono", "with-json" ], default-features = false }
+sqlx = { version = "0.7.1", features = [ "runtime-tokio-rustls", "postgres", "migrate" ] }
 http = "0.2"
 time = { version = "0.3.9", features = [ "std" ]}
 futures = "0.3"
