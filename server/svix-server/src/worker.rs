@@ -21,7 +21,7 @@ use crate::db::models::{endpoint, message, messageattempt, messagedestination};
 use crate::error::{Error, ErrorType, HttpError, Result};
 use crate::queue::{MessageTask, QueueTask, TaskQueueConsumer, TaskQueueProducer};
 use crate::v1::utils::get_unix_timestamp;
-use crate::{ctx, err_cache, err_generic, err_validation};
+use crate::{ctx, err_generic, err_validation};
 
 use chrono::Utc;
 
@@ -103,7 +103,7 @@ async fn process_endpoint_success(
 ) -> Result<()> {
     let key = FailureCacheKey::new(org_id, app_id, &endp.id);
 
-    cache.delete(&key).await.map_err(|e| err_cache!(e))
+    ctx!(cache.delete(&key).await)
 }
 
 /// Called upon endpoint failure. Returns whether to disable the endpoint based on the time of first
@@ -129,10 +129,8 @@ async fn process_endpoint_failure(
     let now = Utc::now();
 
     // If it already exists in the cache, see if the grace period has already elapsed
-    if let Some(FailureCacheValue { first_failure_at }) = cache
-        .get::<FailureCacheValue>(&key)
-        .await
-        .map_err(|e| err_generic!(e))?
+    if let Some(FailureCacheValue { first_failure_at }) =
+        ctx!(cache.get::<FailureCacheValue>(&key).await)?
     {
         if now - first_failure_at
             > chrono::Duration::from_std(disable_in).expect("Given `disable_in` is too large")
@@ -144,18 +142,19 @@ async fn process_endpoint_failure(
     }
     // If it does not yet exist in the cache, set the first_failure_at value to now
     else {
-        cache
-            .set(
-                &key,
-                &FailureCacheValue {
-                    first_failure_at: now,
-                },
-                // Failures are forgiven after double the `disable_in` `Duration` with the expiry of
-                // the Redis key
-                disable_in * 2,
-            )
-            .await
-            .map_err(|e| err_generic!(e))?;
+        ctx!(
+            cache
+                .set(
+                    &key,
+                    &FailureCacheValue {
+                        first_failure_at: now,
+                    },
+                    // Failures are forgiven after double the `disable_in` `Duration` with the expiry of
+                    // the Redis key
+                    disable_in * 2,
+                )
+                .await
+        )?;
 
         Ok(None)
     }
@@ -197,14 +196,14 @@ fn generate_msg_headers(
     let id_hdr = msg_id
         .0
         .parse()
-        .map_err(|_| err_generic!("Error parsing message id".to_string()))?;
+        .map_err(|e| err_generic!("Error parsing message id {e:?}"))?;
     let timestamp = timestamp
         .to_string()
         .parse()
-        .map_err(|_| err_generic!("Error parsing message timestamp".to_string()))?;
+        .map_err(|e| err_generic!("Error parsing message timestamp {e:?}"))?;
     let signatures_str = signatures
         .parse()
-        .map_err(|_| err_generic!("Error parsing message signatures".to_string()))?;
+        .map_err(|e| err_generic!("Error parsing message signatures {e:?}"))?;
     if whitelabel_headers {
         headers.insert("webhook-id".to_owned(), id_hdr);
         headers.insert("webhook-timestamp".to_owned(), timestamp);
@@ -332,13 +331,13 @@ async fn make_http_call(
     let req = RequestBuilder::new()
         .method(method)
         .uri_str(&url)
-        .map_err(|_| err_validation!("URL is invalid".to_owned()))?
+        .map_err(|e| err_validation!("URL is invalid {e:?}"))?
         .headers(headers)
         .body(payload.into(), HeaderValue::from_static("application/json"))
         .version(Version::HTTP_11)
         .timeout(Duration::from_secs(request_timeout))
         .build()
-        .map_err(|e| err_generic!(e))?;
+        .map_err(|e| err_generic!("{e:?}"))?;
 
     let attempt = messageattempt::ActiveModel {
         // Set both ID and created_at to the same timestamp
@@ -386,7 +385,7 @@ async fn make_http_call(
             match http_error {
                 Some(err) => Ok(CompletedDispatch::Failed(FailedDispatch(
                     attempt,
-                    err_generic!(err.to_string()),
+                    err_generic!("{err:?}"),
                 ))),
                 None => Ok(CompletedDispatch::Successful(SuccessfulDispatch(attempt))),
             }
@@ -728,10 +727,7 @@ async fn process_queue_task_inner(
                     .await
             )?
             .ok_or_else(|| {
-                err_generic!(format!(
-                    "MessageDestination not found for message {}",
-                    &task.msg_id
-                ))
+                err_generic!("MessageDestination not found for message {}", &task.msg_id)
             })?;
 
             (
@@ -847,9 +843,9 @@ async fn process_queue_task_inner(
 
     let errs: Vec<_> = join.iter().filter(|x| x.is_err()).collect();
     if !errs.is_empty() {
-        return Err(err_generic!(format!(
+        return Err(err_generic!(
             "Some dispatches failed unexpectedly: {errs:?}"
-        )));
+        ));
     }
 
     Ok(())
