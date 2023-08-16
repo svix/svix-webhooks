@@ -282,6 +282,10 @@ Example valid JWT for the secret `x` (so you can see the structure):
 }
 ```
 
+### Using a different signing algorithm
+
+As mentioned above, the default algorithm for signing JWTs is `HS256`. You can select a different algorithm by setting the `jwt_algorithm` config to one of these supported values: `HS384`, `HS512`, `RS256`, `RS384`, `RS512`, or `EdDSA`. 
+
 ## Operational (incoming) webhooks
 
 Operational webhooks are webhooks that you can subscribe to in order to get notified of important events occurring on the svix-server. The list of supported events is available in [the webhooks section of the API reference](https://api.svix.com/docs#tag/Webhooks).
