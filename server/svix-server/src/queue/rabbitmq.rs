@@ -256,7 +256,7 @@ impl TaskQueueReceive for Consumer {
             .ok_or(err_generic!("task is missing message_id!"))?
             .to_string();
 
-        let task: QueueTask = serde_json::from_slice(&delivery.data).map_err(|_e| {
+        let task: QueueTask = serde_json::from_slice(&delivery.data).map_err(|e| {
             err_generic!("rabbitmq task deserialization unexpectedly failed?!: {e:?}")
         })?;
 

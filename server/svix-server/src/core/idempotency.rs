@@ -287,7 +287,7 @@ async fn lock_loop(
             // Start value has expired
             Ok(None) => return Ok(None),
 
-            Err(e) => return Err(err_database!(e)),
+            Err(e) => return Err(err_database!("{e:?}")),
         }
     }
 }

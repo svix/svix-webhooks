@@ -128,9 +128,6 @@ macro_rules! location {
 
 #[macro_export]
 macro_rules! err_generic {
-   ($s:expr) => {
-        $crate::error::Error::generic($s, $crate::location!())
-   };
    ($($arg:tt)*) => {
         $crate::error::Error::generic(format!($($arg)*), $crate::location!())
    }
@@ -138,30 +135,30 @@ macro_rules! err_generic {
 
 #[macro_export]
 macro_rules! err_database {
-    ($s:expr) => {
-        $crate::error::Error::database($s, $crate::location!())
-    };
+    ($($arg:tt)*) => {
+        $crate::error::Error::database(format!($($arg)*), $crate::location!())
+   }
 }
 
 #[macro_export]
 macro_rules! err_queue {
-    ($s:expr) => {
-        $crate::error::Error::queue($s, $crate::location!())
-    };
+    ($($arg:tt)*) => {
+        $crate::error::Error::queue(format!($($arg)*), $crate::location!())
+   }
 }
 
 #[macro_export]
 macro_rules! err_cache {
-    ($s:expr) => {
-        $crate::error::Error::cache($s, $crate::location!())
-    };
+    ($($arg:tt)*) => {
+        $crate::error::Error::cache(format!($($arg)*), $crate::location!())
+   }
 }
 
 #[macro_export]
 macro_rules! err_validation {
-    ($s:expr) => {
-        $crate::error::Error::validation($s, $crate::location!())
-    };
+    ($($arg:tt)*) => {
+        $crate::error::Error::validation(format!($($arg)*), $crate::location!())
+   }
 }
 
 pub trait Traceable<T> {
@@ -439,11 +436,12 @@ impl From<ErrorType> for Error {
     }
 }
 
+// FIXME - delete
 impl From<crate::core::webhook_http_client::Error> for Error {
     fn from(err: webhook_http_client::Error) -> Error {
         match err {
             webhook_http_client::Error::TimedOut => ErrorType::Timeout(err.to_string()).into(),
-            _ => err_generic!(err.to_string()),
+            _ => err_generic!("{err:?}"),
         }
     }
 }
