@@ -160,11 +160,16 @@ impl<'de> Deserialize<'de> for EndpointMessageOut {
 /// endpoint.
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
 pub struct ListAttemptedMessagesQueryParams {
+    /// Filter response based on the channel
     #[validate]
     channel: Option<EventChannel>,
+    /// Filter response based on the delivery status
     status: Option<MessageStatus>,
+    /// Only include items created before a certain date
     before: Option<DateTime<Utc>>,
+    /// Only include items created after a certain date
     after: Option<DateTime<Utc>>,
+    /// When `true` message payloads are included in the response
     #[serde(default = "default_true")]
     with_content: bool,
 }
@@ -273,12 +278,18 @@ async fn list_attempted_messages(
 /// Endpoint" endpoint.
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
 pub struct ListAttemptsByEndpointQueryParams {
+    /// Filter response based on the delivery status
     status: Option<MessageStatus>,
+    /// Filter response based on the HTTP status code
     status_code_class: Option<StatusCodeClass>,
+    /// Filter response based on the channel
     #[validate]
     channel: Option<EventChannel>,
+    /// Only include items created before a certain date
     before: Option<DateTime<Utc>>,
+    /// Only include items created after a certain date
     after: Option<DateTime<Utc>>,
+    /// When `true` attempt content is included in the response
     #[serde(default = "default_true")]
     with_content: bool,
 }
@@ -411,14 +422,21 @@ async fn list_attempts_by_endpoint(
 /// Flattens in a [`ListAttemptsByEndpointOrMsgQueryParameters`] and adds one extra query parameter
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
 pub struct ListAttemptsByMsgQueryParams {
+    /// Filter response based on the delivery status
     status: Option<MessageStatus>,
+    /// Filter response based on the HTTP status code
     status_code_class: Option<StatusCodeClass>,
+    /// Filter response based on the channel
     #[validate]
     channel: Option<EventChannel>,
+    /// Filter the attempts based on the attempted endpoint
     #[validate]
     endpoint_id: Option<EndpointIdOrUid>,
+    /// Only include items created before a certain date
     before: Option<DateTime<Utc>>,
+    /// Only include items created after a certain date
     after: Option<DateTime<Utc>>,
+    /// When `true` attempt content is included in the response
     #[serde(default = "default_true")]
     with_content: bool,
 }
@@ -576,10 +594,14 @@ async fn list_attempted_destinations(
 
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
 pub struct ListAttemptsForEndpointQueryParams {
+    /// Filter response based on the channel
     #[validate]
     pub channel: Option<EventChannel>,
+    /// Filter response based on the delivery status
     pub status: Option<MessageStatus>,
+    /// Only include items created before a certain date
     pub before: Option<DateTime<Utc>>,
+    /// Only include items created after a certain date
     pub after: Option<DateTime<Utc>>,
 }
 
@@ -652,12 +674,17 @@ async fn list_attempts_for_endpoint(
 
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
 pub struct AttemptListFetchQueryParams {
+    /// Filter the attempts based on the attempted endpoint
     #[validate]
     pub endpoint_id: Option<EndpointIdOrUid>,
+    /// Filter response based on the channel
     #[validate]
     pub channel: Option<EventChannel>,
+    /// Filter response based on the delivery status
     pub status: Option<MessageStatus>,
+    /// Only include items created before a certain date
     pub before: Option<DateTime<Utc>>,
+    /// Only include items created after a certain date
     pub after: Option<DateTime<Utc>>,
 }
 

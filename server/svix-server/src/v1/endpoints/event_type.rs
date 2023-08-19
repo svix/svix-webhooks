@@ -207,8 +207,10 @@ impl From<eventtype::Model> for EventTypeOut {
 
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
 pub struct ListFetchQueryParams {
+    /// When `true` archived (deleted but not expunged) items are included in the response
     #[serde(default)]
     pub include_archived: bool,
+    /// When `true` the full item (including the schema) is included in the response
     #[serde(default)]
     pub with_content: bool,
 }
