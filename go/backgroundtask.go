@@ -7,8 +7,8 @@ import (
 )
 
 type (
-	ListResponseBackgroundTaskOut openapi.ListResponseBackgroundTaskOut
-	BackgroundTaskOut             openapi.BackgroundTaskOut
+	ListResponseBackgroundTaskOut = openapi.ListResponseBackgroundTaskOut
+	BackgroundTaskOut             = openapi.BackgroundTaskOut
 )
 
 type BackgroundTask struct {

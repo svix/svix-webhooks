@@ -11,11 +11,11 @@ type EventType struct {
 }
 
 type (
-	ListResponseEventTypeOut openapi.ListResponseEventTypeOut
-	EventTypeIn              openapi.EventTypeIn
-	EventTypeOut             openapi.EventTypeOut
-	EventTypePatch           openapi.EventTypePatch
-	EventTypeUpdate          openapi.EventTypeUpdate
+	ListResponseEventTypeOut = openapi.ListResponseEventTypeOut
+	EventTypeIn              = openapi.EventTypeIn
+	EventTypeOut             = openapi.EventTypeOut
+	EventTypePatch           = openapi.EventTypePatch
+	EventTypeUpdate          = openapi.EventTypeUpdate
 )
 
 type EventTypeListOptions struct {

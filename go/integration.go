@@ -7,11 +7,11 @@ import (
 )
 
 type (
-	ListResponseIntegrationOut openapi.ListResponseIntegrationOut
-	IntegrationIn              openapi.IntegrationIn
-	IntegrationUpdate          openapi.IntegrationUpdate
-	IntegrationOut             openapi.IntegrationOut
-	IntegrationKeyOut          openapi.IntegrationKeyOut
+	ListResponseIntegrationOut = openapi.ListResponseIntegrationOut
+	IntegrationIn              = openapi.IntegrationIn
+	IntegrationUpdate          = openapi.IntegrationUpdate
+	IntegrationOut             = openapi.IntegrationOut
+	IntegrationKeyOut          = openapi.IntegrationKeyOut
 )
 
 type Integration struct {
