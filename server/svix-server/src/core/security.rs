@@ -76,8 +76,24 @@ pub async fn permissions_from_bearer(parts: &mut Parts, state: &AppState) -> Res
     let TypedHeader(Authorization(bearer)) =
         ctx!(TypedHeader::<Authorization<Bearer>>::from_request_parts(parts, state).await)?;
 
-    let claims = parse_bearer(&state.cfg.jwt_signing_config, &bearer)
-        .ok_or_else(|| HttpError::unauthorized(None, Some("Invalid token".to_string())))?;
+    let claims =
+        parse_bearer(&state.cfg.jwt_signing_config, &bearer).ok_or_else(|| {
+            match state.cfg.jwt_signing_config.as_ref() {
+                JwtSigningConfig::Default { jwt_secret }
+                    if jwt_secret.to_bytes() == bearer.token().as_bytes() =>
+                {
+                    HttpError::unauthorized(
+                        None,
+                        Some(
+                            "Invalid token. Please note that JWT signing secrets are not tokens"
+                                .to_string(),
+                        ),
+                    )
+                }
+
+                _ => HttpError::unauthorized(None, Some("Invalid token".to_string())),
+            }
+        })?;
     let perms = permissions_from_jwt(claims)?;
 
     tracing::Span::current().record("org_id", perms.org_id().to_string());
