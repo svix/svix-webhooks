@@ -5,6 +5,7 @@
 #![forbid(unsafe_code)]
 
 use aide::axum::ApiRouter;
+use sentry::integrations::tracing::EventFilter;
 
 use crate::core::cache::Cache;
 use cfg::ConfigurationInner;
@@ -13,6 +14,7 @@ use opentelemetry_otlp::WithExportConfig;
 use queue::TaskQueueProducer;
 use sea_orm::DatabaseConnection;
 use std::{
+    borrow::Cow,
     net::TcpListener,
     sync::atomic::{AtomicBool, Ordering},
     time::Duration,
@@ -224,7 +226,7 @@ pub async fn run_with_prefix(
     expired_message_cleaner_loop.expect("Error initializing expired message cleaner")
 }
 
-pub fn setup_tracing(cfg: &ConfigurationInner) {
+pub fn setup_tracing(cfg: &ConfigurationInner) -> impl Drop {
     if std::env::var_os("RUST_LOG").is_none() {
         let level = cfg.log_level.to_string();
         let mut var = vec![
@@ -268,6 +270,19 @@ pub fn setup_tracing(cfg: &ConfigurationInner) {
         tracing_opentelemetry::layer().with_tracer(tracer)
     });
 
+    let sentry_guard = sentry::init(sentry::ClientOptions {
+        dsn: cfg.sentry_dsn.clone(),
+        environment: Some(Cow::Owned(cfg.environment.to_string())),
+        release: sentry::release_name!(),
+        ..Default::default()
+    });
+
+    let sentry_layer =
+        sentry::integrations::tracing::layer().event_filter(|md| match *md.level() {
+            tracing::Level::ERROR | tracing::Level::WARN => EventFilter::Event,
+            _ => EventFilter::Ignore,
+        });
+
     // Then initialize logging with an additional layer priting to stdout. This additional layer is
     // either formatted normally or in JSON format
     // Fails if the subscriber was already initialized, which we can safely and silently ignore
@@ -276,6 +291,7 @@ pub fn setup_tracing(cfg: &ConfigurationInner) {
             let stdout_layer = tracing_subscriber::fmt::layer();
             tracing_subscriber::Registry::default()
                 .with(otel_layer)
+                .with(sentry_layer)
                 .with(stdout_layer)
                 .with(tracing_subscriber::EnvFilter::from_default_env())
                 .try_init()
@@ -290,11 +306,13 @@ pub fn setup_tracing(cfg: &ConfigurationInner) {
 
             tracing_subscriber::Registry::default()
                 .with(otel_layer)
+                .with(sentry_layer)
                 .with(stdout_layer)
                 .with(tracing_subscriber::EnvFilter::from_default_env())
                 .try_init()
         }
     };
+    sentry_guard
 }
 
 mod docs {

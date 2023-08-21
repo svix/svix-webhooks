@@ -271,7 +271,7 @@ pub async fn start_svix_server_with_cfg_and_org_id(
     cfg: &ConfigurationInner,
     org_id: OrganizationId,
 ) -> (TestClient, tokio::task::JoinHandle<()>) {
-    setup_tracing(cfg);
+    let _guard = setup_tracing(cfg);
 
     let cfg = Arc::new(cfg.clone());
 
