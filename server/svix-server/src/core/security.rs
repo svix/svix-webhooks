@@ -85,7 +85,7 @@ pub async fn permissions_from_bearer(parts: &mut Parts, state: &AppState) -> Res
                     HttpError::unauthorized(
                         None,
                         Some(
-                            "Invalid token. Please note that JWT signing secrets are not tokens"
+                            "Authentication failed. JWT signing secrets can not be used as tokens, please refer to https://github.com/svix/svix-webhooks#authentication for more information."
                                 .to_string(),
                         ),
                     )
