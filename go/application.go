@@ -7,10 +7,10 @@ import (
 )
 
 type (
-	ListResponseApplicationOut openapi.ListResponseApplicationOut
-	ApplicationIn              openapi.ApplicationIn
-	ApplicationOut             openapi.ApplicationOut
-	ApplicationPatch           openapi.ApplicationPatch
+	ListResponseApplicationOut = openapi.ListResponseApplicationOut
+	ApplicationIn              = openapi.ApplicationIn
+	ApplicationOut             = openapi.ApplicationOut
+	ApplicationPatch           = openapi.ApplicationPatch
 )
 
 type Application struct {

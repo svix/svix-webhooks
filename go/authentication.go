@@ -11,9 +11,9 @@ type Authentication struct {
 }
 
 type (
-	AppPortalAccessIn  openapi.AppPortalAccessIn
-	AppPortalAccessOut openapi.AppPortalAccessOut
-	DashboardAccessOut openapi.DashboardAccessOut
+	AppPortalAccessIn  = openapi.AppPortalAccessIn
+	AppPortalAccessOut = openapi.AppPortalAccessOut
+	DashboardAccessOut = openapi.DashboardAccessOut
 )
 
 func (a *Authentication) AppPortalAccess(ctx context.Context, appId string, appPortalAccessIn *AppPortalAccessIn) (*AppPortalAccessOut, error) {

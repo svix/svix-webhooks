@@ -12,9 +12,9 @@ type Message struct {
 }
 
 type (
-	ListResponseMessageOut openapi.ListResponseMessageOut
-	MessageIn              openapi.MessageIn
-	MessageOut             openapi.MessageOut
+	ListResponseMessageOut = openapi.ListResponseMessageOut
+	MessageIn              = openapi.MessageIn
+	MessageOut             = openapi.MessageOut
 )
 
 type MessageListOptions struct {
