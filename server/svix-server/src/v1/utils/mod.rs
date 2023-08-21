@@ -52,20 +52,25 @@ static PAGINATION_LIMIT_ERROR: Lazy<String> =
 
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
 pub struct PaginationDescending<T: Validate + JsonSchema> {
+    /// Limit the number of returned items
     #[validate]
     #[serde(default = "default_limit")]
     pub limit: PaginationLimit,
+    /// The iterator returned from a prior invocation
     #[validate]
     pub iterator: Option<T>,
 }
 
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
 pub struct Pagination<T: Validate + JsonSchema> {
+    /// Limit the number of returned items
     #[validate]
     #[serde(default = "default_limit")]
     pub limit: PaginationLimit,
+    /// The iterator returned from a prior invocation
     #[validate]
     pub iterator: Option<T>,
+    /// The sorting order of the returned items
     pub order: Option<Ordering>,
 }
 
@@ -592,6 +597,7 @@ impl OperationInput for EventTypesQueryParams {
         // simple `#[derive(Deserialize)]` on it.
         #[derive(JsonSchema)]
         struct EventTypesQueryParams {
+            /// Filter response based on the event type
             #[allow(unused)]
             event_types: Option<EventTypeNameSet>,
         }

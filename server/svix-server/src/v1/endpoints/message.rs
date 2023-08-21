@@ -219,13 +219,16 @@ fn default_90() -> i64 {
 
 #[derive(Clone, Debug, Deserialize, Validate, JsonSchema)]
 pub struct ListMessagesQueryParams {
+    /// Filter response based on the channel
     #[validate]
     channel: Option<EventChannel>,
+    /// Only include items created before a certain date
+    before: Option<DateTime<Utc>>,
+    /// Only include items created after a certain date
+    after: Option<DateTime<Utc>>,
+    /// When `true` message payloads are included in the response
     #[serde(default = "default_true")]
     with_content: bool,
-
-    before: Option<DateTime<Utc>>,
-    after: Option<DateTime<Utc>>,
 }
 
 /// List all of the application's messages.
@@ -281,6 +284,7 @@ async fn list_messages(
 
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
 pub struct CreateMessageQueryParams {
+    /// When `true` message payloads are included in the response
     #[serde(default = "default_true")]
     with_content: bool,
 }
@@ -370,6 +374,7 @@ pub(crate) async fn create_message_inner(
 
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
 pub struct GetMessageQueryParams {
+    /// When `true` message payloads are included in the response
     #[serde(default = "default_true")]
     with_content: bool,
 }

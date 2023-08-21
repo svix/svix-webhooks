@@ -2046,9 +2046,11 @@
                 "operationId": "v1.application.list",
                 "parameters": [
                     {
+                        "description": "Limit the number of returned items",
                         "in": "query",
                         "name": "limit",
                         "schema": {
+                            "description": "Limit the number of returned items",
                             "format": "uint64",
                             "minimum": 0,
                             "type": "integer"
@@ -2056,9 +2058,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "The iterator returned from a prior invocation",
                         "in": "query",
                         "name": "iterator",
                         "schema": {
+                            "description": "The iterator returned from a prior invocation",
                             "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                             "nullable": true,
                             "type": "string"
@@ -2066,10 +2070,12 @@
                         "style": "form"
                     },
                     {
+                        "description": "The sorting order of the returned items",
                         "in": "query",
                         "name": "order",
                         "schema": {
                             "$ref": "#/components/schemas/Ordering",
+                            "description": "The sorting order of the returned items",
                             "nullable": true
                         },
                         "style": "form"
@@ -2641,9 +2647,11 @@
                 "operationId": "v1.message-attempt.list-by-endpoint",
                 "parameters": [
                     {
+                        "description": "Limit the number of returned items",
                         "in": "query",
                         "name": "limit",
                         "schema": {
+                            "description": "Limit the number of returned items",
                             "format": "uint64",
                             "minimum": 0,
                             "type": "integer"
@@ -2651,9 +2659,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "The iterator returned from a prior invocation",
                         "in": "query",
                         "name": "iterator",
                         "schema": {
+                            "description": "The iterator returned from a prior invocation",
                             "example": "atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                             "nullable": true,
                             "type": "string"
@@ -2661,27 +2671,33 @@
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the delivery status",
                         "in": "query",
                         "name": "status",
                         "schema": {
                             "$ref": "#/components/schemas/MessageStatus",
+                            "description": "Filter response based on the delivery status",
                             "nullable": true
                         },
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the HTTP status code",
                         "in": "query",
                         "name": "status_code_class",
                         "schema": {
                             "$ref": "#/components/schemas/StatusCodeClass",
+                            "description": "Filter response based on the HTTP status code",
                             "nullable": true
                         },
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the channel",
                         "in": "query",
                         "name": "channel",
                         "schema": {
+                            "description": "Filter response based on the channel",
                             "example": "project_1337",
                             "maxLength": 128,
                             "nullable": true,
@@ -2691,9 +2707,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "Only include items created before a certain date",
                         "in": "query",
                         "name": "before",
                         "schema": {
+                            "description": "Only include items created before a certain date",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -2701,9 +2719,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "Only include items created after a certain date",
                         "in": "query",
                         "name": "after",
                         "schema": {
+                            "description": "Only include items created after a certain date",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -2711,18 +2731,22 @@
                         "style": "form"
                     },
                     {
+                        "description": "When `true` attempt content is included in the response",
                         "in": "query",
                         "name": "with_content",
                         "schema": {
                             "default": true,
+                            "description": "When `true` attempt content is included in the response",
                             "type": "boolean"
                         },
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the event type",
                         "in": "query",
                         "name": "event_types",
                         "schema": {
+                            "description": "Filter response based on the event type",
                             "items": {
                                 "example": "user.signup",
                                 "maxLength": 256,
@@ -2846,9 +2870,11 @@
                 "operationId": "v1.message-attempt.list-by-msg",
                 "parameters": [
                     {
+                        "description": "Limit the number of returned items",
                         "in": "query",
                         "name": "limit",
                         "schema": {
+                            "description": "Limit the number of returned items",
                             "format": "uint64",
                             "minimum": 0,
                             "type": "integer"
@@ -2856,9 +2882,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "The iterator returned from a prior invocation",
                         "in": "query",
                         "name": "iterator",
                         "schema": {
+                            "description": "The iterator returned from a prior invocation",
                             "example": "atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                             "nullable": true,
                             "type": "string"
@@ -2866,27 +2894,33 @@
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the delivery status",
                         "in": "query",
                         "name": "status",
                         "schema": {
                             "$ref": "#/components/schemas/MessageStatus",
+                            "description": "Filter response based on the delivery status",
                             "nullable": true
                         },
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the HTTP status code",
                         "in": "query",
                         "name": "status_code_class",
                         "schema": {
                             "$ref": "#/components/schemas/StatusCodeClass",
+                            "description": "Filter response based on the HTTP status code",
                             "nullable": true
                         },
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the channel",
                         "in": "query",
                         "name": "channel",
                         "schema": {
+                            "description": "Filter response based on the channel",
                             "example": "project_1337",
                             "maxLength": 128,
                             "nullable": true,
@@ -2896,9 +2930,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "Filter the attempts based on the attempted endpoint",
                         "in": "query",
                         "name": "endpoint_id",
                         "schema": {
+                            "description": "Filter the attempts based on the attempted endpoint",
                             "example": "unique-ep-identifier",
                             "maxLength": 256,
                             "minLength": 1,
@@ -2909,9 +2945,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "Only include items created before a certain date",
                         "in": "query",
                         "name": "before",
                         "schema": {
+                            "description": "Only include items created before a certain date",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -2919,9 +2957,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "Only include items created after a certain date",
                         "in": "query",
                         "name": "after",
                         "schema": {
+                            "description": "Only include items created after a certain date",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -2929,10 +2969,12 @@
                         "style": "form"
                     },
                     {
+                        "description": "When `true` attempt content is included in the response",
                         "in": "query",
                         "name": "with_content",
                         "schema": {
                             "default": true,
+                            "description": "When `true` attempt content is included in the response",
                             "type": "boolean"
                         },
                         "style": "form"
@@ -2964,9 +3006,11 @@
                         "style": "simple"
                     },
                     {
+                        "description": "Filter response based on the event type",
                         "in": "query",
                         "name": "event_types",
                         "schema": {
+                            "description": "Filter response based on the event type",
                             "items": {
                                 "example": "user.signup",
                                 "maxLength": 256,
@@ -3077,9 +3121,11 @@
                         "style": "simple"
                     },
                     {
+                        "description": "Limit the number of returned items",
                         "in": "query",
                         "name": "limit",
                         "schema": {
+                            "description": "Limit the number of returned items",
                             "format": "uint64",
                             "minimum": 0,
                             "type": "integer"
@@ -3087,9 +3133,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "The iterator returned from a prior invocation",
                         "in": "query",
                         "name": "iterator",
                         "schema": {
+                            "description": "The iterator returned from a prior invocation",
                             "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                             "nullable": true,
                             "type": "string"
@@ -3097,10 +3145,12 @@
                         "style": "form"
                     },
                     {
+                        "description": "The sorting order of the returned items",
                         "in": "query",
                         "name": "order",
                         "schema": {
                             "$ref": "#/components/schemas/Ordering",
+                            "description": "The sorting order of the returned items",
                             "nullable": true
                         },
                         "style": "form"
@@ -4093,9 +4143,11 @@
                 "operationId": "v1.message-attempt.list-attempted-messages",
                 "parameters": [
                     {
+                        "description": "Limit the number of returned items",
                         "in": "query",
                         "name": "limit",
                         "schema": {
+                            "description": "Limit the number of returned items",
                             "format": "uint64",
                             "minimum": 0,
                             "type": "integer"
@@ -4103,9 +4155,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "The iterator returned from a prior invocation",
                         "in": "query",
                         "name": "iterator",
                         "schema": {
+                            "description": "The iterator returned from a prior invocation",
                             "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                             "nullable": true,
                             "type": "string"
@@ -4113,9 +4167,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the channel",
                         "in": "query",
                         "name": "channel",
                         "schema": {
+                            "description": "Filter response based on the channel",
                             "example": "project_1337",
                             "maxLength": 128,
                             "nullable": true,
@@ -4125,18 +4181,22 @@
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the delivery status",
                         "in": "query",
                         "name": "status",
                         "schema": {
                             "$ref": "#/components/schemas/MessageStatus",
+                            "description": "Filter response based on the delivery status",
                             "nullable": true
                         },
                         "style": "form"
                     },
                     {
+                        "description": "Only include items created before a certain date",
                         "in": "query",
                         "name": "before",
                         "schema": {
+                            "description": "Only include items created before a certain date",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -4144,9 +4204,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "Only include items created after a certain date",
                         "in": "query",
                         "name": "after",
                         "schema": {
+                            "description": "Only include items created after a certain date",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -4154,10 +4216,12 @@
                         "style": "form"
                     },
                     {
+                        "description": "When `true` message payloads are included in the response",
                         "in": "query",
                         "name": "with_content",
                         "schema": {
                             "default": true,
+                            "description": "When `true` message payloads are included in the response",
                             "type": "boolean"
                         },
                         "style": "form"
@@ -4189,9 +4253,11 @@
                         "style": "simple"
                     },
                     {
+                        "description": "Filter response based on the event type",
                         "in": "query",
                         "name": "event_types",
                         "schema": {
+                            "description": "Filter response based on the event type",
                             "items": {
                                 "example": "user.signup",
                                 "maxLength": 256,
@@ -4902,9 +4968,11 @@
                 "operationId": "v1.message.list",
                 "parameters": [
                     {
+                        "description": "Limit the number of returned items",
                         "in": "query",
                         "name": "limit",
                         "schema": {
+                            "description": "Limit the number of returned items",
                             "format": "uint64",
                             "minimum": 0,
                             "type": "integer"
@@ -4912,9 +4980,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "The iterator returned from a prior invocation",
                         "in": "query",
                         "name": "iterator",
                         "schema": {
+                            "description": "The iterator returned from a prior invocation",
                             "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                             "nullable": true,
                             "type": "string"
@@ -4922,9 +4992,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the channel",
                         "in": "query",
                         "name": "channel",
                         "schema": {
+                            "description": "Filter response based on the channel",
                             "example": "project_1337",
                             "maxLength": 128,
                             "nullable": true,
@@ -4934,38 +5006,46 @@
                         "style": "form"
                     },
                     {
+                        "description": "Only include items created before a certain date",
+                        "in": "query",
+                        "name": "before",
+                        "schema": {
+                            "description": "Only include items created before a certain date",
+                            "format": "date-time",
+                            "nullable": true,
+                            "type": "string"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "Only include items created after a certain date",
+                        "in": "query",
+                        "name": "after",
+                        "schema": {
+                            "description": "Only include items created after a certain date",
+                            "format": "date-time",
+                            "nullable": true,
+                            "type": "string"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "When `true` message payloads are included in the response",
                         "in": "query",
                         "name": "with_content",
                         "schema": {
                             "default": true,
+                            "description": "When `true` message payloads are included in the response",
                             "type": "boolean"
                         },
                         "style": "form"
                     },
                     {
-                        "in": "query",
-                        "name": "before",
-                        "schema": {
-                            "format": "date-time",
-                            "nullable": true,
-                            "type": "string"
-                        },
-                        "style": "form"
-                    },
-                    {
-                        "in": "query",
-                        "name": "after",
-                        "schema": {
-                            "format": "date-time",
-                            "nullable": true,
-                            "type": "string"
-                        },
-                        "style": "form"
-                    },
-                    {
+                        "description": "Filter response based on the event type",
                         "in": "query",
                         "name": "event_types",
                         "schema": {
+                            "description": "Filter response based on the event type",
                             "items": {
                                 "example": "user.signup",
                                 "maxLength": 256,
@@ -5061,10 +5141,12 @@
                 "operationId": "v1.message.create",
                 "parameters": [
                     {
+                        "description": "When `true` message payloads are included in the response",
                         "in": "query",
                         "name": "with_content",
                         "schema": {
                             "default": true,
+                            "description": "When `true` message payloads are included in the response",
                             "type": "boolean"
                         },
                         "style": "form"
@@ -5199,10 +5281,12 @@
                         "style": "simple"
                     },
                     {
+                        "description": "When `true` message payloads are included in the response",
                         "in": "query",
                         "name": "with_content",
                         "schema": {
                             "default": true,
+                            "description": "When `true` message payloads are included in the response",
                             "type": "boolean"
                         },
                         "style": "form"
@@ -5292,9 +5376,11 @@
                 "operationId": "v1.message-attempt.list-by-msg-deprecated",
                 "parameters": [
                     {
+                        "description": "Limit the number of returned items",
                         "in": "query",
                         "name": "limit",
                         "schema": {
+                            "description": "Limit the number of returned items",
                             "format": "uint64",
                             "minimum": 0,
                             "type": "integer"
@@ -5302,9 +5388,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "The iterator returned from a prior invocation",
                         "in": "query",
                         "name": "iterator",
                         "schema": {
+                            "description": "The iterator returned from a prior invocation",
                             "example": "atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                             "nullable": true,
                             "type": "string"
@@ -5312,9 +5400,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "Filter the attempts based on the attempted endpoint",
                         "in": "query",
                         "name": "endpoint_id",
                         "schema": {
+                            "description": "Filter the attempts based on the attempted endpoint",
                             "example": "unique-ep-identifier",
                             "maxLength": 256,
                             "minLength": 1,
@@ -5325,9 +5415,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the channel",
                         "in": "query",
                         "name": "channel",
                         "schema": {
+                            "description": "Filter response based on the channel",
                             "example": "project_1337",
                             "maxLength": 128,
                             "nullable": true,
@@ -5337,18 +5429,22 @@
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the delivery status",
                         "in": "query",
                         "name": "status",
                         "schema": {
                             "$ref": "#/components/schemas/MessageStatus",
+                            "description": "Filter response based on the delivery status",
                             "nullable": true
                         },
                         "style": "form"
                     },
                     {
+                        "description": "Only include items created before a certain date",
                         "in": "query",
                         "name": "before",
                         "schema": {
+                            "description": "Only include items created before a certain date",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -5356,9 +5452,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "Only include items created after a certain date",
                         "in": "query",
                         "name": "after",
                         "schema": {
+                            "description": "Only include items created after a certain date",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -5366,9 +5464,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the event type",
                         "in": "query",
                         "name": "event_types",
                         "schema": {
+                            "description": "Filter response based on the event type",
                             "items": {
                                 "example": "user.signup",
                                 "maxLength": 256,
@@ -5822,9 +5922,11 @@
                 "operationId": "v1.message-attempt.list-attempted-destinations",
                 "parameters": [
                     {
+                        "description": "Limit the number of returned items",
                         "in": "query",
                         "name": "limit",
                         "schema": {
+                            "description": "Limit the number of returned items",
                             "format": "uint64",
                             "minimum": 0,
                             "type": "integer"
@@ -5832,9 +5934,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "The iterator returned from a prior invocation",
                         "in": "query",
                         "name": "iterator",
                         "schema": {
+                            "description": "The iterator returned from a prior invocation",
                             "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                             "nullable": true,
                             "type": "string"
@@ -5952,9 +6056,11 @@
                 "operationId": "v1.message-attempt.list-by-endpoint-deprecated",
                 "parameters": [
                     {
+                        "description": "Limit the number of returned items",
                         "in": "query",
                         "name": "limit",
                         "schema": {
+                            "description": "Limit the number of returned items",
                             "format": "uint64",
                             "minimum": 0,
                             "type": "integer"
@@ -5962,9 +6068,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "The iterator returned from a prior invocation",
                         "in": "query",
                         "name": "iterator",
                         "schema": {
+                            "description": "The iterator returned from a prior invocation",
                             "example": "atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                             "nullable": true,
                             "type": "string"
@@ -5972,9 +6080,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the channel",
                         "in": "query",
                         "name": "channel",
                         "schema": {
+                            "description": "Filter response based on the channel",
                             "example": "project_1337",
                             "maxLength": 128,
                             "nullable": true,
@@ -5984,18 +6094,22 @@
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the delivery status",
                         "in": "query",
                         "name": "status",
                         "schema": {
                             "$ref": "#/components/schemas/MessageStatus",
+                            "description": "Filter response based on the delivery status",
                             "nullable": true
                         },
                         "style": "form"
                     },
                     {
+                        "description": "Only include items created before a certain date",
                         "in": "query",
                         "name": "before",
                         "schema": {
+                            "description": "Only include items created before a certain date",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -6003,9 +6117,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "Only include items created after a certain date",
                         "in": "query",
                         "name": "after",
                         "schema": {
+                            "description": "Only include items created after a certain date",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -6013,9 +6129,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the event type",
                         "in": "query",
                         "name": "event_types",
                         "schema": {
+                            "description": "Filter response based on the event type",
                             "items": {
                                 "example": "user.signup",
                                 "maxLength": 256,
@@ -6525,9 +6643,11 @@
                 "operationId": "v1.event-type.list",
                 "parameters": [
                     {
+                        "description": "Limit the number of returned items",
                         "in": "query",
                         "name": "limit",
                         "schema": {
+                            "description": "Limit the number of returned items",
                             "format": "uint64",
                             "minimum": 0,
                             "type": "integer"
@@ -6535,9 +6655,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "The iterator returned from a prior invocation",
                         "in": "query",
                         "name": "iterator",
                         "schema": {
+                            "description": "The iterator returned from a prior invocation",
                             "example": "user.signup",
                             "maxLength": 256,
                             "nullable": true,
@@ -6547,28 +6669,34 @@
                         "style": "form"
                     },
                     {
+                        "description": "The sorting order of the returned items",
                         "in": "query",
                         "name": "order",
                         "schema": {
                             "$ref": "#/components/schemas/Ordering",
+                            "description": "The sorting order of the returned items",
                             "nullable": true
                         },
                         "style": "form"
                     },
                     {
+                        "description": "When `true` archived (deleted but not expunged) items are included in the response",
                         "in": "query",
                         "name": "include_archived",
                         "schema": {
                             "default": false,
+                            "description": "When `true` archived (deleted but not expunged) items are included in the response",
                             "type": "boolean"
                         },
                         "style": "form"
                     },
                     {
+                        "description": "When `true` the full item (including the schema) is included in the response",
                         "in": "query",
                         "name": "with_content",
                         "schema": {
                             "default": false,
+                            "description": "When `true` the full item (including the schema) is included in the response",
                             "type": "boolean"
                         },
                         "style": "form"
