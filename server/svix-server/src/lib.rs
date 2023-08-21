@@ -277,10 +277,11 @@ pub fn setup_tracing(cfg: &ConfigurationInner) -> impl Drop {
         ..Default::default()
     });
 
-    let sentry_layer = sentry::integrations::tracing::layer().event_filter(|md| match *md.level() {
-        tracing::Level::ERROR | tracing::Level::WARN => EventFilter::Event,
-        _ => EventFilter::Ignore,
-    });
+    let sentry_layer =
+        sentry::integrations::tracing::layer().event_filter(|md| match *md.level() {
+            tracing::Level::ERROR | tracing::Level::WARN => EventFilter::Event,
+            _ => EventFilter::Ignore,
+        });
 
     // Then initialize logging with an additional layer priting to stdout. This additional layer is
     // either formatted normally or in JSON format
