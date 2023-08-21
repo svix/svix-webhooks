@@ -5,7 +5,7 @@
 #![forbid(unsafe_code)]
 
 use aide::axum::ApiRouter;
-use sentry_tracing::EventFilter;
+use sentry::integrations::tracing::EventFilter;
 
 use crate::core::cache::Cache;
 use cfg::ConfigurationInner;
@@ -277,7 +277,7 @@ pub fn setup_tracing(cfg: &ConfigurationInner) -> impl Drop {
         ..Default::default()
     });
 
-    let sentry_layer = sentry_tracing::layer().event_filter(|md| match *md.level() {
+    let sentry_layer = sentry::integrations::tracing::layer().event_filter(|md| match *md.level() {
         tracing::Level::ERROR | tracing::Level::WARN => EventFilter::Event,
         _ => EventFilter::Ignore,
     });
