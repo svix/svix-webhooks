@@ -75,6 +75,8 @@ strum_macros = "0.24"
 strum = { version = "0.24", features = ["derive"] }
 form_urlencoded = "1.1.0"
 lapin = "2.1.1"
+sentry = { version = "0.31.5", features = ["tracing"] }
+sentry-tracing = "0.31.5"
 
 [dev-dependencies]
 anyhow = "1.0.56"

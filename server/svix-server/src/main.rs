@@ -103,7 +103,7 @@ async fn main() {
     let args = Args::parse();
     let cfg = cfg::load().expect("Error loading configuration");
 
-    setup_tracing(&cfg);
+    let _guard = setup_tracing(&cfg);
 
     if let Some(wait_for_seconds) = args.wait_for {
         let mut wait_for = Vec::with_capacity(2);

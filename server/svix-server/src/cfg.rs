@@ -111,6 +111,11 @@ pub struct ConfigurationInner {
     /// Whether to enable the logging of the databases at the configured log level. This may be
     /// useful for analyzing their response times.
     pub db_tracing: bool,
+    /// The Sentry DSN to use for error reporting. If this is `None`,
+    /// then sentry reporting is disabled
+    pub sentry_dsn: Option<sentry::types::Dsn>,
+    /// The environment (dev, staging, or prod) that the server is running in.
+    pub environment: Environment,
 
     /// The wanted retry schedule in seconds. Each value is the time to wait between retries.
     #[serde(deserialize_with = "deserialize_retry_schedule")]
@@ -335,6 +340,29 @@ pub enum CacheType {
 pub enum DefaultSignatureType {
     Hmac256,
     Ed25519,
+}
+
+#[derive(Clone, Debug, Deserialize, Default)]
+#[serde(rename_all = "lowercase")]
+pub enum Environment {
+    #[default]
+    Dev,
+    Staging,
+    Prod,
+}
+
+impl std::fmt::Display for Environment {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                Environment::Dev => "dev",
+                Environment::Staging => "staging",
+                Environment::Prod => "prod",
+            }
+        )
+    }
 }
 
 impl ToString for LogLevel {
