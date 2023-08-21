@@ -342,10 +342,9 @@ pub enum DefaultSignatureType {
     Ed25519,
 }
 
-#[derive(Clone, Debug, Deserialize, Default)]
+#[derive(Clone, Debug, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Environment {
-    #[default]
     Dev,
     Staging,
     Prod,
