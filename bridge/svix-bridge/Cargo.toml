@@ -34,15 +34,20 @@ deno_runtime = "0.119.0"
 deno_ast = "0.27.2"
 deadpool = { version = "0.9.5", features = ["unmanaged", "rt_tokio_1"] }
 
+[target.'cfg(not(target_env = "msvc"))'.dependencies]
+tikv-jemallocator = { version = "0.5", optional = true }
+tikv-jemalloc-ctl = { version = "0.5", optional = true, features = ["use_std"] }
+
 [dev-dependencies]
 chrono = "0.4"
 tower = "0.4"
 
 [features]
-default = ["gcp-pubsub", "rabbitmq", "redis", "sqs"]
+default = ["gcp-pubsub", "rabbitmq", "redis", "sqs", "jemalloc"]
 
 gcp-pubsub = ["generic-queue"]
 generic-queue = ["dep:svix-bridge-plugin-queue"]
 rabbitmq = ["generic-queue"]
 redis = ["generic-queue"]
 sqs = ["generic-queue"]
+jemalloc = ["tikv-jemallocator", "tikv-jemalloc-ctl"]

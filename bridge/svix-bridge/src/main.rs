@@ -2,17 +2,35 @@ use self::config::Config;
 use clap::Parser;
 use lazy_static::lazy_static;
 use opentelemetry::runtime::Tokio;
+use opentelemetry::sdk::export::metrics::aggregation::delta_temporality_selector;
+use opentelemetry::sdk::metrics::controllers::BasicController;
+use opentelemetry::sdk::metrics::selectors;
 use opentelemetry_otlp::WithExportConfig;
 use std::io::{Error, ErrorKind, Result};
 use std::path::PathBuf;
 use std::time::Duration;
 use svix_bridge_types::{SenderInput, TransformerJob};
 use svix_ksuid::{KsuidLike as _, KsuidMs};
+#[cfg(all(not(target_env = "msvc"), feature = "jemalloc"))]
+use tikv_jemallocator::Jemalloc;
+use tracing::Instrument;
 use tracing_subscriber::prelude::*;
 
+mod allocator;
 mod config;
+mod metrics;
 mod runtime;
 mod webhook_receiver;
+
+use crate::allocator::{get_allocator_stat_mibs, get_allocator_stats};
+use crate::metrics::CommonMetrics;
+
+#[cfg(all(not(target_env = "msvc"), feature = "jemalloc"))]
+#[global_allocator]
+static GLOBAL: Jemalloc = Jemalloc;
+
+#[cfg(all(target_env = "msvc", feature = "jemalloc"))]
+compile_error!("jemalloc cannot be enabled on msvc");
 
 lazy_static! {
     // Seems like it would be useful to be able to configure this.
@@ -105,6 +123,25 @@ fn setup_tracing(cfg: &Config) {
     };
 }
 
+pub fn setup_metrics(cfg: &Config) -> Option<BasicController> {
+    cfg.opentelemetry.as_ref().map(|otel_cfg| {
+        let exporter = opentelemetry_otlp::new_exporter()
+            .tonic()
+            .with_endpoint(&otel_cfg.address);
+
+        opentelemetry_otlp::new_pipeline()
+            .metrics(
+                selectors::simple::inexpensive(),
+                delta_temporality_selector(),
+                Tokio,
+            )
+            .with_exporter(exporter)
+            .with_resource(get_svc_identifiers(cfg))
+            .build()
+            .unwrap()
+    })
+}
+
 async fn supervise_senders(inputs: Vec<Box<dyn SenderInput>>) -> Result<()> {
     let mut set = tokio::task::JoinSet::new();
     for input in inputs {
@@ -190,7 +227,32 @@ async fn main() -> Result<()> {
     let vars = std::env::vars().collect();
     let cfg = Config::from_src(&cfg_source, Some(vars).as_ref())?;
     setup_tracing(&cfg);
+    let _metrics = setup_metrics(&cfg);
     tracing::info!("starting");
+
+    tokio::spawn(
+        async move {
+            let mut interval = tokio::time::interval(Duration::from_secs(15));
+            let metrics = CommonMetrics::new(&opentelemetry::global::meter("svix.com"));
+            let mibs = get_allocator_stat_mibs().ok().unwrap_or_default();
+
+            tracing::debug!("Common Metrics Collection: Started");
+            loop {
+                interval.tick().await;
+
+                if let Some(mibs) = mibs.clone() {
+                    if let Ok(Some((allocated, resident))) = get_allocator_stats(true, mibs) {
+                        metrics.record_mem_allocated(allocated as _);
+                        metrics.record_mem_resident(resident as _);
+                    }
+                }
+            }
+        }
+        .instrument(tracing::error_span!(
+            "common_metrics_collector",
+            instance_id = tracing::field::Empty
+        )),
+    );
 
     let (xform_tx, mut xform_rx) = tokio::sync::mpsc::unbounded_channel::<TransformerJob>();
 
