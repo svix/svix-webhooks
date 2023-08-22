@@ -22,7 +22,6 @@ ignore = [
 
     # TODO: Update `reqwest` when they remove `webpki` as an indirect dependency
     "RUSTSEC-2023-0052",
-    "RUSTSEC-2023-0053",
 ]
 
 [licenses]
