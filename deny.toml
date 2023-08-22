@@ -19,6 +19,10 @@ ignore = [
 
 	# TODO: Eliminate `chrono` crate when `time` update is possible.
     "RUSTSEC-2020-0159",
+
+    # TODO: Update `reqwest` when they remove `webpki` as an indirect dependency
+    "RUSTSEC-2023-0052",
+    "RUSTSEC-2023-0053",
 ]
 
 [licenses]
@@ -78,4 +82,3 @@ unknown-registry = "warn"
 unknown-git = "warn"
 allow-registry = ["https://github.com/rust-lang/crates.io-index"]
 allow-git = []
-
