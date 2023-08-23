@@ -35,16 +35,16 @@ mod supported {
         Ok(Some((allocated, resident)))
     }
 
-    pub fn get_allocator_stat_mibs() -> anyhow::Result<Option<Arc<AllocatorStatMibs>>> {
+    pub fn get_allocator_stat_mibs() -> anyhow::Result<Arc<AllocatorStatMibs>> {
         let e = epoch::mib()?;
         let allocated = stats::allocated::mib()?;
         let resident = stats::resident::mib()?;
 
-        Ok(Some(Arc::new(AllocatorStatMibs {
+        Ok(Arc::new(AllocatorStatMibs {
             epoch: e,
             allocated,
             resident,
-        })))
+        }))
     }
 }
 
@@ -60,7 +60,7 @@ mod unsupported {
         Ok(None)
     }
 
-    pub fn get_allocator_stat_mibs() -> anyhow::Result<Option<Arc<AllocatorStatMibs>>> {
-        Ok(None)
+    pub fn get_allocator_stat_mibs() -> anyhow::Result<Arc<AllocatorStatMibs>> {
+        Arc::new(AllocatorStatMibs)
     }
 }

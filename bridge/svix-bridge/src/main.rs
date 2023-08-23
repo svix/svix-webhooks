@@ -234,18 +234,22 @@ async fn main() -> Result<()> {
         async move {
             let mut interval = tokio::time::interval(Duration::from_secs(15));
             let metrics = CommonMetrics::new(&opentelemetry::global::meter("svix.com"));
-            let mibs = get_allocator_stat_mibs().ok().unwrap_or_default();
+            match get_allocator_stat_mibs() {
+                Ok(mibs) => {
+                    tracing::debug!("Common Metrics Collection: Started");
 
-            tracing::debug!("Common Metrics Collection: Started");
-            loop {
-                interval.tick().await;
+                    loop {
+                        interval.tick().await;
 
-                if let Some(mibs) = mibs.clone() {
-                    if let Ok(Some((allocated, resident))) = get_allocator_stats(true, mibs) {
-                        metrics.record_mem_allocated(allocated as _);
-                        metrics.record_mem_resident(resident as _);
+                        if let Ok(Some((allocated, resident))) =
+                            get_allocator_stats(true, mibs.clone())
+                        {
+                            metrics.record_mem_allocated(allocated as _);
+                            metrics.record_mem_resident(resident as _);
+                        }
                     }
                 }
+                Err(e) => tracing::error!("Unable to get allocator stats mibs: {e}"),
             }
         }
         .instrument(tracing::error_span!(
