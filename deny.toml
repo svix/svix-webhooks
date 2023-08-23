@@ -72,7 +72,11 @@ multiple-versions = "warn"
 wildcards = "allow"
 highlight = "all"
 allow = []
-deny = []
+deny = [
+    # Versions containing the binary blob
+    # See: https://github.com/serde-rs/serde/issues/2538
+    { name = "serde_derive", version = ">1.0.171, <1.0.184"}
+]
 skip = []
 skip-tree = []
 
