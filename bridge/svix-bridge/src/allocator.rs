@@ -50,6 +50,7 @@ mod supported {
 
 #[cfg(any(target_env = "msvc", not(feature = "jemalloc")))]
 mod unsupported {
+    use anyhow::anyhow;
     use std::sync::Arc;
     pub struct AllocatorStatMibs;
 
@@ -61,6 +62,6 @@ mod unsupported {
     }
 
     pub fn get_allocator_stat_mibs() -> anyhow::Result<Arc<AllocatorStatMibs>> {
-        Arc::new(AllocatorStatMibs)
+        Err(anyhow!("metric collection is not supported"))
     }
 }
