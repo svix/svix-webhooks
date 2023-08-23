@@ -180,6 +180,11 @@ pub struct ConfigurationInner {
     pub rabbit_dsn: Option<Arc<String>>,
     pub rabbit_consumer_prefetch_size: Option<u16>,
 
+    /// Whether or not to completely disable TLS certificate validation on webhook dispatch. This is
+    /// a dangerous flag to set true. This value will default to false.
+    #[serde(default)]
+    pub dangerous_disable_tls_verification: bool,
+
     #[serde(flatten)]
     pub internal: InternalConfig,
 }

@@ -21,7 +21,7 @@ use hyper::{
 };
 use hyper_openssl::HttpsConnector;
 use ipnet::IpNet;
-use openssl::ssl::{SslConnector, SslMethod};
+use openssl::ssl::{SslConnector, SslMethod, SslVerifyMode};
 use serde::Serialize;
 use thiserror::Error;
 use tokio::sync::Mutex;
@@ -62,6 +62,7 @@ impl WebhookClient {
     pub fn new(
         whitelist_nets: Option<Arc<Vec<IpNet>>>,
         whitelist_names: Option<Arc<Vec<String>>>,
+        dangerous_disable_tls_verification: bool,
     ) -> Self {
         let whitelist_nets = whitelist_nets.unwrap_or_else(|| Arc::new(Vec::new()));
         let whitelist_names = whitelist_names.unwrap_or_else(|| Arc::new(Vec::new()));
@@ -74,7 +75,12 @@ impl WebhookClient {
 
         // Openssl is required here -- in practice, rustls does not support many
         // ciphers that we encounter on a regular basis:
-        let ssl = SslConnector::builder(SslMethod::tls()).expect("SslConnector build failed");
+        let mut ssl = SslConnector::builder(SslMethod::tls()).expect("SslConnector build failed");
+        if dangerous_disable_tls_verification {
+            tracing::warn!("TLS certificate verification has been disabled by the configuration.");
+            ssl.set_verify(SslVerifyMode::NONE);
+        }
+
         let https = HttpsConnector::with_connector(NonLocalConnector { connector }, ssl)
             .expect("HttpsConnector build failed");
 
@@ -611,7 +617,14 @@ fn is_documentation_v6(addr: Ipv6Addr) -> bool {
 
 #[cfg(test)]
 mod tests {
-    use std::{net::IpAddr, str::FromStr};
+    use std::{
+        net::{IpAddr, TcpListener},
+        path::PathBuf,
+        str::FromStr,
+    };
+
+    use axum::{routing, Router};
+    use axum_server::tls_openssl::{OpenSSLAcceptor, OpenSSLConfig};
 
     use super::*;
 
@@ -763,5 +776,62 @@ mod tests {
             req_with_port.headers.get("host").unwrap(),
             "127.0.0.1:8000".as_bytes()
         );
+    }
+
+    #[tokio::test]
+    async fn test_tls_verification_disable() {
+        // Self-signed certificates are expected to be found in `server/svix-server/tests/static` from
+        // the repository root.
+        //
+        // Some have been pre-generated into that directory via the following command:
+        //
+        // ```
+        // openssl req -x509 -newkey rsa:4096 -keyout ex_key.pem -out ex_cert.pem -sha256 \
+        // -days 36500 -nodes
+        // ```
+        //
+        // Then, via the interactive prompt, a `.` was entered for all fields but the common name,
+        // which was set to `localhost`.
+        //
+        // NOTE: It doesn't really matter the contents of these files as long as they are a valid key
+        // and certificate that is self-signed, expired, or otherwise unable to pass verification.
+        let dir: PathBuf = [env!("CARGO_MANIFEST_DIR"), "tests", "static"]
+            .iter()
+            .collect();
+        let config =
+            OpenSSLConfig::from_pem_file(dir.join("ex_cert.pem"), dir.join("ex_key.pem")).unwrap();
+        let acceptor = OpenSSLAcceptor::new(config);
+
+        let tcp = TcpListener::bind("127.0.0.1:0").unwrap();
+        let url = format!("https://{}/", tcp.local_addr().unwrap());
+
+        let app = Router::new().route("/", routing::any(|| async { "Hello" }));
+
+        let _jh = tokio::spawn(async {
+            axum_server::from_tcp(tcp)
+                .acceptor(acceptor)
+                .serve(app.into_make_service())
+                .await
+                .unwrap();
+        });
+
+        let request = RequestBuilder::new()
+            .method(Method::GET)
+            .uri_str(&url)
+            .unwrap()
+            .version(Version::HTTP_11)
+            .build()
+            .unwrap();
+
+        let whitelist = Arc::new(vec![IpNet::new("127.0.0.1".parse().unwrap(), 0).unwrap()]);
+
+        // Assert that a [`WebhookClient`] without the disabled flag will err on making to a request
+        // to this server with the self-signed certificate
+        let whc_with_validation = WebhookClient::new(Some(whitelist.clone()), None, false);
+        assert!(whc_with_validation.execute(request.clone()).await.is_err());
+
+        // And assert that when the flag is enabled, that it will succeed
+        let whc_without_validation = WebhookClient::new(Some(whitelist), None, true);
+        assert!(whc_without_validation.execute(request).await.is_ok());
     }
 }
