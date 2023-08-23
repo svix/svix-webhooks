@@ -420,6 +420,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "axum-server"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "197b070de3ae5fc503d531d4dc7680e016438c2ffc848a1fefebc5c53f35cc17"
+dependencies = [
+ "bytes",
+ "futures-util",
+ "http",
+ "http-body",
+ "hyper",
+ "openssl",
+ "pin-project-lite",
+ "tokio",
+ "tokio-openssl",
+ "tower-service",
+]
+
+[[package]]
 name = "backtrace"
 version = "0.3.68"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4096,6 +4114,7 @@ dependencies = [
  "aide",
  "anyhow",
  "axum",
+ "axum-server",
  "base64 0.13.1",
  "bb8",
  "bb8-redis",

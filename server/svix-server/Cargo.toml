@@ -22,7 +22,7 @@ hmac-sha256 = "1"
 clap = { version = "4.1.8", features = ["derive"] }
 axum = { version = "0.6.1", features = ["headers"] }
 base64 = "0.13.0"
-hyper = { version = "0.14.16", features = ["full"] }
+hyper = { version = "=0.14.23", features = ["full"] }
 hyper-openssl = "0.9.2"
 openssl = "0.10.55"
 tokio = { version = "1.24.2", features = ["full"] }
@@ -79,3 +79,5 @@ sentry = { version = "0.31.5", features = ["tracing"] }
 
 [dev-dependencies]
 anyhow = "1.0.56"
+# NOTE: Purposely not the latest version such as not to mess up the `hyper` fork patch
+axum-server = { version = "0.5", features = ["tls-openssl"] }

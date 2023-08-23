@@ -68,7 +68,11 @@ pub struct TestSerializable {
 async fn test_client_basic_operation() {
     // Compares output to `reqwest`.
 
-    let our_client = WebhookClient::new(Some(Arc::new(vec!["127.0.0.1/0".parse().unwrap()])), None);
+    let our_client = WebhookClient::new(
+        Some(Arc::new(vec!["127.0.0.1/0".parse().unwrap()])),
+        None,
+        false,
+    );
     let reqwest_client = reqwest::Client::builder()
         .redirect(reqwest::redirect::Policy::none())
         .build()
@@ -120,7 +124,7 @@ async fn test_client_basic_operation() {
 
 #[tokio::test]
 async fn test_filtering() {
-    let our_client = WebhookClient::new(None, None);
+    let our_client = WebhookClient::new(None, None, false);
 
     let our_req = RequestBuilder::new()
         .uri_str("http://127.0.0.1/")

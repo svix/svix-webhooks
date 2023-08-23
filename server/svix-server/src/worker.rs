@@ -879,6 +879,7 @@ pub async fn queue_handler(
     let webhook_client = WebhookClient::new(
         cfg.whitelist_subnets.clone(),
         Some(Arc::new(vec!["backend".to_owned()])),
+        cfg.dangerous_disable_tls_verification,
     );
 
     tokio::spawn(
