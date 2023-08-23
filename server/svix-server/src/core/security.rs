@@ -72,6 +72,9 @@ pub struct CustomClaim {
     pub feature_flags: FeatureFlagSet,
 }
 
+pub const INVALID_TOKEN_ERR: &str = "Invalid token";
+pub const JWT_SECRET_ERR : &str = "Authentication failed. JWT signing secrets can not be used as tokens, please refer to https://github.com/svix/svix-webhooks#authentication for more information.";
+
 pub async fn permissions_from_bearer(parts: &mut Parts, state: &AppState) -> Result<Permissions> {
     let TypedHeader(Authorization(bearer)) =
         ctx!(TypedHeader::<Authorization<Bearer>>::from_request_parts(parts, state).await)?;
@@ -82,16 +85,10 @@ pub async fn permissions_from_bearer(parts: &mut Parts, state: &AppState) -> Res
                 JwtSigningConfig::Default { jwt_secret }
                     if jwt_secret.to_bytes() == bearer.token().as_bytes() =>
                 {
-                    HttpError::unauthorized(
-                        None,
-                        Some(
-                            "Authentication failed. JWT signing secrets can not be used as tokens, please refer to https://github.com/svix/svix-webhooks#authentication for more information."
-                                .to_string(),
-                        ),
-                    )
+                    HttpError::unauthorized(None, Some(JWT_SECRET_ERR.to_string()))
                 }
 
-                _ => HttpError::unauthorized(None, Some("Invalid token".to_string())),
+                _ => HttpError::unauthorized(None, Some(INVALID_TOKEN_ERR.to_string())),
             }
         })?;
     let perms = permissions_from_jwt(claims)?;

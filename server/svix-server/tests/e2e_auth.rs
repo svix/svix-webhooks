@@ -4,13 +4,22 @@
 
 use reqwest::StatusCode;
 
-use svix_server::{core::types::ApplicationId, v1::endpoints::application::ApplicationOut};
+use serde_json::Value;
+use svix_server::{
+    core::{
+        security::{INVALID_TOKEN_ERR, JWT_SECRET_ERR},
+        types::ApplicationId,
+    },
+    v1::endpoints::application::ApplicationOut,
+};
 
 mod utils;
 use utils::{
     common_calls::{app_portal_access, application_in},
     start_svix_server, IgnoredResponse,
 };
+
+use crate::utils::get_default_test_config;
 
 #[tokio::test]
 /// Users with application-level tokens should only be allowed to read the information related to
@@ -99,4 +108,52 @@ async fn test_dashboard_access_without_body() {
         )
         .await
         .unwrap();
+}
+
+#[tokio::test]
+async fn test_invalid_auth_error_detail() {
+    let (mut client, _jh) = start_svix_server().await;
+    let cfg = get_default_test_config();
+    let jwt_secret = match cfg.jwt_signing_config.as_ref() {
+        svix_server::core::security::JwtSigningConfig::Default { jwt_secret } => {
+            std::str::from_utf8(&jwt_secret.to_bytes())
+                .unwrap()
+                .to_owned()
+        }
+
+        _ => return {},
+    };
+
+    client.set_auth_header("some-nonsense-key".to_string());
+    match client
+        .post::<_, Value>(
+            "api/v1/app/",
+            application_in("TEST_APP_NAME"),
+            StatusCode::UNAUTHORIZED,
+        )
+        .await
+    {
+        Ok(Value::Object(i)) => {
+            assert_eq!(i.get("detail").unwrap(), INVALID_TOKEN_ERR);
+        }
+        _ => {
+            panic!("Unexpected response");
+        }
+    }
+    client.set_auth_header(jwt_secret);
+    match client
+        .post::<_, Value>(
+            "api/v1/app/",
+            application_in("TEST_APP_NAME"),
+            StatusCode::UNAUTHORIZED,
+        )
+        .await
+    {
+        Ok(Value::Object(i)) => {
+            assert_eq!(i.get("detail").unwrap(), JWT_SECRET_ERR);
+        }
+        _ => {
+            panic!("Unexpected response");
+        }
+    }
 }
