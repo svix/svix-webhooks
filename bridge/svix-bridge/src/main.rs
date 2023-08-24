@@ -1,6 +1,6 @@
 use self::config::Config;
 use clap::Parser;
-use lazy_static::lazy_static;
+use once_cell::sync::Lazy;
 use opentelemetry::runtime::Tokio;
 use opentelemetry::sdk::export::metrics::aggregation::delta_temporality_selector;
 use opentelemetry::sdk::metrics::controllers::BasicController;
@@ -32,12 +32,10 @@ static GLOBAL: Jemalloc = Jemalloc;
 #[cfg(all(target_env = "msvc", feature = "jemalloc"))]
 compile_error!("jemalloc cannot be enabled on msvc");
 
-lazy_static! {
-    // Seems like it would be useful to be able to configure this.
-    // In some docker setups, hostname is sometimes the container id, and advertising this can be
-    // helpful.
-    pub static ref INSTANCE_ID: String = KsuidMs::new(None, None).to_string();
-}
+// Seems like it would be useful to be able to configure this.
+// In some docker setups, hostname is sometimes the container id, and advertising this can be
+// helpful.
+static INSTANCE_ID: Lazy<String> = Lazy::new(|| KsuidMs::new(None, None).to_string());
 
 fn get_svc_identifiers(cfg: &Config) -> opentelemetry::sdk::Resource {
     opentelemetry::sdk::Resource::new(vec![

@@ -5754,7 +5754,7 @@ dependencies = [
  "envsubst",
  "http",
  "hyper 0.14.27",
- "lazy_static",
+ "once_cell",
  "opentelemetry",
  "opentelemetry-http",
  "opentelemetry-otlp",
