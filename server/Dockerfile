@@ -1,5 +1,5 @@
 # Base build
-FROM rust:1.70-slim-bullseye AS build
+FROM rust:1.72-slim-bullseye AS build
 
 RUN apt-get update && apt-get install -y build-essential=12.* checkinstall=1.* zlib1g-dev=1:* pkg-config=0.29.* libssl-dev=* --no-install-recommends
 
@@ -27,7 +27,7 @@ COPY . .
 RUN cargo build --release --frozen
 
 # Production
-FROM debian:11.2-slim AS prod
+FROM debian:12.1-slim AS prod
 
 RUN set -ex ; \
         mkdir -p /app ;\
