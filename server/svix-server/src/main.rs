@@ -15,6 +15,13 @@ use svix_server::{cfg, db, run, setup_tracing};
 
 use clap::{Parser, Subcommand};
 
+#[cfg(all(target_env = "msvc", feature = "jemalloc"))]
+compile_error!("jemalloc cannot be enabled on msvc");
+
+#[cfg(all(not(target_env = "msvc"), feature = "jemalloc"))]
+#[global_allocator]
+static GLOBAL: tikv_jemallocator::Jemalloc = tikv_jemallocator::Jemalloc;
+
 mod wait_for;
 use wait_for::wait_for_dsn;
 
