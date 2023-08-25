@@ -8,6 +8,7 @@ pub enum Error {
     Svix(svix::error::Error),
     Generic(String),
 }
+pub type Result<T> = std::result::Result<T, Error>;
 
 impl From<svix::error::Error> for Error {
     fn from(value: svix::error::Error) -> Self {

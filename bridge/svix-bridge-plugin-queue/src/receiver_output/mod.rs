@@ -1,19 +1,8 @@
-use crate::gcp_pubsub::GCPPubSubOutputOpts;
-use crate::rabbitmq::RabbitMqOutputOpts;
-use crate::redis::RedisOutputOpts;
-use crate::sqs::SqsOutputOpts;
-use crate::Error;
-use omniqueue::{
-    backends,
-    queue::{
-        producer::{DynProducer, QueueProducer},
-        QueueBackend,
-    },
-};
+use crate::config::ReceiverOutputOpts;
+use crate::error::Result;
+use omniqueue::queue::producer::{DynProducer, QueueProducer};
 use std::sync::Arc;
 use svix_bridge_types::{async_trait, ForwardRequest, ReceiverOutput};
-
-type Result<T> = std::result::Result<T, Error>;
 
 #[derive(Clone)]
 pub struct QueueForwarder {
@@ -24,92 +13,16 @@ pub struct QueueForwarder {
 }
 
 impl QueueForwarder {
-    pub async fn from_rabbitmq_cfg(
+    pub async fn from_receiver_output_opts(
         name: String,
-        cfg: RabbitMqOutputOpts,
+        opts: ReceiverOutputOpts,
     ) -> Result<QueueForwarder> {
-        let sender =
-            backends::rabbitmq::RabbitMqBackend::builder(backends::rabbitmq::RabbitMqConfig {
-                uri: cfg.uri,
-                // N.b the connection properties type is not serde-friendly. If we want to expose some
-                // of these settings we'll probably need to provide our own type and build the real one
-                // here from cfg.
-                connection_properties: Default::default(),
-                publish_exchange: cfg.exchange,
-                publish_routing_key: cfg.routing_key,
-                publish_options: cfg.publish_options,
-                publish_properites: cfg.publish_properties,
-                // consumer stuff we don't care about
-                consume_queue: "".to_string(),
-                consumer_tag: "".to_string(),
-                consume_options: Default::default(),
-                consume_arguments: Default::default(),
-                requeue_on_nack: false,
-            })
-            .make_dynamic()
-            .build_producer()
-            .await?;
-
-        Ok(QueueForwarder {
-            name,
-            sender: Arc::new(sender),
-        })
-    }
-
-    pub async fn from_redis_cfg(name: String, cfg: RedisOutputOpts) -> Result<QueueForwarder> {
-        let sender = backends::redis::RedisQueueBackend::<
-            backends::redis::RedisMultiplexedConnectionManager,
-        >::builder(backends::redis::RedisConfig {
-            dsn: cfg.dsn,
-            max_connections: cfg.max_connections,
-            queue_key: cfg.queue_key,
-            // consumer stuff we don't really care about
-            reinsert_on_nack: false,
-            consumer_group: "".to_string(),
-            consumer_name: "".to_string(),
-            payload_key: "".to_string(),
-        })
-        .make_dynamic()
-        .build_producer()
-        .await?;
-
-        Ok(QueueForwarder {
-            name,
-            sender: Arc::new(sender),
-        })
-    }
-
-    pub async fn from_sqs_cfg(name: String, cfg: SqsOutputOpts) -> Result<QueueForwarder> {
-        let sender = backends::sqs::SqsQueueBackend::builder(backends::sqs::SqsConfig {
-            queue_dsn: cfg.queue_dsn,
-            override_endpoint: cfg.override_endpoint,
-        })
-        .make_dynamic()
-        .build_producer()
-        .await?;
-
-        Ok(QueueForwarder {
-            name,
-            sender: Arc::new(sender),
-        })
-    }
-
-    pub async fn from_gcp_pupsub_cfg(
-        name: String,
-        cfg: GCPPubSubOutputOpts,
-    ) -> Result<QueueForwarder> {
-        let sender = backends::gcp_pubsub::GcpPubSubBackend::builder(
-            backends::gcp_pubsub::GcpPubSubConfig {
-                topic_id: cfg.topic,
-                credentials_file: cfg.credentials_file,
-                // Don't need this. Subscriptions are for consumers only.
-                subscription_id: String::new(),
-            },
-        )
-        .make_dynamic()
-        .build_producer()
-        .await?;
-
+        let sender = match opts {
+            ReceiverOutputOpts::GCPPubSub(cfg) => crate::gcp_pubsub::producer(&cfg).await?,
+            ReceiverOutputOpts::RabbitMQ(cfg) => crate::rabbitmq::producer(&cfg).await?,
+            ReceiverOutputOpts::Redis(cfg) => crate::redis::producer(&cfg).await?,
+            ReceiverOutputOpts::SQS(cfg) => crate::sqs::producer(&cfg).await?,
+        };
         Ok(QueueForwarder {
             name,
             sender: Arc::new(sender),

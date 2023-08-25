@@ -8,7 +8,9 @@ use lapin::{
 };
 use serde_json::json;
 use std::time::Duration;
-use svix_bridge_plugin_queue::{config::RabbitMqInputOpts, RabbitMqConsumerPlugin};
+use svix_bridge_plugin_queue::config::RabbitMqInputOpts;
+use svix_bridge_plugin_queue::config::SenderInputOpts;
+use svix_bridge_plugin_queue::sender_input::QueueSender;
 use svix_bridge_types::{
     svix::api::MessageIn, CreateMessageRequest, SenderInput, SenderOutputOpts, SvixOptions,
     SvixSenderOutputOpts, TransformationConfig, TransformerInput, TransformerInputFormat,
@@ -22,17 +24,17 @@ fn get_test_plugin(
     mq_uri: &str,
     queue_name: &str,
     use_transformation: Option<TransformerInputFormat>,
-) -> RabbitMqConsumerPlugin {
-    RabbitMqConsumerPlugin::new(
+) -> QueueSender {
+    QueueSender::new(
         "test".into(),
-        RabbitMqInputOpts {
+        SenderInputOpts::RabbitMQ(RabbitMqInputOpts {
             uri: mq_uri.to_string(),
             queue_name: queue_name.to_string(),
             consumer_tag: None,
             consume_opts: None,
             consume_args: None,
             requeue_on_nack: false,
-        },
+        }),
         use_transformation.map(|format| TransformationConfig::Explicit {
             format,
             src: String::from("function handle(x) { return x; }"),

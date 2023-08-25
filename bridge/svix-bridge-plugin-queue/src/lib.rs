@@ -8,7 +8,6 @@ use svix_bridge_types::{
     async_trait, svix::api::Svix, CreateMessageRequest, JsObject, TransformationConfig,
     TransformerInput, TransformerInputFormat, TransformerJob, TransformerOutput, TransformerTx,
 };
-use tracing::instrument;
 
 pub const PLUGIN_NAME: &str = env!("CARGO_PKG_NAME");
 pub const PLUGIN_VERS: &str = env!("CARGO_PKG_VERSION");
@@ -19,11 +18,10 @@ mod gcp_pubsub;
 mod rabbitmq;
 mod receiver_output;
 mod redis;
+pub mod sender_input;
 mod sqs;
-pub use self::{
-    error::Error, gcp_pubsub::GCPPubSubConsumerPlugin, rabbitmq::RabbitMqConsumerPlugin,
-    redis::RedisConsumerPlugin, sqs::SqsConsumerPlugin,
-};
+
+use error::Error;
 
 /// Newtype for [`omniqueue::queue::Delivery`].
 ///
@@ -67,9 +65,9 @@ trait Consumer {
     /// The name of the messaging system, e.g. rabbitmq, sqs, etc.
     fn system(&self) -> &str;
     /// Gets the channel sender for running transformations.
-    fn transformer_tx(&self) -> &Option<TransformerTx>;
+    fn transformer_tx(&self) -> Option<&TransformerTx>;
     /// The js source for the transformation to run on each payload.
-    fn transformation(&self) -> &Option<TransformationConfig>;
+    fn transformation(&self) -> Option<&TransformationConfig>;
     /// The client to use when creating messages in svix.
     fn svix_client(&self) -> &Svix;
 
@@ -113,7 +111,7 @@ trait Consumer {
     }
 
     /// Pulls N messages off the queue and feeds them to [`Self::process`].
-    #[instrument(skip_all,
+    #[tracing::instrument(skip_all,
     fields(
         otel.kind = "CONSUMER",
         messaging.system = self.system(),
@@ -132,7 +130,7 @@ trait Consumer {
 
     /// Parses the delivery as JSON and feeds it into [`create_svix_message`].
     /// Will nack the delivery if either the JSON parse, transformation, or the request to svix fails.
-    #[instrument(skip_all, fields(messaging.operation = "process"))]
+    #[tracing::instrument(skip_all, fields(messaging.operation = "process"))]
     async fn process(&self, delivery: DeliveryWrapper) -> std::io::Result<()> {
         let payload = if let Some(xform_cfg) = self.transformation() {
             let input = match xform_cfg.format() {
@@ -229,7 +227,7 @@ async fn run_inner(consumer: &(impl Consumer + Send + Sync)) -> std::io::Result<
     }
 }
 
-#[instrument(skip_all, level="error", fields(
+#[tracing::instrument(skip_all, level="error", fields(
     app_id = app_id,
     event_type = message.event_type
 ))]

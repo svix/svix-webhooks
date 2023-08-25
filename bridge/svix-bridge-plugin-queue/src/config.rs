@@ -2,10 +2,8 @@ pub use crate::gcp_pubsub::{GCPPubSubInputOpts, GCPPubSubOutputOpts};
 pub use crate::rabbitmq::{RabbitMqInputOpts, RabbitMqOutputOpts};
 pub use crate::receiver_output::QueueForwarder;
 pub use crate::redis::{RedisInputOpts, RedisOutputOpts};
+use crate::sender_input::QueueSender;
 pub use crate::sqs::{SqsInputOpts, SqsOutputOpts};
-use crate::{
-    GCPPubSubConsumerPlugin, RabbitMqConsumerPlugin, RedisConsumerPlugin, SqsConsumerPlugin,
-};
 use serde::Deserialize;
 use svix_bridge_types::{
     ReceiverOutput, SenderInput, SenderOutputOpts, TransformationConfig, TransformerInputFormat,
@@ -22,39 +20,23 @@ pub struct QueueConsumerConfig {
 
 impl QueueConsumerConfig {
     pub fn into_sender_input(self) -> Result<Box<dyn SenderInput>, &'static str> {
-        match self.input {
-            SenderInputOpts::GCPPubSub(input) => Ok(Box::new(GCPPubSubConsumerPlugin::new(
-                self.name,
-                input,
-                self.transformation,
-                self.output,
-            ))),
-            SenderInputOpts::RabbitMQ(input) => Ok(Box::new(RabbitMqConsumerPlugin::new(
-                self.name,
-                input,
-                self.transformation,
-                self.output,
-            ))),
-            SenderInputOpts::Redis(input) => {
-                if let Some(xform) = &self.transformation {
-                    if xform.format() != TransformerInputFormat::Json {
-                        return Err("redis only supports json formatted transformations");
-                    }
-                }
-                Ok(Box::new(RedisConsumerPlugin::new(
-                    self.name,
-                    input,
-                    self.transformation,
-                    self.output,
-                )))
-            }
-            SenderInputOpts::SQS(input) => Ok(Box::new(SqsConsumerPlugin::new(
-                self.name,
-                input,
-                self.transformation,
-                self.output,
-            ))),
+        // FIXME: see if this check is still needed. String transforms worked for the omniqueue redis receiver, I think?
+        if matches!(self.input, SenderInputOpts::Redis(_))
+            && self
+                .transformation
+                .as_ref()
+                .map(|t| t.format() != TransformerInputFormat::Json)
+                .unwrap_or_default()
+        {
+            return Err("redis only supports json formatted transformations");
         }
+
+        Ok(Box::new(QueueSender::new(
+            self.name,
+            self.input,
+            self.transformation,
+            self.output,
+        )))
     }
 }
 
@@ -62,25 +44,21 @@ pub async fn into_receiver_output(
     name: String,
     opts: ReceiverOutputOpts,
     // Annoying to have to pass this, but certain backends (redis) only work with certain transformations (json).
-    transformation: &Option<TransformationConfig>,
+    transformation: Option<&TransformationConfig>,
 ) -> Result<Box<dyn ReceiverOutput>, crate::Error> {
-    let forwarder = match opts {
-        ReceiverOutputOpts::GCPPubSub(opts) => {
-            QueueForwarder::from_gcp_pupsub_cfg(name, opts).await?
-        }
-        ReceiverOutputOpts::RabbitMQ(opts) => QueueForwarder::from_rabbitmq_cfg(name, opts).await?,
-        ReceiverOutputOpts::Redis(opts) => {
-            if let Some(t) = transformation {
-                if t.format() != TransformerInputFormat::Json {
-                    return Err(crate::Error::Generic(
-                        "redis only supports json formatted transformations".to_string(),
-                    ));
-                }
-            }
-            QueueForwarder::from_redis_cfg(name, opts).await?
-        }
-        ReceiverOutputOpts::SQS(opts) => QueueForwarder::from_sqs_cfg(name, opts).await?,
-    };
+    // FIXME: see if this check is still needed. String transforms worked for the omniqueue redis receiver, I think?
+    if matches!(opts, ReceiverOutputOpts::Redis(_))
+        && transformation
+            .as_ref()
+            .map(|t| t.format() != TransformerInputFormat::Json)
+            .unwrap_or_default()
+    {
+        return Err(crate::Error::Generic(
+            "redis only supports json formatted transformations".to_string(),
+        ));
+    }
+
+    let forwarder = QueueForwarder::from_receiver_output_opts(name, opts).await?;
     Ok(Box::new(forwarder))
 }
 
@@ -161,10 +139,11 @@ mod tests {
         let res = into_receiver_output(
             "".to_string(),
             redis_out,
-            &Some(TransformationConfig::Explicit {
+            Some(TransformationConfig::Explicit {
                 src: String::new(),
                 format: TransformerInputFormat::String,
-            }),
+            })
+            .as_ref(),
         )
         .await;
         assert!(matches!(

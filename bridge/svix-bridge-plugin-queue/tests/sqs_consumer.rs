@@ -7,7 +7,9 @@ use std::time::Duration;
 
 use aws_sdk_sqs::Client;
 use serde_json::json;
-use svix_bridge_plugin_queue::{config::SqsInputOpts, SqsConsumerPlugin};
+use svix_bridge_plugin_queue::config::SenderInputOpts;
+use svix_bridge_plugin_queue::config::SqsInputOpts;
+use svix_bridge_plugin_queue::sender_input::QueueSender;
 use svix_bridge_types::svix::api::MessageIn;
 use svix_bridge_types::{
     CreateMessageRequest, SenderInput, SenderOutputOpts, SvixOptions, SvixSenderOutputOpts,
@@ -28,13 +30,13 @@ fn get_test_plugin(
     svix_url: String,
     queue_dsn: String,
     use_transformation: Option<TransformerInputFormat>,
-) -> SqsConsumerPlugin {
-    SqsConsumerPlugin::new(
+) -> QueueSender {
+    QueueSender::new(
         "test".into(),
-        SqsInputOpts {
+        SenderInputOpts::SQS(SqsInputOpts {
             queue_dsn,
             override_endpoint: true,
-        },
+        }),
         use_transformation.map(|format| TransformationConfig::Explicit {
             format,
             src: String::from("function handle(x) { return x; }"),

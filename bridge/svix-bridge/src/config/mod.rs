@@ -197,7 +197,7 @@ impl ReceiverConfig {
     pub async fn into_receiver_output(self) -> std::io::Result<Box<dyn ReceiverOutput>> {
         match self.output {
             ReceiverOut::QueueProducer(x) => {
-                into_receiver_output(self.name.clone(), x, &self.transformation)
+                into_receiver_output(self.name.clone(), x, self.transformation.as_ref())
                     .await
                     .map_err(Into::into)
             }
