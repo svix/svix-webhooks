@@ -3,6 +3,19 @@
 ## Next
 * 
 
+## Version 1.9.0
+* Server: add missing field documentation for query params.
+* Server: warn people trying to use the JWT secret as an auth token.
+* Server: allow disabling TLS verification.
+* Server: use jemalloc as the global allocator.
+* Server: add Sentry support.
+* Server: update dependencies.
+* Server: update Docker base image and rust version.
+* Libs/Go: export missing types
+* Bridge: switch to the Omniqueue library
+* Bridge: use jemalloc as the global allocator.
+* Bridge: update Docker base image and rust version.
+
 ## Version 1.8.1
 * Server: correctly disconnect the tracing provider when shutting down in some rare scenarios.
 * Libs: update OpenAPI spec
