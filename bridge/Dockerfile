@@ -1,5 +1,5 @@
 # Base build
-FROM rust:1.70-slim-bullseye AS build
+FROM rust:1.72-slim-bullseye AS build
 
 RUN apt-get update && apt-get install -y \
     build-essential=12.* \
@@ -49,7 +49,7 @@ RUN touch */src/lib.rs && touch */src/main.rs
 RUN cargo build --release --frozen
 
 # Production
-FROM debian:11.2-slim AS prod
+FROM debian:12.1-slim AS prod
 
 RUN set -ex ; \
         mkdir -p /app ;\
