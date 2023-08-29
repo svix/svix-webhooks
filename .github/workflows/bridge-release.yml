@@ -80,10 +80,10 @@ jobs:
           echo DOCKER_TAGS="$(echo "${{ github.event.release.tag_name }}" | sed -E "s#v([0-9]+)\.([0-9]+)\.([0-9]+)#${REPO}:latest,${REPO}:v\1.\2.\3,${REPO}:v\1.\2,${REPO}:v\1#")" >> "$GITHUB_ENV"
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v4
         with:
           context: ./bridge
           file: ./bridge/Dockerfile
           push: true
           tags: ${{ env.DOCKER_TAGS }}
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
