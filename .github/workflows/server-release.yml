@@ -86,4 +86,4 @@ jobs:
           file: ./server/Dockerfile
           push: true
           tags: ${{ env.DOCKER_TAGS }}
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
