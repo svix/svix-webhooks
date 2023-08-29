@@ -3,7 +3,7 @@ name: Server Release
 on:
   push:
     branches:
-      - tom/arm64
+      - tom/arm64-2
 
 jobs:
   docker:
