@@ -3,6 +3,10 @@
 ## Next
 * 
 
+## Version 1.10.0
+* Server: fix docker image.
+* Server: release arm64 version!
+
 ## Version 1.9.0
 * Server: add missing field documentation for query params.
 * Server: warn people trying to use the JWT secret as an auth token.
