@@ -11,11 +11,14 @@ type EventType struct {
 }
 
 type (
-	ListResponseEventTypeOut = openapi.ListResponseEventTypeOut
-	EventTypeIn              = openapi.EventTypeIn
-	EventTypeOut             = openapi.EventTypeOut
-	EventTypePatch           = openapi.EventTypePatch
-	EventTypeUpdate          = openapi.EventTypeUpdate
+	ListResponseEventTypeOut      = openapi.ListResponseEventTypeOut
+	EventTypeIn                   = openapi.EventTypeIn
+	EventTypeOut                  = openapi.EventTypeOut
+	EventTypePatch                = openapi.EventTypePatch
+	EventTypeUpdate               = openapi.EventTypeUpdate
+	EventTypeImportOpenApiIn      = openapi.EventTypeImportOpenApiIn
+	EventTypeImportOpenApiOut     = openapi.EventTypeImportOpenApiOut
+	EventTypeImportOpenApiOutData = openapi.EventTypeImportOpenApiOutData
 )
 
 type EventTypeListOptions struct {
@@ -105,4 +108,21 @@ func (e *EventType) Delete(ctx context.Context, eventTypeName string) error {
 	req := e.api.EventTypeApi.V1EventTypeDelete(ctx, eventTypeName)
 	res, err := req.Execute()
 	return wrapError(err, res)
+}
+
+func (e *EventType) ImportOpenApi(ctx context.Context, eventTypeImportOpenApiIn EventTypeImportOpenApiIn) (*EventTypeImportOpenApiOut, error) {
+	return e.ImportOpenApiWithOptions(ctx, eventTypeImportOpenApiIn, nil)
+}
+
+func (e *EventType) ImportOpenApiWithOptions(ctx context.Context, eventTypeImportOpenApiIn EventTypeImportOpenApiIn, options *PostOptions) (*EventTypeImportOpenApiOut, error) {
+	req := e.api.EventTypeApi.V1EventTypeImportOpenapi(ctx).EventTypeImportOpenApiIn(eventTypeImportOpenApiIn)
+	if options != nil && options.IdempotencyKey != nil {
+		req = req.IdempotencyKey(*options.IdempotencyKey)
+	}
+	out, res, err := req.Execute()
+	if err != nil {
+		return nil, wrapError(err, res)
+	}
+	ret := EventTypeImportOpenApiOut(out)
+	return &ret, nil
 }

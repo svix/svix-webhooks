@@ -41,6 +41,7 @@ from .internal.openapi_client.api.event_type import (
     v1_event_type_create,
     v1_event_type_delete,
     v1_event_type_get,
+    v1_event_type_import_openapi,
     v1_event_type_list,
     v1_event_type_patch,
     v1_event_type_update,
@@ -94,6 +95,8 @@ from .internal.openapi_client.models.endpoint_transformation_in import EndpointT
 from .internal.openapi_client.models.endpoint_transformation_out import EndpointTransformationOut
 from .internal.openapi_client.models.endpoint_update import EndpointUpdate
 from .internal.openapi_client.models.event_example_in import EventExampleIn
+from .internal.openapi_client.models.event_type_import_open_api_in import EventTypeImportOpenApiIn
+from .internal.openapi_client.models.event_type_import_open_api_out import EventTypeImportOpenApiOut
 from .internal.openapi_client.models.event_type_in import EventTypeIn
 from .internal.openapi_client.models.event_type_out import EventTypeOut
 from .internal.openapi_client.models.event_type_patch import EventTypePatch
@@ -603,6 +606,15 @@ class EventTypeAsync(ApiBase):
             event_type_name=event_type_name,
         )
 
+    async def import_openapi(
+        self, event_type_import_openapi_in: EventTypeImportOpenApiIn, options: PostOptions = PostOptions()
+    ) -> EventTypeImportOpenApiOut:
+        return await v1_event_type_import_openapi.asyncio(
+            client=self._client,
+            json_body=event_type_import_openapi_in,
+            **options.to_dict(),
+        )
+
 
 class EventType(ApiBase):
     def list(self, options: EventTypeListOptions = EventTypeListOptions()) -> ListResponseEventTypeOut:
@@ -642,6 +654,15 @@ class EventType(ApiBase):
         return v1_event_type_delete.sync(
             client=self._client,
             event_type_name=event_type_name,
+        )
+
+    def import_openapi(
+        self, event_type_import_openapi_in: EventTypeImportOpenApiIn, options: PostOptions = PostOptions()
+    ) -> EventTypeImportOpenApiOut:
+        return v1_event_type_import_openapi.sync(
+            client=self._client,
+            json_body=event_type_import_openapi_in,
+            **options.to_dict(),
         )
 
 
@@ -1116,6 +1137,8 @@ __all__ = [
     "EndpointSecretOut",
     "EndpointSecretRotateIn",
     "ListResponseEndpointOut",
+    "EventTypeImportOpenApiIn",
+    "EventTypeImportOpenApiOut",
     "EventTypeIn",
     "EventTypeOut",
     "EventTypePatch",

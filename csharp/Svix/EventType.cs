@@ -285,5 +285,48 @@ namespace Svix
                 return null;
             }
         }
+
+        public EventTypeImportOpenApiOut ImportOpenApi(EventTypeImportOpenApiIn eventTypeImportOpenApiIn, string idempotencyKey = default)
+        {
+            try
+            {
+                var lEventTypeImportOpenApiOut = _eventTypeApi.V1EventTypeImportOpenapi(
+                    eventTypeImportOpenApiIn,
+                    idempotencyKey);
+
+                return lEventTypeImportOpenApiOut;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(Create)} failed");
+
+                if (Throw)
+                    throw;
+
+                return null;
+            }
+        }
+
+        public async Task<EventTypeImportOpenApiOut> ImportOpenApiAsync(EventTypeImportOpenApiIn eventTypeImportOpenApiIn, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var lEventTypeImportOpenApiOut = await _eventTypeApi.V1EventTypeImportOpenapiAsync(
+                    eventTypeImportOpenApiIn,
+                    idempotencyKey,
+                    cancellationToken);
+
+                return lEventTypeImportOpenApiOut;
+            }
+            catch (ApiException e)
+            {
+                Logger?.LogError(e, $"{nameof(CreateAsync)} failed");
+
+                if (Throw)
+                    throw;
+
+                return null;
+            }
+        }
     }
 }

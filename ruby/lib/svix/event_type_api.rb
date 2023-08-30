@@ -29,5 +29,9 @@ module Svix
     def delete(event_type_name)
       return @api.v1_event_type_delete(event_type_name)
     end
+
+    def import_openapi(event_type_import_open_api_in, options = {})
+      return @api.v1_event_type_import_openapi(event_type_import_open_api_in, options)
+    end
   end
 end

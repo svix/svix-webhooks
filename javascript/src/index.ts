@@ -62,6 +62,8 @@ import {
   ApplicationPatch,
   EndpointPatch,
   EventTypePatch,
+  EventTypeImportOpenApiIn,
+  EventTypeImportOpenApiOut,
 } from "./openapi/index";
 export * from "./openapi/models/all";
 export * from "./openapi/apis/exception";
@@ -490,6 +492,10 @@ class EventType {
 
   public delete(eventTypeName: string): Promise<void> {
     return this.api.v1EventTypeDelete({ eventTypeName });
+  }
+
+  public importOpenApi(eventTypeImportOpenApiIn: EventTypeImportOpenApiIn, options?: PostOptions): Promise<EventTypeImportOpenApiOut> {
+    return this.api.v1EventTypeImportOpenapi({ eventTypeImportOpenApiIn, ...options });
   }
 }
 

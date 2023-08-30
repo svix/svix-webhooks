@@ -2,6 +2,8 @@ package com.svix;
 
 import com.svix.exceptions.ApiException;
 import com.svix.internal.api.EventTypeApi;
+import com.svix.models.EventTypeImportOpenApiIn;
+import com.svix.models.EventTypeImportOpenApiOut;
 import com.svix.models.EventTypeIn;
 import com.svix.models.EventTypeOut;
 import com.svix.models.EventTypePatch;
@@ -62,6 +64,22 @@ public final class EventType {
 	public void delete(final String eventTypeName) throws ApiException {
 		try {
 			api.v1EventTypeDelete(eventTypeName, null);
+		} catch (com.svix.internal.ApiException e) {
+			throw Utils.wrapInternalApiException(e);
+		}
+	}
+
+	public EventTypeImportOpenApiOut importOpenApi(final EventTypeImportOpenApiIn eventTypeImportOpenApiIn) throws ApiException {
+		try {
+			return this.importOpenApi(eventTypeImportOpenApiIn, new PostOptions());
+		} catch (com.svix.internal.ApiException e) {
+			throw Utils.wrapInternalApiException(e);
+		}
+	}
+
+	public EventTypeImportOpenApiOut importOpenApi(final EventTypeImportOpenApiIn eventTypeImportOpenApiIn, final PostOptions options) throws ApiException {
+		try {
+			return api.v1EventTypeImportOpenapi(eventTypeImportOpenApiIn, options.getIdempotencyKey());
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}
