@@ -23,22 +23,18 @@ WORKDIR /app
 # Hack to enable docker caching
 COPY Cargo.toml .
 COPY Cargo.lock .
-COPY generic-queue/Cargo.toml generic-queue/
 COPY svix-bridge-types/Cargo.toml svix-bridge-types/
 COPY svix-bridge-plugin-queue/Cargo.toml svix-bridge-plugin-queue/
 COPY svix-bridge/Cargo.toml svix-bridge/
 RUN set -ex ;\
-        mkdir generic-queue/src ;\
         mkdir svix-bridge-plugin-queue/src ;\
         mkdir svix-bridge-types/src ;\
         mkdir svix-bridge/src ;\
-        echo '' > generic-queue/src/lib.rs ;\
         echo '' > svix-bridge-plugin-queue/src/lib.rs ;\
         echo '' > svix-bridge-types/src/lib.rs ;\
         echo 'fn main() { println!("Dummy!"); }' > svix-bridge/src/main.rs ;\
         cargo build --release ;\
         rm -rf \
-          generic-queue/src \
           svix-bridge-plugin-queue/src \
           svix-bridge-types/src \
           svix-bridge/src
