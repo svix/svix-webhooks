@@ -6,7 +6,6 @@ use crate::{
         permissions,
         types::{EventTypeName, FeatureFlag},
     },
-    ctx,
     db::models::eventtype,
     error::{http_error_on_conflict, HttpError, Result},
     v1::utils::{
@@ -250,7 +249,9 @@ async fn list_event_types(
     );
 
     Ok(Json(EventTypeOut::list_response(
-        ctx!(query.all(db).await)?
+        query
+            .all(db)
+            .await?
             .into_iter()
             .map(|x| {
                 if !fetch_options.with_content {
@@ -276,18 +277,16 @@ async fn create_event_type(
     permissions::Organization { org_id }: permissions::Organization,
     ValidatedJson(data): ValidatedJson<EventTypeIn>,
 ) -> Result<JsonStatus<201, EventTypeOut>> {
-    let evtype = ctx!(
-        eventtype::Entity::secure_find_by_name(org_id.clone(), data.name.to_owned())
-            .one(db)
-            .await
-    )?;
+    let evtype = eventtype::Entity::secure_find_by_name(org_id.clone(), data.name.to_owned())
+        .one(db)
+        .await?;
     let ret = match evtype {
         Some(evtype) => {
             if evtype.deleted {
                 let mut evtype: eventtype::ActiveModel = evtype.into();
                 evtype.deleted = Set(false);
                 data.update_model(&mut evtype);
-                ctx!(evtype.update(db).await)?
+                evtype.update(db).await?
             } else {
                 return Err(HttpError::conflict(
                     Some("event_type_exists".to_owned()),
@@ -301,7 +300,7 @@ async fn create_event_type(
                 org_id: Set(org_id),
                 ..data.into()
             };
-            ctx!(evtype.insert(db).await.map_err(http_error_on_conflict))?
+            evtype.insert(db).await.map_err(http_error_on_conflict)?
         }
     };
     Ok(JsonStatus(ret.into()))
@@ -322,7 +321,10 @@ async fn get_event_type(
     if let permissions::AllowedFeatureFlags::Some(flags) = feature_flags {
         query = eventtype::Entity::filter_feature_flags(query, flags);
     }
-    let evtype = ctx!(query.one(db).await)?.ok_or_else(|| HttpError::not_found(None, None))?;
+    let evtype = query
+        .one(db)
+        .await?
+        .ok_or_else(|| HttpError::not_found(None, None))?;
 
     Ok(Json(evtype.into()))
 }
@@ -335,29 +337,27 @@ async fn update_event_type(
     permissions::Organization { org_id }: permissions::Organization,
     ValidatedJson(data): ValidatedJson<EventTypeUpdate>,
 ) -> Result<JsonStatusUpsert<EventTypeOut>> {
-    let evtype = ctx!(
-        eventtype::Entity::secure_find_by_name(org_id.clone(), event_type_name.clone())
-            .one(db)
-            .await
-    )?;
+    let evtype = eventtype::Entity::secure_find_by_name(org_id.clone(), event_type_name.clone())
+        .one(db)
+        .await?;
 
     match evtype {
         Some(evtype) => {
             let mut evtype: eventtype::ActiveModel = evtype.into();
             data.update_model(&mut evtype);
-            let ret = ctx!(evtype.update(db).await.map_err(http_error_on_conflict))?;
+            let ret = evtype.update(db).await.map_err(http_error_on_conflict)?;
 
             Ok(JsonStatusUpsert::Updated(ret.into()))
         }
         None => {
-            let ret = ctx!(eventtype::ActiveModel {
+            let ret = eventtype::ActiveModel {
                 org_id: Set(org_id),
                 name: Set(event_type_name),
                 ..data.into()
             }
             .insert(db)
             .await
-            .map_err(http_error_on_conflict))?;
+            .map_err(http_error_on_conflict)?;
 
             Ok(JsonStatusUpsert::Created(ret.into()))
         }
@@ -372,17 +372,15 @@ async fn patch_event_type(
     permissions::Organization { org_id }: permissions::Organization,
     ValidatedJson(data): ValidatedJson<EventTypePatch>,
 ) -> Result<Json<EventTypeOut>> {
-    let evtype = ctx!(
-        eventtype::Entity::secure_find_by_name(org_id, event_type_name)
-            .one(db)
-            .await
-    )?
-    .ok_or_else(|| HttpError::not_found(None, None))?;
+    let evtype = eventtype::Entity::secure_find_by_name(org_id, event_type_name)
+        .one(db)
+        .await?
+        .ok_or_else(|| HttpError::not_found(None, None))?;
 
     let mut evtype: eventtype::ActiveModel = evtype.into();
     data.update_model(&mut evtype);
 
-    let ret = ctx!(evtype.update(db).await.map_err(http_error_on_conflict))?;
+    let ret = evtype.update(db).await.map_err(http_error_on_conflict)?;
     Ok(Json(ret.into()))
 }
 
@@ -398,16 +396,14 @@ async fn delete_event_type(
     Path(EventTypeNamePath { event_type_name }): Path<EventTypeNamePath>,
     permissions::Organization { org_id }: permissions::Organization,
 ) -> Result<NoContent> {
-    let evtype = ctx!(
-        eventtype::Entity::secure_find_by_name(org_id, event_type_name)
-            .one(db)
-            .await
-    )?
-    .ok_or_else(|| HttpError::not_found(None, None))?;
+    let evtype = eventtype::Entity::secure_find_by_name(org_id, event_type_name)
+        .one(db)
+        .await?
+        .ok_or_else(|| HttpError::not_found(None, None))?;
 
     let mut evtype: eventtype::ActiveModel = evtype.into();
     evtype.deleted = Set(true);
-    ctx!(evtype.update(db).await)?;
+    evtype.update(db).await?;
     Ok(NoContent)
 }
 

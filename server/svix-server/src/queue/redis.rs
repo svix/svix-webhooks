@@ -39,8 +39,7 @@ use redis::{
 use tokio::time::sleep;
 
 use crate::{
-    ctx, err_generic,
-    error::Result,
+    error::{Error, Result},
     queue::Acker,
     redis::{PoolLike, PooledConnection, PooledConnectionLike, RedisPool},
 };
@@ -133,7 +132,7 @@ async fn background_task_pending(
     main_queue_name: String,
     pending_duration: i64,
 ) -> Result<()> {
-    let mut pool = ctx!(pool.get().await)?;
+    let mut pool = pool.get().await?;
 
     // Every iteration checks whether the processing queue has items that should be picked back up,
     // claiming them in the process
@@ -146,7 +145,7 @@ async fn background_task_pending(
         .arg("COUNT")
         .arg(PENDING_BATCH_SIZE);
 
-    let StreamAutoclaimReply { ids } = ctx!(pool.query_async(cmd).await)?;
+    let StreamAutoclaimReply { ids } = pool.query_async(cmd).await?;
 
     if !ids.is_empty() {
         let mut pipe = redis::pipe();
@@ -168,7 +167,7 @@ async fn background_task_pending(
             );
         }
 
-        let _: () = ctx!(pool.query_async_pipeline(pipe).await)?;
+        let _: () = pool.query_async_pipeline(pipe).await?;
 
         // Acknowledge all the stale ones so the pending queue is cleared
         let ids: Vec<_> = ids.iter().map(|wrapped| &wrapped.id).collect();
@@ -177,7 +176,7 @@ async fn background_task_pending(
         pipe.add_command(Cmd::xack(&main_queue_name, WORKERS_GROUP, &ids));
         pipe.add_command(Cmd::xdel(&main_queue_name, &ids));
 
-        let _: () = ctx!(pool.query_async_pipeline(pipe).await)?;
+        let _: () = pool.query_async_pipeline(pipe).await?;
     } else {
         // Wait for half a second before attempting to fetch again if nothing was found
         sleep(Duration::from_millis(500)).await;
@@ -194,7 +193,7 @@ async fn background_task_delayed(
 ) -> Result<()> {
     let batch_size: isize = 50;
 
-    let mut pool = ctx!(pool.get().await)?;
+    let mut pool = pool.get().await?;
 
     // There is a lock on the delayed queue processing to avoid race conditions. So first try to
     // acquire the lock should it not already exist. The lock expires after five seconds in case a
@@ -206,15 +205,14 @@ async fn background_task_delayed(
         .arg("PX")
         .arg(5000);
     // WIll be Some("OK") when set or None when not set
-    let resp: Option<String> = ctx!(pool.query_async(cmd).await)?;
+    let resp: Option<String> = pool.query_async(cmd).await?;
 
     if resp.as_deref() == Some("OK") {
         // First look for delayed keys whose time is up and add them to the main qunue
         let timestamp = Utc::now().timestamp();
-        let keys: Vec<String> = ctx!(
-            pool.zrangebyscore_limit(&delayed_queue_name, 0isize, timestamp, 0isize, batch_size)
-                .await
-        )?;
+        let keys: Vec<String> = pool
+            .zrangebyscore_limit(&delayed_queue_name, 0isize, timestamp, 0isize, batch_size)
+            .await?;
 
         if !keys.is_empty() {
             let tasks: Vec<&str> = keys
@@ -233,16 +231,18 @@ async fn background_task_delayed(
                     &[(QUEUE_KV_KEY, task)],
                 );
             }
-            let _: () = ctx!(pool.query_async_pipeline(pipe).await)?;
+            let _: () = pool.query_async_pipeline(pipe).await?;
 
             // Then remove the tasks from the delayed queue so they aren't resent
-            let _: () = ctx!(pool.query_async(Cmd::zrem(&delayed_queue_name, keys)).await)?;
+            let _: () = pool
+                .query_async(Cmd::zrem(&delayed_queue_name, keys))
+                .await?;
 
             // Make sure to release the lock after done processing
-            let _: () = ctx!(pool.del(delayed_lock).await)?;
+            let _: () = pool.del(delayed_lock).await?;
         } else {
             // Make sure to release the lock before sleeping
-            let _: () = ctx!(pool.del(delayed_lock).await)?;
+            let _: () = pool.del(delayed_lock).await?;
             // Wait for half a second before attempting to fetch again if nothing was found
             sleep(Duration::from_millis(500)).await;
         }
@@ -469,27 +469,26 @@ fn from_redis_key(key: &str) -> (String, Arc<QueueTask>) {
 
 impl RedisQueueInner {
     async fn send_immedietly(&self, task: Arc<QueueTask>) -> Result<()> {
-        let mut pool = ctx!(self.pool.get().await)?;
+        let mut pool = self.pool.get().await?;
 
-        let _: () = ctx!(
-            pool.query_async(Cmd::xadd(
+        let _: () = pool
+            .query_async(Cmd::xadd(
                 &self.main_queue_name,
                 GENERATE_STREAM_ID,
                 &[(
                     QUEUE_KV_KEY,
                     serde_json::to_string(&task)
-                        .map_err(|e| err_generic!("serialization error: {}", e))?,
+                        .map_err(|e| Error::generic(format!("serialization error: {}", e)))?,
                 )],
             ))
-            .await
-        )?;
+            .await?;
 
         Ok(())
     }
 
     /// ACKing the delivery, XACKs the message in the queue so it will no longer be retried
     pub(super) async fn ack(&self, delivery: &TaskQueueDelivery) -> Result<()> {
-        let mut pool = ctx!(self.pool.get().await)?;
+        let mut pool = self.pool.get().await?;
 
         let mut pipe = redis::pipe();
 
@@ -500,7 +499,7 @@ impl RedisQueueInner {
         ))
         .add_command(Cmd::xdel(&self.main_queue_name, &[delivery.id.as_str()]));
 
-        let (processed, deleted): (u8, u8) = ctx!(pool.query_async_pipeline(pipe).await)?;
+        let (processed, deleted): (u8, u8) = pool.query_async_pipeline(pipe).await?;
         if processed != 1 || deleted != 1 {
             tracing::warn!(
                 "Expected to remove 1 from the list, acked {}, deleted {}, for {}|{}",
@@ -508,7 +507,7 @@ impl RedisQueueInner {
                 deleted,
                 delivery.id,
                 serde_json::to_string(&delivery.task)
-                    .map_err(|e| err_generic!("serialization error: {}", e))?
+                    .map_err(|e| Error::generic(format!("serialization error: {}", e)))?
             );
         }
 
@@ -528,7 +527,7 @@ impl TaskQueueSend for RedisQueueProducer {
         let timestamp = if let Some(delay) = delay {
             Utc::now()
                 + chrono::Duration::from_std(delay)
-                    .map_err(|_| err_generic!("Duration out of bounds"))?
+                    .map_err(|_| Error::generic("Duration out of bounds"))?
         } else {
             tracing::trace!("RedisQueue: event sent (no delay)");
             return self.inner.send_immedietly(task).await;
@@ -536,7 +535,7 @@ impl TaskQueueSend for RedisQueueProducer {
 
         // If there's a delay, add it to the DELAYED queue by ZADDING the Redis-key-ified
         // delivery
-        let mut pool = ctx!(self.inner.pool.get().await)?;
+        let mut pool = self.inner.pool.get().await?;
         let delivery = TaskQueueDelivery::from_arc(
             task.clone(),
             Some(timestamp),
@@ -544,10 +543,9 @@ impl TaskQueueSend for RedisQueueProducer {
         );
         let key = to_redis_key(&delivery);
         let delayed_queue_name: &str = &self.delayed_queue_name;
-        let _: () = ctx!(
-            pool.zadd(delayed_queue_name, key, timestamp.timestamp())
-                .await
-        )?;
+        let _: () = pool
+            .zadd(delayed_queue_name, key, timestamp.timestamp())
+            .await?;
 
         tracing::trace!("RedisQueue: event sent > (delay: {:?})", delay);
         Ok(())
@@ -563,12 +561,12 @@ impl TaskQueueReceive for RedisQueueConsumer {
         let consumer = self.clone();
         tokio::spawn(async move {
             // TODO: Receive messages in batches so it's not always a Vec with one member
-            let mut pool = ctx!(consumer.0.pool.get().await)?;
+            let mut pool = consumer.0.pool.get().await?;
 
             // There is no way to make it await a message for unbounded times, so simply block for a short
             // amount of time (to avoid locking) and loop if no messages were retreived
-            let resp: StreamReadReply = ctx!(
-                pool.query_async(Cmd::xread_options(
+            let resp: StreamReadReply = pool
+                .query_async(Cmd::xread_options(
                     &[&consumer.0.main_queue_name],
                     &[LISTEN_STREAM_ID],
                     &StreamReadOptions::default()
@@ -576,8 +574,7 @@ impl TaskQueueReceive for RedisQueueConsumer {
                         .count(1)
                         .block(10_000),
                 ))
-                .await
-            )?;
+                .await?;
 
             if !resp.keys.is_empty() && !resp.keys[0].ids.is_empty() {
                 let element = &resp.keys[0].ids[0];
@@ -602,7 +599,7 @@ impl TaskQueueReceive for RedisQueueConsumer {
             }
         })
         .await
-        .map_err(|e| err_generic!("task join error {}", e))?
+        .map_err(|e| Error::generic(format!("task join error {}", e)))?
     }
 }
 
@@ -620,8 +617,9 @@ async fn migrate_list_to_stream(
 ) -> Result<()> {
     let batch_size = 1000;
     loop {
-        let legacy_keys: Vec<String> =
-            ctx!(pool.lpop(legacy_queue, NonZeroUsize::new(batch_size)).await)?;
+        let legacy_keys: Vec<String> = pool
+            .lpop(legacy_queue, NonZeroUsize::new(batch_size))
+            .await?;
         if legacy_keys.is_empty() {
             break Ok(());
         }
@@ -641,7 +639,7 @@ async fn migrate_list_to_stream(
             );
         }
 
-        let _: () = ctx!(pool.query_async_pipeline(pipe).await)?;
+        let _: () = pool.query_async_pipeline(pipe).await?;
     }
 }
 
@@ -661,8 +659,9 @@ async fn migrate_list(
     let batch_size = 1000;
     loop {
         // Checking for old messages from queue
-        let legacy_keys: Vec<String> =
-            ctx!(pool.lpop(legacy_queue, NonZeroUsize::new(batch_size)).await)?;
+        let legacy_keys: Vec<String> = pool
+            .lpop(legacy_queue, NonZeroUsize::new(batch_size))
+            .await?;
         if legacy_keys.is_empty() {
             break Ok(());
         }
@@ -671,7 +670,7 @@ async fn migrate_list(
             legacy_keys.len(),
             legacy_queue
         );
-        let _: () = ctx!(pool.rpush(queue, legacy_keys).await)?;
+        let _: () = pool.rpush(queue, legacy_keys).await?;
     }
 }
 
@@ -683,7 +682,7 @@ async fn migrate_sset(
     let batch_size = 1000;
     loop {
         // Checking for old messages from LEGACY_DELAYED
-        let legacy_keys: Vec<(String, f64)> = ctx!(pool.zpopmin(legacy_queue, batch_size).await)?;
+        let legacy_keys: Vec<(String, f64)> = pool.zpopmin(legacy_queue, batch_size).await?;
 
         if legacy_keys.is_empty() {
             break Ok(());
@@ -696,7 +695,7 @@ async fn migrate_sset(
         let legacy_keys: Vec<(f64, String)> =
             legacy_keys.into_iter().map(|(x, y)| (y, x)).collect();
 
-        let _: () = ctx!(pool.zadd_multiple(queue, &legacy_keys).await)?;
+        let _: () = pool.zadd_multiple(queue, &legacy_keys).await?;
     }
 }
 

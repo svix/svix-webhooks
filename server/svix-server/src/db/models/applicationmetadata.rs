@@ -3,7 +3,7 @@
 use crate::core::types::ApplicationId;
 
 use crate::core::types::metadata::Metadata;
-use crate::{ctx, error};
+use crate::error;
 use chrono::Utc;
 use sea_orm::entity::prelude::*;
 use sea_orm::sea_query::OnConflict;
@@ -80,12 +80,12 @@ impl ActiveModel {
         let data = self.data.clone().take().unwrap_or_default();
 
         if data.is_empty() {
-            let model = ctx!(self.clone().try_into_model())?;
-            ctx!(self.delete(db).await)?;
+            let model = self.clone().try_into_model()?;
+            self.delete(db).await?;
             return Ok(model);
         }
 
-        ctx!(Entity::upsert(self).exec_with_returning(db).await)
+        Ok(Entity::upsert(self).exec_with_returning(db).await?)
     }
 }
 

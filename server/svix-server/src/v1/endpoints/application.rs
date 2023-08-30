@@ -1,15 +1,14 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
+use crate::error::Traceable;
 use crate::{
     core::{
         permissions,
         types::{metadata::Metadata, ApplicationId, ApplicationUid},
     },
-    ctx,
     db::models::{application, applicationmetadata},
     error::{http_error_on_conflict, HttpError, Result},
-    transaction,
     v1::utils::{
         apply_pagination, openapi_tag,
         patch::{
@@ -32,9 +31,10 @@ use axum::{
     Json,
 };
 use chrono::{DateTime, Utc};
+use futures::FutureExt;
 use schemars::JsonSchema;
-use sea_orm::ActiveModelTrait;
 use sea_orm::ActiveValue::Set;
+use sea_orm::{ActiveModelTrait, TransactionTrait};
 use serde::{Deserialize, Serialize};
 use svix_server_derive::{aide_annotate, ModelOut};
 use validator::{Validate, ValidationError};
@@ -214,19 +214,18 @@ async fn list_applications(
         pagination.order.unwrap_or(Ordering::Ascending),
     );
 
-    let results: Vec<ApplicationOut> = ctx!(
-        query
-            .find_also_related(applicationmetadata::Entity)
-            .all(db)
-            .await
-    )?
-    .into_iter()
-    .map(|(app, metadata)| {
-        let metadata = metadata.unwrap_or_else(|| applicationmetadata::Model::new(app.id.clone()));
-        (app, metadata)
-    })
-    .map(ApplicationOut::from)
-    .collect();
+    let results: Vec<ApplicationOut> = query
+        .find_also_related(applicationmetadata::Entity)
+        .all(db)
+        .await?
+        .into_iter()
+        .map(|(app, metadata)| {
+            let metadata =
+                metadata.unwrap_or_else(|| applicationmetadata::Model::new(app.id.clone()));
+            (app, metadata)
+        })
+        .map(ApplicationOut::from)
+        .collect();
 
     Ok(Json(ApplicationOut::list_response(
         results,
@@ -255,9 +254,11 @@ async fn create_application(
     ValidatedJson(data): ValidatedJson<ApplicationIn>,
 ) -> Result<JsonStatusUpsert<ApplicationOut>> {
     if let Some(ref uid) = data.uid {
-        if let Some((app, metadata)) = ctx!(
-            application::Model::fetch_with_metadata(db, org_id.clone(), uid.clone().into()).await
-        )? {
+        if let Some((app, metadata)) =
+            application::Model::fetch_with_metadata(db, org_id.clone(), uid.clone().into())
+                .await
+                .trace()?
+        {
             if query.get_if_exists {
                 // Technically not updated, but it fits.
                 return Ok(JsonStatusUpsert::Updated((app, metadata).into()));
@@ -277,11 +278,16 @@ async fn create_application(
     data.update_model(&mut model);
     let (app, metadata) = model;
 
-    let (app, metadata) = transaction!(db, |txn| async move {
-        let app_result = ctx!(app.insert(txn).await.map_err(http_error_on_conflict))?;
-        let metadata = ctx!(metadata.upsert_or_delete(txn).await)?;
-        Ok((app_result, metadata))
-    })?;
+    let (app, metadata) = db
+        .transaction(|txn| {
+            async move {
+                let app_result = app.insert(txn).await.map_err(http_error_on_conflict)?;
+                let metadata = metadata.upsert_or_delete(txn).await.trace()?;
+                Ok((app_result, metadata))
+            }
+            .boxed()
+        })
+        .await?;
 
     Ok(JsonStatusUpsert::Created((app, metadata).into()))
 }
@@ -303,7 +309,9 @@ async fn update_application(
     ValidatedJson(data): ValidatedJson<ApplicationIn>,
 ) -> Result<JsonStatusUpsert<ApplicationOut>> {
     let (app, metadata, create_models) = if let Some((app, metadata)) =
-        ctx!(application::Model::fetch_with_metadata(db, org_id.clone(), app_id).await)?
+        application::Model::fetch_with_metadata(db, org_id.clone(), app_id)
+            .await
+            .trace()?
     {
         (app.into(), metadata.into(), false)
     } else {
@@ -316,15 +324,20 @@ async fn update_application(
     data.update_model(&mut models);
     let (app, metadata) = models;
 
-    let (app, metadata) = transaction!(db, |txn| async move {
-        let app = if create_models {
-            ctx!(app.insert(txn).await.map_err(http_error_on_conflict))?
-        } else {
-            ctx!(app.update(txn).await.map_err(http_error_on_conflict))?
-        };
-        let metadata = ctx!(metadata.upsert_or_delete(txn).await)?;
-        Ok((app, metadata))
-    })?;
+    let (app, metadata) = db
+        .transaction(|txn| {
+            async move {
+                let app = if create_models {
+                    app.insert(txn).await.map_err(http_error_on_conflict)?
+                } else {
+                    app.update(txn).await.map_err(http_error_on_conflict)?
+                };
+                let metadata = metadata.upsert_or_delete(txn).await?;
+                Ok((app, metadata))
+            }
+            .boxed()
+        })
+        .await?;
 
     if create_models {
         Ok(JsonStatusUpsert::Created((app, metadata).into()))
@@ -340,18 +353,23 @@ async fn patch_application(
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
     ValidatedJson(data): ValidatedJson<ApplicationPatch>,
 ) -> Result<Json<ApplicationOut>> {
-    let metadata = ctx!(app.fetch_or_create_metadata(db).await)?;
+    let metadata = app.fetch_or_create_metadata(db).await.trace()?;
     let app: application::ActiveModel = app.into();
 
     let mut model = (app, metadata);
     data.update_model(&mut model);
     let (app, metadata) = model;
 
-    let (app, metadata) = transaction!(db, |txn| async move {
-        let app = ctx!(app.update(txn).await.map_err(http_error_on_conflict))?;
-        let metadata = ctx!(metadata.upsert_or_delete(txn).await)?;
-        Ok((app, metadata))
-    })?;
+    let (app, metadata) = db
+        .transaction(|txn| {
+            async move {
+                let app = app.update(txn).await.map_err(http_error_on_conflict)?;
+                let metadata = metadata.upsert_or_delete(txn).await.trace()?;
+                Ok((app, metadata))
+            }
+            .boxed()
+        })
+        .await?;
 
     Ok(Json((app, metadata).into()))
 }
@@ -365,7 +383,7 @@ async fn delete_application(
     let mut app: application::ActiveModel = app.into();
     app.deleted = Set(true);
     app.uid = Set(None); // We don't want deleted UIDs to clash
-    ctx!(app.update(db).await)?;
+    app.update(db).await?;
     Ok(NoContent)
 }
 

@@ -16,9 +16,8 @@ use validator::Validate;
 
 use crate::error::Error;
 use crate::{
-    ctx,
     error::{HttpError, Result},
-    location, AppState,
+    AppState,
 };
 
 use super::types::{ApplicationId, FeatureFlagSet, OrganizationId};
@@ -77,7 +76,9 @@ pub const JWT_SECRET_ERR : &str = "Authentication failed. JWT signing secrets ca
 
 pub async fn permissions_from_bearer(parts: &mut Parts, state: &AppState) -> Result<Permissions> {
     let TypedHeader(Authorization(bearer)) =
-        ctx!(TypedHeader::<Authorization<Bearer>>::from_request_parts(parts, state).await)?;
+        TypedHeader::<Authorization<Bearer>>::from_request_parts(parts, state)
+            .await
+            .map_err(|_| HttpError::unauthorized(None, Some("Invalid token".to_string())))?;
 
     let claims =
         parse_bearer(&state.cfg.jwt_signing_config, &bearer).ok_or_else(|| {
@@ -177,9 +178,7 @@ pub fn generate_org_token(
     .with_issuer(JWT_ISSUER)
     .with_subject(org_id.0);
 
-    signing_config
-        .generate(claims)
-        .map_err(|e| Error::generic(e, location!()))
+    signing_config.generate(claims).map_err(Error::generic)
 }
 
 pub fn generate_management_token(signing_config: &JwtSigningConfig) -> Result<String> {
@@ -193,9 +192,7 @@ pub fn generate_management_token(signing_config: &JwtSigningConfig) -> Result<St
     .with_issuer(JWT_ISSUER)
     .with_subject(management_org_id());
 
-    signing_config
-        .generate(claims)
-        .map_err(|e| Error::generic(e, location!()))
+    signing_config.generate(claims).map_err(Error::generic)
 }
 
 pub fn generate_app_token(
@@ -214,8 +211,7 @@ pub fn generate_app_token(
     .with_issuer(JWT_ISSUER)
     .with_subject(app_id.0);
 
-    keys.generate(claims)
-        .map_err(|e| Error::generic(e, location!()))
+    keys.generate(claims).map_err(Error::generic)
 }
 #[derive(Deserialize)]
 #[serde(untagged)]

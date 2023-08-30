@@ -15,7 +15,6 @@ use crate::{
             EventChannelSet, EventTypeName, EventTypeNameSet, MessageEndpointId, MessageStatus,
         },
     },
-    ctx,
     db::models::{eventtype, messagedestination},
     error::{self, HttpError},
     v1::utils::{
@@ -717,26 +716,24 @@ async fn endpoint_stats(
 ) -> error::Result<Json<EndpointStatsOut>> {
     let (since, until) = range.validate_unwrap_or_default()?;
 
-    let endpoint = ctx!(
+    let endpoint =
         crate::db::models::endpoint::Entity::secure_find_by_id_or_uid(app.id, endpoint_id)
             .one(db)
-            .await
-    )?
-    .ok_or_else(|| HttpError::not_found(None, None))?
-    .id;
+            .await?
+            .ok_or_else(|| HttpError::not_found(None, None))?
+            .id;
 
-    let query_out: Vec<EndpointStatsQueryOut> = ctx!(
+    let query_out: Vec<EndpointStatsQueryOut> =
         messagedestination::Entity::secure_find_by_endpoint(endpoint)
             .select_only()
             .column(messagedestination::Column::Status)
             .column_as(messagedestination::Column::Status.count(), "count")
             .group_by(messagedestination::Column::Status)
-            .filter(messagedestination::Column::Id.gte(MessageEndpointId::start_id(since)),)
-            .filter(messagedestination::Column::Id.lte(MessageEndpointId::start_id(until)),)
+            .filter(messagedestination::Column::Id.gte(MessageEndpointId::start_id(since)))
+            .filter(messagedestination::Column::Id.lte(MessageEndpointId::start_id(until)))
             .into_model::<EndpointStatsQueryOut>()
             .all(db)
-            .await
-    )?;
+            .await?;
     let mut query_out = query_out
         .into_iter()
         .map(|EndpointStatsQueryOut { status, count }| (status, count))
@@ -777,22 +774,19 @@ async fn send_example(
         ..
     }) = state;
 
-    let endpoint = ctx!(
-        endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endpoint_id)
-            .one(db)
-            .await
-    )?
-    .ok_or_else(|| HttpError::not_found(None, None))?;
+    let endpoint = endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endpoint_id)
+        .one(db)
+        .await?
+        .ok_or_else(|| HttpError::not_found(None, None))?;
 
     let example = if data.event_type == EventTypeName(SVIX_PING_EVENT_TYPE_NAME.to_owned()) {
         SVIX_PING_EVENT_TYPE_PAYLOAD.to_string()
     } else {
-        let event_type = ctx!(
+        let event_type =
             eventtype::Entity::secure_find_by_name(app.org_id.clone(), data.event_type.clone())
                 .one(db)
-                .await
-        )?
-        .ok_or_else(|| HttpError::not_found(None, None))?;
+                .await?
+                .ok_or_else(|| HttpError::not_found(None, None))?;
 
         let example = event_type.schemas.and_then(|schema| {
             schema

@@ -5,8 +5,8 @@ use axum::{
     http::request::Parts,
 };
 
+use crate::error::Traceable;
 use crate::{
-    ctx,
     db::models::{application, applicationmetadata},
     error::{Error, HttpError, Result},
     AppState,
@@ -27,7 +27,7 @@ impl FromRequestParts<AppState> for ReadAll {
     type Rejection = Error;
 
     async fn from_request_parts(parts: &mut Parts, state: &AppState) -> Result<Self> {
-        let permissions = ctx!(permissions_from_bearer(parts, state).await)?;
+        let permissions = permissions_from_bearer(parts, state).await?;
         let org_id = permissions.org_id();
         let feature_flags = match permissions.access_level {
             AccessLevel::Organization(_) => AllowedFeatureFlags::All,
@@ -87,13 +87,12 @@ impl FromRequestParts<AppState> for Application {
         let permissions = permissions_from_bearer(parts, state).await?;
 
         let Path(ApplicationPathParams { app_id }) =
-            ctx!(Path::<ApplicationPathParams>::from_request_parts(parts, state).await)?;
-        let app = ctx!(
-            application::Entity::secure_find_by_id_or_uid(permissions.org_id(), app_id.to_owned(),)
+            Path::<ApplicationPathParams>::from_request_parts(parts, state).await?;
+        let app =
+            application::Entity::secure_find_by_id_or_uid(permissions.org_id(), app_id.to_owned())
                 .one(&state.db)
-                .await
-        )?
-        .ok_or_else(|| HttpError::not_found(None, None))?;
+                .await?
+                .ok_or_else(|| HttpError::not_found(None, None))?;
 
         permissions.check_app_is_permitted(&app.id)?;
 
@@ -115,16 +114,16 @@ impl FromRequestParts<AppState> for OrganizationWithApplication {
     type Rejection = Error;
 
     async fn from_request_parts(parts: &mut Parts, state: &AppState) -> Result<Self> {
-        let Organization { org_id } = ctx!(Organization::from_request_parts(parts, state).await)?;
+        let Organization { org_id } = Organization::from_request_parts(parts, state)
+            .await
+            .trace()?;
 
         let Path(ApplicationPathParams { app_id }) =
-            ctx!(Path::<ApplicationPathParams>::from_request_parts(parts, state).await)?;
-        let app = ctx!(
-            application::Entity::secure_find_by_id_or_uid(org_id, app_id.to_owned(),)
-                .one(&state.db)
-                .await
-        )?
-        .ok_or_else(|| HttpError::not_found(None, None))?;
+            Path::<ApplicationPathParams>::from_request_parts(parts, state).await?;
+        let app = application::Entity::secure_find_by_id_or_uid(org_id, app_id.to_owned())
+            .one(&state.db)
+            .await?
+            .ok_or_else(|| HttpError::not_found(None, None))?;
         Ok(OrganizationWithApplication { app })
     }
 }
@@ -144,15 +143,14 @@ impl FromRequestParts<AppState> for ApplicationWithMetadata {
         let permissions = permissions_from_bearer(parts, state).await?;
 
         let Path(ApplicationPathParams { app_id }) =
-            ctx!(Path::<ApplicationPathParams>::from_request_parts(parts, state).await)?;
-        let (app, metadata) = ctx!(
-            application::Model::fetch_with_metadata(
-                &state.db,
-                permissions.org_id(),
-                app_id.to_owned()
-            )
-            .await
-        )?
+            Path::<ApplicationPathParams>::from_request_parts(parts, state).await?;
+        let (app, metadata) = application::Model::fetch_with_metadata(
+            &state.db,
+            permissions.org_id(),
+            app_id.to_owned(),
+        )
+        .await
+        .trace()?
         .ok_or_else(|| HttpError::not_found(None, None))?;
 
         permissions.check_app_is_permitted(&app.id)?;

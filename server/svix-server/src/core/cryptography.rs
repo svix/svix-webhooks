@@ -8,7 +8,6 @@ use chacha20poly1305::{Key, XChaCha20Poly1305, XNonce};
 use ed25519_compact::*;
 use rand::Rng;
 
-use crate::err_generic;
 use crate::error::Result;
 
 // Asymmetric Signature keys
@@ -21,13 +20,14 @@ impl AsymmetricKey {
     }
 
     pub fn from_slice(bytes: &[u8]) -> Result<Self> {
-        Ok(AsymmetricKey(
-            KeyPair::from_slice(bytes).map_err(|_| err_generic!("Failed parsing key."))?,
-        ))
+        Ok(AsymmetricKey(KeyPair::from_slice(bytes).map_err(|_| {
+            crate::error::Error::generic("Failed parsing key.")
+        })?))
     }
 
     pub fn from_base64(b64: &str) -> Result<Self> {
-        let bytes = base64::decode(b64).map_err(|_| err_generic!("Failed parsing base64"))?;
+        let bytes = base64::decode(b64)
+            .map_err(|_| crate::error::Error::generic("Failed parsing base64"))?;
 
         Self::from_slice(bytes.as_slice())
     }
@@ -67,14 +67,14 @@ impl Encryption {
         Self(Some(Key::from_slice(&key).to_owned()))
     }
 
-    pub fn encrypt(&self, data: &[u8]) -> crate::error::Result<Vec<u8>> {
+    pub fn encrypt(&self, data: &[u8]) -> Result<Vec<u8>> {
         if let Some(main_key) = self.0.as_ref() {
             let cipher = XChaCha20Poly1305::new(main_key);
             let nonce: [u8; Self::NONCE_SIZE] = rand::thread_rng().gen();
             let nonce = XNonce::from_slice(&nonce);
             let mut ciphertext = cipher
                 .encrypt(nonce, data)
-                .map_err(|_| err_generic!("Encryption failed"))?;
+                .map_err(|_| crate::error::Error::generic("Encryption failed"))?;
             let mut ret = nonce.to_vec();
             ret.append(&mut ciphertext);
             Ok(ret)
@@ -83,14 +83,14 @@ impl Encryption {
         }
     }
 
-    pub fn decrypt(&self, ciphertext: &[u8]) -> crate::error::Result<Vec<u8>> {
+    pub fn decrypt(&self, ciphertext: &[u8]) -> Result<Vec<u8>> {
         if let Some(main_key) = self.0.as_ref() {
             let cipher = XChaCha20Poly1305::new(main_key);
             let nonce = &ciphertext[..Self::NONCE_SIZE];
             let ciphertext = &ciphertext[Self::NONCE_SIZE..];
             cipher
                 .decrypt(XNonce::from_slice(nonce), ciphertext)
-                .map_err(|_| err_generic!("Encryption failed"))
+                .map_err(|_| crate::error::Error::generic("Encryption failed"))
         } else {
             Ok(ciphertext.to_vec())
         }

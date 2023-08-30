@@ -12,9 +12,7 @@ use crate::{
             StatusCodeClass,
         },
     },
-    ctx,
     db::models::{endpoint, message, messagedestination},
-    err_database,
     error::{Error, HttpError, Result},
     queue::MessageTask,
     v1::{
@@ -197,12 +195,10 @@ async fn list_attempted_messages(
     EventTypesQueryParams(event_types): EventTypesQueryParams,
 ) -> Result<Json<ListResponse<EndpointMessageOut>>> {
     let PaginationLimit(limit) = pagination.limit;
-    let endp = ctx!(
-        endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endpoint_id)
-            .one(db)
-            .await
-    )?
-    .ok_or_else(|| HttpError::not_found(None, None))?;
+    let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endpoint_id)
+        .one(db)
+        .await?
+        .ok_or_else(|| HttpError::not_found(None, None))?;
 
     let mut dests_and_msgs = messagedestination::Entity::secure_find_by_endpoint(endp.id)
         .find_also_related(message::Entity);
@@ -224,13 +220,11 @@ async fn list_attempted_messages(
         db: &DatabaseConnection,
         msg_id: MessageId,
     ) -> Result<MessageEndpointId> {
-        Ok(ctx!(
-            messagedestination::Entity::secure_find_by_msg(msg_id)
-                .one(db)
-                .await
-        )?
-        .ok_or_else(|| HttpError::bad_request(None, Some("Invalid iterator".to_owned())))?
-        .id)
+        Ok(messagedestination::Entity::secure_find_by_msg(msg_id)
+            .one(db)
+            .await?
+            .ok_or_else(|| HttpError::bad_request(None, Some("Invalid iterator".to_owned())))?
+            .id)
     }
 
     let msg_dest_iterator = match pagination.iterator {
@@ -254,7 +248,7 @@ async fn list_attempted_messages(
 
     let into = |(dest, msg): (messagedestination::Model, Option<message::Model>)| {
         let msg =
-            msg.ok_or_else(|| err_database!("No associated message with messagedestination"))?;
+            msg.ok_or_else(|| Error::database("No associated message with messagedestination"))?;
         Ok(EndpointMessageOut::from_dest_and_msg(
             dest,
             msg,
@@ -262,7 +256,9 @@ async fn list_attempted_messages(
         ))
     };
 
-    let out = ctx!(dests_and_msgs.all(db).await)?
+    let out = dests_and_msgs
+        .all(db)
+        .await?
         .into_iter()
         .map(into)
         .collect::<Result<_>>()?;
@@ -381,12 +377,10 @@ async fn list_attempts_by_endpoint(
 ) -> Result<Json<ListResponse<MessageAttemptOut>>> {
     let PaginationLimit(limit) = pagination.limit;
     // Confirm endpoint ID belongs to the given application
-    let endp = ctx!(
-        endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endpoint_id)
-            .one(db)
-            .await
-    )?
-    .ok_or_else(|| HttpError::not_found(None, None))?;
+    let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endpoint_id)
+        .one(db)
+        .await?
+        .ok_or_else(|| HttpError::not_found(None, None))?;
 
     let query = list_attempts_by_endpoint_or_message_filters(
         messageattempt::Entity::secure_find_by_endpoint(endp.id),
@@ -400,7 +394,9 @@ async fn list_attempts_by_endpoint(
     let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
     let query = apply_pagination_desc(query, messageattempt::Column::Id, limit, iterator);
 
-    let out = ctx!(query.all(db).await)?
+    let out = query
+        .all(db)
+        .await?
         .into_iter()
         .map(|mut attempt| {
             if !with_content {
@@ -463,12 +459,10 @@ async fn list_attempts_by_msg(
 ) -> Result<Json<ListResponse<MessageAttemptOut>>> {
     let PaginationLimit(limit) = pagination.limit;
     // Confirm message ID belongs to the given application
-    let msg = ctx!(
-        message::Entity::secure_find_by_id_or_uid(app.id.clone(), msg_id)
-            .one(db)
-            .await
-    )?
-    .ok_or_else(|| HttpError::not_found(None, None))?;
+    let msg = message::Entity::secure_find_by_id_or_uid(app.id.clone(), msg_id)
+        .one(db)
+        .await?
+        .ok_or_else(|| HttpError::not_found(None, None))?;
 
     let mut query = list_attempts_by_endpoint_or_message_filters(
         messageattempt::Entity::secure_find_by_msg(msg.id),
@@ -480,11 +474,10 @@ async fn list_attempts_by_msg(
 
     if let Some(endpoint_id) = endpoint_id {
         // Ensure the endpoint ID/UID belongs to the given application
-        if let Some(endp) = ctx!(
-            endpoint::Entity::secure_find_by_id_or_uid(app.id, endpoint_id)
-                .one(db)
-                .await
-        )? {
+        if let Some(endp) = endpoint::Entity::secure_find_by_id_or_uid(app.id, endpoint_id)
+            .one(db)
+            .await?
+        {
             // And filter by its ID incase a UID was used
             query = query.filter(messageattempt::Column::EndpId.eq(endp.id));
         } else {
@@ -495,7 +488,9 @@ async fn list_attempts_by_msg(
     let iterator = iterator_from_before_or_after(pagination.iterator, before, after);
     let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
     let query = apply_pagination_desc(query, messageattempt::Column::Id, limit, iterator);
-    let out = ctx!(query.all(db).await)?
+    let out = query
+        .all(db)
+        .await?
         .into_iter()
         .map(|mut attempt| {
             if !with_content {
@@ -556,11 +551,11 @@ async fn list_attempted_destinations(
 
     // Confirm message ID belongs to the given application while fetching the ID in case a UID was
     // given
-    let msg_id = if let Some(message) = ctx!(
+    let msg_id = if let Some(message) =
         message::Entity::secure_find_by_id_or_uid(app.id.clone(), msg_id.clone())
             .one(db)
-            .await
-    )? {
+            .await?
+    {
         message.id
     } else {
         return Err(Error::http(HttpError::not_found(None, None)));
@@ -577,12 +572,14 @@ async fn list_attempted_destinations(
     }
 
     Ok(Json(MessageEndpointOut::list_response_no_prev(
-        ctx!(query.all(db).await)?
+        query
+            .all(db)
+            .await?
             .into_iter()
             .map(
                 |(dest, endp): (messagedestination::Model, Option<endpoint::Model>)| {
                     let endp = endp.ok_or_else(|| {
-                        err_database!("No associated endpoint with messagedestination")
+                        Error::database("No associated endpoint with messagedestination")
                     })?;
                     Ok(MessageEndpointOut::from_dest_and_endp(dest, endp))
                 },
@@ -709,22 +706,18 @@ async fn list_messageattempts(
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<ListResponse<MessageAttemptOut>>> {
     let PaginationLimit(limit) = pagination.limit;
-    let msg = ctx!(
-        message::Entity::secure_find_by_id_or_uid(app.id.clone(), msg_id)
-            .one(db)
-            .await
-    )?
-    .ok_or_else(|| HttpError::not_found(None, None))?;
+    let msg = message::Entity::secure_find_by_id_or_uid(app.id.clone(), msg_id)
+        .one(db)
+        .await?
+        .ok_or_else(|| HttpError::not_found(None, None))?;
 
     let mut query = messageattempt::Entity::secure_find_by_msg(msg.id);
 
     if let Some(endpoint_id) = endpoint_id {
-        let endp = ctx!(
-            endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endpoint_id)
-                .one(db)
-                .await
-        )?
-        .ok_or_else(|| HttpError::not_found(None, None))?;
+        let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endpoint_id)
+            .one(db)
+            .await?
+            .ok_or_else(|| HttpError::not_found(None, None))?;
         query = query.filter(messageattempt::Column::EndpId.eq(endp.id))
     }
 
@@ -743,10 +736,7 @@ async fn list_messageattempts(
     let iterator = iterator_from_before_or_after(pagination.iterator, before, after);
     let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
     let query = apply_pagination_desc(query, messageattempt::Column::Id, limit, iterator);
-    let out = ctx!(query.all(db).await)?
-        .into_iter()
-        .map(Into::into)
-        .collect();
+    let out = query.all(db).await?.into_iter().map(Into::into).collect();
 
     Ok(Json(MessageAttemptOut::list_response(
         out,
@@ -764,20 +754,16 @@ async fn get_messageattempt(
     }): Path<ApplicationMsgAttemptPath>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<MessageAttemptOut>> {
-    let msg = ctx!(
-        message::Entity::secure_find_by_id_or_uid(app.id, msg_id)
-            .one(db)
-            .await
-    )?
-    .ok_or_else(|| HttpError::not_found(None, None))?;
+    let msg = message::Entity::secure_find_by_id_or_uid(app.id, msg_id)
+        .one(db)
+        .await?
+        .ok_or_else(|| HttpError::not_found(None, None))?;
 
-    let attempt = ctx!(
-        messageattempt::Entity::secure_find_by_msg(msg.id)
-            .filter(messageattempt::Column::Id.eq(attempt_id))
-            .one(db)
-            .await
-    )?
-    .ok_or_else(|| HttpError::not_found(None, None))?;
+    let attempt = messageattempt::Entity::secure_find_by_msg(msg.id)
+        .filter(messageattempt::Column::Id.eq(attempt_id))
+        .one(db)
+        .await?
+        .ok_or_else(|| HttpError::not_found(None, None))?;
     Ok(Json(attempt.into()))
 }
 
@@ -794,12 +780,10 @@ async fn resend_webhook(
     }): Path<ApplicationMsgEndpointPath>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<NoContentWithCode<202>> {
-    let msg = ctx!(
-        message::Entity::secure_find_by_id_or_uid(app.id.clone(), msg_id)
-            .one(db)
-            .await
-    )?
-    .ok_or_else(|| HttpError::not_found(None, None))?;
+    let msg = message::Entity::secure_find_by_id_or_uid(app.id.clone(), msg_id)
+        .one(db)
+        .await?
+        .ok_or_else(|| HttpError::not_found(None, None))?;
 
     if msg.payload.is_none() {
         return Err(HttpError::bad_request(
@@ -809,21 +793,17 @@ async fn resend_webhook(
         .into());
     }
 
-    let endp = ctx!(
-        endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endpoint_id)
-            .one(db)
-            .await
-    )?
-    .ok_or_else(|| HttpError::not_found(None, None))?;
+    let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endpoint_id)
+        .one(db)
+        .await?
+        .ok_or_else(|| HttpError::not_found(None, None))?;
 
     // Fetch it to make sure it was even a combination
-    let _msg_dest = ctx!(
-        messagedestination::Entity::secure_find_by_msg(msg.id.clone())
-            .filter(messagedestination::Column::EndpId.eq(endp.id.clone()))
-            .one(db)
-            .await
-    )?
-    .ok_or_else(|| HttpError::not_found(None, None))?;
+    let _msg_dest = messagedestination::Entity::secure_find_by_msg(msg.id.clone())
+        .filter(messagedestination::Column::EndpId.eq(endp.id.clone()))
+        .one(db)
+        .await?
+        .ok_or_else(|| HttpError::not_found(None, None))?;
 
     queue_tx
         .send(
@@ -848,24 +828,20 @@ async fn expunge_attempt_content(
     }): Path<ApplicationMsgAttemptPath>,
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
 ) -> Result<StatusCode> {
-    let msg = ctx!(
-        message::Entity::secure_find_by_id_or_uid(app.id, msg_id)
-            .one(db)
-            .await
-    )?
-    .ok_or_else(|| HttpError::not_found(None, Some("Message not found".to_string())))?;
+    let msg = message::Entity::secure_find_by_id_or_uid(app.id, msg_id)
+        .one(db)
+        .await?
+        .ok_or_else(|| HttpError::not_found(None, Some("Message not found".to_string())))?;
 
-    let mut attempt = ctx!(
-        messageattempt::Entity::secure_find_by_msg(msg.id)
-            .filter(messageattempt::Column::Id.eq(attempt_id))
-            .one(db)
-            .await
-    )?
-    .ok_or_else(|| HttpError::not_found(None, Some("Message attempt not found".to_string())))?
-    .into_active_model();
+    let mut attempt = messageattempt::Entity::secure_find_by_msg(msg.id)
+        .filter(messageattempt::Column::Id.eq(attempt_id))
+        .one(db)
+        .await?
+        .ok_or_else(|| HttpError::not_found(None, Some("Message attempt not found".to_string())))?
+        .into_active_model();
 
     attempt.response = sea_orm::Set("EXPUNGED".to_string());
-    ctx!(attempt.update(db).await)?;
+    attempt.update(db).await?;
 
     Ok(StatusCode::NO_CONTENT)
 }

@@ -22,7 +22,7 @@ use serde::{Deserialize, Serialize};
 use tower::Service;
 
 use super::cache::{kv_def, Cache, CacheBehavior, CacheKey, CacheValue};
-use crate::{err_database, error::Error};
+use crate::error::Error;
 
 /// Returns the default exipry period for cached responses
 const fn expiry_default() -> Duration {
@@ -287,7 +287,7 @@ async fn lock_loop(
             // Start value has expired
             Ok(None) => return Ok(None),
 
-            Err(e) => return Err(err_database!("{e:?}")),
+            Err(e) => return Err(Error::database(format!("{e:?}"))),
         }
     }
 }

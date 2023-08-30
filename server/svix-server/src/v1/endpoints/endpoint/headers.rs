@@ -8,7 +8,6 @@ use svix_server_derive::aide_annotate;
 use super::{EndpointHeadersIn, EndpointHeadersOut, EndpointHeadersPatchIn};
 use crate::{
     core::permissions,
-    ctx,
     db::models::endpoint,
     error::{HttpError, Result},
     v1::utils::{ApplicationEndpointPath, ModelIn, NoContent, ValidatedJson},
@@ -22,12 +21,10 @@ pub(super) async fn get_endpoint_headers(
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<EndpointHeadersOut>> {
-    let endp = ctx!(
-        endpoint::Entity::secure_find_by_id_or_uid(app.id, endpoint_id)
-            .one(db)
-            .await
-    )?
-    .ok_or_else(|| HttpError::not_found(None, None))?;
+    let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id, endpoint_id)
+        .one(db)
+        .await?
+        .ok_or_else(|| HttpError::not_found(None, None))?;
 
     match endp.headers {
         Some(h) => Ok(Json(h.into())),
@@ -43,16 +40,14 @@ pub(super) async fn update_endpoint_headers(
     permissions::Application { app }: permissions::Application,
     ValidatedJson(data): ValidatedJson<EndpointHeadersIn>,
 ) -> Result<NoContent> {
-    let endp = ctx!(
-        endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endpoint_id)
-            .one(db)
-            .await
-    )?
-    .ok_or_else(|| HttpError::not_found(None, None))?;
+    let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endpoint_id)
+        .one(db)
+        .await?
+        .ok_or_else(|| HttpError::not_found(None, None))?;
 
     let mut endp: endpoint::ActiveModel = endp.into();
     data.update_model(&mut endp);
-    ctx!(endp.update(db).await)?;
+    endp.update(db).await?;
 
     Ok(NoContent)
 }
@@ -65,16 +60,14 @@ pub(super) async fn patch_endpoint_headers(
     permissions::Application { app }: permissions::Application,
     ValidatedJson(data): ValidatedJson<EndpointHeadersPatchIn>,
 ) -> Result<NoContent> {
-    let endp = ctx!(
-        endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endpoint_id)
-            .one(db)
-            .await
-    )?
-    .ok_or_else(|| HttpError::not_found(None, None))?;
+    let endp = endpoint::Entity::secure_find_by_id_or_uid(app.id.clone(), endpoint_id)
+        .one(db)
+        .await?
+        .ok_or_else(|| HttpError::not_found(None, None))?;
 
     let mut endp: endpoint::ActiveModel = endp.into();
     data.update_model(&mut endp);
-    ctx!(endp.update(db).await)?;
+    endp.update(db).await?;
 
     Ok(NoContent)
 }

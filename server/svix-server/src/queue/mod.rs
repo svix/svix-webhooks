@@ -7,13 +7,13 @@ use serde::{Deserialize, Serialize};
 use strum::Display;
 use svix_ksuid::*;
 
+use crate::error::Traceable;
 use crate::{
     cfg::{Configuration, QueueBackend},
     core::{
         run_with_retries::run_with_retries,
         types::{ApplicationId, EndpointId, MessageAttemptTriggerType, MessageId},
     },
-    ctx,
     error::{Error, ErrorType, Result},
 };
 
@@ -157,9 +157,9 @@ pub enum TaskQueueConsumer {
 impl TaskQueueConsumer {
     pub async fn receive_all(&mut self) -> Result<Vec<TaskQueueDelivery>> {
         match self {
-            TaskQueueConsumer::Redis(q) => ctx!(q.receive_all().await),
-            TaskQueueConsumer::Memory(q) => ctx!(q.receive_all().await),
-            TaskQueueConsumer::RabbitMq(q) => ctx!(q.receive_all().await),
+            TaskQueueConsumer::Redis(q) => q.receive_all().await.trace(),
+            TaskQueueConsumer::Memory(q) => q.receive_all().await.trace(),
+            TaskQueueConsumer::RabbitMq(q) => q.receive_all().await.trace(),
         }
     }
 }
@@ -196,17 +196,14 @@ impl TaskQueueDelivery {
             || async {
                 match &self.acker {
                     Acker::Memory(_) => Ok(()), // nothing to do
-                    Acker::Redis(q) => {
-                        ctx!(q.ack(&self).await)
-                    }
+                    Acker::Redis(q) => q.ack(&self).await.trace(),
                     Acker::RabbitMQ(delivery) => {
-                        ctx!(
-                            delivery
-                                .ack(BasicAckOptions {
-                                    multiple: false // Only ack this message, not others
-                                })
-                                .await
-                        )
+                        delivery
+                            .ack(BasicAckOptions {
+                                multiple: false, // Only ack this message, not others
+                            })
+                            .await
+                            .map_err(Into::into)
                     }
                 }
             },
@@ -223,21 +220,19 @@ impl TaskQueueDelivery {
                 match &self.acker {
                     Acker::Memory(q) => {
                         tracing::debug!("nack {}", self.id);
-                        ctx!(q.send(self.task.clone(), None).await)
+                        q.send(self.task.clone(), None).await.trace()
                     }
-                    Acker::Redis(q) => {
-                        ctx!(q.nack(&self).await)
-                    }
+                    Acker::Redis(q) => q.nack(&self).await.trace(),
                     Acker::RabbitMQ(delivery) => {
                         // See https://www.rabbitmq.com/confirms.html#consumer-nacks-requeue
-                        ctx!(
-                            delivery
-                                .nack(BasicNackOptions {
-                                    requeue: true,
-                                    multiple: false // Only nack this message, not others
-                                })
-                                .await
-                        )
+
+                        delivery
+                            .nack(BasicNackOptions {
+                                requeue: true,
+                                multiple: false, // Only nack this message, not others
+                            })
+                            .await
+                            .map_err(Into::into)
                     }
                 }
             },

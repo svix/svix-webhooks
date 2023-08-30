@@ -17,9 +17,7 @@ use crate::{
             OrganizationId,
         },
     },
-    ctx,
     db::models::{application, endpoint},
-    err_validation,
     error::{Error, Result},
 };
 
@@ -44,7 +42,9 @@ impl CreateMessageApp {
         db: &DatabaseTransaction,
         app: application::Model,
     ) -> Result<CreateMessageApp> {
-        let endpoints = ctx!(endpoint::Entity::secure_find(app.id.clone()).all(db).await)?
+        let endpoints = endpoint::Entity::secure_find(app.id.clone())
+            .all(db)
+            .await?
             .into_iter()
             .map(TryInto::try_into)
             .collect::<Result<Vec<_>>>()?;
@@ -57,7 +57,7 @@ impl CreateMessageApp {
                 .rate_limit
                 .map(|v| v.try_into())
                 .transpose()
-                .map_err(|_| err_validation!("Application rate limit out of bounds"))?,
+                .map_err(|_| Error::validation("Application rate limit out of bounds"))?,
             endpoints,
             deleted: app.deleted,
         })
@@ -86,15 +86,14 @@ impl CreateMessageApp {
         }
 
         // Then check PostgreSQL
-        let db = ctx!(pg.begin().await)?;
+        let db = pg.begin().await?;
         // Fetch the [`application::Model`] either given or from the ID
         let app = if let Some(app) = app {
             app
-        } else if let Some(app) = ctx!(
-            application::Entity::secure_find_by_id(org_id, app_id)
-                .one(&db)
-                .await
-        )? {
+        } else if let Some(app) = application::Entity::secure_find_by_id(org_id, app_id)
+            .one(&db)
+            .await?
+        {
             app
         } else {
             return Ok(None);
@@ -200,7 +199,7 @@ impl TryFrom<endpoint::Model> for CreateMessageEndpoint {
                 .rate_limit
                 .map(|v| v.try_into())
                 .transpose()
-                .map_err(|_| err_validation!("Endpoint rate limit out of bounds"))?,
+                .map_err(|_| Error::validation("Endpoint rate limit out of bounds"))?,
             first_failure_at: m.first_failure_at,
             headers: m.headers,
             disabled: m.disabled,

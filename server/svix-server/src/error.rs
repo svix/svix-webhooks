@@ -3,17 +3,14 @@
 
 use std::error;
 use std::fmt;
+use std::panic::Location;
 
 use aide::OperationOutput;
 use axum::extract::rejection::ExtensionRejection;
 use axum::extract::rejection::PathRejection;
-use axum::extract::rejection::TypedHeaderRejection;
-use axum::headers::authorization::Bearer;
-use axum::headers::Authorization;
 use axum::response::IntoResponse;
 use axum::response::Response;
 use axum::Json;
-use axum::TypedHeader;
 use hyper::StatusCode;
 use schemars::JsonSchema;
 use sea_orm::DbErr;
@@ -31,57 +28,71 @@ pub type Result<T> = std::result::Result<T, Error>;
 #[derive(Debug)]
 pub struct Error {
     // the file name and line number of the error. Used for debugging non Http errors
-    pub trace: Vec<&'static str>,
+    pub trace: Vec<&'static Location<'static>>,
     pub typ: ErrorType,
 }
 
 impl Error {
-    pub fn generic(s: impl fmt::Display, location: &'static str) -> Self {
+    #[track_caller]
+    pub fn generic(s: impl fmt::Display) -> Self {
         Self {
-            trace: Self::init_trace(location),
+            trace: vec![Location::caller()],
             typ: ErrorType::Generic(s.to_string()),
         }
     }
 
-    pub fn database(s: impl fmt::Display, location: &'static str) -> Self {
+    #[track_caller]
+    pub fn database(s: impl fmt::Display) -> Self {
         Self {
-            trace: Self::init_trace(location),
+            trace: vec![Location::caller()],
             typ: ErrorType::Database(s.to_string()),
         }
     }
 
-    pub fn queue(s: impl fmt::Display, location: &'static str) -> Self {
+    #[track_caller]
+    pub fn queue(s: impl fmt::Display) -> Self {
         Self {
-            trace: Self::init_trace(location),
+            trace: vec![Location::caller()],
             typ: ErrorType::Queue(s.to_string()),
         }
     }
 
-    pub fn validation(s: impl fmt::Display, location: &'static str) -> Self {
+    #[track_caller]
+    pub fn validation(s: impl fmt::Display) -> Self {
         Self {
-            trace: Self::init_trace(location),
+            trace: vec![Location::caller()],
             typ: ErrorType::Validation(s.to_string()),
         }
     }
 
+    #[track_caller]
     pub fn http(h: HttpError) -> Self {
         Self {
-            trace: vec![], // no debugging necessary
+            trace: Vec::with_capacity(0), // no debugging necessary
             typ: ErrorType::Http(h),
         }
     }
 
-    pub fn cache(s: impl fmt::Display, location: &'static str) -> Self {
+    #[track_caller]
+    pub fn cache(s: impl fmt::Display) -> Self {
         Self {
-            trace: Self::init_trace(location),
+            trace: vec![Location::caller()],
             typ: ErrorType::Cache(s.to_string()),
         }
     }
 
-    fn init_trace(location: &'static str) -> Vec<&'static str> {
-        let mut trace = Vec::with_capacity(10); // somewhat arbitrary capacity, but avoids reallocation when building an error trace later on
-        trace.push(location);
-        trace
+    #[track_caller]
+    pub fn timeout(s: impl fmt::Display) -> Self {
+        Self {
+            trace: vec![Location::caller()],
+            typ: ErrorType::Timeout(s.to_string()),
+        }
+    }
+
+    #[track_caller]
+    pub fn trace(mut self) -> Self {
+        self.trace.push(Location::caller());
+        self
     }
 }
 
@@ -99,13 +110,14 @@ impl error::Error for Error {
 
 impl IntoResponse for Error {
     fn into_response(self) -> Response {
+        let stringified: Vec<String> = self.trace.into_iter().map(ToString::to_string).collect();
         match self.typ {
             ErrorType::Http(s) => {
-                tracing::debug!("{:?}, location: {:?}", &s, &self.trace);
+                tracing::debug!("{:?}, location: {:?}", &s, stringified);
                 s.into_response()
             }
             s => {
-                tracing::error!("type: {:?}, location: {:?}", s, &self.trace);
+                tracing::error!("type: {:?}, location: {:?}", s, stringified);
                 (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({}))).into_response()
             }
         }
@@ -116,128 +128,74 @@ impl OperationOutput for Error {
     type Inner = Self;
 }
 
-/// Returns a [&'static str] of the file.rs:<line_number>.
-#[macro_export]
-macro_rules! location {
-    () => {
-        concat!(file!(), ":", line!())
-    };
-}
-
-// Kind of boilerplatey, but these macros make it much easier to use the Error type with diagnostic information
-
-#[macro_export]
-macro_rules! err_generic {
-   ($($arg:tt)*) => {
-        $crate::error::Error::generic(format!($($arg)*), $crate::location!())
-   }
-}
-
-#[macro_export]
-macro_rules! err_database {
-    ($($arg:tt)*) => {
-        $crate::error::Error::database(format!($($arg)*), $crate::location!())
-   }
-}
-
-#[macro_export]
-macro_rules! err_queue {
-    ($($arg:tt)*) => {
-        $crate::error::Error::queue(format!($($arg)*), $crate::location!())
-   }
-}
-
-#[macro_export]
-macro_rules! err_cache {
-    ($($arg:tt)*) => {
-        $crate::error::Error::cache(format!($($arg)*), $crate::location!())
-   }
-}
-
-#[macro_export]
-macro_rules! err_validation {
-    ($($arg:tt)*) => {
-        $crate::error::Error::validation(format!($($arg)*), $crate::location!())
-   }
-}
-
 pub trait Traceable<T> {
-    fn trace(self, location: &'static str) -> Result<T>;
-}
-
-/// Adds [location!] data to the given result, returning a [crate::error::Result<T>].
-#[macro_export]
-macro_rules! ctx {
-    ($res:expr) => {
-        $crate::error::Traceable::trace($res, $crate::location!())
-    };
+    /// Pushes the current [`Location`] onto the error's trace stack
+    #[track_caller]
+    fn trace(self) -> Result<T>;
 }
 
 impl<T> Traceable<T> for Result<T> {
-    fn trace(self, location: &'static str) -> Result<T> {
-        self.map_err(|mut e| {
-            e.trace.push(location);
-            e
-        })
+    fn trace(self) -> Result<T> {
+        self.map_err(|e| e.trace())
     }
 }
 
-impl<T> Traceable<T> for std::result::Result<T, DbErr> {
-    fn trace(self, location: &'static str) -> Result<T> {
-        self.map_err(|e| Error::database(e, location))
+impl From<DbErr> for Error {
+    #[track_caller]
+    fn from(value: DbErr) -> Self {
+        Error::database(value)
     }
 }
 
-impl<T> Traceable<T> for std::result::Result<T, redis::RedisError> {
-    fn trace(self, location: &'static str) -> Result<T> {
-        self.map_err(|e| Error::queue(e, location))
+impl From<redis::RedisError> for Error {
+    #[track_caller]
+    fn from(value: redis::RedisError) -> Self {
+        Error::queue(value)
     }
 }
 
-impl<T, E: error::Error + 'static> Traceable<T> for std::result::Result<T, bb8::RunError<E>> {
-    fn trace(self, location: &'static str) -> Result<T> {
-        self.map_err(|e| Error::queue(e, location))
+impl<E: error::Error + 'static> From<bb8::RunError<E>> for Error {
+    #[track_caller]
+    fn from(value: bb8::RunError<E>) -> Self {
+        Error::queue(value)
     }
 }
 
-impl<T> Traceable<T> for std::result::Result<T, ExtensionRejection> {
-    fn trace(self, location: &'static str) -> Result<T> {
-        self.map_err(|e| Error::generic(e, location))
+impl From<ExtensionRejection> for Error {
+    #[track_caller]
+    fn from(value: ExtensionRejection) -> Self {
+        Error::generic(value)
     }
 }
 
-impl<T> Traceable<T> for std::result::Result<T, PathRejection> {
-    fn trace(self, location: &'static str) -> Result<T> {
-        self.map_err(|e| Error::generic(e, location))
+impl From<PathRejection> for Error {
+    #[track_caller]
+    fn from(value: PathRejection) -> Self {
+        Error::generic(value)
     }
 }
 
-impl Traceable<TypedHeader<Authorization<Bearer>>>
-    for std::result::Result<TypedHeader<Authorization<Bearer>>, TypedHeaderRejection>
-{
-    fn trace(self, _location: &'static str) -> Result<TypedHeader<Authorization<Bearer>>> {
-        self.map_err(|_| HttpError::unauthorized(None, Some("Invalid token".to_string())).into())
+impl From<crate::core::cache::Error> for Error {
+    #[track_caller]
+    fn from(value: crate::core::cache::Error) -> Self {
+        Error::cache(value)
     }
 }
 
-impl<T> Traceable<T> for std::result::Result<T, crate::core::cache::Error> {
-    fn trace(self, location: &'static str) -> Result<T> {
-        self.map_err(|e| Error::cache(e, location))
-    }
-}
-
-impl<T> Traceable<T> for std::result::Result<T, TransactionError<Error>> {
-    fn trace(self, location: &'static str) -> Result<T> {
-        self.map_err(|e| match e {
-            TransactionError::Connection(db_err) => Error::database(db_err, location),
+impl From<TransactionError<Error>> for Error {
+    #[track_caller]
+    fn from(value: TransactionError<Error>) -> Self {
+        match value {
+            TransactionError::Connection(db_err) => Error::database(db_err),
             TransactionError::Transaction(crate_err) => crate_err, // preserve the trace that comes from within the transaction
-        })
+        }
     }
 }
 
-impl<T> Traceable<T> for std::result::Result<T, lapin::Error> {
-    fn trace(self, location: &'static str) -> Result<T> {
-        self.map_err(|e| Error::queue(format!("{e:?}"), location))
+impl From<lapin::Error> for Error {
+    #[track_caller]
+    fn from(value: lapin::Error) -> Self {
+        Error::queue(format!("{value:?}"))
     }
 }
 
@@ -440,8 +398,8 @@ impl From<ErrorType> for Error {
 impl From<crate::core::webhook_http_client::Error> for Error {
     fn from(err: webhook_http_client::Error) -> Error {
         match err {
-            webhook_http_client::Error::TimedOut => ErrorType::Timeout(err.to_string()).into(),
-            _ => err_generic!("{err:?}"),
+            webhook_http_client::Error::TimedOut => Self::timeout(err),
+            _ => Error::generic(err),
         }
     }
 }
@@ -459,8 +417,6 @@ pub fn http_error_on_conflict(db_err: DbErr) -> Error {
         {
             HttpError::conflict(None, None).into()
         }
-        // This always inserts a blank locaton, but because it should be wrapped by a [`ctx`] call,
-        // you should still get a meaningful trace
-        e => Error::database(e, ""),
+        e => Error::database(e),
     }
 }
