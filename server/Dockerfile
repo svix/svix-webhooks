@@ -27,7 +27,7 @@ COPY . .
 RUN cargo build --release --frozen
 
 # Production
-FROM debian:12.1-slim AS prod
+FROM debian:bullseye-slim AS prod
 
 RUN set -ex ; \
         mkdir -p /app ;\
