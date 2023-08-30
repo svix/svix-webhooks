@@ -6,7 +6,7 @@ data class SvixOptions(
     val numRetries: Int? = null
 ) {
 
-    private val version = "1.9.0"
+    private val version = "1.10.0"
 
     var serverUrl: String
         get() = this.wantedServerUrl ?: DEFAULT_URL
