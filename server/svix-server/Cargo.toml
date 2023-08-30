@@ -61,7 +61,6 @@ sqlx = { version = "0.7.1", features = [ "runtime-tokio-rustls", "postgres", "mi
 http = "0.2"
 time = { version = "0.3.9", features = [ "std" ]}
 futures = "0.3"
-redis_cluster_async = { git = "https://github.com/redis-rs/redis-cluster-async.git", rev = "e6fe168" }
 url = { version = "2.2.2", features = ["serde"] }
 rand = "0.8.5"
 jsonschema = "0.16.1"
