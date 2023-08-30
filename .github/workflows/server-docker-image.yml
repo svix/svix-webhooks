@@ -1,0 +1,42 @@
+name: Server docker image CI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'server/Dockerfile'
+      - '.github/workflows/server-docker-image.yml'
+  pull_request:
+    paths:
+      - 'server/Dockerfile'
+      - '.github/workflows/server-docker-image.yml'
+
+jobs:
+  test-image:
+    name: Server docker image CI
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@master
+
+    - name: Build server image
+      run: docker-compose build
+      working-directory: ./server
+
+    - name: Run server with docker-compose
+      run: docker-compose up -d
+      working-directory: ./server
+
+    - name: Check server container is up and running
+      run: curl --retry 5 --retry-all-errors http://localhost:8071/api/v1/health/
+
+    - name: Display server container logs
+      if: failure()
+      run: docker-compose logs backend
+      working-directory: ./server
+
+    - name: Terminate docker-compose created containers
+      if: always()
+      run: docker-compose down -v
+      working-directory: ./server

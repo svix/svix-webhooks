@@ -1,7 +1,13 @@
 # Base build
-FROM rust:1.72-slim-bullseye AS build
+FROM rust:1.72-slim-bookworm AS build
 
-RUN apt-get update && apt-get install -y build-essential=12.* checkinstall=1.* zlib1g-dev=1:* pkg-config=0.29.* libssl-dev=* --no-install-recommends
+RUN apt-get update && apt-get install -y \
+        build-essential=12.* \
+        checkinstall=1.* \
+        zlib1g-dev=1:* \
+        pkg-config=1.8.* \
+        libssl-dev=* \
+        --no-install-recommends
 
 RUN set -ex ; \
         mkdir -p /app ;\
@@ -27,7 +33,7 @@ COPY . .
 RUN cargo build --release --frozen
 
 # Production
-FROM debian:bullseye-slim AS prod
+FROM debian:bookworm-slim AS prod
 
 RUN set -ex ; \
         mkdir -p /app ;\
@@ -36,10 +42,12 @@ RUN set -ex ; \
         mkdir -p /home/appuser ;\
         chown -R appuser: /home/appuser
 
-RUN apt-get update ;\
-    apt-get install --no-install-recommends -y ca-certificates=20210119; \
-    update-ca-certificates; \
-    rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y \
+        ca-certificates=20230311 \
+        libssl3=3.* \
+        --no-install-recommends && \
+        update-ca-certificates && \
+        rm -rf /var/lib/apt/lists/*
 
 USER appuser
 EXPOSE 8080
