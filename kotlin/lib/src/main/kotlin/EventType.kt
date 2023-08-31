@@ -2,6 +2,8 @@ package com.svix.kotlin
 
 import com.svix.kotlin.exceptions.ApiException
 import com.svix.kotlin.internal.apis.EventTypeApi
+import com.svix.kotlin.models.EventTypeImportOpenApiIn
+import com.svix.kotlin.models.EventTypeImportOpenApiOut
 import com.svix.kotlin.models.EventTypeIn
 import com.svix.kotlin.models.EventTypeOut
 import com.svix.kotlin.models.EventTypePatch
@@ -61,6 +63,14 @@ class EventType internal constructor(token: String, options: SvixOptions) {
     suspend fun delete(eventTypeName: String) {
         try {
             api.v1EventTypeDelete(eventTypeName, null)
+        } catch (e: Exception) {
+            throw ApiException.wrap(e)
+        }
+    }
+
+    suspend fun importOpenApi(eventTypeImportOpenApiIn: EventTypeImportOpenApiIn, options: PostOptions = PostOptions()): EventTypeImportOpenApiOut {
+        try {
+            return api.v1EventTypeImportOpenapi(eventTypeImportOpenApiIn, options.idempotencyKey)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }

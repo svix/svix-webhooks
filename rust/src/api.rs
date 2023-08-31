@@ -773,6 +773,22 @@ impl<'a> EventType<'a> {
         )
         .await?)
     }
+
+    pub async fn import_openapi(
+        &self,
+        event_type_import_open_api_in: EventTypeImportOpenApiIn,
+        options: Option<PostOptions>,
+    ) -> Result<EventTypeImportOpenApiOut> {
+        let PostOptions { idempotency_key } = options.unwrap_or_default();
+        Ok(event_type_api::v1_event_type_import_openapi(
+            self.cfg,
+            event_type_api::V1EventTypeImportOpenapiParams {
+                event_type_import_open_api_in,
+                idempotency_key,
+            },
+        )
+        .await?)
+    }
 }
 
 #[derive(Default)]

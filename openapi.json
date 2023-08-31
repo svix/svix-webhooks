@@ -1447,6 +1447,99 @@
                 ],
                 "type": "object"
             },
+            "EventTypeImportOpenApiIn": {
+                "properties": {
+                    "spec": {
+                        "additionalProperties": {
+                            "type": "object"
+                        },
+                        "example": {
+                            "components": {
+                                "schemas": {
+                                    "Pet": {
+                                        "properties": {
+                                            "id": {
+                                                "format": "int64",
+                                                "type": "integer"
+                                            },
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "tag": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "id",
+                                            "name"
+                                        ]
+                                    }
+                                }
+                            },
+                            "info": {
+                                "title": "Webhook Example",
+                                "version": "1.0.0"
+                            },
+                            "openapi": "3.1.0",
+                            "webhooks": {
+                                "pet.new": {
+                                    "post": {
+                                        "requestBody": {
+                                            "content": {
+                                                "application/json": {
+                                                    "schema": {
+                                                        "$ref": "#/components/schemas/Pet"
+                                                    }
+                                                }
+                                            },
+                                            "description": "Information about a new pet in the system"
+                                        },
+                                        "responses": {
+                                            "200": {
+                                                "description": "Return a 200 status to indicate that the data was received successfully"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "required": [
+                    "spec"
+                ],
+                "type": "object"
+            },
+            "EventTypeImportOpenApiOut": {
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/EventTypeImportOpenApiOutData"
+                    }
+                },
+                "required": [
+                    "data"
+                ],
+                "type": "object"
+            },
+            "EventTypeImportOpenApiOutData": {
+                "properties": {
+                    "modified": {
+                        "items": {
+                            "description": "The event type's name",
+                            "example": "user.signup",
+                            "maxLength": 256,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "modified"
+                ],
+                "type": "object"
+            },
             "EventTypeIn": {
                 "properties": {
                     "archived": {
@@ -3458,9 +3551,9 @@
         }
     },
     "info": {
-        "description": "Welcome to the Svix API documentation!\n\nUseful links: [Homepage](https://www.svix.com) | [Support email](mailto:support+docs@svix.com) | [Blog](https://www.svix.com/blog/) | [Slack Community](https://www.svix.com/slack/)\n\n# Introduction\n\nThis is the reference documentation and schemas for the [Svix webhook service](https://www.svix.com) API. For tutorials and other documentation please refer to [the documentation](https://docs.svix.com).\n\n## Main concepts\n\nIn Svix you have four important entities you will be interacting with:\n\n- `messages`: these are the webhooks being sent. They can have contents and a few other properties.\n- `application`: this is where `messages` are sent to. Usually you want to create one application for each user on your platform.\n- `endpoint`: endpoints are the URLs messages will be sent to. Each application can have multiple `endpoints` and each message sent to that application will be sent to all of them (unless they are not subscribed to the sent event type).\n- `event-type`: event types are identifiers denoting the type of the message being sent. Event types are primarily used to decide which events are sent to which endpoint.\n\n\n## Authentication\n\nGet your authentication token (`AUTH_TOKEN`) from the [Svix dashboard](https://dashboard.svix.com) and use it as part of the `Authorization` header as such: `Authorization: Bearer ${AUTH_TOKEN}`. For more information on authentication, please refer to the [authentication token docs](https://docs.svix.com/api-keys).\n\n<SecurityDefinitions />\n\n\n## Code samples\n\nThe code samples assume you already have the respective libraries installed and you know how to use them. For the latest information on how to do that, please refer to [the documentation](https://docs.svix.com/).\n\n\n## Idempotency\n\nSvix supports [idempotency](https://en.wikipedia.org/wiki/Idempotence) for safely retrying requests without accidentally performing the same operation twice. This is useful when an API call is disrupted in transit and you do not receive a response.\n\nTo perform an idempotent request, pass the idempotency key in the `Idempotency-Key` header to the request. The idempotency key should be a unique value generated by the client. You can create the key in however way you like, though we suggest using UUID v4, or any other string with enough entropy to avoid collisions.\n\nSvix's idempotency works by saving the resulting status code and body of the first request made for any given idempotency key for any successful request. Subsequent requests with the same key return the same result.\n\nPlease note that idempotency is only supported for `POST` requests.\n\n\n## Cross-Origin Resource Sharing\n\nThis API features Cross-Origin Resource Sharing (CORS) implemented in compliance with [W3C spec](https://www.w3.org/TR/cors/). And that allows cross-domain communication from the browser. All responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site.\n",
+        "description": "",
         "title": "Svix API",
-        "version": "1.7.0",
+        "version": "1.1.1",
         "x-logo": {
             "altText": "Svix Logo",
             "url": "https://www.svix.com/static/img/brand-padded.svg"
@@ -3474,9 +3567,11 @@
                 "operationId": "v1.application.list",
                 "parameters": [
                     {
+                        "description": "Limit the number of returned items",
                         "in": "query",
                         "name": "limit",
                         "schema": {
+                            "description": "Limit the number of returned items",
                             "format": "uint64",
                             "maximum": 250,
                             "minimum": 1,
@@ -3485,11 +3580,11 @@
                         "style": "form"
                     },
                     {
-                        "description": "The app's ID",
+                        "description": "The iterator returned from a prior invocation",
                         "in": "query",
                         "name": "iterator",
                         "schema": {
-                            "description": "The app's ID",
+                            "description": "The iterator returned from a prior invocation",
                             "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                             "nullable": true,
                             "type": "string"
@@ -3497,10 +3592,12 @@
                         "style": "form"
                     },
                     {
+                        "description": "The sorting order of the returned items",
                         "in": "query",
                         "name": "order",
                         "schema": {
                             "$ref": "#/components/schemas/Ordering",
+                            "description": "The sorting order of the returned items",
                             "nullable": true
                         },
                         "style": "form"
@@ -3656,7 +3753,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -3855,7 +3952,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"name\": \"My first application\",\n        \"rateLimit\": null,\n        \"uid\": \"unique-app-identifier\"\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"name\": \"My first application\",\n        \"rateLimit\": null,\n        \"uid\": \"unique-app-identifier\"\n    }'"
                     }
                 ]
             }
@@ -3866,30 +3963,36 @@
                 "operationId": "get_app_usage_stats_api_v1_app_stats_usage__get",
                 "parameters": [
                     {
+                        "description": "Filter the range to data after this date",
                         "in": "query",
                         "name": "since",
                         "required": true,
                         "schema": {
+                            "description": "Filter the range to data after this date",
                             "format": "date-time",
                             "type": "string"
                         },
                         "style": "form"
                     },
                     {
+                        "description": "Filter the range to data before this date",
                         "in": "query",
                         "name": "until",
                         "required": true,
                         "schema": {
+                            "description": "Filter the range to data before this date",
                             "format": "date-time",
                             "type": "string"
                         },
                         "style": "form"
                     },
                     {
+                        "description": "Limit the number of returned items",
                         "in": "query",
                         "name": "limit",
                         "schema": {
                             "default": 50,
+                            "description": "Limit the number of returned items",
                             "format": "int",
                             "maximum": 250,
                             "nullable": true,
@@ -3898,11 +4001,11 @@
                         "style": "form"
                     },
                     {
-                        "description": "The app's ID",
+                        "description": "The iterator to use (depends on the chosen ordering)",
                         "in": "query",
                         "name": "iterator",
                         "schema": {
-                            "description": "The app's ID",
+                            "description": "The iterator to use (depends on the chosen ordering)",
                             "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                             "nullable": true,
                             "type": "string"
@@ -4060,7 +4163,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/stats/usage/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/stats/usage/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -4229,7 +4332,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'DELETE' \\\n  'https://api.svix.com/api/v1/app/{app_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -4403,7 +4506,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -4587,7 +4690,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PATCH' \\\n  'https://api.svix.com/api/v1/app/{app_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"rateLimit\": null,\n        \"uid\": \"unique-app-identifier\"\n    }'"
+                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"rateLimit\": null,\n        \"uid\": \"unique-app-identifier\"\n    }'"
                     }
                 ]
             },
@@ -4781,7 +4884,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.svix.com/api/v1/app/{app_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"name\": \"My first application\",\n        \"rateLimit\": null,\n        \"uid\": \"unique-app-identifier\"\n    }'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"name\": \"My first application\",\n        \"rateLimit\": null,\n        \"uid\": \"unique-app-identifier\"\n    }'"
                     }
                 ]
             }
@@ -4792,9 +4895,11 @@
                 "operationId": "v1.message-attempt.list-by-endpoint",
                 "parameters": [
                     {
+                        "description": "Limit the number of returned items",
                         "in": "query",
                         "name": "limit",
                         "schema": {
+                            "description": "Limit the number of returned items",
                             "format": "uint64",
                             "maximum": 250,
                             "minimum": 1,
@@ -4803,11 +4908,11 @@
                         "style": "form"
                     },
                     {
-                        "description": "The attempt's ID",
+                        "description": "The iterator returned from a prior invocation",
                         "in": "query",
                         "name": "iterator",
                         "schema": {
-                            "description": "The attempt's ID",
+                            "description": "The iterator returned from a prior invocation",
                             "example": "atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                             "nullable": true,
                             "type": "string"
@@ -4815,27 +4920,33 @@
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the delivery status",
                         "in": "query",
                         "name": "status",
                         "schema": {
                             "$ref": "#/components/schemas/MessageStatus",
+                            "description": "Filter response based on the delivery status",
                             "nullable": true
                         },
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the HTTP status code",
                         "in": "query",
                         "name": "status_code_class",
                         "schema": {
                             "$ref": "#/components/schemas/StatusCodeClass",
+                            "description": "Filter response based on the HTTP status code",
                             "nullable": true
                         },
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the channel",
                         "in": "query",
                         "name": "channel",
                         "schema": {
+                            "description": "Filter response based on the channel",
                             "example": "project_1337",
                             "maxLength": 128,
                             "nullable": true,
@@ -4845,9 +4956,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "Only include items created before a certain date",
                         "in": "query",
                         "name": "before",
                         "schema": {
+                            "description": "Only include items created before a certain date",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -4855,9 +4968,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "Only include items created after a certain date",
                         "in": "query",
                         "name": "after",
                         "schema": {
+                            "description": "Only include items created after a certain date",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -4865,18 +4980,22 @@
                         "style": "form"
                     },
                     {
+                        "description": "When `true` attempt content is included in the response",
                         "in": "query",
                         "name": "with_content",
                         "schema": {
                             "default": true,
+                            "description": "When `true` attempt content is included in the response",
                             "type": "boolean"
                         },
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the event type",
                         "in": "query",
                         "name": "event_types",
                         "schema": {
+                            "description": "Filter response based on the event type",
                             "items": {
                                 "description": "The event type's name",
                                 "example": "user.signup",
@@ -5071,7 +5190,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/attempt/endpoint/{endpoint_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/attempt/endpoint/{endpoint_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -5082,9 +5201,11 @@
                 "operationId": "v1.message-attempt.list-by-msg",
                 "parameters": [
                     {
+                        "description": "Limit the number of returned items",
                         "in": "query",
                         "name": "limit",
                         "schema": {
+                            "description": "Limit the number of returned items",
                             "format": "uint64",
                             "maximum": 250,
                             "minimum": 1,
@@ -5093,11 +5214,11 @@
                         "style": "form"
                     },
                     {
-                        "description": "The attempt's ID",
+                        "description": "The iterator returned from a prior invocation",
                         "in": "query",
                         "name": "iterator",
                         "schema": {
-                            "description": "The attempt's ID",
+                            "description": "The iterator returned from a prior invocation",
                             "example": "atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                             "nullable": true,
                             "type": "string"
@@ -5105,27 +5226,33 @@
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the delivery status",
                         "in": "query",
                         "name": "status",
                         "schema": {
                             "$ref": "#/components/schemas/MessageStatus",
+                            "description": "Filter response based on the delivery status",
                             "nullable": true
                         },
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the HTTP status code",
                         "in": "query",
                         "name": "status_code_class",
                         "schema": {
                             "$ref": "#/components/schemas/StatusCodeClass",
+                            "description": "Filter response based on the HTTP status code",
                             "nullable": true
                         },
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the channel",
                         "in": "query",
                         "name": "channel",
                         "schema": {
+                            "description": "Filter response based on the channel",
                             "example": "project_1337",
                             "maxLength": 128,
                             "nullable": true,
@@ -5135,11 +5262,11 @@
                         "style": "form"
                     },
                     {
-                        "description": "The ep's ID or UID",
+                        "description": "Filter the attempts based on the attempted endpoint",
                         "in": "query",
                         "name": "endpoint_id",
                         "schema": {
-                            "description": "The ep's ID or UID",
+                            "description": "Filter the attempts based on the attempted endpoint",
                             "example": "unique-ep-identifier",
                             "maxLength": 256,
                             "minLength": 1,
@@ -5150,9 +5277,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "Only include items created before a certain date",
                         "in": "query",
                         "name": "before",
                         "schema": {
+                            "description": "Only include items created before a certain date",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -5160,9 +5289,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "Only include items created after a certain date",
                         "in": "query",
                         "name": "after",
                         "schema": {
+                            "description": "Only include items created after a certain date",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -5170,10 +5301,12 @@
                         "style": "form"
                     },
                     {
+                        "description": "When `true` attempt content is included in the response",
                         "in": "query",
                         "name": "with_content",
                         "schema": {
                             "default": true,
+                            "description": "When `true` attempt content is included in the response",
                             "type": "boolean"
                         },
                         "style": "form"
@@ -5209,9 +5342,11 @@
                         "style": "simple"
                     },
                     {
+                        "description": "Filter response based on the event type",
                         "in": "query",
                         "name": "event_types",
                         "schema": {
+                            "description": "Filter response based on the event type",
                             "items": {
                                 "description": "The event type's name",
                                 "example": "user.signup",
@@ -5376,7 +5511,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/attempt/msg/{msg_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/attempt/msg/{msg_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -5402,9 +5537,11 @@
                         "style": "simple"
                     },
                     {
+                        "description": "Limit the number of returned items",
                         "in": "query",
                         "name": "limit",
                         "schema": {
+                            "description": "Limit the number of returned items",
                             "format": "uint64",
                             "maximum": 250,
                             "minimum": 1,
@@ -5413,11 +5550,11 @@
                         "style": "form"
                     },
                     {
-                        "description": "The ep's ID",
+                        "description": "The iterator returned from a prior invocation",
                         "in": "query",
                         "name": "iterator",
                         "schema": {
-                            "description": "The ep's ID",
+                            "description": "The iterator returned from a prior invocation",
                             "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                             "nullable": true,
                             "type": "string"
@@ -5425,10 +5562,12 @@
                         "style": "form"
                     },
                     {
+                        "description": "The sorting order of the returned items",
                         "in": "query",
                         "name": "order",
                         "schema": {
                             "$ref": "#/components/schemas/Ordering",
+                            "description": "The sorting order of the returned items",
                             "nullable": true
                         },
                         "style": "form"
@@ -5584,7 +5723,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -5777,7 +5916,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"description\": \"An example endpoint name\",\n        \"rateLimit\": null,\n        \"uid\": \"unique-ep-identifier\",\n        \"url\": \"https://example.com/webhook/\",\n        \"version\": 1,\n        \"disabled\": false,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n        \"channels\": [\"project_123\", \"group_2\"],\n        \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"description\": \"An example endpoint name\",\n        \"rateLimit\": null,\n        \"uid\": \"unique-ep-identifier\",\n        \"url\": \"https://example.com/webhook/\",\n        \"version\": 1,\n        \"disabled\": false,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n        \"channels\": [\"project_123\", \"group_2\"],\n        \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n    }'"
                     }
                 ]
             }
@@ -5961,7 +6100,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'DELETE' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -6150,7 +6289,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -6349,7 +6488,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PATCH' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"rateLimit\": null,\n        \"uid\": \"unique-ep-identifier\",\n        \"version\": 1,\n        \"filterTypes\": null,\n        \"channels\": null,\n        \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n    }'"
+                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"rateLimit\": null,\n        \"uid\": \"unique-ep-identifier\",\n        \"version\": 1,\n        \"filterTypes\": null,\n        \"channels\": null,\n        \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n    }'"
                     }
                 ]
             },
@@ -6558,7 +6697,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"description\": \"An example endpoint name\",\n        \"rateLimit\": null,\n        \"uid\": \"unique-ep-identifier\",\n        \"url\": \"https://example.com/webhook/\",\n        \"version\": 1,\n        \"disabled\": false,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n        \"channels\": [\"project_123\", \"group_2\"]\n    }'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"description\": \"An example endpoint name\",\n        \"rateLimit\": null,\n        \"uid\": \"unique-ep-identifier\",\n        \"url\": \"https://example.com/webhook/\",\n        \"version\": 1,\n        \"disabled\": false,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n        \"channels\": [\"project_123\", \"group_2\"]\n    }'"
                     }
                 ]
             }
@@ -6749,7 +6888,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -6941,7 +7080,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PATCH' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"headers\": {\"X-Example\":\"123\",\"X-Foobar\":\"Bar\"}\n    }'"
+                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"headers\": {\"X-Example\":\"123\",\"X-Foobar\":\"Bar\"}\n    }'"
                     }
                 ]
             },
@@ -7133,7 +7272,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"headers\": {\"X-Example\":\"123\",\"X-Foobar\":\"Bar\"}\n    }'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"headers\": {\"X-Example\":\"123\",\"X-Foobar\":\"Bar\"}\n    }'"
                     }
                 ]
             }
@@ -7144,9 +7283,11 @@
                 "operationId": "v1.message-attempt.list-attempted-messages",
                 "parameters": [
                     {
+                        "description": "Limit the number of returned items",
                         "in": "query",
                         "name": "limit",
                         "schema": {
+                            "description": "Limit the number of returned items",
                             "format": "uint64",
                             "maximum": 250,
                             "minimum": 1,
@@ -7155,11 +7296,11 @@
                         "style": "form"
                     },
                     {
-                        "description": "The msg's ID",
+                        "description": "The iterator returned from a prior invocation",
                         "in": "query",
                         "name": "iterator",
                         "schema": {
-                            "description": "The msg's ID",
+                            "description": "The iterator returned from a prior invocation",
                             "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                             "nullable": true,
                             "type": "string"
@@ -7167,9 +7308,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the channel",
                         "in": "query",
                         "name": "channel",
                         "schema": {
+                            "description": "Filter response based on the channel",
                             "example": "project_1337",
                             "maxLength": 128,
                             "nullable": true,
@@ -7179,18 +7322,22 @@
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the delivery status",
                         "in": "query",
                         "name": "status",
                         "schema": {
                             "$ref": "#/components/schemas/MessageStatus",
+                            "description": "Filter response based on the delivery status",
                             "nullable": true
                         },
                         "style": "form"
                     },
                     {
+                        "description": "Only include items created before a certain date",
                         "in": "query",
                         "name": "before",
                         "schema": {
+                            "description": "Only include items created before a certain date",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -7198,9 +7345,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "Only include items created after a certain date",
                         "in": "query",
                         "name": "after",
                         "schema": {
+                            "description": "Only include items created after a certain date",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -7208,10 +7357,12 @@
                         "style": "form"
                     },
                     {
+                        "description": "When `true` message payloads are included in the response",
                         "in": "query",
                         "name": "with_content",
                         "schema": {
                             "default": true,
+                            "description": "When `true` message payloads are included in the response",
                             "type": "boolean"
                         },
                         "style": "form"
@@ -7247,9 +7398,11 @@
                         "style": "simple"
                     },
                     {
+                        "description": "Filter response based on the event type",
                         "in": "query",
                         "name": "event_types",
                         "schema": {
+                            "description": "Filter response based on the event type",
                             "items": {
                                 "description": "The event type's name",
                                 "example": "user.signup",
@@ -7414,7 +7567,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -7772,7 +7925,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"until\": null\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"until\": null\n    }'"
                     }
                 ]
             }
@@ -7982,7 +8135,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/replay-missing/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"until\": null\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/replay-missing/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"until\": null\n    }'"
                     }
                 ]
             }
@@ -8173,7 +8326,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -8376,7 +8529,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"\n    }'"
                     }
                 ]
             }
@@ -8586,7 +8739,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/send-example/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"eventType\": \"user.signup\"\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/send-example/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"eventType\": \"user.signup\"\n    }'"
                     }
                 ]
             }
@@ -8627,9 +8780,11 @@
                         "style": "simple"
                     },
                     {
+                        "description": "Filter the range to data starting from this date",
                         "in": "query",
                         "name": "since",
                         "schema": {
+                            "description": "Filter the range to data starting from this date",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -8637,9 +8792,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "Filter the range to data ending by this date",
                         "in": "query",
                         "name": "until",
                         "schema": {
+                            "description": "Filter the range to data ending by this date",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -8797,7 +8954,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/stats/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/stats/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -8988,7 +9145,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -9180,7 +9337,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PATCH' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"code\": null\n    }'"
+                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"code\": null\n    }'"
                     }
                 ]
             }
@@ -9390,7 +9547,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation/simulate/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"eventType\": \"user.signup\",\n        \"channels\": null\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation/simulate/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"eventType\": \"user.signup\",\n        \"channels\": null\n    }'"
                     }
                 ]
             }
@@ -9416,9 +9573,11 @@
                         "style": "simple"
                     },
                     {
+                        "description": "Limit the number of returned items",
                         "in": "query",
                         "name": "limit",
                         "schema": {
+                            "description": "Limit the number of returned items",
                             "format": "uint64",
                             "maximum": 250,
                             "minimum": 1,
@@ -9427,11 +9586,11 @@
                         "style": "form"
                     },
                     {
-                        "description": "The integ's ID",
+                        "description": "The iterator returned from a prior invocation",
                         "in": "query",
                         "name": "iterator",
                         "schema": {
-                            "description": "The integ's ID",
+                            "description": "The iterator returned from a prior invocation",
                             "example": "integ_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                             "nullable": true,
                             "type": "string"
@@ -9589,7 +9748,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/integration/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/integration/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -9782,7 +9941,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/integration/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"name\": \"Example Integration\"\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/integration/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"name\": \"Example Integration\"\n    }'"
                     }
                 ]
             }
@@ -9963,7 +10122,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'DELETE' \\\n  'https://api.svix.com/api/v1/app/{app_id}/integration/{integ_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/integration/{integ_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -10149,7 +10308,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/integration/{integ_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/integration/{integ_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -10345,7 +10504,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.svix.com/api/v1/app/{app_id}/integration/{integ_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"name\": \"Example Integration\"\n    }'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/integration/{integ_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"name\": \"Example Integration\"\n    }'"
                     }
                 ]
             }
@@ -10533,7 +10692,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/integration/{integ_id}/key/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/integration/{integ_id}/key/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -10730,7 +10889,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/integration/{integ_id}/key/rotate/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/integration/{integ_id}/key/rotate/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -10756,9 +10915,11 @@
                         "style": "simple"
                     },
                     {
+                        "description": "Limit the number of returned items",
                         "in": "query",
                         "name": "limit",
                         "schema": {
+                            "description": "Limit the number of returned items",
                             "format": "uint64",
                             "maximum": 250,
                             "minimum": 1,
@@ -10767,11 +10928,11 @@
                         "style": "form"
                     },
                     {
-                        "description": "The msg's ID",
+                        "description": "The iterator returned from a prior invocation",
                         "in": "query",
                         "name": "iterator",
                         "schema": {
-                            "description": "The msg's ID",
+                            "description": "The iterator returned from a prior invocation",
                             "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                             "nullable": true,
                             "type": "string"
@@ -10779,9 +10940,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the channel",
                         "in": "query",
                         "name": "channel",
                         "schema": {
+                            "description": "Filter response based on the channel",
                             "example": "project_1337",
                             "maxLength": 128,
                             "nullable": true,
@@ -10791,9 +10954,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "Only include items created before a certain date",
                         "in": "query",
                         "name": "before",
                         "schema": {
+                            "description": "Only include items created before a certain date",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -10801,9 +10966,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "Only include items created after a certain date",
                         "in": "query",
                         "name": "after",
                         "schema": {
+                            "description": "Only include items created after a certain date",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -10811,18 +10978,22 @@
                         "style": "form"
                     },
                     {
+                        "description": "When `true` message payloads are included in the response",
                         "in": "query",
                         "name": "with_content",
                         "schema": {
-                            "default": false,
+                            "default": true,
+                            "description": "When `true` message payloads are included in the response",
                             "type": "boolean"
                         },
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the event type",
                         "in": "query",
                         "name": "event_types",
                         "schema": {
+                            "description": "Filter response based on the event type",
                             "items": {
                                 "description": "The event type's name",
                                 "example": "user.signup",
@@ -10987,7 +11158,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/msg/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -11011,10 +11182,12 @@
                         "style": "simple"
                     },
                     {
+                        "description": "When `true` message payloads are included in the response",
                         "in": "query",
                         "name": "with_content",
                         "schema": {
                             "default": true,
+                            "description": "When `true` message payloads are included in the response",
                             "type": "boolean"
                         },
                         "style": "form"
@@ -11189,7 +11362,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/msg/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"eventId\": \"unique-msg-identifier\",\n        \"eventType\": \"user.signup\",\n        \"payload\": {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n        \"channels\": [\"project_123\", \"group_2\"],\n        \"payloadRetentionPeriod\": 90,\n        \"application\": null\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"eventId\": \"unique-msg-identifier\",\n        \"eventType\": \"user.signup\",\n        \"payload\": {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n        \"channels\": [\"project_123\", \"group_2\"],\n        \"payloadRetentionPeriod\": 90,\n        \"application\": null\n    }'"
                     }
                 ]
             }
@@ -11230,10 +11403,12 @@
                         "style": "simple"
                     },
                     {
+                        "description": "When `true` message payloads are included in the response",
                         "in": "query",
                         "name": "with_content",
                         "schema": {
                             "default": true,
+                            "description": "When `true` message payloads are included in the response",
                             "type": "boolean"
                         },
                         "style": "form"
@@ -11389,7 +11564,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/msg/{msg_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/{msg_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -11401,9 +11576,11 @@
                 "operationId": "v1.message-attempt.list-by-msg-deprecated",
                 "parameters": [
                     {
+                        "description": "Limit the number of returned items",
                         "in": "query",
                         "name": "limit",
                         "schema": {
+                            "description": "Limit the number of returned items",
                             "format": "uint64",
                             "maximum": 250,
                             "minimum": 1,
@@ -11412,11 +11589,11 @@
                         "style": "form"
                     },
                     {
-                        "description": "The attempt's ID",
+                        "description": "The iterator returned from a prior invocation",
                         "in": "query",
                         "name": "iterator",
                         "schema": {
-                            "description": "The attempt's ID",
+                            "description": "The iterator returned from a prior invocation",
                             "example": "atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                             "nullable": true,
                             "type": "string"
@@ -11424,11 +11601,11 @@
                         "style": "form"
                     },
                     {
-                        "description": "The ep's ID or UID",
+                        "description": "Filter the attempts based on the attempted endpoint",
                         "in": "query",
                         "name": "endpoint_id",
                         "schema": {
-                            "description": "The ep's ID or UID",
+                            "description": "Filter the attempts based on the attempted endpoint",
                             "example": "unique-ep-identifier",
                             "maxLength": 256,
                             "minLength": 1,
@@ -11439,9 +11616,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the channel",
                         "in": "query",
                         "name": "channel",
                         "schema": {
+                            "description": "Filter response based on the channel",
                             "example": "project_1337",
                             "maxLength": 128,
                             "nullable": true,
@@ -11451,18 +11630,22 @@
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the delivery status",
                         "in": "query",
                         "name": "status",
                         "schema": {
                             "$ref": "#/components/schemas/MessageStatus",
+                            "description": "Filter response based on the delivery status",
                             "nullable": true
                         },
                         "style": "form"
                     },
                     {
+                        "description": "Only include items created before a certain date",
                         "in": "query",
                         "name": "before",
                         "schema": {
+                            "description": "Only include items created before a certain date",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -11470,9 +11653,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "Only include items created after a certain date",
                         "in": "query",
                         "name": "after",
                         "schema": {
+                            "description": "Only include items created after a certain date",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -11480,18 +11665,22 @@
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the HTTP status code",
                         "in": "query",
                         "name": "status_code_class",
                         "schema": {
                             "$ref": "#/components/schemas/StatusCodeClass",
+                            "description": "Filter response based on the HTTP status code",
                             "nullable": true
                         },
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the event type",
                         "in": "query",
                         "name": "event_types",
                         "schema": {
+                            "description": "Filter response based on the event type",
                             "items": {
                                 "description": "The event type's name",
                                 "example": "user.signup",
@@ -11686,7 +11875,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/msg/{msg_id}/attempt/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/{msg_id}/attempt/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -11889,7 +12078,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -12085,7 +12274,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'DELETE' \\\n  'https://api.svix.com/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/content/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/content/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -12288,7 +12477,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/headers/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/headers/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -12472,20 +12661,22 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'DELETE' \\\n  'https://api.svix.com/api/v1/app/{app_id}/msg/{msg_id}/content/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/{msg_id}/content/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
         },
         "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/": {
             "get": {
-                "description": "`msg_id`: Use a message id or a message `eventId`",
+                "description": "List endpoints attempted by a given message. Additionally includes metadata about the latest message attempt.\nBy default, endpoints are listed in ascending order by ID.",
                 "operationId": "v1.message-attempt.list-attempted-destinations",
                 "parameters": [
                     {
+                        "description": "Limit the number of returned items",
                         "in": "query",
                         "name": "limit",
                         "schema": {
+                            "description": "Limit the number of returned items",
                             "format": "uint64",
                             "maximum": 250,
                             "minimum": 1,
@@ -12494,9 +12685,12 @@
                         "style": "form"
                     },
                     {
+                        "description": "The iterator returned from a prior invocation",
                         "in": "query",
                         "name": "iterator",
                         "schema": {
+                            "description": "The iterator returned from a prior invocation",
+                            "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                             "nullable": true,
                             "type": "string"
                         },
@@ -12683,7 +12877,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/msg/{msg_id}/endpoint/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/{msg_id}/endpoint/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -12695,9 +12889,11 @@
                 "operationId": "v1.message-attempt.list-by-endpoint-deprecated",
                 "parameters": [
                     {
+                        "description": "Limit the number of returned items",
                         "in": "query",
                         "name": "limit",
                         "schema": {
+                            "description": "Limit the number of returned items",
                             "format": "uint64",
                             "maximum": 250,
                             "minimum": 1,
@@ -12706,11 +12902,11 @@
                         "style": "form"
                     },
                     {
-                        "description": "The attempt's ID",
+                        "description": "The iterator returned from a prior invocation",
                         "in": "query",
                         "name": "iterator",
                         "schema": {
-                            "description": "The attempt's ID",
+                            "description": "The iterator returned from a prior invocation",
                             "example": "atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                             "nullable": true,
                             "type": "string"
@@ -12718,9 +12914,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the channel",
                         "in": "query",
                         "name": "channel",
                         "schema": {
+                            "description": "Filter response based on the channel",
                             "example": "project_1337",
                             "maxLength": 128,
                             "nullable": true,
@@ -12730,18 +12928,22 @@
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the delivery status",
                         "in": "query",
                         "name": "status",
                         "schema": {
                             "$ref": "#/components/schemas/MessageStatus",
+                            "description": "Filter response based on the delivery status",
                             "nullable": true
                         },
                         "style": "form"
                     },
                     {
+                        "description": "Only include items created before a certain date",
                         "in": "query",
                         "name": "before",
                         "schema": {
+                            "description": "Only include items created before a certain date",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -12749,9 +12951,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "Only include items created after a certain date",
                         "in": "query",
                         "name": "after",
                         "schema": {
+                            "description": "Only include items created after a certain date",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -12759,9 +12963,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the event type",
                         "in": "query",
                         "name": "event_types",
                         "schema": {
+                            "description": "Filter response based on the event type",
                             "items": {
                                 "description": "The event type's name",
                                 "example": "user.signup",
@@ -12971,7 +13177,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/attempt/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/attempt/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -13179,7 +13385,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/resend/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/resend/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -13190,20 +13396,24 @@
                 "operationId": "v1.application.get-stats",
                 "parameters": [
                     {
+                        "description": "Filter the range to data starting from this date",
                         "in": "query",
                         "name": "since",
                         "required": true,
                         "schema": {
+                            "description": "Filter the range to data starting from this date",
                             "format": "date-time",
                             "type": "string"
                         },
                         "style": "form"
                     },
                     {
+                        "description": "Filter the range to data ending by this date",
                         "in": "query",
                         "name": "until",
                         "required": true,
                         "schema": {
+                            "description": "Filter the range to data ending by this date",
                             "format": "date-time",
                             "type": "string"
                         },
@@ -13375,7 +13585,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/app/{app_id}/stats/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/stats/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -13570,7 +13780,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/auth/app-portal-access/{app_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"featureFlags\": []\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/app-portal-access/{app_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"featureFlags\": []\n    }'"
                     }
                 ]
             }
@@ -13758,7 +13968,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/auth/app/{app_id}/expire-all/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"expiry\": 60\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/app/{app_id}/expire-all/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"expiry\": 60\n    }'"
                     }
                 ]
             }
@@ -13944,7 +14154,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/auth/dashboard-access/{app_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/dashboard-access/{app_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -14107,7 +14317,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/auth/logout/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/logout/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -14287,7 +14497,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/auth/one-time-token/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/one-time-token/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '\n    }'"
                     }
                 ]
             }
@@ -14298,27 +14508,33 @@
                 "operationId": "list_background_tasks",
                 "parameters": [
                     {
+                        "description": "Filter the response based on the status",
                         "in": "query",
                         "name": "status",
                         "schema": {
                             "$ref": "#/components/schemas/BackgroundTaskStatus",
+                            "description": "Filter the response based on the status",
                             "nullable": true
                         },
                         "style": "form"
                     },
                     {
+                        "description": "Filter the response based on the type",
                         "in": "query",
                         "name": "task",
                         "schema": {
                             "$ref": "#/components/schemas/BackgroundTaskType",
+                            "description": "Filter the response based on the type",
                             "nullable": true
                         },
                         "style": "form"
                     },
                     {
+                        "description": "Limit the number of returned items",
                         "in": "query",
                         "name": "limit",
                         "schema": {
+                            "description": "Limit the number of returned items",
                             "format": "uint64",
                             "maximum": 250,
                             "minimum": 1,
@@ -14327,19 +14543,23 @@
                         "style": "form"
                     },
                     {
+                        "description": "The iterator returned from a prior invocation",
                         "in": "query",
                         "name": "iterator",
                         "schema": {
+                            "description": "The iterator returned from a prior invocation",
                             "nullable": true,
                             "type": "string"
                         },
                         "style": "form"
                     },
                     {
+                        "description": "The sorting order of the returned items",
                         "in": "query",
                         "name": "order",
                         "schema": {
                             "$ref": "#/components/schemas/Ordering",
+                            "description": "The sorting order of the returned items",
                             "nullable": true
                         },
                         "style": "form"
@@ -14721,7 +14941,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/environment/export/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/environment/export/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '\n    }'"
                     }
                 ]
             }
@@ -14894,7 +15114,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/environment/import/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"eventTypes\": null,\n        \"settings\": null\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/environment/import/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"eventTypes\": null,\n        \"settings\": null\n    }'"
                     }
                 ]
             }
@@ -15053,7 +15273,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/environment/settings/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/environment/settings/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -15064,9 +15284,11 @@
                 "operationId": "v1.event-type.list",
                 "parameters": [
                     {
+                        "description": "Limit the number of returned items",
                         "in": "query",
                         "name": "limit",
                         "schema": {
+                            "description": "Limit the number of returned items",
                             "format": "uint64",
                             "maximum": 250,
                             "minimum": 1,
@@ -15075,11 +15297,11 @@
                         "style": "form"
                     },
                     {
-                        "description": "The event type's name",
+                        "description": "The iterator returned from a prior invocation",
                         "in": "query",
                         "name": "iterator",
                         "schema": {
-                            "description": "The event type's name",
+                            "description": "The iterator returned from a prior invocation",
                             "example": "user.signup",
                             "maxLength": 256,
                             "nullable": true,
@@ -15089,28 +15311,34 @@
                         "style": "form"
                     },
                     {
+                        "description": "The sorting order of the returned items",
                         "in": "query",
                         "name": "order",
                         "schema": {
                             "$ref": "#/components/schemas/Ordering",
+                            "description": "The sorting order of the returned items",
                             "nullable": true
                         },
                         "style": "form"
                     },
                     {
+                        "description": "When `true` archived (deleted but not expunged) items are included in the response",
                         "in": "query",
                         "name": "include_archived",
                         "schema": {
                             "default": false,
+                            "description": "When `true` archived (deleted but not expunged) items are included in the response",
                             "type": "boolean"
                         },
                         "style": "form"
                     },
                     {
+                        "description": "When `true` the full item (including the schema) is included in the response",
                         "in": "query",
                         "name": "with_content",
                         "schema": {
                             "default": false,
+                            "description": "When `true` the full item (including the schema) is included in the response",
                             "type": "boolean"
                         },
                         "style": "form"
@@ -15266,7 +15494,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/event-type/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/event-type/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -15444,7 +15672,187 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/event-type/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"name\": \"user.signup\",\n        \"description\": \"A user has signed up\",\n        \"archived\": false,\n        \"schemas\": {\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}},\n        \"featureFlag\": \"cool-new-feature\"\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/event-type/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"name\": \"user.signup\",\n        \"description\": \"A user has signed up\",\n        \"archived\": false,\n        \"schemas\": {\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}},\n        \"featureFlag\": \"cool-new-feature\"\n    }'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/event-type/import/openapi/": {
+            "post": {
+                "description": "Given an OpenAPI spec, create new or update existing event types.\nIf an existing `archived` event type is updated, it will be unarchvied.\n\nThe importer will convert all webhooks found in the either the `webhooks` or `x-webhooks`\ntop-level.",
+                "operationId": "v1.event-type.import-openapi",
+                "parameters": [
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EventTypeImportOpenApiIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EventTypeImportOpenApiOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Event Type Import From Openapi",
+                "tags": [
+                    "Event Type"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const eventTypeImportOpenApiOut = await svix.eventType.importOpenapi({\n    spec: {\"components\":{\"schemas\":{\"Pet\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Pet\"}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}}\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const eventTypeImportOpenApiOut = await svix.eventType.importOpenapi({\n    spec: {\"components\":{\"schemas\":{\"Pet\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Pet\"}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}}\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "event_type_import_open_api_out = svix.event_type.import_openapi(EventTypeImportOpenApiIn(\n    spec={\"components\": {\"schemas\": {\"Pet\": {\"properties\": {\"id\": {\"format\": \"int64\", \"type\": \"integer\"}, \"name\": {\"type\": \"string\"}, \"tag\": {\"type\": \"string\"}}, \"required\": [\"id\", \"name\"]}}}, \"info\": {\"title\": \"Webhook Example\", \"version\": \"1.0.0\"}, \"openapi\": \"3.1.0\", \"webhooks\": {\"pet.new\": {\"post\": {\"requestBody\": {\"content\": {\"application/json\": {\"schema\": {\"$ref\": \"#/components/schemas/Pet\"}}}, \"description\": \"Information about a new pet in the system\"}, \"responses\": {\"200\": {\"description\": \"Return a 200 status to indicate that the data was received successfully\"}}}}}}\n), None)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "event_type_import_open_api_out = await svix.event_type.import_openapi(EventTypeImportOpenApiIn(\n    spec={\"components\": {\"schemas\": {\"Pet\": {\"properties\": {\"id\": {\"format\": \"int64\", \"type\": \"integer\"}, \"name\": {\"type\": \"string\"}, \"tag\": {\"type\": \"string\"}}, \"required\": [\"id\", \"name\"]}}}, \"info\": {\"title\": \"Webhook Example\", \"version\": \"1.0.0\"}, \"openapi\": \"3.1.0\", \"webhooks\": {\"pet.new\": {\"post\": {\"requestBody\": {\"content\": {\"application/json\": {\"schema\": {\"$ref\": \"#/components/schemas/Pet\"}}}, \"description\": \"Information about a new pet in the system\"}, \"responses\": {\"200\": {\"description\": \"Return a 200 status to indicate that the data was received successfully\"}}}}}}\n), None)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "eventTypeImportOpenApiOut, err := svixClient.EventType.ImportOpenapi(ctx, &EventTypeImportOpenApiIn{\n    Spec: map[interface{}]interface{}{\"components\": map[interface{}]interface{}{\"schemas\": map[interface{}]interface{}{\"Pet\": map[interface{}]interface{}{\"properties\": map[interface{}]interface{}{\"id\": map[string]interface{}{\"format\": \"int64\", \"type\": \"integer\"}, \"name\": map[string]interface{}{\"type\": \"string\"}, \"tag\": map[string]interface{}{\"type\": \"string\"}}, \"required\": []string{\"id\", \"name\"}}}}, \"info\": map[string]interface{}{\"title\": \"Webhook Example\", \"version\": \"1.0.0\"}, \"openapi\": \"3.1.0\", \"webhooks\": map[interface{}]interface{}{\"pet.new\": map[interface{}]interface{}{\"post\": map[interface{}]interface{}{\"requestBody\": map[interface{}]interface{}{\"content\": map[interface{}]interface{}{\"application/json\": map[interface{}]interface{}{\"schema\": map[string]interface{}{\"$ref\": \"#/components/schemas/Pet\"}}}, \"description\": \"Information about a new pet in the system\"}, \"responses\": map[interface{}]interface{}{\"200\": map[string]interface{}{\"description\": \"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val eventTypeImportOpenApiOut = svix.eventType.importOpenapi(EventTypeImportOpenApiIn()\n    .spec(\"\"\"{\"components\":{\"schemas\":{\"Pet\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Pet\"}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}}\"\"\")\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "EventTypeImportOpenApiOut eventTypeImportOpenApiOut = svix.getEventType().importOpenapi(new EventTypeImportOpenApiIn()\n    .spec(\"{\\\"components\\\":{\\\"schemas\\\":{\\\"Pet\\\":{\\\"properties\\\":{\\\"id\\\":{\\\"format\\\":\\\"int64\\\",\\\"type\\\":\\\"integer\\\"},\\\"name\\\":{\\\"type\\\":\\\"string\\\"},\\\"tag\\\":{\\\"type\\\":\\\"string\\\"}},\\\"required\\\":[\\\"id\\\",\\\"name\\\"]}}},\\\"info\\\":{\\\"title\\\":\\\"Webhook Example\\\",\\\"version\\\":\\\"1.0.0\\\"},\\\"openapi\\\":\\\"3.1.0\\\",\\\"webhooks\\\":{\\\"pet.new\\\":{\\\"post\\\":{\\\"requestBody\\\":{\\\"content\\\":{\\\"application/json\\\":{\\\"schema\\\":{\\\"$ref\\\":\\\"#/components/schemas/Pet\\\"}}},\\\"description\\\":\\\"Information about a new pet in the system\\\"},\\\"responses\\\":{\\\"200\\\":{\\\"description\\\":\\\"Return a 200 status to indicate that the data was received successfully\\\"}}}}}}\")\n)"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "event_type_import_open_api_out = svix.event_type.import_openapi(Svix::EventTypeImportOpenApiIn.new({\n    \"spec\": {\"components\":{\"schemas\":{\"Pet\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Pet\"}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}}\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let event_type_import_open_api_out = svix.event_type().import_openapi(EventTypeImportOpenApiIn {\n    spec: json!({\"components\":{\"schemas\":{\"Pet\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Pet\"}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}}),\n}, None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var eventTypeImportOpenApiOut = await svix.EventType.ImportOpenapiAsync(new EventTypeImportOpenApiIn{\n    spec: new {\"components\":{\"schemas\":{\"Pet\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Pet\"}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}}\n})"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix event-type import-openapi '{\n    \"spec\": {\"components\":{\"schemas\":{\"Pet\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Pet\"}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}}\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/event-type/import/openapi/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"spec\": {\"components\":{\"schemas\":{\"Pet\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Pet\"}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}}\n    }'"
                     }
                 ]
             }
@@ -15624,7 +16032,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/event-type/schema/generate-example/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"schema\": {\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/event-type/schema/generate-example/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"schema\": {\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}\n    }'"
                     }
                 ]
             }
@@ -15649,10 +16057,12 @@
                         "style": "simple"
                     },
                     {
+                        "description": "By default event types are archived when \"deleted\". Passing this to `true` deletes them entriely.",
                         "in": "query",
                         "name": "expunge",
                         "schema": {
                             "default": false,
+                            "description": "By default event types are archived when \"deleted\". Passing this to `true` deletes them entriely.",
                             "type": "boolean"
                         },
                         "style": "form"
@@ -15801,7 +16211,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'DELETE' \\\n  'https://api.svix.com/api/v1/event-type/{event_type_name}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/event-type/{event_type_name}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -15974,7 +16384,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/event-type/{event_type_name}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/event-type/{event_type_name}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -16157,7 +16567,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PATCH' \\\n  'https://api.svix.com/api/v1/event-type/{event_type_name}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"schemas\": {\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"},\n        \"featureFlag\": \"cool-new-feature\"\n    }'"
+                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/event-type/{event_type_name}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"schemas\": {\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"},\n        \"featureFlag\": \"cool-new-feature\"\n    }'"
                     }
                 ]
             },
@@ -16350,7 +16760,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.svix.com/api/v1/event-type/{event_type_name}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"description\": \"A user has signed up\",\n        \"archived\": false,\n        \"schemas\": {\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}},\n        \"featureFlag\": \"cool-new-feature\"\n    }'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/event-type/{event_type_name}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"description\": \"A user has signed up\",\n        \"archived\": false,\n        \"schemas\": {\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}},\n        \"featureFlag\": \"cool-new-feature\"\n    }'"
                     }
                 ]
             }
@@ -16497,7 +16907,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/health/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/health/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -16626,9 +17036,11 @@
                 "operationId": "v1.stats.app-attempts",
                 "parameters": [
                     {
+                        "description": "Filter the range to data starting from this date",
                         "in": "query",
                         "name": "startDate",
                         "schema": {
+                            "description": "Filter the range to data starting from this date",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -16636,9 +17048,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "Filter the range to data ending by this date",
                         "in": "query",
                         "name": "endDate",
                         "schema": {
+                            "description": "Filter the range to data ending by this date",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -16811,7 +17225,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/stats/app/{app_id}/attempt/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stats/app/{app_id}/attempt/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -16822,9 +17236,11 @@
                 "operationId": "v1.stats.endpoint-attempts",
                 "parameters": [
                     {
+                        "description": "Filter the range to data starting from this date",
                         "in": "query",
                         "name": "startDate",
                         "schema": {
+                            "description": "Filter the range to data starting from this date",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -16832,9 +17248,11 @@
                         "style": "form"
                     },
                     {
+                        "description": "Filter the range to data ending by this date",
                         "in": "query",
                         "name": "endDate",
                         "schema": {
+                            "description": "Filter the range to data ending by this date",
                             "format": "date-time",
                             "nullable": true,
                             "type": "string"
@@ -17022,7 +17440,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/stats/app/{app_id}/ep/{endpoint_id}/attempt/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stats/app/{app_id}/ep/{endpoint_id}/attempt/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -17151,9 +17569,11 @@
                 "operationId": "v1.transformation-template.list",
                 "parameters": [
                     {
+                        "description": "Limit the number of returned items",
                         "in": "query",
                         "name": "limit",
                         "schema": {
+                            "description": "Limit the number of returned items",
                             "format": "uint64",
                             "maximum": 250,
                             "minimum": 1,
@@ -17162,19 +17582,23 @@
                         "style": "form"
                     },
                     {
+                        "description": "The iterator returned from a prior invocation",
                         "in": "query",
                         "name": "iterator",
                         "schema": {
+                            "description": "The iterator returned from a prior invocation",
                             "nullable": true,
                             "type": "string"
                         },
                         "style": "form"
                     },
                     {
+                        "description": "The sorting order of the returned items",
                         "in": "query",
                         "name": "order",
                         "schema": {
                             "$ref": "#/components/schemas/Ordering",
+                            "description": "The sorting order of the returned items",
                             "nullable": true
                         },
                         "style": "form"
@@ -17330,7 +17754,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/transformation-template/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -17508,7 +17932,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/transformation-template/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"instructionsLink\": null,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"]\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"instructionsLink\": null,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"]\n    }'"
                     }
                 ]
             }
@@ -17688,7 +18112,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.svix.com/api/v1/transformation-template/simulate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"eventType\": \"user.signup\",\n        \"channels\": null\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/simulate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"eventType\": \"user.signup\",\n        \"channels\": null\n    }'"
                     }
                 ]
             }
@@ -17851,7 +18275,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'DELETE' \\\n  'https://api.svix.com/api/v1/transformation-template/{transformation_template_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/{transformation_template_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -18019,7 +18443,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'GET' \\\n  'https://api.svix.com/api/v1/transformation-template/{transformation_template_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/{transformation_template_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             },
@@ -18197,7 +18621,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PATCH' \\\n  'https://api.svix.com/api/v1/transformation-template/{transformation_template_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"instructionsLink\": null,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"]\n    }'"
+                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/{transformation_template_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"instructionsLink\": null,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"]\n    }'"
                     }
                 ]
             },
@@ -18385,12 +18809,22 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.svix.com/api/v1/transformation-template/{transformation_template_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"instructionsLink\": null,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"]\n    }'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/{transformation_template_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"instructionsLink\": null,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"]\n    }'"
                     }
                 ]
             }
         }
     },
+    "servers": [
+        {
+            "description": "The Svix EU region",
+            "url": "https://api.eu.svix.com/"
+        },
+        {
+            "description": "The Svix US region",
+            "url": "https://api.us.svix.com/"
+        }
+    ],
     "tags": [
         {
             "description": "Consumer Applications are where messages are sent to. In most cases you would want to have one application for each of your users.",
@@ -18466,10 +18900,10 @@
         }
     ],
     "x-webhooks": {
-        "EndpointCreatedEvent": {
+        "endpoint.created": {
             "post": {
                 "description": "Sent when an endpoint is created.",
-                "operationId": "EndpointCreatedEvent",
+                "operationId": "endpoint.created",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -18484,17 +18918,16 @@
                         "description": "Return any 2XX status to indicate that the data was received successfully"
                     }
                 },
-                "summary": "EndpointCreatedEvent",
+                "summary": "endpoint.created",
                 "tags": [
                     "Webhooks"
-                ],
-                "x-event-type": "endpoint.created"
+                ]
             }
         },
-        "EndpointDeletedEvent": {
+        "endpoint.deleted": {
             "post": {
                 "description": "Sent when an endpoint is deleted.",
-                "operationId": "EndpointDeletedEvent",
+                "operationId": "endpoint.deleted",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -18509,17 +18942,16 @@
                         "description": "Return any 2XX status to indicate that the data was received successfully"
                     }
                 },
-                "summary": "EndpointDeletedEvent",
+                "summary": "endpoint.deleted",
                 "tags": [
                     "Webhooks"
-                ],
-                "x-event-type": "endpoint.deleted"
+                ]
             }
         },
-        "EndpointDisabledEvent": {
+        "endpoint.disabled": {
             "post": {
                 "description": "Sent when an endpoint has been automatically disabled after continuous failures.",
-                "operationId": "EndpointDisabledEvent",
+                "operationId": "endpoint.disabled",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -18534,17 +18966,16 @@
                         "description": "Return any 2XX status to indicate that the data was received successfully"
                     }
                 },
-                "summary": "EndpointDisabledEvent",
+                "summary": "endpoint.disabled",
                 "tags": [
                     "Webhooks"
-                ],
-                "x-event-type": "endpoint.disabled"
+                ]
             }
         },
-        "EndpointUpdatedEvent": {
+        "endpoint.updated": {
             "post": {
                 "description": "Sent when an endpoint is updated.",
-                "operationId": "EndpointUpdatedEvent",
+                "operationId": "endpoint.updated",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -18559,17 +18990,16 @@
                         "description": "Return any 2XX status to indicate that the data was received successfully"
                     }
                 },
-                "summary": "EndpointUpdatedEvent",
+                "summary": "endpoint.updated",
                 "tags": [
                     "Webhooks"
-                ],
-                "x-event-type": "endpoint.updated"
+                ]
             }
         },
-        "MessageAttemptExhaustedEvent": {
+        "message.attempt.exhausted": {
             "post": {
                 "description": "Sent when a message delivery has failed (all of the retry attempts have been exhausted).",
-                "operationId": "MessageAttemptExhaustedEvent",
+                "operationId": "message.attempt.exhausted",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -18584,17 +19014,16 @@
                         "description": "Return any 2XX status to indicate that the data was received successfully"
                     }
                 },
-                "summary": "MessageAttemptExhaustedEvent",
+                "summary": "message.attempt.exhausted",
                 "tags": [
                     "Webhooks"
-                ],
-                "x-event-type": "message.attempt.exhausted"
+                ]
             }
         },
-        "MessageAttemptFailingEvent": {
+        "message.attempt.failing": {
             "post": {
                 "description": "Sent after a message has been failing for a few times.\nIt's sent on the fourth failure. It complements `message.attempt.exhausted` which is sent after the last failure.",
-                "operationId": "MessageAttemptFailingEvent",
+                "operationId": "message.attempt.failing",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -18609,17 +19038,16 @@
                         "description": "Return any 2XX status to indicate that the data was received successfully"
                     }
                 },
-                "summary": "MessageAttemptFailingEvent",
+                "summary": "message.attempt.failing",
                 "tags": [
                     "Webhooks"
-                ],
-                "x-event-type": "message.attempt.failing"
+                ]
             }
         },
-        "MessageAttemptRecoveredEvent": {
+        "message.attempt.recovered": {
             "post": {
                 "description": "Sent on a successful dispatch after an earlier failure op webhook has already been sent.",
-                "operationId": "MessageAttemptRecoveredEvent",
+                "operationId": "message.attempt.recovered",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -18634,11 +19062,10 @@
                         "description": "Return any 2XX status to indicate that the data was received successfully"
                     }
                 },
-                "summary": "MessageAttemptRecoveredEvent",
+                "summary": "message.attempt.recovered",
                 "tags": [
                     "Webhooks"
-                ],
-                "x-event-type": "message.attempt.recovered"
+                ]
             }
         }
     }
