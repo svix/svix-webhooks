@@ -3,6 +3,12 @@
 ## Next
 * 
 
+## Version 1.11.0
+* Server: update Docker image to Debian bookworm.
+* Server: update dependencies.
+* Libs: add functions to import event types from OpenAPI specs
+* Libs: update OpenAPI spec
+
 ## Version 1.10.0
 * Server: fix docker image.
 * Server: release arm64 version!
