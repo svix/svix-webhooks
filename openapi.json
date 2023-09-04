@@ -2929,6 +2929,18 @@
                 ],
                 "type": "object"
             },
+            "MessageRawPayloadOut": {
+                "properties": {
+                    "payload": {
+                        "example": "{\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"}",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "payload"
+                ],
+                "type": "object"
+            },
             "MessageStatus": {
                 "description": "The sending status of the message:\n- Success = 0\n- Pending = 1\n- Fail = 2\n- Sending = 3",
                 "enum": [
@@ -3518,7 +3530,7 @@
                 "description": "Validation errors have their own schema to provide context for invalid requests eg. mismatched types and out of bounds values. There may be any number of these per 422 UNPROCESSABLE ENTITY error.",
                 "properties": {
                     "loc": {
-                        "description": "The location as a [`Vec`] of [`String`]s -- often in the form `[\"body\", \"field_name\"]`, `[\"query\", \"field_name\"]`, etc. They may, however, be arbitarily deep.",
+                        "description": "The location as a [`Vec`] of [`String`]s -- often in the form `[\"body\", \"field_name\"]`, `[\"query\", \"field_name\"]`, etc. They may, however, be arbitrarily deep.",
                         "items": {
                             "type": "string"
                         },
@@ -13390,6 +13402,197 @@
                 ]
             }
         },
+        "/api/v1/app/{app_id}/msg/{msg_id}/raw/": {
+            "get": {
+                "description": "Get a message raw payload by its ID or eventID.",
+                "operationId": "v1.message.get_raw_payload",
+                "parameters": [
+                    {
+                        "description": "The app's ID or UID",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The app's ID or UID",
+                            "example": "unique-app-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The msg's ID or UID",
+                        "in": "path",
+                        "name": "msg_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The msg's ID or UID",
+                            "example": "unique-msg-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MessageRawPayloadOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Get Raw Message Payload",
+                "tags": [
+                    "Message"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const messageRawPayloadOut = await svix.message.get(\"app_id\", \"msg_id\");"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const messageRawPayloadOut = await svix.message.get(\"app_id\", \"msg_id\");"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "message_raw_payload_out = svix.message.get(\"app_id\", \"msg_id\")"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "message_raw_payload_out = await svix.message.get(\"app_id\", \"msg_id\")"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "messageRawPayloadOut, err := svixClient.Message.Get(ctx, \"app_id\", \"msg_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val messageRawPayloadOut = svix.message.get(\"app_id\", \"msg_id\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "MessageRawPayloadOut messageRawPayloadOut = svix.getMessage().get(\"app_id\", \"msg_id\")"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "message_raw_payload_out = svix.message.get(\"app_id\", \"msg_id\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let message_raw_payload_out = svix.message().get(\"app_id\", \"msg_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var messageRawPayloadOut = await svix.Message.GetAsync(\"app_id\", \"msg_id\")"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix message get \"app_id\" \"msg_id\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/{msg_id}/raw/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            }
+        },
         "/api/v1/app/{app_id}/stats/": {
             "get": {
                 "description": "Get basic statistics for the application",
@@ -16057,12 +16260,12 @@
                         "style": "simple"
                     },
                     {
-                        "description": "By default event types are archived when \"deleted\". Passing this to `true` deletes them entriely.",
+                        "description": "By default event types are archived when \"deleted\". Passing this to `true` deletes them entirely.",
                         "in": "query",
                         "name": "expunge",
                         "schema": {
                             "default": false,
-                            "description": "By default event types are archived when \"deleted\". Passing this to `true` deletes them entriely.",
+                            "description": "By default event types are archived when \"deleted\". Passing this to `true` deletes them entirely.",
                             "type": "boolean"
                         },
                         "style": "form"
