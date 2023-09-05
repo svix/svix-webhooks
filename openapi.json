@@ -3239,6 +3239,13 @@
                         "default": "",
                         "type": "string"
                     },
+                    "featureFlag": {
+                        "example": "cool-new-feature",
+                        "maxLength": 256,
+                        "nullable": true,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "type": "string"
+                    },
                     "filterTypes": {
                         "example": [
                             "user.signup",
@@ -3293,6 +3300,13 @@
                         "type": "string"
                     },
                     "description": {
+                        "type": "string"
+                    },
+                    "featureFlag": {
+                        "example": "cool-new-feature",
+                        "maxLength": 256,
+                        "nullable": true,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "type": "string"
                     },
                     "filterTypes": {
@@ -3363,6 +3377,13 @@
                     "description": {
                         "type": "string"
                     },
+                    "featureFlag": {
+                        "example": "cool-new-feature",
+                        "maxLength": 256,
+                        "nullable": true,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "type": "string"
+                    },
                     "filterTypes": {
                         "example": [
                             "user.signup",
@@ -3407,6 +3428,13 @@
                 "properties": {
                     "description": {
                         "default": "",
+                        "type": "string"
+                    },
+                    "featureFlag": {
+                        "example": "cool-new-feature",
+                        "maxLength": 256,
+                        "nullable": true,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "type": "string"
                     },
                     "filterTypes": {
@@ -18080,62 +18108,62 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const templateOut = await svix.transformationTemplate.create({\n    instructionsLink: null,\n    filterTypes: [\"user.signup\", \"user.deleted\"]\n});"
+                        "source": "const templateOut = await svix.transformationTemplate.create({\n    instructionsLink: null,\n    filterTypes: [\"user.signup\", \"user.deleted\"],\n    featureFlag: \"cool-new-feature\"\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const templateOut = await svix.transformationTemplate.create({\n    instructionsLink: null,\n    filterTypes: [\"user.signup\", \"user.deleted\"]\n});"
+                        "source": "const templateOut = await svix.transformationTemplate.create({\n    instructionsLink: null,\n    filterTypes: [\"user.signup\", \"user.deleted\"],\n    featureFlag: \"cool-new-feature\"\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "template_out = svix.transformation_template.create(TemplateIn(\n    instructions_link=None,\n    filter_types=[\"user.signup\", \"user.deleted\"]\n), None)"
+                        "source": "template_out = svix.transformation_template.create(TemplateIn(\n    instructions_link=None,\n    filter_types=[\"user.signup\", \"user.deleted\"],\n    feature_flag=\"cool-new-feature\"\n), None)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "template_out = await svix.transformation_template.create(TemplateIn(\n    instructions_link=None,\n    filter_types=[\"user.signup\", \"user.deleted\"]\n), None)"
+                        "source": "template_out = await svix.transformation_template.create(TemplateIn(\n    instructions_link=None,\n    filter_types=[\"user.signup\", \"user.deleted\"],\n    feature_flag=\"cool-new-feature\"\n), None)"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "templateOut, err := svixClient.TransformationTemplate.Create(ctx, &TemplateIn{\n    InstructionsLink: nil,\n    FilterTypes: []string{\"user.signup\", \"user.deleted\"},\n})"
+                        "source": "templateOut, err := svixClient.TransformationTemplate.Create(ctx, &TemplateIn{\n    InstructionsLink: nil,\n    FilterTypes: []string{\"user.signup\", \"user.deleted\"},\n    FeatureFlag: \"cool-new-feature\",\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val templateOut = svix.transformationTemplate.create(TemplateIn()\n    .instructionsLink(null)\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\"))\n)"
+                        "source": "val templateOut = svix.transformationTemplate.create(TemplateIn()\n    .instructionsLink(null)\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\"))\n    .featureFlag(\"cool-new-feature\")\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "TemplateOut templateOut = svix.getTransformationTemplate().create(new TemplateIn()\n    .instructionsLink(null)\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"})\n)"
+                        "source": "TemplateOut templateOut = svix.getTransformationTemplate().create(new TemplateIn()\n    .instructionsLink(null)\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"})\n    .featureFlag(\"cool-new-feature\")\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "template_out = svix.transformation_template.create(Svix::TemplateIn.new({\n    \"instructions_link\": nil,\n    \"filter_types\": [\"user.signup\", \"user.deleted\"]\n}))"
+                        "source": "template_out = svix.transformation_template.create(Svix::TemplateIn.new({\n    \"instructions_link\": nil,\n    \"filter_types\": [\"user.signup\", \"user.deleted\"],\n    \"feature_flag\": \"cool-new-feature\"\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let template_out = svix.transformation_template().create(TemplateIn {\n    instructions_link: None,\n    filter_types: Some(vec![\"user.signup\".to_string(), \"user.deleted\".to_string()]),\n}, None).await?;"
+                        "source": "let template_out = svix.transformation_template().create(TemplateIn {\n    instructions_link: None,\n    filter_types: Some(vec![\"user.signup\".to_string(), \"user.deleted\".to_string()]),\n    feature_flag: Some(\"cool-new-feature\".to_string()),\n}, None).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var templateOut = await svix.TransformationTemplate.CreateAsync(new TemplateIn{\n    instructionsLink: null,\n    filterTypes: new string[] {\"user.signup\", \"user.deleted\"}\n})"
+                        "source": "var templateOut = await svix.TransformationTemplate.CreateAsync(new TemplateIn{\n    instructionsLink: null,\n    filterTypes: new string[] {\"user.signup\", \"user.deleted\"},\n    featureFlag: \"cool-new-feature\"\n})"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix transformation-template create '{\n    \"instructionsLink\": null,\n    \"filterTypes\": [\"user.signup\", \"user.deleted\"]\n}'"
+                        "source": "svix transformation-template create '{\n    \"instructionsLink\": null,\n    \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n    \"featureFlag\": \"cool-new-feature\"\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"instructionsLink\": null,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"]\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"instructionsLink\": null,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n        \"featureFlag\": \"cool-new-feature\"\n    }'"
                     }
                 ]
             }
@@ -18769,62 +18797,62 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const templateOut = await svix.transformationTemplate.patch(\"transformation_template_id\", {\n    instructionsLink: null,\n    filterTypes: [\"user.signup\", \"user.deleted\"]\n});"
+                        "source": "const templateOut = await svix.transformationTemplate.patch(\"transformation_template_id\", {\n    instructionsLink: null,\n    filterTypes: [\"user.signup\", \"user.deleted\"],\n    featureFlag: \"cool-new-feature\"\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const templateOut = await svix.transformationTemplate.patch(\"transformation_template_id\", {\n    instructionsLink: null,\n    filterTypes: [\"user.signup\", \"user.deleted\"]\n});"
+                        "source": "const templateOut = await svix.transformationTemplate.patch(\"transformation_template_id\", {\n    instructionsLink: null,\n    filterTypes: [\"user.signup\", \"user.deleted\"],\n    featureFlag: \"cool-new-feature\"\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "template_out = svix.transformation_template.patch(\"transformation_template_id\", TemplatePatch(\n    instructions_link=None,\n    filter_types=[\"user.signup\", \"user.deleted\"]\n))"
+                        "source": "template_out = svix.transformation_template.patch(\"transformation_template_id\", TemplatePatch(\n    instructions_link=None,\n    filter_types=[\"user.signup\", \"user.deleted\"],\n    feature_flag=\"cool-new-feature\"\n))"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "template_out = await svix.transformation_template.patch(\"transformation_template_id\", TemplatePatch(\n    instructions_link=None,\n    filter_types=[\"user.signup\", \"user.deleted\"]\n))"
+                        "source": "template_out = await svix.transformation_template.patch(\"transformation_template_id\", TemplatePatch(\n    instructions_link=None,\n    filter_types=[\"user.signup\", \"user.deleted\"],\n    feature_flag=\"cool-new-feature\"\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "templateOut, err := svixClient.TransformationTemplate.Patch(ctx, \"transformation_template_id\", &TemplatePatch{\n    InstructionsLink: nil,\n    FilterTypes: []string{\"user.signup\", \"user.deleted\"},\n})"
+                        "source": "templateOut, err := svixClient.TransformationTemplate.Patch(ctx, \"transformation_template_id\", &TemplatePatch{\n    InstructionsLink: nil,\n    FilterTypes: []string{\"user.signup\", \"user.deleted\"},\n    FeatureFlag: \"cool-new-feature\",\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val templateOut = svix.transformationTemplate.patch(\"transformation_template_id\", TemplatePatch()\n    .instructionsLink(null)\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\"))\n)"
+                        "source": "val templateOut = svix.transformationTemplate.patch(\"transformation_template_id\", TemplatePatch()\n    .instructionsLink(null)\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\"))\n    .featureFlag(\"cool-new-feature\")\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "TemplateOut templateOut = svix.getTransformationTemplate().patch(\"transformation_template_id\", new TemplatePatch()\n    .instructionsLink(null)\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"})\n)"
+                        "source": "TemplateOut templateOut = svix.getTransformationTemplate().patch(\"transformation_template_id\", new TemplatePatch()\n    .instructionsLink(null)\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"})\n    .featureFlag(\"cool-new-feature\")\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "template_out = svix.transformation_template.patch(\"transformation_template_id\", Svix::TemplatePatch.new({\n    \"instructions_link\": nil,\n    \"filter_types\": [\"user.signup\", \"user.deleted\"]\n}))"
+                        "source": "template_out = svix.transformation_template.patch(\"transformation_template_id\", Svix::TemplatePatch.new({\n    \"instructions_link\": nil,\n    \"filter_types\": [\"user.signup\", \"user.deleted\"],\n    \"feature_flag\": \"cool-new-feature\"\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let template_out = svix.transformation_template().patch(\"transformation_template_id\", TemplatePatch {\n    instructions_link: None,\n    filter_types: Some(vec![\"user.signup\".to_string(), \"user.deleted\".to_string()]),\n}).await?;"
+                        "source": "let template_out = svix.transformation_template().patch(\"transformation_template_id\", TemplatePatch {\n    instructions_link: None,\n    filter_types: Some(vec![\"user.signup\".to_string(), \"user.deleted\".to_string()]),\n    feature_flag: Some(\"cool-new-feature\".to_string()),\n}).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var templateOut = await svix.TransformationTemplate.PatchAsync(\"transformation_template_id\", new TemplatePatch{\n    instructionsLink: null,\n    filterTypes: new string[] {\"user.signup\", \"user.deleted\"}\n})"
+                        "source": "var templateOut = await svix.TransformationTemplate.PatchAsync(\"transformation_template_id\", new TemplatePatch{\n    instructionsLink: null,\n    filterTypes: new string[] {\"user.signup\", \"user.deleted\"},\n    featureFlag: \"cool-new-feature\"\n})"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix transformation-template patch \"transformation_template_id\" '{\n    \"instructionsLink\": null,\n    \"filterTypes\": [\"user.signup\", \"user.deleted\"]\n}'"
+                        "source": "svix transformation-template patch \"transformation_template_id\" '{\n    \"instructionsLink\": null,\n    \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n    \"featureFlag\": \"cool-new-feature\"\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/{transformation_template_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"instructionsLink\": null,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"]\n    }'"
+                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/{transformation_template_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"instructionsLink\": null,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n        \"featureFlag\": \"cool-new-feature\"\n    }'"
                     }
                 ]
             },
@@ -18957,62 +18985,62 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const templateOut = await svix.transformationTemplate.update(\"transformation_template_id\", {\n    instructionsLink: null,\n    filterTypes: [\"user.signup\", \"user.deleted\"]\n});"
+                        "source": "const templateOut = await svix.transformationTemplate.update(\"transformation_template_id\", {\n    instructionsLink: null,\n    filterTypes: [\"user.signup\", \"user.deleted\"],\n    featureFlag: \"cool-new-feature\"\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const templateOut = await svix.transformationTemplate.update(\"transformation_template_id\", {\n    instructionsLink: null,\n    filterTypes: [\"user.signup\", \"user.deleted\"]\n});"
+                        "source": "const templateOut = await svix.transformationTemplate.update(\"transformation_template_id\", {\n    instructionsLink: null,\n    filterTypes: [\"user.signup\", \"user.deleted\"],\n    featureFlag: \"cool-new-feature\"\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "template_out = svix.transformation_template.update(\"transformation_template_id\", TemplateUpdate(\n    instructions_link=None,\n    filter_types=[\"user.signup\", \"user.deleted\"]\n))"
+                        "source": "template_out = svix.transformation_template.update(\"transformation_template_id\", TemplateUpdate(\n    instructions_link=None,\n    filter_types=[\"user.signup\", \"user.deleted\"],\n    feature_flag=\"cool-new-feature\"\n))"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "template_out = await svix.transformation_template.update(\"transformation_template_id\", TemplateUpdate(\n    instructions_link=None,\n    filter_types=[\"user.signup\", \"user.deleted\"]\n))"
+                        "source": "template_out = await svix.transformation_template.update(\"transformation_template_id\", TemplateUpdate(\n    instructions_link=None,\n    filter_types=[\"user.signup\", \"user.deleted\"],\n    feature_flag=\"cool-new-feature\"\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "templateOut, err := svixClient.TransformationTemplate.Update(ctx, \"transformation_template_id\", &TemplateUpdate{\n    InstructionsLink: nil,\n    FilterTypes: []string{\"user.signup\", \"user.deleted\"},\n})"
+                        "source": "templateOut, err := svixClient.TransformationTemplate.Update(ctx, \"transformation_template_id\", &TemplateUpdate{\n    InstructionsLink: nil,\n    FilterTypes: []string{\"user.signup\", \"user.deleted\"},\n    FeatureFlag: \"cool-new-feature\",\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val templateOut = svix.transformationTemplate.update(\"transformation_template_id\", TemplateUpdate()\n    .instructionsLink(null)\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\"))\n)"
+                        "source": "val templateOut = svix.transformationTemplate.update(\"transformation_template_id\", TemplateUpdate()\n    .instructionsLink(null)\n    .filterTypes(arrayOf(\"user.signup\", \"user.deleted\"))\n    .featureFlag(\"cool-new-feature\")\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "TemplateOut templateOut = svix.getTransformationTemplate().update(\"transformation_template_id\", new TemplateUpdate()\n    .instructionsLink(null)\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"})\n)"
+                        "source": "TemplateOut templateOut = svix.getTransformationTemplate().update(\"transformation_template_id\", new TemplateUpdate()\n    .instructionsLink(null)\n    .filterTypes(new String[]{\"user.signup\", \"user.deleted\"})\n    .featureFlag(\"cool-new-feature\")\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "template_out = svix.transformation_template.update(\"transformation_template_id\", Svix::TemplateUpdate.new({\n    \"instructions_link\": nil,\n    \"filter_types\": [\"user.signup\", \"user.deleted\"]\n}))"
+                        "source": "template_out = svix.transformation_template.update(\"transformation_template_id\", Svix::TemplateUpdate.new({\n    \"instructions_link\": nil,\n    \"filter_types\": [\"user.signup\", \"user.deleted\"],\n    \"feature_flag\": \"cool-new-feature\"\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let template_out = svix.transformation_template().update(\"transformation_template_id\", TemplateUpdate {\n    instructions_link: None,\n    filter_types: Some(vec![\"user.signup\".to_string(), \"user.deleted\".to_string()]),\n}).await?;"
+                        "source": "let template_out = svix.transformation_template().update(\"transformation_template_id\", TemplateUpdate {\n    instructions_link: None,\n    filter_types: Some(vec![\"user.signup\".to_string(), \"user.deleted\".to_string()]),\n    feature_flag: Some(\"cool-new-feature\".to_string()),\n}).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var templateOut = await svix.TransformationTemplate.UpdateAsync(\"transformation_template_id\", new TemplateUpdate{\n    instructionsLink: null,\n    filterTypes: new string[] {\"user.signup\", \"user.deleted\"}\n})"
+                        "source": "var templateOut = await svix.TransformationTemplate.UpdateAsync(\"transformation_template_id\", new TemplateUpdate{\n    instructionsLink: null,\n    filterTypes: new string[] {\"user.signup\", \"user.deleted\"},\n    featureFlag: \"cool-new-feature\"\n})"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix transformation-template update \"transformation_template_id\" '{\n    \"instructionsLink\": null,\n    \"filterTypes\": [\"user.signup\", \"user.deleted\"]\n}'"
+                        "source": "svix transformation-template update \"transformation_template_id\" '{\n    \"instructionsLink\": null,\n    \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n    \"featureFlag\": \"cool-new-feature\"\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/{transformation_template_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"instructionsLink\": null,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"]\n    }'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/{transformation_template_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"instructionsLink\": null,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n        \"featureFlag\": \"cool-new-feature\"\n    }'"
                     }
                 ]
             }
