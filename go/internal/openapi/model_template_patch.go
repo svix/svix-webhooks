@@ -17,6 +17,7 @@ import (
 // TemplatePatch struct for TemplatePatch
 type TemplatePatch struct {
 	Description *string `json:"description,omitempty"`
+	FeatureFlag NullableString `json:"featureFlag,omitempty"`
 	FilterTypes []string `json:"filterTypes,omitempty"`
 	Instructions *string `json:"instructions,omitempty"`
 	InstructionsLink NullableString `json:"instructionsLink,omitempty"`
@@ -72,6 +73,48 @@ func (o *TemplatePatch) HasDescription() bool {
 // SetDescription gets a reference to the given string and assigns it to the Description field.
 func (o *TemplatePatch) SetDescription(v string) {
 	o.Description = &v
+}
+
+// GetFeatureFlag returns the FeatureFlag field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *TemplatePatch) GetFeatureFlag() string {
+	if o == nil || o.FeatureFlag.Get() == nil {
+		var ret string
+		return ret
+	}
+	return *o.FeatureFlag.Get()
+}
+
+// GetFeatureFlagOk returns a tuple with the FeatureFlag field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *TemplatePatch) GetFeatureFlagOk() (*string, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return o.FeatureFlag.Get(), o.FeatureFlag.IsSet()
+}
+
+// HasFeatureFlag returns a boolean if a field has been set.
+func (o *TemplatePatch) HasFeatureFlag() bool {
+	if o != nil && o.FeatureFlag.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetFeatureFlag gets a reference to the given NullableString and assigns it to the FeatureFlag field.
+func (o *TemplatePatch) SetFeatureFlag(v string) {
+	o.FeatureFlag.Set(&v)
+}
+// SetFeatureFlagNil sets the value for FeatureFlag to be an explicit nil
+func (o *TemplatePatch) SetFeatureFlagNil() {
+	o.FeatureFlag.Set(nil)
+}
+
+// UnsetFeatureFlag ensures that no value is present for FeatureFlag, not even an explicit nil
+func (o *TemplatePatch) UnsetFeatureFlag() {
+	o.FeatureFlag.Unset()
 }
 
 // GetFilterTypes returns the FilterTypes field value if set, zero value otherwise (both if not set or set to explicit null).
@@ -281,6 +324,9 @@ func (o TemplatePatch) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if o.Description != nil {
 		toSerialize["description"] = o.Description
+	}
+	if o.FeatureFlag.IsSet() {
+		toSerialize["featureFlag"] = o.FeatureFlag.Get()
 	}
 	if o.FilterTypes != nil {
 		toSerialize["filterTypes"] = o.FilterTypes
