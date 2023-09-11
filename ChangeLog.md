@@ -3,6 +3,9 @@
 ## Next
 * 
 
+## Version 1.12.0
+* Libs: update OpenAPI spec
+
 ## Version 1.11.0
 * Server: update Docker image to Debian bookworm.
 * Server: update dependencies.
