@@ -2,6 +2,8 @@ name: Javascript Release
 
 on:
   push:
+    branches:
+      - main
     tags:
       - 'v*'
 
@@ -26,7 +28,16 @@ jobs:
           cd javascript
           yarn
 
+      - name: Publish (pre-release)
+        if: github.ref_type == 'branch'
+        run: |
+          cd javascript
+          yarn publish --tag next
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: Publish
+        if: github.ref_type == 'tag'
         run: |
           cd javascript
           yarn publish
