@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'javascript/**'
     tags:
       - 'v*'
 
@@ -32,6 +34,7 @@ jobs:
         if: github.ref_type == 'branch'
         run: |
           cd javascript
+          yarn version --prerelease --preid next
           yarn publish --tag next
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
