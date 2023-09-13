@@ -1,6 +1,6 @@
 {
   "name": "svix",
-  "version": "1.12.0",
+  "version": "1.12.1-next.0",
   "description": "Svix API client",
   "author": "svix",
   "repository": "https://github.com/svix/svix-libs",
