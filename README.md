@@ -294,7 +294,7 @@ The operational webhooks utilize Svix, and are controlled by a special account s
 
 The first step is to turn it on by setting the `operational_webhook_address` config to point to your Svix server. The most common value for this setting is `http://127.0.0.1:8071/`, though it may be different based on your specific setup.
 
-The above step enables operational webhooks on this instance, and the next step is to enable it for your specific organization. As mentioned above, operational webhooks use a normal Svix account behind the scenes, so we'll first need to get the authentication token for this account, to do this you should run:
+The above step enables operational webhooks on this instance, and the next step is to enable it for your specific organization. As mentioned above, operational webhooks use a normal Svix account behind the scenes, so we'll first need to get the authentication token for this account. To do this you should run:
 
 ```
 svix-server jwt generate org_00000000000SvixManagement00
@@ -316,7 +316,7 @@ curl -X 'POST' \
     }'
 ```
 
-This is it, we now have operational webhooks enable for the default account. The only thing left is adding an endpoint where the operational webhooks are going to be sent to. For example:
+This is it, we now have operational webhooks enabled for the default account. The only thing left is adding an endpoint where the operational webhooks are going to be sent to. For example:
 
 ```
 curl -X 'POST' \
@@ -333,9 +333,9 @@ curl -X 'POST' \
     }'
 ```
 
-Please note, how we again use the org ID of the default account as the `app_id` (or rather `uid` in this case), when calling this function.
+Note how we use the org ID of the default account as the `app_id` (or rather `uid` in this case), when creating an endpoint.
 
-That's it. You should now have working operational webhooks. If you ever want to create a new endpoint, modify this existing one, or anything else, you just need to again get a JWT for the service account, and then use it like you would use any other Svix account.
+That's it. You should now have working operational webhooks. If you ever want to create a new endpoint, or modify an existing endpoint, you just need to generate a JWT for the service account, and then use the JWT like you would use any other Svix account.
 
 ## Asymmetric signatures
 
