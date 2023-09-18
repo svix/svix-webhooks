@@ -284,17 +284,58 @@ Example valid JWT for the secret `x` (so you can see the structure):
 
 ### Using a different signing algorithm
 
-As mentioned above, the default algorithm for signing JWTs is `HS256`. You can select a different algorithm by setting the `jwt_algorithm` config to one of these supported values: `HS384`, `HS512`, `RS256`, `RS384`, `RS512`, or `EdDSA`. 
+As mentioned above, the default algorithm for signing JWTs is `HS256`. You can select a different algorithm by setting the `jwt_algorithm` config to one of these supported values: `HS384`, `HS512`, `RS256`, `RS384`, `RS512`, or `EdDSA`.
 
 ## Operational (incoming) webhooks
 
 Operational webhooks are webhooks that you can subscribe to in order to get notified of important events occurring on the svix-server. The list of supported events is available in [the webhooks section of the API reference](https://api.svix.com/docs#tag/Webhooks).
 
-The operational webhooks utilize Svix, and are controlled by a special account with the following ID: `org_00000000000SvixManagement00`.
-To turn operational webhooks on, set the `operational_webhook_address` config to point to your Svix server, and create a JWT for the special account.
-Once those are set, create an `Application` with the `uid` set to the `org_id` you're interested in, and add `Endpoint`s for all of the events you'd like to subscribe to.
+The operational webhooks utilize Svix, and are controlled by a special account service account with the following ID: `org_00000000000SvixManagement00`.
 
-For example, for the default account, just create an app with the `uid` set to `org_23rb8YdGqMT0qIzpgGwdXfHirMu`.
+The first step is to turn it on by setting the `operational_webhook_address` config to point to your Svix server. The most common value for this setting is `http://127.0.0.1:8071/`, though it may be different based on your specific setup.
+
+The above step enables operational webhooks on this instance, and the next step is to enable it for your specific organization. As mentioned above, operational webhooks use a normal Svix account behind the scenes, so we'll first need to get the authentication token for this account. To do this you should run:
+
+```
+svix-server jwt generate org_00000000000SvixManagement00
+```
+
+This will give you a special JWT to access the operational webhooks account which is different to the normal JWT you use when interacting with Svix. Let's assume for example that the JWT it returned was `op_webhook_token_123`.
+
+To enable operational webhooks for a specific account we need to first create an application for it in the service account (remember: operational webhooks just use Svix behind the scenes). We'll use the default Svix account as an example: `org_23rb8YdGqMT0qIzpgGwdXfHirMu`.
+
+```
+curl -X 'POST' \
+  'http://localhost:8071/api/v1/app/' \
+  -H 'Authorization: Bearer op_webhook_token_123' \
+  -H 'Accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+        "name": "Operational webhook for default org",
+        "uid": "org_23rb8YdGqMT0qIzpgGwdXfHirMu"
+    }'
+```
+
+This is it, we now have operational webhooks enabled for the default account. The only thing left is adding an endpoint where the operational webhooks are going to be sent to. For example:
+
+```
+curl -X 'POST' \
+  'https://api.eu.svix.com/api/v1/app/org_23rb8YdGqMT0qIzpgGwdXfHirMu/endpoint/' \
+  -H 'Authorization: Bearer AUTH_TOKEN' \
+  -H 'Accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+        "url": "https://operational-webhook-destination.com/webhook/",
+        "filterTypes": [
+          “endpoint.updated”,
+          “endpoint.deleted”
+        ],
+    }'
+```
+
+Note how we use the org ID of the default account as the `app_id` (or rather `uid` in this case), when creating an endpoint.
+
+That's it. You should now have working operational webhooks. If you ever want to create a new endpoint, or modify an existing endpoint, you just need to generate a JWT for the service account, and then use the JWT like you would use any other Svix account.
 
 ## Asymmetric signatures
 
