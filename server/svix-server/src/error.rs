@@ -136,7 +136,11 @@ pub trait Traceable<T> {
 
 impl<T> Traceable<T> for Result<T> {
     fn trace(self) -> Result<T> {
-        self.map_err(|e| e.trace())
+        // Using `map_err` would lose `#[track_caller]` information
+        match self {
+            Err(e) => Err(e.trace()),
+            ok => ok,
+        }
     }
 }
 
