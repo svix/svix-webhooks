@@ -9,11 +9,11 @@
       request = build_request(http_method, path, opts)
       response = request.run
 
-      # retry 500s
+      # retry on 5XX and general network errors
       sleep_time = 0.05
       retry_count = 0
       (0..1).each do |n|
-        break if response.success? || response.code < 500
+        break if response.success? || (response.code < 500 && response.code > 0)
         retry_count += 1
         sleep(sleep_time)
         sleep_time = sleep_time * 2
