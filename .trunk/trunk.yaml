@@ -48,6 +48,9 @@ lint:
       paths:
         # do not reun
         - rust/src/lib.rs
+    - linters: [ALL]
+      paths:
+        - go/internal/openapi/**
 actions:
   enabled:
     - trunk-announce
