@@ -105,7 +105,18 @@ func (e *EventType) Patch(ctx context.Context, eventTypeName string, eventTypePa
 }
 
 func (e *EventType) Delete(ctx context.Context, eventTypeName string) error {
+	return e.DeleteWithOptions(ctx, eventTypeName, nil)
+}
+
+type EventTypeDeleteOptions struct {
+	Expunge *bool
+}
+
+func (e *EventType) DeleteWithOptions(ctx context.Context, eventTypeName string, options *EventTypeDeleteOptions) error {
 	req := e.api.EventTypeApi.V1EventTypeDelete(ctx, eventTypeName)
+	if options.Expunge != nil {
+		req = req.Expunge(*options.Expunge)
+	}
 	res, err := req.Execute()
 	return wrapError(err, res)
 }
