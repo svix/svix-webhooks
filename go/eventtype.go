@@ -114,8 +114,10 @@ type EventTypeDeleteOptions struct {
 
 func (e *EventType) DeleteWithOptions(ctx context.Context, eventTypeName string, options *EventTypeDeleteOptions) error {
 	req := e.api.EventTypeApi.V1EventTypeDelete(ctx, eventTypeName)
-	if options.Expunge != nil {
-		req = req.Expunge(*options.Expunge)
+	if options != nil {
+		if options.Expunge != nil {
+			req = req.Expunge(*options.Expunge)
+		}
 	}
 	res, err := req.Execute()
 	return wrapError(err, res)
