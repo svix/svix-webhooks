@@ -21,6 +21,7 @@ type TemplatePatch struct {
 	FilterTypes []string `json:"filterTypes,omitempty"`
 	Instructions *string `json:"instructions,omitempty"`
 	InstructionsLink NullableString `json:"instructionsLink,omitempty"`
+	Kind *TransformationTemplateKind `json:"kind,omitempty"`
 	Logo *string `json:"logo,omitempty"`
 	Name *string `json:"name,omitempty"`
 	Transformation *string `json:"transformation,omitempty"`
@@ -224,6 +225,38 @@ func (o *TemplatePatch) UnsetInstructionsLink() {
 	o.InstructionsLink.Unset()
 }
 
+// GetKind returns the Kind field value if set, zero value otherwise.
+func (o *TemplatePatch) GetKind() TransformationTemplateKind {
+	if o == nil || o.Kind == nil {
+		var ret TransformationTemplateKind
+		return ret
+	}
+	return *o.Kind
+}
+
+// GetKindOk returns a tuple with the Kind field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *TemplatePatch) GetKindOk() (*TransformationTemplateKind, bool) {
+	if o == nil || o.Kind == nil {
+		return nil, false
+	}
+	return o.Kind, true
+}
+
+// HasKind returns a boolean if a field has been set.
+func (o *TemplatePatch) HasKind() bool {
+	if o != nil && o.Kind != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetKind gets a reference to the given TransformationTemplateKind and assigns it to the Kind field.
+func (o *TemplatePatch) SetKind(v TransformationTemplateKind) {
+	o.Kind = &v
+}
+
 // GetLogo returns the Logo field value if set, zero value otherwise.
 func (o *TemplatePatch) GetLogo() string {
 	if o == nil || o.Logo == nil {
@@ -336,6 +369,9 @@ func (o TemplatePatch) MarshalJSON() ([]byte, error) {
 	}
 	if o.InstructionsLink.IsSet() {
 		toSerialize["instructionsLink"] = o.InstructionsLink.Get()
+	}
+	if o.Kind != nil {
+		toSerialize["kind"] = o.Kind
 	}
 	if o.Logo != nil {
 		toSerialize["logo"] = o.Logo
