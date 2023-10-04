@@ -1897,6 +1897,31 @@
                 "title": "HttpError",
                 "type": "object"
             },
+            "IncomingWebhook": {
+                "properties": {
+                    "channel": {
+                        "type": "string"
+                    },
+                    "channel_id": {
+                        "type": "string"
+                    },
+                    "configuration_url": {
+                        "format": "uri",
+                        "type": "string"
+                    },
+                    "url": {
+                        "format": "uri",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "channel",
+                    "channel_id",
+                    "configuration_url",
+                    "url"
+                ],
+                "type": "object"
+            },
             "IntegrationIn": {
                 "properties": {
                     "name": {
@@ -3257,6 +3282,40 @@
                         "type": "boolean"
                     }
                 },
+                "type": "object"
+            },
+            "SlackOauthPayloadIn": {
+                "properties": {
+                    "code": {
+                        "type": "string"
+                    },
+                    "redirect_uri": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "code",
+                    "redirect_uri"
+                ],
+                "type": "object"
+            },
+            "SlackOauthPayloadOut": {
+                "properties": {
+                    "error": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "incoming_webhook": {
+                        "$ref": "#/components/schemas/IncomingWebhook",
+                        "nullable": true
+                    },
+                    "ok": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "ok"
+                ],
                 "type": "object"
             },
             "StatisticsPeriod": {
@@ -18232,6 +18291,186 @@
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"instructionsLink\": null,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n        \"featureFlag\": \"cool-new-feature\"\n    }'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/transformation-template/oauth/slack": {
+            "post": {
+                "description": "Get Slack Incoming webhook URL",
+                "operationId": "v1.transformation-template.oauth.slack",
+                "parameters": [
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SlackOauthPayloadIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SlackOauthPayloadOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Authorize Slack",
+                "tags": [
+                    "Transformation Template"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const slackOauthPayloadOut = await svix.transformationTemplate.oauth(\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const slackOauthPayloadOut = await svix.transformationTemplate.oauth(\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "slack_oauth_payload_out = svix.transformation_template.oauth(SlackOauthPayloadIn\n), None)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "slack_oauth_payload_out = await svix.transformation_template.oauth(SlackOauthPayloadIn\n), None)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "slackOauthPayloadOut, err := svixClient.TransformationTemplate.Oauth(ctx, &SlackOauthPayloadIn{\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val slackOauthPayloadOut = svix.transformationTemplate.oauth(SlackOauthPayloadIn()\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "SlackOauthPayloadOut slackOauthPayloadOut = svix.getTransformationTemplate().oauth(new SlackOauthPayloadIn()\n)"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "slack_oauth_payload_out = svix.transformation_template.oauth(Svix::SlackOauthPayloadIn.new(\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let slack_oauth_payload_out = svix.transformation_template().oauth(SlackOauthPayloadIn {\n}, None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var slackOauthPayloadOut = await svix.TransformationTemplate.OauthAsync(new SlackOauthPayloadIn\n})"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix transformation-template oauth '\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/oauth/slack' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '\n    }'"
                     }
                 ]
             }
