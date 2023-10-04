@@ -5,7 +5,9 @@ on:
     branches:
       - main
     paths:
+      - 'openapi.json'
       - 'javascript/**'
+      - '.github/workflows/javascript-release.yml'
     tags:
       - 'v*'
 
