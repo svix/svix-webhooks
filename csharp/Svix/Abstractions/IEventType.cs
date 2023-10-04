@@ -8,9 +8,9 @@ namespace Svix.Abstractions
 {
     public interface IEventType
     {
-        bool Archive(string eventType, string idempotencyKey = default);
+        bool Archive(string eventType, bool? expunge = null, string idempotencyKey = default);
 
-        Task<bool> ArchiveAsync(string eventType, string idempotencyKey = default,
+        Task<bool> ArchiveAsync(string eventType, bool? expunge = null, string idempotencyKey = default,
             CancellationToken cancellationToken = default);
 
         EventTypeOut Create(EventTypeIn eventType, string idempotencyKey = default);

@@ -22,13 +22,13 @@ namespace Svix
             _eventTypeApi = eventTypeApi ?? throw new ArgumentNullException(nameof(eventTypeApi));
         }
 
-        public bool Archive(string eventType, string idempotencyKey = default)
+        public bool Archive(string eventType, bool? expunge = null, string idempotencyKey = default)
         {
             try
             {
                 var lResponse = _eventTypeApi.V1EventTypeDeleteWithHttpInfo(
                     eventType,
-                    null);
+                    expunge);
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
             }
@@ -43,13 +43,13 @@ namespace Svix
             }
         }
 
-        public async Task<bool> ArchiveAsync(string eventType, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        public async Task<bool> ArchiveAsync(string eventType, bool? expunge = null, string idempotencyKey = default, CancellationToken cancellationToken = default)
         {
             try
             {
                 var lResponse = await _eventTypeApi.V1EventTypeDeleteWithHttpInfoAsync(
                     eventType,
-                    null,
+                    expunge,
                     cancellationToken);
 
                 return lResponse.StatusCode == HttpStatusCode.NoContent;
