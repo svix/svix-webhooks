@@ -14,8 +14,8 @@ module Svix
       return @api.v1_message_create(app_id, message_in, options)
     end
 
-    def get(app_id, msg_id)
-      return @api.v1_message_get(app_id, msg_id)
+    def get(app_id, msg_id, options = {})
+      return @api.v1_message_get(app_id, msg_id, options)
     end
 
     def expunge_content(app_id, msg_id)
