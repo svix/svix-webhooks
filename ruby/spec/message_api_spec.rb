@@ -5,7 +5,7 @@ require_relative "../lib/svix/message_api.rb"
 RSpec.describe Svix::MessageAPI do
   let(:app_id) { "app_123" }
   let(:msg_id) { "msg_123" }
-  let(:options) { {foo: "bar"} }
+  let(:options) { {with_content: true} }
   subject { described_class.new(param_mock) }
 
   let(:param_mock) { double("MessageApiParam") }
