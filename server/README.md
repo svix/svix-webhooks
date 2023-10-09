@@ -25,13 +25,9 @@ You would need a working Rust complier in order to build Svix server.
 The easiest way is to use [rustup](https://rustup.rs/).
 Make sure you have a working Rust compiled (e.g. by using [rustup](https://rustup.rs/)).
 
-Once rustup is installed make sure to set up the `stable` toolchain by running:
+Once rustup is installed, switch to the `stable` toolchain and install required components:
 ```sh
 rustup default stable
-```
-
-Afterwards please install the following components:
-```sh
 rustup component add clippy rust-src cargo rustfmt
 ```
 
@@ -71,9 +67,9 @@ Now generate an auth token, you can do it by running:
 ```sh
 cargo run jwt generate
 ```
-TODO: add instruction for adding auth token to configuration
+Copy-paste this value into the value of `SVIX_JWT_SECRET` in `.env`.
 
-See [the main README](../README.md) for instructions on how to generate it in production.
+See [the main README](../README.md) for instructions on how to generate the auth token in production.
 
 ### Run the SQL migrations
 
