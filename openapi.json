@@ -327,7 +327,8 @@
                     "endpoint.replay",
                     "endpoint.recover",
                     "application.stats",
-                    "message.broadcast"
+                    "message.broadcast",
+                    "sdk.generate"
                 ],
                 "type": "string"
             },
@@ -1857,6 +1858,25 @@
             "ExportEnvironmentIn": {
                 "type": "object"
             },
+            "ExportEventTypeOut": {
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/BackgroundTaskStatus"
+                    },
+                    "task": {
+                        "$ref": "#/components/schemas/BackgroundTaskType"
+                    }
+                },
+                "required": [
+                    "id",
+                    "status",
+                    "task"
+                ],
+                "type": "object"
+            },
             "FontSizeConfig": {
                 "properties": {
                     "base": {
@@ -1895,31 +1915,6 @@
                     "detail"
                 ],
                 "title": "HttpError",
-                "type": "object"
-            },
-            "IncomingWebhook": {
-                "properties": {
-                    "channel": {
-                        "type": "string"
-                    },
-                    "channel_id": {
-                        "type": "string"
-                    },
-                    "configuration_url": {
-                        "format": "uri",
-                        "type": "string"
-                    },
-                    "url": {
-                        "format": "uri",
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "channel",
-                    "channel_id",
-                    "configuration_url",
-                    "url"
-                ],
                 "type": "object"
             },
             "IntegrationIn": {
@@ -3289,25 +3284,30 @@
                     "code": {
                         "type": "string"
                     },
-                    "redirect_uri": {
+                    "redirectUri": {
                         "type": "string"
                     }
                 },
                 "required": [
                     "code",
-                    "redirect_uri"
+                    "redirectUri"
                 ],
                 "type": "object"
             },
             "SlackOauthPayloadOut": {
                 "properties": {
+                    "channel": {
+                        "nullable": true,
+                        "type": "string"
+                    },
                     "error": {
                         "nullable": true,
                         "type": "string"
                     },
-                    "incoming_webhook": {
-                        "$ref": "#/components/schemas/IncomingWebhook",
-                        "nullable": true
+                    "incomingWebhookUrl": {
+                        "format": "uri",
+                        "nullable": true,
+                        "type": "string"
                     },
                     "ok": {
                         "type": "boolean"
@@ -16030,6 +16030,176 @@
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/event-type/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"name\": \"user.signup\",\n        \"description\": \"A user has signed up\",\n        \"archived\": false,\n        \"schemas\": {\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}},\n        \"featureFlag\": \"cool-new-feature\"\n    }'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/event-type/export/openapi/": {
+            "post": {
+                "description": "Exports event type definitions based on the OpenAPI schemas associated\nwith each existing event type",
+                "operationId": "v1.event-type.export-openapi",
+                "parameters": [
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExportEventTypeOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Event Type Export From Openapi",
+                "tags": [
+                    "Event Type"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const exportEventTypeOut = await svix.eventType.exportOpenapi();"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const exportEventTypeOut = await svix.eventType.exportOpenapi();"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "export_event_type_out = svix.event_type.export_openapi(None)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "export_event_type_out = await svix.event_type.export_openapi(None)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "exportEventTypeOut, err := svixClient.EventType.ExportOpenapi(ctx)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val exportEventTypeOut = svix.eventType.exportOpenapi()"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "ExportEventTypeOut exportEventTypeOut = svix.getEventType().exportOpenapi()"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "export_event_type_out = svix.event_type.export_openapi()"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let export_event_type_out = svix.event_type().export_openapi(None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var exportEventTypeOut = await svix.EventType.ExportOpenapiAsync()"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix event-type export-openapi "
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/event-type/export/openapi/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
