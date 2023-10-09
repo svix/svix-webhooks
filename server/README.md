@@ -23,47 +23,38 @@ For information on how to use this server please refer to the [running the serve
 
 You would need a working Rust complier in order to build Svix server.
 The easiest way is to use [rustup](https://rustup.rs/).
+Make sure you have a working Rust compiled (e.g. by using [rustup](https://rustup.rs/)).
 
+Once rustup is installed make sure to set up the `stable` toolchain by running:
+```bash
+rustup default stable
 ```
-# Clone the repository
+
+Afterwards please install the following components:
+```bash
+rustup component add clippy rust-src cargo rustfmt
+```
+
+Also build additional rust dependencies:
+```bash
+cargo install sqlx-cli cargo-watch
+```
+(`cargo-watch` is used for automatic reload while developing and can be skipped)
+
+Finally, clone and build Svix:
+
+```bash
 git clone https://github.com/svix/svix-webhooks
-# Change to the source directory
 cd svix-webhooks/server/
-# Build
 cargo install --path svix-server
 ```
 
 # Development
 
-## Setup your environment
-
-Make sure you have a working Rust compiled (e.g. by using [rustup](https://rustup.rs/)).
-
-Once rustup is installed make sure to set up the `stable` toolchain by running:
-```
-$ rustup default stable
-```
-
-Afterwards please install the following components:
-```
-$ rustup component add clippy rust-src cargo rustfmt
-```
-
-Install SQLx CLI for database migrations
-```
-$ cargo install sqlx-cli
-```
-
-For automatic reload while developing:
-```
-$ cargo install cargo-watch
-```
-
 ## Run the development server
 
 To run the auto-reloading development server run:
-```
-# Move to the inner svix-server directory.
+```bash
 cd svix-server
 cargo watch -x run
 ```
