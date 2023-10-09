@@ -26,24 +26,24 @@ The easiest way is to use [rustup](https://rustup.rs/).
 Make sure you have a working Rust compiled (e.g. by using [rustup](https://rustup.rs/)).
 
 Once rustup is installed make sure to set up the `stable` toolchain by running:
-```bash
+```sh
 rustup default stable
 ```
 
 Afterwards please install the following components:
-```bash
+```sh
 rustup component add clippy rust-src cargo rustfmt
 ```
 
 Also build additional rust dependencies:
-```bash
+```sh
 cargo install sqlx-cli cargo-watch
 ```
 (`cargo-watch` is used for automatic reload while developing and can be skipped)
 
 Finally, clone and build Svix:
 
-```bash
+```sh
 git clone https://github.com/svix/svix-webhooks
 cd svix-webhooks/server/
 cargo install --path svix-server
@@ -53,29 +53,25 @@ cargo install --path svix-server
 
 ## Run the development server
 
-To run the auto-reloading development server run:
-```bash
-cd svix-server
-cargo watch -x run
+Svix needs a few ancillary services.
+```sh
+ln -s docker-compose.base.yml docker-compose.yml
+docker compose up -d
 ```
 
-This however will fail, as you also need to point the server to the database and setup a few other configurations.
-
-The easiest way to achieve that is to use docker-compose to setup a dockerize development environment, and the related config.
-
-```
-# From the svix inner directory
+Setting some server configuration:
+```sh
+cd svix-server/
 cp development.env .env
-# Set up docker (may need sudo depending on your setup)
-docker-compose up
 ```
 
-Now run `cargo watch -x run` again to start the development server against your local docker environment.
+### setting an auth token
 
 Now generate an auth token, you can do it by running:
 ```
 cargo run jwt generate
 ```
+TODO: add instruction for adding auth token to configuration
 
 See [the main README](../README.md) for instructions on how to generate it in production.
 
@@ -94,6 +90,13 @@ More useful commands:
 cargo sqlx migrate info
 # Reverting the latest migration
 cargo sqlx migrate revert
+```
+
+### Starting Svix
+
+To run the auto-reloading development server run:
+```sh
+cargo watch -x run
 ```
 
 ## Creating new SQL migration
@@ -121,7 +124,7 @@ By default, `cargo test` will run the full test suite which assumes a running Po
 These databases are configured with the same environment variables as with running the actual server.
 
 The easiest way to get these tests to pass is to:
-    1. Use the `testing-docker-compose.yml` file with `docker-compose` to launch the databases on their default ports.
+    1. Start background services using `docker compose -f docker-compose.testing.yml up`
     2. Create a `.env` file as you would when running the server for real.
     3. Migrate the database with `cargo run -- migrate`.
     4. Run `cargo test --all-targets`
