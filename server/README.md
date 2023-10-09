@@ -61,7 +61,7 @@ cd svix-server/
 cp development.env .env
 ```
 
-### setting an auth token
+### Generating an auth token
 
 Now generate an auth token, you can do it by running:
 ```sh
