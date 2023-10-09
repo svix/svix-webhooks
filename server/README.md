@@ -67,7 +67,7 @@ Now generate an auth token, you can do it by running:
 ```sh
 cargo run jwt generate
 ```
-Copy-paste this value into the value of `SVIX_JWT_SECRET` in `.env`.
+This is the `Bearer` token that you can use to authenticate requests.
 
 See [the main README](../README.md) for instructions on how to generate the auth token in production.
 
@@ -94,6 +94,15 @@ To run the auto-reloading development server run:
 ```sh
 cargo watch -x run
 ```
+
+Test the server:
+```sh
+curl -X 'GET' \
+  'http://localhost:8071/api/v1/app/' \
+  -H 'Authorization: Bearer <what you generated before> \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json'
+  ```
 
 ## Creating new SQL migration
 
