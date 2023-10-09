@@ -2,6 +2,8 @@ include:
   - docker-compose.base.yml
 services:
   backend:
+    environment:
+      SVIX_JWT_SECRET: "x"
     build:
       context: .
       dockerfile: Dockerfile
