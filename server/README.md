@@ -68,7 +68,7 @@ cp development.env .env
 ### setting an auth token
 
 Now generate an auth token, you can do it by running:
-```
+```sh
 cargo run jwt generate
 ```
 TODO: add instruction for adding auth token to configuration
@@ -80,12 +80,12 @@ See [the main README](../README.md) for instructions on how to generate it in pr
 One last missing piece to the puzzle is running the SQL migrations.
 
 From the same directory as the `.env` file run:
-```
+```sh
 cargo sqlx migrate run
 ```
 
 More useful commands:
-```
+```sh
 # View the migrations and their status
 cargo sqlx migrate info
 # Reverting the latest migration
@@ -102,7 +102,7 @@ cargo watch -x run
 ## Creating new SQL migration
 
 As you saw before you run/revert migrations. To generate new migrations you just run:
-```
+```sh
 cargo sqlx migrate add -r MIGRATION_NAME
 ```
 
@@ -113,7 +113,7 @@ And fill up the created migration files.
 
 Please run these two commands before pushing code:
 
-```
+```sh
 cargo clippy --fix
 cargo fmt
 ```
