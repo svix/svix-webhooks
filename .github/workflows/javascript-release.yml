@@ -38,7 +38,7 @@ jobs:
           git config user.name "${{ github.event.pusher.name }}"
           git config user.email "${{ github.event.pusher.email }}"
           cd javascript
-          yarn version --prerelease --preid next
+          yarn version --prerelease --preid next-${{ github.sha }}
           yarn publish --tag next
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
