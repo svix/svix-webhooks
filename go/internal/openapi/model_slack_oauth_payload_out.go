@@ -16,8 +16,9 @@ import (
 
 // SlackOauthPayloadOut struct for SlackOauthPayloadOut
 type SlackOauthPayloadOut struct {
+	Channel NullableString `json:"channel,omitempty"`
 	Error NullableString `json:"error,omitempty"`
-	IncomingWebhook *IncomingWebhook `json:"incoming_webhook,omitempty"`
+	IncomingWebhookUrl NullableString `json:"incomingWebhookUrl,omitempty"`
 	Ok bool `json:"ok"`
 }
 
@@ -37,6 +38,48 @@ func NewSlackOauthPayloadOut(ok bool) *SlackOauthPayloadOut {
 func NewSlackOauthPayloadOutWithDefaults() *SlackOauthPayloadOut {
 	this := SlackOauthPayloadOut{}
 	return &this
+}
+
+// GetChannel returns the Channel field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *SlackOauthPayloadOut) GetChannel() string {
+	if o == nil || o.Channel.Get() == nil {
+		var ret string
+		return ret
+	}
+	return *o.Channel.Get()
+}
+
+// GetChannelOk returns a tuple with the Channel field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *SlackOauthPayloadOut) GetChannelOk() (*string, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return o.Channel.Get(), o.Channel.IsSet()
+}
+
+// HasChannel returns a boolean if a field has been set.
+func (o *SlackOauthPayloadOut) HasChannel() bool {
+	if o != nil && o.Channel.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetChannel gets a reference to the given NullableString and assigns it to the Channel field.
+func (o *SlackOauthPayloadOut) SetChannel(v string) {
+	o.Channel.Set(&v)
+}
+// SetChannelNil sets the value for Channel to be an explicit nil
+func (o *SlackOauthPayloadOut) SetChannelNil() {
+	o.Channel.Set(nil)
+}
+
+// UnsetChannel ensures that no value is present for Channel, not even an explicit nil
+func (o *SlackOauthPayloadOut) UnsetChannel() {
+	o.Channel.Unset()
 }
 
 // GetError returns the Error field value if set, zero value otherwise (both if not set or set to explicit null).
@@ -81,36 +124,46 @@ func (o *SlackOauthPayloadOut) UnsetError() {
 	o.Error.Unset()
 }
 
-// GetIncomingWebhook returns the IncomingWebhook field value if set, zero value otherwise.
-func (o *SlackOauthPayloadOut) GetIncomingWebhook() IncomingWebhook {
-	if o == nil || o.IncomingWebhook == nil {
-		var ret IncomingWebhook
+// GetIncomingWebhookUrl returns the IncomingWebhookUrl field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *SlackOauthPayloadOut) GetIncomingWebhookUrl() string {
+	if o == nil || o.IncomingWebhookUrl.Get() == nil {
+		var ret string
 		return ret
 	}
-	return *o.IncomingWebhook
+	return *o.IncomingWebhookUrl.Get()
 }
 
-// GetIncomingWebhookOk returns a tuple with the IncomingWebhook field value if set, nil otherwise
+// GetIncomingWebhookUrlOk returns a tuple with the IncomingWebhookUrl field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *SlackOauthPayloadOut) GetIncomingWebhookOk() (*IncomingWebhook, bool) {
-	if o == nil || o.IncomingWebhook == nil {
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *SlackOauthPayloadOut) GetIncomingWebhookUrlOk() (*string, bool) {
+	if o == nil  {
 		return nil, false
 	}
-	return o.IncomingWebhook, true
+	return o.IncomingWebhookUrl.Get(), o.IncomingWebhookUrl.IsSet()
 }
 
-// HasIncomingWebhook returns a boolean if a field has been set.
-func (o *SlackOauthPayloadOut) HasIncomingWebhook() bool {
-	if o != nil && o.IncomingWebhook != nil {
+// HasIncomingWebhookUrl returns a boolean if a field has been set.
+func (o *SlackOauthPayloadOut) HasIncomingWebhookUrl() bool {
+	if o != nil && o.IncomingWebhookUrl.IsSet() {
 		return true
 	}
 
 	return false
 }
 
-// SetIncomingWebhook gets a reference to the given IncomingWebhook and assigns it to the IncomingWebhook field.
-func (o *SlackOauthPayloadOut) SetIncomingWebhook(v IncomingWebhook) {
-	o.IncomingWebhook = &v
+// SetIncomingWebhookUrl gets a reference to the given NullableString and assigns it to the IncomingWebhookUrl field.
+func (o *SlackOauthPayloadOut) SetIncomingWebhookUrl(v string) {
+	o.IncomingWebhookUrl.Set(&v)
+}
+// SetIncomingWebhookUrlNil sets the value for IncomingWebhookUrl to be an explicit nil
+func (o *SlackOauthPayloadOut) SetIncomingWebhookUrlNil() {
+	o.IncomingWebhookUrl.Set(nil)
+}
+
+// UnsetIncomingWebhookUrl ensures that no value is present for IncomingWebhookUrl, not even an explicit nil
+func (o *SlackOauthPayloadOut) UnsetIncomingWebhookUrl() {
+	o.IncomingWebhookUrl.Unset()
 }
 
 // GetOk returns the Ok field value
@@ -139,11 +192,14 @@ func (o *SlackOauthPayloadOut) SetOk(v bool) {
 
 func (o SlackOauthPayloadOut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
+	if o.Channel.IsSet() {
+		toSerialize["channel"] = o.Channel.Get()
+	}
 	if o.Error.IsSet() {
 		toSerialize["error"] = o.Error.Get()
 	}
-	if o.IncomingWebhook != nil {
-		toSerialize["incoming_webhook"] = o.IncomingWebhook
+	if o.IncomingWebhookUrl.IsSet() {
+		toSerialize["incomingWebhookUrl"] = o.IncomingWebhookUrl.Get()
 	}
 	if true {
 		toSerialize["ok"] = o.Ok
