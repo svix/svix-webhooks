@@ -17,7 +17,7 @@ import (
 // SlackOauthPayloadIn struct for SlackOauthPayloadIn
 type SlackOauthPayloadIn struct {
 	Code string `json:"code"`
-	RedirectUri string `json:"redirect_uri"`
+	RedirectUri string `json:"redirectUri"`
 }
 
 // NewSlackOauthPayloadIn instantiates a new SlackOauthPayloadIn object
@@ -93,7 +93,7 @@ func (o SlackOauthPayloadIn) MarshalJSON() ([]byte, error) {
 		toSerialize["code"] = o.Code
 	}
 	if true {
-		toSerialize["redirect_uri"] = o.RedirectUri
+		toSerialize["redirectUri"] = o.RedirectUri
 	}
 	return json.Marshal(toSerialize)
 }

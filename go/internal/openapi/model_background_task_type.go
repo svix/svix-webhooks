@@ -24,6 +24,7 @@ const (
 	BACKGROUNDTASKTYPE_ENDPOINT_RECOVER BackgroundTaskType = "endpoint.recover"
 	BACKGROUNDTASKTYPE_APPLICATION_STATS BackgroundTaskType = "application.stats"
 	BACKGROUNDTASKTYPE_MESSAGE_BROADCAST BackgroundTaskType = "message.broadcast"
+	BACKGROUNDTASKTYPE_SDK_GENERATE BackgroundTaskType = "sdk.generate"
 )
 
 var allowedBackgroundTaskTypeEnumValues = []BackgroundTaskType{
@@ -31,6 +32,7 @@ var allowedBackgroundTaskTypeEnumValues = []BackgroundTaskType{
 	"endpoint.recover",
 	"application.stats",
 	"message.broadcast",
+	"sdk.generate",
 }
 
 func (v *BackgroundTaskType) UnmarshalJSON(src []byte) error {
