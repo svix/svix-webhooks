@@ -256,9 +256,9 @@ func (e *Endpoint) TransformationGet(ctx context.Context, appId string, endpoint
 	return &ret, nil
 }
 
-func (e *Endpoint) TransformatioPartialUpdate(ctx context.Context, appId string, endpointId string, transformation *EndpointTransformationIn) error {
+func (e *Endpoint) TransformationPartialUpdate(ctx context.Context, appId string, endpointId string, transformation *EndpointTransformationIn) error {
 	req := e.api.EndpointApi.V1EndpointTransformationPartialUpdate(ctx, appId, endpointId)
-	req.EndpointTransformationIn(openapi.EndpointTransformationIn(*transformation))
+	req = req.EndpointTransformationIn(openapi.EndpointTransformationIn(*transformation))
 
 	res, err := req.Execute()
 	if err != nil {
