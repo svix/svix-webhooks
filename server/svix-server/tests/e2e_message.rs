@@ -413,7 +413,7 @@ async fn test_payload_retention_period() {
         .await
         .unwrap();
 
-    assert_eq!(message.unwrap().payload, None);
+    assert_eq!(message.unwrap().legacy_payload, None);
 }
 
 #[tokio::test]

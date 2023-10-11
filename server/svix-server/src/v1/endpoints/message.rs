@@ -11,7 +11,7 @@ use crate::{
             MessageAttemptTriggerType, MessageId, MessageUid,
         },
     },
-    db::models::application,
+    db::models::{application, messagecontent},
     error::{HttpError, Result},
     queue::{MessageTaskBatch, TaskQueueProducer},
     v1::utils::{
@@ -30,11 +30,12 @@ use axum::{
     Json,
 };
 use chrono::{DateTime, Duration, Utc};
+use futures::FutureExt;
 use hyper::StatusCode;
 use schemars::JsonSchema;
-use sea_orm::ActiveModelTrait;
 use sea_orm::{entity::prelude::*, IntoActiveModel};
 use sea_orm::{sea_query::Expr, ActiveValue::Set};
+use sea_orm::{ActiveModelTrait, TransactionTrait};
 use serde::{Deserialize, Serialize};
 
 use serde_json::value::RawValue;
@@ -72,6 +73,12 @@ impl JsonSchema for RawPayload {
 
     fn is_referenceable() -> bool {
         false
+    }
+}
+
+impl std::fmt::Display for RawPayload {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.0.get())
     }
 }
 
@@ -146,18 +153,15 @@ impl ModelIn for MessageIn {
     fn update_model(self, model: &mut message::ActiveModel) {
         let MessageIn {
             uid,
-            payload,
             event_type,
             channels,
             payload_retention_period,
+            ..
         } = self;
 
         let expiration = Utc::now() + Duration::days(payload_retention_period);
 
         model.uid = Set(uid);
-        model.payload = Set(Some(
-            serde_json::from_str(payload.0.get()).expect("It has to be valid"),
-        ));
         model.event_type = Set(event_type);
         model.expiration = Set(expiration.with_timezone(&Utc).into());
         model.channels = Set(channels);
@@ -182,25 +186,32 @@ pub struct MessageOut {
 }
 
 impl MessageOut {
-    pub fn without_payload(model: message::Model) -> Self {
-        Self {
-            payload: RawPayload::from_string("{}".to_string()).expect("Can never fail"),
-            ..model.into()
-        }
-    }
-}
+    pub fn from_msg_and_payload(model: message::Model, content: Option<Vec<u8>>) -> Self {
+        // Thankfully it can never fail :)
+        let payload = content
+            .map(|p| serde_json::from_slice(&p).expect("Can never fail"))
+            .or(model.legacy_payload);
+        let payload = RawPayload::from_string(match payload {
+            Some(payload) => serde_json::to_string(&payload).expect("Can never fail"),
+            None => r#"{"expired":true}"#.to_string(),
+        })
+        .expect("Can never fail");
 
-// FIXME: This can and should be a derive macro
-impl From<message::Model> for MessageOut {
-    fn from(model: message::Model) -> Self {
         Self {
             uid: model.uid,
             event_type: model.event_type,
-            payload: RawPayload::from_string(match model.payload {
-                Some(payload) => serde_json::to_string(&payload).expect("Can never fail"),
-                None => r#"{"expired":true}"#.to_string(),
-            })
-            .expect("Can never fail"),
+            payload,
+            channels: model.channels,
+            id: model.id,
+            created_at: model.created_at.into(),
+        }
+    }
+
+    pub fn without_payload(model: message::Model) -> Self {
+        Self {
+            uid: model.uid,
+            event_type: model.event_type,
+            payload: RawPayload::from_string("{}".to_string()).expect("Can never fail"),
             channels: model.channels,
             id: model.id,
             created_at: model.created_at.into(),
@@ -263,19 +274,21 @@ async fn list_messages(
     let iterator = iterator_from_before_or_after(pagination.iterator, before, after);
     let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
 
-    let query = apply_pagination_desc(query, message::Column::Id, limit, iterator);
-    let into = |x: message::Model| {
+    let query = apply_pagination_desc(query, message::Column::Id, limit, iterator)
+        .find_also_related(messagecontent::Entity);
+
+    let msgs_and_content: Vec<(message::Model, Option<messagecontent::Model>)> =
+        query.all(db).await?.into_iter().collect();
+    let into = |(msg, content): (message::Model, Option<messagecontent::Model>)| {
         if with_content {
-            x.into()
+            MessageOut::from_msg_and_payload(msg, content.map(|c| c.payload))
         } else {
-            MessageOut::without_payload(x)
+            MessageOut::without_payload(msg)
         }
     };
 
-    let out = query.all(db).await?.into_iter().map(into).collect();
-
     Ok(Json(MessageOut::list_response(
-        out,
+        msgs_and_content.into_iter().map(into).collect(),
         limit as usize,
         is_prev,
     )))
@@ -337,12 +350,24 @@ pub(crate) async fn create_message_inner(
     // Should never happen since you're giving it an existing Application, but just in case
     .ok_or_else(|| Error::generic(format!("Application doesn't exist: {}", app.id)))?;
 
+    let payload = data.payload.to_string().into_bytes();
     let msg = message::ActiveModel {
         app_id: Set(app.id.clone()),
         org_id: Set(app.org_id),
         ..data.into()
     };
-    let msg = msg.insert(db).await?;
+
+    let (msg, msg_content) = db
+        .transaction(|txn| {
+            async move {
+                let msg = msg.insert(txn).await?;
+                let msg_content = messagecontent::ActiveModel::new(msg.id.clone(), payload);
+                let msg_content = msg_content.insert(txn).await?;
+                Ok((msg, msg_content))
+            }
+            .boxed()
+        })
+        .await?;
 
     let trigger_type = MessageAttemptTriggerType::Scheduled;
     if !create_message_app
@@ -363,7 +388,7 @@ pub(crate) async fn create_message_inner(
     }
 
     let msg_out = if with_content {
-        msg.into()
+        MessageOut::from_msg_and_payload(msg, Some(msg_content.payload))
     } else {
         MessageOut::without_payload(msg)
     };
@@ -386,12 +411,13 @@ async fn get_message(
     ValidatedQuery(GetMessageQueryParams { with_content }): ValidatedQuery<GetMessageQueryParams>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<Json<MessageOut>> {
-    let msg = message::Entity::secure_find_by_id_or_uid(app.id, msg_id)
+    let (msg, msg_content) = message::Entity::secure_find_by_id_or_uid(app.id, msg_id)
+        .find_also_related(messagecontent::Entity)
         .one(db)
         .await?
         .ok_or_else(|| HttpError::not_found(None, None))?;
     let msg_out = if with_content {
-        msg.into()
+        MessageOut::from_msg_and_payload(msg, msg_content.map(|c| c.payload))
     } else {
         MessageOut::without_payload(msg)
     };
@@ -407,15 +433,19 @@ async fn expunge_message_content(
     Path(ApplicationMsgPath { msg_id, .. }): Path<ApplicationMsgPath>,
     permissions::OrganizationWithApplication { app }: permissions::OrganizationWithApplication,
 ) -> Result<StatusCode> {
-    let mut msg = message::Entity::secure_find_by_id_or_uid(app.id, msg_id)
+    let msg = message::Entity::secure_find_by_id_or_uid(app.id, msg_id)
         .one(db)
         .await?
-        .ok_or_else(|| HttpError::not_found(None, None))?
-        .into_active_model();
+        .ok_or_else(|| HttpError::not_found(None, None))?;
+    let msg_id = msg.id.clone();
+    let mut msg = msg.into_active_model();
 
-    msg.payload = Set(None);
+    msg.legacy_payload = Set(None);
     msg.update(db).await?;
 
+    messagecontent::Entity::delete_by_id(msg_id)
+        .exec(db)
+        .await?;
     Ok(StatusCode::NO_CONTENT)
 }
 

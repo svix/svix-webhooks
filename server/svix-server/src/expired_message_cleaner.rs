@@ -14,7 +14,7 @@ pub async fn clean_expired_messages(
     pool: &DatabaseConnection,
     limit: u32,
 ) -> std::result::Result<UpdateResult, DbErr> {
-    let stmt = Statement::from_sql_and_values(
+    let legacy_stmt = Statement::from_sql_and_values(
         pool.get_database_backend(),
         r#"
         UPDATE message SET payload = NULL WHERE id IN (
@@ -28,9 +28,27 @@ pub async fn clean_expired_messages(
     "#,
         [limit.into()],
     );
+    let legacy_res = pool.execute(legacy_stmt).await?;
+
+    let stmt = Statement::from_sql_and_values(
+        pool.get_database_backend(),
+        r#"
+        DELETE FROM messagecontent WHERE id = any(
+            array(
+                SELECT id FROM messagecontent
+                WHERE 
+                    expiration <= now()
+                LIMIT $1
+                FOR UPDATE SKIP LOCKED
+            )
+        )
+    "#,
+        [limit.into()],
+    );
     let res = pool.execute(stmt).await?;
+
     Ok(UpdateResult {
-        rows_affected: res.rows_affected(),
+        rows_affected: legacy_res.rows_affected() + res.rows_affected(),
     })
 }
 
