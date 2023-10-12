@@ -21,9 +21,7 @@ pub enum Relation {
     #[sea_orm(
         belongs_to = "super::message::Entity",
         from = "Column::Id",
-        to = "super::message::Column::Id",
-        on_update = "NoAction",
-        on_delete = "Cascade"
+        to = "super::message::Column::Id"
     )]
     Message,
 }
