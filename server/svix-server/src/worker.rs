@@ -17,7 +17,7 @@ use crate::core::types::{
 use crate::core::webhook_http_client::{
     Error as WebhookClientError, RequestBuilder, WebhookClient,
 };
-use crate::db::models::{endpoint, message, messageattempt, messagedestination};
+use crate::db::models::{endpoint, message, messageattempt, messagecontent, messagedestination};
 use crate::error::{Error, ErrorType, HttpError, Result};
 use crate::queue::{MessageTask, QueueTask, TaskQueueConsumer, TaskQueueProducer};
 use crate::v1::utils::get_unix_timestamp;
@@ -711,56 +711,69 @@ async fn process_queue_task_inner(
     let WorkerContext { db, cache, .. }: WorkerContext<'_> = worker_context;
     let span = tracing::Span::current();
 
-    let (msg, force_endpoint, destination, trigger_type, attempt_count) = match queue_task {
-        QueueTask::HealthCheck => return Ok(()),
-        QueueTask::MessageV1(task) => {
-            let msg = message::Entity::find_by_id(task.msg_id.clone())
-                .one(db)
-                .await?
-                .ok_or_else(|| Error::generic("Unexpected: message doesn't exist"))?;
+    let (mut msg, msg_content, force_endpoint, destination, trigger_type, attempt_count) =
+        match queue_task {
+            QueueTask::HealthCheck => return Ok(()),
+            QueueTask::MessageV1(task) => {
+                let (msg, msg_content) = message::Entity::find_by_id(task.msg_id.clone())
+                    .find_also_related(messagecontent::Entity)
+                    .one(db)
+                    .await?
+                    .ok_or_else(|| Error::generic("Unexpected: message doesn't exist"))?;
 
-            let destination = messagedestination::Entity::secure_find_by_msg(task.msg_id.clone())
-                .filter(messagedestination::Column::EndpId.eq(task.endpoint_id.clone()))
-                .one(db)
-                .await?
-                .ok_or_else(|| {
-                    Error::generic(format!(
-                        "MessageDestination not found for message {}",
-                        &task.msg_id
-                    ))
-                })?;
+                let destination =
+                    messagedestination::Entity::secure_find_by_msg(task.msg_id.clone())
+                        .filter(messagedestination::Column::EndpId.eq(task.endpoint_id.clone()))
+                        .one(db)
+                        .await?
+                        .ok_or_else(|| {
+                            Error::generic(format!(
+                                "MessageDestination not found for message {}",
+                                &task.msg_id
+                            ))
+                        })?;
 
-            (
-                msg,
-                Some(task.endpoint_id),
-                Some(destination),
-                task.trigger_type,
-                task.attempt_count,
-            )
-        }
-        QueueTask::MessageBatch(task) => {
-            let msg = message::Entity::find_by_id(task.msg_id)
-                .one(db)
-                .await?
-                .ok_or_else(|| Error::generic("Unexpected: message doesn't exist"))?;
-            (msg, task.force_endpoint, None, task.trigger_type, 0)
-        }
-    };
+                (
+                    msg,
+                    msg_content,
+                    Some(task.endpoint_id),
+                    Some(destination),
+                    task.trigger_type,
+                    task.attempt_count,
+                )
+            }
+            QueueTask::MessageBatch(task) => {
+                let (msg, msg_content) = message::Entity::find_by_id(task.msg_id)
+                    .find_also_related(messagecontent::Entity)
+                    .one(db)
+                    .await?
+                    .ok_or_else(|| Error::generic("Unexpected: message doesn't exist"))?;
+                (
+                    msg,
+                    msg_content,
+                    task.force_endpoint,
+                    None,
+                    task.trigger_type,
+                    0,
+                )
+            }
+        };
 
     span.record("msg_id", &msg.id.0);
     span.record("app_id", &msg.app_id.0);
     span.record("org_id", &msg.org_id.0);
 
-    let payload = match msg
-        .payload
-        .as_ref()
-        .and_then(|value| serde_json::to_string(value).ok())
-    {
-        Some(p) => p,
-        None => {
-            tracing::warn!("Message payload is NULL; payload has most likely expired");
-            return Ok(());
-        }
+    let payload = msg_content
+        .and_then(|m| String::from_utf8(m.payload).ok())
+        .or_else(|| {
+            msg.legacy_payload
+                .take()
+                .and_then(|m| serde_json::to_string(&m).ok())
+        });
+
+    let Some(payload) = payload else {
+        tracing::warn!("Message payload is NULL; payload has most likely expired");
+        return Ok(());
     };
 
     let create_message_app = match CreateMessageApp::layered_fetch(

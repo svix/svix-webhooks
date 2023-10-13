@@ -12,7 +12,7 @@ use crate::{
             StatusCodeClass,
         },
     },
-    db::models::{endpoint, message, messagedestination},
+    db::models::{endpoint, message, messagecontent, messagedestination},
     error::{Error, HttpError, Result},
     queue::MessageTask,
     v1::{
@@ -123,10 +123,11 @@ impl EndpointMessageOut {
         dest: messagedestination::Model,
         msg: message::Model,
         with_content: bool,
+        msg_payload: Option<Vec<u8>>,
     ) -> EndpointMessageOut {
         EndpointMessageOut {
             msg: if with_content {
-                msg.into()
+                MessageOut::from_msg_and_payload(msg, msg_payload)
             } else {
                 MessageOut::without_payload(msg)
             },
@@ -246,19 +247,37 @@ async fn list_attempted_messages(
         iterator,
     );
 
+    let dests_and_msgs = dests_and_msgs.all(db).await?;
+
+    let msg_ids = dests_and_msgs
+        .iter()
+        .filter_map(|(_, msg)| msg.as_ref())
+        .map(|msg| msg.id.clone())
+        .collect::<Vec<MessageId>>();
+
+    // `find_also_related` can't be used multiple times in a query, so rather
+    // than build a complicated custom query, just query all the content
+    // data separately. Hopefully this isn't too painful:
+    let mut msg_content_map = messagecontent::Entity::secure_find_by_id_in(msg_ids)
+        .all(db)
+        .await?
+        .into_iter()
+        .map(|content| (content.id, content.payload))
+        .collect::<HashMap<MessageId, Vec<u8>>>();
+
     let into = |(dest, msg): (messagedestination::Model, Option<message::Model>)| {
         let msg =
             msg.ok_or_else(|| Error::database("No associated message with messagedestination"))?;
+        let payload = msg_content_map.remove(&msg.id);
         Ok(EndpointMessageOut::from_dest_and_msg(
             dest,
             msg,
             with_content,
+            payload,
         ))
     };
 
     let out = dests_and_msgs
-        .all(db)
-        .await?
         .into_iter()
         .map(into)
         .collect::<Result<_>>()?;
@@ -780,12 +799,17 @@ async fn resend_webhook(
     }): Path<ApplicationMsgEndpointPath>,
     permissions::Application { app }: permissions::Application,
 ) -> Result<NoContentWithCode<202>> {
-    let msg = message::Entity::secure_find_by_id_or_uid(app.id.clone(), msg_id)
+    let (msg, msg_content) = message::Entity::secure_find_by_id_or_uid(app.id.clone(), msg_id)
+        .find_also_related(messagecontent::Entity)
         .one(db)
         .await?
         .ok_or_else(|| HttpError::not_found(None, None))?;
 
-    if msg.payload.is_none() {
+    let msg_content = match msg_content {
+        Some(m) => serde_json::from_slice(&m.payload).ok(),
+        None => msg.legacy_payload,
+    };
+    if msg_content.is_none() {
         return Err(HttpError::bad_request(
             Some("missing_payload".to_string()),
             Some("Unable to resend message. Payload is missing (probably expired).".to_string()),

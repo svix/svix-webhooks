@@ -6,7 +6,7 @@ use reqwest::StatusCode;
 use sea_orm::{sea_query::Expr, ColumnTrait, EntityTrait, QueryFilter};
 
 use svix_server::{
-    db::models::message,
+    db::models::{message, messagecontent},
     expired_message_cleaner,
     v1::{
         endpoints::attempt::MessageAttemptOut,
@@ -384,7 +384,7 @@ async fn test_payload_retention_period() {
         .unwrap()
         .id;
 
-    let msg_row: MessageOut = client
+    let msg: MessageOut = client
         .post(
             &format!("api/v1/app/{}/msg/", &app_id),
             message_in(&app_id, serde_json::json!({"test": "value"})).unwrap(),
@@ -392,28 +392,34 @@ async fn test_payload_retention_period() {
         )
         .await
         .unwrap();
-    let msg_row_2 = msg_row.clone();
+    let msg_id = msg.id.clone();
 
-    message::Entity::update_many()
+    let res = messagecontent::Entity::update_many()
         .col_expr(
             message::Column::Expiration,
             Expr::value(Utc::now() - Duration::days(1)),
         )
-        .filter(message::Column::Id.eq(msg_row.id))
+        .filter(messagecontent::Column::Id.eq(msg_id.clone()))
         .exec(&pool)
         .await
         .unwrap();
+    assert_eq!(1, res.rows_affected);
+
+    let content: Option<messagecontent::Model> = messagecontent::Entity::find_by_id(msg_id.clone())
+        .one(&pool)
+        .await
+        .unwrap();
+    assert_eq!(content.unwrap().id, msg_id.clone());
 
     expired_message_cleaner::clean_expired_messages(&pool, 5000)
         .await
         .unwrap();
 
-    let message: Option<message::Model> = message::Entity::find_by_id(msg_row_2.id)
+    let content: Option<messagecontent::Model> = messagecontent::Entity::find_by_id(msg_id)
         .one(&pool)
         .await
         .unwrap();
-
-    assert_eq!(message.unwrap().payload, None);
+    assert!(content.is_none());
 }
 
 #[tokio::test]

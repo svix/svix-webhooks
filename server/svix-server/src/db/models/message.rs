@@ -19,8 +19,8 @@ pub struct Model {
     pub app_id: ApplicationId,
     pub event_type: EventTypeName,
     pub uid: Option<MessageUid>,
-    #[sea_orm(column_type = "JsonBinary", nullable)]
-    pub payload: Option<Json>,
+    #[sea_orm(column_type = "JsonBinary", column_name = "payload", nullable)]
+    pub legacy_payload: Option<Json>,
     pub channels: Option<EventChannelSet>,
     pub expiration: DateTimeWithTimeZone,
 }
@@ -37,6 +37,8 @@ pub enum Relation {
     Application,
     #[sea_orm(has_many = "super::messagedestination::Entity")]
     Messagedestination,
+    #[sea_orm(has_one = "super::messagecontent::Entity")]
+    Messagecontent,
 }
 
 impl Related<super::application::Entity> for Entity {
@@ -48,6 +50,12 @@ impl Related<super::application::Entity> for Entity {
 impl Related<super::messagedestination::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Messagedestination.def()
+    }
+}
+
+impl Related<super::messagecontent::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Messagecontent.def()
     }
 }
 
