@@ -60,7 +60,7 @@ func (m *MessageAttempt) ListByMsg(appId string, msgId string, options *MessageA
 			req = req.After(*options.After)
 		}
 		if options.StatusCodeClass != nil {
-			req.StatusCodeClass(openapi.StatusCodeClass(*options.StatusCodeClass))
+			req = req.StatusCodeClass(openapi.StatusCodeClass(*options.StatusCodeClass))
 		}
 		if options.Channel != nil {
 			req = req.Channel(*options.Channel)
