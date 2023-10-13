@@ -187,9 +187,14 @@ pub struct MessageOut {
 
 impl MessageOut {
     pub fn from_msg_and_payload(model: message::Model, content: Option<Vec<u8>>) -> Self {
-        // Thankfully it can never fail :)
         let payload = content
-            .map(|p| serde_json::from_slice(&p).expect("Can never fail"))
+            .and_then(|p| match serde_json::from_slice(&p) {
+                Ok(v) => Some(v),
+                Err(e) => {
+                    tracing::error!("Failed to parse content: {e}");
+                    None
+                }
+            })
             .or(model.legacy_payload);
         let payload = RawPayload::from_string(match payload {
             Some(payload) => serde_json::to_string(&payload).expect("Can never fail"),
