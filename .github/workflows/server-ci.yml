@@ -51,7 +51,7 @@ jobs:
       run: ./generate-openapi.sh --check
 
     - name: Start dependencies
-      run: docker-compose -f "server/testing-docker-compose.yml" up -d
+      run: docker-compose -f "server/docker-compose.testing.yml" up -d
 
     - name: Clippy
       uses: actions-rs/cargo@v1
@@ -81,7 +81,7 @@ jobs:
       run: ./run-tests.sh
 
     - name: Stop dependencies
-      run: docker-compose -f "server/testing-docker-compose.yml" down
+      run: docker-compose -f "server/docker-compose.testing.yml" down
 #  deny-check:
 #    name: cargo-deny check
 #    runs-on: ubuntu-latest
