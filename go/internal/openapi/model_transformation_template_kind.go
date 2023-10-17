@@ -22,11 +22,13 @@ type TransformationTemplateKind string
 const (
 	TRANSFORMATIONTEMPLATEKIND_CUSTOM TransformationTemplateKind = "Custom"
 	TRANSFORMATIONTEMPLATEKIND_SLACK TransformationTemplateKind = "Slack"
+	TRANSFORMATIONTEMPLATEKIND_DISCORD TransformationTemplateKind = "Discord"
 )
 
 var allowedTransformationTemplateKindEnumValues = []TransformationTemplateKind{
 	"Custom",
 	"Slack",
+	"Discord",
 }
 
 func (v *TransformationTemplateKind) UnmarshalJSON(src []byte) error {
