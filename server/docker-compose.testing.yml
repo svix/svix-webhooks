@@ -1,3 +1,4 @@
+version: "3.7"
 include:
   - docker-compose.base.yml
 services:
