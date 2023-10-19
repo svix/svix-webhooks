@@ -369,10 +369,11 @@ fn test_variable_substitution_available_vars() {
 }
 
 #[test]
-fn test_variable_substitution_requires_braces() {
+fn test_variable_substitution_braces_optional() {
     let src = r#"
     opentelemetry:
-        # Neglecting to use ${} notation means the port number will not be substituted. 
+        # Formerly failing to use ${} notation means the port number would not be substituted.
+        # Today, it works. Test that it continues to.
         address: "${OTEL_SCHEME}://${OTEL_HOST}:$OTEL_PORT"
     "#;
     let mut vars = HashMap::new();
@@ -383,7 +384,7 @@ fn test_variable_substitution_requires_braces() {
     // when lookups succeed, the token should be replaced.
     let otel = cfg.opentelemetry.unwrap();
     // Not the user-intended outcome, but it simplifies the parsing requirements.
-    assert_eq!(&otel.address, "https://127.0.0.1:$OTEL_PORT");
+    assert_eq!(&otel.address, "https://127.0.0.1:9999");
 }
 
 #[test]
@@ -548,4 +549,18 @@ fn test_transformation_validation_bad_syntax_is_err() {
     assert!(err
         .to_string()
         .contains("failed to parse transformation for sender `bad xform`"))
+}
+
+#[test]
+fn test_var_substitution_json_values_ok() {
+    let src = r#""#;
+    let mut vars = HashMap::new();
+    // GCP credentials is one place where we _expect_ json to be supplied as an env var.
+    // We need to be able to support this.
+    vars.insert(
+        "GOOGLE_APPLICATION_CREDENTIALS_JSON".into(),
+        r#"{"foo": true, "bar": 123}"#.into(),
+    );
+    // Should not be an error
+    let _cfg = Config::from_src(src, Some(&vars)).unwrap();
 }

@@ -2302,15 +2302,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "envsubst"
-version = "0.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cf2f29f6ee674d1229e5715dfc7e24f14395a20d66949e36032de68b31542643"
-dependencies = [
- "thiserror",
-]
-
-[[package]]
 name = "equivalent"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5392,6 +5383,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "shellexpand"
+version = "3.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "da03fa3b94cc19e3ebfc88c4229c49d8f08cdbd1228870a45f0ffdf84988e14b"
+
+[[package]]
 name = "signal-hook-registry"
 version = "1.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5669,7 +5666,6 @@ dependencies = [
  "deno_ast",
  "deno_runtime",
  "enum_dispatch",
- "envsubst",
  "http",
  "hyper 0.14.27",
  "once_cell",
@@ -5679,6 +5675,7 @@ dependencies = [
  "serde",
  "serde_json",
  "serde_yaml",
+ "shellexpand",
  "svix-bridge-plugin-queue",
  "svix-bridge-types",
  "svix-ksuid",

@@ -1,6 +1,8 @@
 use serde::Deserialize;
+use shellexpand::LookupError;
 use std::borrow::Cow;
 use std::collections::HashMap;
+use std::convert::Infallible;
 use std::io::{Error, ErrorKind};
 use std::net::SocketAddr;
 use std::num::NonZeroUsize;
@@ -40,12 +42,15 @@ impl Config {
         vars: Option<&HashMap<String, String>>,
     ) -> std::io::Result<Self> {
         let src = if let Some(vars) = vars {
-            Cow::Owned(envsubst::substitute(raw_src, vars).map_err(|e| {
+            let context = |key: &str| -> Result<Option<Cow<'_, str>>, LookupError<Infallible>> {
+                Ok(vars.get(key).map(Cow::from))
+            };
+            shellexpand::env_with_context(raw_src, context).map_err(|e: LookupError<_>| {
                 Error::new(
                     ErrorKind::Other,
                     format!("Variable substitution failed: {e}"),
                 )
-            })?)
+            })?
         } else {
             Cow::Borrowed(raw_src)
         };
