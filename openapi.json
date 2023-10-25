@@ -3671,7 +3671,10 @@
                 "enum": [
                     "Custom",
                     "Slack",
-                    "Discord"
+                    "Discord",
+                    "Teams",
+                    "Inngest",
+                    "Segment"
                 ],
                 "type": "string"
             },
