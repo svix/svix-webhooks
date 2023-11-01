@@ -189,6 +189,7 @@ fn generate_msg_headers(
     msg_id: &MessageId,
     signatures: String,
     whitelabel_headers: bool,
+    user_agent_header: Option<&str>,
     configured_headers: Option<&EndpointHeaders>,
     _endpoint_url: &str,
 ) -> Result<CaseSensitiveHeaderMap> {
@@ -213,10 +214,16 @@ fn generate_msg_headers(
         headers.insert("svix-timestamp".to_owned(), timestamp);
         headers.insert("svix-signature".to_owned(), signatures_str);
     }
+
+    let user_agent_value = HeaderValue::try_from(
+        user_agent_header.unwrap_or(USER_AGENT)
+    ).unwrap_or_else(|_| USER_AGENT.to_string().parse().unwrap());
+
     headers.insert(
         "user-agent".to_owned(),
-        USER_AGENT.to_string().parse().unwrap(),
+        user_agent_value,
     );
+
     headers.insert(
         "content-type".to_owned(),
         "application/json".parse().unwrap(),
@@ -299,6 +306,7 @@ async fn prepare_dispatch(
             &msg_task.msg_id,
             signatures,
             cfg.whitelabel_headers,
+            cfg.user_agent_header.as_deref(),
             endp.headers.as_ref(),
             &endp.url,
         )?
@@ -1035,6 +1043,7 @@ mod tests {
                 signatures,
                 WHITELABEL_HEADERS,
                 None,
+                None,
                 ENDPOINT_URL,
             )
             .unwrap(),
@@ -1065,7 +1074,36 @@ mod tests {
             &id,
             signatures,
             WHITELABEL_HEADERS,
+            None,
             Some(&EndpointHeaders(headers)),
+            ENDPOINT_URL,
+        )
+        .unwrap();
+
+        assert_eq!(expected, actual);
+    }
+
+    // Tests asymmetric signing keys
+    #[test]
+    fn test_generate_msg_headers_with_user_agent_header() {
+        let (mut expected, id) = mock_headers();
+        let _ = expected.insert("user-agent".to_owned(), "User Agent".parse().unwrap());
+
+        let signatures = sign_msg(
+            &Encryption::new_noop(),
+            TIMESTAMP,
+            BODY,
+            &id,
+            ENDPOINT_SIGNING_KEYS,
+        );
+
+        let actual = generate_msg_headers(
+            TIMESTAMP,
+            &id,
+            signatures,
+            WHITELABEL_HEADERS,
+            Some("User Agent"),
+            None,
             ENDPOINT_URL,
         )
         .unwrap();
@@ -1101,6 +1139,7 @@ mod tests {
             &test_message_id,
             signatures,
             WHITELABEL_HEADERS,
+            None,
             None,
             ENDPOINT_URL,
         )

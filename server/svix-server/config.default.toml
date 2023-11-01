@@ -90,6 +90,9 @@ cache_type = "memory"
 # If true, headers are prefixed with `Webhook-`, otherwise with `Svix-` (default).
 whitelabel_headers = false
 
+# Custom User-Agent header
+# user_agent_header = "User Agent"
+
 # If true, only allow https endpoints, otherwise also allow http.
 endpoint_https_only = false
 

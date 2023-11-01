@@ -150,6 +150,9 @@ pub struct ConfigurationInner {
     /// If true, headers are prefixed with `Webhook-`, otherwise with `Svix-` (default).
     pub whitelabel_headers: bool,
 
+    /// Custom User-Agent header
+    pub user_agent_header: Option<String>,
+
     /// If true, only allow https endpoints, otherwise also allow http.
     pub endpoint_https_only: bool,
 
