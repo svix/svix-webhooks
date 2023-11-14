@@ -25,6 +25,7 @@ const (
 	BACKGROUNDTASKTYPE_APPLICATION_STATS BackgroundTaskType = "application.stats"
 	BACKGROUNDTASKTYPE_MESSAGE_BROADCAST BackgroundTaskType = "message.broadcast"
 	BACKGROUNDTASKTYPE_SDK_GENERATE BackgroundTaskType = "sdk.generate"
+	BACKGROUNDTASKTYPE_EVENT_TYPE_AGGREGATE BackgroundTaskType = "event-type.aggregate"
 )
 
 var allowedBackgroundTaskTypeEnumValues = []BackgroundTaskType{
@@ -33,6 +34,7 @@ var allowedBackgroundTaskTypeEnumValues = []BackgroundTaskType{
 	"application.stats",
 	"message.broadcast",
 	"sdk.generate",
+	"event-type.aggregate",
 }
 
 func (v *BackgroundTaskType) UnmarshalJSON(src []byte) error {

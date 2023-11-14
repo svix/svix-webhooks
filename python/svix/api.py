@@ -4,6 +4,10 @@ from datetime import datetime
 
 from deprecated import deprecated
 
+from svix.internal.openapi_client.models.aggregate_event_types_out import AggregateEventTypesOut
+from svix.internal.openapi_client.models.app_usage_stats_in import AppUsageStatsIn
+from svix.internal.openapi_client.models.app_usage_stats_out import AppUsageStatsOut
+
 from .internal.openapi_client.api.application import (
     v1_application_create,
     v1_application_delete,
@@ -71,6 +75,7 @@ from .internal.openapi_client.api.message_attempt import (
     v1_message_attempt_list_by_msg,
     v1_message_attempt_resend,
 )
+from .internal.openapi_client.api.statistics import aggregate_event_types, calculate_aggregate_app_stats
 from .internal.openapi_client.client import AuthenticatedClient
 from .internal.openapi_client.models.app_portal_access_in import AppPortalAccessIn
 from .internal.openapi_client.models.app_portal_access_out import AppPortalAccessOut
@@ -1034,6 +1039,34 @@ class BackgroundTask(ApiBase):
         return get_background_task.sync(client=self._client, task_id=task_id)
 
 
+class StatisticsAsync(ApiBase):
+    async def calculate_aggregate_app_stats(
+        self, app_usage_stats_in: AppUsageStatsIn, options: PostOptions = PostOptions()
+    ) -> AppUsageStatsOut:
+        return await calculate_aggregate_app_stats.asyncio(
+            client=self._client,
+            json_body=app_usage_stats_in,
+            **options.to_dict(),
+        )
+
+    async def aggregate_event_types(self, task_id: str) -> AggregateEventTypesOut:
+        return await aggregate_event_types.asyncio(client=self._client)
+
+
+class Statistics(ApiBase):
+    def calculate_aggregate_app_stats(
+        self, app_usage_stats_in: AppUsageStatsIn, options: PostOptions = PostOptions()
+    ) -> AppUsageStatsOut:
+        return calculate_aggregate_app_stats.sync(
+            client=self._client,
+            json_body=app_usage_stats_in,
+            **options.to_dict(),
+        )
+
+    def aggregate_event_types(self, task_id: str) -> AggregateEventTypesOut:
+        return aggregate_event_types.sync(client=self._client)
+
+
 class ClientBase:
     _client: AuthenticatedClient
 
@@ -1091,6 +1124,10 @@ class SvixAsync(ClientBase):
     def message_attempt(self) -> MessageAttemptAsync:
         return MessageAttemptAsync(self._client)
 
+    @property
+    def statistics(self) -> StatisticsAsync:
+        return StatisticsAsync(self._client)
+
 
 class Svix(ClientBase):
     @property
@@ -1120,6 +1157,10 @@ class Svix(ClientBase):
     @property
     def message_attempt(self) -> MessageAttempt:
         return MessageAttempt(self._client)
+
+    @property
+    def statistics(self) -> Statistics:
+        return Statistics(self._client)
 
 
 __all__ = [

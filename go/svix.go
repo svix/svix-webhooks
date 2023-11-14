@@ -27,6 +27,7 @@ type (
 		Integration    *Integration
 		Message        *Message
 		MessageAttempt *MessageAttempt
+		Statistics     *Statistics
 	}
 )
 
@@ -96,6 +97,9 @@ func New(token string, options *SvixOptions) *Svix {
 			api: apiClient,
 		},
 		MessageAttempt: &MessageAttempt{
+			api: apiClient,
+		},
+		Statistics: &Statistics{
 			api: apiClient,
 		},
 	}

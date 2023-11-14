@@ -23,4 +23,5 @@ class Svix(token: String, options: SvixOptions = SvixOptions()) {
     val integration = Integration(token, options)
     val message = Message(token, options)
     val messageAttempt = MessageAttempt(token, options)
+    val statistics = Statistics(token, options)
 }
