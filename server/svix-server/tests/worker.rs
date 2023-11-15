@@ -110,7 +110,7 @@ async fn test_no_redirects_policy() {
             .await
             .unwrap();
 
-        let attempt = attempts.data.get(0);
+        let attempt = attempts.data.first();
 
         if let Some(attempt) = attempt {
             assert_eq!(attempt.response_status_code, 308);

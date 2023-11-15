@@ -792,7 +792,7 @@ pub mod tests {
 
         let test_key: Vec<(String, i32)> = pool.zpopmin(TEST_QUEUE, 1).await.unwrap();
 
-        assert_eq!(test_key.get(0).unwrap().0, v);
+        assert_eq!(test_key.first().unwrap().0, v);
 
         let should_be_none: Vec<(String, i32)> = pool.zpopmin(TEST_LEGACY, 1).await.unwrap();
         assert!(should_be_none.is_empty());
