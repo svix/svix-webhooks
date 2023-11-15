@@ -281,7 +281,7 @@ mod tests {
     /// equal to the mock message with the given message_id.
     async fn assert_recv(rx: &mut TaskQueueConsumer, message_id: &str) {
         assert_eq!(
-            *rx.receive_all().await.unwrap().get(0).unwrap().task,
+            *rx.receive_all().await.unwrap().first().unwrap().task,
             mock_message(message_id.to_owned())
         )
     }
