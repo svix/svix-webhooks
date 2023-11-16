@@ -24,6 +24,7 @@ class BasicTest {
                     )
                 )
             )
+            svix.application.delete(applicationOut.id)
         }
     }
 
