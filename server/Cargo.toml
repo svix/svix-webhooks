@@ -1,5 +1,7 @@
 [workspace]
 members = ["svix-server", "svix-server_derive"]
+resolver = "2"
 
 [patch.crates-io]
-hyper = { git = "https://github.com/svix/hyper/", rev = "b901ca7c" }
+# FIXME(onelson): this rev points to a draft PR which should be merged before this PR gets merged.
+hyper = { git = "https://github.com/svix/hyper/", rev = "19c6acd14767b769303b8ae274cc30e3f9602d61" }
