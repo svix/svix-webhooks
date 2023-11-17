@@ -3,14 +3,17 @@
 ## Next
 * 
 
+## Version 1.14.0
+* Server: separate out the message content to its own model.
+* Libs: expose two new Statistics endpoints.
+* Libs/Csharp: implement "hard delete" event types.
+* Libs/Ruby: accept additional options on message get.
+* Libs/Go: fix transformation partial update function.
+* Libs/Kotlin: fix errors with APIs that return no content (like endpoint delete).
+
 ## Version 1.13.0
 * Server: Fix tracking of backtrace in some error cases.
 * Libs/Go: expose `EventType.DeleteWithOptions`
-
-## New Contributors
-* @rolznz made their first contribution in https://github.com/svix/svix-webhooks/pull/1077
-
-**Full Changelog**: https://github.com/svix/svix-webhooks/compare/v1.12.0...v3324 
 
 ## Version 1.12.0
 * Libs: update OpenAPI spec
