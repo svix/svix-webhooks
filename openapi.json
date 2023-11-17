@@ -1,6 +1,25 @@
 {
     "components": {
         "schemas": {
+            "AggregateEventTypesOut": {
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/BackgroundTaskStatus"
+                    },
+                    "task": {
+                        "$ref": "#/components/schemas/BackgroundTaskType"
+                    }
+                },
+                "required": [
+                    "id",
+                    "status",
+                    "task"
+                ],
+                "type": "object"
+            },
             "AppPortalAccessIn": {
                 "properties": {
                     "featureFlags": {
@@ -328,7 +347,8 @@
                     "endpoint.recover",
                     "application.stats",
                     "message.broadcast",
-                    "sdk.generate"
+                    "sdk.generate",
+                    "event-type.aggregate"
                 ],
                 "type": "string"
             },
@@ -1457,28 +1477,6 @@
                         },
                         "description": "A pre-parsed JSON spec.",
                         "example": {
-                            "components": {
-                                "schemas": {
-                                    "Pet": {
-                                        "properties": {
-                                            "id": {
-                                                "format": "int64",
-                                                "type": "integer"
-                                            },
-                                            "name": {
-                                                "type": "string"
-                                            },
-                                            "tag": {
-                                                "type": "string"
-                                            }
-                                        },
-                                        "required": [
-                                            "id",
-                                            "name"
-                                        ]
-                                    }
-                                }
-                            },
                             "info": {
                                 "title": "Webhook Example",
                                 "version": "1.0.0"
@@ -1491,7 +1489,22 @@
                                             "content": {
                                                 "application/json": {
                                                     "schema": {
-                                                        "$ref": "#/components/schemas/Pet"
+                                                        "properties": {
+                                                            "id": {
+                                                                "format": "int64",
+                                                                "type": "integer"
+                                                            },
+                                                            "name": {
+                                                                "type": "string"
+                                                            },
+                                                            "tag": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "id",
+                                                            "name"
+                                                        ]
                                                     }
                                                 }
                                             },
@@ -1512,28 +1525,6 @@
                     "specRaw": {
                         "description": "A string, parsed by the server as YAML or JSON.",
                         "example": {
-                            "components": {
-                                "schemas": {
-                                    "Pet": {
-                                        "properties": {
-                                            "id": {
-                                                "format": "int64",
-                                                "type": "integer"
-                                            },
-                                            "name": {
-                                                "type": "string"
-                                            },
-                                            "tag": {
-                                                "type": "string"
-                                            }
-                                        },
-                                        "required": [
-                                            "id",
-                                            "name"
-                                        ]
-                                    }
-                                }
-                            },
                             "info": {
                                 "title": "Webhook Example",
                                 "version": "1.0.0"
@@ -1546,7 +1537,22 @@
                                             "content": {
                                                 "application/json": {
                                                     "schema": {
-                                                        "$ref": "#/components/schemas/Pet"
+                                                        "properties": {
+                                                            "id": {
+                                                                "format": "int64",
+                                                                "type": "integer"
+                                                            },
+                                                            "name": {
+                                                                "type": "string"
+                                                            },
+                                                            "tag": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "id",
+                                                            "name"
+                                                        ]
                                                     }
                                                 }
                                             },
@@ -2535,6 +2541,18 @@
             },
             "MessageAttemptHeadersOut": {
                 "properties": {
+                    "responseHeaders": {
+                        "items": {
+                            "items": {
+                                "type": "string"
+                            },
+                            "maxItems": 2,
+                            "minItems": 2,
+                            "type": "array"
+                        },
+                        "nullable": true,
+                        "type": "array"
+                    },
                     "sensitive": {
                         "items": {
                             "type": "string"
@@ -16333,62 +16351,62 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const eventTypeImportOpenApiOut = await svix.eventType.importOpenapi({\n    spec: {\"components\":{\"schemas\":{\"Pet\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Pet\"}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n    specRaw: {\"components\":{\"schemas\":{\"Pet\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Pet\"}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}}\n});"
+                        "source": "const eventTypeImportOpenApiOut = await svix.eventType.importOpenapi({\n    spec: {\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n    specRaw: {\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}}\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const eventTypeImportOpenApiOut = await svix.eventType.importOpenapi({\n    spec: {\"components\":{\"schemas\":{\"Pet\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Pet\"}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n    specRaw: {\"components\":{\"schemas\":{\"Pet\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Pet\"}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}}\n});"
+                        "source": "const eventTypeImportOpenApiOut = await svix.eventType.importOpenapi({\n    spec: {\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n    specRaw: {\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}}\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "event_type_import_open_api_out = svix.event_type.import_openapi(EventTypeImportOpenApiIn(\n    spec={\"components\": {\"schemas\": {\"Pet\": {\"properties\": {\"id\": {\"format\": \"int64\", \"type\": \"integer\"}, \"name\": {\"type\": \"string\"}, \"tag\": {\"type\": \"string\"}}, \"required\": [\"id\", \"name\"]}}}, \"info\": {\"title\": \"Webhook Example\", \"version\": \"1.0.0\"}, \"openapi\": \"3.1.0\", \"webhooks\": {\"pet.new\": {\"post\": {\"requestBody\": {\"content\": {\"application/json\": {\"schema\": {\"$ref\": \"#/components/schemas/Pet\"}}}, \"description\": \"Information about a new pet in the system\"}, \"responses\": {\"200\": {\"description\": \"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n    spec_raw={\"components\": {\"schemas\": {\"Pet\": {\"properties\": {\"id\": {\"format\": \"int64\", \"type\": \"integer\"}, \"name\": {\"type\": \"string\"}, \"tag\": {\"type\": \"string\"}}, \"required\": [\"id\", \"name\"]}}}, \"info\": {\"title\": \"Webhook Example\", \"version\": \"1.0.0\"}, \"openapi\": \"3.1.0\", \"webhooks\": {\"pet.new\": {\"post\": {\"requestBody\": {\"content\": {\"application/json\": {\"schema\": {\"$ref\": \"#/components/schemas/Pet\"}}}, \"description\": \"Information about a new pet in the system\"}, \"responses\": {\"200\": {\"description\": \"Return a 200 status to indicate that the data was received successfully\"}}}}}}\n), None)"
+                        "source": "event_type_import_open_api_out = svix.event_type.import_openapi(EventTypeImportOpenApiIn(\n    spec={\"info\": {\"title\": \"Webhook Example\", \"version\": \"1.0.0\"}, \"openapi\": \"3.1.0\", \"webhooks\": {\"pet.new\": {\"post\": {\"requestBody\": {\"content\": {\"application/json\": {\"schema\": {\"properties\": {\"id\": {\"format\": \"int64\", \"type\": \"integer\"}, \"name\": {\"type\": \"string\"}, \"tag\": {\"type\": \"string\"}}, \"required\": [\"id\", \"name\"]}}}, \"description\": \"Information about a new pet in the system\"}, \"responses\": {\"200\": {\"description\": \"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n    spec_raw={\"info\": {\"title\": \"Webhook Example\", \"version\": \"1.0.0\"}, \"openapi\": \"3.1.0\", \"webhooks\": {\"pet.new\": {\"post\": {\"requestBody\": {\"content\": {\"application/json\": {\"schema\": {\"properties\": {\"id\": {\"format\": \"int64\", \"type\": \"integer\"}, \"name\": {\"type\": \"string\"}, \"tag\": {\"type\": \"string\"}}, \"required\": [\"id\", \"name\"]}}}, \"description\": \"Information about a new pet in the system\"}, \"responses\": {\"200\": {\"description\": \"Return a 200 status to indicate that the data was received successfully\"}}}}}}\n), None)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "event_type_import_open_api_out = await svix.event_type.import_openapi(EventTypeImportOpenApiIn(\n    spec={\"components\": {\"schemas\": {\"Pet\": {\"properties\": {\"id\": {\"format\": \"int64\", \"type\": \"integer\"}, \"name\": {\"type\": \"string\"}, \"tag\": {\"type\": \"string\"}}, \"required\": [\"id\", \"name\"]}}}, \"info\": {\"title\": \"Webhook Example\", \"version\": \"1.0.0\"}, \"openapi\": \"3.1.0\", \"webhooks\": {\"pet.new\": {\"post\": {\"requestBody\": {\"content\": {\"application/json\": {\"schema\": {\"$ref\": \"#/components/schemas/Pet\"}}}, \"description\": \"Information about a new pet in the system\"}, \"responses\": {\"200\": {\"description\": \"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n    spec_raw={\"components\": {\"schemas\": {\"Pet\": {\"properties\": {\"id\": {\"format\": \"int64\", \"type\": \"integer\"}, \"name\": {\"type\": \"string\"}, \"tag\": {\"type\": \"string\"}}, \"required\": [\"id\", \"name\"]}}}, \"info\": {\"title\": \"Webhook Example\", \"version\": \"1.0.0\"}, \"openapi\": \"3.1.0\", \"webhooks\": {\"pet.new\": {\"post\": {\"requestBody\": {\"content\": {\"application/json\": {\"schema\": {\"$ref\": \"#/components/schemas/Pet\"}}}, \"description\": \"Information about a new pet in the system\"}, \"responses\": {\"200\": {\"description\": \"Return a 200 status to indicate that the data was received successfully\"}}}}}}\n), None)"
+                        "source": "event_type_import_open_api_out = await svix.event_type.import_openapi(EventTypeImportOpenApiIn(\n    spec={\"info\": {\"title\": \"Webhook Example\", \"version\": \"1.0.0\"}, \"openapi\": \"3.1.0\", \"webhooks\": {\"pet.new\": {\"post\": {\"requestBody\": {\"content\": {\"application/json\": {\"schema\": {\"properties\": {\"id\": {\"format\": \"int64\", \"type\": \"integer\"}, \"name\": {\"type\": \"string\"}, \"tag\": {\"type\": \"string\"}}, \"required\": [\"id\", \"name\"]}}}, \"description\": \"Information about a new pet in the system\"}, \"responses\": {\"200\": {\"description\": \"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n    spec_raw={\"info\": {\"title\": \"Webhook Example\", \"version\": \"1.0.0\"}, \"openapi\": \"3.1.0\", \"webhooks\": {\"pet.new\": {\"post\": {\"requestBody\": {\"content\": {\"application/json\": {\"schema\": {\"properties\": {\"id\": {\"format\": \"int64\", \"type\": \"integer\"}, \"name\": {\"type\": \"string\"}, \"tag\": {\"type\": \"string\"}}, \"required\": [\"id\", \"name\"]}}}, \"description\": \"Information about a new pet in the system\"}, \"responses\": {\"200\": {\"description\": \"Return a 200 status to indicate that the data was received successfully\"}}}}}}\n), None)"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "eventTypeImportOpenApiOut, err := svixClient.EventType.ImportOpenapi(ctx, &EventTypeImportOpenApiIn{\n    Spec: map[interface{}]interface{}{\"components\": map[interface{}]interface{}{\"schemas\": map[interface{}]interface{}{\"Pet\": map[interface{}]interface{}{\"properties\": map[interface{}]interface{}{\"id\": map[string]interface{}{\"format\": \"int64\", \"type\": \"integer\"}, \"name\": map[string]interface{}{\"type\": \"string\"}, \"tag\": map[string]interface{}{\"type\": \"string\"}}, \"required\": []string{\"id\", \"name\"}}}}, \"info\": map[string]interface{}{\"title\": \"Webhook Example\", \"version\": \"1.0.0\"}, \"openapi\": \"3.1.0\", \"webhooks\": map[interface{}]interface{}{\"pet.new\": map[interface{}]interface{}{\"post\": map[interface{}]interface{}{\"requestBody\": map[interface{}]interface{}{\"content\": map[interface{}]interface{}{\"application/json\": map[interface{}]interface{}{\"schema\": map[string]interface{}{\"$ref\": \"#/components/schemas/Pet\"}}}, \"description\": \"Information about a new pet in the system\"}, \"responses\": map[interface{}]interface{}{\"200\": map[string]interface{}{\"description\": \"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n    SpecRaw: map[interface{}]interface{}{\"components\": map[interface{}]interface{}{\"schemas\": map[interface{}]interface{}{\"Pet\": map[interface{}]interface{}{\"properties\": map[interface{}]interface{}{\"id\": map[string]interface{}{\"format\": \"int64\", \"type\": \"integer\"}, \"name\": map[string]interface{}{\"type\": \"string\"}, \"tag\": map[string]interface{}{\"type\": \"string\"}}, \"required\": []string{\"id\", \"name\"}}}}, \"info\": map[string]interface{}{\"title\": \"Webhook Example\", \"version\": \"1.0.0\"}, \"openapi\": \"3.1.0\", \"webhooks\": map[interface{}]interface{}{\"pet.new\": map[interface{}]interface{}{\"post\": map[interface{}]interface{}{\"requestBody\": map[interface{}]interface{}{\"content\": map[interface{}]interface{}{\"application/json\": map[interface{}]interface{}{\"schema\": map[string]interface{}{\"$ref\": \"#/components/schemas/Pet\"}}}, \"description\": \"Information about a new pet in the system\"}, \"responses\": map[interface{}]interface{}{\"200\": map[string]interface{}{\"description\": \"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n})"
+                        "source": "eventTypeImportOpenApiOut, err := svixClient.EventType.ImportOpenapi(ctx, &EventTypeImportOpenApiIn{\n    Spec: map[interface{}]interface{}{\"info\": map[string]interface{}{\"title\": \"Webhook Example\", \"version\": \"1.0.0\"}, \"openapi\": \"3.1.0\", \"webhooks\": map[interface{}]interface{}{\"pet.new\": map[interface{}]interface{}{\"post\": map[interface{}]interface{}{\"requestBody\": map[interface{}]interface{}{\"content\": map[interface{}]interface{}{\"application/json\": map[interface{}]interface{}{\"schema\": map[interface{}]interface{}{\"properties\": map[interface{}]interface{}{\"id\": map[string]interface{}{\"format\": \"int64\", \"type\": \"integer\"}, \"name\": map[string]interface{}{\"type\": \"string\"}, \"tag\": map[string]interface{}{\"type\": \"string\"}}, \"required\": []string{\"id\", \"name\"}}}}, \"description\": \"Information about a new pet in the system\"}, \"responses\": map[interface{}]interface{}{\"200\": map[string]interface{}{\"description\": \"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n    SpecRaw: map[interface{}]interface{}{\"info\": map[string]interface{}{\"title\": \"Webhook Example\", \"version\": \"1.0.0\"}, \"openapi\": \"3.1.0\", \"webhooks\": map[interface{}]interface{}{\"pet.new\": map[interface{}]interface{}{\"post\": map[interface{}]interface{}{\"requestBody\": map[interface{}]interface{}{\"content\": map[interface{}]interface{}{\"application/json\": map[interface{}]interface{}{\"schema\": map[interface{}]interface{}{\"properties\": map[interface{}]interface{}{\"id\": map[string]interface{}{\"format\": \"int64\", \"type\": \"integer\"}, \"name\": map[string]interface{}{\"type\": \"string\"}, \"tag\": map[string]interface{}{\"type\": \"string\"}}, \"required\": []string{\"id\", \"name\"}}}}, \"description\": \"Information about a new pet in the system\"}, \"responses\": map[interface{}]interface{}{\"200\": map[string]interface{}{\"description\": \"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val eventTypeImportOpenApiOut = svix.eventType.importOpenapi(EventTypeImportOpenApiIn()\n    .spec(\"\"\"{\"components\":{\"schemas\":{\"Pet\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Pet\"}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}}\"\"\")\n    .specRaw(\"\"\"{\"components\":{\"schemas\":{\"Pet\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Pet\"}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}}\"\"\")\n)"
+                        "source": "val eventTypeImportOpenApiOut = svix.eventType.importOpenapi(EventTypeImportOpenApiIn()\n    .spec(\"\"\"{\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}}\"\"\")\n    .specRaw(\"\"\"{\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}}\"\"\")\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "EventTypeImportOpenApiOut eventTypeImportOpenApiOut = svix.getEventType().importOpenapi(new EventTypeImportOpenApiIn()\n    .spec(\"{\\\"components\\\":{\\\"schemas\\\":{\\\"Pet\\\":{\\\"properties\\\":{\\\"id\\\":{\\\"format\\\":\\\"int64\\\",\\\"type\\\":\\\"integer\\\"},\\\"name\\\":{\\\"type\\\":\\\"string\\\"},\\\"tag\\\":{\\\"type\\\":\\\"string\\\"}},\\\"required\\\":[\\\"id\\\",\\\"name\\\"]}}},\\\"info\\\":{\\\"title\\\":\\\"Webhook Example\\\",\\\"version\\\":\\\"1.0.0\\\"},\\\"openapi\\\":\\\"3.1.0\\\",\\\"webhooks\\\":{\\\"pet.new\\\":{\\\"post\\\":{\\\"requestBody\\\":{\\\"content\\\":{\\\"application/json\\\":{\\\"schema\\\":{\\\"$ref\\\":\\\"#/components/schemas/Pet\\\"}}},\\\"description\\\":\\\"Information about a new pet in the system\\\"},\\\"responses\\\":{\\\"200\\\":{\\\"description\\\":\\\"Return a 200 status to indicate that the data was received successfully\\\"}}}}}}\")\n    .specRaw(\"{\\\"components\\\":{\\\"schemas\\\":{\\\"Pet\\\":{\\\"properties\\\":{\\\"id\\\":{\\\"format\\\":\\\"int64\\\",\\\"type\\\":\\\"integer\\\"},\\\"name\\\":{\\\"type\\\":\\\"string\\\"},\\\"tag\\\":{\\\"type\\\":\\\"string\\\"}},\\\"required\\\":[\\\"id\\\",\\\"name\\\"]}}},\\\"info\\\":{\\\"title\\\":\\\"Webhook Example\\\",\\\"version\\\":\\\"1.0.0\\\"},\\\"openapi\\\":\\\"3.1.0\\\",\\\"webhooks\\\":{\\\"pet.new\\\":{\\\"post\\\":{\\\"requestBody\\\":{\\\"content\\\":{\\\"application/json\\\":{\\\"schema\\\":{\\\"$ref\\\":\\\"#/components/schemas/Pet\\\"}}},\\\"description\\\":\\\"Information about a new pet in the system\\\"},\\\"responses\\\":{\\\"200\\\":{\\\"description\\\":\\\"Return a 200 status to indicate that the data was received successfully\\\"}}}}}}\")\n)"
+                        "source": "EventTypeImportOpenApiOut eventTypeImportOpenApiOut = svix.getEventType().importOpenapi(new EventTypeImportOpenApiIn()\n    .spec(\"{\\\"info\\\":{\\\"title\\\":\\\"Webhook Example\\\",\\\"version\\\":\\\"1.0.0\\\"},\\\"openapi\\\":\\\"3.1.0\\\",\\\"webhooks\\\":{\\\"pet.new\\\":{\\\"post\\\":{\\\"requestBody\\\":{\\\"content\\\":{\\\"application/json\\\":{\\\"schema\\\":{\\\"properties\\\":{\\\"id\\\":{\\\"format\\\":\\\"int64\\\",\\\"type\\\":\\\"integer\\\"},\\\"name\\\":{\\\"type\\\":\\\"string\\\"},\\\"tag\\\":{\\\"type\\\":\\\"string\\\"}},\\\"required\\\":[\\\"id\\\",\\\"name\\\"]}}},\\\"description\\\":\\\"Information about a new pet in the system\\\"},\\\"responses\\\":{\\\"200\\\":{\\\"description\\\":\\\"Return a 200 status to indicate that the data was received successfully\\\"}}}}}}\")\n    .specRaw(\"{\\\"info\\\":{\\\"title\\\":\\\"Webhook Example\\\",\\\"version\\\":\\\"1.0.0\\\"},\\\"openapi\\\":\\\"3.1.0\\\",\\\"webhooks\\\":{\\\"pet.new\\\":{\\\"post\\\":{\\\"requestBody\\\":{\\\"content\\\":{\\\"application/json\\\":{\\\"schema\\\":{\\\"properties\\\":{\\\"id\\\":{\\\"format\\\":\\\"int64\\\",\\\"type\\\":\\\"integer\\\"},\\\"name\\\":{\\\"type\\\":\\\"string\\\"},\\\"tag\\\":{\\\"type\\\":\\\"string\\\"}},\\\"required\\\":[\\\"id\\\",\\\"name\\\"]}}},\\\"description\\\":\\\"Information about a new pet in the system\\\"},\\\"responses\\\":{\\\"200\\\":{\\\"description\\\":\\\"Return a 200 status to indicate that the data was received successfully\\\"}}}}}}\")\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "event_type_import_open_api_out = svix.event_type.import_openapi(Svix::EventTypeImportOpenApiIn.new({\n    \"spec\": {\"components\":{\"schemas\":{\"Pet\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Pet\"}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n    \"spec_raw\": {\"components\":{\"schemas\":{\"Pet\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Pet\"}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}}\n}))"
+                        "source": "event_type_import_open_api_out = svix.event_type.import_openapi(Svix::EventTypeImportOpenApiIn.new({\n    \"spec\": {\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n    \"spec_raw\": {\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}}\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let event_type_import_open_api_out = svix.event_type().import_openapi(EventTypeImportOpenApiIn {\n    spec: Some(json!({\"components\":{\"schemas\":{\"Pet\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Pet\"}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}})),\n    spec_raw: Some(json!({\"components\":{\"schemas\":{\"Pet\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Pet\"}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}})),\n}, None).await?;"
+                        "source": "let event_type_import_open_api_out = svix.event_type().import_openapi(EventTypeImportOpenApiIn {\n    spec: Some(json!({\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}})),\n    spec_raw: Some(json!({\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}})),\n}, None).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var eventTypeImportOpenApiOut = await svix.EventType.ImportOpenapiAsync(new EventTypeImportOpenApiIn{\n    spec: new {\"components\":{\"schemas\":{\"Pet\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Pet\"}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n    specRaw: new {\"components\":{\"schemas\":{\"Pet\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Pet\"}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}}\n})"
+                        "source": "var eventTypeImportOpenApiOut = await svix.EventType.ImportOpenapiAsync(new EventTypeImportOpenApiIn{\n    spec: new {\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n    specRaw: new {\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}}\n})"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix event-type import-openapi '{\n    \"spec\": {\"components\":{\"schemas\":{\"Pet\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Pet\"}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n    \"specRaw\": {\"components\":{\"schemas\":{\"Pet\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Pet\"}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}}\n}'"
+                        "source": "svix event-type import-openapi '{\n    \"spec\": {\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n    \"specRaw\": {\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}}\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/event-type/import/openapi/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"spec\": {\"components\":{\"schemas\":{\"Pet\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Pet\"}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n        \"specRaw\": {\"components\":{\"schemas\":{\"Pet\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/Pet\"}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}}\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/event-type/import/openapi/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"spec\": {\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n        \"specRaw\": {\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}}\n    }'"
                     }
                 ]
             }
@@ -17983,8 +18001,8 @@
         },
         "/api/v1/stats/usage/app/": {
             "post": {
-                "description": "Creates a background task to calculate the message destinations for all applications in the environment.",
-                "operationId": "calculate_aggregate_app_stats",
+                "description": "Creates a background task to calculate the message destinations for all applications in the environment.\n\nNote that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to\nretrieve the results of the operation.",
+                "operationId": "aggregate_app_stats",
                 "parameters": [
                     {
                         "description": "The request's idempotency key",
@@ -18093,7 +18111,104 @@
                         "HTTPBearer": []
                     }
                 ],
-                "summary": "Calculate Aggregate App Stats",
+                "summary": "Aggregate App Stats",
+                "tags": [
+                    "Statistics"
+                ]
+            }
+        },
+        "/api/v1/stats/usage/event-types/": {
+            "put": {
+                "description": "Creates a background task to calculate the listed event types for all apps in the organization.\n\nNote that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to\nretrieve the results of the operation.",
+                "operationId": "aggregate_event_types",
+                "responses": {
+                    "202": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AggregateEventTypesOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Aggregate Event Types",
                 "tags": [
                     "Statistics"
                 ]
@@ -19761,6 +19876,10 @@
         {
             "description": "The background tasks that have been executed for your environment.",
             "name": "Background Tasks"
+        },
+        {
+            "description": "Generate statistics about your Svix utilization",
+            "name": "Statistics"
         }
     ],
     "x-tagGroups": [
@@ -19793,6 +19912,12 @@
             "tags": [
                 "Webhooks"
             ]
+        },
+        {
+            "name": "Statistics",
+            "tags": [
+                "Statistics"
+            ]
         }
     ],
     "x-webhooks": {
@@ -19803,6 +19928,15 @@
                 "requestBody": {
                     "content": {
                         "application/json": {
+                            "example": {
+                                "data": {
+                                    "appId": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                    "appUid": "unique-app-identifier",
+                                    "endpointId": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                    "endpointUid": "unique-endpoint-identifier"
+                                },
+                                "type": "endpoint.created"
+                            },
                             "schema": {
                                 "$ref": "#/components/schemas/EndpointCreatedEvent"
                             }
@@ -19827,6 +19961,15 @@
                 "requestBody": {
                     "content": {
                         "application/json": {
+                            "example": {
+                                "data": {
+                                    "appId": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                    "appUid": "unique-app-identifier",
+                                    "endpointId": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                    "endpointUid": "unique-endpoint-identifier"
+                                },
+                                "type": "endpoint.deleted"
+                            },
                             "schema": {
                                 "$ref": "#/components/schemas/EndpointDeletedEvent"
                             }
@@ -19851,6 +19994,16 @@
                 "requestBody": {
                     "content": {
                         "application/json": {
+                            "example": {
+                                "data": {
+                                    "appId": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                    "appUid": "unique-app-identifier",
+                                    "endpointId": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                    "endpointUid": "unique-endpoint-identifier",
+                                    "failSince": "2022-11-06T15:04:05Z"
+                                },
+                                "type": "endpoint.disabled"
+                            },
                             "schema": {
                                 "$ref": "#/components/schemas/EndpointDisabledEvent"
                             }
@@ -19875,6 +20028,15 @@
                 "requestBody": {
                     "content": {
                         "application/json": {
+                            "example": {
+                                "data": {
+                                    "appId": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                    "appUid": "unique-app-identifier",
+                                    "endpointId": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                    "endpointUid": "unique-endpoint-identifier"
+                                },
+                                "type": "endpoint.updated"
+                            },
                             "schema": {
                                 "$ref": "#/components/schemas/EndpointUpdatedEvent"
                             }
@@ -19899,6 +20061,21 @@
                 "requestBody": {
                     "content": {
                         "application/json": {
+                            "example": {
+                                "data": {
+                                    "appId": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                    "appUid": "unique-app-identifier",
+                                    "endpointId": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                    "lastAttempt": {
+                                        "id": "atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                        "responseStatusCode": 500,
+                                        "timestamp": "2022-11-06T15:04:05Z"
+                                    },
+                                    "msgEventId": "unique-msg-identifier",
+                                    "msgId": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2"
+                                },
+                                "type": "message.attempt.exhausted"
+                            },
                             "schema": {
                                 "$ref": "#/components/schemas/MessageAttemptExhaustedEvent"
                             }
@@ -19923,6 +20100,21 @@
                 "requestBody": {
                     "content": {
                         "application/json": {
+                            "example": {
+                                "data": {
+                                    "appId": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                    "appUid": "unique-app-identifier",
+                                    "endpointId": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                    "lastAttempt": {
+                                        "id": "atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                        "responseStatusCode": 500,
+                                        "timestamp": "2022-11-06T15:04:05Z"
+                                    },
+                                    "msgEventId": "unique-msg-identifier",
+                                    "msgId": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2"
+                                },
+                                "type": "message.attempt.failing"
+                            },
                             "schema": {
                                 "$ref": "#/components/schemas/MessageAttemptFailingEvent"
                             }
@@ -19947,6 +20139,21 @@
                 "requestBody": {
                     "content": {
                         "application/json": {
+                            "example": {
+                                "data": {
+                                    "appId": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                    "appUid": "unique-app-identifier",
+                                    "endpointId": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                    "lastAttempt": {
+                                        "id": "atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                        "responseStatusCode": 200,
+                                        "timestamp": "2022-11-06T15:04:05Z"
+                                    },
+                                    "msgEventId": "unique-msg-identifier",
+                                    "msgId": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2"
+                                },
+                                "type": "message.attempt.recovered"
+                            },
                             "schema": {
                                 "$ref": "#/components/schemas/MessageAttemptRecoveredEvent"
                             }

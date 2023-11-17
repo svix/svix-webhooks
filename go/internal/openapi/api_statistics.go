@@ -28,34 +28,37 @@ var (
 // StatisticsApiService StatisticsApi service
 type StatisticsApiService service
 
-type ApiCalculateAggregateAppStatsRequest struct {
+type ApiAggregateAppStatsRequest struct {
 	ctx _context.Context
 	ApiService *StatisticsApiService
 	appUsageStatsIn *AppUsageStatsIn
 	idempotencyKey *string
 }
 
-func (r ApiCalculateAggregateAppStatsRequest) AppUsageStatsIn(appUsageStatsIn AppUsageStatsIn) ApiCalculateAggregateAppStatsRequest {
+func (r ApiAggregateAppStatsRequest) AppUsageStatsIn(appUsageStatsIn AppUsageStatsIn) ApiAggregateAppStatsRequest {
 	r.appUsageStatsIn = &appUsageStatsIn
 	return r
 }
-func (r ApiCalculateAggregateAppStatsRequest) IdempotencyKey(idempotencyKey string) ApiCalculateAggregateAppStatsRequest {
+func (r ApiAggregateAppStatsRequest) IdempotencyKey(idempotencyKey string) ApiAggregateAppStatsRequest {
 	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
-func (r ApiCalculateAggregateAppStatsRequest) Execute() (AppUsageStatsOut, *_nethttp.Response, error) {
-	return r.ApiService.CalculateAggregateAppStatsExecute(r)
+func (r ApiAggregateAppStatsRequest) Execute() (AppUsageStatsOut, *_nethttp.Response, error) {
+	return r.ApiService.AggregateAppStatsExecute(r)
 }
 
 /*
- * CalculateAggregateAppStats Calculate Aggregate App Stats
+ * AggregateAppStats Aggregate App Stats
  * Creates a background task to calculate the message destinations for all applications in the environment.
+
+Note that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to
+retrieve the results of the operation.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @return ApiCalculateAggregateAppStatsRequest
+ * @return ApiAggregateAppStatsRequest
  */
-func (a *StatisticsApiService) CalculateAggregateAppStats(ctx _context.Context) ApiCalculateAggregateAppStatsRequest {
-	return ApiCalculateAggregateAppStatsRequest{
+func (a *StatisticsApiService) AggregateAppStats(ctx _context.Context) ApiAggregateAppStatsRequest {
+	return ApiAggregateAppStatsRequest{
 		ApiService: a,
 		ctx: ctx,
 	}
@@ -65,7 +68,7 @@ func (a *StatisticsApiService) CalculateAggregateAppStats(ctx _context.Context) 
  * Execute executes the request
  * @return AppUsageStatsOut
  */
-func (a *StatisticsApiService) CalculateAggregateAppStatsExecute(r ApiCalculateAggregateAppStatsRequest) (AppUsageStatsOut, *_nethttp.Response, error) {
+func (a *StatisticsApiService) AggregateAppStatsExecute(r ApiAggregateAppStatsRequest) (AppUsageStatsOut, *_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPost
 		localVarPostBody     interface{}
@@ -75,7 +78,7 @@ func (a *StatisticsApiService) CalculateAggregateAppStatsExecute(r ApiCalculateA
 		localVarReturnValue  AppUsageStatsOut
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StatisticsApiService.CalculateAggregateAppStats")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StatisticsApiService.AggregateAppStats")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
@@ -111,6 +114,180 @@ func (a *StatisticsApiService) CalculateAggregateAppStatsExecute(r ApiCalculateA
 	}
 	// body params
 	localVarPostBody = r.appUsageStatsIn
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := _ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = _ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 400 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 401 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 403 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 404 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 409 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 422 {
+			var v HTTPValidationError
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiAggregateEventTypesRequest struct {
+	ctx _context.Context
+	ApiService *StatisticsApiService
+}
+
+
+func (r ApiAggregateEventTypesRequest) Execute() (AggregateEventTypesOut, *_nethttp.Response, error) {
+	return r.ApiService.AggregateEventTypesExecute(r)
+}
+
+/*
+ * AggregateEventTypes Aggregate Event Types
+ * Creates a background task to calculate the listed event types for all apps in the organization.
+
+Note that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to
+retrieve the results of the operation.
+ * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ * @return ApiAggregateEventTypesRequest
+ */
+func (a *StatisticsApiService) AggregateEventTypes(ctx _context.Context) ApiAggregateEventTypesRequest {
+	return ApiAggregateEventTypesRequest{
+		ApiService: a,
+		ctx: ctx,
+	}
+}
+
+/*
+ * Execute executes the request
+ * @return AggregateEventTypesOut
+ */
+func (a *StatisticsApiService) AggregateEventTypesExecute(r ApiAggregateEventTypesRequest) (AggregateEventTypesOut, *_nethttp.Response, error) {
+	var (
+		localVarHTTPMethod   = _nethttp.MethodPut
+		localVarPostBody     interface{}
+		localVarFormFileName string
+		localVarFileName     string
+		localVarFileBytes    []byte
+		localVarReturnValue  AggregateEventTypesOut
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StatisticsApiService.AggregateEventTypes")
+	if err != nil {
+		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/api/v1/stats/usage/event-types/"
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := _neturl.Values{}
+	localVarFormParams := _neturl.Values{}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return localVarReturnValue, nil, err

@@ -13,6 +13,7 @@ public final class Svix {
 	private final Integration integration;
 	private final Message message;
 	private final MessageAttempt messageAttempt;
+	private final Statistics statistics;
 
 	public Svix(final String token) {
 		this(token, new SvixOptions());
@@ -47,6 +48,7 @@ public final class Svix {
 		integration = new Integration();
 		message = new Message();
 		messageAttempt = new MessageAttempt();
+		statistics = new Statistics();
 	}
 
 	public Application getApplication() {
@@ -75,5 +77,9 @@ public final class Svix {
 
 	public MessageAttempt getMessageAttempt() {
 		return messageAttempt;
+	}
+
+	public Statistics getStatistics() {
+		return statistics;
 	}
 }

@@ -1,7 +1,7 @@
 use crate::apis::configuration::Configuration;
 use crate::apis::{
     application_api, authentication_api, background_tasks_api, endpoint_api, event_type_api,
-    integration_api, message_api, message_attempt_api,
+    integration_api, message_api, message_attempt_api, statistics_api,
 };
 use crate::error::Result;
 pub use crate::models::*;
@@ -1175,5 +1175,46 @@ impl<'a> BackgroundTask<'a> {
             background_tasks_api::GetBackgroundTaskParams { task_id },
         )
         .await?)
+    }
+}
+
+pub struct Statistics<'a> {
+    cfg: &'a Configuration,
+}
+
+pub struct AggregateAppStatsOptions {
+    pub app_ids: Option<Vec<String>>,
+    pub since: String,
+    pub until: String,
+}
+
+impl<'a> Statistics<'a> {
+    pub fn new(cfg: &'a Configuration) -> Self {
+        Self { cfg }
+    }
+
+    pub async fn aggregate_app_stats(
+        &self,
+        AggregateAppStatsOptions {
+            app_ids,
+            since,
+            until,
+        }: AggregateAppStatsOptions,
+        options: Option<PostOptions>,
+    ) -> Result<AppUsageStatsOut> {
+        let options = options.unwrap_or_default();
+        let params = statistics_api::AggregateAppStatsParams {
+            app_usage_stats_in: AppUsageStatsIn {
+                app_ids,
+                since,
+                until,
+            },
+            idempotency_key: options.idempotency_key,
+        };
+        Ok(statistics_api::aggregate_app_stats(self.cfg, params).await?)
+    }
+
+    pub async fn aggregate_event_types(&self) -> Result<AggregateEventTypesOut> {
+        Ok(statistics_api::aggregate_event_types(self.cfg).await?)
     }
 }

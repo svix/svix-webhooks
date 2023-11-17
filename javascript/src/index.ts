@@ -64,6 +64,10 @@ import {
   EventTypePatch,
   EventTypeImportOpenApiIn,
   EventTypeImportOpenApiOut,
+  StatisticsApi,
+  AppUsageStatsIn,
+  AppUsageStatsOut,
+  AggregateEventTypesOut,
 } from "./openapi/index";
 export * from "./openapi/models/all";
 export * from "./openapi/apis/exception";
@@ -106,6 +110,7 @@ export class Svix {
   public readonly message: Message;
   public readonly messageAttempt: MessageAttempt;
   public readonly backgroundTask: BackgroundTask;
+  public readonly statistics: Statistics;
 
   public constructor(token: string, options: SvixOptions = {}) {
     const regionalUrl = REGIONS.find((x) => x.region === token.split(".")[1])?.url;
@@ -135,6 +140,7 @@ export class Svix {
     this.message = new Message(config);
     this.messageAttempt = new MessageAttempt(config);
     this.backgroundTask = new BackgroundTask(config);
+    this.statistics = new Statistics(config);
   }
 }
 export interface PostOptions {
@@ -873,5 +879,27 @@ export class Webhook {
       throw new WebhookVerificationError("Message timestamp too new");
     }
     return new Date(timestamp * 1000);
+  }
+}
+
+class Statistics {
+  private readonly api: StatisticsApi;
+
+  public constructor(config: Configuration) {
+    this.api = new StatisticsApi(config);
+  }
+
+  public aggregateEventTypes(): Promise<AggregateEventTypesOut> {
+    return this.api.aggregateEventTypes({});
+  }
+
+  public aggregateAppStats(
+    appUsageStatsIn: AppUsageStatsIn,
+    options?: PostOptions
+  ): Promise<AppUsageStatsOut> {
+    return this.api.aggregateAppStats({
+      appUsageStatsIn,
+      ...options,
+    });
   }
 }
