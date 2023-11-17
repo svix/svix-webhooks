@@ -13,9 +13,9 @@ public class Statistics {
         api = new StatisticsApi();
     }
 
-    public AppUsageStatsOut calculateAggregateAppStats(final AppUsageStatsIn appUsageStatsIn, final PostOptions options) throws ApiException {
+    public AppUsageStatsOut aggregateAppStats(final AppUsageStatsIn appUsageStatsIn, final PostOptions options) throws ApiException {
         try {
-            return api.calculateAggregateAppStats(appUsageStatsIn, options.getIdempotencyKey());
+            return api.aggregateAppStats(appUsageStatsIn, options.getIdempotencyKey());
         } catch (com.svix.internal.ApiException e) {
             throw Utils.wrapInternalApiException(e);
         }

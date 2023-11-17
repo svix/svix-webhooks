@@ -28,24 +28,37 @@ var (
 // StatisticsApiService StatisticsApi service
 type StatisticsApiService service
 
-type ApiAggregateEventTypesRequest struct {
+type ApiAggregateAppStatsRequest struct {
 	ctx _context.Context
 	ApiService *StatisticsApiService
+	appUsageStatsIn *AppUsageStatsIn
+	idempotencyKey *string
 }
 
+func (r ApiAggregateAppStatsRequest) AppUsageStatsIn(appUsageStatsIn AppUsageStatsIn) ApiAggregateAppStatsRequest {
+	r.appUsageStatsIn = &appUsageStatsIn
+	return r
+}
+func (r ApiAggregateAppStatsRequest) IdempotencyKey(idempotencyKey string) ApiAggregateAppStatsRequest {
+	r.idempotencyKey = &idempotencyKey
+	return r
+}
 
-func (r ApiAggregateEventTypesRequest) Execute() (AggregateEventTypesOut, *_nethttp.Response, error) {
-	return r.ApiService.AggregateEventTypesExecute(r)
+func (r ApiAggregateAppStatsRequest) Execute() (AppUsageStatsOut, *_nethttp.Response, error) {
+	return r.ApiService.AggregateAppStatsExecute(r)
 }
 
 /*
- * AggregateEventTypes Aggregate Event Types
- * Creates a background task to calculate the listed event types for all apps in the organization
+ * AggregateAppStats Aggregate App Stats
+ * Creates a background task to calculate the message destinations for all applications in the environment.
+
+Note that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to
+retrieve the results of the operation.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @return ApiAggregateEventTypesRequest
+ * @return ApiAggregateAppStatsRequest
  */
-func (a *StatisticsApiService) AggregateEventTypes(ctx _context.Context) ApiAggregateEventTypesRequest {
-	return ApiAggregateEventTypesRequest{
+func (a *StatisticsApiService) AggregateAppStats(ctx _context.Context) ApiAggregateAppStatsRequest {
+	return ApiAggregateAppStatsRequest{
 		ApiService: a,
 		ctx: ctx,
 	}
@@ -53,31 +66,34 @@ func (a *StatisticsApiService) AggregateEventTypes(ctx _context.Context) ApiAggr
 
 /*
  * Execute executes the request
- * @return AggregateEventTypesOut
+ * @return AppUsageStatsOut
  */
-func (a *StatisticsApiService) AggregateEventTypesExecute(r ApiAggregateEventTypesRequest) (AggregateEventTypesOut, *_nethttp.Response, error) {
+func (a *StatisticsApiService) AggregateAppStatsExecute(r ApiAggregateAppStatsRequest) (AppUsageStatsOut, *_nethttp.Response, error) {
 	var (
-		localVarHTTPMethod   = _nethttp.MethodPut
+		localVarHTTPMethod   = _nethttp.MethodPost
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  AggregateEventTypesOut
+		localVarReturnValue  AppUsageStatsOut
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StatisticsApiService.AggregateEventTypes")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StatisticsApiService.AggregateAppStats")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/stats/usage/event-types/"
+	localVarPath := localBasePath + "/api/v1/stats/usage/app/"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
+	if r.appUsageStatsIn == nil {
+		return localVarReturnValue, nil, reportError("appUsageStatsIn is required and must be specified")
+	}
 
 	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{}
+	localVarHTTPContentTypes := []string{"application/json"}
 
 	// set Content-Type header
 	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
@@ -93,6 +109,11 @@ func (a *StatisticsApiService) AggregateEventTypesExecute(r ApiAggregateEventTyp
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
+	}
+	// body params
+	localVarPostBody = r.appUsageStatsIn
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -199,37 +220,27 @@ func (a *StatisticsApiService) AggregateEventTypesExecute(r ApiAggregateEventTyp
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiCalculateAggregateAppStatsRequest struct {
+type ApiAggregateEventTypesRequest struct {
 	ctx _context.Context
 	ApiService *StatisticsApiService
-	appUsageStatsIn *AppUsageStatsIn
-	idempotencyKey *string
 }
 
-func (r ApiCalculateAggregateAppStatsRequest) AppUsageStatsIn(appUsageStatsIn AppUsageStatsIn) ApiCalculateAggregateAppStatsRequest {
-	r.appUsageStatsIn = &appUsageStatsIn
-	return r
-}
-func (r ApiCalculateAggregateAppStatsRequest) IdempotencyKey(idempotencyKey string) ApiCalculateAggregateAppStatsRequest {
-	r.idempotencyKey = &idempotencyKey
-	return r
-}
 
-func (r ApiCalculateAggregateAppStatsRequest) Execute() (AppUsageStatsOut, *_nethttp.Response, error) {
-	return r.ApiService.CalculateAggregateAppStatsExecute(r)
+func (r ApiAggregateEventTypesRequest) Execute() (AggregateEventTypesOut, *_nethttp.Response, error) {
+	return r.ApiService.AggregateEventTypesExecute(r)
 }
 
 /*
- * CalculateAggregateAppStats Calculate Aggregate App Stats
- * Creates a background task to calculate the message destinations for all applications in the environment.
+ * AggregateEventTypes Aggregate Event Types
+ * Creates a background task to calculate the listed event types for all apps in the organization.
 
 Note that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to
 retrieve the results of the operation.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @return ApiCalculateAggregateAppStatsRequest
+ * @return ApiAggregateEventTypesRequest
  */
-func (a *StatisticsApiService) CalculateAggregateAppStats(ctx _context.Context) ApiCalculateAggregateAppStatsRequest {
-	return ApiCalculateAggregateAppStatsRequest{
+func (a *StatisticsApiService) AggregateEventTypes(ctx _context.Context) ApiAggregateEventTypesRequest {
+	return ApiAggregateEventTypesRequest{
 		ApiService: a,
 		ctx: ctx,
 	}
@@ -237,34 +248,31 @@ func (a *StatisticsApiService) CalculateAggregateAppStats(ctx _context.Context) 
 
 /*
  * Execute executes the request
- * @return AppUsageStatsOut
+ * @return AggregateEventTypesOut
  */
-func (a *StatisticsApiService) CalculateAggregateAppStatsExecute(r ApiCalculateAggregateAppStatsRequest) (AppUsageStatsOut, *_nethttp.Response, error) {
+func (a *StatisticsApiService) AggregateEventTypesExecute(r ApiAggregateEventTypesRequest) (AggregateEventTypesOut, *_nethttp.Response, error) {
 	var (
-		localVarHTTPMethod   = _nethttp.MethodPost
+		localVarHTTPMethod   = _nethttp.MethodPut
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  AppUsageStatsOut
+		localVarReturnValue  AggregateEventTypesOut
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StatisticsApiService.CalculateAggregateAppStats")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StatisticsApiService.AggregateEventTypes")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/stats/usage/app/"
+	localVarPath := localBasePath + "/api/v1/stats/usage/event-types/"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
-	if r.appUsageStatsIn == nil {
-		return localVarReturnValue, nil, reportError("appUsageStatsIn is required and must be specified")
-	}
 
 	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{"application/json"}
+	localVarHTTPContentTypes := []string{}
 
 	// set Content-Type header
 	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
@@ -280,11 +288,6 @@ func (a *StatisticsApiService) CalculateAggregateAppStatsExecute(r ApiCalculateA
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
-	if r.idempotencyKey != nil {
-		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
-	}
-	// body params
-	localVarPostBody = r.appUsageStatsIn
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return localVarReturnValue, nil, err

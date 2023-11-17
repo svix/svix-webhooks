@@ -6,8 +6,8 @@ module Svix
       @api = StatisticsApi.new(api_client)
     end
 
-    def calculate_aggregate_app_stats(options = {})
-      return @api.calculate_aggregate_app_stats(options)
+    def aggregate_app_stats(options = {})
+      return @api.aggregate_app_stats(options)
     end
 
     def aggregate_event_types(options = {})

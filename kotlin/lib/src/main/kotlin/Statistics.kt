@@ -16,9 +16,9 @@ class Statistics internal constructor(token: String, options: SvixOptions) {
         options.numRetries?.let { api.numRetries = it }
     }
 
-    suspend fun calculateAggregateAppStats(appUsageStatsIn: AppUsageStatsIn, options: PostOptions = PostOptions()): AppUsageStatsOut {
+    suspend fun aggregateAppStats(appUsageStatsIn: AppUsageStatsIn, options: PostOptions = PostOptions()): AppUsageStatsOut {
         try {
-            return api.calculateAggregateAppStats(appUsageStatsIn, options.idempotencyKey)
+            return api.aggregateAppStats(appUsageStatsIn, options.idempotencyKey)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }

@@ -893,11 +893,11 @@ class Statistics {
     return this.api.aggregateEventTypes({});
   }
 
-  public calculateAggregateAppStats(
+  public aggregateAppStats(
     appUsageStatsIn: AppUsageStatsIn,
     options?: PostOptions
   ): Promise<AppUsageStatsOut> {
-    return this.api.calculateAggregateAppStats({
+    return this.api.aggregateAppStats({
       appUsageStatsIn,
       ...options,
     });

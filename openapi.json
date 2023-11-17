@@ -18002,7 +18002,7 @@
         "/api/v1/stats/usage/app/": {
             "post": {
                 "description": "Creates a background task to calculate the message destinations for all applications in the environment.\n\nNote that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to\nretrieve the results of the operation.",
-                "operationId": "calculate_aggregate_app_stats",
+                "operationId": "aggregate_app_stats",
                 "parameters": [
                     {
                         "description": "The request's idempotency key",
@@ -18111,7 +18111,7 @@
                         "HTTPBearer": []
                     }
                 ],
-                "summary": "Calculate Aggregate App Stats",
+                "summary": "Aggregate App Stats",
                 "tags": [
                     "Statistics"
                 ]
@@ -18119,7 +18119,7 @@
         },
         "/api/v1/stats/usage/event-types/": {
             "put": {
-                "description": "Creates a background task to calculate the listed event types for all apps in the organization",
+                "description": "Creates a background task to calculate the listed event types for all apps in the organization.\n\nNote that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to\nretrieve the results of the operation.",
                 "operationId": "aggregate_event_types",
                 "responses": {
                     "202": {

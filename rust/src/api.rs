@@ -1182,7 +1182,7 @@ pub struct Statistics<'a> {
     cfg: &'a Configuration,
 }
 
-pub struct CalculateAggregateAppStatsOptions {
+pub struct AggregateAppStatsOptions {
     pub app_ids: Option<Vec<String>>,
     pub since: String,
     pub until: String,
@@ -1193,17 +1193,17 @@ impl<'a> Statistics<'a> {
         Self { cfg }
     }
 
-    pub async fn calculate_aggregate_app_stats(
+    pub async fn aggregate_app_stats(
         &self,
-        CalculateAggregateAppStatsOptions {
+        AggregateAppStatsOptions {
             app_ids,
             since,
             until,
-        }: CalculateAggregateAppStatsOptions,
+        }: AggregateAppStatsOptions,
         options: Option<PostOptions>,
     ) -> Result<AppUsageStatsOut> {
         let options = options.unwrap_or_default();
-        let params = statistics_api::CalculateAggregateAppStatsParams {
+        let params = statistics_api::AggregateAppStatsParams {
             app_usage_stats_in: AppUsageStatsIn {
                 app_ids,
                 since,
@@ -1211,7 +1211,7 @@ impl<'a> Statistics<'a> {
             },
             idempotency_key: options.idempotency_key,
         };
-        Ok(statistics_api::calculate_aggregate_app_stats(self.cfg, params).await?)
+        Ok(statistics_api::aggregate_app_stats(self.cfg, params).await?)
     }
 
     pub async fn aggregate_event_types(&self) -> Result<AggregateEventTypesOut> {

@@ -18,11 +18,11 @@ namespace Svix
             _statisticsApi = statisticsApi ?? throw new ArgumentNullException(nameof(statisticsApi));
         }
 
-        public AppUsageStatsOut CalculateAggregateAppStats(AppUsageStatsIn appUsageStatsIn, string idempotencyKey = default)
+        public AppUsageStatsOut AggregateAppStats(AppUsageStatsIn appUsageStatsIn, string idempotencyKey = default)
         {
             try
             {
-                var res = _statisticsApi.CalculateAggregateAppStats(
+                var res = _statisticsApi.AggregateAppStats(
                     appUsageStatsIn,
                     idempotencyKey);
 
@@ -30,7 +30,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(CalculateAggregateAppStats)} failed");
+                Logger?.LogError(e, $"{nameof(AggregateAppStats)} failed");
 
                 if (Throw)
                     throw;
@@ -39,11 +39,11 @@ namespace Svix
             }
         }
 
-        public async Task<AppUsageStatsOut> CalculateAggregateAppStatsAsync(AppUsageStatsIn appUsageStatsIn, string idempotencyKey = default)
+        public async Task<AppUsageStatsOut> AggregateAppStatsAsync(AppUsageStatsIn appUsageStatsIn, string idempotencyKey = default)
         {
             try
             {
-                var res = await _statisticsApi.CalculateAggregateAppStatsAsync(
+                var res = await _statisticsApi.AggregateAppStatsAsync(
                     appUsageStatsIn,
                     idempotencyKey);
 
@@ -51,7 +51,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(CalculateAggregateAppStatsAsync)} failed");
+                Logger?.LogError(e, $"{nameof(AggregateAppStatsAsync)} failed");
 
                 if (Throw)
                     throw;
@@ -70,7 +70,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(CalculateAggregateAppStatsAsync)} failed");
+                Logger?.LogError(e, $"{nameof(AggregateAppStatsAsync)} failed");
 
                 if (Throw)
                     throw;
@@ -89,7 +89,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                Logger?.LogError(e, $"{nameof(CalculateAggregateAppStatsAsync)} failed");
+                Logger?.LogError(e, $"{nameof(AggregateAppStatsAsync)} failed");
 
                 if (Throw)
                     throw;

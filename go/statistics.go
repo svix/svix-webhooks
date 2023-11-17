@@ -16,8 +16,8 @@ type (
 	AggregateEventTypesOut = openapi.AggregateEventTypesOut
 )
 
-func (s *Statistics) CalculateAggregateAppStats(ctx context.Context, appUsageStatsIn *AppUsageStatsIn, options *PostOptions) (*AppUsageStatsOut, error) {
-	req := s.api.StatisticsApi.CalculateAggregateAppStats(ctx)
+func (s *Statistics) AggregateAppStats(ctx context.Context, appUsageStatsIn *AppUsageStatsIn, options *PostOptions) (*AppUsageStatsOut, error) {
+	req := s.api.StatisticsApi.AggregateAppStats(ctx)
 	if appUsageStatsIn != nil {
 		req = req.AppUsageStatsIn(*appUsageStatsIn)
 	}
