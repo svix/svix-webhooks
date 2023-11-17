@@ -75,7 +75,7 @@ from .internal.openapi_client.api.message_attempt import (
     v1_message_attempt_list_by_msg,
     v1_message_attempt_resend,
 )
-from .internal.openapi_client.api.statistics import aggregate_event_types, aggregate_app_stats
+from .internal.openapi_client.api.statistics import aggregate_app_stats, aggregate_event_types
 from .internal.openapi_client.client import AuthenticatedClient
 from .internal.openapi_client.models.app_portal_access_in import AppPortalAccessIn
 from .internal.openapi_client.models.app_portal_access_out import AppPortalAccessOut
