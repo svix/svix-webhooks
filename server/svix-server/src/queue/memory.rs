@@ -1,47 +1,57 @@
-use std::{sync::Arc, time::Duration};
+use std::ops::Deref;
+use std::{fmt, sync::Arc, time::Duration};
 
 use axum::async_trait;
-use chrono::Utc;
-use tokio::{sync::mpsc, time::sleep};
+use omniqueue::backends::memory_queue;
+use omniqueue::queue::consumer::QueueConsumer;
+use omniqueue::queue::producer::QueueProducer;
+use omniqueue::queue::QueueBackend;
+use omniqueue::scheduled::ScheduledProducer;
 
 use crate::error::Error;
 use crate::error::Result;
 
 use super::{
-    Acker, QueueTask, TaskQueueConsumer, TaskQueueDelivery, TaskQueueProducer, TaskQueueReceive,
+    QueueTask, TaskQueueConsumer, TaskQueueDelivery, TaskQueueProducer, TaskQueueReceive,
     TaskQueueSend,
 };
 
 pub async fn new_pair() -> (TaskQueueProducer, TaskQueueConsumer) {
-    let (tx, rx) = mpsc::unbounded_channel::<TaskQueueDelivery>();
+    let (tx, rx) = memory_queue::MemoryQueueBackend::builder(usize::MAX)
+        .build_pair()
+        .await
+        .expect("memory queue backend");
     (
-        TaskQueueProducer::Memory(MemoryQueueProducer { tx }),
+        TaskQueueProducer::Memory(MemoryQueueProducer { tx: Arc::new(tx) }),
         TaskQueueConsumer::Memory(MemoryQueueConsumer { rx }),
     )
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct MemoryQueueProducer {
-    tx: mpsc::UnboundedSender<TaskQueueDelivery>,
+    tx: Arc<memory_queue::MemoryQueueProducer>,
+}
+
+impl fmt::Debug for MemoryQueueProducer {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("MemoryQueueProducer").finish()
+    }
 }
 
 #[async_trait]
 impl TaskQueueSend for MemoryQueueProducer {
     async fn send(&self, msg: Arc<QueueTask>, delay: Option<Duration>) -> Result<()> {
-        let timestamp = delay.map(|delay| Utc::now() + chrono::Duration::from_std(delay).unwrap());
-        let delivery = TaskQueueDelivery::from_arc(msg, timestamp, Acker::Memory(self.clone()));
-
+        let task = msg.deref().clone();
         if let Some(delay) = delay {
-            let tx = self.tx.clone();
-            tokio::spawn(async move {
-                // We just assume memory queue always works, so we can defer the error handling
-                tracing::trace!("MemoryQueue: event sent > (delay: {:?})", delay);
-                sleep(delay).await;
-                if tx.send(delivery).is_err() {
-                    tracing::error!("Receiver dropped");
-                }
-            });
-        } else if self.tx.send(delivery).is_err() {
+            if self
+                .tx
+                .send_serde_json_scheduled(&task, delay)
+                .await
+                .is_err()
+            {
+                tracing::error!("Receiver dropped");
+            }
+        } else if self.tx.send_serde_json(&task).await.is_err() {
             tracing::error!("Receiver dropped");
         }
 
@@ -50,31 +60,23 @@ impl TaskQueueSend for MemoryQueueProducer {
 }
 
 pub struct MemoryQueueConsumer {
-    rx: mpsc::UnboundedReceiver<TaskQueueDelivery>,
+    rx: memory_queue::MemoryQueueConsumer,
 }
 
 #[async_trait]
 impl TaskQueueReceive for MemoryQueueConsumer {
     async fn receive_all(&mut self) -> Result<Vec<TaskQueueDelivery>> {
-        let mut deliveries = tokio::select! {
-            _ = tokio::time::sleep(Duration::from_secs(30)) => return Ok(Vec::new()),
-            recv = self.rx.recv() => {
-                if let Some(delivery) = recv {
-                    tracing::trace!("MemoryQueue: event recv <");
-                    vec![delivery]
-                } else {
-                    return Err(Error::queue("Failed to fetch from queue"))
-                }
-            }
-        };
-
-        // possible errors are `Empty` or `Disconnected`. Either way,
-        // we want to return the deliveries that could be received.
-        // If it was Disconnected, the next call to receive_all will fail
-        while let Ok(delivery) = self.rx.try_recv() {
-            deliveries.push(delivery);
+        const MAX_MESSAGES: usize = 100;
+        let mut tasks: Vec<TaskQueueDelivery> = Vec::with_capacity(MAX_MESSAGES);
+        for item in self
+            .rx
+            .receive_all(MAX_MESSAGES, Duration::from_secs(30))
+            .await
+            .map_err(|_| Error::queue("Failed to fetch from queue"))?
+        {
+            tasks.push(item.try_into()?);
         }
 
-        Ok(deliveries)
+        Ok(tasks)
     }
 }

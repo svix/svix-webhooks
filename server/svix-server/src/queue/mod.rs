@@ -3,6 +3,10 @@ use std::{sync::Arc, time::Duration};
 use axum::async_trait;
 use chrono::{DateTime, Utc};
 use lapin::options::{BasicAckOptions, BasicNackOptions};
+use omniqueue::queue::consumer::QueueConsumer;
+use omniqueue::queue::producer::QueueProducer;
+use omniqueue::queue::Delivery;
+use omniqueue::scheduled::ScheduledProducer;
 use serde::{Deserialize, Serialize};
 use strum::Display;
 use svix_ksuid::*;
@@ -128,6 +132,7 @@ pub enum TaskQueueProducer {
     Memory(MemoryQueueProducer),
     Redis(RedisQueueProducer),
     RabbitMq(rabbitmq::Producer),
+    Omni(Arc<omniqueue::scheduled::DynScheduledProducer>),
 }
 
 impl TaskQueueProducer {
@@ -139,6 +144,12 @@ impl TaskQueueProducer {
                     TaskQueueProducer::Memory(q) => q.send(task.clone(), delay).await,
                     TaskQueueProducer::Redis(q) => q.send(task.clone(), delay).await,
                     TaskQueueProducer::RabbitMq(q) => q.send(task.clone(), delay).await,
+                    TaskQueueProducer::Omni(q) => if let Some(delay) = delay {
+                        q.send_serde_json_scheduled(task.as_ref(), delay).await
+                    } else {
+                        q.send_serde_json(task.as_ref()).await
+                    }
+                    .map_err(Into::into),
                 }
             },
             should_retry,
@@ -152,6 +163,7 @@ pub enum TaskQueueConsumer {
     Redis(RedisQueueConsumer),
     Memory(MemoryQueueConsumer),
     RabbitMq(rabbitmq::Consumer),
+    Omni(omniqueue::queue::consumer::DynConsumer),
 }
 
 impl TaskQueueConsumer {
@@ -160,6 +172,15 @@ impl TaskQueueConsumer {
             TaskQueueConsumer::Redis(q) => q.receive_all().await.trace(),
             TaskQueueConsumer::Memory(q) => q.receive_all().await.trace(),
             TaskQueueConsumer::RabbitMq(q) => q.receive_all().await.trace(),
+            // FIXME(onelson): need to figure out what deadline/duration to use here
+            TaskQueueConsumer::Omni(q) => q
+                .receive_all(usize::MAX, Duration::from_secs(30))
+                .await
+                .map_err(Into::into)
+                .trace()?
+                .into_iter()
+                .map(TryInto::try_into)
+                .collect(),
         }
     }
 }
@@ -167,9 +188,9 @@ impl TaskQueueConsumer {
 /// Used by TaskQueueDeliveries to Ack/Nack itself
 #[derive(Debug)]
 enum Acker {
-    Memory(MemoryQueueProducer),
     Redis(Arc<RedisQueueInner>),
     RabbitMQ(lapin::message::Delivery),
+    Omni(omniqueue::queue::Delivery),
 }
 
 #[derive(Debug)]
@@ -194,8 +215,9 @@ impl TaskQueueDelivery {
         tracing::trace!("ack {}", self.id);
         run_with_retries(
             || async {
+                // FIXME(onelson): borrowing &self in the match allows redis arm to pass it to `ack`
+                //   Omni arm needs `mut self` for `delivery.ack()`. How to satisfy both?
                 match &self.acker {
-                    Acker::Memory(_) => Ok(()), // nothing to do
                     Acker::Redis(q) => q.ack(&self).await.trace(),
                     Acker::RabbitMQ(delivery) => {
                         delivery
@@ -204,6 +226,10 @@ impl TaskQueueDelivery {
                             })
                             .await
                             .map_err(Into::into)
+                    }
+                    Acker::Omni(_delivery) => {
+                        todo!("resolve fixme at top of match")
+                        // delivery.ack().await.map_err(Into::into)
                     }
                 }
             },
@@ -217,11 +243,9 @@ impl TaskQueueDelivery {
         tracing::trace!("nack {}", self.id);
         run_with_retries(
             || async {
+                // FIXME(onelson): borrowing &self in the match allows redis arm to pass it to `nack`
+                //   Omni arm needs `mut self` for `delivery.nack()`. How to satisfy both?
                 match &self.acker {
-                    Acker::Memory(q) => {
-                        tracing::debug!("nack {}", self.id);
-                        q.send(self.task.clone(), None).await.trace()
-                    }
                     Acker::Redis(q) => q.nack(&self).await.trace(),
                     Acker::RabbitMQ(delivery) => {
                         // See https://www.rabbitmq.com/confirms.html#consumer-nacks-requeue
@@ -234,12 +258,35 @@ impl TaskQueueDelivery {
                             .await
                             .map_err(Into::into)
                     }
+                    Acker::Omni(_delivery) => {
+                        todo!("resolve fixme at top of match")
+                        // delivery.nack().await.map_err(Into::into).trace()
+                    }
                 }
             },
             should_retry,
             RETRY_SCHEDULE,
         )
         .await
+    }
+}
+
+impl TryFrom<Delivery> for TaskQueueDelivery {
+    type Error = Error;
+    fn try_from(value: Delivery) -> Result<Self> {
+        Ok(TaskQueueDelivery {
+            // FIXME(onelson): ksuid for the id?
+            //   Since ack/nack is all handled internally by the omniqueue delivery, maybe it
+            //   doesn't matter.
+            id: "".to_string(),
+            task: Arc::new(
+                value
+                    .payload_serde_json()
+                    .map_err(|_| Error::queue("Failed to decode queue task"))?
+                    .ok_or_else(|| Error::queue("Unexpected empty delivery"))?,
+            ),
+            acker: Acker::Omni(value),
+        })
     }
 }
 
