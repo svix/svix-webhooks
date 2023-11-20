@@ -77,7 +77,8 @@ lapin = "2.1.1"
 sentry = { version = "0.31.5", features = ["tracing"] }
 # FIXME(onelson): cut a new release of omniqueue before this PR merges.
 # FIXME(onelson): remove the path dep before this PR merges.
-omniqueue = { version = "0.1.0", path = "../../../omniqueue-rs/omniqueue" }
+#omniqueue = { path = "../../../omniqueue-rs/omniqueue" }
+omniqueue = { git = "https://github.com/svix/omniqueue-rs.git", branch="onelson/svix-oss-fixups" }
 
 [target.'cfg(not(target_env = "msvc"))'.dependencies]
 tikv-jemallocator = { version = "0.5", optional = true }
