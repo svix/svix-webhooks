@@ -3,10 +3,14 @@ use std::{sync::Arc, time::Duration};
 use axum::async_trait;
 use chrono::{DateTime, Utc};
 use lapin::options::{BasicAckOptions, BasicNackOptions};
-use omniqueue::queue::consumer::QueueConsumer;
-use omniqueue::queue::producer::QueueProducer;
-use omniqueue::queue::Delivery;
-use omniqueue::scheduled::ScheduledProducer;
+use omniqueue::{
+    queue::{
+        consumer::{DynConsumer, QueueConsumer},
+        producer::QueueProducer,
+        Delivery,
+    },
+    scheduled::ScheduledProducer,
+};
 use serde::{Deserialize, Serialize};
 use strum::Display;
 use svix_ksuid::*;
@@ -163,7 +167,7 @@ pub enum TaskQueueConsumer {
     Redis(RedisQueueConsumer),
     Memory(MemoryQueueConsumer),
     RabbitMq(rabbitmq::Consumer),
-    Omni(omniqueue::queue::consumer::DynConsumer),
+    Omni(DynConsumer),
 }
 
 impl TaskQueueConsumer {
@@ -190,7 +194,7 @@ impl TaskQueueConsumer {
 enum Acker {
     Redis(Arc<RedisQueueInner>),
     RabbitMQ(lapin::message::Delivery),
-    Omni(omniqueue::queue::Delivery),
+    Omni(Delivery),
 }
 
 #[derive(Debug)]
