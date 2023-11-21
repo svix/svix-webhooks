@@ -17,7 +17,9 @@ use super::{
 };
 
 pub async fn new_pair() -> (TaskQueueProducer, TaskQueueConsumer) {
-    let (tx, rx) = memory_queue::MemoryQueueBackend::builder(usize::MAX)
+    // This is the largest possible broadcast channel capacity per tokio's docs. Will panic if set larger.
+    const CAPACITY: usize = usize::MAX / 2;
+    let (tx, rx) = memory_queue::MemoryQueueBackend::builder(CAPACITY)
         .build_pair()
         .await
         .expect("memory queue backend");
