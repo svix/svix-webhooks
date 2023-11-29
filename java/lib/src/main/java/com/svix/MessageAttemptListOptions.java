@@ -16,6 +16,7 @@ public class MessageAttemptListOptions extends ListOptions {
 	private String channel;
 	private Boolean withContent;
 	private String endpointId;
+	private Boolean withMsg;
 
 	public MessageAttemptListOptions() {
         super();
@@ -122,6 +123,19 @@ public class MessageAttemptListOptions extends ListOptions {
 
 	public MessageAttemptListOptions endpointId(final String endpointId) {
 		this.endpointId = endpointId;
+		return this;
+	}
+
+	public Boolean getWithMsg() {
+		return withMsg;
+	}
+
+	public void setWithMsg(final Boolean withMsg) {
+		this.withMsg = withMsg;
+	}
+
+	public MessageAttemptListOptions withMsg(final Boolean withMsg) {
+		this.withMsg = withMsg;
 		return this;
 	}
 }

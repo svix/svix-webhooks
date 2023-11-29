@@ -901,6 +901,24 @@ pub struct MessageAttemptListOptions {
     pub endpoint_id: Option<String>,
 }
 
+#[derive(Default)]
+pub struct MessageAttemptListByEndpointOptions {
+    pub iterator: Option<String>,
+    pub limit: Option<i32>,
+    pub event_types: Option<Vec<String>>,
+    // FIXME: make before and after actual dates
+    /// RFC3339 date string
+    pub before: Option<String>,
+    /// RFC3339 date string
+    pub after: Option<String>,
+    pub channel: Option<String>,
+    pub status: Option<MessageStatus>,
+    pub status_code_class: Option<StatusCodeClass>,
+    pub with_content: Option<bool>,
+    pub with_msg: Option<bool>,
+    pub endpoint_id: Option<String>,
+}
+
 pub struct MessageAttempt<'a> {
     cfg: &'a Configuration,
 }
@@ -952,9 +970,9 @@ impl<'a> MessageAttempt<'a> {
         &self,
         app_id: String,
         endpoint_id: String,
-        options: Option<MessageAttemptListOptions>,
+        options: Option<MessageAttemptListByEndpointOptions>,
     ) -> Result<ListResponseMessageAttemptOut> {
-        let MessageAttemptListOptions {
+        let MessageAttemptListByEndpointOptions {
             iterator,
             limit,
             event_types,
@@ -965,6 +983,7 @@ impl<'a> MessageAttempt<'a> {
             status_code_class,
             endpoint_id: _,
             with_content,
+            with_msg,
         } = options.unwrap_or_default();
         Ok(message_attempt_api::v1_message_attempt_list_by_endpoint(
             self.cfg,
@@ -980,6 +999,7 @@ impl<'a> MessageAttempt<'a> {
                 status,
                 status_code_class,
                 with_content,
+                with_msg,
             },
         )
         .await?)

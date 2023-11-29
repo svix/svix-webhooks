@@ -60,6 +60,7 @@ class MessageAttempt internal constructor(token: String, options: SvixOptions) {
                 options.before,
                 options.after,
                 options.withContent,
+                options.withMsg,
                 HashSet(options.eventTypes)
             )
         } catch (e: Exception) {

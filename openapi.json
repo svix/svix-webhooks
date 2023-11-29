@@ -5173,6 +5173,15 @@
                         "style": "form"
                     },
                     {
+                        "in": "query",
+                        "name": "with_msg",
+                        "schema": {
+                            "default": false,
+                            "type": "boolean"
+                        },
+                        "style": "form"
+                    },
+                    {
                         "description": "Filter response based on the event type",
                         "in": "query",
                         "name": "event_types",
