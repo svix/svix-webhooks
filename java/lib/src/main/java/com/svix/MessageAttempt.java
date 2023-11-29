@@ -59,6 +59,7 @@ public final class MessageAttempt {
 					options.getBefore(),
 					options.getAfter(),
 					options.getWithContent(),
+					options.getWithMsg(),
 					new HashSet<>(options.getEventTypes())
 			);
 		} catch (com.svix.internal.ApiException e) {

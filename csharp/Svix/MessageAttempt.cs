@@ -144,6 +144,7 @@ namespace Svix
                     options?.Before,
                     options?.After,
                     options?.WithContent,
+                    options?.WithMsg,
                     options?.EventTypes);
 
                 return lResults?.Data;
@@ -175,6 +176,7 @@ namespace Svix
                     options?.Before,
                     options?.After,
                     options?.WithContent,
+                    options?.WithMsg,
                     options?.EventTypes,
                     cancellationToken);
 
