@@ -1095,6 +1095,7 @@ type ApiV1MessageAttemptListByEndpointRequest struct {
 	before *time.Time
 	after *time.Time
 	withContent *bool
+	withMsg *bool
 	eventTypes *[]string
 }
 
@@ -1128,6 +1129,10 @@ func (r ApiV1MessageAttemptListByEndpointRequest) After(after time.Time) ApiV1Me
 }
 func (r ApiV1MessageAttemptListByEndpointRequest) WithContent(withContent bool) ApiV1MessageAttemptListByEndpointRequest {
 	r.withContent = &withContent
+	return r
+}
+func (r ApiV1MessageAttemptListByEndpointRequest) WithMsg(withMsg bool) ApiV1MessageAttemptListByEndpointRequest {
+	r.withMsg = &withMsg
 	return r
 }
 func (r ApiV1MessageAttemptListByEndpointRequest) EventTypes(eventTypes []string) ApiV1MessageAttemptListByEndpointRequest {
@@ -1224,6 +1229,9 @@ func (a *MessageAttemptApiService) V1MessageAttemptListByEndpointExecute(r ApiV1
 	}
 	if r.withContent != nil {
 		localVarQueryParams.Add("with_content", parameterToString(*r.withContent, ""))
+	}
+	if r.withMsg != nil {
+		localVarQueryParams.Add("with_msg", parameterToString(*r.withMsg, ""))
 	}
 	if r.eventTypes != nil {
 		t := *r.eventTypes
