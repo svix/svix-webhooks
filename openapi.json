@@ -2335,6 +2335,10 @@
                         "example": "atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                         "type": "string"
                     },
+                    "msg": {
+                        "$ref": "#/components/schemas/MessageOut",
+                        "nullable": true
+                    },
                     "msgId": {
                         "description": "The msg's ID",
                         "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
@@ -2584,6 +2588,10 @@
                         "description": "The attempt's ID",
                         "example": "atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                         "type": "string"
+                    },
+                    "msg": {
+                        "$ref": "#/components/schemas/MessageOut",
+                        "nullable": true
                     },
                     "msgId": {
                         "description": "The msg's ID",
@@ -3688,11 +3696,17 @@
             "TransformationTemplateKind": {
                 "enum": [
                     "Custom",
-                    "Slack",
+                    "CustomerIO",
                     "Discord",
-                    "Teams",
+                    "Hubspot",
                     "Inngest",
-                    "Segment"
+                    "Salesforce",
+                    "Segment",
+                    "Slack",
+                    "Teams",
+                    "TriggerDev",
+                    "Windmill",
+                    "Zapier"
                 ],
                 "type": "string"
             },

@@ -21,6 +21,7 @@ type MessageAttemptOut struct {
 	EndpointId string `json:"endpointId"`
 	// The attempt's ID
 	Id string `json:"id"`
+	Msg *MessageOut `json:"msg,omitempty"`
 	// The msg's ID
 	MsgId string `json:"msgId"`
 	Response string `json:"response"`
@@ -103,6 +104,38 @@ func (o *MessageAttemptOut) GetIdOk() (*string, bool) {
 // SetId sets field value
 func (o *MessageAttemptOut) SetId(v string) {
 	o.Id = v
+}
+
+// GetMsg returns the Msg field value if set, zero value otherwise.
+func (o *MessageAttemptOut) GetMsg() MessageOut {
+	if o == nil || o.Msg == nil {
+		var ret MessageOut
+		return ret
+	}
+	return *o.Msg
+}
+
+// GetMsgOk returns a tuple with the Msg field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *MessageAttemptOut) GetMsgOk() (*MessageOut, bool) {
+	if o == nil || o.Msg == nil {
+		return nil, false
+	}
+	return o.Msg, true
+}
+
+// HasMsg returns a boolean if a field has been set.
+func (o *MessageAttemptOut) HasMsg() bool {
+	if o != nil && o.Msg != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetMsg gets a reference to the given MessageOut and assigns it to the Msg field.
+func (o *MessageAttemptOut) SetMsg(v MessageOut) {
+	o.Msg = &v
 }
 
 // GetMsgId returns the MsgId field value
@@ -280,6 +313,9 @@ func (o MessageAttemptOut) MarshalJSON() ([]byte, error) {
 	}
 	if true {
 		toSerialize["id"] = o.Id
+	}
+	if o.Msg != nil {
+		toSerialize["msg"] = o.Msg
 	}
 	if true {
 		toSerialize["msgId"] = o.MsgId
