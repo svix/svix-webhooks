@@ -6,7 +6,7 @@ use reqwest::StatusCode;
 use sea_orm::{sea_query::Expr, ColumnTrait, EntityTrait, QueryFilter};
 
 use svix_server::{
-    db::models::{message, messagecontent},
+    db::models::messagecontent,
     expired_message_cleaner,
     v1::{
         endpoints::attempt::MessageAttemptOut,
@@ -396,7 +396,7 @@ async fn test_payload_retention_period() {
 
     let res = messagecontent::Entity::update_many()
         .col_expr(
-            message::Column::Expiration,
+            messagecontent::Column::Expiration,
             Expr::value(Utc::now() - Duration::days(1)),
         )
         .filter(messagecontent::Column::Id.eq(msg_id.clone()))
