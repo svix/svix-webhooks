@@ -22,7 +22,7 @@ namespace Svix
         {
             try
             {
-                var res = _statisticsApi.AggregateAppStats(
+                var res = _statisticsApi.V1StatisticsAggregateAppStats(
                     appUsageStatsIn,
                     idempotencyKey);
 
@@ -43,7 +43,7 @@ namespace Svix
         {
             try
             {
-                var res = await _statisticsApi.AggregateAppStatsAsync(
+                var res = await _statisticsApi.V1StatisticsAggregateAppStatsAsync(
                     appUsageStatsIn,
                     idempotencyKey);
 
@@ -64,7 +64,7 @@ namespace Svix
         {
             try
             {
-                var res = _statisticsApi.AggregateEventTypes();
+                var res = _statisticsApi.V1StatisticsAggregateEventTypes();
 
                 return res;
             }
@@ -83,7 +83,7 @@ namespace Svix
         {
             try
             {
-                var res = await _statisticsApi.AggregateEventTypesAsync();
+                var res = await _statisticsApi.V1StatisticsAggregateEventTypesAsync();
 
                 return res;
             }

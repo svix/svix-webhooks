@@ -128,6 +128,7 @@ namespace Svix
                     options?.Before,
                     options?.After,
                     options?.WithContent,
+                    options?.Tag,
                     options?.EventTypes
                     );
 
@@ -156,6 +157,7 @@ namespace Svix
                     options?.Before,
                     options?.After,
                     options?.WithContent,
+                    options?.Tag,
                     options?.EventTypes,
                     cancellationToken);
 

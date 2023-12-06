@@ -26,6 +26,7 @@ public final class Message {
 					options.getBefore(),
 					options.getAfter(),
 					options.getWithContent(),
+					options.getTag(),
 					new HashSet<>(options.getEventTypes())
 			);
 		} catch (com.svix.internal.ApiException e) {

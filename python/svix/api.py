@@ -75,7 +75,10 @@ from .internal.openapi_client.api.message_attempt import (
     v1_message_attempt_list_by_msg,
     v1_message_attempt_resend,
 )
-from .internal.openapi_client.api.statistics import aggregate_app_stats, aggregate_event_types
+from .internal.openapi_client.api.statistics import (
+    v1_statistics_aggregate_app_stats,
+    v1_statistics_aggregate_event_types,
+)
 from .internal.openapi_client.client import AuthenticatedClient
 from .internal.openapi_client.models.app_portal_access_in import AppPortalAccessIn
 from .internal.openapi_client.models.app_portal_access_out import AppPortalAccessOut
@@ -1043,28 +1046,28 @@ class StatisticsAsync(ApiBase):
     async def aggregate_app_stats(
         self, app_usage_stats_in: AppUsageStatsIn, options: PostOptions = PostOptions()
     ) -> AppUsageStatsOut:
-        return await aggregate_app_stats.asyncio(
+        return await v1_statistics_aggregate_app_stats.asyncio(
             client=self._client,
             json_body=app_usage_stats_in,
             **options.to_dict(),
         )
 
     async def aggregate_event_types(self, task_id: str) -> AggregateEventTypesOut:
-        return await aggregate_event_types.asyncio(client=self._client)
+        return await v1_statistics_aggregate_event_types.asyncio(client=self._client)
 
 
 class Statistics(ApiBase):
     def aggregate_app_stats(
         self, app_usage_stats_in: AppUsageStatsIn, options: PostOptions = PostOptions()
     ) -> AppUsageStatsOut:
-        return aggregate_app_stats.sync(
+        return v1_statistics_aggregate_app_stats.sync(
             client=self._client,
             json_body=app_usage_stats_in,
             **options.to_dict(),
         )
 
     def aggregate_event_types(self, task_id: str) -> AggregateEventTypesOut:
-        return aggregate_event_types.sync(client=self._client)
+        return v1_statistics_aggregate_event_types.sync(client=self._client)
 
 
 class ClientBase:

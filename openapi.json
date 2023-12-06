@@ -2960,6 +2960,24 @@
                         "maximum": 90,
                         "minimum": 5,
                         "type": "integer"
+                    },
+                    "tags": {
+                        "description": "List of free-form tags that can be filtered by when listing messages",
+                        "example": [
+                            "my_tag",
+                            "other"
+                        ],
+                        "items": {
+                            "example": "project_1337",
+                            "maxLength": 128,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "maxItems": 5,
+                        "minItems": 1,
+                        "nullable": true,
+                        "type": "array",
+                        "uniqueItems": true
                     }
                 },
                 "required": [
@@ -11194,6 +11212,20 @@
                         "style": "form"
                     },
                     {
+                        "description": "Filter messages matching the provided tag",
+                        "in": "query",
+                        "name": "tag",
+                        "schema": {
+                            "description": "Filter messages matching the provided tag",
+                            "example": "project_1337",
+                            "maxLength": 128,
+                            "nullable": true,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "form"
+                    },
+                    {
                         "description": "Filter response based on the event type",
                         "in": "query",
                         "name": "event_types",
@@ -11522,62 +11554,62 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const messageOut = await svix.message.create(\"app_id\", {\n    eventId: \"unique-msg-identifier\",\n    eventType: \"user.signup\",\n    payload: {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    channels: [\"project_123\", \"group_2\"],\n    payloadRetentionPeriod: 90,\n    application: null\n});"
+                        "source": "const messageOut = await svix.message.create(\"app_id\", {\n    eventId: \"unique-msg-identifier\",\n    eventType: \"user.signup\",\n    payload: {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    channels: [\"project_123\", \"group_2\"],\n    payloadRetentionPeriod: 90,\n    application: null,\n    tags: [\"my_tag\", \"other\"]\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const messageOut = await svix.message.create(\"app_id\", {\n    eventId: \"unique-msg-identifier\",\n    eventType: \"user.signup\",\n    payload: {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    channels: [\"project_123\", \"group_2\"],\n    payloadRetentionPeriod: 90,\n    application: null\n});"
+                        "source": "const messageOut = await svix.message.create(\"app_id\", {\n    eventId: \"unique-msg-identifier\",\n    eventType: \"user.signup\",\n    payload: {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    channels: [\"project_123\", \"group_2\"],\n    payloadRetentionPeriod: 90,\n    application: null,\n    tags: [\"my_tag\", \"other\"]\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "message_out = svix.message.create(\"app_id\", MessageIn(\n    event_id=\"unique-msg-identifier\",\n    event_type=\"user.signup\",\n    payload={\"email\": \"test@example.com\", \"type\": \"user.created\", \"username\": \"test_user\"},\n    channels=[\"project_123\", \"group_2\"],\n    payload_retention_period=90,\n    application=None\n), None)"
+                        "source": "message_out = svix.message.create(\"app_id\", MessageIn(\n    event_id=\"unique-msg-identifier\",\n    event_type=\"user.signup\",\n    payload={\"email\": \"test@example.com\", \"type\": \"user.created\", \"username\": \"test_user\"},\n    channels=[\"project_123\", \"group_2\"],\n    payload_retention_period=90,\n    application=None,\n    tags=[\"my_tag\", \"other\"]\n), None)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "message_out = await svix.message.create(\"app_id\", MessageIn(\n    event_id=\"unique-msg-identifier\",\n    event_type=\"user.signup\",\n    payload={\"email\": \"test@example.com\", \"type\": \"user.created\", \"username\": \"test_user\"},\n    channels=[\"project_123\", \"group_2\"],\n    payload_retention_period=90,\n    application=None\n), None)"
+                        "source": "message_out = await svix.message.create(\"app_id\", MessageIn(\n    event_id=\"unique-msg-identifier\",\n    event_type=\"user.signup\",\n    payload={\"email\": \"test@example.com\", \"type\": \"user.created\", \"username\": \"test_user\"},\n    channels=[\"project_123\", \"group_2\"],\n    payload_retention_period=90,\n    application=None,\n    tags=[\"my_tag\", \"other\"]\n), None)"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "messageOut, err := svixClient.Message.Create(ctx, \"app_id\", &MessageIn{\n    EventId: \"unique-msg-identifier\",\n    EventType: \"user.signup\",\n    Payload: map[string]interface{}{\"email\": \"test@example.com\", \"type\": \"user.created\", \"username\": \"test_user\"},\n    Channels: []string{\"project_123\", \"group_2\"},\n    PayloadRetentionPeriod: 90,\n    Application: nil,\n})"
+                        "source": "messageOut, err := svixClient.Message.Create(ctx, \"app_id\", &MessageIn{\n    EventId: \"unique-msg-identifier\",\n    EventType: \"user.signup\",\n    Payload: map[string]interface{}{\"email\": \"test@example.com\", \"type\": \"user.created\", \"username\": \"test_user\"},\n    Channels: []string{\"project_123\", \"group_2\"},\n    PayloadRetentionPeriod: 90,\n    Application: nil,\n    Tags: []string{\"my_tag\", \"other\"},\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val messageOut = svix.message.create(\"app_id\", MessageIn()\n    .eventId(\"unique-msg-identifier\")\n    .eventType(\"user.signup\")\n    .payload(\"\"\"{\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"}\"\"\")\n    .channels(arrayOf(\"project_123\", \"group_2\"))\n    .payloadRetentionPeriod(90)\n    .application(null)\n)"
+                        "source": "val messageOut = svix.message.create(\"app_id\", MessageIn()\n    .eventId(\"unique-msg-identifier\")\n    .eventType(\"user.signup\")\n    .payload(\"\"\"{\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"}\"\"\")\n    .channels(arrayOf(\"project_123\", \"group_2\"))\n    .payloadRetentionPeriod(90)\n    .application(null)\n    .tags(arrayOf(\"my_tag\", \"other\"))\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "MessageOut messageOut = svix.getMessage().create(\"app_id\", new MessageIn()\n    .eventId(\"unique-msg-identifier\")\n    .eventType(\"user.signup\")\n    .payload(\"{\\\"email\\\":\\\"test@example.com\\\",\\\"type\\\":\\\"user.created\\\",\\\"username\\\":\\\"test_user\\\"}\")\n    .channels(new String[]{\"project_123\", \"group_2\"})\n    .payloadRetentionPeriod(90)\n    .application(null)\n)"
+                        "source": "MessageOut messageOut = svix.getMessage().create(\"app_id\", new MessageIn()\n    .eventId(\"unique-msg-identifier\")\n    .eventType(\"user.signup\")\n    .payload(\"{\\\"email\\\":\\\"test@example.com\\\",\\\"type\\\":\\\"user.created\\\",\\\"username\\\":\\\"test_user\\\"}\")\n    .channels(new String[]{\"project_123\", \"group_2\"})\n    .payloadRetentionPeriod(90)\n    .application(null)\n    .tags(new String[]{\"my_tag\", \"other\"})\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "message_out = svix.message.create(\"app_id\", Svix::MessageIn.new({\n    \"event_id\": \"unique-msg-identifier\",\n    \"event_type\": \"user.signup\",\n    \"payload\": {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    \"channels\": [\"project_123\", \"group_2\"],\n    \"payload_retention_period\": 90,\n    \"application\": nil\n}))"
+                        "source": "message_out = svix.message.create(\"app_id\", Svix::MessageIn.new({\n    \"event_id\": \"unique-msg-identifier\",\n    \"event_type\": \"user.signup\",\n    \"payload\": {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    \"channels\": [\"project_123\", \"group_2\"],\n    \"payload_retention_period\": 90,\n    \"application\": nil,\n    \"tags\": [\"my_tag\", \"other\"]\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let message_out = svix.message().create(\"app_id\", MessageIn {\n    event_id: Some(\"unique-msg-identifier\".to_string()),\n    event_type: \"user.signup\".to_string(),\n    payload: json!({\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"}),\n    channels: Some(vec![\"project_123\".to_string(), \"group_2\".to_string()]),\n    payload_retention_period: Some(90),\n    application: None,\n}, None).await?;"
+                        "source": "let message_out = svix.message().create(\"app_id\", MessageIn {\n    event_id: Some(\"unique-msg-identifier\".to_string()),\n    event_type: \"user.signup\".to_string(),\n    payload: json!({\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"}),\n    channels: Some(vec![\"project_123\".to_string(), \"group_2\".to_string()]),\n    payload_retention_period: Some(90),\n    application: None,\n    tags: Some(vec![\"my_tag\".to_string(), \"other\".to_string()]),\n}, None).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var messageOut = await svix.Message.CreateAsync(\"app_id\", new MessageIn{\n    eventId: \"unique-msg-identifier\",\n    eventType: \"user.signup\",\n    payload: new {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    channels: new string[] {\"project_123\", \"group_2\"},\n    payloadRetentionPeriod: 90,\n    application: null\n})"
+                        "source": "var messageOut = await svix.Message.CreateAsync(\"app_id\", new MessageIn{\n    eventId: \"unique-msg-identifier\",\n    eventType: \"user.signup\",\n    payload: new {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    channels: new string[] {\"project_123\", \"group_2\"},\n    payloadRetentionPeriod: 90,\n    application: null,\n    tags: new string[] {\"my_tag\", \"other\"}\n})"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix message create \"app_id\" '{\n    \"eventId\": \"unique-msg-identifier\",\n    \"eventType\": \"user.signup\",\n    \"payload\": {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    \"channels\": [\"project_123\", \"group_2\"],\n    \"payloadRetentionPeriod\": 90,\n    \"application\": null\n}'"
+                        "source": "svix message create \"app_id\" '{\n    \"eventId\": \"unique-msg-identifier\",\n    \"eventType\": \"user.signup\",\n    \"payload\": {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    \"channels\": [\"project_123\", \"group_2\"],\n    \"payloadRetentionPeriod\": 90,\n    \"application\": null,\n    \"tags\": [\"my_tag\", \"other\"]\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"eventId\": \"unique-msg-identifier\",\n        \"eventType\": \"user.signup\",\n        \"payload\": {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n        \"channels\": [\"project_123\", \"group_2\"],\n        \"payloadRetentionPeriod\": 90,\n        \"application\": null\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"eventId\": \"unique-msg-identifier\",\n        \"eventType\": \"user.signup\",\n        \"payload\": {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n        \"channels\": [\"project_123\", \"group_2\"],\n        \"payloadRetentionPeriod\": 90,\n        \"application\": null,\n        \"tags\": [\"my_tag\", \"other\"]\n    }'"
                     }
                 ]
             }
@@ -18025,7 +18057,7 @@
         "/api/v1/stats/usage/app/": {
             "post": {
                 "description": "Creates a background task to calculate the message destinations for all applications in the environment.\n\nNote that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to\nretrieve the results of the operation.",
-                "operationId": "aggregate_app_stats",
+                "operationId": "v1.statistics.aggregate-app-stats",
                 "parameters": [
                     {
                         "description": "The request's idempotency key",
@@ -18137,13 +18169,75 @@
                 "summary": "Aggregate App Stats",
                 "tags": [
                     "Statistics"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const appUsageStatsOut = await svix.statistics.aggregateAppStats({\n    appIds: null\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const appUsageStatsOut = await svix.statistics.aggregateAppStats({\n    appIds: null\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "app_usage_stats_out = svix.statistics.aggregate_app_stats(AppUsageStatsIn(\n    app_ids=None\n), None)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "app_usage_stats_out = await svix.statistics.aggregate_app_stats(AppUsageStatsIn(\n    app_ids=None\n), None)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "appUsageStatsOut, err := svixClient.Statistics.AggregateAppStats(ctx, &AppUsageStatsIn{\n    AppIds: nil,\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val appUsageStatsOut = svix.statistics.aggregateAppStats(AppUsageStatsIn()\n    .appIds(null)\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "AppUsageStatsOut appUsageStatsOut = svix.getStatistics().aggregateAppStats(new AppUsageStatsIn()\n    .appIds(null)\n)"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "app_usage_stats_out = svix.statistics.aggregate_app_stats(Svix::AppUsageStatsIn.new({\n    \"app_ids\": nil\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let app_usage_stats_out = svix.statistics().aggregate_app_stats(AppUsageStatsIn {\n    app_ids: None,\n}, None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var appUsageStatsOut = await svix.Statistics.AggregateAppStatsAsync(new AppUsageStatsIn{\n    appIds: null\n})"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix statistics aggregate-app-stats '{\n    \"appIds\": null\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/stats/usage/app/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"appIds\": null\n    }'"
+                    }
                 ]
             }
         },
         "/api/v1/stats/usage/event-types/": {
             "put": {
                 "description": "Creates a background task to calculate the listed event types for all apps in the organization.\n\nNote that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to\nretrieve the results of the operation.",
-                "operationId": "aggregate_event_types",
+                "operationId": "v1.statistics.aggregate-event-types",
                 "responses": {
                     "202": {
                         "content": {
@@ -18234,6 +18328,68 @@
                 "summary": "Aggregate Event Types",
                 "tags": [
                     "Statistics"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const aggregateEventTypesOut = await svix.statistics.aggregateEventTypes();"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const aggregateEventTypesOut = await svix.statistics.aggregateEventTypes();"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "aggregate_event_types_out = svix.statistics.aggregate_event_types()"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "aggregate_event_types_out = await svix.statistics.aggregate_event_types()"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "aggregateEventTypesOut, err := svixClient.Statistics.AggregateEventTypes(ctx)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val aggregateEventTypesOut = svix.statistics.aggregateEventTypes()"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "AggregateEventTypesOut aggregateEventTypesOut = svix.getStatistics().aggregateEventTypes()"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "aggregate_event_types_out = svix.statistics.aggregate_event_types()"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let aggregate_event_types_out = svix.statistics().aggregate_event_types().await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var aggregateEventTypesOut = await svix.Statistics.AggregateEventTypesAsync()"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix statistics aggregate-event-types "
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/stats/usage/event-types/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
                 ]
             }
         },

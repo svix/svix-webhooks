@@ -890,14 +890,14 @@ class Statistics {
   }
 
   public aggregateEventTypes(): Promise<AggregateEventTypesOut> {
-    return this.api.aggregateEventTypes({});
+    return this.api.v1StatisticsAggregateEventTypes({});
   }
 
   public aggregateAppStats(
     appUsageStatsIn: AppUsageStatsIn,
     options?: PostOptions
   ): Promise<AppUsageStatsOut> {
-    return this.api.aggregateAppStats({
+    return this.api.v1StatisticsAggregateAppStats({
       appUsageStatsIn,
       ...options,
     });
