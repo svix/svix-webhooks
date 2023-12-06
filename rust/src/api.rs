@@ -803,6 +803,7 @@ pub struct MessageListOptions {
     pub after: Option<String>,
     pub channel: Option<String>,
     pub with_content: Option<bool>,
+    pub tag: Option<String>,
 }
 
 pub struct Message<'a> {
@@ -827,6 +828,7 @@ impl<'a> Message<'a> {
             after,
             channel,
             with_content,
+            tag,
         } = options.unwrap_or_default();
         Ok(message_api::v1_message_list(
             self.cfg,
@@ -839,6 +841,7 @@ impl<'a> Message<'a> {
                 after,
                 channel,
                 with_content,
+                tag,
             },
         )
         .await?)
@@ -1223,7 +1226,7 @@ impl<'a> Statistics<'a> {
         options: Option<PostOptions>,
     ) -> Result<AppUsageStatsOut> {
         let options = options.unwrap_or_default();
-        let params = statistics_api::AggregateAppStatsParams {
+        let params = statistics_api::V1StatisticsAggregateAppStatsParams {
             app_usage_stats_in: AppUsageStatsIn {
                 app_ids,
                 since,
@@ -1231,10 +1234,10 @@ impl<'a> Statistics<'a> {
             },
             idempotency_key: options.idempotency_key,
         };
-        Ok(statistics_api::aggregate_app_stats(self.cfg, params).await?)
+        Ok(statistics_api::v1_statistics_aggregate_app_stats(self.cfg, params).await?)
     }
 
     pub async fn aggregate_event_types(&self) -> Result<AggregateEventTypesOut> {
-        Ok(statistics_api::aggregate_event_types(self.cfg).await?)
+        Ok(statistics_api::v1_statistics_aggregate_event_types(self.cfg).await?)
     }
 }

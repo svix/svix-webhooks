@@ -25,6 +25,8 @@ type MessageIn struct {
 	EventType string `json:"eventType"`
 	Payload map[string]interface{} `json:"payload"`
 	PayloadRetentionPeriod *int64 `json:"payloadRetentionPeriod,omitempty"`
+	// List of free-form tags that can be filtered by when listing messages
+	Tags []string `json:"tags,omitempty"`
 }
 
 // NewMessageIn instantiates a new MessageIn object
@@ -237,6 +239,39 @@ func (o *MessageIn) SetPayloadRetentionPeriod(v int64) {
 	o.PayloadRetentionPeriod = &v
 }
 
+// GetTags returns the Tags field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *MessageIn) GetTags() []string {
+	if o == nil  {
+		var ret []string
+		return ret
+	}
+	return o.Tags
+}
+
+// GetTagsOk returns a tuple with the Tags field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *MessageIn) GetTagsOk() (*[]string, bool) {
+	if o == nil || o.Tags == nil {
+		return nil, false
+	}
+	return &o.Tags, true
+}
+
+// HasTags returns a boolean if a field has been set.
+func (o *MessageIn) HasTags() bool {
+	if o != nil && o.Tags != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetTags gets a reference to the given []string and assigns it to the Tags field.
+func (o *MessageIn) SetTags(v []string) {
+	o.Tags = v
+}
+
 func (o MessageIn) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if o.Application != nil {
@@ -256,6 +291,9 @@ func (o MessageIn) MarshalJSON() ([]byte, error) {
 	}
 	if o.PayloadRetentionPeriod != nil {
 		toSerialize["payloadRetentionPeriod"] = o.PayloadRetentionPeriod
+	}
+	if o.Tags != nil {
+		toSerialize["tags"] = o.Tags
 	}
 	return json.Marshal(toSerialize)
 }

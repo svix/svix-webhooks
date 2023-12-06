@@ -9,6 +9,7 @@ public class MessageListOptions extends ListOptions {
 	private OffsetDateTime after;
 	private String channel;
 	private Boolean withContent;
+	private String tag;
 
 	public MessageListOptions eventTypes(final List<String> eventTypes) {
 		this.eventTypes = eventTypes;
@@ -73,5 +74,18 @@ public class MessageListOptions extends ListOptions {
 	public MessageListOptions withContent(final Boolean withContent) {
 		this.withContent = withContent;
 		return this;
+	}
+
+	public String getTag() {
+		return tag;
+	}
+
+	public MessageListOptions tag(final String tag) {
+		this.tag = tag;
+		return this;
+	}
+
+	public void setTag(final String tag) {
+		this.tag = tag;
 	}
 }

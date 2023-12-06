@@ -18,7 +18,7 @@ class Statistics internal constructor(token: String, options: SvixOptions) {
 
     suspend fun aggregateAppStats(appUsageStatsIn: AppUsageStatsIn, options: PostOptions = PostOptions()): AppUsageStatsOut {
         try {
-            return api.aggregateAppStats(appUsageStatsIn, options.idempotencyKey)
+            return api.v1StatisticsAggregateAppStats(appUsageStatsIn, options.idempotencyKey)
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
@@ -26,7 +26,7 @@ class Statistics internal constructor(token: String, options: SvixOptions) {
 
     suspend fun aggregateEventTypes(): AggregateEventTypesOut {
         try {
-            return api.aggregateEventTypes()
+            return api.v1StatisticsAggregateEventTypes()
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }

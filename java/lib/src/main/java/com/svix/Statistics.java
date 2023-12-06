@@ -15,7 +15,7 @@ public class Statistics {
 
     public AppUsageStatsOut aggregateAppStats(final AppUsageStatsIn appUsageStatsIn, final PostOptions options) throws ApiException {
         try {
-            return api.aggregateAppStats(appUsageStatsIn, options.getIdempotencyKey());
+            return api.v1StatisticsAggregateAppStats(appUsageStatsIn, options.getIdempotencyKey());
         } catch (com.svix.internal.ApiException e) {
             throw Utils.wrapInternalApiException(e);
         }
@@ -23,7 +23,7 @@ public class Statistics {
 
     public AggregateEventTypesOut aggregateEventTypes() throws com.svix.internal.ApiException {
         try {
-            return api.aggregateEventTypes();
+            return api.v1StatisticsAggregateEventTypes();
         } catch (com.svix.internal.ApiException e) {
             throw Utils.wrapInternalApiException(e);
         }

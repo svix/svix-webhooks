@@ -1046,6 +1046,7 @@ type ApiV1MessageListRequest struct {
 	before *time.Time
 	after *time.Time
 	withContent *bool
+	tag *string
 	eventTypes *[]string
 }
 
@@ -1071,6 +1072,10 @@ func (r ApiV1MessageListRequest) After(after time.Time) ApiV1MessageListRequest 
 }
 func (r ApiV1MessageListRequest) WithContent(withContent bool) ApiV1MessageListRequest {
 	r.withContent = &withContent
+	return r
+}
+func (r ApiV1MessageListRequest) Tag(tag string) ApiV1MessageListRequest {
+	r.tag = &tag
 	return r
 }
 func (r ApiV1MessageListRequest) EventTypes(eventTypes []string) ApiV1MessageListRequest {
@@ -1155,6 +1160,9 @@ func (a *MessageApiService) V1MessageListExecute(r ApiV1MessageListRequest) (Lis
 	}
 	if r.withContent != nil {
 		localVarQueryParams.Add("with_content", parameterToString(*r.withContent, ""))
+	}
+	if r.tag != nil {
+		localVarQueryParams.Add("tag", parameterToString(*r.tag, ""))
 	}
 	if r.eventTypes != nil {
 		t := *r.eventTypes

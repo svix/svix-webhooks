@@ -28,37 +28,37 @@ var (
 // StatisticsApiService StatisticsApi service
 type StatisticsApiService service
 
-type ApiAggregateAppStatsRequest struct {
+type ApiV1StatisticsAggregateAppStatsRequest struct {
 	ctx _context.Context
 	ApiService *StatisticsApiService
 	appUsageStatsIn *AppUsageStatsIn
 	idempotencyKey *string
 }
 
-func (r ApiAggregateAppStatsRequest) AppUsageStatsIn(appUsageStatsIn AppUsageStatsIn) ApiAggregateAppStatsRequest {
+func (r ApiV1StatisticsAggregateAppStatsRequest) AppUsageStatsIn(appUsageStatsIn AppUsageStatsIn) ApiV1StatisticsAggregateAppStatsRequest {
 	r.appUsageStatsIn = &appUsageStatsIn
 	return r
 }
-func (r ApiAggregateAppStatsRequest) IdempotencyKey(idempotencyKey string) ApiAggregateAppStatsRequest {
+func (r ApiV1StatisticsAggregateAppStatsRequest) IdempotencyKey(idempotencyKey string) ApiV1StatisticsAggregateAppStatsRequest {
 	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
-func (r ApiAggregateAppStatsRequest) Execute() (AppUsageStatsOut, *_nethttp.Response, error) {
-	return r.ApiService.AggregateAppStatsExecute(r)
+func (r ApiV1StatisticsAggregateAppStatsRequest) Execute() (AppUsageStatsOut, *_nethttp.Response, error) {
+	return r.ApiService.V1StatisticsAggregateAppStatsExecute(r)
 }
 
 /*
- * AggregateAppStats Aggregate App Stats
+ * V1StatisticsAggregateAppStats Aggregate App Stats
  * Creates a background task to calculate the message destinations for all applications in the environment.
 
 Note that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to
 retrieve the results of the operation.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @return ApiAggregateAppStatsRequest
+ * @return ApiV1StatisticsAggregateAppStatsRequest
  */
-func (a *StatisticsApiService) AggregateAppStats(ctx _context.Context) ApiAggregateAppStatsRequest {
-	return ApiAggregateAppStatsRequest{
+func (a *StatisticsApiService) V1StatisticsAggregateAppStats(ctx _context.Context) ApiV1StatisticsAggregateAppStatsRequest {
+	return ApiV1StatisticsAggregateAppStatsRequest{
 		ApiService: a,
 		ctx: ctx,
 	}
@@ -68,7 +68,7 @@ func (a *StatisticsApiService) AggregateAppStats(ctx _context.Context) ApiAggreg
  * Execute executes the request
  * @return AppUsageStatsOut
  */
-func (a *StatisticsApiService) AggregateAppStatsExecute(r ApiAggregateAppStatsRequest) (AppUsageStatsOut, *_nethttp.Response, error) {
+func (a *StatisticsApiService) V1StatisticsAggregateAppStatsExecute(r ApiV1StatisticsAggregateAppStatsRequest) (AppUsageStatsOut, *_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPost
 		localVarPostBody     interface{}
@@ -78,7 +78,7 @@ func (a *StatisticsApiService) AggregateAppStatsExecute(r ApiAggregateAppStatsRe
 		localVarReturnValue  AppUsageStatsOut
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StatisticsApiService.AggregateAppStats")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StatisticsApiService.V1StatisticsAggregateAppStats")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
@@ -220,27 +220,27 @@ func (a *StatisticsApiService) AggregateAppStatsExecute(r ApiAggregateAppStatsRe
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiAggregateEventTypesRequest struct {
+type ApiV1StatisticsAggregateEventTypesRequest struct {
 	ctx _context.Context
 	ApiService *StatisticsApiService
 }
 
 
-func (r ApiAggregateEventTypesRequest) Execute() (AggregateEventTypesOut, *_nethttp.Response, error) {
-	return r.ApiService.AggregateEventTypesExecute(r)
+func (r ApiV1StatisticsAggregateEventTypesRequest) Execute() (AggregateEventTypesOut, *_nethttp.Response, error) {
+	return r.ApiService.V1StatisticsAggregateEventTypesExecute(r)
 }
 
 /*
- * AggregateEventTypes Aggregate Event Types
+ * V1StatisticsAggregateEventTypes Aggregate Event Types
  * Creates a background task to calculate the listed event types for all apps in the organization.
 
 Note that this endpoint is asynchronous. You will need to poll the `Get Background Task` endpoint to
 retrieve the results of the operation.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @return ApiAggregateEventTypesRequest
+ * @return ApiV1StatisticsAggregateEventTypesRequest
  */
-func (a *StatisticsApiService) AggregateEventTypes(ctx _context.Context) ApiAggregateEventTypesRequest {
-	return ApiAggregateEventTypesRequest{
+func (a *StatisticsApiService) V1StatisticsAggregateEventTypes(ctx _context.Context) ApiV1StatisticsAggregateEventTypesRequest {
+	return ApiV1StatisticsAggregateEventTypesRequest{
 		ApiService: a,
 		ctx: ctx,
 	}
@@ -250,7 +250,7 @@ func (a *StatisticsApiService) AggregateEventTypes(ctx _context.Context) ApiAggr
  * Execute executes the request
  * @return AggregateEventTypesOut
  */
-func (a *StatisticsApiService) AggregateEventTypesExecute(r ApiAggregateEventTypesRequest) (AggregateEventTypesOut, *_nethttp.Response, error) {
+func (a *StatisticsApiService) V1StatisticsAggregateEventTypesExecute(r ApiV1StatisticsAggregateEventTypesRequest) (AggregateEventTypesOut, *_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPut
 		localVarPostBody     interface{}
@@ -260,7 +260,7 @@ func (a *StatisticsApiService) AggregateEventTypesExecute(r ApiAggregateEventTyp
 		localVarReturnValue  AggregateEventTypesOut
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StatisticsApiService.AggregateEventTypes")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StatisticsApiService.V1StatisticsAggregateEventTypes")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
