@@ -249,7 +249,7 @@ dependencies = [
  "num-traits",
  "rusticata-macros",
  "thiserror",
- "time 0.3.25",
+ "time",
 ]
 
 [[package]]
@@ -489,7 +489,7 @@ dependencies = [
  "http",
  "hyper 0.14.27",
  "ring",
- "time 0.3.25",
+ "time",
  "tokio",
  "tower",
  "tracing",
@@ -650,7 +650,7 @@ dependencies = [
  "percent-encoding",
  "regex",
  "sha2",
- "time 0.3.25",
+ "time",
  "tracing",
 ]
 
@@ -757,7 +757,7 @@ dependencies = [
  "itoa",
  "num-integer",
  "ryu",
- "time 0.3.25",
+ "time",
 ]
 
 [[package]]
@@ -1067,17 +1067,16 @@ checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
 name = "chrono"
-version = "0.4.26"
+version = "0.4.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ec837a71355b28f6556dbd569b37b3f363091c0bd4b2e735674521b4c5fd9bc5"
+checksum = "7f2c685bad3eb3d45a01354cedb7d5faa66194d1d58ba6e267a8de788f79db38"
 dependencies = [
  "android-tzdata",
  "iana-time-zone",
  "js-sys",
  "num-traits",
- "time 0.1.45",
  "wasm-bindgen",
- "winapi",
+ "windows-targets",
 ]
 
 [[package]]
@@ -2741,7 +2740,7 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror",
- "time 0.3.25",
+ "time",
  "tokio",
  "tracing",
  "urlencoding",
@@ -5420,7 +5419,7 @@ dependencies = [
  "num-bigint",
  "num-traits",
  "thiserror",
- "time 0.3.25",
+ "time",
 ]
 
 [[package]]
@@ -5638,7 +5637,7 @@ dependencies = [
  "serde_derive",
  "serde_json",
  "thiserror",
- "time 0.3.25",
+ "time",
  "url",
 ]
 
@@ -5721,7 +5720,7 @@ dependencies = [
  "base-encode",
  "byteorder",
  "getrandom 0.2.10",
- "time 0.3.25",
+ "time",
 ]
 
 [[package]]
@@ -6215,17 +6214,6 @@ checksum = "965fe0c26be5c56c94e38ba547249074803efd52adfb66de62107d95aab3eaca"
 dependencies = [
  "libc",
  "tikv-jemalloc-sys",
-]
-
-[[package]]
-name = "time"
-version = "0.1.45"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1b797afad3f312d1c66a56d11d0316f916356d11bd158fbc6ca6389ff6bf805a"
-dependencies = [
- "libc",
- "wasi 0.10.0+wasi-snapshot-preview1",
- "winapi",
 ]
 
 [[package]]
@@ -7017,12 +7005,6 @@ checksum = "cccddf32554fecc6acb585f82a32a72e28b48f8c4c1883ddfeeeaa96f7d8e519"
 
 [[package]]
 name = "wasi"
-version = "0.10.0+wasi-snapshot-preview1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1a143597ca7c7793eff794def352d41792a93c481eb1042423ff7ff72ba2c31f"
-
-[[package]]
-name = "wasi"
 version = "0.11.0+wasi-snapshot-preview1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9c8d87e72b64a3b4db28d11ce29237c246188f4f51057d65a7eab63b7987e423"
@@ -7362,7 +7344,7 @@ dependencies = [
  "oid-registry",
  "rusticata-macros",
  "thiserror",
- "time 0.3.25",
+ "time",
 ]
 
 [[package]]
