@@ -170,6 +170,7 @@ class MessageListOptions(ListOptions):
     before: t.Optional[datetime] = None
     after: t.Optional[datetime] = None
     channel: t.Optional[str] = None
+    tag: t.Optional[str] = None
 
 
 @dataclass
