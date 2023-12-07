@@ -3,6 +3,9 @@
 ## Next
 * 
 
+## Version 1.15.0
+* Libs: update OpenAPI spec and libs.
+
 ## Version 1.14.0
 * Server: separate out the message content to its own model.
 * Libs: expose two new Statistics endpoints.
