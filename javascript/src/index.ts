@@ -211,6 +211,7 @@ export interface MessageListOptions extends ListOptions {
   after?: Date;
   channel?: string;
   withContent?: boolean;
+  tag?: string;
 }
 
 export interface MessageAttemptListOptions extends ListOptions {

@@ -24,6 +24,7 @@ type MessageListOptions struct {
 	Before     *time.Time
 	After      *time.Time
 	Channel    *string
+	Tag        *string
 }
 
 func (m *Message) List(ctx context.Context, appId string, options *MessageListOptions) (*ListResponseMessageOut, error) {
@@ -46,6 +47,9 @@ func (m *Message) List(ctx context.Context, appId string, options *MessageListOp
 		}
 		if options.Channel != nil {
 			req = req.Channel(*options.Channel)
+		}
+		if options.Tag != nil {
+			req = req.Tag(*options.Tag)
 		}
 	}
 	out, res, err := req.Execute()
