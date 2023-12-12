@@ -292,7 +292,7 @@ Operational webhooks are webhooks that you can subscribe to in order to get noti
 
 The operational webhooks utilize Svix, and are controlled by a special account service account with the following ID: `org_00000000000SvixManagement00`.
 
-The first step is to turn it on by setting the `operational_webhook_address` config to point to your Svix server. The most common value for this setting is `http://127.0.0.1:8071/`, though it may be different based on your specific setup.
+The first step is to turn it on by setting the `operational_webhook_address` config to point to your Svix server. The most common value for this setting is `http://127.0.0.1:8071`, though it may be different based on your specific setup.
 
 The above step enables operational webhooks on this instance, and the next step is to enable it for your specific organization. As mentioned above, operational webhooks use a normal Svix account behind the scenes, so we'll first need to get the authentication token for this account. To do this you should run:
 
