@@ -16,12 +16,13 @@ import (
 
 // CustomColorPalette struct for CustomColorPalette
 type CustomColorPalette struct {
-	BackgroundHover NullableString `json:"backgroundHover,omitempty"`
-	BackgroundPrimary NullableString `json:"backgroundPrimary,omitempty"`
-	BackgroundSecondary NullableString `json:"backgroundSecondary,omitempty"`
-	InteractiveAccent NullableString `json:"interactiveAccent,omitempty"`
-	TextDanger NullableString `json:"textDanger,omitempty"`
-	TextPrimary NullableString `json:"textPrimary,omitempty"`
+	BackgroundHover *string `json:"backgroundHover,omitempty"`
+	BackgroundPrimary *string `json:"backgroundPrimary,omitempty"`
+	BackgroundSecondary *string `json:"backgroundSecondary,omitempty"`
+	InteractiveAccent *string `json:"interactiveAccent,omitempty"`
+	Primary *string `json:"primary,omitempty"`
+	TextDanger *string `json:"textDanger,omitempty"`
+	TextPrimary *string `json:"textPrimary,omitempty"`
 }
 
 // NewCustomColorPalette instantiates a new CustomColorPalette object
@@ -41,277 +42,252 @@ func NewCustomColorPaletteWithDefaults() *CustomColorPalette {
 	return &this
 }
 
-// GetBackgroundHover returns the BackgroundHover field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetBackgroundHover returns the BackgroundHover field value if set, zero value otherwise.
 func (o *CustomColorPalette) GetBackgroundHover() string {
-	if o == nil || o.BackgroundHover.Get() == nil {
+	if o == nil || o.BackgroundHover == nil {
 		var ret string
 		return ret
 	}
-	return *o.BackgroundHover.Get()
+	return *o.BackgroundHover
 }
 
 // GetBackgroundHoverOk returns a tuple with the BackgroundHover field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *CustomColorPalette) GetBackgroundHoverOk() (*string, bool) {
-	if o == nil  {
+	if o == nil || o.BackgroundHover == nil {
 		return nil, false
 	}
-	return o.BackgroundHover.Get(), o.BackgroundHover.IsSet()
+	return o.BackgroundHover, true
 }
 
 // HasBackgroundHover returns a boolean if a field has been set.
 func (o *CustomColorPalette) HasBackgroundHover() bool {
-	if o != nil && o.BackgroundHover.IsSet() {
+	if o != nil && o.BackgroundHover != nil {
 		return true
 	}
 
 	return false
 }
 
-// SetBackgroundHover gets a reference to the given NullableString and assigns it to the BackgroundHover field.
+// SetBackgroundHover gets a reference to the given string and assigns it to the BackgroundHover field.
 func (o *CustomColorPalette) SetBackgroundHover(v string) {
-	o.BackgroundHover.Set(&v)
-}
-// SetBackgroundHoverNil sets the value for BackgroundHover to be an explicit nil
-func (o *CustomColorPalette) SetBackgroundHoverNil() {
-	o.BackgroundHover.Set(nil)
+	o.BackgroundHover = &v
 }
 
-// UnsetBackgroundHover ensures that no value is present for BackgroundHover, not even an explicit nil
-func (o *CustomColorPalette) UnsetBackgroundHover() {
-	o.BackgroundHover.Unset()
-}
-
-// GetBackgroundPrimary returns the BackgroundPrimary field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetBackgroundPrimary returns the BackgroundPrimary field value if set, zero value otherwise.
 func (o *CustomColorPalette) GetBackgroundPrimary() string {
-	if o == nil || o.BackgroundPrimary.Get() == nil {
+	if o == nil || o.BackgroundPrimary == nil {
 		var ret string
 		return ret
 	}
-	return *o.BackgroundPrimary.Get()
+	return *o.BackgroundPrimary
 }
 
 // GetBackgroundPrimaryOk returns a tuple with the BackgroundPrimary field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *CustomColorPalette) GetBackgroundPrimaryOk() (*string, bool) {
-	if o == nil  {
+	if o == nil || o.BackgroundPrimary == nil {
 		return nil, false
 	}
-	return o.BackgroundPrimary.Get(), o.BackgroundPrimary.IsSet()
+	return o.BackgroundPrimary, true
 }
 
 // HasBackgroundPrimary returns a boolean if a field has been set.
 func (o *CustomColorPalette) HasBackgroundPrimary() bool {
-	if o != nil && o.BackgroundPrimary.IsSet() {
+	if o != nil && o.BackgroundPrimary != nil {
 		return true
 	}
 
 	return false
 }
 
-// SetBackgroundPrimary gets a reference to the given NullableString and assigns it to the BackgroundPrimary field.
+// SetBackgroundPrimary gets a reference to the given string and assigns it to the BackgroundPrimary field.
 func (o *CustomColorPalette) SetBackgroundPrimary(v string) {
-	o.BackgroundPrimary.Set(&v)
-}
-// SetBackgroundPrimaryNil sets the value for BackgroundPrimary to be an explicit nil
-func (o *CustomColorPalette) SetBackgroundPrimaryNil() {
-	o.BackgroundPrimary.Set(nil)
+	o.BackgroundPrimary = &v
 }
 
-// UnsetBackgroundPrimary ensures that no value is present for BackgroundPrimary, not even an explicit nil
-func (o *CustomColorPalette) UnsetBackgroundPrimary() {
-	o.BackgroundPrimary.Unset()
-}
-
-// GetBackgroundSecondary returns the BackgroundSecondary field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetBackgroundSecondary returns the BackgroundSecondary field value if set, zero value otherwise.
 func (o *CustomColorPalette) GetBackgroundSecondary() string {
-	if o == nil || o.BackgroundSecondary.Get() == nil {
+	if o == nil || o.BackgroundSecondary == nil {
 		var ret string
 		return ret
 	}
-	return *o.BackgroundSecondary.Get()
+	return *o.BackgroundSecondary
 }
 
 // GetBackgroundSecondaryOk returns a tuple with the BackgroundSecondary field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *CustomColorPalette) GetBackgroundSecondaryOk() (*string, bool) {
-	if o == nil  {
+	if o == nil || o.BackgroundSecondary == nil {
 		return nil, false
 	}
-	return o.BackgroundSecondary.Get(), o.BackgroundSecondary.IsSet()
+	return o.BackgroundSecondary, true
 }
 
 // HasBackgroundSecondary returns a boolean if a field has been set.
 func (o *CustomColorPalette) HasBackgroundSecondary() bool {
-	if o != nil && o.BackgroundSecondary.IsSet() {
+	if o != nil && o.BackgroundSecondary != nil {
 		return true
 	}
 
 	return false
 }
 
-// SetBackgroundSecondary gets a reference to the given NullableString and assigns it to the BackgroundSecondary field.
+// SetBackgroundSecondary gets a reference to the given string and assigns it to the BackgroundSecondary field.
 func (o *CustomColorPalette) SetBackgroundSecondary(v string) {
-	o.BackgroundSecondary.Set(&v)
-}
-// SetBackgroundSecondaryNil sets the value for BackgroundSecondary to be an explicit nil
-func (o *CustomColorPalette) SetBackgroundSecondaryNil() {
-	o.BackgroundSecondary.Set(nil)
+	o.BackgroundSecondary = &v
 }
 
-// UnsetBackgroundSecondary ensures that no value is present for BackgroundSecondary, not even an explicit nil
-func (o *CustomColorPalette) UnsetBackgroundSecondary() {
-	o.BackgroundSecondary.Unset()
-}
-
-// GetInteractiveAccent returns the InteractiveAccent field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetInteractiveAccent returns the InteractiveAccent field value if set, zero value otherwise.
 func (o *CustomColorPalette) GetInteractiveAccent() string {
-	if o == nil || o.InteractiveAccent.Get() == nil {
+	if o == nil || o.InteractiveAccent == nil {
 		var ret string
 		return ret
 	}
-	return *o.InteractiveAccent.Get()
+	return *o.InteractiveAccent
 }
 
 // GetInteractiveAccentOk returns a tuple with the InteractiveAccent field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *CustomColorPalette) GetInteractiveAccentOk() (*string, bool) {
-	if o == nil  {
+	if o == nil || o.InteractiveAccent == nil {
 		return nil, false
 	}
-	return o.InteractiveAccent.Get(), o.InteractiveAccent.IsSet()
+	return o.InteractiveAccent, true
 }
 
 // HasInteractiveAccent returns a boolean if a field has been set.
 func (o *CustomColorPalette) HasInteractiveAccent() bool {
-	if o != nil && o.InteractiveAccent.IsSet() {
+	if o != nil && o.InteractiveAccent != nil {
 		return true
 	}
 
 	return false
 }
 
-// SetInteractiveAccent gets a reference to the given NullableString and assigns it to the InteractiveAccent field.
+// SetInteractiveAccent gets a reference to the given string and assigns it to the InteractiveAccent field.
 func (o *CustomColorPalette) SetInteractiveAccent(v string) {
-	o.InteractiveAccent.Set(&v)
-}
-// SetInteractiveAccentNil sets the value for InteractiveAccent to be an explicit nil
-func (o *CustomColorPalette) SetInteractiveAccentNil() {
-	o.InteractiveAccent.Set(nil)
+	o.InteractiveAccent = &v
 }
 
-// UnsetInteractiveAccent ensures that no value is present for InteractiveAccent, not even an explicit nil
-func (o *CustomColorPalette) UnsetInteractiveAccent() {
-	o.InteractiveAccent.Unset()
-}
-
-// GetTextDanger returns the TextDanger field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *CustomColorPalette) GetTextDanger() string {
-	if o == nil || o.TextDanger.Get() == nil {
+// GetPrimary returns the Primary field value if set, zero value otherwise.
+func (o *CustomColorPalette) GetPrimary() string {
+	if o == nil || o.Primary == nil {
 		var ret string
 		return ret
 	}
-	return *o.TextDanger.Get()
+	return *o.Primary
+}
+
+// GetPrimaryOk returns a tuple with the Primary field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *CustomColorPalette) GetPrimaryOk() (*string, bool) {
+	if o == nil || o.Primary == nil {
+		return nil, false
+	}
+	return o.Primary, true
+}
+
+// HasPrimary returns a boolean if a field has been set.
+func (o *CustomColorPalette) HasPrimary() bool {
+	if o != nil && o.Primary != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetPrimary gets a reference to the given string and assigns it to the Primary field.
+func (o *CustomColorPalette) SetPrimary(v string) {
+	o.Primary = &v
+}
+
+// GetTextDanger returns the TextDanger field value if set, zero value otherwise.
+func (o *CustomColorPalette) GetTextDanger() string {
+	if o == nil || o.TextDanger == nil {
+		var ret string
+		return ret
+	}
+	return *o.TextDanger
 }
 
 // GetTextDangerOk returns a tuple with the TextDanger field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *CustomColorPalette) GetTextDangerOk() (*string, bool) {
-	if o == nil  {
+	if o == nil || o.TextDanger == nil {
 		return nil, false
 	}
-	return o.TextDanger.Get(), o.TextDanger.IsSet()
+	return o.TextDanger, true
 }
 
 // HasTextDanger returns a boolean if a field has been set.
 func (o *CustomColorPalette) HasTextDanger() bool {
-	if o != nil && o.TextDanger.IsSet() {
+	if o != nil && o.TextDanger != nil {
 		return true
 	}
 
 	return false
 }
 
-// SetTextDanger gets a reference to the given NullableString and assigns it to the TextDanger field.
+// SetTextDanger gets a reference to the given string and assigns it to the TextDanger field.
 func (o *CustomColorPalette) SetTextDanger(v string) {
-	o.TextDanger.Set(&v)
-}
-// SetTextDangerNil sets the value for TextDanger to be an explicit nil
-func (o *CustomColorPalette) SetTextDangerNil() {
-	o.TextDanger.Set(nil)
+	o.TextDanger = &v
 }
 
-// UnsetTextDanger ensures that no value is present for TextDanger, not even an explicit nil
-func (o *CustomColorPalette) UnsetTextDanger() {
-	o.TextDanger.Unset()
-}
-
-// GetTextPrimary returns the TextPrimary field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetTextPrimary returns the TextPrimary field value if set, zero value otherwise.
 func (o *CustomColorPalette) GetTextPrimary() string {
-	if o == nil || o.TextPrimary.Get() == nil {
+	if o == nil || o.TextPrimary == nil {
 		var ret string
 		return ret
 	}
-	return *o.TextPrimary.Get()
+	return *o.TextPrimary
 }
 
 // GetTextPrimaryOk returns a tuple with the TextPrimary field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *CustomColorPalette) GetTextPrimaryOk() (*string, bool) {
-	if o == nil  {
+	if o == nil || o.TextPrimary == nil {
 		return nil, false
 	}
-	return o.TextPrimary.Get(), o.TextPrimary.IsSet()
+	return o.TextPrimary, true
 }
 
 // HasTextPrimary returns a boolean if a field has been set.
 func (o *CustomColorPalette) HasTextPrimary() bool {
-	if o != nil && o.TextPrimary.IsSet() {
+	if o != nil && o.TextPrimary != nil {
 		return true
 	}
 
 	return false
 }
 
-// SetTextPrimary gets a reference to the given NullableString and assigns it to the TextPrimary field.
+// SetTextPrimary gets a reference to the given string and assigns it to the TextPrimary field.
 func (o *CustomColorPalette) SetTextPrimary(v string) {
-	o.TextPrimary.Set(&v)
-}
-// SetTextPrimaryNil sets the value for TextPrimary to be an explicit nil
-func (o *CustomColorPalette) SetTextPrimaryNil() {
-	o.TextPrimary.Set(nil)
-}
-
-// UnsetTextPrimary ensures that no value is present for TextPrimary, not even an explicit nil
-func (o *CustomColorPalette) UnsetTextPrimary() {
-	o.TextPrimary.Unset()
+	o.TextPrimary = &v
 }
 
 func (o CustomColorPalette) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if o.BackgroundHover.IsSet() {
-		toSerialize["backgroundHover"] = o.BackgroundHover.Get()
+	if o.BackgroundHover != nil {
+		toSerialize["backgroundHover"] = o.BackgroundHover
 	}
-	if o.BackgroundPrimary.IsSet() {
-		toSerialize["backgroundPrimary"] = o.BackgroundPrimary.Get()
+	if o.BackgroundPrimary != nil {
+		toSerialize["backgroundPrimary"] = o.BackgroundPrimary
 	}
-	if o.BackgroundSecondary.IsSet() {
-		toSerialize["backgroundSecondary"] = o.BackgroundSecondary.Get()
+	if o.BackgroundSecondary != nil {
+		toSerialize["backgroundSecondary"] = o.BackgroundSecondary
 	}
-	if o.InteractiveAccent.IsSet() {
-		toSerialize["interactiveAccent"] = o.InteractiveAccent.Get()
+	if o.InteractiveAccent != nil {
+		toSerialize["interactiveAccent"] = o.InteractiveAccent
 	}
-	if o.TextDanger.IsSet() {
-		toSerialize["textDanger"] = o.TextDanger.Get()
+	if o.Primary != nil {
+		toSerialize["primary"] = o.Primary
 	}
-	if o.TextPrimary.IsSet() {
-		toSerialize["textPrimary"] = o.TextPrimary.Get()
+	if o.TextDanger != nil {
+		toSerialize["textDanger"] = o.TextDanger
+	}
+	if o.TextPrimary != nil {
+		toSerialize["textPrimary"] = o.TextPrimary
 	}
 	return json.Marshal(toSerialize)
 }

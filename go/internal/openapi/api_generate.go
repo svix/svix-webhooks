@@ -23,27 +23,37 @@ var (
 	_ _context.Context
 )
 
-// EnvironmentSettingsApiService EnvironmentSettingsApi service
-type EnvironmentSettingsApiService service
+// GenerateApiService GenerateApi service
+type GenerateApiService service
 
-type ApiV1EnvironmentGetSettingsRequest struct {
+type ApiV1GenerateGenTransformationRequest struct {
 	ctx _context.Context
-	ApiService *EnvironmentSettingsApiService
+	ApiService *GenerateApiService
+	openAIIn *OpenAIIn
+	idempotencyKey *string
 }
 
+func (r ApiV1GenerateGenTransformationRequest) OpenAIIn(openAIIn OpenAIIn) ApiV1GenerateGenTransformationRequest {
+	r.openAIIn = &openAIIn
+	return r
+}
+func (r ApiV1GenerateGenTransformationRequest) IdempotencyKey(idempotencyKey string) ApiV1GenerateGenTransformationRequest {
+	r.idempotencyKey = &idempotencyKey
+	return r
+}
 
-func (r ApiV1EnvironmentGetSettingsRequest) Execute() (EnvironmentSettingsOut, *_nethttp.Response, error) {
-	return r.ApiService.V1EnvironmentGetSettingsExecute(r)
+func (r ApiV1GenerateGenTransformationRequest) Execute() (interface{}, *_nethttp.Response, error) {
+	return r.ApiService.V1GenerateGenTransformationExecute(r)
 }
 
 /*
- * V1EnvironmentGetSettings Get Org Settings
- * Get the environment's settings
+ * V1GenerateGenTransformation Generate
+ * stop bothering me
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @return ApiV1EnvironmentGetSettingsRequest
+ * @return ApiV1GenerateGenTransformationRequest
  */
-func (a *EnvironmentSettingsApiService) V1EnvironmentGetSettings(ctx _context.Context) ApiV1EnvironmentGetSettingsRequest {
-	return ApiV1EnvironmentGetSettingsRequest{
+func (a *GenerateApiService) V1GenerateGenTransformation(ctx _context.Context) ApiV1GenerateGenTransformationRequest {
+	return ApiV1GenerateGenTransformationRequest{
 		ApiService: a,
 		ctx: ctx,
 	}
@@ -51,31 +61,34 @@ func (a *EnvironmentSettingsApiService) V1EnvironmentGetSettings(ctx _context.Co
 
 /*
  * Execute executes the request
- * @return EnvironmentSettingsOut
+ * @return interface{}
  */
-func (a *EnvironmentSettingsApiService) V1EnvironmentGetSettingsExecute(r ApiV1EnvironmentGetSettingsRequest) (EnvironmentSettingsOut, *_nethttp.Response, error) {
+func (a *GenerateApiService) V1GenerateGenTransformationExecute(r ApiV1GenerateGenTransformationRequest) (interface{}, *_nethttp.Response, error) {
 	var (
-		localVarHTTPMethod   = _nethttp.MethodGet
+		localVarHTTPMethod   = _nethttp.MethodPost
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  EnvironmentSettingsOut
+		localVarReturnValue  interface{}
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "EnvironmentSettingsApiService.V1EnvironmentGetSettings")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "GenerateApiService.V1GenerateGenTransformation")
 	if err != nil {
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/environment/settings/"
+	localVarPath := localBasePath + "/api/v1/generate-transformation/"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
+	if r.openAIIn == nil {
+		return localVarReturnValue, nil, reportError("openAIIn is required and must be specified")
+	}
 
 	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{}
+	localVarHTTPContentTypes := []string{"application/json"}
 
 	// set Content-Type header
 	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
@@ -91,6 +104,11 @@ func (a *EnvironmentSettingsApiService) V1EnvironmentGetSettingsExecute(r ApiV1E
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
+	}
+	// body params
+	localVarPostBody = r.openAIIn
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return localVarReturnValue, nil, err

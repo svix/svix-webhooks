@@ -379,37 +379,73 @@
                 ],
                 "type": "string"
             },
+            "Color": {
+                "type": "string"
+            },
+            "CompletionChoice": {
+                "properties": {
+                    "finish_reason": {
+                        "type": "string"
+                    },
+                    "index": {
+                        "format": "int64",
+                        "type": "integer"
+                    },
+                    "message": {
+                        "$ref": "#/components/schemas/CompletionMessage"
+                    }
+                },
+                "required": [
+                    "finish_reason",
+                    "index",
+                    "message"
+                ],
+                "type": "object"
+            },
+            "CompletionMessage": {
+                "properties": {
+                    "content": {
+                        "type": "string"
+                    },
+                    "role": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "content",
+                    "role"
+                ],
+                "type": "object"
+            },
             "CustomColorPalette": {
                 "properties": {
                     "backgroundHover": {
-                        "format": "color",
-                        "nullable": true,
-                        "type": "string"
+                        "$ref": "#/components/schemas/Color",
+                        "nullable": true
                     },
                     "backgroundPrimary": {
-                        "format": "color",
-                        "nullable": true,
-                        "type": "string"
+                        "$ref": "#/components/schemas/Color",
+                        "nullable": true
                     },
                     "backgroundSecondary": {
-                        "format": "color",
-                        "nullable": true,
-                        "type": "string"
+                        "$ref": "#/components/schemas/Color",
+                        "nullable": true
                     },
                     "interactiveAccent": {
-                        "format": "color",
-                        "nullable": true,
-                        "type": "string"
+                        "$ref": "#/components/schemas/Color",
+                        "nullable": true
+                    },
+                    "primary": {
+                        "$ref": "#/components/schemas/Color",
+                        "nullable": true
                     },
                     "textDanger": {
-                        "format": "color",
-                        "nullable": true,
-                        "type": "string"
+                        "$ref": "#/components/schemas/Color",
+                        "nullable": true
                     },
                     "textPrimary": {
-                        "format": "color",
-                        "nullable": true,
-                        "type": "string"
+                        "$ref": "#/components/schemas/Color",
+                        "nullable": true
                     }
                 },
                 "type": "object"
@@ -1396,9 +1432,8 @@
                         "nullable": true
                     },
                     "customColor": {
-                        "format": "color",
-                        "nullable": true,
-                        "type": "string"
+                        "$ref": "#/components/schemas/Color",
+                        "nullable": true
                     },
                     "customFontFamily": {
                         "example": "Open Sans",
@@ -1861,9 +1896,6 @@
                 ],
                 "type": "object"
             },
-            "ExportEnvironmentIn": {
-                "type": "object"
-            },
             "ExportEventTypeOut": {
                 "properties": {
                     "id": {
@@ -1886,11 +1918,54 @@
             "FontSizeConfig": {
                 "properties": {
                     "base": {
-                        "format": "int",
+                        "format": "uint16",
+                        "minimum": 0,
                         "nullable": true,
                         "type": "integer"
                     }
                 },
+                "type": "object"
+            },
+            "GenerateIn": {
+                "properties": {
+                    "prompt": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "prompt"
+                ],
+                "type": "object"
+            },
+            "GenerateOut": {
+                "properties": {
+                    "choices": {
+                        "items": {
+                            "$ref": "#/components/schemas/CompletionChoice"
+                        },
+                        "type": "array"
+                    },
+                    "created": {
+                        "format": "int64",
+                        "type": "integer"
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "model": {
+                        "type": "string"
+                    },
+                    "object": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "choices",
+                    "created",
+                    "id",
+                    "model",
+                    "object"
+                ],
                 "type": "object"
             },
             "HTTPValidationError": {
@@ -1921,6 +1996,26 @@
                     "detail"
                 ],
                 "title": "HttpError",
+                "type": "object"
+            },
+            "InboundPathParams": {
+                "properties": {
+                    "app_id": {
+                        "description": "The app's ID or UID",
+                        "example": "unique-app-identifier",
+                        "maxLength": 256,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "type": "string"
+                    },
+                    "inbound_token": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "app_id",
+                    "inbound_token"
+                ],
                 "type": "object"
             },
             "IntegrationIn": {
@@ -3077,6 +3172,28 @@
                     "Sending"
                 ]
             },
+            "MessageStreamOut": {
+                "properties": {
+                    "data": {
+                        "items": {
+                            "$ref": "#/components/schemas/MessageOut"
+                        },
+                        "type": "array"
+                    },
+                    "done": {
+                        "type": "boolean"
+                    },
+                    "iterator": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "data",
+                    "done",
+                    "iterator"
+                ],
+                "type": "object"
+            },
             "OauthPayloadIn": {
                 "properties": {
                     "code": {
@@ -3212,6 +3329,17 @@
                 ],
                 "type": "object"
             },
+            "RotatedUrlOut": {
+                "properties": {
+                    "url": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "url"
+                ],
+                "type": "object"
+            },
             "SettingsIn": {
                 "properties": {
                     "colorPaletteDark": {
@@ -3228,9 +3356,8 @@
                         "type": "integer"
                     },
                     "customColor": {
-                        "format": "color",
-                        "nullable": true,
-                        "type": "string"
+                        "$ref": "#/components/schemas/Color",
+                        "nullable": true
                     },
                     "customFontFamily": {
                         "example": "Open Sans",
@@ -3300,9 +3427,8 @@
                         "type": "integer"
                     },
                     "customColor": {
-                        "format": "color",
-                        "nullable": true,
-                        "type": "string"
+                        "$ref": "#/components/schemas/Color",
+                        "nullable": true
                     },
                     "customFontFamily": {
                         "example": "Open Sans",
@@ -5205,10 +5331,12 @@
                         "style": "form"
                     },
                     {
+                        "description": "When `true`, the message information is included in the response",
                         "in": "query",
                         "name": "with_msg",
                         "schema": {
                             "default": false,
+                            "description": "When `true`, the message information is included in the response",
                             "type": "boolean"
                         },
                         "style": "form"
@@ -9771,6 +9899,632 @@
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation/simulate/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"eventType\": \"user.signup\",\n        \"channels\": null\n    }'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/app/{app_id}/events/": {
+            "get": {
+                "description": "Reads the stream of created messages for an application",
+                "operationId": "v1.message.stream",
+                "parameters": [
+                    {
+                        "description": "The app's ID or UID",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The app's ID or UID",
+                            "example": "unique-app-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "Limit the number of returned items",
+                        "in": "query",
+                        "name": "limit",
+                        "schema": {
+                            "description": "Limit the number of returned items",
+                            "format": "uint64",
+                            "maximum": 250,
+                            "minimum": 1,
+                            "type": "integer"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "The iterator returned from a prior invocation",
+                        "in": "query",
+                        "name": "iterator",
+                        "schema": {
+                            "description": "The iterator returned from a prior invocation",
+                            "nullable": true,
+                            "type": "string"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "Filter response based on the event type",
+                        "in": "query",
+                        "name": "event_types",
+                        "schema": {
+                            "description": "Filter response based on the event type",
+                            "items": {
+                                "description": "The event type's name",
+                                "example": "user.signup",
+                                "maxLength": 256,
+                                "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                                "type": "string"
+                            },
+                            "nullable": true,
+                            "type": "array",
+                            "uniqueItems": true
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "Filter response based on the event type",
+                        "in": "query",
+                        "name": "channels",
+                        "schema": {
+                            "description": "Filter response based on the event type",
+                            "items": {
+                                "example": "project_1337",
+                                "maxLength": 128,
+                                "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                                "type": "string"
+                            },
+                            "nullable": true,
+                            "type": "array",
+                            "uniqueItems": true
+                        },
+                        "style": "form"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MessageStreamOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Stream Events",
+                "tags": [
+                    "Message"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const messageStreamOut = await svix.message.stream(\"app_id\");"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const messageStreamOut = await svix.message.stream(\"app_id\");"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "message_stream_out = svix.message.stream(\"app_id\")"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "message_stream_out = await svix.message.stream(\"app_id\")"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "messageStreamOut, err := svixClient.Message.Stream(ctx, \"app_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val messageStreamOut = svix.message.stream(\"app_id\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "MessageStreamOut messageStreamOut = svix.getMessage().stream(\"app_id\")"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "message_stream_out = svix.message.stream(\"app_id\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let message_stream_out = svix.message().stream(\"app_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var messageStreamOut = await svix.Message.StreamAsync(\"app_id\")"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix message stream \"app_id\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/events/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/app/{app_id}/inbound/msg/{inbound_token}/": {
+            "post": {
+                "description": "Handles a raw inbound webhook for the application",
+                "operationId": "v1.inbound.msg",
+                "parameters": [
+                    {
+                        "description": "The app's ID or UID",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The app's ID or UID",
+                            "example": "unique-app-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "in": "path",
+                        "name": "inbound_token",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "text/plain; charset=utf-8": {
+                            "schema": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "202": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MessageOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Handle Inbound",
+                "tags": [
+                    "Inbound"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const messageOut = await svix.inbound.msg(\"app_id\", \"inbound_token\");"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const messageOut = await svix.inbound.msg(\"app_id\", \"inbound_token\");"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "message_out = svix.inbound.msg(\"app_id\", \"inbound_token\", None)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "message_out = await svix.inbound.msg(\"app_id\", \"inbound_token\", None)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "messageOut, err := svixClient.Inbound.Msg(ctx, \"app_id\", \"inbound_token\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val messageOut = svix.inbound.msg(\"app_id\", \"inbound_token\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "MessageOut messageOut = svix.getInbound().msg(\"app_id\", \"inbound_token\")"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "message_out = svix.inbound.msg(\"app_id\", \"inbound_token\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let message_out = svix.inbound().msg(\"app_id\", \"inbound_token\", None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var messageOut = await svix.Inbound.MsgAsync(\"app_id\", \"inbound_token\")"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix inbound msg \"app_id\" \"inbound_token\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/inbound/msg/{inbound_token}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/app/{app_id}/inbound/rotate-url/": {
+            "post": {
+                "description": "Invalidates the previous inbound url (if one exists), producing a new inbound\nURL for this app",
+                "operationId": "v1.inbound.rotate-url",
+                "parameters": [
+                    {
+                        "description": "The app's ID or UID",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The app's ID or UID",
+                            "example": "unique-app-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RotatedUrlOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Rotate Url",
+                "tags": [
+                    "Inbound"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const rotatedUrlOut = await svix.inbound.rotateUrl(\"app_id\");"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const rotatedUrlOut = await svix.inbound.rotateUrl(\"app_id\");"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "rotated_url_out = svix.inbound.rotate_url(\"app_id\", None)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "rotated_url_out = await svix.inbound.rotate_url(\"app_id\", None)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "rotatedUrlOut, err := svixClient.Inbound.RotateUrl(ctx, \"app_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val rotatedUrlOut = svix.inbound.rotateUrl(\"app_id\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "RotatedUrlOut rotatedUrlOut = svix.getInbound().rotateUrl(\"app_id\")"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "rotated_url_out = svix.inbound.rotate_url(\"app_id\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let rotated_url_out = svix.inbound().rotate_url(\"app_id\", None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var rotatedUrlOut = await svix.Inbound.RotateUrlAsync(\"app_id\")"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix inbound rotate-url \"app_id\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/inbound/rotate-url/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -15205,30 +15959,9 @@
             }
         },
         "/api/v1/environment/export/": {
-            "post": {
+            "get": {
                 "description": "Download a JSON file containing all org-settings and event types",
-                "operationId": "v1.environment.export",
-                "parameters": [
-                    {
-                        "description": "The request's idempotency key",
-                        "in": "header",
-                        "name": "idempotency-key",
-                        "schema": {
-                            "type": "string"
-                        },
-                        "style": "simple"
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ExportEnvironmentIn"
-                            }
-                        }
-                    },
-                    "required": true
-                },
+                "operationId": "v1.environment.export.get",
                 "responses": {
                     "200": {
                         "content": {
@@ -15324,62 +16057,230 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const environmentOut = await svix.environment.export(\n});"
+                        "source": "const environmentOut = await svix.environment.export();"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const environmentOut = await svix.environment.export(\n});"
+                        "source": "const environmentOut = await svix.environment.export();"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "environment_out = svix.environment.export(ExportEnvironmentIn\n), None)"
+                        "source": "environment_out = svix.environment.export()"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "environment_out = await svix.environment.export(ExportEnvironmentIn\n), None)"
+                        "source": "environment_out = await svix.environment.export()"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "environmentOut, err := svixClient.Environment.Export(ctx, &ExportEnvironmentIn{\n})"
+                        "source": "environmentOut, err := svixClient.Environment.Export(ctx)"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val environmentOut = svix.environment.export(ExportEnvironmentIn()\n)"
+                        "source": "val environmentOut = svix.environment.export()"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "EnvironmentOut environmentOut = svix.getEnvironment().export(new ExportEnvironmentIn()\n)"
+                        "source": "EnvironmentOut environmentOut = svix.getEnvironment().export()"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "environment_out = svix.environment.export(Svix::ExportEnvironmentIn.new(\n}))"
+                        "source": "environment_out = svix.environment.export()"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let environment_out = svix.environment().export(ExportEnvironmentIn {\n}, None).await?;"
+                        "source": "let environment_out = svix.environment().export().await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var environmentOut = await svix.Environment.ExportAsync(new ExportEnvironmentIn\n})"
+                        "source": "var environmentOut = await svix.Environment.ExportAsync()"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix environment export '\n}'"
+                        "source": "svix environment export "
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/environment/export/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '\n    }'"
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/environment/export/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            },
+            "post": {
+                "description": "Download a JSON file containing all org-settings and event types",
+                "operationId": "v1.environment.export",
+                "parameters": [
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EnvironmentOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Export Environment Configuration",
+                "tags": [
+                    "Environment"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const environmentOut = await svix.environment.export();"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const environmentOut = await svix.environment.export();"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "environment_out = svix.environment.export(None)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "environment_out = await svix.environment.export(None)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "environmentOut, err := svixClient.Environment.Export(ctx)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val environmentOut = svix.environment.export()"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "EnvironmentOut environmentOut = svix.getEnvironment().export()"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "environment_out = svix.environment.export()"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let environment_out = svix.environment().export(None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var environmentOut = await svix.Environment.ExportAsync()"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix environment export "
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/environment/export/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -15650,7 +16551,7 @@
                 ],
                 "summary": "Get Org Settings",
                 "tags": [
-                    "Environment-Settings"
+                    "Environment"
                 ],
                 "x-codeSamples": [
                     {
@@ -18763,6 +19664,186 @@
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"instructionsLink\": null,\n        \"filterTypes\": [\"user.signup\", \"user.deleted\"],\n        \"featureFlag\": \"cool-new-feature\"\n    }'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/transformation-template/generate": {
+            "post": {
+                "description": "Use OpenAI's Completion API to generate code for a transformation template",
+                "operationId": "v1.transformation-template.generate",
+                "parameters": [
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/GenerateIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GenerateOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Generate",
+                "tags": [
+                    "Transformation Template"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const generateOut = await svix.transformationTemplate.generate(\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const generateOut = await svix.transformationTemplate.generate(\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "generate_out = svix.transformation_template.generate(GenerateIn\n), None)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "generate_out = await svix.transformation_template.generate(GenerateIn\n), None)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "generateOut, err := svixClient.TransformationTemplate.Generate(ctx, &GenerateIn{\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val generateOut = svix.transformationTemplate.generate(GenerateIn()\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "GenerateOut generateOut = svix.getTransformationTemplate().generate(new GenerateIn()\n)"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "generate_out = svix.transformation_template.generate(Svix::GenerateIn.new(\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let generate_out = svix.transformation_template().generate(GenerateIn {\n}, None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var generateOut = await svix.TransformationTemplate.GenerateAsync(new GenerateIn\n})"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix transformation-template generate '\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/generate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '\n    }'"
                     }
                 ]
             }
