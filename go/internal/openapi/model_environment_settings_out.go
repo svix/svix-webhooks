@@ -18,7 +18,7 @@ import (
 type EnvironmentSettingsOut struct {
 	ColorPaletteDark *CustomColorPalette `json:"colorPaletteDark,omitempty"`
 	ColorPaletteLight *CustomColorPalette `json:"colorPaletteLight,omitempty"`
-	CustomColor NullableString `json:"customColor,omitempty"`
+	CustomColor *string `json:"customColor,omitempty"`
 	CustomFontFamily NullableString `json:"customFontFamily,omitempty"`
 	CustomLogoUrl NullableString `json:"customLogoUrl,omitempty"`
 	CustomThemeOverride *CustomThemeOverride `json:"customThemeOverride,omitempty"`
@@ -120,46 +120,36 @@ func (o *EnvironmentSettingsOut) SetColorPaletteLight(v CustomColorPalette) {
 	o.ColorPaletteLight = &v
 }
 
-// GetCustomColor returns the CustomColor field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetCustomColor returns the CustomColor field value if set, zero value otherwise.
 func (o *EnvironmentSettingsOut) GetCustomColor() string {
-	if o == nil || o.CustomColor.Get() == nil {
+	if o == nil || o.CustomColor == nil {
 		var ret string
 		return ret
 	}
-	return *o.CustomColor.Get()
+	return *o.CustomColor
 }
 
 // GetCustomColorOk returns a tuple with the CustomColor field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EnvironmentSettingsOut) GetCustomColorOk() (*string, bool) {
-	if o == nil  {
+	if o == nil || o.CustomColor == nil {
 		return nil, false
 	}
-	return o.CustomColor.Get(), o.CustomColor.IsSet()
+	return o.CustomColor, true
 }
 
 // HasCustomColor returns a boolean if a field has been set.
 func (o *EnvironmentSettingsOut) HasCustomColor() bool {
-	if o != nil && o.CustomColor.IsSet() {
+	if o != nil && o.CustomColor != nil {
 		return true
 	}
 
 	return false
 }
 
-// SetCustomColor gets a reference to the given NullableString and assigns it to the CustomColor field.
+// SetCustomColor gets a reference to the given string and assigns it to the CustomColor field.
 func (o *EnvironmentSettingsOut) SetCustomColor(v string) {
-	o.CustomColor.Set(&v)
-}
-// SetCustomColorNil sets the value for CustomColor to be an explicit nil
-func (o *EnvironmentSettingsOut) SetCustomColorNil() {
-	o.CustomColor.Set(nil)
-}
-
-// UnsetCustomColor ensures that no value is present for CustomColor, not even an explicit nil
-func (o *EnvironmentSettingsOut) UnsetCustomColor() {
-	o.CustomColor.Unset()
+	o.CustomColor = &v
 }
 
 // GetCustomFontFamily returns the CustomFontFamily field value if set, zero value otherwise (both if not set or set to explicit null).
@@ -382,8 +372,8 @@ func (o EnvironmentSettingsOut) MarshalJSON() ([]byte, error) {
 	if o.ColorPaletteLight != nil {
 		toSerialize["colorPaletteLight"] = o.ColorPaletteLight
 	}
-	if o.CustomColor.IsSet() {
-		toSerialize["customColor"] = o.CustomColor.Get()
+	if o.CustomColor != nil {
+		toSerialize["customColor"] = o.CustomColor
 	}
 	if o.CustomFontFamily.IsSet() {
 		toSerialize["customFontFamily"] = o.CustomFontFamily.Get()
