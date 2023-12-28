@@ -7401,12 +7401,12 @@
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "svix.endpoint.patchHeaders(\"app_id\", \"endpoint_id\", EndpointHeadersPatchIn()\n    .headers(\"\"\"{\"X-Example\":\"123\",\"X-Foobar\":\"Bar\"}\"\"\")\n)"
+                        "source": "svix.endpoint.patchHeaders(\"app_id\", \"endpoint_id\", EndpointHeadersPatchIn()\n    .headers(/* ... */)\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "svix.getEndpoint().patchHeaders(\"app_id\", \"endpoint_id\", new EndpointHeadersPatchIn()\n    .headers(\"{\\\"X-Example\\\":\\\"123\\\",\\\"X-Foobar\\\":\\\"Bar\\\"}\")\n)"
+                        "source": "svix.getEndpoint().patchHeaders(\"app_id\", \"endpoint_id\", new EndpointHeadersPatchIn()\n    .headers(/* ... */)\n)"
                     },
                     {
                         "label": "Ruby",
@@ -7421,7 +7421,7 @@
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "await svix.Endpoint.PatchHeadersAsync(\"app_id\", \"endpoint_id\", new EndpointHeadersPatchIn{\n    headers: new {\"X-Example\":\"123\",\"X-Foobar\":\"Bar\"}\n})"
+                        "source": "await svix.Endpoint.PatchHeadersAsync(\"app_id\", \"endpoint_id\", new EndpointHeadersPatchIn{\n    headers: /* ... */\n})"
                     },
                     {
                         "label": "CLI",
@@ -7593,12 +7593,12 @@
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "svix.endpoint.updateHeaders(\"app_id\", \"endpoint_id\", EndpointHeadersIn()\n    .headers(\"\"\"{\"X-Example\":\"123\",\"X-Foobar\":\"Bar\"}\"\"\")\n)"
+                        "source": "svix.endpoint.updateHeaders(\"app_id\", \"endpoint_id\", EndpointHeadersIn()\n    .headers(/* ... */)\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "svix.getEndpoint().updateHeaders(\"app_id\", \"endpoint_id\", new EndpointHeadersIn()\n    .headers(\"{\\\"X-Example\\\":\\\"123\\\",\\\"X-Foobar\\\":\\\"Bar\\\"}\")\n)"
+                        "source": "svix.getEndpoint().updateHeaders(\"app_id\", \"endpoint_id\", new EndpointHeadersIn()\n    .headers(/* ... */)\n)"
                     },
                     {
                         "label": "Ruby",
@@ -7613,7 +7613,7 @@
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "await svix.Endpoint.UpdateHeadersAsync(\"app_id\", \"endpoint_id\", new EndpointHeadersIn{\n    headers: new {\"X-Example\":\"123\",\"X-Foobar\":\"Bar\"}\n})"
+                        "source": "await svix.Endpoint.UpdateHeadersAsync(\"app_id\", \"endpoint_id\", new EndpointHeadersIn{\n    headers: /* ... */\n})"
                     },
                     {
                         "label": "CLI",
@@ -12333,12 +12333,12 @@
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val messageOut = svix.message.create(\"app_id\", MessageIn()\n    .eventId(\"unique-msg-identifier\")\n    .eventType(\"user.signup\")\n    .payload(\"\"\"{\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"}\"\"\")\n    .channels(arrayOf(\"project_123\", \"group_2\"))\n    .payloadRetentionPeriod(90)\n    .application(null)\n    .tags(arrayOf(\"my_tag\", \"other\"))\n)"
+                        "source": "val messageOut = svix.message.create(\"app_id\", MessageIn()\n    .eventId(\"unique-msg-identifier\")\n    .eventType(\"user.signup\")\n    .payload(/* ... */)\n    .channels(arrayOf(\"project_123\", \"group_2\"))\n    .payloadRetentionPeriod(90)\n    .application(null)\n    .tags(arrayOf(\"my_tag\", \"other\"))\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "MessageOut messageOut = svix.getMessage().create(\"app_id\", new MessageIn()\n    .eventId(\"unique-msg-identifier\")\n    .eventType(\"user.signup\")\n    .payload(\"{\\\"email\\\":\\\"test@example.com\\\",\\\"type\\\":\\\"user.created\\\",\\\"username\\\":\\\"test_user\\\"}\")\n    .channels(new String[]{\"project_123\", \"group_2\"})\n    .payloadRetentionPeriod(90)\n    .application(null)\n    .tags(new String[]{\"my_tag\", \"other\"})\n)"
+                        "source": "MessageOut messageOut = svix.getMessage().create(\"app_id\", new MessageIn()\n    .eventId(\"unique-msg-identifier\")\n    .eventType(\"user.signup\")\n    .payload(/* ... */)\n    .channels(new String[]{\"project_123\", \"group_2\"})\n    .payloadRetentionPeriod(90)\n    .application(null)\n    .tags(new String[]{\"my_tag\", \"other\"})\n)"
                     },
                     {
                         "label": "Ruby",
@@ -12353,7 +12353,7 @@
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var messageOut = await svix.Message.CreateAsync(\"app_id\", new MessageIn{\n    eventId: \"unique-msg-identifier\",\n    eventType: \"user.signup\",\n    payload: new {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    channels: new string[] {\"project_123\", \"group_2\"},\n    payloadRetentionPeriod: 90,\n    application: null,\n    tags: new string[] {\"my_tag\", \"other\"}\n})"
+                        "source": "var messageOut = await svix.Message.CreateAsync(\"app_id\", new MessageIn{\n    eventId: \"unique-msg-identifier\",\n    eventType: \"user.signup\",\n    payload: /* ... */,\n    channels: new string[] {\"project_123\", \"group_2\"},\n    payloadRetentionPeriod: 90,\n    application: null,\n    tags: new string[] {\"my_tag\", \"other\"}\n})"
                     },
                     {
                         "label": "CLI",
@@ -16551,7 +16551,7 @@
                 ],
                 "summary": "Get Org Settings",
                 "tags": [
-                    "Environment"
+                    "Environment-Settings"
                 ],
                 "x-codeSamples": [
                     {
@@ -16981,12 +16981,12 @@
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val eventTypeOut = svix.eventType.create(EventTypeIn()\n    .name(\"user.signup\")\n    .description(\"A user has signed up\")\n    .archived(false)\n    .schemas(\"\"\"{\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}}\"\"\")\n    .featureFlag(\"cool-new-feature\")\n)"
+                        "source": "val eventTypeOut = svix.eventType.create(EventTypeIn()\n    .name(\"user.signup\")\n    .description(\"A user has signed up\")\n    .archived(false)\n    .schemas(/* ... */)\n    .featureFlag(\"cool-new-feature\")\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "EventTypeOut eventTypeOut = svix.getEventType().create(new EventTypeIn()\n    .name(\"user.signup\")\n    .description(\"A user has signed up\")\n    .archived(false)\n    .schemas(\"{\\\"1\\\":{\\\"description\\\":\\\"An invoice was paid by a user\\\",\\\"properties\\\":{\\\"invoiceId\\\":{\\\"description\\\":\\\"The invoice id\\\",\\\"type\\\":\\\"string\\\"},\\\"userId\\\":{\\\"description\\\":\\\"The user id\\\",\\\"type\\\":\\\"string\\\"}},\\\"required\\\":[\\\"invoiceId\\\",\\\"userId\\\"],\\\"title\\\":\\\"Invoice Paid Event\\\",\\\"type\\\":\\\"object\\\"}}\")\n    .featureFlag(\"cool-new-feature\")\n)"
+                        "source": "EventTypeOut eventTypeOut = svix.getEventType().create(new EventTypeIn()\n    .name(\"user.signup\")\n    .description(\"A user has signed up\")\n    .archived(false)\n    .schemas(/* ... */)\n    .featureFlag(\"cool-new-feature\")\n)"
                     },
                     {
                         "label": "Ruby",
@@ -17001,7 +17001,7 @@
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var eventTypeOut = await svix.EventType.CreateAsync(new EventTypeIn{\n    name: \"user.signup\",\n    description: \"A user has signed up\",\n    archived: false,\n    schemas: new {\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}},\n    featureFlag: \"cool-new-feature\"\n})"
+                        "source": "var eventTypeOut = await svix.EventType.CreateAsync(new EventTypeIn{\n    name: \"user.signup\",\n    description: \"A user has signed up\",\n    archived: false,\n    schemas: /* ... */,\n    featureFlag: \"cool-new-feature\"\n})"
                     },
                     {
                         "label": "CLI",
@@ -17332,12 +17332,12 @@
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val eventTypeImportOpenApiOut = svix.eventType.importOpenapi(EventTypeImportOpenApiIn()\n    .spec(\"\"\"{\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}}\"\"\")\n    .specRaw(\"\"\"{\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}}\"\"\")\n)"
+                        "source": "val eventTypeImportOpenApiOut = svix.eventType.importOpenapi(EventTypeImportOpenApiIn()\n    .spec(/* ... */)\n    .specRaw(/* ... */)\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "EventTypeImportOpenApiOut eventTypeImportOpenApiOut = svix.getEventType().importOpenapi(new EventTypeImportOpenApiIn()\n    .spec(\"{\\\"info\\\":{\\\"title\\\":\\\"Webhook Example\\\",\\\"version\\\":\\\"1.0.0\\\"},\\\"openapi\\\":\\\"3.1.0\\\",\\\"webhooks\\\":{\\\"pet.new\\\":{\\\"post\\\":{\\\"requestBody\\\":{\\\"content\\\":{\\\"application/json\\\":{\\\"schema\\\":{\\\"properties\\\":{\\\"id\\\":{\\\"format\\\":\\\"int64\\\",\\\"type\\\":\\\"integer\\\"},\\\"name\\\":{\\\"type\\\":\\\"string\\\"},\\\"tag\\\":{\\\"type\\\":\\\"string\\\"}},\\\"required\\\":[\\\"id\\\",\\\"name\\\"]}}},\\\"description\\\":\\\"Information about a new pet in the system\\\"},\\\"responses\\\":{\\\"200\\\":{\\\"description\\\":\\\"Return a 200 status to indicate that the data was received successfully\\\"}}}}}}\")\n    .specRaw(\"{\\\"info\\\":{\\\"title\\\":\\\"Webhook Example\\\",\\\"version\\\":\\\"1.0.0\\\"},\\\"openapi\\\":\\\"3.1.0\\\",\\\"webhooks\\\":{\\\"pet.new\\\":{\\\"post\\\":{\\\"requestBody\\\":{\\\"content\\\":{\\\"application/json\\\":{\\\"schema\\\":{\\\"properties\\\":{\\\"id\\\":{\\\"format\\\":\\\"int64\\\",\\\"type\\\":\\\"integer\\\"},\\\"name\\\":{\\\"type\\\":\\\"string\\\"},\\\"tag\\\":{\\\"type\\\":\\\"string\\\"}},\\\"required\\\":[\\\"id\\\",\\\"name\\\"]}}},\\\"description\\\":\\\"Information about a new pet in the system\\\"},\\\"responses\\\":{\\\"200\\\":{\\\"description\\\":\\\"Return a 200 status to indicate that the data was received successfully\\\"}}}}}}\")\n)"
+                        "source": "EventTypeImportOpenApiOut eventTypeImportOpenApiOut = svix.getEventType().importOpenapi(new EventTypeImportOpenApiIn()\n    .spec(/* ... */)\n    .specRaw(/* ... */)\n)"
                     },
                     {
                         "label": "Ruby",
@@ -17352,7 +17352,7 @@
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var eventTypeImportOpenApiOut = await svix.EventType.ImportOpenapiAsync(new EventTypeImportOpenApiIn{\n    spec: new {\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}},\n    specRaw: new {\"info\":{\"title\":\"Webhook Example\",\"version\":\"1.0.0\"},\"openapi\":\"3.1.0\",\"webhooks\":{\"pet.new\":{\"post\":{\"requestBody\":{\"content\":{\"application/json\":{\"schema\":{\"properties\":{\"id\":{\"format\":\"int64\",\"type\":\"integer\"},\"name\":{\"type\":\"string\"},\"tag\":{\"type\":\"string\"}},\"required\":[\"id\",\"name\"]}}},\"description\":\"Information about a new pet in the system\"},\"responses\":{\"200\":{\"description\":\"Return a 200 status to indicate that the data was received successfully\"}}}}}}\n})"
+                        "source": "var eventTypeImportOpenApiOut = await svix.EventType.ImportOpenapiAsync(new EventTypeImportOpenApiIn{\n    spec: /* ... */,\n    specRaw: /* ... */\n})"
                     },
                     {
                         "label": "CLI",
@@ -17512,12 +17512,12 @@
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val eventTypeExampleOut = svix.eventType.generateExample(EventTypeSchemaIn()\n    .schema(\"\"\"{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}\"\"\")\n)"
+                        "source": "val eventTypeExampleOut = svix.eventType.generateExample(EventTypeSchemaIn()\n    .schema(/* ... */)\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "EventTypeExampleOut eventTypeExampleOut = svix.getEventType().generateExample(new EventTypeSchemaIn()\n    .schema(\"{\\\"description\\\":\\\"An invoice was paid by a user\\\",\\\"properties\\\":{\\\"invoiceId\\\":{\\\"description\\\":\\\"The invoice id\\\",\\\"type\\\":\\\"string\\\"},\\\"userId\\\":{\\\"description\\\":\\\"The user id\\\",\\\"type\\\":\\\"string\\\"}},\\\"required\\\":[\\\"invoiceId\\\",\\\"userId\\\"],\\\"title\\\":\\\"Invoice Paid Event\\\",\\\"type\\\":\\\"object\\\"}\")\n)"
+                        "source": "EventTypeExampleOut eventTypeExampleOut = svix.getEventType().generateExample(new EventTypeSchemaIn()\n    .schema(/* ... */)\n)"
                     },
                     {
                         "label": "Ruby",
@@ -17532,7 +17532,7 @@
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var eventTypeExampleOut = await svix.EventType.GenerateExampleAsync(new EventTypeSchemaIn{\n    schema: new {\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}\n})"
+                        "source": "var eventTypeExampleOut = await svix.EventType.GenerateExampleAsync(new EventTypeSchemaIn{\n    schema: /* ... */\n})"
                     },
                     {
                         "label": "CLI",
@@ -18047,12 +18047,12 @@
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val eventTypeOut = svix.eventType.patch(\"event_type_name\", EventTypePatch()\n    .schemas(\"\"\"{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}\"\"\")\n    .featureFlag(\"cool-new-feature\")\n)"
+                        "source": "val eventTypeOut = svix.eventType.patch(\"event_type_name\", EventTypePatch()\n    .schemas(/* ... */)\n    .featureFlag(\"cool-new-feature\")\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "EventTypeOut eventTypeOut = svix.getEventType().patch(\"event_type_name\", new EventTypePatch()\n    .schemas(\"{\\\"description\\\":\\\"An invoice was paid by a user\\\",\\\"properties\\\":{\\\"invoiceId\\\":{\\\"description\\\":\\\"The invoice id\\\",\\\"type\\\":\\\"string\\\"},\\\"userId\\\":{\\\"description\\\":\\\"The user id\\\",\\\"type\\\":\\\"string\\\"}},\\\"required\\\":[\\\"invoiceId\\\",\\\"userId\\\"],\\\"title\\\":\\\"Invoice Paid Event\\\",\\\"type\\\":\\\"object\\\"}\")\n    .featureFlag(\"cool-new-feature\")\n)"
+                        "source": "EventTypeOut eventTypeOut = svix.getEventType().patch(\"event_type_name\", new EventTypePatch()\n    .schemas(/* ... */)\n    .featureFlag(\"cool-new-feature\")\n)"
                     },
                     {
                         "label": "Ruby",
@@ -18067,7 +18067,7 @@
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var eventTypeOut = await svix.EventType.PatchAsync(\"event_type_name\", new EventTypePatch{\n    schemas: new {\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"},\n    featureFlag: \"cool-new-feature\"\n})"
+                        "source": "var eventTypeOut = await svix.EventType.PatchAsync(\"event_type_name\", new EventTypePatch{\n    schemas: /* ... */,\n    featureFlag: \"cool-new-feature\"\n})"
                     },
                     {
                         "label": "CLI",
@@ -18240,12 +18240,12 @@
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val eventTypeOut = svix.eventType.update(\"event_type_name\", EventTypeUpdate()\n    .description(\"A user has signed up\")\n    .archived(false)\n    .schemas(\"\"\"{\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}}\"\"\")\n    .featureFlag(\"cool-new-feature\")\n)"
+                        "source": "val eventTypeOut = svix.eventType.update(\"event_type_name\", EventTypeUpdate()\n    .description(\"A user has signed up\")\n    .archived(false)\n    .schemas(/* ... */)\n    .featureFlag(\"cool-new-feature\")\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "EventTypeOut eventTypeOut = svix.getEventType().update(\"event_type_name\", new EventTypeUpdate()\n    .description(\"A user has signed up\")\n    .archived(false)\n    .schemas(\"{\\\"1\\\":{\\\"description\\\":\\\"An invoice was paid by a user\\\",\\\"properties\\\":{\\\"invoiceId\\\":{\\\"description\\\":\\\"The invoice id\\\",\\\"type\\\":\\\"string\\\"},\\\"userId\\\":{\\\"description\\\":\\\"The user id\\\",\\\"type\\\":\\\"string\\\"}},\\\"required\\\":[\\\"invoiceId\\\",\\\"userId\\\"],\\\"title\\\":\\\"Invoice Paid Event\\\",\\\"type\\\":\\\"object\\\"}}\")\n    .featureFlag(\"cool-new-feature\")\n)"
+                        "source": "EventTypeOut eventTypeOut = svix.getEventType().update(\"event_type_name\", new EventTypeUpdate()\n    .description(\"A user has signed up\")\n    .archived(false)\n    .schemas(/* ... */)\n    .featureFlag(\"cool-new-feature\")\n)"
                     },
                     {
                         "label": "Ruby",
@@ -18260,7 +18260,7 @@
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var eventTypeOut = await svix.EventType.UpdateAsync(\"event_type_name\", new EventTypeUpdate{\n    description: \"A user has signed up\",\n    archived: false,\n    schemas: new {\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}},\n    featureFlag: \"cool-new-feature\"\n})"
+                        "source": "var eventTypeOut = await svix.EventType.UpdateAsync(\"event_type_name\", new EventTypeUpdate{\n    description: \"A user has signed up\",\n    archived: false,\n    schemas: /* ... */,\n    featureFlag: \"cool-new-feature\"\n})"
                     },
                     {
                         "label": "CLI",
