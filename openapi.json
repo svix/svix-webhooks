@@ -1441,6 +1441,13 @@
                         "pattern": "^[a-zA-Z0-9\\-_ ]+$",
                         "type": "string"
                     },
+                    "customFontFamilyUrl": {
+                        "format": "uri",
+                        "maxLength": 65536,
+                        "minLength": 1,
+                        "nullable": true,
+                        "type": "string"
+                    },
                     "customLogoUrl": {
                         "format": "uri",
                         "maxLength": 65536,
@@ -3365,6 +3372,13 @@
                         "pattern": "^[a-zA-Z0-9\\-_ ]+$",
                         "type": "string"
                     },
+                    "customFontFamilyUrl": {
+                        "format": "uri",
+                        "maxLength": 65536,
+                        "minLength": 1,
+                        "nullable": true,
+                        "type": "string"
+                    },
                     "customLogoUrl": {
                         "format": "uri",
                         "maxLength": 65536,
@@ -3434,6 +3448,13 @@
                         "example": "Open Sans",
                         "nullable": true,
                         "pattern": "^[a-zA-Z0-9\\-_ ]+$",
+                        "type": "string"
+                    },
+                    "customFontFamilyUrl": {
+                        "format": "uri",
+                        "maxLength": 65536,
+                        "minLength": 1,
+                        "nullable": true,
                         "type": "string"
                     },
                     "customLogoUrl": {
