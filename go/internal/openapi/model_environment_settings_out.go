@@ -20,6 +20,7 @@ type EnvironmentSettingsOut struct {
 	ColorPaletteLight *CustomColorPalette `json:"colorPaletteLight,omitempty"`
 	CustomColor *string `json:"customColor,omitempty"`
 	CustomFontFamily NullableString `json:"customFontFamily,omitempty"`
+	CustomFontFamilyUrl NullableString `json:"customFontFamilyUrl,omitempty"`
 	CustomLogoUrl NullableString `json:"customLogoUrl,omitempty"`
 	CustomThemeOverride *CustomThemeOverride `json:"customThemeOverride,omitempty"`
 	EnableChannels *bool `json:"enableChannels,omitempty"`
@@ -192,6 +193,48 @@ func (o *EnvironmentSettingsOut) SetCustomFontFamilyNil() {
 // UnsetCustomFontFamily ensures that no value is present for CustomFontFamily, not even an explicit nil
 func (o *EnvironmentSettingsOut) UnsetCustomFontFamily() {
 	o.CustomFontFamily.Unset()
+}
+
+// GetCustomFontFamilyUrl returns the CustomFontFamilyUrl field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *EnvironmentSettingsOut) GetCustomFontFamilyUrl() string {
+	if o == nil || o.CustomFontFamilyUrl.Get() == nil {
+		var ret string
+		return ret
+	}
+	return *o.CustomFontFamilyUrl.Get()
+}
+
+// GetCustomFontFamilyUrlOk returns a tuple with the CustomFontFamilyUrl field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *EnvironmentSettingsOut) GetCustomFontFamilyUrlOk() (*string, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return o.CustomFontFamilyUrl.Get(), o.CustomFontFamilyUrl.IsSet()
+}
+
+// HasCustomFontFamilyUrl returns a boolean if a field has been set.
+func (o *EnvironmentSettingsOut) HasCustomFontFamilyUrl() bool {
+	if o != nil && o.CustomFontFamilyUrl.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetCustomFontFamilyUrl gets a reference to the given NullableString and assigns it to the CustomFontFamilyUrl field.
+func (o *EnvironmentSettingsOut) SetCustomFontFamilyUrl(v string) {
+	o.CustomFontFamilyUrl.Set(&v)
+}
+// SetCustomFontFamilyUrlNil sets the value for CustomFontFamilyUrl to be an explicit nil
+func (o *EnvironmentSettingsOut) SetCustomFontFamilyUrlNil() {
+	o.CustomFontFamilyUrl.Set(nil)
+}
+
+// UnsetCustomFontFamilyUrl ensures that no value is present for CustomFontFamilyUrl, not even an explicit nil
+func (o *EnvironmentSettingsOut) UnsetCustomFontFamilyUrl() {
+	o.CustomFontFamilyUrl.Unset()
 }
 
 // GetCustomLogoUrl returns the CustomLogoUrl field value if set, zero value otherwise (both if not set or set to explicit null).
@@ -377,6 +420,9 @@ func (o EnvironmentSettingsOut) MarshalJSON() ([]byte, error) {
 	}
 	if o.CustomFontFamily.IsSet() {
 		toSerialize["customFontFamily"] = o.CustomFontFamily.Get()
+	}
+	if o.CustomFontFamilyUrl.IsSet() {
+		toSerialize["customFontFamilyUrl"] = o.CustomFontFamilyUrl.Get()
 	}
 	if o.CustomLogoUrl.IsSet() {
 		toSerialize["customLogoUrl"] = o.CustomLogoUrl.Get()
