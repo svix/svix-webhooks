@@ -411,7 +411,7 @@ async fn test_payload_retention_period() {
         .unwrap();
     assert_eq!(content.unwrap().id, msg_id.clone());
 
-    expired_message_cleaner::clean_expired_messages(&pool, 5000)
+    expired_message_cleaner::clean_expired_messages(&pool, 5000, false)
         .await
         .unwrap();
 
