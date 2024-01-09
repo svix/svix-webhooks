@@ -5,7 +5,7 @@ use std::time::Duration;
 
 use axum::async_trait;
 
-use super::{Cache, CacheBehavior, CacheKey, CacheValue, Result, StringCacheValue};
+use super::{Cache, CacheBehavior, CacheKey, CacheValue, Result, StringCacheKey};
 
 pub fn new() -> Cache {
     tracing::warn!("Running with caching disabled will negatively affect performance. Idempotency is not supported without a cache.");
@@ -29,7 +29,7 @@ impl CacheBehavior for NoCache {
         Ok(None)
     }
 
-    async fn get_string<T: StringCacheValue>(&self, _key: &T::Key) -> Result<Option<T>> {
+    async fn get_string<T: StringCacheKey>(&self, _key: &T) -> Result<Option<String>> {
         Ok(None)
     }
 
@@ -41,10 +41,10 @@ impl CacheBehavior for NoCache {
         Ok(())
     }
 
-    async fn set_string<T: StringCacheValue>(
+    async fn set_string<T: StringCacheKey>(
         &self,
-        _key: &T::Key,
-        _value: &T,
+        _key: &T,
+        _value: &str,
         _ttl: Duration,
     ) -> Result<()> {
         Ok(())
@@ -72,10 +72,10 @@ impl CacheBehavior for NoCache {
         Ok(false)
     }
 
-    async fn set_string_if_not_exists<T: StringCacheValue>(
+    async fn set_string_if_not_exists<T: StringCacheKey>(
         &self,
-        _key: &T::Key,
-        _value: &T,
+        _key: &T,
+        _value: &str,
         _ttl: Duration,
     ) -> Result<bool> {
         Ok(false)
