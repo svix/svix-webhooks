@@ -106,7 +106,7 @@ fn check_is_expired(vw: &ValueWrapper) -> bool {
 #[cfg(test)]
 mod tests {
     use super::{
-        super::{kv_def, CacheValue, StringCacheValue},
+        super::{kv_def, CacheValue},
         *,
     };
     use crate::core::cache::string_kv_def;
@@ -134,23 +134,10 @@ mod tests {
 
     #[derive(Deserialize, Serialize, Debug, PartialEq)]
     struct StringTestVal(String);
-    string_kv_def!(StringTestKey, StringTestVal);
+    string_kv_def!(StringTestKey);
     impl StringTestKey {
         fn new(id: String) -> StringTestKey {
             StringTestKey(format!("SVIX_TEST_KEY_STRING_{id}"))
-        }
-    }
-
-    impl std::fmt::Display for StringTestVal {
-        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-            write!(f, "{}", self.0)
-        }
-    }
-
-    impl TryFrom<String> for StringTestVal {
-        type Error = crate::error::Error;
-        fn try_from(s: String) -> crate::error::Result<Self> {
-            Ok(StringTestVal(s))
         }
     }
 
@@ -167,8 +154,8 @@ mod tests {
         );
         let (third_key, third_val_a, third_val_b) = (
             StringTestKey::new("1".to_owned()),
-            StringTestVal("1".to_owned()),
-            StringTestVal("2".to_owned()),
+            "1".to_owned(),
+            "2".to_owned(),
         );
 
         // Create
@@ -223,10 +210,7 @@ mod tests {
         // Confirm deletion
         assert_eq!(cache.get::<TestValA>(&first_key).await.unwrap(), None);
         assert_eq!(cache.get::<TestValB>(&second_key).await.unwrap(), None);
-        assert_eq!(
-            cache.get_string::<StringTestVal>(&third_key).await.unwrap(),
-            None
-        );
+        assert_eq!(cache.get_string(&third_key).await.unwrap(), None);
     }
 
     #[tokio::test]
