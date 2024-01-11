@@ -19,7 +19,9 @@ type CustomColorPalette struct {
 	BackgroundHover *string `json:"backgroundHover,omitempty"`
 	BackgroundPrimary *string `json:"backgroundPrimary,omitempty"`
 	BackgroundSecondary *string `json:"backgroundSecondary,omitempty"`
+	ButtonPrimary *string `json:"buttonPrimary,omitempty"`
 	InteractiveAccent *string `json:"interactiveAccent,omitempty"`
+	NavigationAccent *string `json:"navigationAccent,omitempty"`
 	Primary *string `json:"primary,omitempty"`
 	TextDanger *string `json:"textDanger,omitempty"`
 	TextPrimary *string `json:"textPrimary,omitempty"`
@@ -138,6 +140,38 @@ func (o *CustomColorPalette) SetBackgroundSecondary(v string) {
 	o.BackgroundSecondary = &v
 }
 
+// GetButtonPrimary returns the ButtonPrimary field value if set, zero value otherwise.
+func (o *CustomColorPalette) GetButtonPrimary() string {
+	if o == nil || o.ButtonPrimary == nil {
+		var ret string
+		return ret
+	}
+	return *o.ButtonPrimary
+}
+
+// GetButtonPrimaryOk returns a tuple with the ButtonPrimary field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *CustomColorPalette) GetButtonPrimaryOk() (*string, bool) {
+	if o == nil || o.ButtonPrimary == nil {
+		return nil, false
+	}
+	return o.ButtonPrimary, true
+}
+
+// HasButtonPrimary returns a boolean if a field has been set.
+func (o *CustomColorPalette) HasButtonPrimary() bool {
+	if o != nil && o.ButtonPrimary != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetButtonPrimary gets a reference to the given string and assigns it to the ButtonPrimary field.
+func (o *CustomColorPalette) SetButtonPrimary(v string) {
+	o.ButtonPrimary = &v
+}
+
 // GetInteractiveAccent returns the InteractiveAccent field value if set, zero value otherwise.
 func (o *CustomColorPalette) GetInteractiveAccent() string {
 	if o == nil || o.InteractiveAccent == nil {
@@ -168,6 +202,38 @@ func (o *CustomColorPalette) HasInteractiveAccent() bool {
 // SetInteractiveAccent gets a reference to the given string and assigns it to the InteractiveAccent field.
 func (o *CustomColorPalette) SetInteractiveAccent(v string) {
 	o.InteractiveAccent = &v
+}
+
+// GetNavigationAccent returns the NavigationAccent field value if set, zero value otherwise.
+func (o *CustomColorPalette) GetNavigationAccent() string {
+	if o == nil || o.NavigationAccent == nil {
+		var ret string
+		return ret
+	}
+	return *o.NavigationAccent
+}
+
+// GetNavigationAccentOk returns a tuple with the NavigationAccent field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *CustomColorPalette) GetNavigationAccentOk() (*string, bool) {
+	if o == nil || o.NavigationAccent == nil {
+		return nil, false
+	}
+	return o.NavigationAccent, true
+}
+
+// HasNavigationAccent returns a boolean if a field has been set.
+func (o *CustomColorPalette) HasNavigationAccent() bool {
+	if o != nil && o.NavigationAccent != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetNavigationAccent gets a reference to the given string and assigns it to the NavigationAccent field.
+func (o *CustomColorPalette) SetNavigationAccent(v string) {
+	o.NavigationAccent = &v
 }
 
 // GetPrimary returns the Primary field value if set, zero value otherwise.
@@ -277,8 +343,14 @@ func (o CustomColorPalette) MarshalJSON() ([]byte, error) {
 	if o.BackgroundSecondary != nil {
 		toSerialize["backgroundSecondary"] = o.BackgroundSecondary
 	}
+	if o.ButtonPrimary != nil {
+		toSerialize["buttonPrimary"] = o.ButtonPrimary
+	}
 	if o.InteractiveAccent != nil {
 		toSerialize["interactiveAccent"] = o.InteractiveAccent
+	}
+	if o.NavigationAccent != nil {
+		toSerialize["navigationAccent"] = o.NavigationAccent
 	}
 	if o.Primary != nil {
 		toSerialize["primary"] = o.Primary
