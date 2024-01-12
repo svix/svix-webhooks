@@ -431,7 +431,15 @@
                         "$ref": "#/components/schemas/Color",
                         "nullable": true
                     },
+                    "buttonPrimary": {
+                        "$ref": "#/components/schemas/Color",
+                        "nullable": true
+                    },
                     "interactiveAccent": {
+                        "$ref": "#/components/schemas/Color",
+                        "nullable": true
+                    },
+                    "navigationAccent": {
                         "$ref": "#/components/schemas/Color",
                         "nullable": true
                     },
