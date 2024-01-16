@@ -165,6 +165,11 @@ export class {{classname}}ResponseProcessor {
      */
      public async {{nickname}}(response: ResponseContext): Promise<{{#returnType}}{{{returnType}}}{{/returnType}} {{^returnType}}void{{/returnType}}> {
         const contentType = ObjectSerializer.normalizeMediaType(response.headers["content-type"]);
+
+        if (contentType === undefined) {
+            throw new Error("Cannot parse content. No Content-Type defined. Body: " + await response.body.text());
+        }
+
         {{#responses}}
         if (isCodeInRange("{{code}}", response.httpStatusCode)) {
             {{#dataType}}
@@ -214,8 +219,8 @@ export class {{classname}}ResponseProcessor {
             {{/returnType}}
         }
 
-        let body = response.body || "";
-        throw new ApiException<string>(response.httpStatusCode, "Unknown API Status Code!\nBody: \"" + body + "\"");
+        let body = await response.body.text();
+        throw new ApiException<string>(response.httpStatusCode, body);
     }
 
     {{/operation}}
