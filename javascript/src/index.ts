@@ -72,11 +72,13 @@ import {
 export * from "./openapi/models/all";
 export * from "./openapi/apis/exception";
 import { timingSafeEqual } from "./timing_safe_equal";
-import * as base64 from "@stablelib/base64";
+import { toUint8Array, fromUint8Array } from "js-base64";
 import * as sha256 from "fast-sha256";
 
 const WEBHOOK_TOLERANCE_IN_SECONDS = 5 * 60; // 5 minutes
 const VERSION = "1.15.0";
+
+const encoder = new globalThis.TextEncoder();
 
 class UserAgentMiddleware implements Middleware {
   public pre(context: RequestContext): Promise<RequestContext> {
@@ -265,7 +267,10 @@ class Application {
     return this.api.v1ApplicationUpdate({ appId, applicationIn });
   }
 
-  public patch(appId: string, applicationPatch: ApplicationPatch): Promise<ApplicationOut> {
+  public patch(
+    appId: string,
+    applicationPatch: ApplicationPatch
+  ): Promise<ApplicationOut> {
     return this.api.v1ApplicationPatch({ appId, applicationPatch });
   }
 
@@ -419,11 +424,15 @@ class Endpoint {
     });
   }
 
-  public getStats(appId: string, endpointId: string, options?: EndpointStatsOptions): Promise<EndpointStats> {
+  public getStats(
+    appId: string,
+    endpointId: string,
+    options?: EndpointStatsOptions
+  ): Promise<EndpointStats> {
     return this.api.v1EndpointGetStats({
       appId,
       endpointId,
-      ...options
+      ...options,
     });
   }
 
@@ -431,9 +440,7 @@ class Endpoint {
     appId: string,
     endpointId: string
   ): Promise<EndpointTransformationOut> {
-    return this.api.v1EndpointTransformationGet(
-      { endpointId, appId }
-    );
+    return this.api.v1EndpointTransformationGet({ endpointId, appId });
   }
 
   public transformationPartialUpdate(
@@ -441,20 +448,25 @@ class Endpoint {
     endpointId: string,
     endpointTransformationIn: EndpointTransformationIn
   ): Promise<void> {
-    return this.api.v1EndpointTransformationPartialUpdate(
-      { appId, endpointId, endpointTransformationIn }
-    );
+    return this.api.v1EndpointTransformationPartialUpdate({
+      appId,
+      endpointId,
+      endpointTransformationIn,
+    });
   }
 
   public sendExample(
     appId: string,
     endpointId: string,
     eventExampleIn: EventExampleIn,
-    options?: PostOptions,
+    options?: PostOptions
   ): Promise<MessageOut> {
-    return this.api.v1EndpointSendExample(
-      { appId, endpointId, eventExampleIn, ...options }
-    );
+    return this.api.v1EndpointSendExample({
+      appId,
+      endpointId,
+      eventExampleIn,
+      ...options,
+    });
   }
 }
 
@@ -501,7 +513,10 @@ class EventType {
     return this.api.v1EventTypeDelete({ eventTypeName });
   }
 
-  public importOpenApi(eventTypeImportOpenApiIn: EventTypeImportOpenApiIn, options?: PostOptions): Promise<EventTypeImportOpenApiOut> {
+  public importOpenApi(
+    eventTypeImportOpenApiIn: EventTypeImportOpenApiIn,
+    options?: PostOptions
+  ): Promise<EventTypeImportOpenApiOut> {
     return this.api.v1EventTypeImportOpenapi({ eventTypeImportOpenApiIn, ...options });
   }
 }
@@ -704,19 +719,20 @@ class MessageAttempt {
     endpointId: string,
     options?: MessageAttemptListOptions
   ): Promise<ListResponseMessageAttemptEndpointOut> {
-    return this.api.v1MessageAttemptListByEndpointDeprecated(
-      { appId, msgId, endpointId, ...options }
-    );
+    return this.api.v1MessageAttemptListByEndpointDeprecated({
+      appId,
+      msgId,
+      endpointId,
+      ...options,
+    });
   }
 
-  public expungeContent(
-    appId: string,
-    msgId: string,
-    attemptId: string
-  ): Promise<void> {
+  public expungeContent(appId: string, msgId: string, attemptId: string): Promise<void> {
     return this.api.v1MessageAttemptExpungeContent({
-      appId, msgId, attemptId
-    })
+      appId,
+      msgId,
+      attemptId,
+    });
   }
 }
 
@@ -735,14 +751,11 @@ class BackgroundTask {
     });
   }
 
-  public get(
-    taskId: string,
-  ): Promise<BackgroundTaskOut> {
+  public get(taskId: string): Promise<BackgroundTaskOut> {
     return this.api.getBackgroundTask({
-      taskId
+      taskId,
     });
   }
-
 }
 
 class ExtendableError extends Error {
@@ -799,12 +812,12 @@ export class Webhook {
       if (secret.startsWith(Webhook.prefix)) {
         secret = secret.substring(Webhook.prefix.length);
       }
-      this.key = base64.decode(secret);
+      this.key = toUint8Array(secret);
     }
   }
 
   public verify(
-    payload: string | Buffer,
+    payload: string,
     headers_:
       | WebhookRequiredHeaders
       | WebhookUnbrandedRequiredHeaders
@@ -836,7 +849,6 @@ export class Webhook {
 
     const passedSignatures = msgSignature.split(" ");
 
-    const encoder = new globalThis.TextEncoder();
     for (const versionedSignature of passedSignatures) {
       const [version, signature] = versionedSignature.split(",");
       if (version !== "v1") {
@@ -850,19 +862,16 @@ export class Webhook {
     throw new WebhookVerificationError("No matching signature found");
   }
 
-  public sign(msgId: string, timestamp: Date, payload: string | Buffer): string {
-    if (typeof payload === "string") {
-      // Do nothing, already a string
-    } else if (payload.constructor.name === "Buffer") {
-      payload = payload.toString();
-    } else {
-      throw new Error("Expected payload to be of type string or Buffer. Please refer to https://docs.svix.com/receiving/verifying-payloads/how for more information.");
+  public sign(msgId: string, timestamp: Date, payload: string): string {
+    if (typeof payload !== "string") {
+      throw new Error(
+        "Expected payload to be of type string. Please refer to https://docs.svix.com/receiving/verifying-payloads/how for more information."
+      );
     }
 
-    const encoder = new TextEncoder();
     const timestampNumber = Math.floor(timestamp.getTime() / 1000);
     const toSign = encoder.encode(`${msgId}.${timestampNumber}.${payload}`);
-    const expectedSignature = base64.encode(sha256.hmac(this.key, toSign));
+    const expectedSignature = fromUint8Array(sha256.hmac(this.key, toSign));
     return `v1,${expectedSignature}`;
   }
 

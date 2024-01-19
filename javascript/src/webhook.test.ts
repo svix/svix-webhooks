@@ -1,8 +1,10 @@
-import * as utf8 from "@stablelib/utf8";
-import * as base64 from "@stablelib/base64";
+import { expect, test } from "vitest";
+import { fromUint8Array, toUint8Array } from "js-base64";
 import * as sha256 from "fast-sha256";
 
 import { Webhook, WebhookVerificationError } from "./index";
+
+const textEncoder = new globalThis.TextEncoder();
 
 const defaultMsgID = "msg_p5jXN8AQM9LWM0D4loKWxJek";
 const defaultPayload = `{"test": 2432232314}`;
@@ -25,8 +27,8 @@ class TestPayload {
     this.payload = defaultPayload;
     this.secret = defaultSecret;
 
-    const toSign = utf8.encode(`${this.id}.${this.timestamp}.${this.payload}`);
-    this.signature = base64.encode(sha256.hmac(base64.decode(this.secret), toSign));
+    const toSign = textEncoder.encode(`${this.id}.${this.timestamp}.${this.payload}`);
+    this.signature = fromUint8Array(sha256.hmac(toUint8Array(this.secret), toSign));
 
     this.header = {
       "svix-id": this.id,
