@@ -2,9 +2,9 @@
   "compilerOptions": {
     "strict": true,
     /* Basic Options */
-    "target": "es6",
-    "module": "CommonJS",
-    "moduleResolution": "node",
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "declaration": true,
     "allowJs": true,
 
@@ -18,13 +18,8 @@
     "sourceMap": true,
     "outDir": "./dist",
     "noLib": false,
-    "lib": ["es6", "dom"]
+    "lib": ["ESNext", "dom"],
   },
-  "exclude": [
-    "dist",
-    "node_modules",
-    "jest.config.js",
-    "src/**/*.test.ts",
-  ],
-  "filesGlob": ["./src/**/*.ts"]
+  "exclude": ["dist", "node_modules", "jest.config.js", "src/**/*.test.ts"],
+  "filesGlob": ["./src/**/*.ts"],
 }
