@@ -123,11 +123,8 @@ pub async fn expired_message_cleaner_loop(pool: &DatabaseConnection) -> Result<(
         tracing::info!("No payloads pending expiry found in `message` table. Skipping the cleaner for this table.");
     }
 
-    // When no rows have been updated, widen the interval.
+    // When fewer rows than the batch size have been updated, take a nap for this long.
     const IDLE: Duration = Duration::from_secs(60 * 60 * 12);
-    // When the affected row count dips below this, switch to the `SLOWING` interval.
-    const SLOWING_THRESHOLD: u64 = 5_000;
-    const SLOWING: Duration = Duration::from_secs(60 * 60 * 12);
     const ON_ERROR: Duration = Duration::from_secs(10);
     const BATCH_SIZE: u32 = 5_000;
     let mut sleep_time = None;
@@ -163,14 +160,11 @@ pub async fn expired_message_cleaner_loop(pool: &DatabaseConnection) -> Result<(
                     tracing::debug!(elapsed =? start.elapsed(), "expired {} payloads", rows_affected);
                 }
 
-                sleep_time = match rows_affected {
-                    0 => Some(IDLE),
-                    count if count <= SLOWING_THRESHOLD => {
-                        tracing::trace!("slowing down...");
-                        Some(SLOWING)
-                    }
-                    // Any non-zero count above the slowing threshold gets no sleep.
-                    _ => None,
+                sleep_time = if rows_affected < (BATCH_SIZE as _) {
+                    Some(IDLE)
+                } else {
+                    // When we see full batches, don't sleep at all.
+                    None
                 };
             }
         }
