@@ -491,6 +491,25 @@
                 ],
                 "type": "object"
             },
+            "Duration": {
+                "properties": {
+                    "nanos": {
+                        "format": "uint32",
+                        "minimum": 0,
+                        "type": "integer"
+                    },
+                    "secs": {
+                        "format": "uint64",
+                        "minimum": 0,
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "nanos",
+                    "secs"
+                ],
+                "type": "object"
+            },
             "EndpointCreatedEvent": {
                 "description": "Sent when an endpoint is created.",
                 "properties": {
@@ -3092,6 +3111,11 @@
                         "nullable": true,
                         "type": "array",
                         "uniqueItems": true
+                    },
+                    "transformationsParams": {
+                        "description": "Extra parameters to pass to Transformations (for future use)",
+                        "nullable": true,
+                        "type": "object"
                     }
                 },
                 "required": [
@@ -3346,6 +3370,21 @@
                     "status",
                     "task"
                 ],
+                "type": "object"
+            },
+            "RetrySchedule": {
+                "items": {
+                    "$ref": "#/components/schemas/Duration"
+                },
+                "type": "array"
+            },
+            "RetryScheduleInOut": {
+                "properties": {
+                    "retrySchedule": {
+                        "$ref": "#/components/schemas/RetrySchedule",
+                        "nullable": true
+                    }
+                },
                 "type": "object"
             },
             "RotatedUrlOut": {
@@ -12355,62 +12394,62 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const messageOut = await svix.message.create(\"app_id\", {\n    eventId: \"unique-msg-identifier\",\n    eventType: \"user.signup\",\n    payload: {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    channels: [\"project_123\", \"group_2\"],\n    payloadRetentionPeriod: 90,\n    application: null,\n    tags: [\"my_tag\", \"other\"]\n});"
+                        "source": "const messageOut = await svix.message.create(\"app_id\", {\n    eventId: \"unique-msg-identifier\",\n    eventType: \"user.signup\",\n    payload: {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    channels: [\"project_123\", \"group_2\"],\n    payloadRetentionPeriod: 90,\n    application: null,\n    tags: [\"my_tag\", \"other\"],\n    transformationsParams: null\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const messageOut = await svix.message.create(\"app_id\", {\n    eventId: \"unique-msg-identifier\",\n    eventType: \"user.signup\",\n    payload: {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    channels: [\"project_123\", \"group_2\"],\n    payloadRetentionPeriod: 90,\n    application: null,\n    tags: [\"my_tag\", \"other\"]\n});"
+                        "source": "const messageOut = await svix.message.create(\"app_id\", {\n    eventId: \"unique-msg-identifier\",\n    eventType: \"user.signup\",\n    payload: {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    channels: [\"project_123\", \"group_2\"],\n    payloadRetentionPeriod: 90,\n    application: null,\n    tags: [\"my_tag\", \"other\"],\n    transformationsParams: null\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "message_out = svix.message.create(\"app_id\", MessageIn(\n    event_id=\"unique-msg-identifier\",\n    event_type=\"user.signup\",\n    payload={\"email\": \"test@example.com\", \"type\": \"user.created\", \"username\": \"test_user\"},\n    channels=[\"project_123\", \"group_2\"],\n    payload_retention_period=90,\n    application=None,\n    tags=[\"my_tag\", \"other\"]\n), None)"
+                        "source": "message_out = svix.message.create(\"app_id\", MessageIn(\n    event_id=\"unique-msg-identifier\",\n    event_type=\"user.signup\",\n    payload={\"email\": \"test@example.com\", \"type\": \"user.created\", \"username\": \"test_user\"},\n    channels=[\"project_123\", \"group_2\"],\n    payload_retention_period=90,\n    application=None,\n    tags=[\"my_tag\", \"other\"],\n    transformations_params=None\n), None)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "message_out = await svix.message.create(\"app_id\", MessageIn(\n    event_id=\"unique-msg-identifier\",\n    event_type=\"user.signup\",\n    payload={\"email\": \"test@example.com\", \"type\": \"user.created\", \"username\": \"test_user\"},\n    channels=[\"project_123\", \"group_2\"],\n    payload_retention_period=90,\n    application=None,\n    tags=[\"my_tag\", \"other\"]\n), None)"
+                        "source": "message_out = await svix.message.create(\"app_id\", MessageIn(\n    event_id=\"unique-msg-identifier\",\n    event_type=\"user.signup\",\n    payload={\"email\": \"test@example.com\", \"type\": \"user.created\", \"username\": \"test_user\"},\n    channels=[\"project_123\", \"group_2\"],\n    payload_retention_period=90,\n    application=None,\n    tags=[\"my_tag\", \"other\"],\n    transformations_params=None\n), None)"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "messageOut, err := svixClient.Message.Create(ctx, \"app_id\", &MessageIn{\n    EventId: \"unique-msg-identifier\",\n    EventType: \"user.signup\",\n    Payload: map[string]interface{}{\"email\": \"test@example.com\", \"type\": \"user.created\", \"username\": \"test_user\"},\n    Channels: []string{\"project_123\", \"group_2\"},\n    PayloadRetentionPeriod: 90,\n    Application: nil,\n    Tags: []string{\"my_tag\", \"other\"},\n})"
+                        "source": "messageOut, err := svixClient.Message.Create(ctx, \"app_id\", &MessageIn{\n    EventId: \"unique-msg-identifier\",\n    EventType: \"user.signup\",\n    Payload: map[string]interface{}{\"email\": \"test@example.com\", \"type\": \"user.created\", \"username\": \"test_user\"},\n    Channels: []string{\"project_123\", \"group_2\"},\n    PayloadRetentionPeriod: 90,\n    Application: nil,\n    Tags: []string{\"my_tag\", \"other\"},\n    TransformationsParams: nil,\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val messageOut = svix.message.create(\"app_id\", MessageIn()\n    .eventId(\"unique-msg-identifier\")\n    .eventType(\"user.signup\")\n    .payload(/* ... */)\n    .channels(arrayOf(\"project_123\", \"group_2\"))\n    .payloadRetentionPeriod(90)\n    .application(null)\n    .tags(arrayOf(\"my_tag\", \"other\"))\n)"
+                        "source": "val messageOut = svix.message.create(\"app_id\", MessageIn()\n    .eventId(\"unique-msg-identifier\")\n    .eventType(\"user.signup\")\n    .payload(/* ... */)\n    .channels(arrayOf(\"project_123\", \"group_2\"))\n    .payloadRetentionPeriod(90)\n    .application(null)\n    .tags(arrayOf(\"my_tag\", \"other\"))\n    .transformationsParams(null)\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "MessageOut messageOut = svix.getMessage().create(\"app_id\", new MessageIn()\n    .eventId(\"unique-msg-identifier\")\n    .eventType(\"user.signup\")\n    .payload(/* ... */)\n    .channels(new String[]{\"project_123\", \"group_2\"})\n    .payloadRetentionPeriod(90)\n    .application(null)\n    .tags(new String[]{\"my_tag\", \"other\"})\n)"
+                        "source": "MessageOut messageOut = svix.getMessage().create(\"app_id\", new MessageIn()\n    .eventId(\"unique-msg-identifier\")\n    .eventType(\"user.signup\")\n    .payload(/* ... */)\n    .channels(new String[]{\"project_123\", \"group_2\"})\n    .payloadRetentionPeriod(90)\n    .application(null)\n    .tags(new String[]{\"my_tag\", \"other\"})\n    .transformationsParams(null)\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "message_out = svix.message.create(\"app_id\", Svix::MessageIn.new({\n    \"event_id\": \"unique-msg-identifier\",\n    \"event_type\": \"user.signup\",\n    \"payload\": {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    \"channels\": [\"project_123\", \"group_2\"],\n    \"payload_retention_period\": 90,\n    \"application\": nil,\n    \"tags\": [\"my_tag\", \"other\"]\n}))"
+                        "source": "message_out = svix.message.create(\"app_id\", Svix::MessageIn.new({\n    \"event_id\": \"unique-msg-identifier\",\n    \"event_type\": \"user.signup\",\n    \"payload\": {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    \"channels\": [\"project_123\", \"group_2\"],\n    \"payload_retention_period\": 90,\n    \"application\": nil,\n    \"tags\": [\"my_tag\", \"other\"],\n    \"transformations_params\": nil\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let message_out = svix.message().create(\"app_id\", MessageIn {\n    event_id: Some(\"unique-msg-identifier\".to_string()),\n    event_type: \"user.signup\".to_string(),\n    payload: json!({\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"}),\n    channels: Some(vec![\"project_123\".to_string(), \"group_2\".to_string()]),\n    payload_retention_period: Some(90),\n    application: None,\n    tags: Some(vec![\"my_tag\".to_string(), \"other\".to_string()]),\n}, None).await?;"
+                        "source": "let message_out = svix.message().create(\"app_id\", MessageIn {\n    event_id: Some(\"unique-msg-identifier\".to_string()),\n    event_type: \"user.signup\".to_string(),\n    payload: json!({\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"}),\n    channels: Some(vec![\"project_123\".to_string(), \"group_2\".to_string()]),\n    payload_retention_period: Some(90),\n    application: None,\n    tags: Some(vec![\"my_tag\".to_string(), \"other\".to_string()]),\n    transformations_params: None,\n}, None).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var messageOut = await svix.Message.CreateAsync(\"app_id\", new MessageIn{\n    eventId: \"unique-msg-identifier\",\n    eventType: \"user.signup\",\n    payload: /* ... */,\n    channels: new string[] {\"project_123\", \"group_2\"},\n    payloadRetentionPeriod: 90,\n    application: null,\n    tags: new string[] {\"my_tag\", \"other\"}\n})"
+                        "source": "var messageOut = await svix.Message.CreateAsync(\"app_id\", new MessageIn{\n    eventId: \"unique-msg-identifier\",\n    eventType: \"user.signup\",\n    payload: /* ... */,\n    channels: new string[] {\"project_123\", \"group_2\"},\n    payloadRetentionPeriod: 90,\n    application: null,\n    tags: new string[] {\"my_tag\", \"other\"},\n    transformationsParams: null\n})"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix message create \"app_id\" '{\n    \"eventId\": \"unique-msg-identifier\",\n    \"eventType\": \"user.signup\",\n    \"payload\": {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    \"channels\": [\"project_123\", \"group_2\"],\n    \"payloadRetentionPeriod\": 90,\n    \"application\": null,\n    \"tags\": [\"my_tag\", \"other\"]\n}'"
+                        "source": "svix message create \"app_id\" '{\n    \"eventId\": \"unique-msg-identifier\",\n    \"eventType\": \"user.signup\",\n    \"payload\": {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    \"channels\": [\"project_123\", \"group_2\"],\n    \"payloadRetentionPeriod\": 90,\n    \"application\": null,\n    \"tags\": [\"my_tag\", \"other\"],\n    \"transformationsParams\": null\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"eventId\": \"unique-msg-identifier\",\n        \"eventType\": \"user.signup\",\n        \"payload\": {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n        \"channels\": [\"project_123\", \"group_2\"],\n        \"payloadRetentionPeriod\": 90,\n        \"application\": null,\n        \"tags\": [\"my_tag\", \"other\"]\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"eventId\": \"unique-msg-identifier\",\n        \"eventType\": \"user.signup\",\n        \"payload\": {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n        \"channels\": [\"project_123\", \"group_2\"],\n        \"payloadRetentionPeriod\": 90,\n        \"application\": null,\n        \"tags\": [\"my_tag\", \"other\"],\n        \"transformationsParams\": null\n    }'"
                     }
                 ]
             }
@@ -18318,6 +18357,364 @@
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/event-type/{event_type_name}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"description\": \"A user has signed up\",\n        \"archived\": false,\n        \"schemas\": {\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}},\n        \"featureFlag\": \"cool-new-feature\"\n    }'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/event-type/{event_type_name}/retry-schedule/": {
+            "get": {
+                "description": "Gets the retry schedule for messages using the given event type",
+                "operationId": "v1.event-type.get-retry-schedule",
+                "parameters": [
+                    {
+                        "description": "The event type's name",
+                        "in": "path",
+                        "name": "event_type_name",
+                        "required": true,
+                        "schema": {
+                            "description": "The event type's name",
+                            "example": "user.signup",
+                            "maxLength": 256,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RetryScheduleInOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Get Retry Schedule",
+                "tags": [
+                    "Event Type"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const retryScheduleInOut = await svix.eventType.getRetrySchedule(\"event_type_name\");"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const retryScheduleInOut = await svix.eventType.getRetrySchedule(\"event_type_name\");"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "retry_schedule_in_out = svix.event_type.get_retry_schedule(\"event_type_name\")"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "retry_schedule_in_out = await svix.event_type.get_retry_schedule(\"event_type_name\")"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "retryScheduleInOut, err := svixClient.EventType.GetRetrySchedule(ctx, \"event_type_name\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val retryScheduleInOut = svix.eventType.getRetrySchedule(\"event_type_name\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "RetryScheduleInOut retryScheduleInOut = svix.getEventType().getRetrySchedule(\"event_type_name\")"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "retry_schedule_in_out = svix.event_type.get_retry_schedule(\"event_type_name\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let retry_schedule_in_out = svix.event_type().get_retry_schedule(\"event_type_name\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var retryScheduleInOut = await svix.EventType.GetRetryScheduleAsync(\"event_type_name\")"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix event-type get-retry-schedule \"event_type_name\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/event-type/{event_type_name}/retry-schedule/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            },
+            "put": {
+                "description": "Sets a retry schedule for all messages using the given event type",
+                "operationId": "v1.event-type.update-retry-schedule",
+                "parameters": [
+                    {
+                        "description": "The event type's name",
+                        "in": "path",
+                        "name": "event_type_name",
+                        "required": true,
+                        "schema": {
+                            "description": "The event type's name",
+                            "example": "user.signup",
+                            "maxLength": 256,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RetryScheduleInOut"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RetryScheduleInOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Update Retry Schedule",
+                "tags": [
+                    "Event Type"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const retryScheduleInOut = await svix.eventType.updateRetrySchedule(\"event_type_name\", {\n    retrySchedule: null\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const retryScheduleInOut = await svix.eventType.updateRetrySchedule(\"event_type_name\", {\n    retrySchedule: null\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "retry_schedule_in_out = svix.event_type.update_retry_schedule(\"event_type_name\", RetryScheduleInOut(\n    retry_schedule=None\n))"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "retry_schedule_in_out = await svix.event_type.update_retry_schedule(\"event_type_name\", RetryScheduleInOut(\n    retry_schedule=None\n))"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "retryScheduleInOut, err := svixClient.EventType.UpdateRetrySchedule(ctx, \"event_type_name\", &RetryScheduleInOut{\n    RetrySchedule: nil,\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val retryScheduleInOut = svix.eventType.updateRetrySchedule(\"event_type_name\", RetryScheduleInOut()\n    .retrySchedule(null)\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "RetryScheduleInOut retryScheduleInOut = svix.getEventType().updateRetrySchedule(\"event_type_name\", new RetryScheduleInOut()\n    .retrySchedule(null)\n)"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "retry_schedule_in_out = svix.event_type.update_retry_schedule(\"event_type_name\", Svix::RetryScheduleInOut.new({\n    \"retry_schedule\": nil\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let retry_schedule_in_out = svix.event_type().update_retry_schedule(\"event_type_name\", RetryScheduleInOut {\n    retry_schedule: None,\n}).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var retryScheduleInOut = await svix.EventType.UpdateRetryScheduleAsync(\"event_type_name\", new RetryScheduleInOut{\n    retrySchedule: null\n})"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix event-type update-retry-schedule \"event_type_name\" '{\n    \"retrySchedule\": null\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/event-type/{event_type_name}/retry-schedule/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"retrySchedule\": null\n    }'"
                     }
                 ]
             }

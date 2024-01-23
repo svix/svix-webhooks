@@ -27,6 +27,8 @@ type MessageIn struct {
 	PayloadRetentionPeriod *int64 `json:"payloadRetentionPeriod,omitempty"`
 	// List of free-form tags that can be filtered by when listing messages
 	Tags []string `json:"tags,omitempty"`
+	// Extra parameters to pass to Transformations (for future use)
+	TransformationsParams map[string]interface{} `json:"transformationsParams,omitempty"`
 }
 
 // NewMessageIn instantiates a new MessageIn object
@@ -272,6 +274,39 @@ func (o *MessageIn) SetTags(v []string) {
 	o.Tags = v
 }
 
+// GetTransformationsParams returns the TransformationsParams field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *MessageIn) GetTransformationsParams() map[string]interface{} {
+	if o == nil  {
+		var ret map[string]interface{}
+		return ret
+	}
+	return o.TransformationsParams
+}
+
+// GetTransformationsParamsOk returns a tuple with the TransformationsParams field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *MessageIn) GetTransformationsParamsOk() (*map[string]interface{}, bool) {
+	if o == nil || o.TransformationsParams == nil {
+		return nil, false
+	}
+	return &o.TransformationsParams, true
+}
+
+// HasTransformationsParams returns a boolean if a field has been set.
+func (o *MessageIn) HasTransformationsParams() bool {
+	if o != nil && o.TransformationsParams != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetTransformationsParams gets a reference to the given map[string]interface{} and assigns it to the TransformationsParams field.
+func (o *MessageIn) SetTransformationsParams(v map[string]interface{}) {
+	o.TransformationsParams = v
+}
+
 func (o MessageIn) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if o.Application != nil {
@@ -294,6 +329,9 @@ func (o MessageIn) MarshalJSON() ([]byte, error) {
 	}
 	if o.Tags != nil {
 		toSerialize["tags"] = o.Tags
+	}
+	if o.TransformationsParams != nil {
+		toSerialize["transformationsParams"] = o.TransformationsParams
 	}
 	return json.Marshal(toSerialize)
 }
