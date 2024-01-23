@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["support@svix.com"]
   spec.license       = "MIT"
 
-  spec.summary       = "Ruby bindings for the Svix API"
+  spec.summary       = "Svix webhooks API client and webhook verification library"
   spec.description   = "Svix makes webhooks easy and reliable.  " \
                        "Learn more at https://www.svix.com"
   spec.homepage      = "https://www.svix.com"
