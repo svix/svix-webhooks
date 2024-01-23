@@ -1,10 +1,10 @@
 package com.svix;
 
 import java.util.List;
-import org.threeten.bp.OffsetDateTime;
+import java.time.OffsetDateTime;
 
 public class MessageListOptions extends ListOptions {
-    private List<String> eventTypes;
+	private List<String> eventTypes;
 	private OffsetDateTime before;
 	private OffsetDateTime after;
 	private String channel;

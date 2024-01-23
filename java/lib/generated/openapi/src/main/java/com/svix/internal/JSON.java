@@ -12,7 +12,6 @@
  * @generated
  */
 
-
 package com.svix.internal;
 
 import com.google.gson.Gson;
@@ -25,9 +24,6 @@ import com.google.gson.stream.JsonWriter;
 import com.google.gson.JsonElement;
 import io.gsonfire.GsonFireBuilder;
 import io.gsonfire.TypeSelector;
-import org.threeten.bp.LocalDate;
-import org.threeten.bp.OffsetDateTime;
-import org.threeten.bp.format.DateTimeFormatter;
 
 import com.svix.models.*;
 import okio.ByteString;
@@ -38,6 +34,9 @@ import java.lang.reflect.Type;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.ParsePosition;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
@@ -54,8 +53,7 @@ public class JSON {
 
     @SuppressWarnings("unchecked")
     public static GsonBuilder createGson() {
-        GsonFireBuilder fireBuilder = new GsonFireBuilder()
-        ;
+        GsonFireBuilder fireBuilder = new GsonFireBuilder();
         GsonBuilder builder = fireBuilder.createGsonBuilder();
         return builder;
     }
@@ -69,10 +67,13 @@ public class JSON {
     }
 
     /**
-     * Returns the Java class that implements the OpenAPI schema for the specified discriminator value.
+     * Returns the Java class that implements the OpenAPI schema for the specified
+     * discriminator value.
      *
-     * @param classByDiscriminatorValue The map of discriminator values to Java classes.
-     * @param discriminatorValue The value of the OpenAPI discriminator in the input data.
+     * @param classByDiscriminatorValue The map of discriminator values to Java
+     *                                  classes.
+     * @param discriminatorValue        The value of the OpenAPI discriminator in
+     *                                  the input data.
      * @return The Java class that implements the OpenAPI schema
      */
     private static Class getClassByDiscriminator(Map classByDiscriminatorValue, String discriminatorValue) {
@@ -85,13 +86,13 @@ public class JSON {
 
     public JSON() {
         gson = createGson()
-            .registerTypeAdapter(Date.class, dateTypeAdapter)
-            .registerTypeAdapter(java.sql.Date.class, sqlDateTypeAdapter)
-            .registerTypeAdapter(OffsetDateTime.class, offsetDateTimeTypeAdapter)
-            .registerTypeAdapter(LocalDate.class, localDateTypeAdapter)
-            .registerTypeAdapter(byte[].class, byteArrayAdapter)
-            .serializeNulls()
-            .create();
+                .registerTypeAdapter(Date.class, dateTypeAdapter)
+                .registerTypeAdapter(java.sql.Date.class, sqlDateTypeAdapter)
+                .registerTypeAdapter(OffsetDateTime.class, offsetDateTimeTypeAdapter)
+                .registerTypeAdapter(LocalDate.class, localDateTypeAdapter)
+                .registerTypeAdapter(byte[].class, byteArrayAdapter)
+                .serializeNulls()
+                .create();
     }
 
     /**
@@ -142,7 +143,8 @@ public class JSON {
         try {
             if (isLenientOnJson) {
                 JsonReader jsonReader = new JsonReader(new StringReader(body));
-                // see https://google-gson.googlecode.com/svn/trunk/gson/docs/javadocs/com/google/gson/stream/JsonReader.html#setLenient(boolean)
+                // see
+                // https://google-gson.googlecode.com/svn/trunk/gson/docs/javadocs/com/google/gson/stream/JsonReader.html#setLenient(boolean)
                 jsonReader.setLenient(true);
                 return gson.fromJson(jsonReader, returnType);
             } else {
@@ -224,7 +226,7 @@ public class JSON {
                 default:
                     String date = in.nextString();
                     if (date.endsWith("+0000")) {
-                        date = date.substring(0, date.length()-5) + "Z";
+                        date = date.substring(0, date.length() - 5) + "Z";
                     }
                     return OffsetDateTime.parse(date, formatter);
             }
@@ -291,7 +293,8 @@ public class JSON {
 
         private DateFormat dateFormat;
 
-        public SqlDateTypeAdapter() {}
+        public SqlDateTypeAdapter() {
+        }
 
         public SqlDateTypeAdapter(DateFormat dateFormat) {
             this.dateFormat = dateFormat;
@@ -344,7 +347,8 @@ public class JSON {
 
         private DateFormat dateFormat;
 
-        public DateTypeAdapter() {}
+        public DateTypeAdapter() {
+        }
 
         public DateTypeAdapter(DateFormat dateFormat) {
             this.dateFormat = dateFormat;
