@@ -14,9 +14,9 @@
 [![Twitter Follow](https://img.shields.io/twitter/follow/SvixHQ?style=social)](https://twitter.com/SvixHQ)
 [![Join our slack](https://img.shields.io/badge/Slack-join%20the%20community-blue?logo=slack&style=social)](https://www.svix.com/slack/)
 
+[![Docker Pulls](https://img.shields.io/docker/pulls/svix/svix-server?logo=docker)](https://hub.docker.com/r/svix/svix-server/)
 [![NPM Downloads](https://img.shields.io/npm/dt/svix?logo=npm)](https://www.npmjs.com/package/svix)
 [![Pypi Downloads](https://img.shields.io/pypi/dm/svix?logo=pypi)](https://pypi.org/project/svix/)
-[![Docker Pulls](https://img.shields.io/docker/pulls/svix/svix-server?logo=docker)](https://hub.docker.com/r/svix/svix-server/)
 
 ## Svix is the enterprise ready webhook service
 
