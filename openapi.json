@@ -1467,6 +1467,10 @@
                         "$ref": "#/components/schemas/CustomThemeOverride",
                         "nullable": true
                     },
+                    "displayName": {
+                        "nullable": true,
+                        "type": "string"
+                    },
                     "enableChannels": {
                         "default": false,
                         "type": "boolean"
@@ -10171,7 +10175,7 @@
         },
         "/api/v1/app/{app_id}/inbound/msg/{inbound_token}/": {
             "post": {
-                "description": "Handles a raw inbound webhook for the application",
+                "description": "Handles a raw inbound webhook for the application.",
                 "operationId": "v1.inbound.msg",
                 "parameters": [
                     {
@@ -10197,6 +10201,20 @@
                             "type": "string"
                         },
                         "style": "simple"
+                    },
+                    {
+                        "description": "The event type's name",
+                        "in": "query",
+                        "name": "event_type",
+                        "schema": {
+                            "description": "The event type's name",
+                            "example": "user.signup",
+                            "maxLength": 256,
+                            "nullable": true,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "form"
                     },
                     {
                         "description": "The request's idempotency key",

@@ -23,6 +23,7 @@ type EnvironmentSettingsOut struct {
 	CustomFontFamilyUrl NullableString `json:"customFontFamilyUrl,omitempty"`
 	CustomLogoUrl NullableString `json:"customLogoUrl,omitempty"`
 	CustomThemeOverride *CustomThemeOverride `json:"customThemeOverride,omitempty"`
+	DisplayName NullableString `json:"displayName,omitempty"`
 	EnableChannels *bool `json:"enableChannels,omitempty"`
 	EnableIntegrationManagement *bool `json:"enableIntegrationManagement,omitempty"`
 	EnableTransformations *bool `json:"enableTransformations,omitempty"`
@@ -311,6 +312,48 @@ func (o *EnvironmentSettingsOut) SetCustomThemeOverride(v CustomThemeOverride) {
 	o.CustomThemeOverride = &v
 }
 
+// GetDisplayName returns the DisplayName field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *EnvironmentSettingsOut) GetDisplayName() string {
+	if o == nil || o.DisplayName.Get() == nil {
+		var ret string
+		return ret
+	}
+	return *o.DisplayName.Get()
+}
+
+// GetDisplayNameOk returns a tuple with the DisplayName field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *EnvironmentSettingsOut) GetDisplayNameOk() (*string, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return o.DisplayName.Get(), o.DisplayName.IsSet()
+}
+
+// HasDisplayName returns a boolean if a field has been set.
+func (o *EnvironmentSettingsOut) HasDisplayName() bool {
+	if o != nil && o.DisplayName.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetDisplayName gets a reference to the given NullableString and assigns it to the DisplayName field.
+func (o *EnvironmentSettingsOut) SetDisplayName(v string) {
+	o.DisplayName.Set(&v)
+}
+// SetDisplayNameNil sets the value for DisplayName to be an explicit nil
+func (o *EnvironmentSettingsOut) SetDisplayNameNil() {
+	o.DisplayName.Set(nil)
+}
+
+// UnsetDisplayName ensures that no value is present for DisplayName, not even an explicit nil
+func (o *EnvironmentSettingsOut) UnsetDisplayName() {
+	o.DisplayName.Unset()
+}
+
 // GetEnableChannels returns the EnableChannels field value if set, zero value otherwise.
 func (o *EnvironmentSettingsOut) GetEnableChannels() bool {
 	if o == nil || o.EnableChannels == nil {
@@ -429,6 +472,9 @@ func (o EnvironmentSettingsOut) MarshalJSON() ([]byte, error) {
 	}
 	if o.CustomThemeOverride != nil {
 		toSerialize["customThemeOverride"] = o.CustomThemeOverride
+	}
+	if o.DisplayName.IsSet() {
+		toSerialize["displayName"] = o.DisplayName.Get()
 	}
 	if o.EnableChannels != nil {
 		toSerialize["enableChannels"] = o.EnableChannels

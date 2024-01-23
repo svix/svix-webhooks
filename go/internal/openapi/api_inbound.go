@@ -33,11 +33,16 @@ type ApiV1InboundMsgRequest struct {
 	appId string
 	inboundToken string
 	body *string
+	eventType *string
 	idempotencyKey *string
 }
 
 func (r ApiV1InboundMsgRequest) Body(body string) ApiV1InboundMsgRequest {
 	r.body = &body
+	return r
+}
+func (r ApiV1InboundMsgRequest) EventType(eventType string) ApiV1InboundMsgRequest {
+	r.eventType = &eventType
 	return r
 }
 func (r ApiV1InboundMsgRequest) IdempotencyKey(idempotencyKey string) ApiV1InboundMsgRequest {
@@ -51,7 +56,7 @@ func (r ApiV1InboundMsgRequest) Execute() (MessageOut, *_nethttp.Response, error
 
 /*
  * V1InboundMsg Handle Inbound
- * Handles a raw inbound webhook for the application
+ * Handles a raw inbound webhook for the application.
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param appId The app's ID or UID
  * @param inboundToken
@@ -102,6 +107,9 @@ func (a *InboundApiService) V1InboundMsgExecute(r ApiV1InboundMsgRequest) (Messa
 		return localVarReturnValue, nil, reportError("body is required and must be specified")
 	}
 
+	if r.eventType != nil {
+		localVarQueryParams.Add("event_type", parameterToString(*r.eventType, ""))
+	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"text/plain; charset=utf-8"}
 
