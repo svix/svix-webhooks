@@ -42,7 +42,9 @@ PKG_REQUIRES = [
 
 def find_meta(meta):
     """Extract __*meta*__ from META_CONTENTS."""
-    meta_match = re.search(r"^__{meta}__\s+=\s+['\"]([^'\"]*)['\"]".format(meta=meta), META_CONTENTS, re.M)
+    meta_match = re.search(
+        r"^__{meta}__\s+=\s+['\"]([^'\"]*)['\"]".format(meta=meta), META_CONTENTS, re.M
+    )
 
     if meta_match:
         return meta_match.group(1)
@@ -66,8 +68,9 @@ def get_version_string():
 
     # Check validity
     if not is_canonical_version(version_string):
-        message = 'The detected version string "{}" is not in canonical ' "format as defined in PEP 440.".format(
-            version_string
+        message = (
+            'The detected version string "{}" is not in canonical '
+            "format as defined in PEP 440.".format(version_string)
         )
         raise ValueError(message)
 
@@ -82,7 +85,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 setup(
     name=PKG_NAME,
     version=get_version_string(),
-    description="Svix",
+    description="Svix webhooks API client and webhook verification library",
     author="Svix",
     author_email="development@svix.com",
     url="https://www.svix.com",
