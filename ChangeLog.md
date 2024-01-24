@@ -3,6 +3,12 @@
 ## Next
 * 
 
+## Version 1.16.0
+* Server: Add `tag` parameter to list-message for Go, JavaScript, and Python.
+* Server: improvements to the expired message cleaner.
+* Libs: update OpenAPI spec and libs.
+* Libs/Javascript: Fix thrown error message when API status code is unknown.
+
 ## Version 1.15.0
 * Libs: update OpenAPI spec and libs.
 
