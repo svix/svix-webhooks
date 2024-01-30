@@ -111,7 +111,7 @@ func (a *InboundApiService) V1InboundMsgExecute(r ApiV1InboundMsgRequest) (Messa
 		localVarQueryParams.Add("event_type", parameterToString(*r.eventType, ""))
 	}
 	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{"text/plain; charset=utf-8"}
+	localVarHTTPContentTypes := []string{"application/json"}
 
 	// set Content-Type header
 	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)

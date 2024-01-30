@@ -26,6 +26,7 @@ type EnvironmentSettingsOut struct {
 	DisplayName NullableString `json:"displayName,omitempty"`
 	EnableChannels *bool `json:"enableChannels,omitempty"`
 	EnableIntegrationManagement *bool `json:"enableIntegrationManagement,omitempty"`
+	EnableMessageTags *bool `json:"enableMessageTags,omitempty"`
 	EnableTransformations *bool `json:"enableTransformations,omitempty"`
 }
 
@@ -39,6 +40,8 @@ func NewEnvironmentSettingsOut() *EnvironmentSettingsOut {
 	this.EnableChannels = &enableChannels
 	var enableIntegrationManagement bool = false
 	this.EnableIntegrationManagement = &enableIntegrationManagement
+	var enableMessageTags bool = false
+	this.EnableMessageTags = &enableMessageTags
 	var enableTransformations bool = false
 	this.EnableTransformations = &enableTransformations
 	return &this
@@ -53,6 +56,8 @@ func NewEnvironmentSettingsOutWithDefaults() *EnvironmentSettingsOut {
 	this.EnableChannels = &enableChannels
 	var enableIntegrationManagement bool = false
 	this.EnableIntegrationManagement = &enableIntegrationManagement
+	var enableMessageTags bool = false
+	this.EnableMessageTags = &enableMessageTags
 	var enableTransformations bool = false
 	this.EnableTransformations = &enableTransformations
 	return &this
@@ -418,6 +423,38 @@ func (o *EnvironmentSettingsOut) SetEnableIntegrationManagement(v bool) {
 	o.EnableIntegrationManagement = &v
 }
 
+// GetEnableMessageTags returns the EnableMessageTags field value if set, zero value otherwise.
+func (o *EnvironmentSettingsOut) GetEnableMessageTags() bool {
+	if o == nil || o.EnableMessageTags == nil {
+		var ret bool
+		return ret
+	}
+	return *o.EnableMessageTags
+}
+
+// GetEnableMessageTagsOk returns a tuple with the EnableMessageTags field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *EnvironmentSettingsOut) GetEnableMessageTagsOk() (*bool, bool) {
+	if o == nil || o.EnableMessageTags == nil {
+		return nil, false
+	}
+	return o.EnableMessageTags, true
+}
+
+// HasEnableMessageTags returns a boolean if a field has been set.
+func (o *EnvironmentSettingsOut) HasEnableMessageTags() bool {
+	if o != nil && o.EnableMessageTags != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetEnableMessageTags gets a reference to the given bool and assigns it to the EnableMessageTags field.
+func (o *EnvironmentSettingsOut) SetEnableMessageTags(v bool) {
+	o.EnableMessageTags = &v
+}
+
 // GetEnableTransformations returns the EnableTransformations field value if set, zero value otherwise.
 func (o *EnvironmentSettingsOut) GetEnableTransformations() bool {
 	if o == nil || o.EnableTransformations == nil {
@@ -481,6 +518,9 @@ func (o EnvironmentSettingsOut) MarshalJSON() ([]byte, error) {
 	}
 	if o.EnableIntegrationManagement != nil {
 		toSerialize["enableIntegrationManagement"] = o.EnableIntegrationManagement
+	}
+	if o.EnableMessageTags != nil {
+		toSerialize["enableMessageTags"] = o.EnableMessageTags
 	}
 	if o.EnableTransformations != nil {
 		toSerialize["enableTransformations"] = o.EnableTransformations

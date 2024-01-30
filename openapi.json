@@ -910,6 +910,17 @@
                     "status": {
                         "$ref": "#/components/schemas/MessageStatus"
                     },
+                    "tags": {
+                        "items": {
+                            "example": "project_1337",
+                            "maxLength": 128,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "nullable": true,
+                        "type": "array",
+                        "uniqueItems": true
+                    },
                     "timestamp": {
                         "format": "date-time",
                         "type": "string"
@@ -1495,6 +1506,10 @@
                         "type": "boolean"
                     },
                     "enableIntegrationManagement": {
+                        "default": false,
+                        "type": "boolean"
+                    },
+                    "enableMessageTags": {
                         "default": false,
                         "type": "boolean"
                     },
@@ -3172,6 +3187,17 @@
                             "username": "test_user"
                         },
                         "type": "object"
+                    },
+                    "tags": {
+                        "items": {
+                            "example": "project_1337",
+                            "maxLength": 128,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "nullable": true,
+                        "type": "array",
+                        "uniqueItems": true
                     },
                     "timestamp": {
                         "format": "date-time",
@@ -5368,6 +5394,20 @@
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the tag",
+                        "in": "query",
+                        "name": "tag",
+                        "schema": {
+                            "description": "Filter response based on the tag",
+                            "example": "project_1337",
+                            "maxLength": 128,
+                            "nullable": true,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "form"
+                    },
+                    {
                         "description": "Only include items created before a certain date",
                         "in": "query",
                         "name": "before",
@@ -5676,6 +5716,20 @@
                         "name": "channel",
                         "schema": {
                             "description": "Filter response based on the channel",
+                            "example": "project_1337",
+                            "maxLength": 128,
+                            "nullable": true,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "Filter response based on the tag",
+                        "in": "query",
+                        "name": "tag",
+                        "schema": {
+                            "description": "Filter response based on the tag",
                             "example": "project_1337",
                             "maxLength": 128,
                             "nullable": true,
@@ -7736,6 +7790,20 @@
                         "name": "channel",
                         "schema": {
                             "description": "Filter response based on the channel",
+                            "example": "project_1337",
+                            "maxLength": 128,
+                            "nullable": true,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "Filter response based on the message tags",
+                        "in": "query",
+                        "name": "tag",
+                        "schema": {
+                            "description": "Filter response based on the message tags",
                             "example": "project_1337",
                             "maxLength": 128,
                             "nullable": true,
@@ -10267,7 +10335,7 @@
                 ],
                 "requestBody": {
                     "content": {
-                        "text/plain; charset=utf-8": {
+                        "application/json": {
                             "schema": {
                                 "type": "string"
                             }
@@ -12717,6 +12785,20 @@
                         "style": "form"
                     },
                     {
+                        "description": "Filter response based on the tag",
+                        "in": "query",
+                        "name": "tag",
+                        "schema": {
+                            "description": "Filter response based on the tag",
+                            "example": "project_1337",
+                            "maxLength": 128,
+                            "nullable": true,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "form"
+                    },
+                    {
                         "description": "Filter response based on the delivery status",
                         "in": "query",
                         "name": "status",
@@ -14006,6 +14088,20 @@
                         "name": "channel",
                         "schema": {
                             "description": "Filter response based on the channel",
+                            "example": "project_1337",
+                            "maxLength": 128,
+                            "nullable": true,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "Filter response based on the tag",
+                        "in": "query",
+                        "name": "tag",
+                        "schema": {
+                            "description": "Filter response based on the tag",
                             "example": "project_1337",
                             "maxLength": 128,
                             "nullable": true,
@@ -18803,61 +18899,6 @@
                     "Health"
                 ],
                 "x-codeSamples": [
-                    {
-                        "label": "JavaScript",
-                        "lang": "JavaScript",
-                        "source": "await svix.health.get();"
-                    },
-                    {
-                        "label": "TypeScript",
-                        "lang": "JavaScript",
-                        "source": "await svix.health.get();"
-                    },
-                    {
-                        "label": "Python",
-                        "lang": "Python",
-                        "source": "svix.health.get()"
-                    },
-                    {
-                        "label": "Python (Async)",
-                        "lang": "Python",
-                        "source": "await svix.health.get()"
-                    },
-                    {
-                        "label": "Go",
-                        "lang": "Go",
-                        "source": "err := svixClient.Health.Get(ctx)"
-                    },
-                    {
-                        "label": "Kotlin",
-                        "lang": "Kotlin",
-                        "source": "svix.health.get()"
-                    },
-                    {
-                        "label": "Java",
-                        "lang": "Java",
-                        "source": "svix.getHealth().get()"
-                    },
-                    {
-                        "label": "Ruby",
-                        "lang": "Ruby",
-                        "source": "svix.health.get()"
-                    },
-                    {
-                        "label": "Rust",
-                        "lang": "Rust",
-                        "source": "svix.health().get().await?;"
-                    },
-                    {
-                        "label": "C#",
-                        "lang": "C#",
-                        "source": "await svix.Health.GetAsync()"
-                    },
-                    {
-                        "label": "CLI",
-                        "lang": "Shell",
-                        "source": "svix health get "
-                    },
                     {
                         "label": "cURL",
                         "lang": "Shell",

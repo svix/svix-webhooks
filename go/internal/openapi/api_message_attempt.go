@@ -819,6 +819,7 @@ type ApiV1MessageAttemptListAttemptedMessagesRequest struct {
 	limit *int32
 	iterator *string
 	channel *string
+	tag *string
 	status *MessageStatus
 	before *time.Time
 	after *time.Time
@@ -836,6 +837,10 @@ func (r ApiV1MessageAttemptListAttemptedMessagesRequest) Iterator(iterator strin
 }
 func (r ApiV1MessageAttemptListAttemptedMessagesRequest) Channel(channel string) ApiV1MessageAttemptListAttemptedMessagesRequest {
 	r.channel = &channel
+	return r
+}
+func (r ApiV1MessageAttemptListAttemptedMessagesRequest) Tag(tag string) ApiV1MessageAttemptListAttemptedMessagesRequest {
+	r.tag = &tag
 	return r
 }
 func (r ApiV1MessageAttemptListAttemptedMessagesRequest) Status(status MessageStatus) ApiV1MessageAttemptListAttemptedMessagesRequest {
@@ -935,6 +940,9 @@ func (a *MessageAttemptApiService) V1MessageAttemptListAttemptedMessagesExecute(
 	}
 	if r.channel != nil {
 		localVarQueryParams.Add("channel", parameterToString(*r.channel, ""))
+	}
+	if r.tag != nil {
+		localVarQueryParams.Add("tag", parameterToString(*r.tag, ""))
 	}
 	if r.status != nil {
 		localVarQueryParams.Add("status", parameterToString(*r.status, ""))
@@ -1092,6 +1100,7 @@ type ApiV1MessageAttemptListByEndpointRequest struct {
 	status *MessageStatus
 	statusCodeClass *StatusCodeClass
 	channel *string
+	tag *string
 	before *time.Time
 	after *time.Time
 	withContent *bool
@@ -1117,6 +1126,10 @@ func (r ApiV1MessageAttemptListByEndpointRequest) StatusCodeClass(statusCodeClas
 }
 func (r ApiV1MessageAttemptListByEndpointRequest) Channel(channel string) ApiV1MessageAttemptListByEndpointRequest {
 	r.channel = &channel
+	return r
+}
+func (r ApiV1MessageAttemptListByEndpointRequest) Tag(tag string) ApiV1MessageAttemptListByEndpointRequest {
+	r.tag = &tag
 	return r
 }
 func (r ApiV1MessageAttemptListByEndpointRequest) Before(before time.Time) ApiV1MessageAttemptListByEndpointRequest {
@@ -1220,6 +1233,9 @@ func (a *MessageAttemptApiService) V1MessageAttemptListByEndpointExecute(r ApiV1
 	}
 	if r.channel != nil {
 		localVarQueryParams.Add("channel", parameterToString(*r.channel, ""))
+	}
+	if r.tag != nil {
+		localVarQueryParams.Add("tag", parameterToString(*r.tag, ""))
 	}
 	if r.before != nil {
 		localVarQueryParams.Add("before", parameterToString(*r.before, ""))
@@ -1376,6 +1392,7 @@ type ApiV1MessageAttemptListByEndpointDeprecatedRequest struct {
 	limit *int32
 	iterator *string
 	channel *string
+	tag *string
 	status *MessageStatus
 	before *time.Time
 	after *time.Time
@@ -1392,6 +1409,10 @@ func (r ApiV1MessageAttemptListByEndpointDeprecatedRequest) Iterator(iterator st
 }
 func (r ApiV1MessageAttemptListByEndpointDeprecatedRequest) Channel(channel string) ApiV1MessageAttemptListByEndpointDeprecatedRequest {
 	r.channel = &channel
+	return r
+}
+func (r ApiV1MessageAttemptListByEndpointDeprecatedRequest) Tag(tag string) ApiV1MessageAttemptListByEndpointDeprecatedRequest {
+	r.tag = &tag
 	return r
 }
 func (r ApiV1MessageAttemptListByEndpointDeprecatedRequest) Status(status MessageStatus) ApiV1MessageAttemptListByEndpointDeprecatedRequest {
@@ -1500,6 +1521,9 @@ func (a *MessageAttemptApiService) V1MessageAttemptListByEndpointDeprecatedExecu
 	}
 	if r.channel != nil {
 		localVarQueryParams.Add("channel", parameterToString(*r.channel, ""))
+	}
+	if r.tag != nil {
+		localVarQueryParams.Add("tag", parameterToString(*r.tag, ""))
 	}
 	if r.status != nil {
 		localVarQueryParams.Add("status", parameterToString(*r.status, ""))
@@ -1654,6 +1678,7 @@ type ApiV1MessageAttemptListByMsgRequest struct {
 	status *MessageStatus
 	statusCodeClass *StatusCodeClass
 	channel *string
+	tag *string
 	endpointId *string
 	before *time.Time
 	after *time.Time
@@ -1679,6 +1704,10 @@ func (r ApiV1MessageAttemptListByMsgRequest) StatusCodeClass(statusCodeClass Sta
 }
 func (r ApiV1MessageAttemptListByMsgRequest) Channel(channel string) ApiV1MessageAttemptListByMsgRequest {
 	r.channel = &channel
+	return r
+}
+func (r ApiV1MessageAttemptListByMsgRequest) Tag(tag string) ApiV1MessageAttemptListByMsgRequest {
+	r.tag = &tag
 	return r
 }
 func (r ApiV1MessageAttemptListByMsgRequest) EndpointId(endpointId string) ApiV1MessageAttemptListByMsgRequest {
@@ -1782,6 +1811,9 @@ func (a *MessageAttemptApiService) V1MessageAttemptListByMsgExecute(r ApiV1Messa
 	}
 	if r.channel != nil {
 		localVarQueryParams.Add("channel", parameterToString(*r.channel, ""))
+	}
+	if r.tag != nil {
+		localVarQueryParams.Add("tag", parameterToString(*r.tag, ""))
 	}
 	if r.endpointId != nil {
 		localVarQueryParams.Add("endpoint_id", parameterToString(*r.endpointId, ""))
@@ -1938,6 +1970,7 @@ type ApiV1MessageAttemptListByMsgDeprecatedRequest struct {
 	iterator *string
 	endpointId *string
 	channel *string
+	tag *string
 	status *MessageStatus
 	before *time.Time
 	after *time.Time
@@ -1959,6 +1992,10 @@ func (r ApiV1MessageAttemptListByMsgDeprecatedRequest) EndpointId(endpointId str
 }
 func (r ApiV1MessageAttemptListByMsgDeprecatedRequest) Channel(channel string) ApiV1MessageAttemptListByMsgDeprecatedRequest {
 	r.channel = &channel
+	return r
+}
+func (r ApiV1MessageAttemptListByMsgDeprecatedRequest) Tag(tag string) ApiV1MessageAttemptListByMsgDeprecatedRequest {
+	r.tag = &tag
 	return r
 }
 func (r ApiV1MessageAttemptListByMsgDeprecatedRequest) Status(status MessageStatus) ApiV1MessageAttemptListByMsgDeprecatedRequest {
@@ -2060,6 +2097,9 @@ func (a *MessageAttemptApiService) V1MessageAttemptListByMsgDeprecatedExecute(r 
 	}
 	if r.channel != nil {
 		localVarQueryParams.Add("channel", parameterToString(*r.channel, ""))
+	}
+	if r.tag != nil {
+		localVarQueryParams.Add("tag", parameterToString(*r.tag, ""))
 	}
 	if r.status != nil {
 		localVarQueryParams.Add("status", parameterToString(*r.status, ""))

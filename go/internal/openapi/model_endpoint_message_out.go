@@ -28,6 +28,7 @@ type EndpointMessageOut struct {
 	NextAttempt NullableTime `json:"nextAttempt,omitempty"`
 	Payload map[string]interface{} `json:"payload"`
 	Status MessageStatus `json:"status"`
+	Tags []string `json:"tags,omitempty"`
 	Timestamp time.Time `json:"timestamp"`
 }
 
@@ -266,6 +267,39 @@ func (o *EndpointMessageOut) SetStatus(v MessageStatus) {
 	o.Status = v
 }
 
+// GetTags returns the Tags field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *EndpointMessageOut) GetTags() []string {
+	if o == nil  {
+		var ret []string
+		return ret
+	}
+	return o.Tags
+}
+
+// GetTagsOk returns a tuple with the Tags field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *EndpointMessageOut) GetTagsOk() (*[]string, bool) {
+	if o == nil || o.Tags == nil {
+		return nil, false
+	}
+	return &o.Tags, true
+}
+
+// HasTags returns a boolean if a field has been set.
+func (o *EndpointMessageOut) HasTags() bool {
+	if o != nil && o.Tags != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetTags gets a reference to the given []string and assigns it to the Tags field.
+func (o *EndpointMessageOut) SetTags(v []string) {
+	o.Tags = v
+}
+
 // GetTimestamp returns the Timestamp field value
 func (o *EndpointMessageOut) GetTimestamp() time.Time {
 	if o == nil {
@@ -312,6 +346,9 @@ func (o EndpointMessageOut) MarshalJSON() ([]byte, error) {
 	}
 	if true {
 		toSerialize["status"] = o.Status
+	}
+	if o.Tags != nil {
+		toSerialize["tags"] = o.Tags
 	}
 	if true {
 		toSerialize["timestamp"] = o.Timestamp
