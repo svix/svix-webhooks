@@ -20,5 +20,7 @@ namespace Svix.Models
         public bool? WithContent { get; set; }
 
         public bool? WithMsg { get; set; }
+
+        public string? Tag { get; set; }
     }
 }

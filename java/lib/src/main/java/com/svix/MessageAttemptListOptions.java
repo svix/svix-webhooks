@@ -14,6 +14,7 @@ public class MessageAttemptListOptions extends ListOptions {
 	private OffsetDateTime after;
 	private StatusCodeClass statusCodeClass;
 	private String channel;
+	private String tag;
 	private Boolean withContent;
 	private String endpointId;
 	private Boolean withMsg;
@@ -136,6 +137,19 @@ public class MessageAttemptListOptions extends ListOptions {
 
 	public MessageAttemptListOptions withMsg(final Boolean withMsg) {
 		this.withMsg = withMsg;
+		return this;
+	}
+
+	public String getTag() {
+		return tag;
+	}
+
+	public void setTag(final String tag) {
+		this.tag = tag;
+	}
+
+	public MessageAttemptListOptions tag(final String tag) {
+		this.tag = tag;
 		return this;
 	}
 }
