@@ -1,6 +1,6 @@
 package com.svix;
 
-import org.threeten.bp.OffsetDateTime;
+import java.time.OffsetDateTime;
 
 public class EndpointStatsOptions {
     private OffsetDateTime since;

@@ -1,14 +1,13 @@
 package com.svix;
 
 import java.util.List;
+import java.time.OffsetDateTime;
 
-import org.threeten.bp.OffsetDateTime;
 import com.svix.models.MessageStatus;
 import com.svix.models.StatusCodeClass;
 
-
 public class MessageAttemptListOptions extends ListOptions {
-    private MessageStatus status;
+	private MessageStatus status;
 	private List<String> eventTypes;
 	private OffsetDateTime before;
 	private OffsetDateTime after;
@@ -20,7 +19,7 @@ public class MessageAttemptListOptions extends ListOptions {
 	private Boolean withMsg;
 
 	public MessageAttemptListOptions() {
-        super();
+		super();
 	}
 
 	public MessageAttemptListOptions messageStatus(final MessageStatus status) {
@@ -36,7 +35,7 @@ public class MessageAttemptListOptions extends ListOptions {
 		return status;
 	}
 
-    public MessageAttemptListOptions eventTypes(final List<String> eventTypes) {
+	public MessageAttemptListOptions eventTypes(final List<String> eventTypes) {
 		this.eventTypes = eventTypes;
 		return this;
 	}
