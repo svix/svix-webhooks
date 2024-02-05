@@ -1,11 +1,11 @@
 use self::config::Config;
 use clap::Parser;
 use once_cell::sync::Lazy;
-use opentelemetry::runtime::Tokio;
-use opentelemetry::sdk::export::metrics::aggregation::delta_temporality_selector;
-use opentelemetry::sdk::metrics::controllers::BasicController;
-use opentelemetry::sdk::metrics::selectors;
 use opentelemetry_otlp::WithExportConfig;
+use opentelemetry_sdk::{
+    metrics::{data::Temporality, reader::TemporalitySelector, InstrumentKind, MeterProvider},
+    runtime::Tokio,
+};
 use std::io::{Error, ErrorKind, Result};
 use std::path::PathBuf;
 use std::time::Duration;
@@ -37,8 +37,8 @@ compile_error!("jemalloc cannot be enabled on msvc");
 // helpful.
 static INSTANCE_ID: Lazy<String> = Lazy::new(|| KsuidMs::new(None, None).to_string());
 
-fn get_svc_identifiers(cfg: &Config) -> opentelemetry::sdk::Resource {
-    opentelemetry::sdk::Resource::new(vec![
+fn get_svc_identifiers(cfg: &Config) -> opentelemetry_sdk::Resource {
+    opentelemetry_sdk::Resource::new(vec![
         opentelemetry::KeyValue::new(
             "service.name",
             cfg.opentelemetry
@@ -66,7 +66,7 @@ fn setup_tracing(cfg: &Config) {
     let otel_layer = cfg.opentelemetry.as_ref().map(|otel_cfg| {
         // Configure the OpenTelemetry tracing layer
         opentelemetry::global::set_text_map_propagator(
-            opentelemetry::sdk::propagation::TraceContextPropagator::new(),
+            opentelemetry_sdk::propagation::TraceContextPropagator::new(),
         );
 
         let exporter = opentelemetry_otlp::new_exporter()
@@ -77,12 +77,12 @@ fn setup_tracing(cfg: &Config) {
             .tracing()
             .with_exporter(exporter)
             .with_trace_config(
-                opentelemetry::sdk::trace::config()
+                opentelemetry_sdk::trace::config()
                     .with_sampler(
                         otel_cfg
                             .sample_ratio
-                            .map(opentelemetry::sdk::trace::Sampler::TraceIdRatioBased)
-                            .unwrap_or(opentelemetry::sdk::trace::Sampler::AlwaysOn),
+                            .map(opentelemetry_sdk::trace::Sampler::TraceIdRatioBased)
+                            .unwrap_or(opentelemetry_sdk::trace::Sampler::AlwaysOn),
                     )
                     .with_resource(get_svc_identifiers(cfg)),
             )
@@ -121,18 +121,29 @@ fn setup_tracing(cfg: &Config) {
     };
 }
 
-pub fn setup_metrics(cfg: &Config) -> Option<BasicController> {
+/// Delta temporality selector as recommended by upstream:
+/// https://github.com/open-telemetry/opentelemetry-rust/discussions/1511#discussioncomment-8386721
+struct DeltaTemporalitySelector;
+
+impl TemporalitySelector for DeltaTemporalitySelector {
+    fn temporality(&self, kind: InstrumentKind) -> Temporality {
+        match kind {
+            InstrumentKind::UpDownCounter => Temporality::Cumulative,
+            InstrumentKind::ObservableUpDownCounter => Temporality::Cumulative,
+            _ => Temporality::Delta,
+        }
+    }
+}
+
+pub fn setup_metrics(cfg: &Config) -> Option<MeterProvider> {
     cfg.opentelemetry.as_ref().map(|otel_cfg| {
         let exporter = opentelemetry_otlp::new_exporter()
             .tonic()
             .with_endpoint(&otel_cfg.address);
 
         opentelemetry_otlp::new_pipeline()
-            .metrics(
-                selectors::simple::inexpensive(),
-                delta_temporality_selector(),
-                Tokio,
-            )
+            .metrics(Tokio)
+            .with_temporality_selector(DeltaTemporalitySelector)
             .with_exporter(exporter)
             .with_resource(get_svc_identifiers(cfg))
             .build()

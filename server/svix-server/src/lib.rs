@@ -9,8 +9,8 @@ use sentry::integrations::tracing::EventFilter;
 
 use crate::core::cache::Cache;
 use cfg::ConfigurationInner;
-use opentelemetry::runtime::Tokio;
 use opentelemetry_otlp::WithExportConfig;
+use opentelemetry_sdk::runtime::Tokio;
 use queue::TaskQueueProducer;
 use sea_orm::DatabaseConnection;
 use std::{
@@ -244,7 +244,7 @@ pub fn setup_tracing(cfg: &ConfigurationInner) -> impl Drop {
     let otel_layer = cfg.opentelemetry_address.as_ref().map(|addr| {
         // Configure the OpenTelemetry tracing layer
         opentelemetry::global::set_text_map_propagator(
-            opentelemetry::sdk::propagation::TraceContextPropagator::new(),
+            opentelemetry_sdk::propagation::TraceContextPropagator::new(),
         );
 
         let exporter = opentelemetry_otlp::new_exporter()
@@ -255,13 +255,13 @@ pub fn setup_tracing(cfg: &ConfigurationInner) -> impl Drop {
             .tracing()
             .with_exporter(exporter)
             .with_trace_config(
-                opentelemetry::sdk::trace::config()
+                opentelemetry_sdk::trace::config()
                     .with_sampler(
                         cfg.opentelemetry_sample_ratio
-                            .map(opentelemetry::sdk::trace::Sampler::TraceIdRatioBased)
-                            .unwrap_or(opentelemetry::sdk::trace::Sampler::AlwaysOn),
+                            .map(opentelemetry_sdk::trace::Sampler::TraceIdRatioBased)
+                            .unwrap_or(opentelemetry_sdk::trace::Sampler::AlwaysOn),
                     )
-                    .with_resource(opentelemetry::sdk::Resource::new(vec![
+                    .with_resource(opentelemetry_sdk::Resource::new(vec![
                         opentelemetry::KeyValue::new("service.name", "svix_server"),
                     ])),
             )

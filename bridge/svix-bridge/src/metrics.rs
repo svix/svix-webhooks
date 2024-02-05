@@ -1,5 +1,4 @@
 use opentelemetry::metrics::{Meter, ObservableGauge};
-use opentelemetry::Context;
 
 fn init_metric<T, E: std::fmt::Display>(result: Result<T, E>) -> Option<T> {
     match result {
@@ -32,13 +31,13 @@ impl CommonMetrics {
 
     pub fn record_mem_allocated(&self, value: u64) {
         if let Some(ref recorder) = self.mem_allocated_recorder {
-            recorder.observe(&Context::current(), value, &[]);
+            recorder.observe(value, &[]);
         }
     }
 
     pub fn record_mem_resident(&self, value: u64) {
         if let Some(ref recorder) = self.mem_resident_recorder {
-            recorder.observe(&Context::current(), value, &[]);
+            recorder.observe(value, &[]);
         }
     }
 }
