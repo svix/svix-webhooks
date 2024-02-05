@@ -499,15 +499,13 @@ impl RedisQueueInner {
         ))
         .add_command(Cmd::xdel(&self.main_queue_name, &[delivery.id.as_str()]));
 
-        let (processed, deleted): (u8, u8) = pool.query_async_pipeline(pipe).await?;
-        if processed != 1 || deleted != 1 {
+        let (acked, deleted): (u8, u8) = pool.query_async_pipeline(pipe).await?;
+        if acked != 1 || deleted != 1 {
             tracing::warn!(
-                "Expected to remove 1 from the list, acked {}, deleted {}, for {}|{}",
-                processed,
-                deleted,
+                "Expected to remove 1 from the list, acked {acked}, deleted {deleted}, for {}|{}",
                 delivery.id,
                 serde_json::to_string(&delivery.task)
-                    .map_err(|e| Error::generic(format!("serialization error: {}", e)))?
+                    .map_err(|e| Error::generic(format!("serialization error: {e}")))?
             );
         }
 
