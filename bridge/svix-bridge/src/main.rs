@@ -55,7 +55,7 @@ fn setup_tracing(cfg: &Config) {
     if std::env::var_os("RUST_LOG").is_none() {
         const CRATE_NAME: &str = env!("CARGO_CRATE_NAME");
         let level = cfg.log_level.to_string();
-        let var = vec![
+        let var = [
             format!("{CRATE_NAME}={level}"),
             // XXX: Assuming this applies to the Producer side (aka `og-ingester`) when we fold it back in.
             format!("tower_http={level}"),
