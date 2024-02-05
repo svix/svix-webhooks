@@ -72,11 +72,12 @@ import {
 export * from "./openapi/models/all";
 export * from "./openapi/apis/exception";
 import { timingSafeEqual } from "./timing_safe_equal";
-import * as base64 from "@stablelib/base64";
-import * as sha256 from "fast-sha256";
+import { toUint8Array, fromUint8Array } from "js-base64";
 
 const WEBHOOK_TOLERANCE_IN_SECONDS = 5 * 60; // 5 minutes
 const VERSION = "1.16.0";
+
+const encoder = new globalThis.TextEncoder();
 
 class UserAgentMiddleware implements Middleware {
   public pre(context: RequestContext): Promise<RequestContext> {
@@ -265,7 +266,10 @@ class Application {
     return this.api.v1ApplicationUpdate({ appId, applicationIn });
   }
 
-  public patch(appId: string, applicationPatch: ApplicationPatch): Promise<ApplicationOut> {
+  public patch(
+    appId: string,
+    applicationPatch: ApplicationPatch
+  ): Promise<ApplicationOut> {
     return this.api.v1ApplicationPatch({ appId, applicationPatch });
   }
 
@@ -419,11 +423,15 @@ class Endpoint {
     });
   }
 
-  public getStats(appId: string, endpointId: string, options?: EndpointStatsOptions): Promise<EndpointStats> {
+  public getStats(
+    appId: string,
+    endpointId: string,
+    options?: EndpointStatsOptions
+  ): Promise<EndpointStats> {
     return this.api.v1EndpointGetStats({
       appId,
       endpointId,
-      ...options
+      ...options,
     });
   }
 
@@ -431,9 +439,7 @@ class Endpoint {
     appId: string,
     endpointId: string
   ): Promise<EndpointTransformationOut> {
-    return this.api.v1EndpointTransformationGet(
-      { endpointId, appId }
-    );
+    return this.api.v1EndpointTransformationGet({ endpointId, appId });
   }
 
   public transformationPartialUpdate(
@@ -441,20 +447,25 @@ class Endpoint {
     endpointId: string,
     endpointTransformationIn: EndpointTransformationIn
   ): Promise<void> {
-    return this.api.v1EndpointTransformationPartialUpdate(
-      { appId, endpointId, endpointTransformationIn }
-    );
+    return this.api.v1EndpointTransformationPartialUpdate({
+      appId,
+      endpointId,
+      endpointTransformationIn,
+    });
   }
 
   public sendExample(
     appId: string,
     endpointId: string,
     eventExampleIn: EventExampleIn,
-    options?: PostOptions,
+    options?: PostOptions
   ): Promise<MessageOut> {
-    return this.api.v1EndpointSendExample(
-      { appId, endpointId, eventExampleIn, ...options }
-    );
+    return this.api.v1EndpointSendExample({
+      appId,
+      endpointId,
+      eventExampleIn,
+      ...options,
+    });
   }
 }
 
@@ -501,7 +512,10 @@ class EventType {
     return this.api.v1EventTypeDelete({ eventTypeName });
   }
 
-  public importOpenApi(eventTypeImportOpenApiIn: EventTypeImportOpenApiIn, options?: PostOptions): Promise<EventTypeImportOpenApiOut> {
+  public importOpenApi(
+    eventTypeImportOpenApiIn: EventTypeImportOpenApiIn,
+    options?: PostOptions
+  ): Promise<EventTypeImportOpenApiOut> {
     return this.api.v1EventTypeImportOpenapi({ eventTypeImportOpenApiIn, ...options });
   }
 }
@@ -704,19 +718,20 @@ class MessageAttempt {
     endpointId: string,
     options?: MessageAttemptListOptions
   ): Promise<ListResponseMessageAttemptEndpointOut> {
-    return this.api.v1MessageAttemptListByEndpointDeprecated(
-      { appId, msgId, endpointId, ...options }
-    );
+    return this.api.v1MessageAttemptListByEndpointDeprecated({
+      appId,
+      msgId,
+      endpointId,
+      ...options,
+    });
   }
 
-  public expungeContent(
-    appId: string,
-    msgId: string,
-    attemptId: string
-  ): Promise<void> {
+  public expungeContent(appId: string, msgId: string, attemptId: string): Promise<void> {
     return this.api.v1MessageAttemptExpungeContent({
-      appId, msgId, attemptId
-    })
+      appId,
+      msgId,
+      attemptId,
+    });
   }
 }
 
@@ -735,14 +750,11 @@ class BackgroundTask {
     });
   }
 
-  public get(
-    taskId: string,
-  ): Promise<BackgroundTaskOut> {
+  public get(taskId: string): Promise<BackgroundTaskOut> {
     return this.api.getBackgroundTask({
-      taskId
+      taskId,
     });
   }
-
 }
 
 class ExtendableError extends Error {
@@ -780,7 +792,8 @@ export interface WebhookOptions {
 
 export class Webhook {
   private static prefix = "whsec_";
-  private readonly key: Uint8Array;
+  readonly #key: Uint8Array;
+  #cachedKey?: CryptoKey;
 
   constructor(secret: string | Uint8Array, options?: WebhookOptions) {
     if (!secret) {
@@ -788,9 +801,9 @@ export class Webhook {
     }
     if (options?.format === "raw") {
       if (secret instanceof Uint8Array) {
-        this.key = secret;
+        this.#key = secret;
       } else {
-        this.key = Uint8Array.from(secret, (c) => c.charCodeAt(0));
+        this.#key = Uint8Array.from(secret, (c) => c.charCodeAt(0));
       }
     } else {
       if (typeof secret !== "string") {
@@ -799,17 +812,17 @@ export class Webhook {
       if (secret.startsWith(Webhook.prefix)) {
         secret = secret.substring(Webhook.prefix.length);
       }
-      this.key = base64.decode(secret);
+      this.#key = toUint8Array(secret);
     }
   }
 
-  public verify(
-    payload: string | Buffer,
+  public async verify(
+    payload: string,
     headers_:
       | WebhookRequiredHeaders
       | WebhookUnbrandedRequiredHeaders
       | Record<string, string>
-  ): unknown {
+  ): Promise<unknown> {
     const headers: Record<string, string> = {};
     for (const key of Object.keys(headers_)) {
       headers[key.toLowerCase()] = (headers_ as Record<string, string>)[key];
@@ -831,12 +844,11 @@ export class Webhook {
 
     const timestamp = this.verifyTimestamp(msgTimestamp);
 
-    const computedSignature = this.sign(msgId, timestamp, payload);
+    const computedSignature = await this.sign(msgId, timestamp, payload);
     const expectedSignature = computedSignature.split(",")[1];
 
     const passedSignatures = msgSignature.split(" ");
 
-    const encoder = new globalThis.TextEncoder();
     for (const versionedSignature of passedSignatures) {
       const [version, signature] = versionedSignature.split(",");
       if (version !== "v1") {
@@ -850,19 +862,29 @@ export class Webhook {
     throw new WebhookVerificationError("No matching signature found");
   }
 
-  public sign(msgId: string, timestamp: Date, payload: string | Buffer): string {
-    if (typeof payload === "string") {
-      // Do nothing, already a string
-    } else if (payload.constructor.name === "Buffer") {
-      payload = payload.toString();
-    } else {
-      throw new Error("Expected payload to be of type string or Buffer. Please refer to https://docs.svix.com/receiving/verifying-payloads/how for more information.");
+  public async sign(msgId: string, timestamp: Date, payload: string): Promise<string> {
+    if (typeof payload !== "string") {
+      throw new Error(
+        "Expected payload to be of type string. Please refer to https://docs.svix.com/receiving/verifying-payloads/how for more information."
+      );
     }
 
-    const encoder = new TextEncoder();
     const timestampNumber = Math.floor(timestamp.getTime() / 1000);
     const toSign = encoder.encode(`${msgId}.${timestampNumber}.${payload}`);
-    const expectedSignature = base64.encode(sha256.hmac(this.key, toSign));
+    if (!this.#cachedKey) {
+      this.#cachedKey = await globalThis.crypto.subtle.importKey(
+        "raw",
+        this.#key,
+        { name: "HMAC", hash: "SHA-256" },
+        false,
+        ["sign"]
+      );
+    }
+    const signature = new Uint8Array(
+      await globalThis.crypto.subtle.sign("HMAC", this.#cachedKey, toSign)
+    );
+
+    const expectedSignature = fromUint8Array(signature);
     return `v1,${expectedSignature}`;
   }
 
