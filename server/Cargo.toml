@@ -1,5 +1,6 @@
 [workspace]
 members = ["svix-server", "svix-server_derive"]
+resolver = "2"
 
 [patch.crates-io]
 hyper = { git = "https://github.com/svix/hyper/", rev = "b901ca7c" }
