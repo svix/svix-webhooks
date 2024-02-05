@@ -16,14 +16,14 @@ services:
     - redis
 
   postgres:
-    image: postgres:13.4
+    image: "docker.io/postgres:13.4"
     volumes:
       - "postgres-data:/var/lib/postgresql/data/"
     environment:
       POSTGRES_PASSWORD: postgres
 
   pgbouncer:
-    image: edoburu/pgbouncer:1.15.0
+    image: "docker.io/edoburu/pgbouncer:1.15.0"
     healthcheck:
       test: "pg_isready -h localhost"
       interval: 30s
@@ -38,7 +38,7 @@ services:
     - postgres
 
   redis:
-    image: "redis:7-alpine"
+    image: "docker.io/redis:7-alpine"
     # Enable persistence
     command: "--save 60 500 --appendonly yes --appendfsync everysec"
     volumes:
