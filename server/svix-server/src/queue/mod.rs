@@ -196,7 +196,7 @@ impl TaskQueueDelivery {
             || async {
                 match &self.acker {
                     Acker::Memory(_) => Ok(()), // nothing to do
-                    Acker::Redis(q) => q.ack(&self).await.trace(),
+                    Acker::Redis(q) => q.ack(&self.id, &self.task).await.trace(),
                     Acker::RabbitMQ(delivery) => {
                         delivery
                             .ack(BasicAckOptions {
@@ -222,7 +222,7 @@ impl TaskQueueDelivery {
                         tracing::debug!("nack {}", self.id);
                         q.send(self.task.clone(), None).await.trace()
                     }
-                    Acker::Redis(q) => q.nack(&self).await.trace(),
+                    Acker::Redis(q) => q.nack(&self.id, &self.task).await.trace(),
                     Acker::RabbitMQ(delivery) => {
                         // See https://www.rabbitmq.com/confirms.html#consumer-nacks-requeue
 

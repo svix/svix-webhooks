@@ -487,7 +487,7 @@ impl RedisQueueInner {
     }
 
     /// ACKing the delivery, XACKs the message in the queue so it will no longer be retried
-    pub(super) async fn ack(&self, delivery: &TaskQueueDelivery) -> Result<()> {
+    pub(super) async fn ack(&self, delivery_id: &str, task: &QueueTask) -> Result<()> {
         let mut pool = self.pool.get().await?;
 
         let mut pipe = redis::pipe();
@@ -495,16 +495,16 @@ impl RedisQueueInner {
         pipe.add_command(Cmd::xack(
             &self.main_queue_name,
             WORKERS_GROUP,
-            &[delivery.id.as_str()],
+            &[delivery_id],
         ))
-        .add_command(Cmd::xdel(&self.main_queue_name, &[delivery.id.as_str()]));
+        .add_command(Cmd::xdel(&self.main_queue_name, &[delivery_id]));
 
         let (acked, deleted): (u8, u8) = pool.query_async_pipeline(pipe).await?;
         if acked != 1 || deleted != 1 {
             tracing::warn!(
-                "Expected to remove 1 from the list, acked {acked}, deleted {deleted}, for {}|{}",
-                delivery.id,
-                serde_json::to_string(&delivery.task)
+                "Expected to remove 1 from the list, acked {acked}, deleted {deleted},\
+                 for {delivery_id}|{}",
+                serde_json::to_string(task)
                     .map_err(|e| Error::generic(format!("serialization error: {e}")))?
             );
         }
@@ -512,10 +512,10 @@ impl RedisQueueInner {
         Ok(())
     }
 
-    pub(super) async fn nack(&self, delivery: &TaskQueueDelivery) -> Result<()> {
-        tracing::debug!("nack {}", delivery.id);
-        self.send_immedietly(delivery.task.clone()).await?;
-        self.ack(delivery).await
+    pub(super) async fn nack(&self, delivery_id: &str, task: &Arc<QueueTask>) -> Result<()> {
+        tracing::debug!("nack {delivery_id}");
+        self.send_immedietly(task.clone()).await?;
+        self.ack(delivery_id, task).await
     }
 }
 
