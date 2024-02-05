@@ -3,6 +3,11 @@
 ## Next
 * 
 
+## Version 1.17.0
+* Server: Upgrade hyper to 0.14.28
+* Libs/Rust: **[Important]** Fix a bug in the webhook signature verification method where certain signatures could bypass the verification.
+* Libs/Java: **[Breaking]** Use Java time instead of threetenbp. This removes the need to import threetenbp to use the library. Depending on how the lib is used, it might require migrating uses of threetenbp to Java 8 Date-Time APIs. 
+
 ## Version 1.16.0
 * Server: Add `tag` parameter to list-message for Go, JavaScript, and Python.
 * Server: improvements to the expired message cleaner.
