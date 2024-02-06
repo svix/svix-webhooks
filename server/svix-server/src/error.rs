@@ -158,6 +158,13 @@ impl From<redis::RedisError> for Error {
     }
 }
 
+impl From<omniqueue::QueueError> for Error {
+    #[track_caller]
+    fn from(value: omniqueue::QueueError) -> Self {
+        Error::queue(value)
+    }
+}
+
 impl<E: error::Error + 'static> From<bb8::RunError<E>> for Error {
     #[track_caller]
     fn from(value: bb8::RunError<E>) -> Self {

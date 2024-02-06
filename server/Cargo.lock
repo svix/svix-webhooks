@@ -2490,6 +2490,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "omniqueue"
+version = "0.1.0"
+source = "git+https://github.com/svix/omniqueue-rs.git?rev=32bf5f17209b76ab33902ed149f1890a80dda32a#32bf5f17209b76ab33902ed149f1890a80dda32a"
+dependencies = [
+ "async-trait",
+ "futures",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
 name = "once_cell"
 version = "1.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4263,6 +4277,7 @@ dependencies = [
  "jwt-simple",
  "lapin",
  "num_enum",
+ "omniqueue",
  "once_cell",
  "openssl",
  "opentelemetry",
