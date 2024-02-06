@@ -690,7 +690,11 @@ fn bytes_to_string(bytes: bytes::Bytes) -> String {
 }
 
 /// Manages preparation and execution of a QueueTask type
-#[tracing::instrument(skip_all, level = "error", fields(msg_id, app_id, org_id, instance_id, task_type=queue_task.to_string()))]
+#[tracing::instrument(
+    skip_all,
+    level = "error",
+    fields(msg_id, app_id, org_id, instance_id, task_type = queue_task.task_type())
+)]
 async fn process_queue_task(
     worker_context: WorkerContext<'_>,
     queue_task: QueueTask,
