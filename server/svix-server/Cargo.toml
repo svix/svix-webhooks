@@ -61,7 +61,7 @@ time = { version = "0.3.9", features = [ "std" ]}
 futures = "0.3"
 url = { version = "2.2.2", features = ["serde"] }
 rand = "0.8.5"
-jsonschema = "0.16.1"
+jsonschema = "0.17.1"
 aide = { version = "0.12.0", features = ["axum", "redoc", "macros", "axum-headers"] }
 schemars = { version = "0.8.11", features = ["chrono", "url", "preserve_order"] }
 indexmap = "1.9.2"
