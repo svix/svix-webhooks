@@ -17,7 +17,6 @@ svix-server_derive = { path = "../svix-server_derive" }
 svix = "0.60"
 svix-ksuid = "^0.5.1"
 dotenv = "0.15.0"
-sha2 = "0.10.2"
 hmac-sha256 = "1"
 clap = { version = "4.1.8", features = ["derive"] }
 axum = { version = "0.6.1", features = ["headers"] }
@@ -30,7 +29,6 @@ tower = "0.4.11"
 tower-http = { version = "0.4.0", features = ["trace", "cors", "request-id"] }
 serde = { version = "1.0.184", features = ["derive"] }
 serde_json = { version = "1.0.74", features = ["arbitrary_precision", "raw_value"] }
-serde_urlencoded = "0.7.1"
 serde_path_to_error = "0.1.7"
 num_enum = "0.5.6"
 enum_dispatch = "0.3.8"

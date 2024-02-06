@@ -4300,8 +4300,6 @@ dependencies = [
  "serde",
  "serde_json",
  "serde_path_to_error",
- "serde_urlencoded",
- "sha2",
  "sqlx",
  "strum 0.24.1",
  "strum_macros",
@@ -4327,7 +4325,6 @@ dependencies = [
 name = "svix-server_derive"
 version = "0.1.0"
 dependencies = [
- "proc-macro2",
  "quote",
  "syn 1.0.109",
 ]
