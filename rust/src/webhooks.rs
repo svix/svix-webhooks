@@ -86,10 +86,13 @@ impl Webhook {
             .filter_map(|x| x.split_once(','))
             .filter(|x| x.0 == SIGNATURE_VERSION)
             .any(|x| {
-                x.1.bytes()
-                    .zip(expected_signature.bytes())
-                    .fold(0, |acc, (a, b)| acc | (a ^ b))
-                    == 0
+                (x.1.len() == expected_signature.len())
+                    && (x
+                        .1
+                        .bytes()
+                        .zip(expected_signature.bytes())
+                        .fold(0, |acc, (a, b)| acc | (a ^ b))
+                        == 0)
             })
             .then_some(())
             .ok_or(WebhookError::InvalidSignature)
@@ -219,6 +222,43 @@ mod tests {
             get_svix_headers(msg_id, &signature),
             get_unbranded_headers(msg_id, &signature),
         ] {
+            assert!(wh.verify(payload, &headers).is_err());
+        }
+    }
+
+    #[test]
+    fn test_verify_partial_signature() {
+        let secret = "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD".to_owned();
+        let msg_id = "msg_27UH4WbU6Z5A5EzD8u03UvzRbpk";
+        let payload = br#"{"email":"test@example.com","username":"test_user"}"#;
+        let wh = Webhook::new(&secret).unwrap();
+
+        let signature = wh
+            .sign(msg_id, OffsetDateTime::now_utc().unix_timestamp(), payload)
+            .unwrap();
+
+        // Just `v1,`
+        for mut headers in [
+            get_svix_headers(msg_id, &signature),
+            get_unbranded_headers(msg_id, &signature),
+        ] {
+            let partial = format!(
+                "{},",
+                signature.split(',').collect::<Vec<&str>>().first().unwrap()
+            );
+            headers.insert(SVIX_MSG_SIGNATURE_KEY, partial.parse().unwrap());
+            headers.insert(UNBRANDED_MSG_SIGNATURE_KEY, partial.parse().unwrap());
+            assert!(wh.verify(payload, &headers).is_err());
+        }
+
+        // Non-empty but still partial signature (first few bytes)
+        for mut headers in [
+            get_svix_headers(msg_id, &signature),
+            get_unbranded_headers(msg_id, &signature),
+        ] {
+            let partial = &signature[0..8];
+            headers.insert(SVIX_MSG_SIGNATURE_KEY, partial.parse().unwrap());
+            headers.insert(UNBRANDED_MSG_SIGNATURE_KEY, partial.parse().unwrap());
             assert!(wh.verify(payload, &headers).is_err());
         }
     }
