@@ -78,7 +78,7 @@ pub trait PooledConnectionLike {
         &mut self,
         key: K,
         value: V,
-        milliseconds: usize,
+        milliseconds: u64,
     ) -> RedisResult<T> {
         self.query_async(redis::Cmd::pset_ex(key, value, milliseconds))
             .await
