@@ -14,7 +14,7 @@ publish = false
 [dependencies]
 svix-server_derive = { path = "../svix-server_derive" }
 
-svix = "0.60"
+svix = "1.17"
 svix-ksuid = "^0.5.1"
 dotenv = "0.15.0"
 hmac-sha256 = "1"

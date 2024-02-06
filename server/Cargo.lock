@@ -3791,6 +3791,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "serde_repr"
+version = "0.1.17"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3081f5ffbb02284dda55132aa26daecedd7372a42417bbbab6f14ab7d6bb9145"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.39",
+]
+
+[[package]]
 name = "serde_spanned"
 version = "0.6.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4199,9 +4210,9 @@ checksum = "6bdef32e8150c2a081110b42772ffe7d7c9032b606bc226c8260fd97e0976601"
 
 [[package]]
 name = "svix"
-version = "0.60.0"
+version = "1.17.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1e4a0071892c06482d6585e7b15146b088f777d4da18aa924d9f960d59b7e4f4"
+checksum = "47ca1e53956ea8fa121372664b70bd97ba79a72d58f8da61443b57f8e208d5f9"
 dependencies = [
  "base64 0.13.1",
  "hmac-sha256",
@@ -4210,6 +4221,7 @@ dependencies = [
  "serde",
  "serde_derive",
  "serde_json",
+ "serde_repr",
  "thiserror",
  "time",
  "url",
