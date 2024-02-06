@@ -10,4 +10,4 @@ async-trait = "0.1"
 tokio = { version = "1", features = ["full"] }
 serde_json = "1"
 serde = { version = "1", features = ["derive"] }
-svix = "0.85.1"
+svix = "1.17.0"
