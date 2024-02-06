@@ -52,7 +52,7 @@ redis = { version = "0.23.3", features = ["tokio-comp", "tokio-native-tls-comp",
 thiserror = "1.0.30"
 bytes = "1.1.0"
 blake2 = "0.10.4"
-chacha20poly1305 = "0.9.0"
+chacha20poly1305 = "0.10.1"
 # sea orm
 sea-orm = { version = "0.12.2", features = [ "sqlx-postgres", "runtime-tokio-rustls", "macros", "with-chrono", "with-json" ], default-features = false }
 sqlx = { version = "0.7.1", features = [ "runtime-tokio-rustls", "postgres", "migrate" ] }
