@@ -4,7 +4,6 @@ use axum::async_trait;
 use chrono::{DateTime, Utc};
 use lapin::options::{BasicAckOptions, BasicNackOptions};
 use serde::{Deserialize, Serialize};
-use strum::Display;
 use svix_ksuid::*;
 
 use crate::error::Traceable;
@@ -114,13 +113,24 @@ impl MessageTaskBatch {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Display)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "type")]
 pub enum QueueTask {
     HealthCheck,
     MessageV1(MessageTask),
     MessageBatch(MessageTaskBatch),
+}
+
+impl QueueTask {
+    /// Returns a type string, for logging.
+    pub fn task_type(&self) -> &'static str {
+        match self {
+            QueueTask::HealthCheck => "HealthCheck",
+            QueueTask::MessageV1(_) => "MessageV1",
+            QueueTask::MessageBatch(_) => "MessageBatch",
+        }
+    }
 }
 
 #[derive(Clone)]

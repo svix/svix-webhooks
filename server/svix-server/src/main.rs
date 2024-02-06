@@ -180,7 +180,7 @@ async fn main() {
             let mut openapi = svix_server::openapi::initialize_openapi();
 
             let router = svix_server::v1::router();
-            aide::axum::ApiRouter::new()
+            _ = aide::axum::ApiRouter::new()
                 .nest("/api/v1", router)
                 .finish_api(&mut openapi);
 
