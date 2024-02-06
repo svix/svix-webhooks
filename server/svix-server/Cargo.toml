@@ -30,7 +30,7 @@ tower-http = { version = "0.4.0", features = ["trace", "cors", "request-id"] }
 serde = { version = "1.0.184", features = ["derive"] }
 serde_json = { version = "1.0.74", features = ["arbitrary_precision", "raw_value"] }
 serde_path_to_error = "0.1.7"
-num_enum = "0.5.6"
+num_enum = "0.7.2"
 enum_dispatch = "0.3.8"
 regex = "1.5.5"
 once_cell = "1.18.0"
