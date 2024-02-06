@@ -1,20 +1,7 @@
 version: "3.7"
+include:
+  - docker-compose.base.yml
 services:
-  postgres:
-    image: postgres:13.4
-    command: postgres -c 'max_connections=500'
-    volumes:
-      - "postgres-data:/var/lib/postgresql/data/"
-    environment:
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "5432:5432"
-
-  redis:
-    image: "redis:7.0.10-alpine"
-    ports:
-      - "6379:6379"
-
   # Redis cluster
   redis-cluster:
     image: "bitnami/redis-cluster:7.0.10"
@@ -85,7 +72,5 @@ services:
       - rabbitmq_data:/var/lib/rabbitmq
       - ./rabbit/enabled_plugins:/etc/rabbitmq/enabled_plugins
       - ./rabbit/plugins:/usr/lib/rabbitmq/plugins
-
 volumes:
-  postgres-data:
   rabbitmq_data:

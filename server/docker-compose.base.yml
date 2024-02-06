@@ -1,26 +1,14 @@
 version: "3.7"
 services:
-  backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: svix/svix-server
-    environment:
-      WAIT_FOR: "true"  # We want to wait for the default services
-      SVIX_REDIS_DSN: "redis://redis:6379"
-      SVIX_DB_DSN: "postgresql://postgres:postgres@pgbouncer/postgres"
-    ports:
-      - "8071:8071"
-    depends_on:
-    - pgbouncer
-    - redis
-
   postgres:
     image: postgres:13.4
+    command: postgres -c 'max_connections=500'
     volumes:
       - "postgres-data:/var/lib/postgresql/data/"
     environment:
       POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
 
   pgbouncer:
     image: edoburu/pgbouncer:1.15.0
@@ -43,6 +31,8 @@ services:
     command: "--save 60 500 --appendonly yes --appendfsync everysec"
     volumes:
       - "redis-data:/data"
+    ports:
+      - "6379:6379"
 
 volumes:
   postgres-data:

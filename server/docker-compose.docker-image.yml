@@ -1,0 +1,19 @@
+version: "3.7"
+include:
+  - docker-compose.base.yml
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: svix/svix-server
+    environment:
+      WAIT_FOR: "true"  # We want to wait for the default services
+      SVIX_REDIS_DSN: "redis://redis:6379"
+      SVIX_DB_DSN: "postgresql://postgres:postgres@pgbouncer/postgres"
+      SVIX_JWT_SECRET: "x"
+    ports:
+      - "8071:8071"
+    depends_on:
+    - pgbouncer
+    - redis
