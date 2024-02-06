@@ -10,7 +10,7 @@ use crate::error::Traceable;
 use crate::{
     cfg::{Configuration, QueueBackend},
     core::{
-        run_with_retries::run_with_retries,
+        retry::run_with_retries,
         types::{ApplicationId, EndpointId, MessageAttemptTriggerType, MessageId},
     },
     error::{Error, ErrorType, Result},
