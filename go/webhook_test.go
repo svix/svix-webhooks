@@ -102,6 +102,14 @@ func TestWebhook(t *testing.T) {
 			expectedErr: true,
 		},
 		{
+			name:        "partial signature is invalid",
+			testPayload: newTestPayload(time.Now()),
+			modifyPayload: func(tp *testPayload) {
+				tp.header.Set("svix-signature", "v1,")
+			},
+			expectedErr: true,
+		},
+		{
 			name:        "old timestamp fails",
 			testPayload: newTestPayload(time.Now().Add(tolerance * -1)),
 			expectedErr: true,

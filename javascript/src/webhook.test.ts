@@ -103,6 +103,23 @@ test("invalid signature throws error", () => {
   }).toThrowError(WebhookVerificationError);
 });
 
+test("partial signature throws error", () => {
+  const wh = new Webhook("MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw");
+
+  const testPayload = new TestPayload();
+  testPayload.header["svix-signature"] = testPayload.header["svix-signature"].slice(0, 8);
+
+  expect(() => {
+    wh.verify(testPayload.payload, testPayload.header);
+  }).toThrowError(WebhookVerificationError);
+
+  testPayload.header["svix-signature"] = "v1,";
+
+  expect(() => {
+    wh.verify(testPayload.payload, testPayload.header);
+  }).toThrowError(WebhookVerificationError);
+});
+
 test("valid signature is valid and returns valid json", () => {
   const wh = new Webhook("MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw");
 
