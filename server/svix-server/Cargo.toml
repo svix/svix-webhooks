@@ -66,7 +66,7 @@ jsonschema = "0.17.1"
 aide = { version = "0.12.0", features = ["axum", "redoc", "macros", "axum-headers"] }
 schemars = { version = "0.8.11", features = ["chrono", "url", "preserve_order"] }
 indexmap = "1.9.2"
-trust-dns-resolver = "0.22.0"
+hickory-resolver = "0.24.0"
 ipnet = { version = "2.5", features = ["serde"] }
 urlencoding = "2.1.2"
 form_urlencoded = "1.1.0"
