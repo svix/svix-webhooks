@@ -30,10 +30,10 @@ jobs:
         workspaces: "server -> target"
 
     - name: rustfmt
-      run: cargo fmt --manifest-path server/Cargo.toml --all -- --check
+      run: cargo fmt --manifest-path server/Cargo.toml -- --check
 
     - name: Build
-      run: cargo build --manifest-path server/Cargo.toml --all --locked
+      run: cargo build --manifest-path server/Cargo.toml --locked
 
     - name: Install dependencies
       run: sudo apt-get install -y jq
@@ -46,7 +46,7 @@ jobs:
       run: docker-compose -f "server/testing-docker-compose.yml" up -d
 
     - name: Clippy
-      run: cargo clippy --manifest-path server/Cargo.toml --all --all-targets --all-features -- -D warnings
+      run: cargo clippy --manifest-path server/Cargo.toml --all-targets --all-features -- -D warnings
 
     - name: Run migrations
       env:
