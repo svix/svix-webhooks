@@ -13,6 +13,9 @@ on:
       - '.github/workflows/rust-lint.yml'
       - "openapi.json"
 
+env:
+  CARGO_TERM_COLOR: always
+
 jobs:
   test-versions:
     name: Rust Lint
@@ -28,11 +31,9 @@ jobs:
         yarn
         ./regen_openapi.sh
 
-    - uses: actions-rs/toolchain@v1
+    - uses: dtolnay/rust-toolchain@master
       with:
         toolchain: ${{ matrix.rust }}
-        override: true
-        profile: minimal
         components: clippy, rustfmt
 
     - uses: Swatinem/rust-cache@v1
@@ -40,19 +41,13 @@ jobs:
         working-directory: rust
 
     - name: Clippy
-      uses: actions-rs/cargo@v1
-      with:
-        command: clippy
-        args: --manifest-path rust/Cargo.toml --all --all-targets --all-features -- -D warnings
+      run: cargo clippy --all-targets --all-features -- -D warnings
+      working-directory: rust
 
     - name: rustfmt
-      uses: actions-rs/cargo@v1
-      with:
-        command: fmt
-        args: --manifest-path rust/Cargo.toml --all -- --check
+      run: cargo fmt -- --check
+      working-directory: rust
 
     - name: Run tests
-      uses: actions-rs/cargo@v1
-      with:
-        command: test
-        args: --manifest-path rust/Cargo.toml --all
+      run: cargo test --all
+      working-directory: rust

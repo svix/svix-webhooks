@@ -4,6 +4,9 @@ on:
   release:
     types: [published]
 
+env:
+  CARGO_TERM_COLOR: always
+
 jobs:
   release:
     name: release ${{ matrix.target }}
@@ -31,22 +34,16 @@ jobs:
       - uses: actions/checkout@master
 
       - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable
-          override: true
-          profile: minimal
-          target: ${{ matrix.target }}
+          targets: ${{ matrix.target }}
 
       - name: Install musl for x86_64-unknown-linux-musl
         if: ${{ matrix.target == 'x86_64-unknown-linux-musl' }}
         run: sudo apt-get install -y musl-dev musl-tools
 
       - name: Compile bridge
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --target ${{ matrix.target }} --release --manifest-path bridge/svix-bridge/Cargo.toml
+        run: cargo build --target ${{ matrix.target }} --release --manifest-path bridge/svix-bridge/Cargo.toml
 
       - name: Release
         uses: actions/upload-artifact@v3
