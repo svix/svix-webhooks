@@ -41,10 +41,13 @@ jobs:
         working-directory: rust
 
     - name: Clippy
-      run: cargo clippy --manifest-path rust/Cargo.toml --all-targets --all-features -- -D warnings
+      run: cargo clippy --all-targets --all-features -- -D warnings
+      working-directory: rust
 
     - name: rustfmt
-      run: cargo fmt --manifest-path rust/Cargo.toml -- --check
+      run: cargo fmt -- --check
+      working-directory: rust
 
     - name: Run tests
-      run: cargo test --manifest-path rust/Cargo.toml --all
+      run: cargo test --all
+      working-directory: rust

@@ -33,7 +33,8 @@ jobs:
         workspaces: "bridge -> target"
 
     - name: rustfmt
-      run: cargo fmt --manifest-path bridge/Cargo.toml -- --check
+      run: cargo fmt -- --check
+      working-directory: bridge
 
     - name: Install dependencies
       # Packages should align with whatever is in the bridge/Dockerfile
@@ -48,16 +49,18 @@ jobs:
           zlib1g-dev=1:*
 
     - name: Build
-      run: cargo build --manifest-path bridge/Cargo.toml --locked
+      run: cargo build --locked
+      working-directory: bridge
 
     - name: Start dependencies
       run: docker-compose -f "bridge/testing-docker-compose.yml" up -d
 
     - name: Clippy
-      run: cargo clippy --manifest-path bridge/Cargo.toml --all-targets --all-features -- -D warnings
+      run: cargo clippy --all-targets --all-features -- -D warnings
+      working-directory: bridge
 
     - name: Run tests
-      working-directory: ./bridge
+      working-directory: bridge
       run: ./run-tests.sh
 
     - name: Stop dependencies

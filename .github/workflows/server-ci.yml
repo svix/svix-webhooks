@@ -33,10 +33,12 @@ jobs:
         workspaces: "server -> target"
 
     - name: rustfmt
-      run: cargo fmt --manifest-path server/Cargo.toml -- --check
+      run: cargo fmt -- --check
+      working-directory: server
 
     - name: Build
-      run: cargo build --manifest-path server/Cargo.toml --locked
+      run: cargo build --locked
+      working-directory: server
 
     - name: Install dependencies
       run: sudo apt-get install -y jq
@@ -49,7 +51,8 @@ jobs:
       run: docker-compose -f "server/testing-docker-compose.yml" up -d
 
     - name: Clippy
-      run: cargo clippy --manifest-path server/Cargo.toml --all-targets --all-features -- -D warnings
+      run: cargo clippy --all-targets --all-features -- -D warnings
+      working-directory: server
 
     - name: Run migrations
       env:
@@ -58,7 +61,8 @@ jobs:
         SVIX_QUEUE_TYPE: "redis"
         SVIX_JWT_SECRET: "test value"
         SVIX_CACHE_TYPE: "memory"
-      run: cargo run --manifest-path server/Cargo.toml -- --wait-for 15 migrate
+      run: cargo run -- --wait-for 15 migrate
+      working-directory: server
 
     - name: Run tests
       working-directory: ./server
