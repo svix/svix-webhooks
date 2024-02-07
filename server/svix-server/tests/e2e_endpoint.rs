@@ -1159,7 +1159,7 @@ async fn test_endpoint_rotate_signing_e2e() {
     for sec in [secret1, secret2, secret3] {
         if let EndpointSecret::Symmetric(key) = &sec.key {
             let sec = base64::encode(key);
-            let wh = Webhook::new(sec).unwrap();
+            let wh = Webhook::new(&sec).unwrap();
             wh.verify(last_body.as_bytes(), &last_headers).unwrap();
         } else {
             panic!("Shouldn't get here");
@@ -1227,7 +1227,7 @@ async fn test_endpoint_rotate_signing_symmetric_and_asymmetric() {
         match sec {
             EndpointSecret::Symmetric(key) => {
                 let sec = base64::encode(key);
-                let wh = Webhook::new(sec).unwrap();
+                let wh = Webhook::new(&sec).unwrap();
                 wh.verify(last_body.as_bytes(), &last_headers).unwrap();
             }
             EndpointSecret::Asymmetric(key) => {
