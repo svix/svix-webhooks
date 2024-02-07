@@ -12,6 +12,9 @@ on:
       - 'bridge/**'
       - '.github/workflows/bridge-ci.yml'
 
+env:
+  CARGO_TERM_COLOR: always
+
 jobs:
   test-versions:
     name: Webhook Bridge CI
