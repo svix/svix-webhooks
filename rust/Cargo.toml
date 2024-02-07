@@ -3,12 +3,12 @@ name = "svix"
 version = "1.17.0"
 authors = ["Svix Inc. <oss@svix.com>"]
 edition = "2021"
-description="Svix webhooks API client and webhook verification library"
-homepage="https://www.svix.com"
-repository="https://github.com/svix/svix-webhooks"
-readme="../README.md"
-license="MIT"
-keywords=["svix", "webhooks", "diahook"]
+description = "Svix webhooks API client and webhook verification library"
+homepage = "https://www.svix.com"
+repository = "https://github.com/svix/svix-webhooks"
+readme = "../README.md"
+license = "MIT"
+keywords = ["svix", "webhooks", "diahook"]
 categories = ["development-tools", "asynchronous", "network-programming", "web-programming"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
