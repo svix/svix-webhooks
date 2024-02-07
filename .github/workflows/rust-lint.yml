@@ -28,11 +28,9 @@ jobs:
         yarn
         ./regen_openapi.sh
 
-    - uses: actions-rs/toolchain@v1
+    - uses: dtolnay/rust-toolchain@master
       with:
         toolchain: ${{ matrix.rust }}
-        override: true
-        profile: minimal
         components: clippy, rustfmt
 
     - uses: Swatinem/rust-cache@v1
@@ -40,19 +38,10 @@ jobs:
         working-directory: rust
 
     - name: Clippy
-      uses: actions-rs/cargo@v1
-      with:
-        command: clippy
-        args: --manifest-path rust/Cargo.toml --all --all-targets --all-features -- -D warnings
+      run: cargo clippy --manifest-path rust/Cargo.toml --all --all-targets --all-features -- -D warnings
 
     - name: rustfmt
-      uses: actions-rs/cargo@v1
-      with:
-        command: fmt
-        args: --manifest-path rust/Cargo.toml --all -- --check
+      run: cargo fmt --manifest-path rust/Cargo.toml --all -- --check
 
     - name: Run tests
-      uses: actions-rs/cargo@v1
-      with:
-        command: test
-        args: --manifest-path rust/Cargo.toml --all
+      run: cargo test --manifest-path rust/Cargo.toml --all

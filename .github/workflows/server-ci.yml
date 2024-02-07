@@ -21,27 +21,19 @@ jobs:
         rust: [stable, beta]
     steps:
     - uses: actions/checkout@master
-    - uses: actions-rs/toolchain@v1
+    - uses: dtolnay/rust-toolchain@master
       with:
         toolchain: ${{ matrix.rust }}
-        override: true
-        profile: minimal
         components: clippy, rustfmt
     - uses: Swatinem/rust-cache@v2
       with:
         workspaces: "server -> target"
 
     - name: rustfmt
-      uses: actions-rs/cargo@v1
-      with:
-        command: fmt
-        args: --manifest-path server/Cargo.toml --all -- --check
+      run: cargo fmt --manifest-path server/Cargo.toml --all -- --check
 
     - name: Build
-      uses: actions-rs/cargo@v1
-      with:
-        command: build
-        args: --manifest-path server/Cargo.toml --all --locked
+      run: cargo build --manifest-path server/Cargo.toml --all --locked
 
     - name: Install dependencies
       run: sudo apt-get install -y jq
@@ -54,22 +46,16 @@ jobs:
       run: docker-compose -f "server/testing-docker-compose.yml" up -d
 
     - name: Clippy
-      uses: actions-rs/cargo@v1
-      with:
-        command: clippy
-        args: --manifest-path server/Cargo.toml --all --all-targets --all-features -- -D warnings
+      run: cargo clippy --manifest-path server/Cargo.toml --all --all-targets --all-features -- -D warnings
 
     - name: Run migrations
-      uses: actions-rs/cargo@v1
       env:
         DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
         SVIX_REDIS_DSN: "redis://localhost:6379"
         SVIX_QUEUE_TYPE: "redis"
         SVIX_JWT_SECRET: "test value"
         SVIX_CACHE_TYPE: "memory"
-      with:
-        command: run
-        args: --manifest-path server/Cargo.toml -- --wait-for 15 migrate
+      run: cargo run --manifest-path server/Cargo.toml -- --wait-for 15 migrate
 
     - name: Run tests
       working-directory: ./server

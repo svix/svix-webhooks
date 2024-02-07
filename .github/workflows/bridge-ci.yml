@@ -21,21 +21,16 @@ jobs:
         rust: [stable, beta]
     steps:
     - uses: actions/checkout@master
-    - uses: actions-rs/toolchain@v1
+    - uses: dtolnay/rust-toolchain@master
       with:
         toolchain: ${{ matrix.rust }}
-        override: true
-        profile: minimal
         components: clippy, rustfmt
     - uses: Swatinem/rust-cache@v2
       with:
         workspaces: "bridge -> target"
 
     - name: rustfmt
-      uses: actions-rs/cargo@v1
-      with:
-        command: fmt
-        args: --manifest-path bridge/Cargo.toml --all -- --check
+      run: cargo fmt --manifest-path bridge/Cargo.toml --all -- --check
 
     - name: Install dependencies
       # Packages should align with whatever is in the bridge/Dockerfile
@@ -50,19 +45,13 @@ jobs:
           zlib1g-dev=1:*
 
     - name: Build
-      uses: actions-rs/cargo@v1
-      with:
-        command: build
-        args: --manifest-path bridge/Cargo.toml --all --locked
+      run: cargo build --manifest-path bridge/Cargo.toml --all --locked
 
     - name: Start dependencies
       run: docker-compose -f "bridge/testing-docker-compose.yml" up -d
 
     - name: Clippy
-      uses: actions-rs/cargo@v1
-      with:
-        command: clippy
-        args: --manifest-path bridge/Cargo.toml --all --all-targets --all-features -- -D warnings
+      run: cargo clippy --manifest-path bridge/Cargo.toml --all --all-targets --all-features -- -D warnings
 
     - name: Run tests
       working-directory: ./bridge
