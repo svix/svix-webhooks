@@ -24,7 +24,7 @@ jobs:
       matrix:
         rust: [stable, beta]
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v4
 
     - name: Regen openapi libs
       run: |
