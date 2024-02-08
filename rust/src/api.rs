@@ -96,14 +96,14 @@ impl<'a> Authentication<'a> {
         options: Option<PostOptions>,
     ) -> Result<DashboardAccessOut> {
         let options = options.unwrap_or_default();
-        Ok(authentication_api::v1_authentication_dashboard_access(
+        authentication_api::v1_authentication_dashboard_access(
             self.cfg,
             authentication_api::V1AuthenticationDashboardAccessParams {
                 app_id,
                 idempotency_key: options.idempotency_key,
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn app_portal_access(
@@ -113,7 +113,7 @@ impl<'a> Authentication<'a> {
         options: Option<PostOptions>,
     ) -> Result<AppPortalAccessOut> {
         let options = options.unwrap_or_default();
-        Ok(authentication_api::v1_authentication_app_portal_access(
+        authentication_api::v1_authentication_app_portal_access(
             self.cfg,
             authentication_api::V1AuthenticationAppPortalAccessParams {
                 app_id,
@@ -121,16 +121,16 @@ impl<'a> Authentication<'a> {
                 idempotency_key: options.idempotency_key,
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn logout(&self, options: Option<PostOptions>) -> Result<()> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
-        Ok(authentication_api::v1_authentication_logout(
+        authentication_api::v1_authentication_logout(
             self.cfg,
             authentication_api::V1AuthenticationLogoutParams { idempotency_key },
         )
-        .await?)
+        .await
     }
 }
 
@@ -165,7 +165,7 @@ impl<'a> Application<'a> {
             limit,
             order,
         } = options.unwrap_or_default();
-        Ok(application_api::v1_application_list(
+        application_api::v1_application_list(
             self.cfg,
             application_api::V1ApplicationListParams {
                 iterator,
@@ -173,7 +173,7 @@ impl<'a> Application<'a> {
                 order,
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn create(
@@ -182,7 +182,7 @@ impl<'a> Application<'a> {
         options: Option<PostOptions>,
     ) -> Result<ApplicationOut> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
-        Ok(application_api::v1_application_create(
+        application_api::v1_application_create(
             self.cfg,
             application_api::V1ApplicationCreateParams {
                 application_in,
@@ -190,7 +190,7 @@ impl<'a> Application<'a> {
                 get_if_exists: None,
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn get_or_create(
@@ -199,7 +199,7 @@ impl<'a> Application<'a> {
         options: Option<PostOptions>,
     ) -> Result<ApplicationOut> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
-        Ok(application_api::v1_application_create(
+        application_api::v1_application_create(
             self.cfg,
             application_api::V1ApplicationCreateParams {
                 application_in,
@@ -207,15 +207,15 @@ impl<'a> Application<'a> {
                 get_if_exists: Some(true),
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn get(&self, app_id: String) -> Result<ApplicationOut> {
-        Ok(application_api::v1_application_get(
+        application_api::v1_application_get(
             self.cfg,
             application_api::V1ApplicationGetParams { app_id },
         )
-        .await?)
+        .await
     }
 
     pub async fn update(
@@ -224,14 +224,14 @@ impl<'a> Application<'a> {
         application_in: ApplicationIn,
         _: Option<PostOptions>,
     ) -> Result<ApplicationOut> {
-        Ok(application_api::v1_application_update(
+        application_api::v1_application_update(
             self.cfg,
             application_api::V1ApplicationUpdateParams {
                 app_id,
                 application_in,
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn patch(
@@ -240,22 +240,22 @@ impl<'a> Application<'a> {
         application_patch: ApplicationPatch,
         _: Option<PostOptions>,
     ) -> Result<ApplicationOut> {
-        Ok(application_api::v1_application_patch(
+        application_api::v1_application_patch(
             self.cfg,
             application_api::V1ApplicationPatchParams {
                 app_id,
                 application_patch,
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn delete(&self, app_id: String) -> Result<()> {
-        Ok(application_api::v1_application_delete(
+        application_api::v1_application_delete(
             self.cfg,
             application_api::V1ApplicationDeleteParams { app_id },
         )
-        .await?)
+        .await
     }
 }
 
@@ -291,7 +291,7 @@ impl<'a> Endpoint<'a> {
             limit,
             order,
         } = options.unwrap_or_default();
-        Ok(endpoint_api::v1_endpoint_list(
+        endpoint_api::v1_endpoint_list(
             self.cfg,
             endpoint_api::V1EndpointListParams {
                 app_id,
@@ -300,7 +300,7 @@ impl<'a> Endpoint<'a> {
                 limit,
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn create(
@@ -310,7 +310,7 @@ impl<'a> Endpoint<'a> {
         options: Option<PostOptions>,
     ) -> Result<EndpointOut> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
-        Ok(endpoint_api::v1_endpoint_create(
+        endpoint_api::v1_endpoint_create(
             self.cfg,
             endpoint_api::V1EndpointCreateParams {
                 app_id,
@@ -318,18 +318,18 @@ impl<'a> Endpoint<'a> {
                 idempotency_key,
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn get(&self, app_id: String, endpoint_id: String) -> Result<EndpointOut> {
-        Ok(endpoint_api::v1_endpoint_get(
+        endpoint_api::v1_endpoint_get(
             self.cfg,
             endpoint_api::V1EndpointGetParams {
                 app_id,
                 endpoint_id,
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn update(
@@ -339,7 +339,7 @@ impl<'a> Endpoint<'a> {
         endpoint_update: EndpointUpdate,
         _: Option<PostOptions>,
     ) -> Result<EndpointOut> {
-        Ok(endpoint_api::v1_endpoint_update(
+        endpoint_api::v1_endpoint_update(
             self.cfg,
             endpoint_api::V1EndpointUpdateParams {
                 app_id,
@@ -347,7 +347,7 @@ impl<'a> Endpoint<'a> {
                 endpoint_update,
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn patch(
@@ -357,7 +357,7 @@ impl<'a> Endpoint<'a> {
         endpoint_patch: EndpointPatch,
         _: Option<PostOptions>,
     ) -> Result<EndpointOut> {
-        Ok(endpoint_api::v1_endpoint_patch(
+        endpoint_api::v1_endpoint_patch(
             self.cfg,
             endpoint_api::V1EndpointPatchParams {
                 app_id,
@@ -365,18 +365,18 @@ impl<'a> Endpoint<'a> {
                 endpoint_patch,
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn delete(&self, app_id: String, endpoint_id: String) -> Result<()> {
-        Ok(endpoint_api::v1_endpoint_delete(
+        endpoint_api::v1_endpoint_delete(
             self.cfg,
             endpoint_api::V1EndpointDeleteParams {
                 app_id,
                 endpoint_id,
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn get_secret(
@@ -384,14 +384,14 @@ impl<'a> Endpoint<'a> {
         app_id: String,
         endpoint_id: String,
     ) -> Result<EndpointSecretOut> {
-        Ok(endpoint_api::v1_endpoint_get_secret(
+        endpoint_api::v1_endpoint_get_secret(
             self.cfg,
             endpoint_api::V1EndpointGetSecretParams {
                 app_id,
                 endpoint_id,
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn rotate_secret(
@@ -400,7 +400,7 @@ impl<'a> Endpoint<'a> {
         endpoint_id: String,
         endpoint_secret_rotate_in: EndpointSecretRotateIn,
     ) -> Result<()> {
-        Ok(endpoint_api::v1_endpoint_rotate_secret(
+        endpoint_api::v1_endpoint_rotate_secret(
             self.cfg,
             endpoint_api::V1EndpointRotateSecretParams {
                 app_id,
@@ -409,7 +409,7 @@ impl<'a> Endpoint<'a> {
                 idempotency_key: None,
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn recover(
@@ -436,14 +436,14 @@ impl<'a> Endpoint<'a> {
         app_id: String,
         endpoint_id: String,
     ) -> Result<EndpointHeadersOut> {
-        Ok(endpoint_api::v1_endpoint_get_headers(
+        endpoint_api::v1_endpoint_get_headers(
             self.cfg,
             endpoint_api::V1EndpointGetHeadersParams {
                 app_id,
                 endpoint_id,
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn update_headers(
@@ -452,7 +452,7 @@ impl<'a> Endpoint<'a> {
         endpoint_id: String,
         endpoint_headers_in: EndpointHeadersIn,
     ) -> Result<()> {
-        Ok(endpoint_api::v1_endpoint_update_headers(
+        endpoint_api::v1_endpoint_update_headers(
             self.cfg,
             endpoint_api::V1EndpointUpdateHeadersParams {
                 app_id,
@@ -460,7 +460,7 @@ impl<'a> Endpoint<'a> {
                 endpoint_headers_in,
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn patch_headers(
@@ -469,7 +469,7 @@ impl<'a> Endpoint<'a> {
         endpoint_id: String,
         endpoint_headers_patch_in: EndpointHeadersPatchIn,
     ) -> Result<()> {
-        Ok(endpoint_api::v1_endpoint_patch_headers(
+        endpoint_api::v1_endpoint_patch_headers(
             self.cfg,
             endpoint_api::V1EndpointPatchHeadersParams {
                 app_id,
@@ -477,7 +477,7 @@ impl<'a> Endpoint<'a> {
                 endpoint_headers_patch_in,
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn get_stats(
@@ -487,7 +487,7 @@ impl<'a> Endpoint<'a> {
         options: Option<EndpointStatsOptions>,
     ) -> Result<EndpointStats> {
         let EndpointStatsOptions { since, until } = options.unwrap_or_default();
-        Ok(endpoint_api::v1_endpoint_get_stats(
+        endpoint_api::v1_endpoint_get_stats(
             self.cfg,
             endpoint_api::V1EndpointGetStatsParams {
                 app_id,
@@ -496,7 +496,7 @@ impl<'a> Endpoint<'a> {
                 until,
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn replay_missing(
@@ -525,14 +525,14 @@ impl<'a> Endpoint<'a> {
         app_id: String,
         endpoint_id: String,
     ) -> Result<EndpointTransformationOut> {
-        Ok(endpoint_api::v1_endpoint_transformation_get(
+        endpoint_api::v1_endpoint_transformation_get(
             self.cfg,
             endpoint_api::V1EndpointTransformationGetParams {
                 app_id,
                 endpoint_id,
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn transformation_partial_update(
@@ -561,7 +561,7 @@ impl<'a> Endpoint<'a> {
         options: Option<PostOptions>,
     ) -> Result<MessageOut> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
-        Ok(endpoint_api::v1_endpoint_send_example(
+        endpoint_api::v1_endpoint_send_example(
             self.cfg,
             endpoint_api::V1EndpointSendExampleParams {
                 app_id,
@@ -570,7 +570,7 @@ impl<'a> Endpoint<'a> {
                 idempotency_key,
             },
         )
-        .await?)
+        .await
     }
 }
 
@@ -591,7 +591,7 @@ impl<'a> Integration<'a> {
         options: Option<IntegrationListOptions>,
     ) -> Result<ListResponseIntegrationOut> {
         let IntegrationListOptions { iterator, limit } = options.unwrap_or_default();
-        Ok(integration_api::v1_integration_list(
+        integration_api::v1_integration_list(
             self.cfg,
             integration_api::V1IntegrationListParams {
                 app_id,
@@ -599,7 +599,7 @@ impl<'a> Integration<'a> {
                 limit,
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn create(
@@ -609,7 +609,7 @@ impl<'a> Integration<'a> {
         options: Option<PostOptions>,
     ) -> Result<IntegrationOut> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
-        Ok(integration_api::v1_integration_create(
+        integration_api::v1_integration_create(
             self.cfg,
             integration_api::V1IntegrationCreateParams {
                 app_id,
@@ -617,15 +617,15 @@ impl<'a> Integration<'a> {
                 idempotency_key,
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn get(&self, app_id: String, integ_id: String) -> Result<IntegrationOut> {
-        Ok(integration_api::v1_integration_get(
+        integration_api::v1_integration_get(
             self.cfg,
             integration_api::V1IntegrationGetParams { app_id, integ_id },
         )
-        .await?)
+        .await
     }
 
     pub async fn update(
@@ -635,7 +635,7 @@ impl<'a> Integration<'a> {
         integration_update: IntegrationUpdate,
         _: Option<PostOptions>,
     ) -> Result<IntegrationOut> {
-        Ok(integration_api::v1_integration_update(
+        integration_api::v1_integration_update(
             self.cfg,
             integration_api::V1IntegrationUpdateParams {
                 app_id,
@@ -643,27 +643,27 @@ impl<'a> Integration<'a> {
                 integration_update,
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn delete(&self, app_id: String, integ_id: String) -> Result<()> {
-        Ok(integration_api::v1_integration_delete(
+        integration_api::v1_integration_delete(
             self.cfg,
             integration_api::V1IntegrationDeleteParams { app_id, integ_id },
         )
-        .await?)
+        .await
     }
 
     pub async fn get_key(&self, app_id: String, integ_id: String) -> Result<IntegrationKeyOut> {
-        Ok(integration_api::v1_integration_get_key(
+        integration_api::v1_integration_get_key(
             self.cfg,
             integration_api::V1IntegrationGetKeyParams { app_id, integ_id },
         )
-        .await?)
+        .await
     }
 
     pub async fn rotate_key(&self, app_id: String, integ_id: String) -> Result<IntegrationKeyOut> {
-        Ok(integration_api::v1_integration_rotate_key(
+        integration_api::v1_integration_rotate_key(
             self.cfg,
             integration_api::V1IntegrationRotateKeyParams {
                 app_id,
@@ -671,7 +671,7 @@ impl<'a> Integration<'a> {
                 idempotency_key: None,
             },
         )
-        .await?)
+        .await
     }
 }
 
@@ -702,7 +702,7 @@ impl<'a> EventType<'a> {
             with_content,
             include_archived,
         } = options.unwrap_or_default();
-        Ok(event_type_api::v1_event_type_list(
+        event_type_api::v1_event_type_list(
             self.cfg,
             event_type_api::V1EventTypeListParams {
                 iterator,
@@ -712,7 +712,7 @@ impl<'a> EventType<'a> {
                 order: None,
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn create(
@@ -721,22 +721,22 @@ impl<'a> EventType<'a> {
         options: Option<PostOptions>,
     ) -> Result<EventTypeOut> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
-        Ok(event_type_api::v1_event_type_create(
+        event_type_api::v1_event_type_create(
             self.cfg,
             event_type_api::V1EventTypeCreateParams {
                 event_type_in,
                 idempotency_key,
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn get(&self, event_type_name: String) -> Result<EventTypeOut> {
-        Ok(event_type_api::v1_event_type_get(
+        event_type_api::v1_event_type_get(
             self.cfg,
             event_type_api::V1EventTypeGetParams { event_type_name },
         )
-        .await?)
+        .await
     }
 
     pub async fn update(
@@ -745,14 +745,14 @@ impl<'a> EventType<'a> {
         event_type_update: EventTypeUpdate,
         _: Option<PostOptions>,
     ) -> Result<EventTypeOut> {
-        Ok(event_type_api::v1_event_type_update(
+        event_type_api::v1_event_type_update(
             self.cfg,
             event_type_api::V1EventTypeUpdateParams {
                 event_type_name,
                 event_type_update,
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn patch(
@@ -761,25 +761,25 @@ impl<'a> EventType<'a> {
         event_type_patch: EventTypePatch,
         _: Option<PostOptions>,
     ) -> Result<EventTypeOut> {
-        Ok(event_type_api::v1_event_type_patch(
+        event_type_api::v1_event_type_patch(
             self.cfg,
             event_type_api::V1EventTypePatchParams {
                 event_type_name,
                 event_type_patch,
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn delete(&self, event_type_name: String) -> Result<()> {
-        Ok(event_type_api::v1_event_type_delete(
+        event_type_api::v1_event_type_delete(
             self.cfg,
             event_type_api::V1EventTypeDeleteParams {
                 event_type_name,
                 expunge: None,
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn import_openapi(
@@ -788,14 +788,14 @@ impl<'a> EventType<'a> {
         options: Option<PostOptions>,
     ) -> Result<EventTypeImportOpenApiOut> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
-        Ok(event_type_api::v1_event_type_import_openapi(
+        event_type_api::v1_event_type_import_openapi(
             self.cfg,
             event_type_api::V1EventTypeImportOpenapiParams {
                 event_type_import_open_api_in,
                 idempotency_key,
             },
         )
-        .await?)
+        .await
     }
 }
 
@@ -838,7 +838,7 @@ impl<'a> Message<'a> {
             with_content,
             tag,
         } = options.unwrap_or_default();
-        Ok(message_api::v1_message_list(
+        message_api::v1_message_list(
             self.cfg,
             message_api::V1MessageListParams {
                 app_id,
@@ -852,7 +852,7 @@ impl<'a> Message<'a> {
                 tag,
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn create(
@@ -862,7 +862,7 @@ impl<'a> Message<'a> {
         options: Option<PostOptions>,
     ) -> Result<MessageOut> {
         let PostOptions { idempotency_key } = options.unwrap_or_default();
-        Ok(message_api::v1_message_create(
+        message_api::v1_message_create(
             self.cfg,
             message_api::V1MessageCreateParams {
                 app_id,
@@ -871,11 +871,11 @@ impl<'a> Message<'a> {
                 with_content: None,
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn get(&self, app_id: String, msg_id: String) -> Result<MessageOut> {
-        Ok(message_api::v1_message_get(
+        message_api::v1_message_get(
             self.cfg,
             message_api::V1MessageGetParams {
                 app_id,
@@ -883,15 +883,15 @@ impl<'a> Message<'a> {
                 with_content: None,
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn expunge_content(&self, app_id: String, msg_id: String) -> Result<()> {
-        Ok(message_api::v1_message_expunge_content(
+        message_api::v1_message_expunge_content(
             self.cfg,
             message_api::V1MessageExpungeContentParams { msg_id, app_id },
         )
-        .await?)
+        .await
     }
 }
 
@@ -960,7 +960,7 @@ impl<'a> MessageAttempt<'a> {
             endpoint_id,
             with_content,
         } = options.unwrap_or_default();
-        Ok(message_attempt_api::v1_message_attempt_list_by_msg(
+        message_attempt_api::v1_message_attempt_list_by_msg(
             self.cfg,
             message_attempt_api::V1MessageAttemptListByMsgParams {
                 app_id,
@@ -978,7 +978,7 @@ impl<'a> MessageAttempt<'a> {
                 with_content,
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn list_by_endpoint(
@@ -1001,7 +1001,7 @@ impl<'a> MessageAttempt<'a> {
             with_content,
             with_msg,
         } = options.unwrap_or_default();
-        Ok(message_attempt_api::v1_message_attempt_list_by_endpoint(
+        message_attempt_api::v1_message_attempt_list_by_endpoint(
             self.cfg,
             message_attempt_api::V1MessageAttemptListByEndpointParams {
                 app_id,
@@ -1019,7 +1019,7 @@ impl<'a> MessageAttempt<'a> {
                 with_msg,
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn list_attempted_messages(
@@ -1041,25 +1041,23 @@ impl<'a> MessageAttempt<'a> {
             with_content,
             endpoint_id: _,
         } = options.unwrap_or_default();
-        Ok(
-            message_attempt_api::v1_message_attempt_list_attempted_messages(
-                self.cfg,
-                message_attempt_api::V1MessageAttemptListAttemptedMessagesParams {
-                    app_id,
-                    endpoint_id,
-                    iterator,
-                    limit,
-                    before,
-                    after,
-                    channel,
-                    tag,
-                    status,
-                    with_content,
-                    event_types,
-                },
-            )
-            .await?,
+        message_attempt_api::v1_message_attempt_list_attempted_messages(
+            self.cfg,
+            message_attempt_api::V1MessageAttemptListAttemptedMessagesParams {
+                app_id,
+                endpoint_id,
+                iterator,
+                limit,
+                before,
+                after,
+                channel,
+                tag,
+                status,
+                with_content,
+                event_types,
+            },
         )
+        .await
     }
 
     pub async fn list_attempted_destinations(
@@ -1069,18 +1067,16 @@ impl<'a> MessageAttempt<'a> {
         options: Option<ListOptions>,
     ) -> Result<ListResponseMessageEndpointOut> {
         let ListOptions { iterator, limit } = options.unwrap_or_default();
-        Ok(
-            message_attempt_api::v1_message_attempt_list_attempted_destinations(
-                self.cfg,
-                message_attempt_api::V1MessageAttemptListAttemptedDestinationsParams {
-                    app_id,
-                    msg_id,
-                    iterator,
-                    limit,
-                },
-            )
-            .await?,
+        message_attempt_api::v1_message_attempt_list_attempted_destinations(
+            self.cfg,
+            message_attempt_api::V1MessageAttemptListAttemptedDestinationsParams {
+                app_id,
+                msg_id,
+                iterator,
+                limit,
+            },
         )
+        .await
     }
 
     pub async fn list_attempts_for_endpoint(
@@ -1103,25 +1099,23 @@ impl<'a> MessageAttempt<'a> {
             endpoint_id: _,
             with_content: _,
         } = options.unwrap_or_default();
-        Ok(
-            message_attempt_api::v1_message_attempt_list_by_endpoint_deprecated(
-                self.cfg,
-                message_attempt_api::V1MessageAttemptListByEndpointDeprecatedParams {
-                    app_id,
-                    endpoint_id,
-                    msg_id,
-                    iterator,
-                    limit,
-                    event_types,
-                    before,
-                    after,
-                    channel,
-                    tag,
-                    status,
-                },
-            )
-            .await?,
+        message_attempt_api::v1_message_attempt_list_by_endpoint_deprecated(
+            self.cfg,
+            message_attempt_api::V1MessageAttemptListByEndpointDeprecatedParams {
+                app_id,
+                endpoint_id,
+                msg_id,
+                iterator,
+                limit,
+                event_types,
+                before,
+                after,
+                channel,
+                tag,
+                status,
+            },
         )
+        .await
     }
 
     pub async fn get(
@@ -1130,7 +1124,7 @@ impl<'a> MessageAttempt<'a> {
         msg_id: String,
         attempt_id: String,
     ) -> Result<MessageAttemptOut> {
-        Ok(message_attempt_api::v1_message_attempt_get(
+        message_attempt_api::v1_message_attempt_get(
             self.cfg,
             message_attempt_api::V1MessageAttemptGetParams {
                 app_id,
@@ -1138,11 +1132,11 @@ impl<'a> MessageAttempt<'a> {
                 attempt_id,
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn resend(&self, app_id: String, msg_id: String, endpoint_id: String) -> Result<()> {
-        Ok(message_attempt_api::v1_message_attempt_resend(
+        message_attempt_api::v1_message_attempt_resend(
             self.cfg,
             message_attempt_api::V1MessageAttemptResendParams {
                 app_id,
@@ -1151,7 +1145,7 @@ impl<'a> MessageAttempt<'a> {
                 idempotency_key: None,
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn expunge_content(
@@ -1160,7 +1154,7 @@ impl<'a> MessageAttempt<'a> {
         msg_id: String,
         attempt_id: String,
     ) -> Result<()> {
-        Ok(message_attempt_api::v1_message_attempt_expunge_content(
+        message_attempt_api::v1_message_attempt_expunge_content(
             self.cfg,
             message_attempt_api::V1MessageAttemptExpungeContentParams {
                 app_id,
@@ -1168,7 +1162,7 @@ impl<'a> MessageAttempt<'a> {
                 attempt_id,
             },
         )
-        .await?)
+        .await
     }
 }
 
@@ -1197,7 +1191,7 @@ impl<'a> BackgroundTask<'a> {
             status,
             task,
         } = options.unwrap_or_default();
-        Ok(background_tasks_api::list_background_tasks(
+        background_tasks_api::list_background_tasks(
             self.cfg,
             background_tasks_api::ListBackgroundTasksParams {
                 status,
@@ -1207,15 +1201,15 @@ impl<'a> BackgroundTask<'a> {
                 order,
             },
         )
-        .await?)
+        .await
     }
 
     pub async fn get(&self, task_id: String) -> Result<BackgroundTaskOut> {
-        Ok(background_tasks_api::get_background_task(
+        background_tasks_api::get_background_task(
             self.cfg,
             background_tasks_api::GetBackgroundTaskParams { task_id },
         )
-        .await?)
+        .await
     }
 }
 
@@ -1252,10 +1246,10 @@ impl<'a> Statistics<'a> {
             },
             idempotency_key: options.idempotency_key,
         };
-        Ok(statistics_api::v1_statistics_aggregate_app_stats(self.cfg, params).await?)
+        statistics_api::v1_statistics_aggregate_app_stats(self.cfg, params).await
     }
 
     pub async fn aggregate_event_types(&self) -> Result<AggregateEventTypesOut> {
-        Ok(statistics_api::v1_statistics_aggregate_event_types(self.cfg).await?)
+        statistics_api::v1_statistics_aggregate_event_types(self.cfg).await
     }
 }
