@@ -1,8 +1,6 @@
-#![allow(clippy::all)]
-
 {{#models}}
 {{#model}}
-pub mod {{{classFilename}}};
+mod {{{classFilename}}};
 pub use self::{{{classFilename}}}::{{{classname}}};
 {{/model}}
 {{/models}}

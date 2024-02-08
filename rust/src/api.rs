@@ -1,10 +1,13 @@
-use crate::apis::configuration::Configuration;
+use hyper_util::client::legacy::Client as HyperClient;
+use hyper_util::rt::TokioExecutor;
+
 use crate::apis::{
     application_api, authentication_api, background_tasks_api, endpoint_api, event_type_api,
     integration_api, message_api, message_attempt_api, statistics_api,
 };
 use crate::error::Result;
 pub use crate::models::*;
+use crate::Configuration;
 
 const CRATE_VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -14,6 +17,7 @@ pub struct SvixOptions {
     pub server_url: Option<String>,
 }
 
+/// Svix API client.
 pub struct Svix {
     cfg: Configuration,
 }
@@ -33,7 +37,7 @@ impl Svix {
             base_path,
             user_agent: Some(format!("svix-libs/{CRATE_VERSION}/rust")),
             bearer_access_token: Some(token),
-            ..Configuration::default()
+            client: HyperClient::builder(TokioExecutor::new()).build(crate::default_connector()),
         };
 
         Self { cfg }

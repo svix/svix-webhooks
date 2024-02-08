@@ -1,4 +1,5 @@
 {
   "packageName": "svix_openapi_internal",
+  "library": "hyper",
   "useSingleRequestParameter": true
 }
