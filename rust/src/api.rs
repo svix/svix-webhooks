@@ -66,6 +66,10 @@ impl Svix {
     pub fn message_attempt(&self) -> MessageAttempt<'_> {
         MessageAttempt::new(&self.cfg)
     }
+
+    pub fn statistics(&self) -> Statistics<'_> {
+        Statistics::new(&self.cfg)
+    }
 }
 
 #[derive(Default)]
@@ -1222,7 +1226,7 @@ pub struct AggregateAppStatsOptions {
 }
 
 impl<'a> Statistics<'a> {
-    pub fn new(cfg: &'a Configuration) -> Self {
+    fn new(cfg: &'a Configuration) -> Self {
         Self { cfg }
     }
 
