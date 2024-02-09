@@ -2,7 +2,7 @@
 
 use std::collections::HashMap;
 
-use http::header::{HeaderValue, AUTHORIZATION, CONTENT_LENGTH, CONTENT_TYPE, USER_AGENT};
+use http1::header::{HeaderValue, AUTHORIZATION, CONTENT_LENGTH, CONTENT_TYPE, USER_AGENT};
 use http_body_util::{BodyExt as _, Full};
 use serde::de::DeserializeOwned;
 
@@ -19,7 +19,7 @@ pub(crate) enum Auth {
 /// include an authorization scheme.
 pub(crate) struct Request {
     auth: Option<Auth>,
-    method: http::Method,
+    method: http1::Method,
     path: String,
     query_params: HashMap<String, String>,
     no_return_type: bool,
@@ -32,7 +32,7 @@ pub(crate) struct Request {
 
 #[allow(dead_code)]
 impl Request {
-    pub fn new(method: http::Method, path: String) -> Self {
+    pub fn new(method: http1::Method, path: String) -> Self {
         Request {
             auth: None,
             method,
@@ -105,7 +105,7 @@ impl Request {
             uri += &query_string_str;
         }
 
-        let mut req_builder = http::Request::builder().uri(uri).method(self.method);
+        let mut req_builder = http1::Request::builder().uri(uri).method(self.method);
 
         // Detect the authorization type if it hasn't been set.
         let auth = self.auth.unwrap_or_else(|| {
@@ -145,13 +145,15 @@ impl Request {
             for (k, v) in self.form_params {
                 enc.append_pair(&k, &v);
             }
-            req_builder.body(Full::from(enc.finish()))?
+            req_builder
+                .body(Full::from(enc.finish()))
+                .map_err(Error::generic)?
         } else if let Some(body) = self.serialized_body {
             req_headers.insert(CONTENT_TYPE, HeaderValue::from_static("application/json"));
             req_headers.insert(CONTENT_LENGTH, body.len().into());
-            req_builder.body(Full::from(body))?
+            req_builder.body(Full::from(body)).map_err(Error::generic)?
         } else {
-            req_builder.body(Full::default())?
+            req_builder.body(Full::default()).map_err(Error::generic)?
         };
 
         let no_return_type = self.no_return_type;
@@ -175,7 +177,7 @@ impl Request {
                 .await
                 .map_err(Error::generic)?
                 .to_bytes();
-            Ok(serde_json::from_slice(&bytes)?)
+            Ok(serde_json::from_slice(&bytes).map_err(Error::generic)?)
         }
     }
 }

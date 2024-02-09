@@ -1,6 +1,7 @@
 {{#models}}
 {{#model}}
-mod {{{classFilename}}};
+// TODO: Make modules private for v2.0 of the library
+pub mod {{{classFilename}}};
 pub use self::{{{classFilename}}}::{{{classname}}};
 {{/model}}
 {{/models}}

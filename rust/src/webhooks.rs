@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use http::HeaderMap;
+use http02::HeaderMap;
 use time::OffsetDateTime;
 
 #[derive(thiserror::Error, Debug)]
@@ -146,10 +146,10 @@ impl Webhook {
 mod tests {
 
     use super::*;
-    use http::HeaderMap;
+    use http02::HeaderMap;
 
     fn get_svix_headers(msg_id: &str, signature: &str) -> HeaderMap {
-        let mut headers = http::header::HeaderMap::new();
+        let mut headers = HeaderMap::new();
         headers.insert(SVIX_MSG_ID_KEY, msg_id.parse().unwrap());
         headers.insert(SVIX_MSG_SIGNATURE_KEY, signature.parse().unwrap());
         headers.insert(
@@ -164,7 +164,7 @@ mod tests {
     }
 
     fn get_unbranded_headers(msg_id: &str, signature: &str) -> HeaderMap {
-        let mut headers = http::header::HeaderMap::new();
+        let mut headers = HeaderMap::new();
         headers.insert(UNBRANDED_MSG_ID_KEY, msg_id.parse().unwrap());
         headers.insert(UNBRANDED_MSG_SIGNATURE_KEY, signature.parse().unwrap());
         headers.insert(

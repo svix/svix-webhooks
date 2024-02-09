@@ -3,9 +3,10 @@
 
 use std::fmt;
 
-use http::StatusCode;
 use http_body_util::BodyExt;
 use hyper::body::Incoming;
+
+use crate::http1_to_02_status_code;
 
 pub type Result<T> = std::result::Result<T, Error>;
 
@@ -25,18 +26,18 @@ impl Error {
         Self::Generic(err.to_string())
     }
 
-    pub(crate) async fn from_response(status_code: StatusCode, body: Incoming) -> Self {
+    pub(crate) async fn from_response(status_code: http1::StatusCode, body: Incoming) -> Self {
         match body.collect().await {
             Ok(collected) => {
                 let bytes = collected.to_bytes();
-                if status_code == StatusCode::UNPROCESSABLE_ENTITY {
+                if status_code == http1::StatusCode::UNPROCESSABLE_ENTITY {
                     Self::Validation(HttpErrorContent {
-                        status: status_code,
+                        status: http02::StatusCode::UNPROCESSABLE_ENTITY,
                         payload: serde_json::from_slice(&bytes).ok(),
                     })
                 } else {
                     Error::Http(HttpErrorContent {
-                        status: status_code,
+                        status: http1_to_02_status_code(status_code),
                         payload: serde_json::from_slice(&bytes).ok(),
                     })
                 }
@@ -46,22 +47,11 @@ impl Error {
     }
 }
 
-impl From<http::Error> for Error {
-    fn from(err: http::Error) -> Self {
-        Self::generic(err)
+// TODO: Remove for v2.0 of the library (very uncommon impl for an error type)
+impl From<Error> for String {
+    fn from(err: Error) -> Self {
+        err.to_string()
     }
-}
-
-impl From<serde_json::Error> for Error {
-    fn from(err: serde_json::Error) -> Self {
-        Self::generic(err)
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct HttpErrorContent<T> {
-    pub status: http::StatusCode,
-    pub payload: Option<T>,
 }
 
 impl fmt::Display for Error {
@@ -75,3 +65,9 @@ impl fmt::Display for Error {
 }
 
 impl std::error::Error for Error {}
+
+#[derive(Debug, Clone)]
+pub struct HttpErrorContent<T> {
+    pub status: http02::StatusCode,
+    pub payload: Option<T>,
+}

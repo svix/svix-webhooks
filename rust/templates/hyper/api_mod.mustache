@@ -1,6 +1,6 @@
 #[derive(Debug, Clone)]
 pub(crate) struct ResponseContent<T> {
-    pub status: http::StatusCode,
+    pub status: http02::StatusCode,
     pub content: String,
     pub entity: Option<T>,
 }

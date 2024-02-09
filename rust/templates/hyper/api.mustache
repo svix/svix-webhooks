@@ -90,7 +90,7 @@ pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}(configuration: 
 {{/vendorExtensions.x-group-parameters}}
 
     #[allow(unused_mut)]
-    let mut req = crate::request::Request::new(http::Method::{{{httpMethod.toUpperCase}}}, "{{{path}}}".to_string())
+    let mut req = crate::request::Request::new(http1::Method::{{{httpMethod.toUpperCase}}}, "{{{path}}}".to_string())
     {{#hasAuthMethods}}
     {{#authMethods}}
     {{#isApiKey}}
