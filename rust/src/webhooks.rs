@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use http02::HeaderMap;
 use time::OffsetDateTime;
 
 #[derive(thiserror::Error, Debug)]
@@ -57,7 +56,7 @@ impl Webhook {
         Ok(Webhook { key: secret })
     }
 
-    pub fn verify(&self, payload: &[u8], headers: &HeaderMap) -> Result<(), WebhookError> {
+    pub fn verify<HM: HeaderMap>(&self, payload: &[u8], headers: &HM) -> Result<(), WebhookError> {
         let msg_id = Self::get_header(headers, SVIX_MSG_ID_KEY, UNBRANDED_MSG_ID_KEY, "id")?;
         let msg_signature = Self::get_header(
             headers,
@@ -112,18 +111,20 @@ impl Webhook {
         Ok(format!("{SIGNATURE_VERSION},{encoded}"))
     }
 
-    fn get_header<'a>(
-        headers: &'a HeaderMap,
+    fn get_header<'a, HM: HeaderMap>(
+        headers: &'a HM,
         svix_hdr: &'static str,
         unbranded_hdr: &'static str,
         err_name: &'static str,
     ) -> Result<&'a str, WebhookError> {
+        use private::HeaderValueSealed as _;
+
         headers
-            .get(svix_hdr)
-            .or_else(|| headers.get(unbranded_hdr))
+            ._get(svix_hdr)
+            .or_else(|| headers._get(unbranded_hdr))
             .ok_or(WebhookError::MissingHeader(err_name))?
-            .to_str()
-            .map_err(|_| WebhookError::InvalidHeader(err_name))
+            ._to_str()
+            .ok_or(WebhookError::InvalidHeader(err_name))
     }
 
     fn parse_timestamp(hdr: &str) -> Result<i64, WebhookError> {
@@ -138,6 +139,47 @@ impl Webhook {
             Err(WebhookError::FutureTimestampError)
         } else {
             Ok(())
+        }
+    }
+}
+
+/// Trait to abstract over the `HeaderMap` types from both v0.2 and v1.0 of the `http` crate.
+pub trait HeaderMap: private::HeaderMapSealed {}
+
+impl HeaderMap for http02::HeaderMap {}
+impl HeaderMap for http1::HeaderMap {}
+
+mod private {
+    pub trait HeaderMapSealed {
+        type HeaderValue: HeaderValueSealed;
+        fn _get(&self, name: &str) -> Option<&Self::HeaderValue>;
+    }
+
+    impl HeaderMapSealed for http02::HeaderMap {
+        type HeaderValue = http02::HeaderValue;
+        fn _get(&self, name: &str) -> Option<&Self::HeaderValue> {
+            self.get(name)
+        }
+    }
+    impl HeaderMapSealed for http1::HeaderMap {
+        type HeaderValue = http1::HeaderValue;
+        fn _get(&self, name: &str) -> Option<&Self::HeaderValue> {
+            self.get(name)
+        }
+    }
+
+    pub trait HeaderValueSealed {
+        fn _to_str(&self) -> Option<&str>;
+    }
+
+    impl HeaderValueSealed for http02::HeaderValue {
+        fn _to_str(&self) -> Option<&str> {
+            self.to_str().ok()
+        }
+    }
+    impl HeaderValueSealed for http1::HeaderValue {
+        fn _to_str(&self) -> Option<&str> {
+            self.to_str().ok()
         }
     }
 }
