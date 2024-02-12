@@ -1,0 +1,222 @@
+{{>partial_header}}
+
+use crate::Configuration;
+use crate::error::Error;
+
+{{#operations}}
+{{#operation}}
+{{#vendorExtensions.x-group-parameters}}
+{{#allParams}}
+{{#-first}}
+/// struct for passing parameters to the method [`{{operationId}}`]
+#[derive(Clone, Debug)]
+pub struct {{{operationIdCamelCase}}}Params {
+{{/-first}}
+    {{#description}}
+    /// {{{.}}}
+    {{/description}}
+    pub {{{paramName}}}: {{^required}}Option<{{/required}}{{#required}}{{#isNullable}}Option<{{/isNullable}}{{/required}}{{^isUuid}}{{#isString}}{{#isArray}}Vec<{{/isArray}}String{{#isArray}}>{{/isArray}}{{/isString}}{{/isUuid}}{{#isUuid}}{{#isArray}}Vec<{{/isArray}}String{{#isArray}}>{{/isArray}}{{/isUuid}}{{^isString}}{{^isUuid}}{{^isPrimitiveType}}{{^isContainer}}{{#isBodyParam}}crate::models::{{/isBodyParam}}{{/isContainer}}{{/isPrimitiveType}}{{{dataType}}}{{/isUuid}}{{/isString}}{{^required}}>{{/required}}{{#required}}{{#isNullable}}>{{/isNullable}}{{/required}}{{^-last}},{{/-last}}
+{{#-last}}
+}
+
+{{/-last}}
+{{/allParams}}
+{{/vendorExtensions.x-group-parameters}}
+{{/operation}}
+{{/operations}}
+
+{{#supportMultipleResponses}}
+{{#operations}}
+{{#operation}}
+/// struct for typed successes of method [`{{operationId}}`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum {{{operationIdCamelCase}}}Success {
+    {{#responses}}
+    {{#is2xx}}
+    Status{{code}}({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}),
+    {{/is2xx}}
+    {{#is3xx}}
+    Status{{code}}({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}),
+    {{/is3xx}}
+    {{/responses}}
+    UnknownValue(serde_json::Value),
+}
+
+{{/operation}}
+{{/operations}}
+{{/supportMultipleResponses}}
+{{#operations}}
+{{#operation}}
+/// struct for typed errors of method [`{{operationId}}`]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum {{{operationIdCamelCase}}}Error {
+    {{#responses}}
+    {{#is4xx}}
+    Status{{code}}({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}),
+    {{/is4xx}}
+    {{#is5xx}}
+    Status{{code}}({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}),
+    {{/is5xx}}
+    {{#isDefault}}
+    DefaultResponse({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}),
+    {{/isDefault}}
+    {{/responses}}
+    UnknownValue(serde_json::Value),
+}
+
+{{/operation}}
+{{/operations}}
+
+{{#operations}}
+{{#operation}}
+{{#description}}
+/// {{{.}}}
+{{/description}}
+{{#notes}}
+/// {{{.}}}
+{{/notes}}
+{{#vendorExtensions.x-group-parameters}}
+pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}(configuration: &Configuration{{#allParams}}{{#-first}}, params: {{{operationIdCamelCase}}}Params{{/-first}}{{/allParams}}) -> Result<{{#supportMultipleResponses}}super::ResponseContent<{{{operationIdCamelCase}}}Success>{{/supportMultipleResponses}}{{^supportMultipleResponses}}{{^returnType}}(){{/returnType}}{{{returnType}}}{{/supportMultipleResponses}}, Error> {
+    // unbox the parameters
+    {{#allParams}}
+    let {{paramName}} = params.{{paramName}};
+    {{/allParams}}
+
+{{/vendorExtensions.x-group-parameters}}
+{{^vendorExtensions.x-group-parameters}}
+pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}(configuration: &Configuration, {{#allParams}}{{{paramName}}}: {{^required}}Option<{{/required}}{{#required}}{{#isNullable}}Option<{{/isNullable}}{{/required}}{{#isString}}{{#isArray}}Vec<{{/isArray}}{{^isUuid}}&str{{/isUuid}}{{#isArray}}>{{/isArray}}{{/isString}}{{#isUuid}}{{#isArray}}Vec<{{/isArray}}&str{{#isArray}}>{{/isArray}}{{/isUuid}}{{^isString}}{{^isUuid}}{{^isPrimitiveType}}{{^isContainer}}{{#isBodyParam}}crate::models::{{/isBodyParam}}{{/isContainer}}{{/isPrimitiveType}}{{{dataType}}}{{/isUuid}}{{/isString}}{{^required}}>{{/required}}{{#required}}{{#isNullable}}>{{/isNullable}}{{/required}}{{^-last}}, {{/-last}}{{/allParams}}) -> Result<{{#supportMultipleResponses}}super::ResponseContent<{{{operationIdCamelCase}}}Success>{{/supportMultipleResponses}}{{^supportMultipleResponses}}{{^returnType}}(){{/returnType}}{{{returnType}}}{{/supportMultipleResponses}}, Error> {
+{{/vendorExtensions.x-group-parameters}}
+
+    #[allow(unused_mut)]
+    let mut req = crate::request::Request::new(http1::Method::{{{httpMethod.toUpperCase}}}, "{{{path}}}".to_string())
+    {{#hasAuthMethods}}
+    {{#authMethods}}
+    {{#isApiKey}}
+        .with_auth(crate::request::Auth::ApiKey(crate::request::ApiKey{
+            in_header: {{#isKeyInHeader}}true{{/isKeyInHeader}}{{^isKeyInHeader}}false{{/isKeyInHeader}},
+            in_query: {{#isKeyInQuery}}true{{/isKeyInQuery}}{{^isKeyInQuery}}false{{/isKeyInQuery}},
+            param_name: "{{{keyParamName}}}".to_owned(),
+        }))
+    {{/isApiKey}}
+    {{#isBasicBasic}}
+        .with_auth(crate::request::Auth::Basic)
+    {{/isBasicBasic}}
+    {{#isOAuth}}
+        .with_auth(crate::request::Auth::Oauth)
+    {{/isOAuth}}
+    {{/authMethods}}
+    {{/hasAuthMethods}}
+    ;
+    {{#queryParams}}
+    {{#required}}
+    {{^isNullable}}
+    req = req.with_query_param("{{{baseName}}}".to_string(), {{{paramName}}}{{#isArray}}.join(","){{/isArray}}.to_string());
+    {{/isNullable}}
+    {{#isNullable}}
+    match {{{paramName}}} {
+        Some(param_value) => { req = req.with_query_param("{{{baseName}}}".to_string(), param_value{{#isArray}}.join(","){{/isArray}}.to_string()); },
+        None => { req = req.with_query_param("{{{baseName}}}".to_string(), "".to_string()); },
+    }
+    {{/isNullable}}
+    {{/required}}
+    {{^required}}
+    if let Some(ref s) = {{{paramName}}} {
+        let query_value = {{#isArray}}s.iter().map(|s| s.to_string()).collect::<Vec<String>>().join(","){{/isArray}}{{^isArray}}s.to_string(){{/isArray}};
+        req = req.with_query_param("{{{baseName}}}".to_string(), query_value);
+    }
+    {{/required}}
+    {{/queryParams}}
+    {{#pathParams}}
+    {{#required}}
+    {{^isNullable}}
+    req = req.with_path_param("{{{baseName}}}".to_string(), {{{paramName}}}{{#isArray}}.join(","){{/isArray}}.to_string());
+    {{/isNullable}}
+    {{#isNullable}}
+    match {{{paramName}}} {
+        Some(param_value) => { req = req.with_path_param("{{{baseName}}}".to_string(), param_value{{#isArray}}.join(","){{/isArray}}.to_string()); },
+        None => { req = req.with_path_param("{{{baseName}}}".to_string(), "".to_string()); },
+    }
+    {{/isNullable}}
+    {{/required}}
+    {{^required}}
+    if let Some(param_value) = {{{paramName}}} {
+        req = req.with_path_param("{{{baseName}}}".to_string(), param_value{{#isArray}}.join(","){{/isArray}}.to_string());
+    }
+    {{/required}}
+    {{/pathParams}}
+    {{#hasHeaderParams}}
+    {{#headerParams}}
+    {{#required}}
+    {{^isNullable}}
+    req = req.with_header_param("{{{baseName}}}".to_string(), {{{paramName}}}{{#isArray}}.join(","){{/isArray}}.to_string());
+    {{/isNullable}}
+    {{#isNullable}}
+    match {{{paramName}}} {
+        Some(param_value) => { req = req.with_header_param("{{{baseName}}}".to_string(), param_value{{#isArray}}.join(","){{/isArray}}.to_string()); },
+        None => { req = req.with_header_param("{{{baseName}}}".to_string(), "".to_string()); },
+    }
+    {{/isNullable}}
+    {{/required}}
+    {{^required}}
+    if let Some(param_value) = {{{paramName}}} {
+        req = req.with_header_param("{{{baseName}}}".to_string(), param_value{{#isArray}}.join(","){{/isArray}}.to_string());
+    }
+    {{/required}}
+    {{/headerParams}}
+    {{/hasHeaderParams}}
+    {{#hasFormParams}}
+    {{#formParams}}
+    {{#isFile}}
+    {{#required}}
+    {{^isNullable}}
+    req = req.with_form_param("{{{baseName}}}".to_string(), unimplemented!());
+    {{/isNullable}}
+    {{#isNullable}}
+    match {{{paramName}}} {
+        Some(param_value) => { req = req.with_form_param("{{{baseName}}}".to_string(), unimplemented!()); },
+        None => { req = req.with_form_param("{{{baseName}}}".to_string(), unimplemented!()); },
+    }
+    {{/isNullable}}
+    {{/required}}
+    {{^required}}
+    if let Some(param_value) = {{{paramName}}} {
+        req = req.with_form_param("{{{baseName}}}".to_string(), unimplemented!());
+    }
+    {{/required}}
+    {{/isFile}}
+    {{^isFile}}
+    {{#required}}
+    {{^isNullable}}
+    req = req.with_form_param("{{{baseName}}}".to_string(), {{{paramName}}}{{#isArray}}.join(","){{/isArray}}.to_string());
+    {{/isNullable}}
+    {{#isNullable}}
+    match {{{paramName}}} {
+        Some(param_value) => { req = req.with_form_param("{{{baseName}}}".to_string(), param_value{{#isArray}}.join(","){{/isArray}}.to_string()); },
+        None => { req = req.with_form_param("{{{baseName}}}".to_string(), "".to_string()); },
+    }
+    {{/isNullable}}
+    {{/required}}
+    {{^required}}
+    if let Some(param_value) = {{{paramName}}} {
+        req = req.with_form_param("{{{baseName}}}".to_string(), param_value{{#isArray}}.join(","){{/isArray}}.to_string());
+    }
+    {{/required}}
+    {{/isFile}}
+    {{/formParams}}
+    {{/hasFormParams}}
+    {{#hasBodyParam}}
+    {{#bodyParams}}
+    req = req.with_body_param({{{paramName}}});
+    {{/bodyParams}}
+    {{/hasBodyParam}}
+    {{^returnType}}
+    req = req.returns_nothing();
+    {{/returnType}}
+
+    req.execute(configuration).await
+}
+
+{{/operation}}
+{{/operations}}

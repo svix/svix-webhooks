@@ -1,10 +1,12 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use std::error;
 use std::fmt;
 
-use http::status;
+use http_body_util::BodyExt;
+use hyper::body::Incoming;
+
+use crate::http1_to_02_status_code;
 
 pub type Result<T> = std::result::Result<T, Error>;
 
@@ -19,10 +21,37 @@ pub enum Error {
     Validation(HttpErrorContent<crate::models::HttpValidationError>),
 }
 
-#[derive(Debug, Clone)]
-pub struct HttpErrorContent<T> {
-    pub status: reqwest::StatusCode,
-    pub payload: Option<T>,
+impl Error {
+    pub(crate) fn generic(err: impl std::error::Error) -> Self {
+        Self::Generic(err.to_string())
+    }
+
+    pub(crate) async fn from_response(status_code: http1::StatusCode, body: Incoming) -> Self {
+        match body.collect().await {
+            Ok(collected) => {
+                let bytes = collected.to_bytes();
+                if status_code == http1::StatusCode::UNPROCESSABLE_ENTITY {
+                    Self::Validation(HttpErrorContent {
+                        status: http02::StatusCode::UNPROCESSABLE_ENTITY,
+                        payload: serde_json::from_slice(&bytes).ok(),
+                    })
+                } else {
+                    Error::Http(HttpErrorContent {
+                        status: http1_to_02_status_code(status_code),
+                        payload: serde_json::from_slice(&bytes).ok(),
+                    })
+                }
+            }
+            Err(e) => Self::Generic(e.to_string()),
+        }
+    }
+}
+
+// TODO: Remove for v2.0 of the library (very uncommon impl for an error type)
+impl From<Error> for String {
+    fn from(err: Error) -> Self {
+        err.to_string()
+    }
 }
 
 impl fmt::Display for Error {
@@ -35,35 +64,10 @@ impl fmt::Display for Error {
     }
 }
 
-impl From<Error> for String {
-    fn from(err: Error) -> String {
-        err.to_string()
-    }
-}
+impl std::error::Error for Error {}
 
-impl error::Error for Error {
-    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
-        None
-    }
-}
-
-impl<T> From<crate::apis::Error<T>> for Error {
-    fn from(err: crate::apis::Error<T>) -> Error {
-        match err {
-            crate::apis::Error::ResponseError(e) => {
-                if e.status == status::StatusCode::UNPROCESSABLE_ENTITY {
-                    Error::Validation(HttpErrorContent {
-                        status: e.status,
-                        payload: serde_json::from_str(&e.content).ok(),
-                    })
-                } else {
-                    Error::Http(HttpErrorContent {
-                        status: e.status,
-                        payload: serde_json::from_str(&e.content).ok(),
-                    })
-                }
-            }
-            _ => Error::Generic(err.to_string()),
-        }
-    }
+#[derive(Debug, Clone)]
+pub struct HttpErrorContent<T> {
+    pub status: http02::StatusCode,
+    pub payload: Option<T>,
 }

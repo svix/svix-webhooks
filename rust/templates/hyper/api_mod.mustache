@@ -1,0 +1,19 @@
+#[derive(Debug, Clone)]
+pub(crate) struct ResponseContent<T> {
+    pub status: http02::StatusCode,
+    pub content: String,
+    pub entity: Option<T>,
+}
+
+{{#apiInfo}}
+{{#apis}}
+pub(crate) mod {{{classFilename}}};
+{{#operations}}
+{{#operation}}
+{{#-last}}
+//pub use self::{{{classFilename}}}::{ {{{classname}}}, {{{classname}}}Client };
+{{/-last}}
+{{/operation}}
+{{/operations}}
+{{/apis}}
+{{/apiInfo}}
