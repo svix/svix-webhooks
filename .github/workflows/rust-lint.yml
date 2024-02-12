@@ -43,9 +43,12 @@ jobs:
         toolchain: ${{ matrix.rust }}
         components: clippy, rustfmt
 
-    - uses: Swatinem/rust-cache@v1
+    - uses: Swatinem/rust-cache@v2
       with:
-        working-directory: rust
+        workspaces: "rust -> target"
+        # only save the cache on the main branch
+        # cf https://github.com/Swatinem/rust-cache/issues/95
+        save-if: ${{ github.ref == 'refs/heads/main' }}
 
     - name: Clippy
       run: cargo clippy --all-targets --all-features -- -D warnings
