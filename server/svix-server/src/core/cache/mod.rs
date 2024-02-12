@@ -8,7 +8,7 @@ use axum::async_trait;
 use enum_dispatch::enum_dispatch;
 use serde::{de::DeserializeOwned, Serialize};
 
-use crate::core::run_with_retries::run_with_retries;
+use crate::core::retry::run_with_retries;
 
 pub mod memory;
 pub mod none;
