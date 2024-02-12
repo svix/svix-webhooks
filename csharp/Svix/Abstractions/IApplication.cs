@@ -24,9 +24,9 @@ namespace Svix.Abstractions
         Task<ApplicationOut> GetAsync(string appId, string idempotencyKey = default,
             CancellationToken cancellationToken = default);
 
-        List<ApplicationOut> List(ListOptions options = null, string idempotencyKey = default);
+        ListResponseApplicationOut List(ListOptions options = null, string idempotencyKey = default);
 
-        Task<List<ApplicationOut>> ListAsync(ListOptions options = null, string idempotencyKey = default, CancellationToken cancellationToken = default);
+        Task<ListResponseApplicationOut> ListAsync(ListOptions options = null, string idempotencyKey = default, CancellationToken cancellationToken = default);
 
         ApplicationOut Update(string appId, ApplicationIn application, string idempotencyKey = default);
 

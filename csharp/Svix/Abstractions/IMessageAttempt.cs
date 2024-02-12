@@ -12,38 +12,38 @@ namespace Svix.Abstractions
 
         Task<MessageAttemptOut> GetAttemptAsync(string appId, string attemptId, string messageId, string idempotencyKey = default, CancellationToken cancellationToken = default);
 
-        List<EndpointMessageOut> ListAttemptedMessages(string appId, string endpointId, MessageAttemptListOptions options = null,
+        ListResponseEndpointMessageOut ListAttemptedMessages(string appId, string endpointId, MessageAttemptListOptions options = null,
             string idempotencyKey = default);
 
-        Task<List<EndpointMessageOut>> ListAttemptedMessagesAsync(string appId, string endpointId, MessageAttemptListOptions options = null,
+        Task<ListResponseEndpointMessageOut> ListAttemptedMessagesAsync(string appId, string endpointId, MessageAttemptListOptions options = null,
             string idempotencyKey = default, CancellationToken cancellationToken = default);
 
-        List<MessageAttemptOut> ListAttemptsByEndpoint(string appId, string endpointId, AttemptsByEndpointListOptions options = null, string idempotencyKey = default);
+        ListResponseMessageAttemptOut ListAttemptsByEndpoint(string appId, string endpointId, AttemptsByEndpointListOptions options = null, string idempotencyKey = default);
 
-        Task<List<MessageAttemptOut>> ListAttemptsByEndpointAsync(string appId, string endpointId, AttemptsByEndpointListOptions options = null, string idempotencyKey = default, CancellationToken cancellationToken = default);
+        Task<ListResponseMessageAttemptOut> ListAttemptsByEndpointAsync(string appId, string endpointId, AttemptsByEndpointListOptions options = null, string idempotencyKey = default, CancellationToken cancellationToken = default);
 
-        List<MessageAttemptOut> ListAttemptsByMessage(string appId, string messageId, AttemptsByMessageListOptions options = null, string idempotencyKey = default);
+        ListResponseMessageAttemptOut ListAttemptsByMessage(string appId, string messageId, AttemptsByMessageListOptions options = null, string idempotencyKey = default);
 
-        Task<List<MessageAttemptOut>> ListAttemptsByMessageAsync(string appId, string messageId, AttemptsByMessageListOptions options = null, string idempotencyKey = default, CancellationToken cancellationToken = default);
+        Task<ListResponseMessageAttemptOut> ListAttemptsByMessageAsync(string appId, string messageId, AttemptsByMessageListOptions options = null, string idempotencyKey = default, CancellationToken cancellationToken = default);
 
-        List<MessageAttemptEndpointOut> ListAttemptsForEndpoint(string appId, string messageId, string endpointId,
+        ListResponseMessageAttemptEndpointOut ListAttemptsForEndpoint(string appId, string messageId, string endpointId,
             AttemptsByEndpointListOptions options = null, string idempotencyKey = default);
 
-        Task<List<MessageAttemptEndpointOut>> ListAttemptsForEndpointAsync(string appId, string messageId, string endpointId,
+        Task<ListResponseMessageAttemptEndpointOut> ListAttemptsForEndpointAsync(string appId, string messageId, string endpointId,
             AttemptsByEndpointListOptions options = null, string idempotencyKey = default,
             CancellationToken cancellationToken = default);
 
-        List<MessageAttemptOut> ListAttempts(string appId, string messageId,
+        ListResponseMessageAttemptOut ListAttempts(string appId, string messageId,
             MessageAttemptListOptions options = null, string idempotencyKey = default);
 
-        Task<List<MessageAttemptOut>> ListAttemptsAsync(string appId, string messageId,
+        Task<ListResponseMessageAttemptOut> ListAttemptsAsync(string appId, string messageId,
             MessageAttemptListOptions options = null, string idempotencyKey = default,
             CancellationToken cancellationToken = default);
 
-        List<MessageEndpointOut> ListAttemptedDestinations(string appId, string messageId,
+        ListResponseMessageEndpointOut ListAttemptedDestinations(string appId, string messageId,
             ListOptions options = null, string idempotencyKey = default);
 
-        Task<List<MessageEndpointOut>> ListAttemptedDestinationsAsync(string appId, string messageId,
+        Task<ListResponseMessageEndpointOut> ListAttemptedDestinationsAsync(string appId, string messageId,
             ListOptions options = null, string idempotencyKey = default,
             CancellationToken cancellationToken = default);
 

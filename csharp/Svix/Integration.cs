@@ -198,7 +198,7 @@ namespace Svix
             }
         }
 
-        public List<IntegrationOut> List(string appId, ListOptions options = null, string idempotencyKey = default)
+        public ListResponseIntegrationOut List(string appId, ListOptions options = null, string idempotencyKey = default)
         {
             try
             {
@@ -207,7 +207,7 @@ namespace Svix
                     options?.Limit,
                     options?.Iterator);
 
-                return lResult?.Data;
+                return lResult;
             }
             catch (ApiException e)
             {
@@ -216,11 +216,11 @@ namespace Svix
                 if (Throw)
                     throw;
 
-                return new List<IntegrationOut>();
+                return new ListResponseIntegrationOut();
             }
         }
 
-        public async Task<List<IntegrationOut>> ListAsync(string appId, ListOptions options = null, string idempotencyKey = default,
+        public async Task<ListResponseIntegrationOut> ListAsync(string appId, ListOptions options = null, string idempotencyKey = default,
             CancellationToken cancellationToken = default)
         {
             try
@@ -231,7 +231,7 @@ namespace Svix
                     options?.Iterator,
                     cancellationToken);
 
-                return lResult?.Data;
+                return lResult;
             }
             catch (ApiException e)
             {
@@ -240,7 +240,7 @@ namespace Svix
                 if (Throw)
                     throw;
 
-                return new List<IntegrationOut>();
+                return new ListResponseIntegrationOut();
             }
         }
 

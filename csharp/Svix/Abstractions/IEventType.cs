@@ -23,9 +23,9 @@ namespace Svix.Abstractions
         Task<EventTypeOut> GetAsync(string eventType, string idempotencyKey = default,
             CancellationToken cancellationToken = default);
 
-        List<EventTypeOut> List(EventTypeListOptions options = null, string idempotencyKey = default);
+        ListResponseEventTypeOut List(EventTypeListOptions options = null, string idempotencyKey = default);
 
-        Task<List<EventTypeOut>> ListAsync(EventTypeListOptions options = null, string idempotencyKey = default,
+        Task<ListResponseEventTypeOut> ListAsync(EventTypeListOptions options = null, string idempotencyKey = default,
             CancellationToken cancellationToken = default);
 
         EventTypeOut Update(string eventType, EventTypeUpdate update, string idempotencyKey = default);

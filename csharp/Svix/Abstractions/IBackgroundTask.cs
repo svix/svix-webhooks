@@ -13,8 +13,8 @@ namespace Svix.Abstractions
         Task<BackgroundTaskOut> GetAsync(string taskId, string idempotencyKey = default,
             CancellationToken cancellationToken = default);
 
-        List<BackgroundTaskOut> List(BackgroundTaskListOptions options = null, string idempotencyKey = default);
+        ListResponseBackgroundTaskOut List(BackgroundTaskListOptions options = null, string idempotencyKey = default);
 
-        Task<List<BackgroundTaskOut>> ListAsync(BackgroundTaskListOptions options = null, string idempotencyKey = default, CancellationToken cancellationToken = default);
+        Task<ListResponseBackgroundTaskOut> ListAsync(BackgroundTaskListOptions options = null, string idempotencyKey = default, CancellationToken cancellationToken = default);
     }
 }

@@ -27,9 +27,9 @@ namespace Svix.Abstractions
         Task<string> GetKeyAsync(string appId, string integrationId, string idempotencyKey = default,
             CancellationToken cancellationToken = default);
 
-        List<IntegrationOut> List(string appId, ListOptions options = null, string idempotencyKey = default);
+        ListResponseIntegrationOut List(string appId, ListOptions options = null, string idempotencyKey = default);
 
-        Task<List<IntegrationOut>> ListAsync(string appId, ListOptions options = null, string idempotencyKey = default,
+        Task<ListResponseIntegrationOut> ListAsync(string appId, ListOptions options = null, string idempotencyKey = default,
             CancellationToken cancellationToken = default);
 
         string RotateKey(string appId, string integrationId, string idempotencyKey = default);
