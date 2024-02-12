@@ -69,7 +69,7 @@ namespace Svix
             }
         }
 
-        public List<EndpointMessageOut> ListAttemptedMessages(string appId, string endpointId, MessageAttemptListOptions options = null,
+        public ListResponseEndpointMessageOut ListAttemptedMessages(string appId, string endpointId, MessageAttemptListOptions options = null,
             string idempotencyKey = default)
         {
             try
@@ -85,7 +85,7 @@ namespace Svix
                     options?.Before,
                     options?.After);
 
-                return lResults?.Data;
+                return lResults;
             }
             catch (ApiException e)
             {
@@ -94,11 +94,11 @@ namespace Svix
                 if (Throw)
                     throw;
 
-                return new List<EndpointMessageOut>();
+                return new ListResponseEndpointMessageOut();
             }
         }
 
-        public async Task<List<EndpointMessageOut>> ListAttemptedMessagesAsync(string appId, string endpointId, MessageAttemptListOptions options = null,
+        public async Task<ListResponseEndpointMessageOut> ListAttemptedMessagesAsync(string appId, string endpointId, MessageAttemptListOptions options = null,
             string idempotencyKey = default, CancellationToken cancellationToken = default)
         {
             try
@@ -110,14 +110,14 @@ namespace Svix
                     options?.Iterator,
                     options?.Channel,
                     options?.Tag,
-                    (Svix.Model.MessageStatus?)options?.Status,
+                    (MessageStatus?)options?.Status,
                     options?.Before,
                     options?.After,
                     options?.WithContent,
                     options?.EventTypes,
                     cancellationToken);
 
-                return lResults?.Data;
+                return lResults;
             }
             catch (ApiException e)
             {
@@ -126,11 +126,11 @@ namespace Svix
                 if (Throw)
                     throw;
 
-                return new List<EndpointMessageOut>();
+                return new ListResponseEndpointMessageOut();
             }
         }
 
-        public List<MessageAttemptOut> ListAttemptsByEndpoint(string appId, string endpointId, AttemptsByEndpointListOptions options = null,
+        public ListResponseMessageAttemptOut ListAttemptsByEndpoint(string appId, string endpointId, AttemptsByEndpointListOptions options = null,
             string idempotencyKey = default)
         {
             try
@@ -150,7 +150,7 @@ namespace Svix
                     options?.WithMsg,
                     options?.EventTypes);
 
-                return lResults?.Data;
+                return lResults;
             }
             catch (ApiException e)
             {
@@ -159,11 +159,11 @@ namespace Svix
                 if (Throw)
                     throw;
 
-                return new List<MessageAttemptOut>();
+                return new ListResponseMessageAttemptOut();
             }
         }
 
-        public async Task<List<MessageAttemptOut>> ListAttemptsByEndpointAsync(string appId, string endpointId, AttemptsByEndpointListOptions options = null,
+        public async Task<ListResponseMessageAttemptOut> ListAttemptsByEndpointAsync(string appId, string endpointId, AttemptsByEndpointListOptions options = null,
             string idempotencyKey = default, CancellationToken cancellationToken = default)
         {
             try
@@ -184,7 +184,7 @@ namespace Svix
                     options?.EventTypes,
                     cancellationToken);
 
-                return lResults?.Data;
+                return lResults;
             }
             catch (ApiException e)
             {
@@ -193,11 +193,11 @@ namespace Svix
                 if (Throw)
                     throw;
 
-                return new List<MessageAttemptOut>();
+                return new ListResponseMessageAttemptOut();
             }
         }
 
-        public List<MessageAttemptOut> ListAttemptsByMessage(string appId, string messageId, AttemptsByMessageListOptions options = null,
+        public ListResponseMessageAttemptOut ListAttemptsByMessage(string appId, string messageId, AttemptsByMessageListOptions options = null,
             string idempotencyKey = default)
         {
             try
@@ -217,7 +217,7 @@ namespace Svix
                     options?.WithContent,
                     options?.EventTypes);
 
-                return lResults?.Data;
+                return lResults;
             }
             catch (ApiException e)
             {
@@ -226,11 +226,11 @@ namespace Svix
                 if (Throw)
                     throw;
 
-                return new List<MessageAttemptOut>();
+                return new ListResponseMessageAttemptOut();
             }
         }
 
-        public async Task<List<MessageAttemptOut>> ListAttemptsByMessageAsync(string appId, string messageId, AttemptsByMessageListOptions options = null,
+        public async Task<ListResponseMessageAttemptOut> ListAttemptsByMessageAsync(string appId, string messageId, AttemptsByMessageListOptions options = null,
             string idempotencyKey = default, CancellationToken cancellationToken = default)
         {
             try
@@ -251,7 +251,7 @@ namespace Svix
                     options?.EventTypes,
                     cancellationToken);
 
-                return lResults?.Data;
+                return lResults;
             }
             catch (ApiException e)
             {
@@ -260,12 +260,12 @@ namespace Svix
                 if (Throw)
                     throw;
 
-                return new List<MessageAttemptOut>();
+                return new ListResponseMessageAttemptOut();
             }
         }
 
         // Deprecated
-        public List<MessageAttemptEndpointOut> ListAttemptsForEndpoint(string appId, string messageId,
+        public ListResponseMessageAttemptEndpointOut ListAttemptsForEndpoint(string appId, string messageId,
             string endpointId, AttemptsByEndpointListOptions options = null, string idempotencyKey = default)
         {
             try
@@ -283,7 +283,7 @@ namespace Svix
                     options?.After,
                     options?.EventTypes);
 
-                return lResults?.Data;
+                return lResults;
             }
             catch (ApiException e)
             {
@@ -292,12 +292,12 @@ namespace Svix
                 if (Throw)
                     throw;
 
-                return new List<MessageAttemptEndpointOut>();
+                return new ListResponseMessageAttemptEndpointOut();
             }
         }
 
         // Deprecated
-        public async Task<List<MessageAttemptEndpointOut>> ListAttemptsForEndpointAsync(string appId,
+        public async Task<ListResponseMessageAttemptEndpointOut> ListAttemptsForEndpointAsync(string appId,
             string messageId, string endpointId, AttemptsByEndpointListOptions options = null, string idempotencyKey = default,
             CancellationToken cancellationToken = default)
         {
@@ -317,7 +317,7 @@ namespace Svix
                     options?.EventTypes?.ToList(),
                     cancellationToken);
 
-                return lResults?.Data;
+                return lResults;
             }
             catch (ApiException e)
             {
@@ -326,12 +326,12 @@ namespace Svix
                 if (Throw)
                     throw;
 
-                return new List<MessageAttemptEndpointOut>();
+                return new ListResponseMessageAttemptEndpointOut();
             }
         }
 
         // Deprecated
-        public List<MessageAttemptOut> ListAttempts(string appId, string messageId, MessageAttemptListOptions options = null,
+        public ListResponseMessageAttemptOut ListAttempts(string appId, string messageId, MessageAttemptListOptions options = null,
             string idempotencyKey = default)
         {
             try
@@ -350,7 +350,7 @@ namespace Svix
                     null,
                     options?.EventTypes);
 
-                return lResults?.Data;
+                return lResults;
             }
             catch (ApiException e)
             {
@@ -359,12 +359,12 @@ namespace Svix
                 if (Throw)
                     throw;
 
-                return new List<MessageAttemptOut>();
+                return new ListResponseMessageAttemptOut();
             }
         }
 
         // Deprecated
-        public async Task<List<MessageAttemptOut>> ListAttemptsAsync(string appId, string messageId, MessageAttemptListOptions options = null,
+        public async Task<ListResponseMessageAttemptOut> ListAttemptsAsync(string appId, string messageId, MessageAttemptListOptions options = null,
             string idempotencyKey = default, CancellationToken cancellationToken = default)
         {
             try
@@ -384,7 +384,7 @@ namespace Svix
                     options?.EventTypes,
                     cancellationToken);
 
-                return lResults?.Data;
+                return lResults;
             }
             catch (ApiException e)
             {
@@ -393,11 +393,11 @@ namespace Svix
                 if (Throw)
                     throw;
 
-                return new List<MessageAttemptOut>();
+                return new ListResponseMessageAttemptOut();
             }
         }
 
-        public List<MessageEndpointOut> ListAttemptedDestinations(string appId, string messageId, ListOptions options = null,
+        public ListResponseMessageEndpointOut ListAttemptedDestinations(string appId, string messageId, ListOptions options = null,
             string idempotencyKey = default)
         {
             try
@@ -408,7 +408,7 @@ namespace Svix
                     options?.Limit,
                     options?.Iterator);
 
-                return lResults?.Data;
+                return lResults;
             }
             catch (ApiException e)
             {
@@ -417,11 +417,11 @@ namespace Svix
                 if (Throw)
                     throw;
 
-                return new List<MessageEndpointOut>();
+                return new ListResponseMessageEndpointOut();
             }
         }
 
-        public async Task<List<MessageEndpointOut>> ListAttemptedDestinationsAsync(string appId, string messageId,
+        public async Task<ListResponseMessageEndpointOut> ListAttemptedDestinationsAsync(string appId, string messageId,
             ListOptions options = null, string idempotencyKey = default,
             CancellationToken cancellationToken = default)
         {
@@ -434,7 +434,7 @@ namespace Svix
                     options?.Iterator,
                     cancellationToken);
 
-                return lResults?.Data;
+                return lResults;
             }
             catch (ApiException e)
             {
@@ -443,7 +443,7 @@ namespace Svix
                 if (Throw)
                     throw;
 
-                return new List<MessageEndpointOut>();
+                return new ListResponseMessageEndpointOut();
             }
         }
 

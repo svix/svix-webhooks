@@ -60,7 +60,7 @@ namespace Svix
             }
         }
 
-        public List<BackgroundTaskOut> List(BackgroundTaskListOptions options = null, string idempotencyKey = default)
+        public ListResponseBackgroundTaskOut List(BackgroundTaskListOptions options = null, string idempotencyKey = default)
         {
             try
             {
@@ -71,7 +71,7 @@ namespace Svix
                     options?.Iterator,
                     options?.Order);
 
-                return lResponse?.Data;
+                return lResponse;
             }
             catch (ApiException e)
             {
@@ -80,11 +80,11 @@ namespace Svix
                 if (Throw)
                     throw;
 
-                return new List<BackgroundTaskOut>();
+                return new ListResponseBackgroundTaskOut();
             }
         }
 
-        public async Task<List<BackgroundTaskOut>> ListAsync(BackgroundTaskListOptions options = null, string idempotencyKey = default, CancellationToken cancellationToken = default)
+        public async Task<ListResponseBackgroundTaskOut> ListAsync(BackgroundTaskListOptions options = null, string idempotencyKey = default, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -96,7 +96,7 @@ namespace Svix
                     options?.Order,
                     cancellationToken);
 
-                return lResponse?.Data;
+                return lResponse;
             }
             catch (ApiException e)
             {
@@ -105,7 +105,7 @@ namespace Svix
                 if (Throw)
                     throw;
 
-                return new List<BackgroundTaskOut>();
+                return new ListResponseBackgroundTaskOut();
             }
         }
     }
