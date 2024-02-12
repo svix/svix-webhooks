@@ -34,6 +34,8 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: "rust -> target"
+          # only restore cache for faster publishing, don't save back results
+          save-if: false
 
       - name: Publish
         env:

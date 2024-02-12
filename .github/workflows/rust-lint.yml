@@ -46,6 +46,9 @@ jobs:
     - uses: Swatinem/rust-cache@v2
       with:
         workspaces: "rust -> target"
+        # only save the cache on the main branch
+        # cf https://github.com/Swatinem/rust-cache/issues/95
+        save-if: ${{ github.ref == 'refs/heads/main' }}
 
     - name: Clippy
       run: cargo clippy --all-targets --all-features -- -D warnings
