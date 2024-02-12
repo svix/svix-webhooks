@@ -1,8 +1,8 @@
 use quote::{format_ident, quote, ToTokens};
 
 use syn::{
-    parse_macro_input, parse_quote, AttributeArgs, DeriveInput, GenericParam, Generics, ItemFn,
-    NestedMeta,
+    parse_macro_input, parse_quote, punctuated::Punctuated, DeriveInput, GenericParam, Generics,
+    ItemFn, Token,
 };
 
 #[proc_macro_derive(ModelIn)]
@@ -69,18 +69,21 @@ fn doc_comment_from_attributes(attributes: &Vec<syn::Attribute>) -> Option<Strin
     let mut doc_comment_lines = Vec::new();
 
     for attr in attributes {
-        let meta = attr
-            .parse_meta()
-            .expect("Failed to parse fn attribute as Meta");
-
-        if let syn::Meta::NameValue(meta) = meta {
-            if meta.path.to_token_stream().to_string() != "doc" {
-                continue;
-            }
-            if let syn::Lit::Str(doc) = meta.lit {
-                doc_comment_lines.push(doc.value().trim().to_string());
-            }
+        if !attr.path().is_ident("doc") {
+            continue;
         }
+
+        // Ignore bare `#[doc]` and `#[doc(foo)]` attributes, only look at `#[doc = "foo"]`
+        let Ok(name_val) = attr.meta.require_name_value() else {
+            continue;
+        };
+
+        // Malformed doc attribute, likely a compile error anyways
+        let Some(doc) = expr_to_litstr(&name_val.value) else {
+            continue;
+        };
+
+        doc_comment_lines.push(doc.value().trim().to_owned());
     }
 
     if doc_comment_lines.is_empty() {
@@ -119,7 +122,8 @@ pub fn aide_annotate(
     args: proc_macro::TokenStream,
     input: proc_macro::TokenStream,
 ) -> proc_macro::TokenStream {
-    let args = parse_macro_input!(args as AttributeArgs);
+    type ArgumentList = Punctuated<syn::MetaNameValue, Token![,]>;
+    let args = parse_macro_input!(args with ArgumentList::parse_terminated);
 
     let item = parse_macro_input!(input as ItemFn);
 
@@ -139,31 +143,23 @@ pub fn aide_annotate(
 
     // Allow overriding operation ID and summary via arguments
     for arg in args {
-        if let NestedMeta::Meta(syn::Meta::NameValue(meta)) = arg {
-            let arg_id = meta.path.to_token_stream().to_string();
+        let Some(lit) = expr_to_litstr(&arg.value) else {
+            return syn::Error::new_spanned(
+                &arg.value,
+                "Unexpected expression, expected a string literal",
+            )
+            .into_compile_error()
+            .into();
+        };
 
-            let value = if let syn::Lit::Str(s) = meta.lit {
-                s.value()
-            } else {
-                return syn::Error::new_spanned(meta.lit, "Unexpected literal, expected a string")
-                    .into_compile_error()
-                    .into();
-            };
-
-            match arg_id.as_str() {
-                "op_id" => operation_id = value,
-                "op_summary" => operation_summary = value,
-                _ => {
-                    let path = meta.path.to_token_stream().to_string();
-                    let msg =
-                        format!("Unknown argument `{path}`, expected `op_id` or `op_summary`",);
-                    return syn::Error::new_spanned(meta.path, msg)
-                        .into_compile_error()
-                        .into();
-                }
-            }
+        if arg.path.is_ident("op_id") {
+            operation_id = lit.value();
+        } else if arg.path.is_ident("op_summary") {
+            operation_summary = lit.value();
         } else {
-            return syn::Error::new_spanned(arg, "Unexpected argument")
+            let path = arg.path.to_token_stream().to_string();
+            let msg = format!("Unknown argument `{path}`, expected `op_id` or `op_summary`",);
+            return syn::Error::new_spanned(arg.path, msg)
                 .into_compile_error()
                 .into();
         }
@@ -219,4 +215,14 @@ fn add_trait_bounds(mut generics: Generics) -> Generics {
         }
     }
     generics
+}
+
+fn expr_to_litstr(expr: &syn::Expr) -> Option<&syn::LitStr> {
+    match expr {
+        syn::Expr::Lit(l) => match &l.lit {
+            syn::Lit::Str(s) => Some(s),
+            _ => None,
+        },
+        _ => None,
+    }
 }
