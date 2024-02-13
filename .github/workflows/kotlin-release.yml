@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Setup Java
         uses: actions/setup-java@v2
@@ -46,7 +46,7 @@ jobs:
           echo -e "$OSSRH_GPG_SECRET_KEY" | gpg --batch --import
         env:
           OSSRH_GPG_SECRET_KEY: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
-  
+
       - name: Publish
         run: |
           cd kotlin
