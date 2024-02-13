@@ -88,6 +88,7 @@ public class ApiClient {
 
     private OkHttpClient httpClient;
     private JSON json;
+    private JSON patchJson;
 
     private HttpLoggingInterceptor loggingInterceptor;
 
@@ -213,6 +214,8 @@ public class ApiClient {
         verifyingSsl = true;
 
         json = new JSON();
+        json = json.serializeNulls();
+        patchJson = new JSON();
 
         // Set default User-Agent.
         setUserAgent("{{#httpUserAgent}}{{{.}}}{{/httpUserAgent}}{{^httpUserAgent}}OpenAPI-Generator/{{{artifactVersion}}}/java{{/httpUserAgent}}");
@@ -1006,7 +1009,7 @@ public class ApiClient {
      * @return The serialized request body
      * @throws ApiException If fail to serialize the given object
      */
-    public RequestBody serialize(Object obj, String contentType) throws ApiException {
+    public RequestBody serialize(JSON jsonSerializer, Object obj, String contentType) throws ApiException {
         if (obj instanceof byte[]) {
             // Binary (byte array) body parameter support.
             return RequestBody.create((byte[]) obj, MediaType.parse(contentType));
@@ -1016,7 +1019,7 @@ public class ApiClient {
         } else if (isJsonMime(contentType)) {
             String content;
             if (obj != null) {
-                content = json.serialize(obj);
+                content = jsonSerializer.serialize(obj);
             } else {
                 content = null;
             }
@@ -1294,8 +1297,10 @@ public class ApiClient {
                 // use an empty request body (for POST, PUT and PATCH)
                 reqBody = RequestBody.create("", MediaType.parse(contentType));
             }
+        } else if ("PATCH".equals(method)) {
+            reqBody = serialize(patchJson, body, contentType); 
         } else {
-            reqBody = serialize(body, contentType);
+            reqBody = serialize(json, body, contentType);
         }
 
         // Associate callback with request (if not null) so interceptor can
