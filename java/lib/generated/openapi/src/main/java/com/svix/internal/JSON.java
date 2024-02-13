@@ -48,7 +48,7 @@ public class JSON {
     }
 
     private static String getDiscriminatorValue(final JsonElement readElement,
-            final String discriminatorField) {
+                                                final String discriminatorField) {
         JsonElement element = readElement.getAsJsonObject().get(discriminatorField);
         if (null == element) {
             throw new IllegalArgumentException(
@@ -62,11 +62,11 @@ public class JSON {
      * value.
      *
      * @param classByDiscriminatorValue The map of discriminator values to Java classes.
-     * @param discriminatorValue The value of the OpenAPI discriminator in the input data.
+     * @param discriminatorValue        The value of the OpenAPI discriminator in the input data.
      * @return The Java class that implements the OpenAPI schema
      */
     private static Class getClassByDiscriminator(final Map classByDiscriminatorValue,
-            final String discriminatorValue) {
+                                                 final String discriminatorValue) {
         Class clazz = (Class) classByDiscriminatorValue.get(discriminatorValue);
         if (null == clazz) {
             throw new IllegalArgumentException(
@@ -126,8 +126,8 @@ public class JSON {
     /**
      * Deserialize the given JSON string to Java object.
      *
-     * @param <T> Type
-     * @param body The JSON string
+     * @param <T>        Type
+     * @param body       The JSON string
      * @param returnType The type to deserialize into
      * @return The deserialized Java object
      */
@@ -285,7 +285,8 @@ public class JSON {
 
         private DateFormat dateFormat;
 
-        public SqlDateTypeAdapter() {}
+        public SqlDateTypeAdapter() {
+        }
 
         public SqlDateTypeAdapter(final DateFormat dateFormat) {
             this.dateFormat = dateFormat;
@@ -339,7 +340,8 @@ public class JSON {
 
         private DateFormat dateFormat;
 
-        public DateTypeAdapter() {}
+        public DateTypeAdapter() {
+        }
 
         public DateTypeAdapter(final DateFormat dateFormat) {
             this.dateFormat = dateFormat;
