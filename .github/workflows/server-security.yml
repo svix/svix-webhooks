@@ -21,4 +21,4 @@ jobs:
       - uses: actions/checkout@v4
       - uses: EmbarkStudios/cargo-deny-action@v1
         with:
-            arguments: --manifest-path=server/Cargo.toml
+          manifest-path: server/Cargo.toml
