@@ -145,6 +145,12 @@ DEFAULT_SERVER_URL = "https://api.svix.com"
 class SvixOptions:
     debug: bool = False
     server_url: t.Optional[str] = None
+    """
+    The number of times to retry HTTP requests.
+
+    Defaults to 3, maximum 5.
+    """
+    num_retries: int = 3
 
     """
     The maximum amount of time in seconds a request can take.
@@ -1084,6 +1090,11 @@ class ClientBase:
     def __init__(self, auth_token: str, options: SvixOptions = SvixOptions()) -> None:
         from . import __version__
 
+        if options.num_retries < 0:
+            raise ValueError("negative number of retries is invalid")
+        if options.num_retries > 5:
+            raise ValueError("number of retries must not exceed 5")
+
         regional_url = None
         region = auth_token.split(".")[-1]
         if region == "us":
@@ -1099,6 +1110,7 @@ class ClientBase:
             token=auth_token,
             headers={"user-agent": f"svix-libs/{__version__}/python"},
             verify_ssl=True,
+            num_request_tries=options.num_retries + 1,
             timeout=options.timeout,
             follow_redirects=False,
             raise_on_unexpected_status=True,

@@ -14,7 +14,6 @@ from ... import errors
 {% endfor %}
 
 SLEEP_TIME = 0.05
-NUM_RETRIES = 3
 
 {% from "endpoint_macros.py.jinja" import header_params, cookie_params, query_params, json_body, multipart_body,
     arguments, client, kwargs, parse_response, docstring %}
@@ -103,7 +102,7 @@ def sync_detailed(
 
     kwargs['headers'] = {'svix-req-id':f"{random.getrandbits(32)}", **kwargs['headers']}
 
-    for retry_count in range(NUM_RETRIES):
+    for retry_count in range(client.num_request_tries):
         response = httpx.request(
                 verify=client.verify_ssl,
                 **kwargs,
@@ -139,7 +138,7 @@ async def asyncio_detailed(
     kwargs['headers'] = {'svix-req-id':f"{random.getrandbits(32)}", **kwargs['headers']}
 
     async with httpx.AsyncClient(verify=client.verify_ssl) as _client:
-        for retry_count in range(NUM_RETRIES):
+        for retry_count in range(client.num_request_tries):
             response = await _client.request(
                 **kwargs
             )
