@@ -3,6 +3,13 @@
 ## Next
 * 
 
+## Version 1.18.0
+* Libs/C#: **[Breaking]** Return iterator information in list endpoints. Changes the return type of list endpoints.
+* Libs/Rust: upgrade and clean up dependencies 
+* Libs/Rust: Switch from reqwest to hyper 1.0
+* Server: upgrade dependencies
+* Server: Adopt omniqueue as a queue backend and remove our own in-memory queue implementation
+
 ## Version 1.17.0
 * Server: Upgrade hyper to 0.14.28
 * Libs/Rust: **[Important]** Fix a bug in the webhook signature verification method where certain signatures could bypass the verification.
