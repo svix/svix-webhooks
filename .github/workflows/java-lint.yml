@@ -10,19 +10,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-  
+      - uses: actions/checkout@v4
+
       - name: Setup Java
         uses: actions/setup-java@v2
         with:
           distribution: 'temurin'
           java-version: '11'
-  
+
       - name: Regen openapi libs
         run: |
           yarn
           ./regen_openapi.sh
-  
+
       - name: Build
         run: |
           cd java

@@ -18,7 +18,7 @@ jobs:
   security_audit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: EmbarkStudios/cargo-deny-action@v1
         with:
-            arguments: --manifest-path=server/Cargo.toml
+          manifest-path: server/Cargo.toml
