@@ -146,6 +146,13 @@ class SvixOptions:
     debug: bool = False
     server_url: t.Optional[str] = None
 
+    """
+    The maximum amount of time in seconds a request can take.
+
+    Request methods will raise httpx.TimeoutException if this is exceeded.
+    """
+    timeout: float = 15.0
+
 
 @dataclass
 class ListOptions:
@@ -1092,7 +1099,7 @@ class ClientBase:
             token=auth_token,
             headers={"user-agent": f"svix-libs/{__version__}/python"},
             verify_ssl=True,
-            timeout=15,
+            timeout=options.timeout,
             follow_redirects=False,
             raise_on_unexpected_status=True,
         )
