@@ -9,6 +9,8 @@
 #![warn(clippy::all)]
 #![forbid(unsafe_code)]
 
+use std::time::Duration;
+
 use hyper::body::Bytes;
 use hyper_util::client::legacy::{connect::HttpConnector, Client as HyperClient};
 
@@ -34,6 +36,7 @@ struct Configuration {
     pub user_agent: Option<String>,
     pub client: HyperClient<Connector, http_body_util::Full<Bytes>>,
     pub bearer_access_token: Option<String>,
+    pub timeout: Option<Duration>,
 }
 
 // If no TLS backend is enabled, use plain http connector.

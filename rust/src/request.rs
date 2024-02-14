@@ -156,28 +156,37 @@ impl Request {
             req_builder.body(Full::default()).map_err(Error::generic)?
         };
 
-        let no_return_type = self.no_return_type;
-        let response = conf.client.request(request).await.map_err(Error::generic)?;
+        let execute_request = async {
+            let response = conf.client.request(request).await.map_err(Error::generic)?;
 
-        let status = response.status();
-        if !status.is_success() {
-            Err(Error::from_response(status, response.into_body()).await)
-        } else if no_return_type {
-            // This is a hack; if there's no_ret_type, U is (), but serde_json gives an
-            // error when deserializing "" into (), so deserialize 'null' into it
-            // instead.
-            // An alternate option would be to require U: Default, and then return
-            // U::default() here instead since () implements that, but then we'd
-            // need to impl default for all models.
-            Ok(serde_json::from_str("null").expect("serde null value"))
-        } else {
-            let bytes = response
-                .into_body()
-                .collect()
+            let status = response.status();
+            if !status.is_success() {
+                Err(Error::from_response(status, response.into_body()).await)
+            } else if self.no_return_type {
+                // This is a hack; if there's no_ret_type, U is (), but serde_json gives an
+                // error when deserializing "" into (), so deserialize 'null' into it
+                // instead.
+                // An alternate option would be to require U: Default, and then return
+                // U::default() here instead since () implements that, but then we'd
+                // need to impl default for all models.
+                Ok(serde_json::from_str("null").expect("serde null value"))
+            } else {
+                let bytes = response
+                    .into_body()
+                    .collect()
+                    .await
+                    .map_err(Error::generic)?
+                    .to_bytes();
+                Ok(serde_json::from_slice(&bytes).map_err(Error::generic)?)
+            }
+        };
+
+        if let Some(duration) = conf.timeout {
+            tokio::time::timeout(duration, execute_request)
                 .await
                 .map_err(Error::generic)?
-                .to_bytes();
-            Ok(serde_json::from_slice(&bytes).map_err(Error::generic)?)
+        } else {
+            execute_request.await
         }
     }
 }

@@ -15,6 +15,13 @@ const CRATE_VERSION: &str = env!("CARGO_PKG_VERSION");
 pub struct SvixOptions {
     pub debug: bool,
     pub server_url: Option<String>,
+    /// Timeout for HTTP requests.
+    ///
+    /// The timeout is applied from when the request starts connecting until
+    /// the response body has finished.
+    ///
+    /// By default, requests never time out.
+    pub timeout: Option<std::time::Duration>,
 }
 
 /// Svix API client.
@@ -24,7 +31,9 @@ pub struct Svix {
 
 impl Svix {
     pub fn new(token: String, options: Option<SvixOptions>) -> Self {
-        let base_path = options.and_then(|x| x.server_url).unwrap_or_else(|| {
+        let options = options.unwrap_or_default();
+
+        let base_path = options.server_url.unwrap_or_else(|| {
             match token.split('.').last() {
                 Some("us") => "https://api.us.svix.com",
                 Some("eu") => "https://api.eu.svix.com",
@@ -38,6 +47,7 @@ impl Svix {
             user_agent: Some(format!("svix-libs/{CRATE_VERSION}/rust")),
             bearer_access_token: Some(token),
             client: HyperClient::builder(TokioExecutor::new()).build(crate::default_connector()),
+            timeout: options.timeout,
         };
 
         Self { cfg }
