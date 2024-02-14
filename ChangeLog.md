@@ -4,11 +4,12 @@
 * 
 
 ## Version 1.18.0
+* Server: upgrade dependencies 
+* Server: adopt omniqueue as a queue backend
 * Libs/C#: **[Breaking]** Return iterator information in list endpoints. Changes the return type of list endpoints.
+* Libs/Java: don't serialize nulls in PATCH endpoint methods
 * Libs/Rust: upgrade and clean up dependencies 
-* Libs/Rust: Switch from reqwest to hyper 1.0
-* Server: upgrade dependencies
-* Server: Adopt omniqueue as a queue backend and remove our own in-memory queue implementation
+* Libs/Rust: switch from reqwest to hyper 1.0
 
 ## Version 1.17.0
 * Server: Upgrade hyper to 0.14.28
