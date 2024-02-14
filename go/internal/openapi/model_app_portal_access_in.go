@@ -16,6 +16,8 @@ import (
 
 // AppPortalAccessIn struct for AppPortalAccessIn
 type AppPortalAccessIn struct {
+	// How long the token will be valid for, in seconds. Valid values are between 1 hour and 7 days. The default is 7 days.
+	Expiry NullableInt32 `json:"expiry,omitempty"`
 	// The set of feature flags the created token will have access to.
 	FeatureFlags *[]string `json:"featureFlags,omitempty"`
 }
@@ -26,6 +28,8 @@ type AppPortalAccessIn struct {
 // will change when the set of required properties is changed
 func NewAppPortalAccessIn() *AppPortalAccessIn {
 	this := AppPortalAccessIn{}
+	var expiry int32 = 604800
+	this.Expiry = *NewNullableInt32(&expiry)
 	return &this
 }
 
@@ -34,7 +38,51 @@ func NewAppPortalAccessIn() *AppPortalAccessIn {
 // but it doesn't guarantee that properties required by API are set
 func NewAppPortalAccessInWithDefaults() *AppPortalAccessIn {
 	this := AppPortalAccessIn{}
+	var expiry int32 = 604800
+	this.Expiry = *NewNullableInt32(&expiry)
 	return &this
+}
+
+// GetExpiry returns the Expiry field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *AppPortalAccessIn) GetExpiry() int32 {
+	if o == nil || o.Expiry.Get() == nil {
+		var ret int32
+		return ret
+	}
+	return *o.Expiry.Get()
+}
+
+// GetExpiryOk returns a tuple with the Expiry field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *AppPortalAccessIn) GetExpiryOk() (*int32, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return o.Expiry.Get(), o.Expiry.IsSet()
+}
+
+// HasExpiry returns a boolean if a field has been set.
+func (o *AppPortalAccessIn) HasExpiry() bool {
+	if o != nil && o.Expiry.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetExpiry gets a reference to the given NullableInt32 and assigns it to the Expiry field.
+func (o *AppPortalAccessIn) SetExpiry(v int32) {
+	o.Expiry.Set(&v)
+}
+// SetExpiryNil sets the value for Expiry to be an explicit nil
+func (o *AppPortalAccessIn) SetExpiryNil() {
+	o.Expiry.Set(nil)
+}
+
+// UnsetExpiry ensures that no value is present for Expiry, not even an explicit nil
+func (o *AppPortalAccessIn) UnsetExpiry() {
+	o.Expiry.Unset()
 }
 
 // GetFeatureFlags returns the FeatureFlags field value if set, zero value otherwise.
@@ -71,6 +119,9 @@ func (o *AppPortalAccessIn) SetFeatureFlags(v []string) {
 
 func (o AppPortalAccessIn) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
+	if o.Expiry.IsSet() {
+		toSerialize["expiry"] = o.Expiry.Get()
+	}
 	if o.FeatureFlags != nil {
 		toSerialize["featureFlags"] = o.FeatureFlags
 	}

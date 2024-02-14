@@ -22,6 +22,15 @@
             },
             "AppPortalAccessIn": {
                 "properties": {
+                    "expiry": {
+                        "default": 604800,
+                        "description": "How long the token will be valid for, in seconds. Valid values are between 1 hour and 7 days. The default is 7 days.",
+                        "format": "uint64",
+                        "maximum": 604800,
+                        "minimum": 3600,
+                        "nullable": true,
+                        "type": "integer"
+                    },
                     "featureFlags": {
                         "description": "The set of feature flags the created token will have access to.",
                         "example": [],
@@ -3057,6 +3066,7 @@
                 "properties": {
                     "application": {
                         "$ref": "#/components/schemas/ApplicationIn",
+                        "description": "Optionally creates a new application alongside the message. If the application id or uid that is used in the path already exists, this argument is ignored.",
                         "nullable": true
                     },
                     "channels": {
@@ -15099,62 +15109,62 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const appPortalAccessOut = await svix.authentication.appPortalAccess(\"app_id\", {\n    featureFlags: []\n});"
+                        "source": "const appPortalAccessOut = await svix.authentication.appPortalAccess(\"app_id\", {\n    featureFlags: [],\n    expiry: null\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const appPortalAccessOut = await svix.authentication.appPortalAccess(\"app_id\", {\n    featureFlags: []\n});"
+                        "source": "const appPortalAccessOut = await svix.authentication.appPortalAccess(\"app_id\", {\n    featureFlags: [],\n    expiry: null\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "app_portal_access_out = svix.authentication.app_portal_access(\"app_id\", AppPortalAccessIn(\n    feature_flags=[]\n), None)"
+                        "source": "app_portal_access_out = svix.authentication.app_portal_access(\"app_id\", AppPortalAccessIn(\n    feature_flags=[],\n    expiry=None\n), None)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "app_portal_access_out = await svix.authentication.app_portal_access(\"app_id\", AppPortalAccessIn(\n    feature_flags=[]\n), None)"
+                        "source": "app_portal_access_out = await svix.authentication.app_portal_access(\"app_id\", AppPortalAccessIn(\n    feature_flags=[],\n    expiry=None\n), None)"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "appPortalAccessOut, err := svixClient.Authentication.AppPortalAccess(ctx, \"app_id\", &AppPortalAccessIn{\n    FeatureFlags: []interface{}{},\n})"
+                        "source": "appPortalAccessOut, err := svixClient.Authentication.AppPortalAccess(ctx, \"app_id\", &AppPortalAccessIn{\n    FeatureFlags: []interface{}{},\n    Expiry: nil,\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val appPortalAccessOut = svix.authentication.appPortalAccess(\"app_id\", AppPortalAccessIn()\n    .featureFlags(arrayOf())\n)"
+                        "source": "val appPortalAccessOut = svix.authentication.appPortalAccess(\"app_id\", AppPortalAccessIn()\n    .featureFlags(arrayOf())\n    .expiry(null)\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "AppPortalAccessOut appPortalAccessOut = svix.getAuthentication().appPortalAccess(\"app_id\", new AppPortalAccessIn()\n    .featureFlags(new Object[]{})\n)"
+                        "source": "AppPortalAccessOut appPortalAccessOut = svix.getAuthentication().appPortalAccess(\"app_id\", new AppPortalAccessIn()\n    .featureFlags(new Object[]{})\n    .expiry(null)\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "app_portal_access_out = svix.authentication.app_portal_access(\"app_id\", Svix::AppPortalAccessIn.new({\n    \"feature_flags\": []\n}))"
+                        "source": "app_portal_access_out = svix.authentication.app_portal_access(\"app_id\", Svix::AppPortalAccessIn.new({\n    \"feature_flags\": [],\n    \"expiry\": nil\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let app_portal_access_out = svix.authentication().app_portal_access(\"app_id\", AppPortalAccessIn {\n    feature_flags: Some(vec![]),\n}, None).await?;"
+                        "source": "let app_portal_access_out = svix.authentication().app_portal_access(\"app_id\", AppPortalAccessIn {\n    feature_flags: Some(vec![]),\n    expiry: None,\n}, None).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var appPortalAccessOut = await svix.Authentication.AppPortalAccessAsync(\"app_id\", new AppPortalAccessIn{\n    featureFlags: new Object[] {}\n})"
+                        "source": "var appPortalAccessOut = await svix.Authentication.AppPortalAccessAsync(\"app_id\", new AppPortalAccessIn{\n    featureFlags: new Object[] {},\n    expiry: null\n})"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix authentication app-portal-access \"app_id\" '{\n    \"featureFlags\": []\n}'"
+                        "source": "svix authentication app-portal-access \"app_id\" '{\n    \"featureFlags\": [],\n    \"expiry\": null\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/app-portal-access/{app_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"featureFlags\": []\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/app-portal-access/{app_id}/' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"featureFlags\": [],\n        \"expiry\": null\n    }'"
                     }
                 ]
             }
