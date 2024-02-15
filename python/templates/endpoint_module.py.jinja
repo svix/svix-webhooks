@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Union, cast
 from time import sleep
 import random
 
+import asyncio
 import httpx
 
 from ...client import AuthenticatedClient, Client
@@ -148,7 +149,7 @@ async def request_asyncio_detailed(
             if response.status_code < 500:
                 break
 
-            sleep(sleep_time)
+            await asyncio.sleep(sleep_time)
             kwargs['headers']['svix-retry-count'] = str(retry_count)
             response = await _client.request(
                 **kwargs
