@@ -11,17 +11,27 @@ use crate::Configuration;
 
 const CRATE_VERSION: &str = env!("CARGO_PKG_VERSION");
 
-#[derive(Default)]
 pub struct SvixOptions {
     pub debug: bool,
     pub server_url: Option<String>,
     /// Timeout for HTTP requests.
     ///
     /// The timeout is applied from when the request starts connecting until
-    /// the response body has finished.
+    /// the response body has finished. If set to `None`, requests never time
+    /// out.
     ///
-    /// By default, requests never time out.
+    /// Default: 15 seconds.
     pub timeout: Option<std::time::Duration>,
+}
+
+impl Default for SvixOptions {
+    fn default() -> Self {
+        Self {
+            debug: false,
+            server_url: None,
+            timeout: Some(std::time::Duration::from_secs(15)),
+        }
+    }
 }
 
 /// Svix API client.
