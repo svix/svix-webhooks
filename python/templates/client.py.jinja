@@ -1,5 +1,5 @@
 import ssl
-from typing import Dict, Union
+from typing import Dict, List, Union
 import attr
 
 @attr.s(auto_attribs=True)
@@ -22,7 +22,7 @@ class Client:
     base_url: str
     cookies: Dict[str, str] = attr.ib(factory=dict, kw_only=True)
     headers: Dict[str, str] = attr.ib(factory=dict, kw_only=True)
-    num_request_tries: int
+    retry_schedule: List[float]
     timeout: float = attr.ib(5.0, kw_only=True)
     verify_ssl: Union[str, bool, ssl.SSLContext] = attr.ib(True, kw_only=True)
     raise_on_unexpected_status: bool = attr.ib(False, kw_only=True)

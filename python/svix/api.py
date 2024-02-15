@@ -1,5 +1,5 @@
 import typing as t
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 
 from deprecated import deprecated
@@ -146,11 +146,16 @@ class SvixOptions:
     debug: bool = False
     server_url: t.Optional[str] = None
     """
-    The number of times to retry HTTP requests.
+    The retry schedule, as seconds to wait after each failed request.
 
-    Defaults to 3, maximum 5.
+    The first entry is the time in seconds to wait between the first request
+    failing and the first retry, and so on.
+    Up to five retries are supported, passing a retry schedule with more than
+    five entries will raise a `ValueError`.
+
+    Defaults to [0.05, 0.1, 0.2]
     """
-    num_retries: int = 3
+    retry_schedule: t.List[float] = field(default_factory=lambda: [0.05, 0.1, 0.2])
 
     """
     The maximum amount of time in seconds a request can take.
@@ -1090,9 +1095,7 @@ class ClientBase:
     def __init__(self, auth_token: str, options: SvixOptions = SvixOptions()) -> None:
         from . import __version__
 
-        if options.num_retries < 0:
-            raise ValueError("negative number of retries is invalid")
-        if options.num_retries > 5:
+        if len(options.retry_schedule) > 5:
             raise ValueError("number of retries must not exceed 5")
 
         regional_url = None
@@ -1110,7 +1113,7 @@ class ClientBase:
             token=auth_token,
             headers={"user-agent": f"svix-libs/{__version__}/python"},
             verify_ssl=True,
-            num_request_tries=options.num_retries + 1,
+            retry_schedule=options.retry_schedule,
             timeout=options.timeout,
             follow_redirects=False,
             raise_on_unexpected_status=True,

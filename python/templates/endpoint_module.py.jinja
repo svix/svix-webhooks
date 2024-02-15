@@ -13,8 +13,6 @@ from ... import errors
 {{ relative }}
 {% endfor %}
 
-SLEEP_TIME = 0.05
-
 {% from "endpoint_macros.py.jinja" import header_params, cookie_params, query_params, json_body, multipart_body,
     arguments, client, kwargs, parse_response, docstring %}
 
@@ -102,16 +100,20 @@ def sync_detailed(
 
     kwargs['headers'] = {'svix-req-id':f"{random.getrandbits(32)}", **kwargs['headers']}
 
-    for retry_count in range(client.num_request_tries):
-        response = httpx.request(
-                verify=client.verify_ssl,
-                **kwargs,
-            )
-        if response.status_code >= 500:
-            kwargs['headers']['svix-retry-count'] = str(retry_count)
-            sleep(SLEEP_TIME * (2 ** retry_count))
-        else:
+    response = httpx.request(
+        verify=client.verify_ssl,
+        **kwargs,
+    )
+    for retry_count, sleep_time in enumerate(client.retry_schedule):
+        if response.status_code < 500:
             break
+
+        sleep(sleep_time)
+        kwargs['headers']['svix-retry-count'] = str(retry_count)
+        response = httpx.request(
+            verify=client.verify_ssl,
+            **kwargs,
+        )
 
     return _build_response(client=client, response=response)
 
@@ -138,15 +140,19 @@ async def asyncio_detailed(
     kwargs['headers'] = {'svix-req-id':f"{random.getrandbits(32)}", **kwargs['headers']}
 
     async with httpx.AsyncClient(verify=client.verify_ssl) as _client:
-        for retry_count in range(client.num_request_tries):
+        response = await _client.request(
+            **kwargs
+        )
+
+        for retry_count, sleep_time in enumerate(client.retry_schedule):
+            if response.status_code < 500:
+                break
+
+            sleep(sleep_time)
+            kwargs['headers']['svix-retry-count'] = str(retry_count)
             response = await _client.request(
                 **kwargs
             )
-            if response.status_code >= 500:
-                kwargs['headers']['svix-retry-count'] = str(retry_count)
-                sleep(SLEEP_TIME * (2 ** retry_count))
-            else:
-                break
 
     return _build_response(client=client, response=response)
 
