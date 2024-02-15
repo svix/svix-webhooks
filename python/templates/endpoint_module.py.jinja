@@ -89,7 +89,7 @@ def _build_response(*, client: Client, response: httpx.Response) -> Response[{{ 
     )
 
 
-def sync_detailed(
+def request_sync_detailed(
     {{ arguments(endpoint) | indent(4) }}
 ) -> Response[{{ return_string }}]:
     {{ docstring(endpoint, return_string, is_detailed=true) | indent(4) }}
@@ -118,17 +118,17 @@ def sync_detailed(
     return _build_response(client=client, response=response)
 
 {% if parsed_responses %}
-def sync(
+def request_sync(
     {{ arguments(endpoint) | indent(4) }}
 ) -> {{ return_string }}:
     {{ docstring(endpoint, return_string, is_detailed=false) | indent(4) }}
 
-    return sync_detailed(
+    return request_sync_detailed(
         {{ kwargs(endpoint) }}
     ).parsed
 {% endif %}
 
-async def asyncio_detailed(
+async def request_asyncio_detailed(
     {{ arguments(endpoint) | indent(4) }}
 ) -> Response[{{ return_string }}]:
     {{ docstring(endpoint, return_string, is_detailed=true) | indent(4) }}
@@ -157,12 +157,12 @@ async def asyncio_detailed(
     return _build_response(client=client, response=response)
 
 {% if parsed_responses %}
-async def asyncio(
+async def request_asyncio(
     {{ arguments(endpoint) | indent(4) }}
 ) -> {{ return_string }}:
     {{ docstring(endpoint, return_string, is_detailed=false) | indent(4) }}
 
-    return (await asyncio_detailed(
+    return (await request_asyncio_detailed(
         {{ kwargs(endpoint) }}
     )).parsed
 {% endif %}
