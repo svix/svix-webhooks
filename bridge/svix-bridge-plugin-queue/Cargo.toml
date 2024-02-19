@@ -6,7 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-omniqueue = { git = "https://github.com/svix/omniqueue-rs", rev = "247904053bcf90cf693df4429092923bf97770eb" }
+omniqueue = { git = "https://github.com/svix/omniqueue-rs", rev = "b6383db507ca2d61da1b31dfb4ea0981cf7c6881" }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 svix-bridge-types = { path = "../svix-bridge-types" }

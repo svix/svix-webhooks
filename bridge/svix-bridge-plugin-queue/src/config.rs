@@ -104,8 +104,10 @@ mod tests {
                 max_connections: 0,
                 reinsert_on_nack: false,
                 queue_key: "".to_string(),
+                delayed_queue_key: None,
                 consumer_group: "".to_string(),
                 consumer_name: "".to_string(),
+                ack_deadline_ms: 2_000,
             }),
             transformation: Some(TransformationConfig::Explicit {
                 format: TransformerInputFormat::String,
@@ -133,6 +135,8 @@ mod tests {
             dsn: "".to_string(),
             max_connections: 0,
             queue_key: "".to_string(),
+            delayed_queue_key: None,
+            ack_deadline_ms: 2_000,
         });
 
         // Explicit String fails
