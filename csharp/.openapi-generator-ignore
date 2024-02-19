@@ -37,3 +37,6 @@ Svix.sln
 
 docs/
 src/
+Svix/Generated/OpenApi/Svix/Model/ApplicationPatch.cs
+Svix/Generated/OpenApi/Svix/Model/EndpointPatch.cs
+Svix/Generated/OpenApi/Svix/Model/EventTypePatch.cs
