@@ -1,38 +1,22 @@
-use chrono::Utc;
-use futures::StreamExt;
 use lapin::{
-    options::{
-        BasicConsumeOptions, BasicPublishOptions, BasicQosOptions, ExchangeDeclareOptions,
-        QueueBindOptions, QueueDeclareOptions,
-    },
+    options::{BasicConsumeOptions, ExchangeDeclareOptions, QueueBindOptions, QueueDeclareOptions},
     types::{AMQPValue, FieldTable},
-    BasicProperties, ConnectionProperties,
+    ConnectionProperties,
+};
+use omniqueue::{
+    backends::rabbitmq::{RabbitMqBackend, RabbitMqConfig},
+    queue::{consumer::QueueConsumer, QueueBackend},
+    scheduled::ScheduledProducer,
 };
 use svix_ksuid::{KsuidLike, KsuidMs};
 
-use crate::error::Result;
-use crate::error::{Error, Traceable};
-use std::{sync::Arc, time::Duration};
+use crate::error::{Result, Traceable};
+use std::sync::Arc;
 
-use super::{
-    Acker, QueueTask, TaskQueueConsumer, TaskQueueDelivery, TaskQueueProducer, TaskQueueReceive,
-    TaskQueueSend,
-};
-
-#[derive(Clone)]
-pub struct Producer(Arc<ProducerInner>);
-
-struct ProducerInner {
-    exchange_name: String,
-    queue_name: String,
-    channel: lapin::Channel,
-}
-
-pub struct Consumer {
-    consumer: lapin::Consumer,
-}
+use super::{TaskQueueConsumer, TaskQueueProducer};
 
 /// Returns a new_pair producers/consumers that use RabbitMQ under the hood.
+///
 /// USE WITH CAUTION - For the time being, this implementation has only been exercised in local development
 /// and testing environments. There may be production kinks that need working out
 pub async fn new_pair(
@@ -41,29 +25,70 @@ pub async fn new_pair(
     prefetch_size: u16,
 ) -> Result<(TaskQueueProducer, TaskQueueConsumer)> {
     let conn = lapin::Connection::connect(dsn, ConnectionProperties::default()).await?;
-    let producer_chan = conn.create_channel().await?;
-    let consumer_chan = conn.create_channel().await?;
+    let channel = conn.create_channel().await.unwrap();
 
-    let exchange_name = declare_delayed_message_exchange(&producer_chan)
-        .await
-        .trace()?;
-    declare_bound_queue(&queue_name, &exchange_name, &producer_chan)
+    let exchange_name = declare_delayed_message_exchange(&channel).await.trace()?;
+    declare_bound_queue(&queue_name, &exchange_name, &channel)
         .await
         .trace()?;
 
-    let consumer = start_queue_consumer(&queue_name, &consumer_chan, prefetch_size)
-        .await
-        .trace()?;
-    let consumer = Consumer { consumer };
+    drop(channel);
 
-    let producer = Producer(Arc::new(ProducerInner {
-        exchange_name,
-        channel: producer_chan,
-        queue_name,
-    }));
+    // Ref https://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.consume.consumer-tag
+    let consumer_tag = format!(
+        "{queue_name}-consumer-{}",
+        // prevent possible errors around duplicate consumer tags
+        KsuidMs::new(None, None).to_string()
+    );
 
-    let producer = TaskQueueProducer::RabbitMq(producer);
-    let consumer = TaskQueueConsumer::RabbitMq(consumer);
+    let (producer, consumer) = RabbitMqBackend::builder(RabbitMqConfig {
+        uri: dsn.to_owned(),
+        connection_properties: Default::default(),
+        publish_exchange: "first-message".to_owned(),
+        publish_routing_key: queue_name.clone(),
+        publish_options: Default::default(),
+        publish_properties: Default::default(),
+        consume_queue: queue_name,
+        consumer_tag,
+        consume_options: BasicConsumeOptions {
+            // https://www.rabbitmq.com/amqp-0-9-1-reference.html#domain.no-local
+            // false because I don't care if the same connection reads and publishes to the same
+            // queue
+            no_local: false,
+
+            // https://www.rabbitmq.com/amqp-0-9-1-reference.html#domain.no-ack
+            // Obviously want message ACKs to ensure message are handled
+            no_ack: false,
+
+            // https://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.consume.exclusive
+            // More than one worker should be able to read from the same queue
+            exclusive: false,
+
+            // https://www.rabbitmq.com/amqp-0-9-1-reference.html#domain.no-wait
+            // want the server to respond if there's a failure
+            nowait: false,
+        },
+        consume_arguments: Default::default(),
+        // Ref https://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.qos.prefetch-size
+        //
+        // prefetch_size tells the consumer how many messages to load in batches from the queue.
+        // Higher values generally means better queue performance (fewer messages stuck in the
+        // queue), at the cost of consumer memory.
+        // Additionally, if the prefetch_size is *too* large, a single worker can "starve" other
+        // workers, potentially hurting total message throughput.
+        //
+        // "global" enforces the same limit for other consumers on the channel, which isn't
+        // necessarily what we want
+        consume_prefetch_count: Some(prefetch_size),
+        requeue_on_nack: false, // TODO
+    })
+    .build_pair()
+    .await
+    .expect("Error initializing rabbitmq queue");
+
+    let producer =
+        TaskQueueProducer::Omni(Arc::new(producer.into_dyn_scheduled(Default::default())));
+    let consumer = TaskQueueConsumer::Omni(consumer.into_dyn(Default::default()));
 
     Ok((producer, consumer))
 }
@@ -140,131 +165,4 @@ async fn declare_bound_queue(
         .await?;
 
     Ok(())
-}
-
-async fn start_queue_consumer(
-    queue_name: &str,
-    channel: &lapin::Channel,
-    prefetch_size: u16,
-) -> Result<lapin::Consumer> {
-    // Ref https://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.consume.consumer-tag
-    let consumer_tag = format!(
-        "{queue_name}-consumer-{}",
-        KsuidMs::new(None, None).to_string() // prevent possible errors around duplicate consumer tags
-    );
-
-    let opts = BasicConsumeOptions {
-        // https://www.rabbitmq.com/amqp-0-9-1-reference.html#domain.no-local
-        // false because I don't care if the same connection reads and publishes to the same queue
-        no_local: false,
-
-        // https://www.rabbitmq.com/amqp-0-9-1-reference.html#domain.no-ack
-        // Obviously want message ACKs to ensure message are handled
-        no_ack: false,
-
-        // https://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.consume.exclusive
-        // More than one worker should be able to read from the same queue
-        exclusive: false,
-
-        // https://www.rabbitmq.com/amqp-0-9-1-reference.html#domain.no-wait
-        // want the server to respond if there's a failure
-        nowait: false,
-    };
-
-    let args = FieldTable::default();
-
-    // Ref https://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.qos.prefetch-size
-    //
-    // prefetch_size tells the consumer how many messages to load in batches from the queue.
-    // Higher values generally means better queue performance (fewer messages stuck in the queue),
-    // at the cost of consumer memory.
-    // Additionally, if the prefetch_size is *too* large, a single worker can "starve" other workers,
-    // potentially hurting total message throughput.
-    //
-    // "global" enforces the same limit for other consumers on the channel, which isn't necessarily
-    // what we want
-    channel
-        .basic_qos(prefetch_size, BasicQosOptions { global: false })
-        .await?;
-
-    Ok(channel
-        .basic_consume(queue_name, &consumer_tag, opts, args)
-        .await?)
-}
-
-#[axum::async_trait]
-impl TaskQueueSend for Producer {
-    async fn send(&self, task: Arc<QueueTask>, delay: Option<Duration>) -> Result<()> {
-        let payload = serde_json::to_vec(&task)
-            .map_err(|e| Error::generic(format!("unable to serialize queue task wtf: {:?}", e)))?;
-
-        let mut headers = FieldTable::default();
-        if let Some(delay) = delay {
-            let delay_ms: u32 = delay
-                .as_millis()
-                .try_into()
-                .map_err(|_| Error::queue("message delay is too large"))?;
-            headers.insert("x-delay".into(), AMQPValue::LongUInt(delay_ms))
-        }
-
-        let routing_key = &self.0.queue_name;
-
-        // Ref https://www.rabbitmq.com/publishers.html#unroutable
-        let options = BasicPublishOptions {
-            mandatory: true, // so we're alerted if the message is unroutable
-            immediate: false,
-        };
-
-        let id = KsuidMs::new(Some(Utc::now()), None).to_string();
-
-        let properties = BasicProperties::default()
-            .with_message_id(id.into())
-            .with_headers(headers);
-
-        let confirm = self
-            .0
-            .channel
-            .basic_publish(
-                &self.0.exchange_name,
-                routing_key,
-                options,
-                &payload,
-                properties,
-            )
-            .await?;
-
-        confirm.await?;
-
-        Ok(())
-    }
-}
-
-#[axum::async_trait]
-impl TaskQueueReceive for Consumer {
-    async fn receive_all(&mut self) -> Result<Vec<TaskQueueDelivery>> {
-        // Unfortunately, lapin::Consumer currently has no API for fetching a batch of messages
-        // without potentially blocking for each one. So we'll always return a vec! of length 1
-        let delivery = self.consumer.next().await.ok_or(Error::generic(
-            "rabbitmq consumer unexpectedly returned nothing!",
-        ))??;
-
-        let id = delivery
-            .properties
-            .message_id()
-            .as_ref()
-            .ok_or(Error::generic("task is missing message_id!"))?
-            .to_string();
-
-        let task: QueueTask = serde_json::from_slice(&delivery.data).map_err(|e| {
-            Error::generic(format!(
-                "rabbitmq task deserialization unexpectedly failed?!: {e:?}"
-            ))
-        })?;
-
-        Ok(vec![TaskQueueDelivery {
-            id,
-            task: Arc::new(task),
-            acker: Acker::RabbitMQ(delivery),
-        }])
-    }
 }

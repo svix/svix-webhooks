@@ -2,7 +2,6 @@ use std::{sync::Arc, time::Duration};
 
 use axum::async_trait;
 use chrono::{DateTime, Utc};
-use lapin::options::{BasicAckOptions, BasicNackOptions};
 use omniqueue::{
     backends::memory_queue::MemoryQueueBackend,
     queue::{
@@ -151,7 +150,6 @@ impl QueueTask {
 #[derive(Clone)]
 pub enum TaskQueueProducer {
     Redis(RedisQueueProducer),
-    RabbitMq(rabbitmq::Producer),
     Omni(Arc<omniqueue::scheduled::DynScheduledProducer>),
 }
 
@@ -162,7 +160,6 @@ impl TaskQueueProducer {
             || async {
                 match self {
                     TaskQueueProducer::Redis(q) => q.send(task.clone(), delay).await,
-                    TaskQueueProducer::RabbitMq(q) => q.send(task.clone(), delay).await,
                     TaskQueueProducer::Omni(q) => if let Some(delay) = delay {
                         q.send_serde_json_scheduled(task.as_ref(), delay).await
                     } else {
@@ -180,7 +177,6 @@ impl TaskQueueProducer {
 
 pub enum TaskQueueConsumer {
     Redis(RedisQueueConsumer),
-    RabbitMq(rabbitmq::Consumer),
     Omni(DynConsumer),
 }
 
@@ -188,7 +184,6 @@ impl TaskQueueConsumer {
     pub async fn receive_all(&mut self) -> Result<Vec<TaskQueueDelivery>> {
         match self {
             TaskQueueConsumer::Redis(q) => q.receive_all().await.trace(),
-            TaskQueueConsumer::RabbitMq(q) => q.receive_all().await.trace(),
             TaskQueueConsumer::Omni(q) => {
                 const MAX_MESSAGES: usize = 128;
                 // FIXME(onelson): need to figure out what deadline/duration to use here
@@ -208,7 +203,6 @@ impl TaskQueueConsumer {
 #[derive(Debug)]
 enum Acker {
     Redis(Arc<RedisQueueInner>),
-    RabbitMQ(lapin::message::Delivery),
     Omni(Delivery),
 }
 
@@ -243,14 +237,6 @@ impl TaskQueueDelivery {
                         .expect("acker is always Some when trying to ack");
                     match acker_ref {
                         Acker::Redis(q) => q.ack(&self.id, &self.task).await.trace(),
-                        Acker::RabbitMQ(delivery) => {
-                            delivery
-                                .ack(BasicAckOptions {
-                                    multiple: false, // Only ack this message, not others
-                                })
-                                .await
-                                .map_err(Into::into)
-                        }
                         Acker::Omni(_) => match acker.take() {
                             Some(Acker::Omni(delivery)) => {
                                 delivery.ack().await.map_err(|(e, delivery)| {
@@ -284,17 +270,6 @@ impl TaskQueueDelivery {
                         .expect("acker is always Some when trying to ack");
                     match acker_ref {
                         Acker::Redis(q) => q.nack(&self.id, &self.task).await.trace(),
-                        Acker::RabbitMQ(delivery) => {
-                            // See https://www.rabbitmq.com/confirms.html#consumer-nacks-requeue
-
-                            delivery
-                                .nack(BasicNackOptions {
-                                    requeue: true,
-                                    multiple: false, // Only nack this message, not others
-                                })
-                                .await
-                                .map_err(Into::into)
-                        }
                         Acker::Omni(_) => match acker.take() {
                             Some(Acker::Omni(delivery)) => {
                                 delivery
