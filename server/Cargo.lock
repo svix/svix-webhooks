@@ -2492,10 +2492,11 @@ dependencies = [
 [[package]]
 name = "omniqueue"
 version = "0.1.0"
-source = "git+https://github.com/svix/omniqueue-rs.git?rev=32bf5f17209b76ab33902ed149f1890a80dda32a#32bf5f17209b76ab33902ed149f1890a80dda32a"
+source = "git+https://github.com/svix/omniqueue-rs.git?rev=648f43f0778d02115df2d91b1a961519a62f42a7#648f43f0778d02115df2d91b1a961519a62f42a7"
 dependencies = [
  "async-trait",
- "futures",
+ "futures-util",
+ "lapin",
  "serde",
  "serde_json",
  "thiserror",
