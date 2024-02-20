@@ -3,6 +3,10 @@
 ## Next
 * 
 
+## Version 1.19.0
+* Libs/Python: Make request timeout and retries configurable
+* Libs/Rust: Make request timeout configurable
+
 ## Version 1.18.0
 * Server: upgrade dependencies 
 * Server: adopt omniqueue as a queue backend
