@@ -14,9 +14,7 @@ use svix_server::{
     },
 };
 
-mod utils;
-
-use utils::{
+use crate::utils::{
     common_calls::{
         create_test_app, create_test_endpoint, create_test_message, create_test_msg_with,
         endpoint_in, get_msg_attempt_list_and_assert_count,

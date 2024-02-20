@@ -5,9 +5,6 @@
 use std::time::Duration;
 
 use http::StatusCode;
-
-mod utils;
-
 use svix_server::{
     cfg::{CacheBackend, CacheType, Configuration},
     core::{
@@ -17,7 +14,8 @@ use svix_server::{
     },
     redis::{new_redis_pool, new_redis_pool_clustered, RedisPool},
 };
-use utils::{
+
+use crate::utils::{
     common_calls::{create_test_app, create_test_endpoint, create_test_message, message_in},
     get_default_test_config, start_svix_server_with_cfg_and_org_id, IgnoredResponse, TestReceiver,
 };

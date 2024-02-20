@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use crate::utils::common_calls::{default_test_endpoint, metadata};
 use anyhow::Result;
 use chrono::{DateTime, Utc};
 use ed25519_compact::Signature;
@@ -47,13 +46,12 @@ use svix_server::{
     },
 };
 
-mod utils;
-
-use utils::{
+use crate::utils::{
     common_calls::{
         common_test_list, create_test_app, create_test_endpoint, create_test_message,
-        delete_test_app, endpoint_in, event_type_in, get_msg_attempt_list_and_assert_count,
-        post_endpoint, put_endpoint, recover_webhooks,
+        default_test_endpoint, delete_test_app, endpoint_in, event_type_in,
+        get_msg_attempt_list_and_assert_count, metadata, post_endpoint, put_endpoint,
+        recover_webhooks,
     },
     get_default_test_config, start_svix_server, start_svix_server_with_cfg,
     start_svix_server_with_cfg_and_org_id, IgnoredResponse, TestClient, TestReceiver,
