@@ -9,6 +9,9 @@ use crate::error::Result;
 pub use crate::models::*;
 use crate::Configuration;
 
+#[cfg(feature = "svix_beta")]
+pub use message_api::{V1MessageStreamError, V1MessageStreamParams};
+
 const CRATE_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 pub struct SvixOptions {
