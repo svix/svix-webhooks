@@ -3,9 +3,8 @@ package com.svix.kotlin
 data class SvixOptions(
     internal var wantedServerUrl: String? = null,
     val initialRetryDelayMillis: Long? = null,
-    val numRetries: Int? = null
+    val numRetries: Int? = null,
 ) {
-
     private val version = "1.19.0"
 
     var serverUrl: String
