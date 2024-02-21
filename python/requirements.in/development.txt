@@ -9,3 +9,4 @@ pip-tools>=6.13.0
 pytest
 httpx>=0.23.0
 openapi-python-client>=0.14.1,<0.15 # I think version 0.15 is now dangerous for us? https://github.com/openapi-generators/openapi-python-client/pull/775#issuecomment-1646977834
+jinja2>=3.1.3
