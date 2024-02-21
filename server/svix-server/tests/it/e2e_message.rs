@@ -15,9 +15,7 @@ use svix_server::{
     },
 };
 
-mod utils;
-
-use utils::{
+use crate::utils::{
     common_calls::{create_test_app, create_test_endpoint, create_test_msg_with, message_in},
     run_with_retries, start_svix_server, IgnoredResponse, TestReceiver,
 };

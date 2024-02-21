@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use crate::utils::common_calls::metadata;
 use reqwest::StatusCode;
 use svix_server::core::security::generate_org_token;
 use svix_server::core::types::{BaseId, OrganizationId};
@@ -10,12 +9,9 @@ use svix_server::{
     v1::endpoints::application::ApplicationOut,
 };
 
-mod utils;
-
-use crate::utils::get_default_test_config;
-use utils::{
-    common_calls::{application_in, common_test_list},
-    start_svix_server, IgnoredResponse,
+use crate::utils::{
+    common_calls::{application_in, common_test_list, metadata},
+    get_default_test_config, start_svix_server, IgnoredResponse,
 };
 
 // NOTE: PATCHing must be tested exhaustively as if any of the boilerplate is missed then the

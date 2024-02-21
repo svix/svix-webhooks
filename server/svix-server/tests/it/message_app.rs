@@ -5,31 +5,20 @@
 use std::time::Duration;
 
 use http::StatusCode;
-
-mod utils;
-
 use svix_server::{
-    cfg::{CacheBackend, CacheType, Configuration},
+    cfg::CacheBackend,
     core::{
         cache::{self, CacheBehavior},
         message_app::AppEndpointKey,
         types::{BaseId, OrganizationId},
     },
-    redis::{new_redis_pool, new_redis_pool_clustered, RedisPool},
+    redis::{new_redis_pool, new_redis_pool_clustered},
 };
-use utils::{
+
+use crate::utils::{
     common_calls::{create_test_app, create_test_endpoint, create_test_message, message_in},
     get_default_test_config, start_svix_server_with_cfg_and_org_id, IgnoredResponse, TestReceiver,
 };
-
-pub async fn get_pool(cfg: Configuration) -> RedisPool {
-    match cfg.cache_type {
-        CacheType::RedisCluster => {
-            new_redis_pool_clustered(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg).await
-        }
-        _ => new_redis_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg).await,
-    }
-}
 
 /// Ensures that a deleted application returns `None` when using [`layered_fetch`]
 #[tokio::test]

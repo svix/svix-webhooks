@@ -13,8 +13,7 @@ use svix_server::{
     v1::endpoints::application::ApplicationOut,
 };
 
-mod utils;
-use utils::{
+use crate::utils::{
     common_calls::{app_portal_access, application_in},
     start_svix_server, IgnoredResponse,
 };

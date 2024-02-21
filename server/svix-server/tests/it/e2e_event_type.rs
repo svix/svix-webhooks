@@ -17,9 +17,7 @@ use svix_server::{
     },
 };
 
-mod utils;
-
-use utils::{
+use crate::utils::{
     common_calls::{app_portal_access, application_in, common_test_list, event_type_in},
     start_svix_server, IgnoredResponse,
 };

@@ -14,8 +14,7 @@ use svix_server::{
     v1::endpoints::event_type::EventTypeOut,
 };
 
-mod utils;
-use utils::{
+use crate::utils::{
     common_calls::{create_test_app, create_test_endpoint, create_test_message, event_type_in},
     {get_default_test_config, start_svix_server_with_cfg_and_org_id},
 };
