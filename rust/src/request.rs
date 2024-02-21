@@ -85,24 +85,28 @@ impl Request {
     }
 
     pub async fn execute<T: DeserializeOwned>(self, conf: &Configuration) -> Result<T, Error> {
-        let mut query_string = ::url::form_urlencoded::Serializer::new("".to_owned());
-
         let mut path = self.path;
         for (k, v) in self.path_params {
             // replace {id} with the value of the id path param
             path = path.replace(&format!("{{{k}}}"), &v);
         }
 
-        for (key, val) in self.query_params {
-            query_string.append_pair(&key, &val);
-        }
-
         let mut uri = format!("{}{}", conf.base_path, path);
 
-        let query_string_str = query_string.finish();
-        if !query_string_str.is_empty() {
-            uri += "?";
-            uri += &query_string_str;
+        // Work around rustc issue - we need to make sure that `query_string` is not captured
+        // by the outer `async` generator. Using `drop(query_string)` is insufficient, so we
+        // create a new scope
+        {
+            let mut query_string = ::url::form_urlencoded::Serializer::new("".to_owned());
+            for (key, val) in self.query_params {
+                query_string.append_pair(&key, &val);
+            }
+
+            let query_string_str = query_string.finish();
+            if !query_string_str.is_empty() {
+                uri += "?";
+                uri += &query_string_str;
+            }
         }
 
         let mut req_builder = http1::Request::builder().uri(uri).method(self.method);

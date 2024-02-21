@@ -1284,3 +1284,18 @@ impl<'a> Statistics<'a> {
         statistics_api::v1_statistics_aggregate_event_types(self.cfg).await
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::api::Svix;
+
+    #[test]
+    fn test_future_send_sync() {
+        fn require_send_sync<T: Send + Sync>(_: T) {}
+
+        let svix = Svix::new(String::new(), None);
+        let message_api = svix.message();
+        let fut = message_api.expunge_content(String::new(), String::new());
+        require_send_sync(fut);
+    }
+}
