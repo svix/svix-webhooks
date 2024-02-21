@@ -913,6 +913,14 @@ impl<'a> Message<'a> {
         )
         .await
     }
+
+    #[cfg(feature = "svix_beta")]
+    pub async fn events(
+        &self,
+        params: message_api::V1MessageStreamParams,
+    ) -> Result<crate::models::MessageStreamOut> {
+        message_api::v1_message_stream(self.cfg, params).await
+    }
 }
 
 #[derive(Default)]
