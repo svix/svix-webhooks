@@ -18,6 +18,7 @@ http1 = ["hyper-util/http1", "hyper-rustls?/http1"]
 http2 = ["hyper-util/http2", "hyper-rustls?/http2"]
 native-tls = ["dep:hyper-tls"]
 rustls-tls = ["dep:hyper-rustls", "hyper-rustls?/rustls-native-certs"]
+svix_beta = []
 
 [dependencies]
 base64 = "0.13"
