@@ -3,6 +3,11 @@
 ## Next
 * 
 
+## Version 1.20.0
+* Server and Bridge: Performance improvements in test setup
+* Libs/C#: don't serialize nulls in PATCH endpoints
+* Libs/Rust: Make API method Future implement Send/Sync
+
 ## Version 1.19.0
 * Libs/Python: Make request timeout and retries configurable
 * Libs/Rust: Make request timeout configurable
