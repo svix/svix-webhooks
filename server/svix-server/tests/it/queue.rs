@@ -6,13 +6,14 @@
 
 use std::{str::FromStr, time::Duration};
 
+use redis::AsyncCommands as _;
 use svix_server::{
     cfg::{CacheType, Configuration},
     core::types::{ApplicationId, EndpointId, MessageAttemptTriggerType, MessageId},
     queue::{
         new_pair, MessageTask, QueueTask, TaskQueueConsumer, TaskQueueDelivery, TaskQueueProducer,
     },
-    redis::{new_redis_pool, new_redis_pool_clustered, PoolLike, PooledConnectionLike, RedisPool},
+    redis::{new_redis_pool, new_redis_pool_clustered, RedisPool},
 };
 
 // TODO: Don't copy this from the Redis queue test directly, place the fn somewhere both can access
@@ -42,7 +43,8 @@ async fn test_many_queue_consumers_inner(prefix: &str, delay: Option<Duration>) 
         let pool = get_pool(cfg.clone()).await;
         let mut conn = pool.get().await.unwrap();
 
-        conn.query_async::<()>(redis::Cmd::del(&format!("{prefix}{{queue}}_svix_v3_main")))
+        let _: () = conn
+            .del(&format!("{prefix}{{queue}}_svix_v3_main"))
             .await
             .unwrap();
     }

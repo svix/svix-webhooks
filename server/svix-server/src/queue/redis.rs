@@ -34,14 +34,14 @@ use axum::async_trait;
 use chrono::Utc;
 use redis::{
     streams::{StreamClaimReply, StreamId, StreamReadOptions, StreamReadReply},
-    Cmd, FromRedisValue, RedisResult, RedisWrite, ToRedisArgs,
+    AsyncCommands as _, Cmd, FromRedisValue, RedisResult, RedisWrite, ToRedisArgs,
 };
 use tokio::time::sleep;
 
 use crate::{
     error::{Error, Result},
     queue::Acker,
-    redis::{PoolLike, PooledConnection, PooledConnectionLike, RedisPool},
+    redis::{PooledConnection, RedisPool},
 };
 
 use super::{
@@ -234,9 +234,7 @@ async fn background_task_delayed(
             let _: () = pool.query_async_pipeline(pipe).await?;
 
             // Then remove the tasks from the delayed queue so they aren't resent
-            let _: () = pool
-                .query_async(Cmd::zrem(&delayed_queue_name, keys))
-                .await?;
+            let _: () = pool.zrem(&delayed_queue_name, keys).await?;
 
             // Make sure to release the lock after done processing
             let _: () = pool.del(delayed_lock).await?;
@@ -309,11 +307,7 @@ async fn new_pair_inner(
             .expect("Error retreiving connection from Redis pool");
 
         let consumer_group_resp: RedisResult<()> = conn
-            .query_async(Cmd::xgroup_create_mkstream(
-                &main_queue_name,
-                WORKERS_GROUP,
-                0i8,
-            ))
+            .xgroup_create_mkstream(&main_queue_name, WORKERS_GROUP, 0i8)
             .await;
 
         // If the error is a BUSYGROUP error, then the stream or consumer group already exists. This does
@@ -472,7 +466,7 @@ impl RedisQueueInner {
         let mut pool = self.pool.get().await?;
 
         let _: () = pool
-            .query_async(Cmd::xadd(
+            .xadd(
                 &self.main_queue_name,
                 GENERATE_STREAM_ID,
                 &[(
@@ -480,7 +474,7 @@ impl RedisQueueInner {
                     serde_json::to_string(&task)
                         .map_err(|e| Error::generic(format!("serialization error: {}", e)))?,
                 )],
-            ))
+            )
             .await?;
 
         Ok(())
@@ -564,14 +558,14 @@ impl TaskQueueReceive for RedisQueueConsumer {
             // There is no way to make it await a message for unbounded times, so simply block for a short
             // amount of time (to avoid locking) and loop if no messages were retreived
             let resp: StreamReadReply = pool
-                .query_async(Cmd::xread_options(
+                .xread_options(
                     &[&consumer.0.main_queue_name],
                     &[LISTEN_STREAM_ID],
                     &StreamReadOptions::default()
                         .group(WORKERS_GROUP, WORKER_CONSUMER)
                         .count(1)
                         .block(10_000),
-                ))
+                )
                 .await?;
 
             if !resp.keys.is_empty() && !resp.keys[0].ids.is_empty() {
@@ -703,7 +697,7 @@ pub mod tests {
     use std::{sync::Arc, time::Duration};
 
     use chrono::Utc;
-    use redis::{streams::StreamReadReply, Cmd};
+    use redis::{streams::StreamReadReply, AsyncCommands as _};
 
     use super::{
         migrate_list, migrate_list_to_stream, migrate_sset, new_pair_inner, to_redis_key, Direction,
@@ -716,7 +710,7 @@ pub mod tests {
             redis::RedisQueueInner, Acker, MessageTask, QueueTask, TaskQueueConsumer,
             TaskQueueDelivery, TaskQueueProducer,
         },
-        redis::{PoolLike, PooledConnectionLike, RedisPool},
+        redis::RedisPool,
     };
 
     pub async fn get_pool(cfg: Configuration) -> RedisPool {
@@ -871,7 +865,7 @@ pub mod tests {
             .await
             .expect("Error retreiving connection from Redis pool");
         assert!(conn
-            .query_async::<StreamReadReply>(Cmd::xread(&["{test}_ack"], &[0]))
+            .xread::<_, _, StreamReadReply>(&["{test}_ack"], &[0])
             .await
             .unwrap()
             .keys
@@ -888,13 +882,14 @@ pub mod tests {
             .get()
             .await
             .expect("Error retreiving connection from Redis pool");
-        conn.query_async::<()>(Cmd::del(&[
-            "{test}_ack",
-            "{test}_ack_delayed",
-            "{test}_ack_delayed_lock",
-        ]))
-        .await
-        .unwrap();
+        let _: () = conn
+            .del(&[
+                "{test}_ack",
+                "{test}_ack_delayed",
+                "{test}_ack_delayed_lock",
+            ])
+            .await
+            .unwrap();
 
         let (p, mut c) = new_pair_inner(
             pool.clone(),
@@ -929,7 +924,7 @@ pub mod tests {
 
         // And assert that the task has been deleted
         assert!(conn
-            .query_async::<StreamReadReply>(Cmd::xread(&["{test}_ack"], &[0]))
+            .xread::<_, _, StreamReadReply>(&["{test}_ack"], &[0])
             .await
             .unwrap()
             .keys
@@ -1051,7 +1046,7 @@ pub mod tests {
 
             // Clear test keys
             let _: () = conn
-                .query_async(redis::Cmd::del(&[
+                .del(&[
                     v1_main,
                     v2_main,
                     v3_main,
@@ -1059,24 +1054,20 @@ pub mod tests {
                     v2_processing,
                     v1_delayed,
                     v2_delayed,
-                ]))
+                ])
                 .await
                 .unwrap();
 
             // Add v3 consumer group
             let _: () = conn
-                .query_async(redis::Cmd::xgroup_create_mkstream(
-                    v3_main,
-                    super::WORKERS_GROUP,
-                    0i8,
-                ))
+                .xgroup_create_mkstream(v3_main, super::WORKERS_GROUP, 0i8)
                 .await
                 .unwrap();
 
             // Add v1 data
             for num in 1..=10 {
                 let _: () = conn
-                    .query_async(redis::Cmd::rpush(
+                    .rpush(
                         v1_main,
                         to_redis_key(&TaskQueueDelivery {
                             id: num.to_string(),
@@ -1092,14 +1083,14 @@ pub mod tests {
                                 main_queue_name: v1_main.to_owned(),
                             })),
                         }),
-                    ))
+                    )
                     .await
                     .unwrap();
             }
 
             for num in 11..=15 {
                 let _: () = conn
-                    .query_async(redis::Cmd::zadd(
+                    .zadd(
                         v1_delayed,
                         to_redis_key(&TaskQueueDelivery {
                             id: num.to_string(),
@@ -1116,7 +1107,7 @@ pub mod tests {
                             })),
                         }),
                         Utc::now().timestamp() + 2,
-                    ))
+                    )
                     .await
                     .unwrap();
             }
