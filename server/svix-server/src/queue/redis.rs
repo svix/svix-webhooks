@@ -34,14 +34,14 @@ use axum::async_trait;
 use chrono::Utc;
 use redis::{
     streams::{StreamClaimReply, StreamId, StreamReadOptions, StreamReadReply},
-    Cmd, FromRedisValue, RedisResult, RedisWrite, ToRedisArgs,
+    AsyncCommands as _, Cmd, FromRedisValue, RedisResult, RedisWrite, ToRedisArgs,
 };
 use tokio::time::sleep;
 
 use crate::{
     error::{Error, Result},
     queue::Acker,
-    redis::{PoolLike, PooledConnection, PooledConnectionLike, RedisPool},
+    redis::{PoolLike, PooledConnection, RedisPool},
 };
 
 use super::{
@@ -703,7 +703,7 @@ pub mod tests {
     use std::{sync::Arc, time::Duration};
 
     use chrono::Utc;
-    use redis::{streams::StreamReadReply, Cmd};
+    use redis::{streams::StreamReadReply, AsyncCommands as _, Cmd};
 
     use super::{
         migrate_list, migrate_list_to_stream, migrate_sset, new_pair_inner, to_redis_key, Direction,
@@ -716,7 +716,7 @@ pub mod tests {
             redis::RedisQueueInner, Acker, MessageTask, QueueTask, TaskQueueConsumer,
             TaskQueueDelivery, TaskQueueProducer,
         },
-        redis::{PoolLike, PooledConnectionLike, RedisPool},
+        redis::{PoolLike, RedisPool},
     };
 
     pub async fn get_pool(cfg: Configuration) -> RedisPool {

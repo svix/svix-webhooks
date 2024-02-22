@@ -5,7 +5,7 @@ use bb8_redis::RedisMultiplexedConnectionManager;
 pub use cluster::RedisClusterConnectionManager;
 
 use axum::async_trait;
-use redis::{FromRedisValue, RedisError, RedisResult, ToRedisArgs};
+use redis::{FromRedisValue, RedisError, RedisResult};
 
 use crate::cfg::Configuration;
 
@@ -30,158 +30,48 @@ pub enum PooledConnection<'a> {
     NonClustered(NonClusteredPooledConnection<'a>),
 }
 
-#[async_trait]
-pub trait PooledConnectionLike {
-    async fn query_async<T: FromRedisValue>(&mut self, cmd: redis::Cmd) -> RedisResult<T>;
-    async fn query_async_pipeline<T: FromRedisValue>(
+impl PooledConnection<'_> {
+    pub async fn query_async<T: FromRedisValue>(&mut self, cmd: redis::Cmd) -> RedisResult<T> {
+        cmd.query_async(self).await
+    }
+
+    pub async fn query_async_pipeline<T: FromRedisValue>(
         &mut self,
         pipe: redis::Pipeline,
-    ) -> RedisResult<T>;
-
-    async fn del<K: ToRedisArgs + Send, T: FromRedisValue>(&mut self, key: K) -> RedisResult<T> {
-        self.query_async(redis::Cmd::del(key)).await
-    }
-
-    async fn get<K: ToRedisArgs + Send, T: FromRedisValue>(&mut self, key: K) -> RedisResult<T> {
-        let mut cmd = redis::cmd(if key.is_single_arg() { "GET" } else { "MGET" });
-        cmd.arg(key);
-        self.query_async(cmd).await
-    }
-
-    async fn lpop<K: ToRedisArgs + Send, T: FromRedisValue>(
-        &mut self,
-        key: K,
-        count: Option<core::num::NonZeroUsize>,
     ) -> RedisResult<T> {
-        self.query_async(redis::Cmd::lpop(key, count)).await
-    }
-
-    async fn lrange<K: ToRedisArgs + Send, T: FromRedisValue>(
-        &mut self,
-        key: K,
-        start: isize,
-        stop: isize,
-    ) -> RedisResult<T> {
-        self.query_async(redis::Cmd::lrange(key, start, stop)).await
-    }
-
-    async fn lrem<K: ToRedisArgs + Send, V: ToRedisArgs + Send, T: FromRedisValue>(
-        &mut self,
-        key: K,
-        count: isize,
-        value: V,
-    ) -> RedisResult<T> {
-        self.query_async(redis::Cmd::lrem(key, count, value)).await
-    }
-
-    async fn pset_ex<K: ToRedisArgs + Send, V: ToRedisArgs + Send, T: FromRedisValue>(
-        &mut self,
-        key: K,
-        value: V,
-        milliseconds: u64,
-    ) -> RedisResult<T> {
-        self.query_async(redis::Cmd::pset_ex(key, value, milliseconds))
-            .await
-    }
-
-    async fn rpush<K: ToRedisArgs + Send, V: ToRedisArgs + Send, T: FromRedisValue>(
-        &mut self,
-        key: K,
-        value: V,
-    ) -> RedisResult<T> {
-        self.query_async(redis::Cmd::rpush(key, value)).await
-    }
-
-    async fn set<K: ToRedisArgs + Send, V: ToRedisArgs + Send, T: FromRedisValue>(
-        &mut self,
-        key: K,
-        value: V,
-    ) -> RedisResult<T> {
-        self.query_async(redis::Cmd::set(key, value)).await
-    }
-
-    async fn zadd<
-        K: ToRedisArgs + Send,
-        S: ToRedisArgs + Send,
-        M: ToRedisArgs + Send,
-        T: FromRedisValue,
-    >(
-        &mut self,
-        key: K,
-        member: M,
-        score: S,
-    ) -> RedisResult<T> {
-        self.query_async(redis::Cmd::zadd(key, member, score)).await
-    }
-
-    async fn zadd_multiple<
-        K: ToRedisArgs + Send,
-        S: ToRedisArgs + Send + Sync,
-        M: ToRedisArgs + Send + Sync,
-        T: FromRedisValue,
-    >(
-        &mut self,
-        key: K,
-        items: &'_ [(S, M)],
-    ) -> RedisResult<T> {
-        self.query_async(redis::Cmd::zadd_multiple(key, items))
-            .await
-    }
-
-    async fn zpopmin<K: ToRedisArgs + Send, T: FromRedisValue>(
-        &mut self,
-        key: K,
-        count: isize,
-    ) -> RedisResult<T> {
-        self.query_async(redis::Cmd::zpopmin(key, count)).await
-    }
-
-    async fn zrange_withscores<K: ToRedisArgs + Send, T: FromRedisValue>(
-        &mut self,
-        key: K,
-        start: isize,
-        stop: isize,
-    ) -> RedisResult<T> {
-        self.query_async(redis::Cmd::zrange_withscores(key, start, stop))
-            .await
-    }
-
-    async fn zrangebyscore_limit<
-        K: ToRedisArgs + Send,
-        M: ToRedisArgs + Send,
-        MM: ToRedisArgs + Send,
-        T: FromRedisValue,
-    >(
-        &mut self,
-        key: K,
-        min: M,
-        max: MM,
-        offset: isize,
-        count: isize,
-    ) -> RedisResult<T> {
-        self.query_async(redis::Cmd::zrangebyscore_limit(
-            key, min, max, offset, count,
-        ))
-        .await
+        pipe.query_async(self).await
     }
 }
 
-#[async_trait]
-impl<'a> PooledConnectionLike for PooledConnection<'a> {
-    async fn query_async<T: FromRedisValue>(&mut self, cmd: redis::Cmd) -> RedisResult<T> {
+impl redis::aio::ConnectionLike for PooledConnection<'_> {
+    fn req_packed_command<'a>(
+        &'a mut self,
+        cmd: &'a redis::Cmd,
+    ) -> redis::RedisFuture<'a, redis::Value> {
         match self {
-            Self::Clustered(pooled_con) => pooled_con.query_async(cmd).await,
-            Self::NonClustered(pooled_con) => pooled_con.query_async(cmd).await,
+            PooledConnection::Clustered(conn) => conn.con.req_packed_command(cmd),
+            PooledConnection::NonClustered(conn) => conn.con.req_packed_command(cmd),
         }
     }
 
-    async fn query_async_pipeline<T: FromRedisValue>(
-        &mut self,
-        pipe: redis::Pipeline,
-    ) -> RedisResult<T> {
+    fn req_packed_commands<'a>(
+        &'a mut self,
+        cmd: &'a redis::Pipeline,
+        offset: usize,
+        count: usize,
+    ) -> redis::RedisFuture<'a, Vec<redis::Value>> {
         match self {
-            Self::Clustered(pooled_con) => pooled_con.query_async_pipeline(pipe).await,
-            Self::NonClustered(pooled_con) => pooled_con.query_async_pipeline(pipe).await,
+            PooledConnection::Clustered(conn) => conn.con.req_packed_commands(cmd, offset, count),
+            PooledConnection::NonClustered(conn) => {
+                conn.con.req_packed_commands(cmd, offset, count)
+            }
+        }
+    }
+
+    fn get_db(&self) -> i64 {
+        match self {
+            PooledConnection::Clustered(conn) => conn.con.get_db(),
+            PooledConnection::NonClustered(conn) => conn.con.get_db(),
         }
     }
 }
@@ -292,6 +182,7 @@ pub async fn new_redis_pool(redis_dsn: &str, cfg: &Configuration) -> RedisPool {
 
 #[cfg(test)]
 mod tests {
+    use redis::AsyncCommands;
 
     use super::*;
     use crate::cfg::CacheType;
@@ -310,19 +201,12 @@ mod tests {
         let cfg = crate::cfg::load().unwrap();
 
         let pool = get_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg).await;
-        let mut pool = pool.get().await.unwrap();
+        let mut conn = pool.get().await.unwrap();
 
         for (val, key) in "abcdefghijklmnopqrstuvwxyz".chars().enumerate() {
             let key = key.to_string();
-            pool.query_async::<()>(redis::Cmd::set::<String, usize>(key.clone(), val))
-                .await
-                .unwrap();
-            assert_eq!(
-                pool.query_async::<usize>(redis::Cmd::get(&key))
-                    .await
-                    .unwrap(),
-                val
-            );
+            let _: () = conn.set(key.clone(), val).await.unwrap();
+            assert_eq!(conn.get::<_, usize>(&key).await.unwrap(), val);
         }
     }
 }
