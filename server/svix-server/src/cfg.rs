@@ -466,7 +466,7 @@ mod tests {
         cfg.cache_type = CacheType::Redis;
         cfg.queue_dsn = Some("test_a".to_owned());
         cfg.cache_dsn = Some("test_b".to_owned());
-        cfg.redis_dsn = Some("this_value_shoud_be_overriden".to_owned());
+        cfg.redis_dsn = Some("this_value_should_be_overridden".to_owned());
 
         // Assert that the queue_dsn and cache_dsn overwrite the `redis_dsn`
         assert_eq!(cfg.queue_backend(), QueueBackend::Redis("test_a"));

@@ -275,7 +275,7 @@ pub enum HttpErrorBody {
 /// error.
 pub struct ValidationErrorItem {
     /// The location as a [`Vec`] of [`String`]s -- often in the form `["body", "field_name"]`,
-    /// `["query", "field_name"]`, etc. They may, however, be arbitarily deep.
+    /// `["query", "field_name"]`, etc. They may, however, be arbitrarily deep.
     pub loc: Vec<String>,
 
     /// The message accompanying the validation error item.

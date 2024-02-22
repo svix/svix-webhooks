@@ -435,7 +435,7 @@
 * Ruby: Fix a broken import (we changed the name of a webhook event) 🐞
 
 ## Version 0.53.0
-* Python: **Breaking** The python library is now fully typed!  There may be some breaking changes releated to this upgrade (including dropping support for Python 2.X). Please check test and check your integration before upgrading to this version. 🤓
+* Python: **Breaking** The python library is now fully typed!  There may be some breaking changes related to this upgrade (including dropping support for Python 2.X). Please check test and check your integration before upgrading to this version. 🤓
 * Python: New Async API via SvixAsync! 🚀
 * Libs: Remove the `prevIterator` option from message attempt options (This was added by mistake, never worked and was never meant to work. All iterators should be passed via the `iterator` option. Sorry for the confusion!)
 * Libs: Allow filtering by messages by channel

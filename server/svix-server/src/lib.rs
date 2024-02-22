@@ -283,7 +283,7 @@ pub fn setup_tracing(cfg: &ConfigurationInner) -> impl Drop {
             _ => EventFilter::Ignore,
         });
 
-    // Then initialize logging with an additional layer priting to stdout. This additional layer is
+    // Then initialize logging with an additional layer printing to stdout. This additional layer is
     // either formatted normally or in JSON format
     // Fails if the subscriber was already initialized, which we can safely and silently ignore
     let _ = match cfg.log_format {

@@ -21,7 +21,7 @@ For information on how to use this server please refer to the [running the serve
 
 # Building from source
 
-You would need a working Rust complier in order to build Svix server.
+You would need a working Rust compiler in order to build Svix server.
 The easiest way is to use [rustup](https://rustup.rs/).
 
 ```

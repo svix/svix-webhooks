@@ -217,7 +217,7 @@ async fn background_task_delayed(
         if !keys.is_empty() {
             let tasks: Vec<&str> = keys
                 .iter()
-                // All information is stored in the key in which the ID and JSON formated task
+                // All information is stored in the key in which the ID and JSON formatted task
                 // are separated by a `|`. So, take the key, then take the part after the `|`
                 .map(|x| x.split('|').nth(1).expect("Improper key format"))
                 .collect();
@@ -245,7 +245,7 @@ async fn background_task_delayed(
             sleep(Duration::from_millis(500)).await;
         }
     } else {
-        // Also sleep half a second if hte lock could not be fetched
+        // Also sleep half a second if the lock could not be fetched
         sleep(Duration::from_millis(500)).await;
     }
 
@@ -304,7 +304,7 @@ async fn new_pair_inner(
         let mut conn = pool
             .get()
             .await
-            .expect("Error retreiving connection from Redis pool");
+            .expect("Error retrieving connection from Redis pool");
 
         let consumer_group_resp: RedisResult<()> = conn
             .xgroup_create_mkstream(&main_queue_name, WORKERS_GROUP, 0i8)
@@ -462,7 +462,7 @@ fn from_redis_key(key: &str) -> (String, Arc<QueueTask>) {
 }
 
 impl RedisQueueInner {
-    async fn send_immedietly(&self, task: Arc<QueueTask>) -> Result<()> {
+    async fn send_immediately(&self, task: Arc<QueueTask>) -> Result<()> {
         let mut pool = self.pool.get().await?;
 
         let _: () = pool
@@ -508,7 +508,7 @@ impl RedisQueueInner {
 
     pub(super) async fn nack(&self, delivery_id: &str, task: &Arc<QueueTask>) -> Result<()> {
         tracing::debug!("nack {delivery_id}");
-        self.send_immedietly(task.clone()).await?;
+        self.send_immediately(task.clone()).await?;
         self.ack(delivery_id, task).await
     }
 }
@@ -522,7 +522,7 @@ impl TaskQueueSend for RedisQueueProducer {
                     .map_err(|_| Error::generic("Duration out of bounds"))?
         } else {
             tracing::trace!("RedisQueue: event sent (no delay)");
-            return self.inner.send_immedietly(task).await;
+            return self.inner.send_immediately(task).await;
         };
 
         // If there's a delay, add it to the DELAYED queue by ZADDING the Redis-key-ified
@@ -556,7 +556,7 @@ impl TaskQueueReceive for RedisQueueConsumer {
             let mut pool = consumer.0.pool.get().await?;
 
             // There is no way to make it await a message for unbounded times, so simply block for a short
-            // amount of time (to avoid locking) and loop if no messages were retreived
+            // amount of time (to avoid locking) and loop if no messages were retrieved
             let resp: StreamReadReply = pool
                 .xread_options(
                     &[&consumer.0.main_queue_name],
@@ -863,7 +863,7 @@ pub mod tests {
         let mut conn = pool
             .get()
             .await
-            .expect("Error retreiving connection from Redis pool");
+            .expect("Error retrieving connection from Redis pool");
         assert!(conn
             .xread::<_, _, StreamReadReply>(&["{test}_ack"], &[0])
             .await
@@ -877,11 +877,11 @@ pub mod tests {
         let cfg = crate::cfg::load().unwrap();
         let pool = get_pool(cfg).await;
 
-        // Delete the keys used in this test to ensure nothing polutes the output
+        // Delete the keys used in this test to ensure nothing pollutes the output
         let mut conn = pool
             .get()
             .await
-            .expect("Error retreiving connection from Redis pool");
+            .expect("Error retrieving connection from Redis pool");
         let _: () = conn
             .del(&[
                 "{test}_ack",

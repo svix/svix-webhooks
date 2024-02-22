@@ -15,7 +15,7 @@ use crate::utils::{
     get_default_test_config, run_with_retries, start_svix_server, start_svix_server_with_cfg,
 };
 
-/// Runs a full Axum server with two endoints. The first endpoint redirects to the second endpoint
+/// Runs a full Axum server with two endpoints. The first endpoint redirects to the second endpoint
 /// while the second endpoint records whether it has been visited. This is such that we can check
 /// that no redirection is taken by the Svix worker's `reqwest::Client`
 struct RedirectionVisitReportingReceiver {
@@ -281,7 +281,7 @@ async fn sporadically_failing_route(
     }
 }
 
-/// This tetss that if an endpoint succceeds, that its record is cleared in the cache and it is not
+/// This tests that if an endpoint succceeds, that its record is cleared in the cache and it is not
 /// disabled after the grace period following a failure.
 #[tokio::test]
 async fn test_endpoint_disable_on_sporadic_failure() {

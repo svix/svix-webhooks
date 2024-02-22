@@ -47,7 +47,7 @@ namespace Svix.Tests
         public const int TOLERANCE_IN_SECONDS = 5 * 60;
 
         [Fact]
-        public void TestMissingIdRasiesException()
+        public void TestMissingIdRaisesException()
         {
             var testPayload = new TestPayload(DateTimeOffset.UtcNow);
             testPayload.headers.Remove(TestPayload.SVIX_ID_HEADER_KEY);
