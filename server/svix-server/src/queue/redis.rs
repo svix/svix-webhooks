@@ -41,7 +41,7 @@ use tokio::time::sleep;
 use crate::{
     error::{Error, Result},
     queue::Acker,
-    redis::{PoolLike, PooledConnection, RedisPool},
+    redis::{PooledConnection, RedisPool},
 };
 
 use super::{
@@ -716,7 +716,7 @@ pub mod tests {
             redis::RedisQueueInner, Acker, MessageTask, QueueTask, TaskQueueConsumer,
             TaskQueueDelivery, TaskQueueProducer,
         },
-        redis::{PoolLike, RedisPool},
+        redis::RedisPool,
     };
 
     pub async fn get_pool(cfg: Configuration) -> RedisPool {

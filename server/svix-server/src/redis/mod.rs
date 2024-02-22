@@ -2,11 +2,9 @@ mod cluster;
 
 use bb8::{Pool, RunError};
 use bb8_redis::RedisMultiplexedConnectionManager;
-pub use cluster::RedisClusterConnectionManager;
-
-use axum::async_trait;
 use redis::{FromRedisValue, RedisError, RedisResult};
 
+pub use self::cluster::RedisClusterConnectionManager;
 use crate::cfg::Configuration;
 
 #[derive(Clone, Debug)]
@@ -15,14 +13,40 @@ pub enum RedisPool {
     NonClustered(NonClusteredRedisPool),
 }
 
+impl RedisPool {
+    pub async fn get(&self) -> Result<PooledConnection, RunError<RedisError>> {
+        match self {
+            Self::Clustered(pool) => pool.get().await,
+            Self::NonClustered(pool) => pool.get().await,
+        }
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct ClusteredRedisPool {
     pool: Pool<RedisClusterConnectionManager>,
 }
 
+impl ClusteredRedisPool {
+    pub async fn get(&self) -> Result<PooledConnection, RunError<RedisError>> {
+        let con = ClusteredPooledConnection {
+            con: self.pool.get().await?,
+        };
+        Ok(PooledConnection::Clustered(con))
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct NonClusteredRedisPool {
     pool: Pool<RedisMultiplexedConnectionManager>,
+}
+
+impl NonClusteredRedisPool {
+    pub async fn get(&self) -> Result<PooledConnection, RunError<RedisError>> {
+        let con = self.pool.get().await?;
+        let con = NonClusteredPooledConnection { con };
+        Ok(PooledConnection::NonClustered(con))
+    }
 }
 
 pub enum PooledConnection<'a> {
@@ -107,40 +131,6 @@ impl<'a> ClusteredPooledConnection<'a> {
         pipe: redis::Pipeline,
     ) -> RedisResult<T> {
         pipe.query_async(&mut *self.con).await
-    }
-}
-
-#[async_trait]
-pub trait PoolLike {
-    async fn get(&self) -> Result<PooledConnection, RunError<RedisError>>;
-}
-
-#[async_trait]
-impl PoolLike for RedisPool {
-    async fn get(&self) -> Result<PooledConnection, RunError<RedisError>> {
-        match self {
-            Self::Clustered(pool) => pool.get().await,
-            Self::NonClustered(pool) => pool.get().await,
-        }
-    }
-}
-
-#[async_trait]
-impl PoolLike for NonClusteredRedisPool {
-    async fn get(&self) -> Result<PooledConnection, RunError<RedisError>> {
-        let con = self.pool.get().await?;
-        let con = NonClusteredPooledConnection { con };
-        Ok(PooledConnection::NonClustered(con))
-    }
-}
-
-#[async_trait]
-impl PoolLike for ClusteredRedisPool {
-    async fn get(&self) -> Result<PooledConnection, RunError<RedisError>> {
-        let con = ClusteredPooledConnection {
-            con: self.pool.get().await?,
-        };
-        Ok(PooledConnection::Clustered(con))
     }
 }
 

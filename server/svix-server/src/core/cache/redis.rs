@@ -6,7 +6,7 @@ use std::time::Duration;
 use axum::async_trait;
 use redis::AsyncCommands as _;
 
-use crate::redis::{PoolLike, RedisPool};
+use crate::redis::RedisPool;
 
 use super::{Cache, CacheBehavior, CacheKey, Error, Result};
 

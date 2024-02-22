@@ -12,7 +12,7 @@ use svix_server::{
     queue::{
         new_pair, MessageTask, QueueTask, TaskQueueConsumer, TaskQueueDelivery, TaskQueueProducer,
     },
-    redis::{new_redis_pool, new_redis_pool_clustered, PoolLike, RedisPool},
+    redis::{new_redis_pool, new_redis_pool_clustered, RedisPool},
 };
 
 // TODO: Don't copy this from the Redis queue test directly, place the fn somewhere both can access
