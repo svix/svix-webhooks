@@ -28,8 +28,10 @@ fn get_test_plugin(
             max_connections: 8,
             reinsert_on_nack: false,
             queue_key,
+            delayed_queue_key: None,
             consumer_group: "test_cg".to_owned(),
             consumer_name: "test_cn".to_owned(),
+            ack_deadline_ms: 2_000,
         }),
         use_transformation.map(|format| TransformationConfig::Explicit {
             format,

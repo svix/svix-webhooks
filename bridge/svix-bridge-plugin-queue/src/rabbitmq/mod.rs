@@ -49,11 +49,12 @@ pub async fn consumer(cfg: &RabbitMqInputOpts) -> Result<DynConsumer> {
         publish_exchange: String::new(),
         publish_routing_key: String::new(),
         publish_options: backends::rabbitmq::BasicPublishOptions::default(),
-        publish_properites: backends::rabbitmq::BasicProperties::default(),
+        publish_properties: backends::rabbitmq::BasicProperties::default(),
         consume_queue: cfg.queue_name.clone(),
         consumer_tag: cfg.consumer_tag.clone().unwrap_or_default(),
         consume_options: cfg.consume_opts.unwrap_or_default(),
         consume_arguments: cfg.consume_args.clone().unwrap_or_default(),
+        consume_prefetch_count: None,
         requeue_on_nack: cfg.requeue_on_nack,
     })
     .make_dynamic()
@@ -71,12 +72,13 @@ pub async fn producer(cfg: &RabbitMqOutputOpts) -> Result<DynProducer> {
         publish_exchange: cfg.exchange.clone(),
         publish_routing_key: cfg.routing_key.clone(),
         publish_options: cfg.publish_options,
-        publish_properites: cfg.publish_properties.clone(),
+        publish_properties: cfg.publish_properties.clone(),
         // consumer stuff we don't care about
         consume_queue: "".to_string(),
         consumer_tag: "".to_string(),
         consume_options: Default::default(),
         consume_arguments: Default::default(),
+        consume_prefetch_count: None,
         requeue_on_nack: false,
     })
     .make_dynamic()

@@ -38,11 +38,11 @@ impl From<Delivery> for DeliveryWrapper {
 impl DeliveryWrapper {
     /// Delegates to the inner delivery types ack method.
     async fn ack(self) -> Result<(), QueueError> {
-        self.0.ack().await
+        self.0.ack().await.map_err(|(e, _)| e)
     }
     /// Delegates to the inner delivery types nack method.
     async fn nack(self) -> Result<(), QueueError> {
-        self.0.nack().await
+        self.0.nack().await.map_err(|(e, _)| e)
     }
 
     /// Decodes the inner delivery as String.
