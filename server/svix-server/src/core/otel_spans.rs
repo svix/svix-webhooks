@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-//! Module defining utilities for crating `tracing` spans compatable with OpenTelemetry's
+//! Module defining utilities for crating `tracing` spans compatible with OpenTelemetry's
 //! conventions.
 use std::{borrow::Cow, net::SocketAddr};
 
@@ -62,7 +62,7 @@ impl<B> MakeSpan<B> for AxumOtelSpanCreator {
             .headers()
             .get("x-request-id")
             .and_then(|id| id.to_str().map(ToOwned::to_owned).ok())
-            // If `x-requst-id` isn't set, check `svix-req-id`. If the `svix-req-id` isn't a
+            // If `x-request-id` isn't set, check `svix-req-id`. If the `svix-req-id` isn't a
             // valid `str`, or it isn't set, then fallback to a random [`KsuidMs`]
             .or_else(|| {
                 request

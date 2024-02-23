@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-//! Module defining utilites for PATCH requests focused mostly around non-required field types.
+//! Module defining utilities for PATCH requests focused mostly around non-required field types.
 
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -217,7 +217,7 @@ impl<T: JsonSchema> JsonSchema for UnrequiredNullableField<T> {
 /// implementation, and the member that `self`, and `model` share that is being modified.
 ///
 /// Optionally, a fourth identifier may be given which is meant to be a closure that takes the type
-/// of self's version of the member beng modified and returns model's version of the member being
+/// of self's version of the member being modified and returns model's version of the member being
 /// modified. This is applied via [`UnrequiredNullableField::map`] such that  basic type conversions may
 /// be made.
 ///
@@ -249,7 +249,7 @@ pub(crate) use patch_field_non_nullable;
 /// implementation, and the member that `self`, and `model` share that is being modified.
 ///
 /// Optionally, a fourth identifier may be given which is meant to be a closure that takes the type
-/// of self's version of the member beng modified and returns model's version of the member being
+/// of self's version of the member being modified and returns model's version of the member being
 /// modified. This is applied via [`UnrequiredNullableField::map`] such that  basic type conversions may
 /// be made.
 ///

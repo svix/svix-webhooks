@@ -246,7 +246,7 @@ async fn test_failed_message_gets_recorded() {
 }
 
 #[tokio::test]
-async fn test_mulitple_endpoints() {
+async fn test_multiple_endpoints() {
     let (client, _jh) = start_svix_server().await;
 
     let app_id = create_test_app(&client, "v1MessageCRTestApp")

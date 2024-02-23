@@ -83,7 +83,7 @@ pub enum ConversionToResponseError {
 
 /// Will never error as long as Redis doesn't corrupt -- never use this with anything but values
 /// from Redis which were put in via the idempotency service from known good requests.
-fn finished_serialized_response_to_reponse(
+fn finished_serialized_response_to_response(
     code: u16,
     headers: Option<HashMap<String, Vec<u8>>>,
     body: Option<Vec<u8>>,
@@ -153,7 +153,7 @@ where
                     return resolve_service(service, Request::from_parts(parts, body)).await;
                 }
 
-                // Retreive `IdempotencyKey` from header and URL parts, but returning the service
+                // Retrieve `IdempotencyKey` from header and URL parts, but returning the service
                 // normally in the event a key could not be created.
                 let key = if let Some(key) = get_key(&parts) {
                     key
@@ -186,10 +186,10 @@ where
                             headers,
                             body,
                         })) => {
-                            return Ok(finished_serialized_response_to_reponse(code, headers, body)
-                                .unwrap_or_else(|_| {
-                                    StatusCode::INTERNAL_SERVER_ERROR.into_response()
-                                }))
+                            return Ok(finished_serialized_response_to_response(
+                                code, headers, body,
+                            )
+                            .unwrap_or_else(|_| StatusCode::INTERNAL_SERVER_ERROR.into_response()))
                         }
 
                         Ok(Some(SerializedResponse::Start)) | Ok(None) => {
@@ -199,7 +199,7 @@ where
                                 body,
                             })) = lock_loop(&cache, &key).await
                             {
-                                return Ok(finished_serialized_response_to_reponse(
+                                return Ok(finished_serialized_response_to_response(
                                     code, headers, body,
                                 )
                                 .unwrap_or_else(|_| {
@@ -239,7 +239,7 @@ where
     }
 }
 
-/// Retreives an [`IdempotencyKey`] from the [`Parts`] of a [`Request`] returning None in the event
+/// Retrieves an [`IdempotencyKey`] from the [`Parts`] of a [`Request`] returning None in the event
 /// that not all erquisite parts are there.
 fn get_key(parts: &Parts) -> Option<IdempotencyKey> {
     let key = if let Some(Ok(key)) = parts.headers.get("idempotency-key").map(|v| v.to_str()) {
@@ -274,7 +274,7 @@ async fn lock_loop(
         tokio::time::sleep(wait_duration()).await;
 
         match cache.get::<SerializedResponse>(key).await {
-            // Value has been retreived from cache, so return it
+            // Value has been retrieved from cache, so return it
             Ok(Some(resp @ SerializedResponse::Finished { .. })) => return Ok(Some(resp)),
 
             // Request setting the lock has not been resolved yet, so wait a little and loop again

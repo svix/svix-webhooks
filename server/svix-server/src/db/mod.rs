@@ -20,7 +20,7 @@ async fn connect(dsn: &str, max_pool_size: u16) -> sqlx::Pool<sqlx::Postgres> {
             .max_connections(max_pool_size.into())
             .connect(dsn)
             .await
-            .expect("Error connectiong to Postgres")
+            .expect("Error connecting to Postgres")
     } else {
         panic!("db_dsn format not recognized. {dsn}")
     }

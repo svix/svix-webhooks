@@ -310,7 +310,7 @@ impl RequestBuilder {
                     case_sensitive_hdrs.insert(key, Bytes::copy_from_slice(k.as_bytes()));
                 }
                 Err(e) => {
-                    tracing::error!("Failured to parse header {} {}", k, e);
+                    tracing::error!("Failed to parse header {} {}", k, e);
                 }
             }
         }
