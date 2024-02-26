@@ -693,9 +693,9 @@ async fn migrate_sset(
 
 #[cfg(test)]
 pub mod tests {
-
     use std::{sync::Arc, time::Duration};
 
+    use assert_matches::assert_matches;
     use chrono::Utc;
     use redis::{streams::StreamReadReply, AsyncCommands as _};
 
@@ -744,7 +744,7 @@ pub mod tests {
         let _: () = pool.rpush(TEST_LEGACY, v).await.unwrap();
 
         let should_be_none: Option<String> = pool.lpop(TEST_QUEUE, None).await.unwrap();
-        assert!(should_be_none.is_none());
+        assert_eq!(should_be_none, None);
 
         migrate_list(&mut pool, TEST_LEGACY, TEST_QUEUE)
             .await
@@ -755,7 +755,7 @@ pub mod tests {
         assert_eq!(test_key.unwrap(), v);
 
         let should_be_none: Option<String> = pool.lpop(TEST_LEGACY, None).await.unwrap();
-        assert!(should_be_none.is_none());
+        assert_eq!(should_be_none, None);
     }
 
     #[tokio::test]
@@ -776,7 +776,7 @@ pub mod tests {
         let _: () = pool.zadd(TEST_LEGACY, v, 1isize).await.unwrap();
 
         let should_be_none: Vec<(String, i32)> = pool.zpopmin(TEST_QUEUE, 1).await.unwrap();
-        assert!(should_be_none.is_empty());
+        assert_eq!(should_be_none, vec![]);
 
         migrate_sset(&mut pool, TEST_LEGACY, TEST_QUEUE)
             .await
@@ -787,7 +787,7 @@ pub mod tests {
         assert_eq!(test_key.first().unwrap().0, v);
 
         let should_be_none: Vec<(String, i32)> = pool.zpopmin(TEST_LEGACY, 1).await.unwrap();
-        assert!(should_be_none.is_empty());
+        assert_eq!(should_be_none, vec![]);
     }
 
     /// Reads and acknowledges all items in the queue with the given name for clearing out entries
@@ -864,12 +864,12 @@ pub mod tests {
             .get()
             .await
             .expect("Error retrieving connection from Redis pool");
-        assert!(conn
+        let keys = conn
             .xread::<_, _, StreamReadReply>(&["{test}_ack"], &[0])
             .await
             .unwrap()
-            .keys
-            .is_empty());
+            .keys;
+        assert_matches!(keys.as_slice(), []);
     }
 
     #[tokio::test]
@@ -923,12 +923,12 @@ pub mod tests {
         }
 
         // And assert that the task has been deleted
-        assert!(conn
+        let keys = conn
             .xread::<_, _, StreamReadReply>(&["{test}_ack"], &[0])
             .await
             .unwrap()
-            .keys
-            .is_empty());
+            .keys;
+        assert_matches!(keys.as_slice(), []);
     }
 
     #[tokio::test]
