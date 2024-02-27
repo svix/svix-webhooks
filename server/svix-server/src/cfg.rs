@@ -14,7 +14,7 @@ use validator::{Validate, ValidationError};
 
 use crate::{core::cryptography::Encryption, core::security::JwtSigningConfig, error::Result};
 
-fn deserialize_main_secret<'de, D>(deserializer: D) -> std::result::Result<Encryption, D::Error>
+fn deserialize_main_secret<'de, D>(deserializer: D) -> Result<Encryption, D::Error>
 where
     D: Deserializer<'de>,
 {
@@ -31,9 +31,7 @@ enum RetryScheduleDeserializer {
     Legacy(String),
 }
 
-fn deserialize_retry_schedule<'de, D>(
-    deserializer: D,
-) -> std::result::Result<Vec<Duration>, D::Error>
+fn deserialize_retry_schedule<'de, D>(deserializer: D) -> Result<Vec<Duration>, D::Error>
 where
     D: Deserializer<'de>,
 {
@@ -56,7 +54,7 @@ where
     }
 }
 
-fn deserialize_hours<'de, D>(deserializer: D) -> std::result::Result<Duration, D::Error>
+fn deserialize_hours<'de, D>(deserializer: D) -> Result<Duration, D::Error>
 where
     D: Deserializer<'de>,
 {
@@ -189,9 +187,7 @@ pub struct ConfigurationInner {
     pub internal: InternalConfig,
 }
 
-fn validate_config_complete(
-    config: &ConfigurationInner,
-) -> std::result::Result<(), ValidationError> {
+fn validate_config_complete(config: &ConfigurationInner) -> Result<(), ValidationError> {
     match config.cache_type {
         CacheType::None | CacheType::Memory => {}
         CacheType::Redis | CacheType::RedisCluster => {

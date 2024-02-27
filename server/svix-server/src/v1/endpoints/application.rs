@@ -128,9 +128,7 @@ impl ModelIn for ApplicationPatch {
     }
 }
 
-fn validate_name_length_patch(
-    name: &UnrequiredField<String>,
-) -> std::result::Result<(), ValidationError> {
+fn validate_name_length_patch(name: &UnrequiredField<String>) -> Result<(), ValidationError> {
     match name {
         UnrequiredField::Absent => Ok(()),
         UnrequiredField::Some(s) => {
@@ -148,7 +146,7 @@ fn validate_name_length_patch(
 
 fn validate_rate_limit_patch(
     rate_limit: &UnrequiredNullableField<u16>,
-) -> std::result::Result<(), ValidationError> {
+) -> Result<(), ValidationError> {
     match rate_limit {
         UnrequiredNullableField::Absent | UnrequiredNullableField::None => Ok(()),
         UnrequiredNullableField::Some(rate_limit) => {
@@ -428,7 +426,7 @@ mod tests {
                     "rateLimit": RATE_LIMIT_INVALID }))
         .unwrap();
         let invalid_3: ApplicationIn = serde_json::from_value(json!({
-                    "name": APP_NAME_VALID, 
+                    "name": APP_NAME_VALID,
                     "uid": UID_INVALID }))
         .unwrap();
 
@@ -455,7 +453,7 @@ mod tests {
                     "rateLimit": RATE_LIMIT_INVALID }))
         .unwrap();
         let invalid_3: ApplicationPatch = serde_json::from_value(json!({
-                    "name": APP_NAME_VALID, 
+                    "name": APP_NAME_VALID,
                     "uid": UID_INVALID }))
         .unwrap();
 

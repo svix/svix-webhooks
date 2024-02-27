@@ -139,7 +139,7 @@ impl EndpointMessageOut {
 
 // XXX: only used in tests, so OK if it's a bit hacky
 impl<'de> Deserialize<'de> for EndpointMessageOut {
-    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: Deserializer<'de>,
     {

@@ -21,8 +21,8 @@ use serde_json::json;
 
 use crate::core::webhook_http_client;
 
-/// A short-hand version of a [std::result::Result] that always returns an Svix [Error].
-pub type Result<T> = std::result::Result<T, Error>;
+/// A short-hand version of a [`std::result::Result`] that defaults to Svix'es [Error].
+pub type Result<T, E = Error> = std::result::Result<T, E>;
 
 /// The error type returned from the Svix API
 #[derive(Debug)]

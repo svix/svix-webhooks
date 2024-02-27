@@ -182,7 +182,7 @@ pub trait BaseId: Deref<Target = String> {
     const PREFIX: &'static str;
     type Output;
 
-    fn validate_(&self) -> std::result::Result<(), ValidationErrors> {
+    fn validate_(&self) -> Result<(), ValidationErrors> {
         let mut errors = ValidationErrors::new();
         if !&self.starts_with(Self::PREFIX) {
             errors.add(
@@ -215,7 +215,7 @@ pub trait BaseId: Deref<Target = String> {
     }
 }
 
-fn validate_limited_str(s: &str) -> std::result::Result<(), ValidationErrors> {
+fn validate_limited_str(s: &str) -> Result<(), ValidationErrors> {
     const MAX_LENGTH: usize = 256;
     static RE: Lazy<Regex> = Lazy::new(|| Regex::new(r"^[a-zA-Z0-9\-_.]+$").unwrap());
     let mut errors = ValidationErrors::new();
@@ -251,7 +251,7 @@ fn validate_limited_str(s: &str) -> std::result::Result<(), ValidationErrors> {
 pub trait BaseUid: Deref<Target = String> {
     const ID_PREFIX: &'static str;
 
-    fn validate_(&self) -> std::result::Result<(), ValidationErrors> {
+    fn validate_(&self) -> Result<(), ValidationErrors> {
         let mut errors = match validate_limited_str(self) {
             Ok(_) => ValidationErrors::new(),
             Err(x) => x,
@@ -1013,7 +1013,7 @@ impl<'de> Deserialize<'de> for EndpointSecret {
 }
 
 impl Validate for EndpointSecret {
-    fn validate(&self) -> std::result::Result<(), ValidationErrors> {
+    fn validate(&self) -> Result<(), ValidationErrors> {
         let mut errors = ValidationErrors::new();
 
         match self {
@@ -1159,9 +1159,7 @@ impl<'de> Deserialize<'de> for EndpointHeaders {
     }
 }
 
-fn validate_header_map(
-    headers: &HashMap<String, String>,
-) -> std::result::Result<(), ValidationErrors> {
+fn validate_header_map(headers: &HashMap<String, String>) -> Result<(), ValidationErrors> {
     let mut errors = ValidationErrors::new();
     for (k, v) in headers {
         validate_header_key(k, &mut errors);
@@ -1204,7 +1202,7 @@ impl<'de> Deserialize<'de> for EndpointHeadersPatch {
 }
 
 impl Validate for EndpointHeadersPatch {
-    fn validate(&self) -> std::result::Result<(), ValidationErrors> {
+    fn validate(&self) -> Result<(), ValidationErrors> {
         let mut errors = ValidationErrors::new();
         self.0
             .iter()
