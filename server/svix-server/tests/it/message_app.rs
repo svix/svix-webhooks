@@ -66,11 +66,11 @@ async fn test_app_deletion() {
     let cache = match cfg.cache_backend() {
         CacheBackend::None => cache::none::new(),
         CacheBackend::Redis(dsn) => {
-            let mgr = new_redis_pool(dsn, &cfg).await;
+            let mgr = new_redis_pool(dsn, cfg.redis_pool_max_size).await;
             cache::redis::new(mgr)
         }
         CacheBackend::RedisCluster(dsn) => {
-            let mgr = new_redis_pool_clustered(dsn, &cfg).await;
+            let mgr = new_redis_pool_clustered(dsn, cfg.redis_pool_max_size).await;
             cache::redis::new(mgr)
         }
 
@@ -150,11 +150,11 @@ async fn test_endp_deletion() {
     let cache = match cfg.cache_backend() {
         CacheBackend::None => cache::none::new(),
         CacheBackend::Redis(dsn) => {
-            let mgr = new_redis_pool(dsn, &cfg).await;
+            let mgr = new_redis_pool(dsn, cfg.redis_pool_max_size).await;
             cache::redis::new(mgr)
         }
         CacheBackend::RedisCluster(dsn) => {
-            let mgr = new_redis_pool_clustered(dsn, &cfg).await;
+            let mgr = new_redis_pool_clustered(dsn, cfg.redis_pool_max_size).await;
             cache::redis::new(mgr)
         }
 

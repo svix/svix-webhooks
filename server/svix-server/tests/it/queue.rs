@@ -20,9 +20,19 @@ use svix_server::{
 pub async fn get_pool(cfg: Configuration) -> RedisPool {
     match cfg.cache_type {
         CacheType::RedisCluster => {
-            new_redis_pool_clustered(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg).await
+            new_redis_pool_clustered(
+                cfg.redis_dsn.as_ref().unwrap().as_str(),
+                cfg.redis_pool_max_size,
+            )
+            .await
         }
-        _ => new_redis_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg).await,
+        _ => {
+            new_redis_pool(
+                cfg.redis_dsn.as_ref().unwrap().as_str(),
+                cfg.redis_pool_max_size,
+            )
+            .await
+        }
     }
 }
 

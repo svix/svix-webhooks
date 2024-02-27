@@ -45,11 +45,11 @@ pub async fn new_pair(
 ) -> (TaskQueueProducer, TaskQueueConsumer) {
     match cfg.queue_backend() {
         QueueBackend::Redis(dsn) => {
-            let pool = crate::redis::new_redis_pool(dsn, cfg).await;
+            let pool = crate::redis::new_redis_pool(dsn, cfg.redis_pool_max_size).await;
             redis::new_pair(pool, prefix).await
         }
         QueueBackend::RedisCluster(dsn) => {
-            let pool = crate::redis::new_redis_pool_clustered(dsn, cfg).await;
+            let pool = crate::redis::new_redis_pool_clustered(dsn, cfg.redis_pool_max_size).await;
             redis::new_pair(pool, prefix).await
         }
         QueueBackend::Memory => {

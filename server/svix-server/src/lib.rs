@@ -107,11 +107,11 @@ pub async fn run_with_prefix(
         CacheBackend::None => cache::none::new(),
         CacheBackend::Memory => cache::memory::new(),
         CacheBackend::Redis(dsn) => {
-            let mgr = crate::redis::new_redis_pool(dsn, &cfg).await;
+            let mgr = crate::redis::new_redis_pool(dsn, cfg.redis_pool_max_size).await;
             cache::redis::new(mgr)
         }
         CacheBackend::RedisCluster(dsn) => {
-            let mgr = crate::redis::new_redis_pool_clustered(dsn, &cfg).await;
+            let mgr = crate::redis::new_redis_pool_clustered(dsn, cfg.redis_pool_max_size).await;
             cache::redis::new(mgr)
         }
     };

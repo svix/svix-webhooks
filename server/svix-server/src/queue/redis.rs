@@ -718,11 +718,17 @@ pub mod tests {
             CacheType::RedisCluster => {
                 crate::redis::new_redis_pool_clustered(
                     cfg.redis_dsn.as_ref().unwrap().as_str(),
-                    &cfg,
+                    cfg.redis_pool_max_size,
                 )
                 .await
             }
-            _ => crate::redis::new_redis_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg).await,
+            _ => {
+                crate::redis::new_redis_pool(
+                    cfg.redis_dsn.as_ref().unwrap().as_str(),
+                    cfg.redis_pool_max_size,
+                )
+                .await
+            }
         }
     }
 

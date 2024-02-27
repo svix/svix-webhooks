@@ -5,7 +5,6 @@ use bb8_redis::RedisMultiplexedConnectionManager;
 use redis::{FromRedisValue, RedisError, RedisResult};
 
 pub use self::cluster::RedisClusterConnectionManager;
-use crate::cfg::Configuration;
 
 #[derive(Clone, Debug)]
 pub enum RedisPool {
@@ -134,53 +133,43 @@ impl<'a> ClusteredPooledConnection<'a> {
     }
 }
 
-async fn new_redis_pool_helper(
-    redis_dsn: &str,
-    clustered: bool,
-    max_connections: u16,
-) -> RedisPool {
-    if clustered {
-        let mgr = RedisClusterConnectionManager::new(redis_dsn)
-            .expect("Error initializing redis cluster client");
-        let pool = bb8::Pool::builder()
-            .max_size(max_connections.into())
-            .build(mgr)
-            .await
-            .expect("Error initializing redis cluster connection pool");
-        let pool = ClusteredRedisPool { pool };
-        RedisPool::Clustered(pool)
-    } else {
-        let mgr = RedisMultiplexedConnectionManager::new(redis_dsn)
-            .expect("Error initializing redis client");
-        let pool = bb8::Pool::builder()
-            .max_size(max_connections.into())
-            .build(mgr)
-            .await
-            .expect("Error initializing redis connection pool");
-        let pool = NonClusteredRedisPool { pool };
-        RedisPool::NonClustered(pool)
-    }
+pub async fn new_redis_pool_clustered(redis_dsn: &str, max_connections: u16) -> RedisPool {
+    let mgr = RedisClusterConnectionManager::new(redis_dsn)
+        .expect("Error initializing redis cluster client");
+    let pool = bb8::Pool::builder()
+        .max_size(max_connections.into())
+        .build(mgr)
+        .await
+        .expect("Error initializing redis cluster connection pool");
+    let pool = ClusteredRedisPool { pool };
+    RedisPool::Clustered(pool)
 }
 
-pub async fn new_redis_pool_clustered(redis_dsn: &str, cfg: &Configuration) -> RedisPool {
-    new_redis_pool_helper(redis_dsn, true, cfg.redis_pool_max_size).await
-}
-
-pub async fn new_redis_pool(redis_dsn: &str, cfg: &Configuration) -> RedisPool {
-    new_redis_pool_helper(redis_dsn, false, cfg.redis_pool_max_size).await
+pub async fn new_redis_pool(redis_dsn: &str, max_connections: u16) -> RedisPool {
+    let mgr =
+        RedisMultiplexedConnectionManager::new(redis_dsn).expect("Error initializing redis client");
+    let pool = bb8::Pool::builder()
+        .max_size(max_connections.into())
+        .build(mgr)
+        .await
+        .expect("Error initializing redis connection pool");
+    let pool = NonClusteredRedisPool { pool };
+    RedisPool::NonClustered(pool)
 }
 
 #[cfg(test)]
 mod tests {
     use redis::AsyncCommands;
 
-    use super::*;
-    use crate::cfg::CacheType;
+    use super::{new_redis_pool, new_redis_pool_clustered, RedisPool};
+    use crate::cfg::{CacheType, Configuration};
 
     async fn get_pool(redis_dsn: &str, cfg: &Configuration) -> RedisPool {
         match cfg.cache_type {
-            CacheType::RedisCluster => crate::redis::new_redis_pool_clustered(redis_dsn, cfg).await,
-            _ => crate::redis::new_redis_pool(redis_dsn, cfg).await,
+            CacheType::RedisCluster => {
+                new_redis_pool_clustered(redis_dsn, cfg.redis_pool_max_size).await
+            }
+            _ => new_redis_pool(redis_dsn, cfg.redis_pool_max_size).await,
         }
     }
 
