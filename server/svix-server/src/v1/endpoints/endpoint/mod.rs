@@ -54,9 +54,7 @@ use self::secrets::generate_secret;
 
 use super::message::{create_message_inner, MessageIn, MessageOut, RawPayload};
 
-pub fn validate_event_types_ids(
-    event_types_ids: &EventTypeNameSet,
-) -> std::result::Result<(), ValidationError> {
+pub fn validate_event_types_ids(event_types_ids: &EventTypeNameSet) -> Result<(), ValidationError> {
     if event_types_ids.0.is_empty() {
         Err(validation_error(
             Some("filterTypes"),
@@ -69,16 +67,14 @@ pub fn validate_event_types_ids(
 
 fn validate_event_types_ids_unrequired_nullable(
     event_types_ids: &UnrequiredNullableField<EventTypeNameSet>,
-) -> std::result::Result<(), ValidationError> {
+) -> Result<(), ValidationError> {
     match event_types_ids {
         UnrequiredNullableField::Absent | UnrequiredNullableField::None => Ok(()),
         UnrequiredNullableField::Some(event_type_ids) => validate_event_types_ids(event_type_ids),
     }
 }
 
-pub fn validate_channels_endpoint(
-    channels: &EventChannelSet,
-) -> std::result::Result<(), ValidationError> {
+pub fn validate_channels_endpoint(channels: &EventChannelSet) -> Result<(), ValidationError> {
     let len = channels.0.len();
     if !(1..=10).contains(&len) {
         Err(validation_error(
@@ -92,14 +88,14 @@ pub fn validate_channels_endpoint(
 
 fn validate_channels_endpoint_unrequired_nullable(
     channels: &UnrequiredNullableField<EventChannelSet>,
-) -> std::result::Result<(), ValidationError> {
+) -> Result<(), ValidationError> {
     match channels {
         UnrequiredNullableField::Absent | UnrequiredNullableField::None => Ok(()),
         UnrequiredNullableField::Some(channels) => validate_channels_endpoint(channels),
     }
 }
 
-pub fn validate_url(url: &Url) -> std::result::Result<(), ValidationError> {
+pub fn validate_url(url: &Url) -> Result<(), ValidationError> {
     let scheme = url.scheme();
     if scheme == "https" || scheme == "http" {
         Ok(())
@@ -111,7 +107,7 @@ pub fn validate_url(url: &Url) -> std::result::Result<(), ValidationError> {
     }
 }
 
-fn validate_url_unrequired(val: &UnrequiredField<Url>) -> std::result::Result<(), ValidationError> {
+fn validate_url_unrequired(val: &UnrequiredField<Url>) -> Result<(), ValidationError> {
     match val {
         UnrequiredField::Absent => Ok(()),
         UnrequiredField::Some(val) => validate_url(val),
@@ -434,7 +430,7 @@ impl ModelIn for EndpointPatch {
 
 fn validate_rate_limit_patch(
     rate_limit: &UnrequiredNullableField<u16>,
-) -> std::result::Result<(), ValidationError> {
+) -> Result<(), ValidationError> {
     match rate_limit {
         UnrequiredNullableField::Absent | UnrequiredNullableField::None => Ok(()),
         UnrequiredNullableField::Some(rate_limit) => {
@@ -450,9 +446,7 @@ fn validate_rate_limit_patch(
     }
 }
 
-fn validate_minimum_version_patch(
-    version: &UnrequiredField<u16>,
-) -> std::result::Result<(), ValidationError> {
+fn validate_minimum_version_patch(version: &UnrequiredField<u16>) -> Result<(), ValidationError> {
     match version {
         UnrequiredField::Absent => Ok(()),
         UnrequiredField::Some(version) => {

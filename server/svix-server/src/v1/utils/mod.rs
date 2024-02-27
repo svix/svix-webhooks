@@ -79,7 +79,7 @@ pub struct Pagination<T: Validate + JsonSchema> {
 pub struct PaginationLimit(pub u64);
 
 impl<'de> Deserialize<'de> for PaginationLimit {
-    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
     {
@@ -95,7 +95,7 @@ impl<'de> Deserialize<'de> for PaginationLimit {
 }
 
 impl Validate for PaginationLimit {
-    fn validate(&self) -> std::result::Result<(), validator::ValidationErrors> {
+    fn validate(&self) -> Result<(), validator::ValidationErrors> {
         let mut errs = validator::ValidationErrors::new();
 
         if self.0 > PAGINATION_LIMIT_CAP_LIMIT {
@@ -122,7 +122,7 @@ pub enum ReversibleIterator<T: Validate> {
 impl<'de, T: 'static + Deserialize<'de> + Validate + From<String>> Deserialize<'de>
     for ReversibleIterator<T>
 {
-    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
     {
@@ -137,7 +137,7 @@ impl<'de, T: 'static + Deserialize<'de> + Validate + From<String>> Deserialize<'
 }
 
 impl<T: Validate> Validate for ReversibleIterator<T> {
-    fn validate(&self) -> std::result::Result<(), validator::ValidationErrors> {
+    fn validate(&self) -> Result<(), validator::ValidationErrors> {
         match self {
             ReversibleIterator::Normal(val) => val.validate(),
             ReversibleIterator::Prev(val) => val.validate(),
@@ -610,7 +610,7 @@ pub async fn api_not_implemented() -> Result<()> {
     Err(HttpError::not_implemented(None, None).into())
 }
 
-pub fn validate_no_control_characters(str: &str) -> std::result::Result<(), ValidationError> {
+pub fn validate_no_control_characters(str: &str) -> Result<(), ValidationError> {
     let re = Regex::new(r"[\x00-\x08]").unwrap();
     if re.is_match(str) {
         return Err(validation_error(
@@ -623,7 +623,7 @@ pub fn validate_no_control_characters(str: &str) -> std::result::Result<(), Vali
 
 pub fn validate_no_control_characters_unrequired(
     str: &UnrequiredField<String>,
-) -> std::result::Result<(), ValidationError> {
+) -> Result<(), ValidationError> {
     match str {
         UnrequiredField::Absent => Ok(()),
         UnrequiredField::Some(str) => validate_no_control_characters(str),

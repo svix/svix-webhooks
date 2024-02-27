@@ -45,9 +45,7 @@ use validator::{Validate, ValidationError};
 use crate::db::models::message;
 use crate::error::Error;
 
-pub fn validate_channels_msg(
-    channels: &EventChannelSet,
-) -> std::result::Result<(), ValidationError> {
+pub fn validate_channels_msg(channels: &EventChannelSet) -> Result<(), ValidationError> {
     let len = channels.0.len();
     if !(1..=5).contains(&len) {
         Err(validation_error(
@@ -96,9 +94,7 @@ impl RawPayload {
     }
 }
 
-pub fn validate_raw_payload_is_object(
-    payload: &RawPayload,
-) -> std::result::Result<(), ValidationError> {
+pub fn validate_raw_payload_is_object(payload: &RawPayload) -> Result<(), ValidationError> {
     // Verify it's an object/map
     if payload.0.get().starts_with('{') {
         Ok(())

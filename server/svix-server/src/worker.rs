@@ -825,7 +825,7 @@ async fn process_queue_task_inner(
                 .exec(db)
                 .await?;
 
-            let dests: std::result::Result<_, _> = destinations
+            let dests: Result<_, _> = destinations
                 .into_iter()
                 .map(|d| d.try_into_model())
                 .collect();

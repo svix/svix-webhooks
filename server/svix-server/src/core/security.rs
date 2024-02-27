@@ -266,10 +266,7 @@ pub enum EdDSA {
 }
 
 impl JwtSigningConfig {
-    pub fn generate(
-        &self,
-        claims: JWTClaims<CustomClaim>,
-    ) -> std::result::Result<String, jwt_simple::Error> {
+    pub fn generate(&self, claims: JWTClaims<CustomClaim>) -> Result<String, jwt_simple::Error> {
         match self {
             JwtSigningConfig::Advanced(a) => match a {
                 JWTAlgorithm::HS256(key) => key.authenticate(claims),
@@ -308,7 +305,7 @@ impl JwtSigningConfig {
         &self,
         token: &str,
         options: Option<VerificationOptions>,
-    ) -> std::result::Result<JWTClaims<CustomClaim>, jwt_simple::Error> {
+    ) -> Result<JWTClaims<CustomClaim>, jwt_simple::Error> {
         match self {
             JwtSigningConfig::Advanced(a) => match a {
                 JWTAlgorithm::HS256(key) => key.verify_token(token, options),
@@ -361,7 +358,7 @@ impl Debug for JwtSigningConfig {
     }
 }
 
-fn deserialize_hs256<'de, D>(deserializer: D) -> std::result::Result<HS256Key, D::Error>
+fn deserialize_hs256<'de, D>(deserializer: D) -> Result<HS256Key, D::Error>
 where
     D: Deserializer<'de>,
 {
@@ -370,7 +367,7 @@ where
     ))
 }
 
-fn deserialize_hs384<'de, D>(deserializer: D) -> std::result::Result<HS384Key, D::Error>
+fn deserialize_hs384<'de, D>(deserializer: D) -> Result<HS384Key, D::Error>
 where
     D: Deserializer<'de>,
 {
@@ -379,7 +376,7 @@ where
     ))
 }
 
-fn deserialize_hs512<'de, D>(deserializer: D) -> std::result::Result<HS512Key, D::Error>
+fn deserialize_hs512<'de, D>(deserializer: D) -> Result<HS512Key, D::Error>
 where
     D: Deserializer<'de>,
 {
@@ -388,7 +385,7 @@ where
     ))
 }
 
-fn deserialize_rs256<'de, D>(deserializer: D) -> std::result::Result<RS256, D::Error>
+fn deserialize_rs256<'de, D>(deserializer: D) -> Result<RS256, D::Error>
 where
     D: Deserializer<'de>,
 {
@@ -402,7 +399,7 @@ where
     }
 }
 
-fn deserialize_rs384<'de, D>(deserializer: D) -> std::result::Result<RS384, D::Error>
+fn deserialize_rs384<'de, D>(deserializer: D) -> Result<RS384, D::Error>
 where
     D: Deserializer<'de>,
 {
@@ -416,7 +413,7 @@ where
     }
 }
 
-fn deserialize_rs512<'de, D>(deserializer: D) -> std::result::Result<RS512, D::Error>
+fn deserialize_rs512<'de, D>(deserializer: D) -> Result<RS512, D::Error>
 where
     D: Deserializer<'de>,
 {
@@ -430,7 +427,7 @@ where
     }
 }
 
-fn deserialize_eddsa<'de, D>(deserializer: D) -> std::result::Result<EdDSA, D::Error>
+fn deserialize_eddsa<'de, D>(deserializer: D) -> Result<EdDSA, D::Error>
 where
     D: Deserializer<'de>,
 {

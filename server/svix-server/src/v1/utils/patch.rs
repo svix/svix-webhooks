@@ -84,7 +84,7 @@ impl<T> From<Option<T>> for UnrequiredNullableField<T> {
 }
 
 impl<T: Validate> Validate for UnrequiredNullableField<T> {
-    fn validate(&self) -> std::result::Result<(), validator::ValidationErrors> {
+    fn validate(&self) -> Result<(), validator::ValidationErrors> {
         match self {
             UnrequiredNullableField::Absent | UnrequiredNullableField::None => Ok(()),
             UnrequiredNullableField::Some(v) => v.validate(),
@@ -93,7 +93,7 @@ impl<T: Validate> Validate for UnrequiredNullableField<T> {
 }
 
 impl<T: Validate> Validate for UnrequiredField<T> {
-    fn validate(&self) -> std::result::Result<(), validator::ValidationErrors> {
+    fn validate(&self) -> Result<(), validator::ValidationErrors> {
         match self {
             UnrequiredField::Absent => Ok(()),
             UnrequiredField::Some(v) => v.validate(),
@@ -127,7 +127,7 @@ impl<'de, T> Deserialize<'de> for UnrequiredNullableField<T>
 where
     T: Deserialize<'de>,
 {
-    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
     {
@@ -139,7 +139,7 @@ impl<'de, T> Deserialize<'de> for UnrequiredField<T>
 where
     T: Deserialize<'de>,
 {
-    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
     {
@@ -151,7 +151,7 @@ impl<T> Serialize for UnrequiredNullableField<T>
 where
     T: Serialize,
 {
-    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: serde::Serializer,
     {
@@ -168,7 +168,7 @@ impl<T> Serialize for UnrequiredField<T>
 where
     T: Serialize,
 {
-    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: serde::Serializer,
     {
