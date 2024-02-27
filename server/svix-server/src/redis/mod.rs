@@ -158,28 +158,30 @@ pub async fn new_redis_pool(redis_dsn: &str, max_connections: u16) -> RedisPool 
 }
 
 #[cfg(test)]
-mod tests {
+pub(crate) mod tests {
+    use std::thread::available_parallelism;
+
     use redis::AsyncCommands;
+    use tokio::sync::OnceCell;
 
-    use super::{new_redis_pool, new_redis_pool_clustered, RedisPool};
-    use crate::cfg::{CacheType, Configuration};
+    use super::RedisPool;
 
-    async fn get_pool(redis_dsn: &str, cfg: &Configuration) -> RedisPool {
-        match cfg.cache_type {
-            CacheType::RedisCluster => {
-                new_redis_pool_clustered(redis_dsn, cfg.redis_pool_max_size).await
-            }
-            _ => new_redis_pool(redis_dsn, cfg.redis_pool_max_size).await,
-        }
+    const TESTING_DSN: &str = "redis://localhost:6379";
+
+    pub async fn get_pool() -> RedisPool {
+        static POOL: OnceCell<RedisPool> = OnceCell::const_new();
+        POOL.get_or_init(|| async {
+            let pool_size = available_parallelism().map_or(1, |nonzero| nonzero.get() as _);
+            crate::redis::new_redis_pool(TESTING_DSN, pool_size).await
+        })
+        .await
+        .clone()
     }
 
     // Ensure basic set/get works -- should test sharding as well:
     #[tokio::test]
     async fn test_set_read_random_keys() {
-        dotenv::dotenv().ok();
-        let cfg = crate::cfg::load().unwrap();
-
-        let pool = get_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg).await;
+        let pool = get_pool().await;
         let mut conn = pool.get().await.unwrap();
 
         for (val, key) in "abcdefghijklmnopqrstuvwxyz".chars().enumerate() {

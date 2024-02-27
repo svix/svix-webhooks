@@ -4,36 +4,29 @@
 //! Configuration-dependent queue tests. This will depend on the set environment variables as with
 //! the e2e tests such as to allow testing multiple queue backends via the test script.
 
-use std::{str::FromStr, time::Duration};
+use std::{str::FromStr, thread::available_parallelism, time::Duration};
 
 use redis::AsyncCommands as _;
 use svix_server::{
-    cfg::{CacheType, Configuration},
     core::types::{ApplicationId, EndpointId, MessageAttemptTriggerType, MessageId},
     queue::{
         new_pair, MessageTask, QueueTask, TaskQueueConsumer, TaskQueueDelivery, TaskQueueProducer,
     },
-    redis::{new_redis_pool, new_redis_pool_clustered, RedisPool},
+    redis::{new_redis_pool, RedisPool},
 };
+use tokio::sync::OnceCell;
+
+const TESTING_DSN: &str = "redis://localhost:6379";
 
 // TODO: Don't copy this from the Redis queue test directly, place the fn somewhere both can access
-pub async fn get_pool(cfg: Configuration) -> RedisPool {
-    match cfg.cache_type {
-        CacheType::RedisCluster => {
-            new_redis_pool_clustered(
-                cfg.redis_dsn.as_ref().unwrap().as_str(),
-                cfg.redis_pool_max_size,
-            )
-            .await
-        }
-        _ => {
-            new_redis_pool(
-                cfg.redis_dsn.as_ref().unwrap().as_str(),
-                cfg.redis_pool_max_size,
-            )
-            .await
-        }
-    }
+pub async fn get_pool() -> RedisPool {
+    static POOL: OnceCell<RedisPool> = OnceCell::const_new();
+    POOL.get_or_init(|| async {
+        let pool_size = available_parallelism().map_or(1, |nonzero| nonzero.get() as _);
+        new_redis_pool(TESTING_DSN, pool_size).await
+    })
+    .await
+    .clone()
 }
 
 fn task_queue_delivery_to_u16(tqd: &TaskQueueDelivery) -> u16 {
@@ -50,7 +43,7 @@ async fn test_many_queue_consumers_inner(prefix: &str, delay: Option<Duration>) 
 
     // This test assumes an empty queue, so load Redis and delete the test key
     {
-        let pool = get_pool(cfg.clone()).await;
+        let pool = get_pool().await;
         let mut conn = pool.get().await.unwrap();
 
         let _: () = conn
