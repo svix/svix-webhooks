@@ -103,8 +103,7 @@ macro_rules! string_kv_def_inner {
 #[allow(unused_imports)]
 pub(crate) use string_kv_def_inner;
 
-// Used downstream and for testing:
-#[allow(unused_macros)]
+#[cfg(test)]
 macro_rules! string_kv_def {
     ($key_id:ident) => {
         crate::core::cache::string_kv_def_inner!($key_id);
@@ -114,7 +113,7 @@ macro_rules! string_kv_def {
         impl crate::core::cache::CacheKey for $key_id {}
     };
 }
-#[allow(unused_imports)]
+#[cfg(test)]
 pub(crate) use string_kv_def;
 
 #[derive(Clone)]
