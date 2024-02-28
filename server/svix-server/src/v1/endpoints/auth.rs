@@ -119,7 +119,7 @@ Logout an app token.
 Trying to log out other tokens will fail.
 "#;
 
-fn logout_operation(op: TransformOperation) -> TransformOperation {
+fn logout_operation(op: TransformOperation<'_>) -> TransformOperation<'_> {
     op.id("logout_api_v1_auth_logout__post")
         .summary("Logout")
         .description(LOGOUT_DESCRIPTION)

@@ -97,7 +97,7 @@ impl Error {
 }
 
 impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         self.typ.fmt(f)
     }
 }
@@ -229,7 +229,7 @@ pub enum ErrorType {
 }
 
 impl fmt::Display for ErrorType {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Generic(s) => s.fmt(f),
             Self::Database(s) => s.fmt(f),
@@ -372,7 +372,7 @@ impl From<HttpError> for Error {
 }
 
 impl fmt::Display for HttpError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match &self.body {
             HttpErrorBody::Standard(StandardHttpError { code, detail }) => write!(
                 f,

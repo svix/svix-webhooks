@@ -2,6 +2,9 @@
 members = ["svix-server", "svix-server_derive"]
 resolver = "2"
 
+[workspace.lints.rust]
+rust_2018_idioms = "warn"
+
 [workspace.lints.clippy]
 dbg_macro = "warn"
 todo = "warn"

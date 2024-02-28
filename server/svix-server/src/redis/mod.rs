@@ -14,7 +14,7 @@ pub enum RedisPool {
 }
 
 impl RedisPool {
-    pub async fn get(&self) -> Result<PooledConnection, RunError<RedisError>> {
+    pub async fn get(&self) -> Result<PooledConnection<'_>, RunError<RedisError>> {
         match self {
             Self::Clustered(pool) => pool.get().await,
             Self::NonClustered(pool) => pool.get().await,
@@ -28,7 +28,7 @@ pub struct ClusteredRedisPool {
 }
 
 impl ClusteredRedisPool {
-    pub async fn get(&self) -> Result<PooledConnection, RunError<RedisError>> {
+    pub async fn get(&self) -> Result<PooledConnection<'_>, RunError<RedisError>> {
         let con = ClusteredPooledConnection {
             con: self.pool.get().await?,
         };
@@ -42,7 +42,7 @@ pub struct NonClusteredRedisPool {
 }
 
 impl NonClusteredRedisPool {
-    pub async fn get(&self) -> Result<PooledConnection, RunError<RedisError>> {
+    pub async fn get(&self) -> Result<PooledConnection<'_>, RunError<RedisError>> {
         let con = self.pool.get().await?;
         let con = NonClusteredPooledConnection { con };
         Ok(PooledConnection::NonClustered(con))
