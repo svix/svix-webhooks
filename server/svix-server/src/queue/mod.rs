@@ -1,12 +1,11 @@
 use std::{sync::Arc, time::Duration};
 
 use axum::async_trait;
-use chrono::{DateTime, Utc};
 use omniqueue::{
-    backends::InMemoryBackend, Delivery, DynConsumer, QueueConsumer, ScheduledQueueProducer,
+    backends::InMemoryBackend, Delivery, DynConsumer, DynScheduledQueueProducer, QueueConsumer,
+    ScheduledQueueProducer,
 };
 use serde::{Deserialize, Serialize};
-use svix_ksuid::*;
 
 use crate::error::Traceable;
 use crate::{
@@ -17,8 +16,6 @@ use crate::{
     },
     error::{Error, ErrorType, Result},
 };
-
-use self::redis::{RedisQueueConsumer, RedisQueueInner, RedisQueueProducer};
 
 pub mod rabbitmq;
 pub mod redis;
@@ -38,13 +35,8 @@ pub async fn new_pair(
     prefix: Option<&str>,
 ) -> (TaskQueueProducer, TaskQueueConsumer) {
     match cfg.queue_backend() {
-        QueueBackend::Redis(dsn) => {
-            let pool = crate::redis::new_redis_pool(dsn, cfg).await;
-            redis::new_pair(pool, prefix).await
-        }
-        QueueBackend::RedisCluster(dsn) => {
-            let pool = crate::redis::new_redis_pool_clustered(dsn, cfg).await;
-            redis::new_pair(pool, prefix).await
+        QueueBackend::Redis(_) | QueueBackend::RedisCluster(_) => {
+            redis::new_pair(cfg, prefix).await
         }
         QueueBackend::Memory => {
             let (producer, consumer) = InMemoryBackend::builder()
@@ -143,8 +135,7 @@ impl QueueTask {
 
 #[derive(Clone)]
 pub enum TaskQueueProducer {
-    Redis(RedisQueueProducer),
-    Omni(Arc<omniqueue::DynScheduledQueueProducer>),
+    Omni(Arc<DynScheduledQueueProducer>),
 }
 
 impl TaskQueueProducer {
@@ -153,7 +144,6 @@ impl TaskQueueProducer {
         run_with_retries(
             || async {
                 match self {
-                    TaskQueueProducer::Redis(q) => q.send(task.clone(), delay).await,
                     TaskQueueProducer::Omni(q) => if let Some(delay) = delay {
                         q.send_serde_json_scheduled(task.as_ref(), delay).await
                     } else {
@@ -170,14 +160,12 @@ impl TaskQueueProducer {
 }
 
 pub enum TaskQueueConsumer {
-    Redis(RedisQueueConsumer),
     Omni(DynConsumer),
 }
 
 impl TaskQueueConsumer {
     pub async fn receive_all(&mut self) -> Result<Vec<TaskQueueDelivery>> {
         match self {
-            TaskQueueConsumer::Redis(q) => q.receive_all().await.trace(),
             TaskQueueConsumer::Omni(q) => {
                 const MAX_MESSAGES: usize = 128;
                 // FIXME(onelson): need to figure out what deadline/duration to use here
@@ -196,7 +184,6 @@ impl TaskQueueConsumer {
 /// Used by TaskQueueDeliveries to Ack/Nack itself
 #[derive(Debug)]
 enum Acker {
-    Redis(Arc<RedisQueueInner>),
     Omni(Delivery),
 }
 
@@ -208,16 +195,6 @@ pub struct TaskQueueDelivery {
 }
 
 impl TaskQueueDelivery {
-    /// The `timestamp` is when this message will be delivered at
-    fn from_arc(task: Arc<QueueTask>, timestamp: Option<DateTime<Utc>>, acker: Acker) -> Self {
-        let ksuid = KsuidMs::new(timestamp, None);
-        Self {
-            id: ksuid.to_string(),
-            task,
-            acker,
-        }
-    }
-
     pub async fn ack(self) -> Result<()> {
         tracing::trace!("ack {}", self.id);
 
@@ -230,7 +207,6 @@ impl TaskQueueDelivery {
                         .as_ref()
                         .expect("acker is always Some when trying to ack");
                     match acker_ref {
-                        Acker::Redis(q) => q.ack(&self.id, &self.task).await.trace(),
                         Acker::Omni(_) => match acker.take() {
                             Some(Acker::Omni(delivery)) => {
                                 delivery.ack().await.map_err(|(e, delivery)| {
@@ -263,7 +239,6 @@ impl TaskQueueDelivery {
                         .as_ref()
                         .expect("acker is always Some when trying to ack");
                     match acker_ref {
-                        Acker::Redis(q) => q.nack(&self.id, &self.task).await.trace(),
                         Acker::Omni(_) => match acker.take() {
                             Some(Acker::Omni(delivery)) => {
                                 delivery
