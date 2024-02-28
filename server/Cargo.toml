@@ -4,9 +4,16 @@ resolver = "2"
 
 [workspace.lints.rust]
 rust_2018_idioms = "warn"
+trivial_casts = "warn"
+trivial_numeric_casts = "warn"
 
 [workspace.lints.clippy]
+cloned_instead_of_copied = "warn"
 dbg_macro = "warn"
+inefficient_to_string = "warn"
+macro_use_imports = "warn"
+mut_mut = "warn"
+nonstandard_macro_braces = "warn"
 todo = "warn"
 
 [patch.crates-io]
