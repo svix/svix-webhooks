@@ -679,23 +679,23 @@ pub mod tests {
         redis::RedisPool,
     };
 
-    pub async fn get_pool(cfg: Configuration) -> RedisPool {
+    pub async fn get_pool(cfg: &Configuration) -> RedisPool {
         match cfg.cache_type {
             CacheType::RedisCluster => {
                 crate::redis::new_redis_pool_clustered(
                     cfg.redis_dsn.as_ref().unwrap().as_str(),
-                    &cfg,
+                    cfg,
                 )
                 .await
             }
-            _ => crate::redis::new_redis_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg).await,
+            _ => crate::redis::new_redis_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), cfg).await,
         }
     }
 
     #[tokio::test]
     async fn test_migrate_list() {
         let cfg = crate::cfg::load().unwrap();
-        let pool = get_pool(cfg).await;
+        let pool = get_pool(&cfg).await;
         let mut pool = pool.get().await.unwrap();
 
         const TEST_QUEUE: &str = "{queue}_svix_test_queue_list";
@@ -727,7 +727,7 @@ pub mod tests {
     #[tokio::test]
     async fn test_migrate_sset() {
         let cfg = crate::cfg::load().unwrap();
-        let pool = get_pool(cfg).await;
+        let pool = get_pool(&cfg).await;
         let mut pool = pool.get().await.unwrap();
 
         const TEST_QUEUE: &str = "{queue}_svix_test_queue_sset";
@@ -776,7 +776,7 @@ pub mod tests {
     #[tokio::test]
     async fn test_idle_period() {
         let cfg = crate::cfg::load().unwrap();
-        let pool = get_pool(cfg).await;
+        let pool = get_pool(&cfg).await;
 
         let (p, mut c) = new_pair_inner(
             pool.clone(),
@@ -841,7 +841,7 @@ pub mod tests {
     #[tokio::test]
     async fn test_ack() {
         let cfg = crate::cfg::load().unwrap();
-        let pool = get_pool(cfg).await;
+        let pool = get_pool(&cfg).await;
 
         // Delete the keys used in this test to ensure nothing pollutes the output
         let mut conn = pool
@@ -900,7 +900,7 @@ pub mod tests {
     #[tokio::test]
     async fn test_nack() {
         let cfg = crate::cfg::load().unwrap();
-        let pool = get_pool(cfg).await;
+        let pool = get_pool(&cfg).await;
 
         let (p, mut c) = new_pair_inner(
             pool,
@@ -943,7 +943,7 @@ pub mod tests {
     #[tokio::test]
     async fn test_delay() {
         let cfg = crate::cfg::load().unwrap();
-        let pool = get_pool(cfg).await;
+        let pool = get_pool(&cfg).await;
 
         let (p, mut c) = new_pair_inner(
             pool,
@@ -991,7 +991,7 @@ pub mod tests {
     #[tokio::test]
     async fn test_migrations() {
         let cfg = crate::cfg::load().unwrap();
-        let pool = get_pool(cfg).await;
+        let pool = get_pool(&cfg).await;
 
         // Test queue name constants
         let v1_main = "{test}_migrations_main_v1";
