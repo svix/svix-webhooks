@@ -2,5 +2,9 @@
 members = ["svix-server", "svix-server_derive"]
 resolver = "2"
 
+[workspace.lints.clippy]
+dbg_macro = "warn"
+todo = "warn"
+
 [patch.crates-io]
 hyper = { git = "https://github.com/svix/hyper/", rev = "63efac5a6719937359d61a1bb1b93d9ce88f0e3d" }
