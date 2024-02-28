@@ -38,13 +38,8 @@ pub async fn new_pair(
     prefix: Option<&str>,
 ) -> (TaskQueueProducer, TaskQueueConsumer) {
     match cfg.queue_backend() {
-        QueueBackend::Redis(dsn) => {
-            let pool = crate::redis::new_redis_pool(dsn, cfg).await;
-            redis::new_pair(pool, prefix).await
-        }
-        QueueBackend::RedisCluster(dsn) => {
-            let pool = crate::redis::new_redis_pool_clustered(dsn, cfg).await;
-            redis::new_pair(pool, prefix).await
+        QueueBackend::Redis(_) | QueueBackend::RedisCluster(_) => {
+            redis::new_pair(cfg, prefix).await
         }
         QueueBackend::Memory => {
             let (producer, consumer) = InMemoryBackend::builder()
