@@ -32,6 +32,7 @@ type SettingsOut struct {
 	EnforceHttps *bool `json:"enforceHttps,omitempty"`
 	EventCatalogPublished *bool `json:"eventCatalogPublished,omitempty"`
 	ReadOnly *bool `json:"readOnly,omitempty"`
+	ShowUseSvixPlay *bool `json:"showUseSvixPlay,omitempty"`
 }
 
 // NewSettingsOut instantiates a new SettingsOut object
@@ -54,6 +55,8 @@ func NewSettingsOut() *SettingsOut {
 	this.EventCatalogPublished = &eventCatalogPublished
 	var readOnly bool = false
 	this.ReadOnly = &readOnly
+	var showUseSvixPlay bool = true
+	this.ShowUseSvixPlay = &showUseSvixPlay
 	return &this
 }
 
@@ -76,6 +79,8 @@ func NewSettingsOutWithDefaults() *SettingsOut {
 	this.EventCatalogPublished = &eventCatalogPublished
 	var readOnly bool = false
 	this.ReadOnly = &readOnly
+	var showUseSvixPlay bool = true
+	this.ShowUseSvixPlay = &showUseSvixPlay
 	return &this
 }
 
@@ -641,6 +646,38 @@ func (o *SettingsOut) SetReadOnly(v bool) {
 	o.ReadOnly = &v
 }
 
+// GetShowUseSvixPlay returns the ShowUseSvixPlay field value if set, zero value otherwise.
+func (o *SettingsOut) GetShowUseSvixPlay() bool {
+	if o == nil || o.ShowUseSvixPlay == nil {
+		var ret bool
+		return ret
+	}
+	return *o.ShowUseSvixPlay
+}
+
+// GetShowUseSvixPlayOk returns a tuple with the ShowUseSvixPlay field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *SettingsOut) GetShowUseSvixPlayOk() (*bool, bool) {
+	if o == nil || o.ShowUseSvixPlay == nil {
+		return nil, false
+	}
+	return o.ShowUseSvixPlay, true
+}
+
+// HasShowUseSvixPlay returns a boolean if a field has been set.
+func (o *SettingsOut) HasShowUseSvixPlay() bool {
+	if o != nil && o.ShowUseSvixPlay != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetShowUseSvixPlay gets a reference to the given bool and assigns it to the ShowUseSvixPlay field.
+func (o *SettingsOut) SetShowUseSvixPlay(v bool) {
+	o.ShowUseSvixPlay = &v
+}
+
 func (o SettingsOut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if o.ColorPaletteDark != nil {
@@ -690,6 +727,9 @@ func (o SettingsOut) MarshalJSON() ([]byte, error) {
 	}
 	if o.ReadOnly != nil {
 		toSerialize["readOnly"] = o.ReadOnly
+	}
+	if o.ShowUseSvixPlay != nil {
+		toSerialize["showUseSvixPlay"] = o.ShowUseSvixPlay
 	}
 	return json.Marshal(toSerialize)
 }

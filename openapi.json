@@ -1525,6 +1525,10 @@
                     "enableTransformations": {
                         "default": false,
                         "type": "boolean"
+                    },
+                    "showUseSvixPlay": {
+                        "default": true,
+                        "type": "boolean"
                     }
                 },
                 "type": "object"
@@ -3508,6 +3512,10 @@
                     "readOnly": {
                         "default": false,
                         "type": "boolean"
+                    },
+                    "showUseSvixPlay": {
+                        "default": true,
+                        "type": "boolean"
                     }
                 },
                 "type": "object"
@@ -3585,6 +3593,10 @@
                     },
                     "readOnly": {
                         "default": false,
+                        "type": "boolean"
+                    },
+                    "showUseSvixPlay": {
+                        "default": true,
                         "type": "boolean"
                     }
                 },

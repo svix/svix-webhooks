@@ -28,6 +28,7 @@ type EnvironmentSettingsOut struct {
 	EnableIntegrationManagement *bool `json:"enableIntegrationManagement,omitempty"`
 	EnableMessageTags *bool `json:"enableMessageTags,omitempty"`
 	EnableTransformations *bool `json:"enableTransformations,omitempty"`
+	ShowUseSvixPlay *bool `json:"showUseSvixPlay,omitempty"`
 }
 
 // NewEnvironmentSettingsOut instantiates a new EnvironmentSettingsOut object
@@ -44,6 +45,8 @@ func NewEnvironmentSettingsOut() *EnvironmentSettingsOut {
 	this.EnableMessageTags = &enableMessageTags
 	var enableTransformations bool = false
 	this.EnableTransformations = &enableTransformations
+	var showUseSvixPlay bool = true
+	this.ShowUseSvixPlay = &showUseSvixPlay
 	return &this
 }
 
@@ -60,6 +63,8 @@ func NewEnvironmentSettingsOutWithDefaults() *EnvironmentSettingsOut {
 	this.EnableMessageTags = &enableMessageTags
 	var enableTransformations bool = false
 	this.EnableTransformations = &enableTransformations
+	var showUseSvixPlay bool = true
+	this.ShowUseSvixPlay = &showUseSvixPlay
 	return &this
 }
 
@@ -487,6 +492,38 @@ func (o *EnvironmentSettingsOut) SetEnableTransformations(v bool) {
 	o.EnableTransformations = &v
 }
 
+// GetShowUseSvixPlay returns the ShowUseSvixPlay field value if set, zero value otherwise.
+func (o *EnvironmentSettingsOut) GetShowUseSvixPlay() bool {
+	if o == nil || o.ShowUseSvixPlay == nil {
+		var ret bool
+		return ret
+	}
+	return *o.ShowUseSvixPlay
+}
+
+// GetShowUseSvixPlayOk returns a tuple with the ShowUseSvixPlay field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *EnvironmentSettingsOut) GetShowUseSvixPlayOk() (*bool, bool) {
+	if o == nil || o.ShowUseSvixPlay == nil {
+		return nil, false
+	}
+	return o.ShowUseSvixPlay, true
+}
+
+// HasShowUseSvixPlay returns a boolean if a field has been set.
+func (o *EnvironmentSettingsOut) HasShowUseSvixPlay() bool {
+	if o != nil && o.ShowUseSvixPlay != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetShowUseSvixPlay gets a reference to the given bool and assigns it to the ShowUseSvixPlay field.
+func (o *EnvironmentSettingsOut) SetShowUseSvixPlay(v bool) {
+	o.ShowUseSvixPlay = &v
+}
+
 func (o EnvironmentSettingsOut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if o.ColorPaletteDark != nil {
@@ -524,6 +561,9 @@ func (o EnvironmentSettingsOut) MarshalJSON() ([]byte, error) {
 	}
 	if o.EnableTransformations != nil {
 		toSerialize["enableTransformations"] = o.EnableTransformations
+	}
+	if o.ShowUseSvixPlay != nil {
+		toSerialize["showUseSvixPlay"] = o.ShowUseSvixPlay
 	}
 	return json.Marshal(toSerialize)
 }
