@@ -86,3 +86,6 @@ axum-server = { version = "0.5", features = ["tls-openssl"] }
 [features]
 default = ["jemalloc"]
 jemalloc = ["dep:tikv-jemallocator"]
+
+[lints]
+workspace = true

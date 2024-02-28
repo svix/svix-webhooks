@@ -103,7 +103,7 @@ impl WebhookClient {
         &self,
         request: Request,
         retry: bool,
-    ) -> BoxFuture<Result<Response<Body>, Error>> {
+    ) -> BoxFuture<'_, Result<Response<Body>, Error>> {
         async move {
             let org_req = request.clone();
             if let Some(auth) = request.uri.authority() {

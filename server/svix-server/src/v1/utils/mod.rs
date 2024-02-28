@@ -630,11 +630,15 @@ pub fn validate_no_control_characters_unrequired(
     }
 }
 
-pub fn openapi_tag<T: AsRef<str>>(tag: T) -> impl Fn(TransformPathItem) -> TransformPathItem {
+pub fn openapi_tag<T: AsRef<str>>(
+    tag: T,
+) -> impl Fn(TransformPathItem<'_>) -> TransformPathItem<'_> {
     move |op| op.tag(tag.as_ref())
 }
 
-pub fn openapi_desc<T: AsRef<str>>(desc: T) -> impl Fn(TransformOperation) -> TransformOperation {
+pub fn openapi_desc<T: AsRef<str>>(
+    desc: T,
+) -> impl Fn(TransformOperation<'_>) -> TransformOperation<'_> {
     move |op| op.description(desc.as_ref())
 }
 
