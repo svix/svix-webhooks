@@ -1,9 +1,5 @@
 use crate::error::{Error, Result};
-use omniqueue::queue::producer::DynProducer;
-use omniqueue::{
-    backends,
-    queue::{consumer::DynConsumer, QueueBackend},
-};
+use omniqueue::{backends, DynConsumer, DynProducer};
 
 use serde::Deserialize;
 
@@ -44,48 +40,53 @@ pub async fn consumer(cfg: &RedisInputOpts) -> Result<DynConsumer> {
         .delayed_queue_key
         .clone()
         .unwrap_or_else(|| format!("{}_delays", cfg.queue_key));
+    let delayed_lock_key = format!("{delayed_queue_key}_lock");
 
-    backends::redis::RedisQueueBackend::<
-        backends::redis::RedisMultiplexedConnectionManager,
-    >::builder(backends::redis::RedisConfig {
-        dsn: cfg.dsn.clone(),
-        max_connections: cfg.max_connections,
-        reinsert_on_nack: cfg.reinsert_on_nack,
-        queue_key: cfg.queue_key.clone(),
-        delayed_queue_key,
-        consumer_group: cfg.consumer_group.clone(),
-        consumer_name: cfg.consumer_name.clone(),
-        // FIXME: expose in config?
-        payload_key: "payload".to_string(),
-        ack_deadline_ms: cfg.ack_deadline_ms,
-    })
-        .make_dynamic()
-        .build_consumer()
-        .await
-        .map_err(Error::from)
+    backends::RedisBackend::<backends::redis::RedisMultiplexedConnectionManager>::builder(
+        backends::RedisConfig {
+            dsn: cfg.dsn.clone(),
+            max_connections: cfg.max_connections,
+            reinsert_on_nack: cfg.reinsert_on_nack,
+            queue_key: cfg.queue_key.clone(),
+            delayed_queue_key,
+            delayed_lock_key,
+            consumer_group: cfg.consumer_group.clone(),
+            consumer_name: cfg.consumer_name.clone(),
+            // FIXME: expose in config?
+            payload_key: "payload".to_string(),
+            ack_deadline_ms: cfg.ack_deadline_ms,
+        },
+    )
+    .make_dynamic()
+    .build_consumer()
+    .await
+    .map_err(Error::from)
 }
 pub async fn producer(cfg: &RedisOutputOpts) -> Result<DynProducer> {
     let delayed_queue_key = cfg
         .delayed_queue_key
         .clone()
         .unwrap_or_else(|| format!("{}_delays", cfg.queue_key));
+    let delayed_lock_key = format!("{delayed_queue_key}_lock");
 
-    backends::redis::RedisQueueBackend::<
-        backends::redis::RedisMultiplexedConnectionManager,
-    >::builder(backends::redis::RedisConfig {
-        dsn: cfg.dsn.clone(),
-        max_connections: cfg.max_connections,
-        queue_key: cfg.queue_key.clone(),
-        delayed_queue_key,
-        // FIXME: expose in config?
-        payload_key: "payload".to_string(),
-        // consumer stuff we don't care about.
-        reinsert_on_nack: false,
-        consumer_group: String::new(),
-        consumer_name: String::new(),
-        ack_deadline_ms: cfg.ack_deadline_ms,
-    })
-        .make_dynamic()
-        .build_producer()
-        .await.map_err(Error::from)
+    backends::RedisBackend::<backends::redis::RedisMultiplexedConnectionManager>::builder(
+        backends::RedisConfig {
+            dsn: cfg.dsn.clone(),
+            max_connections: cfg.max_connections,
+            queue_key: cfg.queue_key.clone(),
+            delayed_queue_key,
+            delayed_lock_key,
+            // FIXME: expose in config?
+            payload_key: "payload".to_string(),
+            // consumer stuff we don't care about.
+            reinsert_on_nack: false,
+            consumer_group: String::new(),
+            consumer_name: String::new(),
+            ack_deadline_ms: cfg.ack_deadline_ms,
+        },
+    )
+    .make_dynamic()
+    .build_producer()
+    .await
+    .map_err(Error::from)
 }

@@ -3941,7 +3941,7 @@ dependencies = [
 [[package]]
 name = "omniqueue"
 version = "0.1.0"
-source = "git+https://github.com/svix/omniqueue-rs?rev=b6383db507ca2d61da1b31dfb4ea0981cf7c6881#b6383db507ca2d61da1b31dfb4ea0981cf7c6881"
+source = "git+https://github.com/svix/omniqueue-rs?rev=044fc688670759859f193bb646fac043bbfd08ba#044fc688670759859f193bb646fac043bbfd08ba"
 dependencies = [
  "async-trait",
  "aws-config",
@@ -3955,10 +3955,9 @@ dependencies = [
  "redis",
  "serde",
  "serde_json",
- "svix-ksuid",
+ "svix-ksuid 0.8.0",
  "thiserror",
  "tokio",
- "tokio-util",
  "tracing",
 ]
 
@@ -5777,7 +5776,7 @@ dependencies = [
  "shellexpand",
  "svix-bridge-plugin-queue",
  "svix-bridge-types",
- "svix-ksuid",
+ "svix-ksuid 0.7.0",
  "tikv-jemalloc-ctl",
  "tikv-jemallocator",
  "tokio",
@@ -5826,6 +5825,18 @@ name = "svix-ksuid"
 version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "75d773122e48817eb6eb74605cf799574a855bf4c7eb0c1bb06c005067123b13"
+dependencies = [
+ "base-encode",
+ "byteorder",
+ "getrandom 0.2.12",
+ "time",
+]
+
+[[package]]
+name = "svix-ksuid"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "66f014385b7fc154f59e9480770c2187b6e61037c2439895788a9a4d421d7859"
 dependencies = [
  "base-encode",
  "byteorder",
