@@ -3,13 +3,7 @@ use std::{sync::Arc, time::Duration};
 use axum::async_trait;
 use chrono::{DateTime, Utc};
 use omniqueue::{
-    backends::memory_queue::MemoryQueueBackend,
-    queue::{
-        consumer::{DynConsumer, QueueConsumer},
-        producer::QueueProducer,
-        Delivery, QueueBackend as _,
-    },
-    scheduled::ScheduledProducer,
+    backends::InMemoryBackend, Delivery, DynConsumer, QueueConsumer, ScheduledQueueProducer,
 };
 use serde::{Deserialize, Serialize};
 use svix_ksuid::*;
@@ -53,14 +47,14 @@ pub async fn new_pair(
             redis::new_pair(pool, prefix).await
         }
         QueueBackend::Memory => {
-            let (producer, consumer) = MemoryQueueBackend::builder(())
+            let (producer, consumer) = InMemoryBackend::builder()
                 .build_pair()
                 .await
                 .expect("building in-memory queue can't fail");
 
             (
-                TaskQueueProducer::Omni(Arc::new(producer.into_dyn_scheduled(Default::default()))),
-                TaskQueueConsumer::Omni(consumer.into_dyn(Default::default())),
+                TaskQueueProducer::Omni(Arc::new(producer.into_dyn_scheduled())),
+                TaskQueueConsumer::Omni(consumer.into_dyn()),
             )
         }
         QueueBackend::RabbitMq(dsn) => {
@@ -150,7 +144,7 @@ impl QueueTask {
 #[derive(Clone)]
 pub enum TaskQueueProducer {
     Redis(RedisQueueProducer),
-    Omni(Arc<omniqueue::scheduled::DynScheduledProducer>),
+    Omni(Arc<omniqueue::DynScheduledQueueProducer>),
 }
 
 impl TaskQueueProducer {
