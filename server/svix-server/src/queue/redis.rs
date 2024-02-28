@@ -445,20 +445,14 @@ pub struct RedisQueueProducer {
     delayed_queue_name: Arc<String>,
 }
 
-fn to_redis_key(delivery: &TaskQueueDelivery) -> String {
-    format!(
-        "{}|{}",
-        delivery.id,
-        serde_json::to_string(&delivery.task).unwrap()
-    )
+fn to_redis_key(delivery_id: &str, task: &QueueTask) -> String {
+    format!("{delivery_id}|{}", serde_json::to_string(&task).unwrap())
 }
 
-fn from_redis_key(key: &str) -> (String, Arc<QueueTask>) {
+fn from_redis_key(key: &str) -> Arc<QueueTask> {
     // Get the first delimiter -> it has to have the |
     let pos = key.find('|').unwrap();
-    let id = key[..pos].to_string();
-    let task = serde_json::from_str(&key[pos + 1..]).unwrap();
-    (id, task)
+    serde_json::from_str(&key[pos + 1..]).unwrap()
 }
 
 impl RedisQueueInner {
@@ -533,7 +527,7 @@ impl TaskQueueSend for RedisQueueProducer {
             Some(timestamp),
             Acker::Redis(self.inner.clone()),
         );
-        let key = to_redis_key(&delivery);
+        let key = to_redis_key(&delivery.id, &delivery.task);
         let delayed_queue_name: &str = &self.delayed_queue_name;
         let _: () = pool
             .zadd(delayed_queue_name, key, timestamp.timestamp())
@@ -623,7 +617,7 @@ async fn migrate_list_to_stream(
 
         let mut pipe = redis::pipe();
         for key in legacy_keys {
-            let (_, task) = from_redis_key(&key);
+            let task = from_redis_key(&key);
             let _ = pipe.xadd(
                 queue,
                 GENERATE_STREAM_ID,
@@ -693,7 +687,7 @@ async fn migrate_sset(
 
 #[cfg(test)]
 pub mod tests {
-    use std::{sync::Arc, time::Duration};
+    use std::time::Duration;
 
     use assert_matches::assert_matches;
     use chrono::Utc;
@@ -706,10 +700,7 @@ pub mod tests {
     use crate::{
         cfg::{CacheType, Configuration},
         core::types::{ApplicationId, EndpointId, MessageAttemptTriggerType, MessageId},
-        queue::{
-            redis::RedisQueueInner, Acker, MessageTask, QueueTask, TaskQueueConsumer,
-            TaskQueueDelivery, TaskQueueProducer,
-        },
+        queue::{MessageTask, QueueTask, TaskQueueConsumer, TaskQueueProducer},
         redis::RedisPool,
     };
 
@@ -1069,20 +1060,16 @@ pub mod tests {
                 let _: () = conn
                     .rpush(
                         v1_main,
-                        to_redis_key(&TaskQueueDelivery {
-                            id: num.to_string(),
-                            task: Arc::new(QueueTask::MessageV1(MessageTask {
+                        to_redis_key(
+                            &num.to_string(),
+                            &QueueTask::MessageV1(MessageTask {
                                 msg_id: MessageId(format!("TestMessageID{num}")),
                                 app_id: ApplicationId("TestApplicationID".to_owned()),
                                 endpoint_id: EndpointId("TestEndpointID".to_owned()),
                                 trigger_type: MessageAttemptTriggerType::Manual,
                                 attempt_count: 0,
-                            })),
-                            acker: Acker::Redis(Arc::new(RedisQueueInner {
-                                pool: pool.clone(),
-                                main_queue_name: v1_main.to_owned(),
-                            })),
-                        }),
+                            }),
+                        ),
                     )
                     .await
                     .unwrap();
@@ -1092,20 +1079,16 @@ pub mod tests {
                 let _: () = conn
                     .zadd(
                         v1_delayed,
-                        to_redis_key(&TaskQueueDelivery {
-                            id: num.to_string(),
-                            task: Arc::new(QueueTask::MessageV1(MessageTask {
+                        to_redis_key(
+                            &num.to_string(),
+                            &QueueTask::MessageV1(MessageTask {
                                 msg_id: MessageId(format!("TestMessageID{num}")),
                                 app_id: ApplicationId("TestApplicationID".to_owned()),
                                 endpoint_id: EndpointId("TestEndpointID".to_owned()),
                                 trigger_type: MessageAttemptTriggerType::Manual,
                                 attempt_count: 0,
-                            })),
-                            acker: Acker::Redis(Arc::new(RedisQueueInner {
-                                pool: pool.clone(),
-                                main_queue_name: v1_main.to_owned(),
-                            })),
-                        }),
+                            }),
+                        ),
                         Utc::now().timestamp() + 2,
                     )
                     .await
