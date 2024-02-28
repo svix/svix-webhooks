@@ -89,6 +89,9 @@ const QUEUE_KV_KEY: &str = "data";
 /// The maximum number of pending messages to reinsert into the queue after becoming stale per loop
 const PENDING_BATCH_SIZE: i16 = 1000;
 
+trait SendConnectionLike: redis::aio::ConnectionLike + Send {}
+impl<T: redis::aio::ConnectionLike + Send + ?Sized> SendConnectionLike for T {}
+
 /// Generates a [`TaskQueueProducer`] and a [`TaskQueueConsumer`] backed by Redis.
 pub async fn new_pair(
     pool: RedisPool,
@@ -255,27 +258,15 @@ async fn background_task_delayed(
 /// Runs Redis queue migrations with the given delay schedule. Migrations are run on this schedule
 /// such that if an old instance of the server is online after the migrations are made, that no data
 /// will be lost assuming the old server is taken offline before the last scheduled delay.
-async fn run_migration_schedule(delays: &[Duration], pool: RedisPool) {
+async fn run_migration_schedule(delays: &[Duration], conn: &mut impl SendConnectionLike) {
     for delay in delays {
-        let mut pool = match pool.get().await {
-            Ok(pool) => pool,
-            Err(e) => {
-                tracing::error!(
-                    "Error fetching Redis connection from pool in migration schedule: {}",
-                    e
-                );
-                tokio::time::sleep(*delay).await;
-                continue;
-            }
-        };
-
         // drain legacy queues:
-        if let Err(e) = migrate_v1_to_v2_queues(&mut pool).await {
+        if let Err(e) = migrate_v1_to_v2_queues(conn).await {
             tracing::error!("Error migrating queue: {}", e);
             tokio::time::sleep(*delay).await;
             continue;
         }
-        if let Err(e) = migrate_v2_to_v3_queues(&mut pool).await {
+        if let Err(e) = migrate_v2_to_v3_queues(conn).await {
             tracing::error!("Error migrating queue: {}", e);
             tokio::time::sleep(*delay).await;
             continue;
@@ -343,6 +334,11 @@ async fn new_pair_inner(
         let pool = pool.clone();
 
         async move {
+            let mut conn = pool
+                .get()
+                .await
+                .expect("Error retrieving connection from Redis pool");
+
             let delays = [
                 // 11.25 min
                 Duration::from_secs(60 * 11 + 15),
@@ -362,7 +358,7 @@ async fn new_pair_inner(
                 Duration::from_secs(60 * 60 * 24),
             ];
 
-            run_migration_schedule(&delays, pool).await;
+            run_migration_schedule(&delays, &mut conn).await;
         }
     });
 
@@ -569,9 +565,6 @@ impl TaskQueueReceive for RedisQueueConsumer {
         .map_err(|e| Error::generic(format!("task join error {}", e)))?
     }
 }
-
-trait SendConnectionLike: redis::aio::ConnectionLike + Send {}
-impl<T: redis::aio::ConnectionLike + Send + ?Sized> SendConnectionLike for T {}
 
 async fn migrate_v2_to_v3_queues(conn: &mut impl SendConnectionLike) -> Result<()> {
     migrate_list_to_stream(conn, LEGACY_V2_MAIN, MAIN).await?;
