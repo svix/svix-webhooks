@@ -131,6 +131,14 @@ impl QueueTask {
             QueueTask::MessageBatch(_) => "MessageBatch",
         }
     }
+
+    pub fn msg_id(&self) -> Option<&str> {
+        match self {
+            QueueTask::HealthCheck => None,
+            QueueTask::MessageV1(v1) => Some(&v1.msg_id),
+            QueueTask::MessageBatch(batch) => Some(&batch.msg_id),
+        }
+    }
 }
 
 #[derive(Clone)]
@@ -192,14 +200,13 @@ impl TaskQueueConsumer {
 
 #[derive(Debug)]
 pub struct TaskQueueDelivery {
-    pub id: String,
     pub task: Arc<QueueTask>,
     acker: Delivery,
 }
 
 impl TaskQueueDelivery {
     pub async fn ack(self) -> Result<()> {
-        tracing::trace!("ack {}", self.id);
+        tracing::trace!(msg_id = self.task.msg_id(), "ack");
 
         let mut retry = Retry::new(should_retry, RETRY_SCHEDULE);
         let mut acker = Some(self.acker);
@@ -224,7 +231,7 @@ impl TaskQueueDelivery {
     }
 
     pub async fn nack(self) -> Result<()> {
-        tracing::trace!("nack {}", self.id);
+        tracing::trace!(msg_id = self.task.msg_id(), "nack");
 
         let mut retry = Retry::new(should_retry, RETRY_SCHEDULE);
         let mut acker = Some(self.acker);
@@ -258,10 +265,6 @@ impl TryFrom<Delivery> for TaskQueueDelivery {
     type Error = Error;
     fn try_from(value: Delivery) -> Result<Self> {
         Ok(TaskQueueDelivery {
-            // FIXME(onelson): ksuid for the id?
-            //   Since ack/nack is all handled internally by the omniqueue delivery, maybe it
-            //   doesn't matter.
-            id: "".to_string(),
             task: Arc::new(
                 value
                     .payload_serde_json()
