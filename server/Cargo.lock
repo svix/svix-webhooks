@@ -2501,10 +2501,14 @@ version = "0.1.0"
 source = "git+https://github.com/svix/omniqueue-rs.git?rev=044fc688670759859f193bb646fac043bbfd08ba#044fc688670759859f193bb646fac043bbfd08ba"
 dependencies = [
  "async-trait",
+ "bb8",
+ "bb8-redis",
  "futures-util",
  "lapin",
+ "redis",
  "serde",
  "serde_json",
+ "svix-ksuid 0.8.0",
  "thiserror",
  "tokio",
  "tracing",
@@ -4253,6 +4257,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "svix-ksuid"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "66f014385b7fc154f59e9480770c2187b6e61037c2439895788a9a4d421d7859"
+dependencies = [
+ "base-encode",
+ "byteorder",
+ "getrandom",
+ "time",
+]
+
+[[package]]
 name = "svix-server"
 version = "1.20.0"
 dependencies = [
@@ -4304,7 +4320,7 @@ dependencies = [
  "serde_path_to_error",
  "sqlx",
  "svix",
- "svix-ksuid",
+ "svix-ksuid 0.5.3",
  "svix-server_derive",
  "thiserror",
  "tikv-jemallocator",

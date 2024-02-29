@@ -29,25 +29,17 @@
 
 use std::{num::NonZeroUsize, sync::Arc, time::Duration};
 
-use axum::async_trait;
-
-use chrono::Utc;
-use redis::{
-    streams::{StreamClaimReply, StreamId, StreamReadOptions, StreamReadReply},
-    AsyncCommands as _, Cmd, FromRedisValue, RedisResult,
+use bb8_redis::RedisMultiplexedConnectionManager;
+use omniqueue::{
+    backends::{redis::RedisClusterConnectionManager, RedisBackend, RedisConfig},
+    QueueConsumer as _, ScheduledQueueProducer as _,
 };
-use tokio::time::sleep;
+use redis::{AsyncCommands as _, RedisResult};
 
+use super::{QueueTask, TaskQueueConsumer, TaskQueueProducer};
 use crate::{
     cfg::{Configuration, QueueType},
-    error::{Error, Result},
-    queue::Acker,
-    redis::RedisPool,
-};
-
-use super::{
-    QueueTask, TaskQueueConsumer, TaskQueueDelivery, TaskQueueProducer, TaskQueueReceive,
-    TaskQueueSend,
+    error::Result,
 };
 
 /// This is the key of the main queue. As a KV store, redis places the entire stream under this key.
@@ -80,15 +72,10 @@ const WORKER_CONSUMER: &str = "svix_workers_consumer";
 
 /// Special ID for XADD command's which generates a stream ID automatically
 const GENERATE_STREAM_ID: &str = "*";
-/// Special ID for XREADGROUP commands which reads any new messages
-const LISTEN_STREAM_ID: &str = ">";
 
 /// Each queue item has a set of KV pairs associated with it, for simplicity a sing key, "data" is
 /// used with the entire [`QueueTask`] as the value in serialized JSON
 const QUEUE_KV_KEY: &str = "data";
-
-/// The maximum number of pending messages to reinsert into the queue after becoming stale per loop
-const PENDING_BATCH_SIZE: i16 = 1000;
 
 trait SendConnectionLike: redis::aio::ConnectionLike + Send {}
 impl<T: redis::aio::ConnectionLike + Send + ?Sized> SendConnectionLike for T {}
@@ -107,153 +94,6 @@ pub async fn new_pair(
         DELAYED_LOCK,
     )
     .await
-}
-
-struct StreamAutoclaimReply {
-    ids: Vec<StreamId>,
-}
-
-impl FromRedisValue for StreamAutoclaimReply {
-    fn from_redis_value(v: &redis::Value) -> RedisResult<Self> {
-        // First try the two member array from before Redis 7.0
-        match <((), StreamClaimReply)>::from_redis_value(v) {
-            Ok(res) => Ok(StreamAutoclaimReply { ids: res.1.ids }),
-
-            // If it's a type error, then try the three member array from Redis 7.0 and after
-            Err(e) if e.kind() == redis::ErrorKind::TypeError => {
-                <((), StreamClaimReply, ())>::from_redis_value(v)
-                    .map(|ok| StreamAutoclaimReply { ids: ok.1.ids })
-            }
-
-            // Any other error should be returned as is
-            Err(e) => Err(e),
-        }
-    }
-}
-
-async fn background_task_pending(
-    pool: RedisPool,
-    main_queue_name: String,
-    pending_duration: i64,
-) -> Result<()> {
-    let mut pool = pool.get().await?;
-
-    // Every iteration checks whether the processing queue has items that should be picked back up,
-    // claiming them in the process
-    let mut cmd = redis::cmd("XAUTOCLAIM");
-    cmd.arg(&main_queue_name)
-        .arg(WORKERS_GROUP)
-        .arg(WORKER_CONSUMER)
-        .arg(pending_duration)
-        .arg("-")
-        .arg("COUNT")
-        .arg(PENDING_BATCH_SIZE);
-
-    let StreamAutoclaimReply { ids } = pool.query_async(cmd).await?;
-
-    if !ids.is_empty() {
-        let mut pipe = redis::pipe();
-
-        // And reinsert the map of KV pairs into the MAIN qunue with a new stream ID
-        for StreamId { map, .. } in &ids {
-            let _ = pipe.xadd(
-                &main_queue_name,
-                GENERATE_STREAM_ID,
-                &map.iter()
-                    .filter_map(|(k, v)| {
-                        if let redis::Value::Data(data) = v {
-                            Some((k.as_str(), data.as_slice()))
-                        } else {
-                            None
-                        }
-                    })
-                    .collect::<Vec<(&str, &[u8])>>(),
-            );
-        }
-
-        let _: () = pool.query_async_pipeline(pipe).await?;
-
-        // Acknowledge all the stale ones so the pending queue is cleared
-        let ids: Vec<_> = ids.iter().map(|wrapped| &wrapped.id).collect();
-
-        let mut pipe = redis::pipe();
-        pipe.add_command(Cmd::xack(&main_queue_name, WORKERS_GROUP, &ids));
-        pipe.add_command(Cmd::xdel(&main_queue_name, &ids));
-
-        let _: () = pool.query_async_pipeline(pipe).await?;
-    } else {
-        // Wait for half a second before attempting to fetch again if nothing was found
-        sleep(Duration::from_millis(500)).await;
-    }
-
-    Ok(())
-}
-
-async fn background_task_delayed(
-    pool: RedisPool,
-    main_queue_name: String,
-    delayed_queue_name: String,
-    delayed_lock: &str,
-) -> Result<()> {
-    let batch_size: isize = 50;
-
-    let mut pool = pool.get().await?;
-
-    // There is a lock on the delayed queue processing to avoid race conditions. So first try to
-    // acquire the lock should it not already exist. The lock expires after five seconds in case a
-    // worker crashes while holding the lock.
-    let mut cmd = redis::cmd("SET");
-    cmd.arg(delayed_lock)
-        .arg(true)
-        .arg("NX")
-        .arg("PX")
-        .arg(5000);
-    // WIll be Some("OK") when set or None when not set
-    let resp: Option<String> = pool.query_async(cmd).await?;
-
-    if resp.as_deref() == Some("OK") {
-        // First look for delayed keys whose time is up and add them to the main qunue
-        let timestamp = Utc::now().timestamp();
-        let keys: Vec<String> = pool
-            .zrangebyscore_limit(&delayed_queue_name, 0isize, timestamp, 0isize, batch_size)
-            .await?;
-
-        if !keys.is_empty() {
-            let tasks: Vec<&str> = keys
-                .iter()
-                // All information is stored in the key in which the ID and JSON formatted task
-                // are separated by a `|`. So, take the key, then take the part after the `|`
-                .map(|x| x.split('|').nth(1).expect("Improper key format"))
-                .collect();
-
-            // For each task, XADD them to the MAIN queue
-            let mut pipe = redis::pipe();
-            for task in tasks {
-                let _ = pipe.xadd(
-                    &main_queue_name,
-                    GENERATE_STREAM_ID,
-                    &[(QUEUE_KV_KEY, task)],
-                );
-            }
-            let _: () = pool.query_async_pipeline(pipe).await?;
-
-            // Then remove the tasks from the delayed queue so they aren't resent
-            let _: () = pool.zrem(&delayed_queue_name, keys).await?;
-
-            // Make sure to release the lock after done processing
-            let _: () = pool.del(delayed_lock).await?;
-        } else {
-            // Make sure to release the lock before sleeping
-            let _: () = pool.del(delayed_lock).await?;
-            // Wait for half a second before attempting to fetch again if nothing was found
-            sleep(Duration::from_millis(500)).await;
-        }
-    } else {
-        // Also sleep half a second if the lock could not be fetched
-        sleep(Duration::from_millis(500)).await;
-    }
-
-    Ok(())
 }
 
 /// Runs Redis queue migrations with the given delay schedule. Migrations are run on this schedule
@@ -335,10 +175,6 @@ async fn new_pair_inner(
         .try_into()
         .expect("Pending duration out of bounds");
 
-    let worker_pool = pool.clone();
-    let mqn = main_queue_name.clone();
-    let dqn = delayed_queue_name.clone();
-
     // Migrate v1 queues to v2 and v2 queues to v3 on a loop with exponential backoff.
     let pool_ = pool.clone();
     tokio::spawn(async move {
@@ -369,66 +205,46 @@ async fn new_pair_inner(
         run_migration_schedule(&delays, &mut conn).await;
     });
 
-    tokio::spawn({
-        let pool = pool.clone();
-        let mqn = mqn.clone();
-        async move {
-            loop {
-                if let Err(err) =
-                    background_task_delayed(pool.clone(), mqn.clone(), dqn.clone(), &delayed_lock)
-                        .await
-                {
-                    tracing::error!("{}", err);
-                    tokio::time::sleep(Duration::from_millis(500)).await;
-                    continue;
-                };
-            }
+    let config = RedisConfig {
+        dsn: dsn.to_owned(),
+        max_connections: cfg.redis_pool_max_size,
+        reinsert_on_nack: false, // TODO
+        queue_key: main_queue_name,
+        delayed_queue_key: delayed_queue_name,
+        delayed_lock_key: delayed_lock,
+        consumer_group: WORKERS_GROUP.to_owned(),
+        consumer_name: WORKER_CONSUMER.to_owned(),
+        payload_key: QUEUE_KV_KEY.to_owned(),
+        ack_deadline_ms: pending_duration,
+    };
+
+    match &cfg.queue_type {
+        QueueType::RedisCluster => {
+            let (producer, consumer) =
+                RedisBackend::<RedisClusterConnectionManager>::builder(config)
+                    .build_pair()
+                    .await
+                    .expect("Error initializing redis-cluster queue");
+
+            let producer = TaskQueueProducer::Omni(Arc::new(producer.into_dyn_scheduled()));
+            let consumer = TaskQueueConsumer::Omni(consumer.into_dyn());
+            (producer, consumer)
         }
-    });
+        _ => {
+            let (producer, consumer) =
+                RedisBackend::<RedisMultiplexedConnectionManager>::builder(config)
+                    .build_pair()
+                    .await
+                    .expect("Error initializing redis queue");
 
-    tokio::spawn({
-        let pool = pool.clone();
-        async move {
-            loop {
-                if let Err(err) =
-                    background_task_pending(pool.clone(), mqn.clone(), pending_duration).await
-                {
-                    tracing::error!("{}", err);
-                    tokio::time::sleep(Duration::from_millis(500)).await;
-                    continue;
-                }
-            }
+            let producer = TaskQueueProducer::Omni(Arc::new(producer.into_dyn_scheduled()));
+            let consumer = TaskQueueConsumer::Omni(consumer.into_dyn());
+            (producer, consumer)
         }
-    });
-
-    let inner = Arc::new(RedisQueueInner {
-        pool: worker_pool,
-        main_queue_name,
-    });
-
-    // Once the background thread has been started, simply return the [`TaskQueueProducer`] and
-    // [`TaskQueueConsumer`]
-    (
-        TaskQueueProducer::Redis(RedisQueueProducer {
-            inner: inner.clone(),
-            delayed_queue_name: Arc::new(delayed_queue_name),
-        }),
-        TaskQueueConsumer::Redis(RedisQueueConsumer(inner)),
-    )
+    }
 }
 
-#[derive(Debug)]
-pub(super) struct RedisQueueInner {
-    pool: RedisPool,
-    main_queue_name: String,
-}
-
-#[derive(Clone)]
-pub struct RedisQueueProducer {
-    inner: Arc<RedisQueueInner>,
-    delayed_queue_name: Arc<String>,
-}
-
+#[cfg(test)]
 fn to_redis_key(delivery_id: &str, task: &QueueTask) -> String {
     format!("{delivery_id}|{}", serde_json::to_string(&task).unwrap())
 }
@@ -437,140 +253,6 @@ fn from_redis_key(key: &str) -> Arc<QueueTask> {
     // Get the first delimiter -> it has to have the |
     let pos = key.find('|').unwrap();
     serde_json::from_str(&key[pos + 1..]).unwrap()
-}
-
-impl RedisQueueInner {
-    async fn send_immediately(&self, task: Arc<QueueTask>) -> Result<()> {
-        let mut pool = self.pool.get().await?;
-
-        let _: () = pool
-            .xadd(
-                &self.main_queue_name,
-                GENERATE_STREAM_ID,
-                &[(
-                    QUEUE_KV_KEY,
-                    serde_json::to_string(&task)
-                        .map_err(|e| Error::generic(format!("serialization error: {}", e)))?,
-                )],
-            )
-            .await?;
-
-        Ok(())
-    }
-
-    /// ACKing the delivery, XACKs the message in the queue so it will no longer be retried
-    pub(super) async fn ack(&self, delivery_id: &str, task: &QueueTask) -> Result<()> {
-        let mut pool = self.pool.get().await?;
-
-        let mut pipe = redis::pipe();
-
-        pipe.add_command(Cmd::xack(
-            &self.main_queue_name,
-            WORKERS_GROUP,
-            &[delivery_id],
-        ))
-        .add_command(Cmd::xdel(&self.main_queue_name, &[delivery_id]));
-
-        let (acked, deleted): (u8, u8) = pool.query_async_pipeline(pipe).await?;
-        if acked != 1 || deleted != 1 {
-            tracing::warn!(
-                "Expected to remove 1 from the list, acked {acked}, deleted {deleted},\
-                 for {delivery_id}|{}",
-                serde_json::to_string(task)
-                    .map_err(|e| Error::generic(format!("serialization error: {e}")))?
-            );
-        }
-
-        Ok(())
-    }
-
-    pub(super) async fn nack(&self, delivery_id: &str, task: &Arc<QueueTask>) -> Result<()> {
-        tracing::debug!("nack {delivery_id}");
-        self.send_immediately(task.clone()).await?;
-        self.ack(delivery_id, task).await
-    }
-}
-
-#[async_trait]
-impl TaskQueueSend for RedisQueueProducer {
-    async fn send(&self, task: Arc<QueueTask>, delay: Option<Duration>) -> Result<()> {
-        let timestamp = if let Some(delay) = delay {
-            Utc::now()
-                + chrono::Duration::from_std(delay)
-                    .map_err(|_| Error::generic("Duration out of bounds"))?
-        } else {
-            tracing::trace!("RedisQueue: event sent (no delay)");
-            return self.inner.send_immediately(task).await;
-        };
-
-        // If there's a delay, add it to the DELAYED queue by ZADDING the Redis-key-ified
-        // delivery
-        let mut pool = self.inner.pool.get().await?;
-        let delivery = TaskQueueDelivery::from_arc(
-            task.clone(),
-            Some(timestamp),
-            Acker::Redis(self.inner.clone()),
-        );
-        let key = to_redis_key(&delivery.id, &delivery.task);
-        let delayed_queue_name: &str = &self.delayed_queue_name;
-        let _: () = pool
-            .zadd(delayed_queue_name, key, timestamp.timestamp())
-            .await?;
-
-        tracing::trace!("RedisQueue: event sent > (delay: {:?})", delay);
-        Ok(())
-    }
-}
-
-#[derive(Clone)]
-pub struct RedisQueueConsumer(Arc<RedisQueueInner>);
-
-#[async_trait]
-impl TaskQueueReceive for RedisQueueConsumer {
-    async fn receive_all(&mut self) -> Result<Vec<TaskQueueDelivery>> {
-        let consumer = self.clone();
-        tokio::spawn(async move {
-            // TODO: Receive messages in batches so it's not always a Vec with one member
-            let mut pool = consumer.0.pool.get().await?;
-
-            // There is no way to make it await a message for unbounded times, so simply block for a short
-            // amount of time (to avoid locking) and loop if no messages were retrieved
-            let resp: StreamReadReply = pool
-                .xread_options(
-                    &[&consumer.0.main_queue_name],
-                    &[LISTEN_STREAM_ID],
-                    &StreamReadOptions::default()
-                        .group(WORKERS_GROUP, WORKER_CONSUMER)
-                        .count(1)
-                        .block(10_000),
-                )
-                .await?;
-
-            if !resp.keys.is_empty() && !resp.keys[0].ids.is_empty() {
-                let element = &resp.keys[0].ids[0];
-                let id = element.id.clone();
-                let map = &element.map;
-
-                let task: QueueTask = if let Some(redis::Value::Data(data)) = map.get("data") {
-                    serde_json::from_slice(data).expect("Invalid QueueTask")
-                } else {
-                    panic!("No QueueTask associated with key");
-                };
-
-                tracing::trace!("RedisQueue: event recv <");
-
-                Ok(vec![TaskQueueDelivery {
-                    id,
-                    task: Arc::new(task),
-                    acker: Acker::Redis(consumer.0.clone()),
-                }])
-            } else {
-                Ok(Vec::new())
-            }
-        })
-        .await
-        .map_err(|e| Error::generic(format!("task join error {}", e)))?
-    }
 }
 
 async fn migrate_v2_to_v3_queues(conn: &mut impl SendConnectionLike) -> Result<()> {
