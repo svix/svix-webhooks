@@ -1,8 +1,4 @@
-use omniqueue::queue::consumer::DynConsumer;
-use omniqueue::{
-    queue::{consumer::QueueConsumer, Delivery},
-    QueueError,
-};
+use omniqueue::{Delivery, DynConsumer, QueueError};
 use std::time::{Duration, Instant};
 use svix_bridge_types::{
     async_trait, svix::api::Svix, CreateMessageRequest, JsObject, TransformationConfig,

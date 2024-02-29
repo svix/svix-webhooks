@@ -1,9 +1,5 @@
 use crate::error::{Error, Result};
-use omniqueue::queue::producer::DynProducer;
-use omniqueue::{
-    backends,
-    queue::{consumer::DynConsumer, QueueBackend},
-};
+use omniqueue::{backends, DynConsumer, DynProducer};
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]

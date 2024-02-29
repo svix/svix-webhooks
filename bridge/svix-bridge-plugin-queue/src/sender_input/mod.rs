@@ -1,6 +1,6 @@
 use crate::config::SenderInputOpts;
 use crate::{error::Error, gcp_pubsub, rabbitmq, run_inner, sqs, Consumer};
-use omniqueue::queue::consumer::DynConsumer;
+use omniqueue::DynConsumer;
 
 use svix_bridge_types::svix::api::Svix;
 use svix_bridge_types::{

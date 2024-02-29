@@ -134,40 +134,28 @@ impl<'a> ClusteredPooledConnection<'a> {
     }
 }
 
-async fn new_redis_pool_helper(
-    redis_dsn: &str,
-    clustered: bool,
-    max_connections: u16,
-) -> RedisPool {
-    if clustered {
-        let mgr = RedisClusterConnectionManager::new(redis_dsn)
-            .expect("Error initializing redis cluster client");
-        let pool = bb8::Pool::builder()
-            .max_size(max_connections.into())
-            .build(mgr)
-            .await
-            .expect("Error initializing redis cluster connection pool");
-        let pool = ClusteredRedisPool { pool };
-        RedisPool::Clustered(pool)
-    } else {
-        let mgr = RedisMultiplexedConnectionManager::new(redis_dsn)
-            .expect("Error initializing redis client");
-        let pool = bb8::Pool::builder()
-            .max_size(max_connections.into())
-            .build(mgr)
-            .await
-            .expect("Error initializing redis connection pool");
-        let pool = NonClusteredRedisPool { pool };
-        RedisPool::NonClustered(pool)
-    }
-}
-
 pub async fn new_redis_pool_clustered(redis_dsn: &str, cfg: &Configuration) -> RedisPool {
-    new_redis_pool_helper(redis_dsn, true, cfg.redis_pool_max_size).await
+    let mgr = RedisClusterConnectionManager::new(redis_dsn)
+        .expect("Error initializing redis cluster client");
+    let pool = bb8::Pool::builder()
+        .max_size(cfg.redis_pool_max_size.into())
+        .build(mgr)
+        .await
+        .expect("Error initializing redis cluster connection pool");
+    let pool = ClusteredRedisPool { pool };
+    RedisPool::Clustered(pool)
 }
 
 pub async fn new_redis_pool(redis_dsn: &str, cfg: &Configuration) -> RedisPool {
-    new_redis_pool_helper(redis_dsn, false, cfg.redis_pool_max_size).await
+    let mgr =
+        RedisMultiplexedConnectionManager::new(redis_dsn).expect("Error initializing redis client");
+    let pool = bb8::Pool::builder()
+        .max_size(cfg.redis_pool_max_size.into())
+        .build(mgr)
+        .await
+        .expect("Error initializing redis connection pool");
+    let pool = NonClusteredRedisPool { pool };
+    RedisPool::NonClustered(pool)
 }
 
 #[cfg(test)]

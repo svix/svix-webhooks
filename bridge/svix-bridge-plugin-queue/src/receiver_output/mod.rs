@@ -1,6 +1,6 @@
 use crate::config::ReceiverOutputOpts;
 use crate::error::Result;
-use omniqueue::queue::producer::{DynProducer, QueueProducer};
+use omniqueue::DynProducer;
 use std::sync::Arc;
 use svix_bridge_types::{async_trait, ForwardRequest, ReceiverOutput};
 

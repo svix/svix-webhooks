@@ -4,9 +4,8 @@ use lapin::{
     ConnectionProperties,
 };
 use omniqueue::{
-    backends::rabbitmq::{RabbitMqBackend, RabbitMqConfig},
-    queue::{consumer::QueueConsumer, QueueBackend},
-    scheduled::ScheduledProducer,
+    backends::{RabbitMqBackend, RabbitMqConfig},
+    QueueConsumer, ScheduledQueueProducer,
 };
 use svix_ksuid::{KsuidLike, KsuidMs};
 
@@ -86,9 +85,8 @@ pub async fn new_pair(
     .await
     .expect("Error initializing rabbitmq queue");
 
-    let producer =
-        TaskQueueProducer::Omni(Arc::new(producer.into_dyn_scheduled(Default::default())));
-    let consumer = TaskQueueConsumer::Omni(consumer.into_dyn(Default::default()));
+    let producer = TaskQueueProducer::Omni(Arc::new(producer.into_dyn_scheduled()));
+    let consumer = TaskQueueConsumer::Omni(consumer.into_dyn());
 
     Ok((producer, consumer))
 }
