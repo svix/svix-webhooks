@@ -45,8 +45,8 @@ pub async fn new_pair(
                 .expect("building in-memory queue can't fail");
 
             (
-                TaskQueueProducer::Omni(Arc::new(producer.into_dyn_scheduled())),
-                TaskQueueConsumer::Omni(consumer.into_dyn()),
+                TaskQueueProducer::new(producer),
+                TaskQueueConsumer::new(consumer),
             )
         }
         QueueBackend::RabbitMq(dsn) => {
@@ -134,23 +134,29 @@ impl QueueTask {
 }
 
 #[derive(Clone)]
-pub enum TaskQueueProducer {
-    Omni(Arc<DynScheduledQueueProducer>),
+pub struct TaskQueueProducer {
+    inner: Arc<DynScheduledQueueProducer>,
 }
 
 impl TaskQueueProducer {
+    pub fn new(inner: impl ScheduledQueueProducer + 'static) -> Self {
+        Self {
+            inner: Arc::new(inner.into_dyn_scheduled()),
+        }
+    }
+
     pub async fn send(&self, task: QueueTask, delay: Option<Duration>) -> Result<()> {
         let task = Arc::new(task);
         run_with_retries(
             || async {
-                match self {
-                    TaskQueueProducer::Omni(q) => if let Some(delay) = delay {
-                        q.send_serde_json_scheduled(task.as_ref(), delay).await
-                    } else {
-                        q.send_serde_json(task.as_ref()).await
-                    }
-                    .map_err(Into::into),
+                if let Some(delay) = delay {
+                    self.inner
+                        .send_serde_json_scheduled(task.as_ref(), delay)
+                        .await
+                } else {
+                    self.inner.send_serde_json(task.as_ref()).await
                 }
+                .map_err(Into::into)
             },
             should_retry,
             RETRY_SCHEDULE,
@@ -159,39 +165,36 @@ impl TaskQueueProducer {
     }
 }
 
-pub enum TaskQueueConsumer {
-    Omni(DynConsumer),
+pub struct TaskQueueConsumer {
+    inner: DynConsumer,
 }
 
 impl TaskQueueConsumer {
-    pub async fn receive_all(&mut self) -> Result<Vec<TaskQueueDelivery>> {
-        match self {
-            TaskQueueConsumer::Omni(q) => {
-                const MAX_MESSAGES: usize = 128;
-                // FIXME(onelson): need to figure out what deadline/duration to use here
-                q.receive_all(MAX_MESSAGES, Duration::from_secs(30))
-                    .await
-                    .map_err(Into::into)
-                    .trace()?
-                    .into_iter()
-                    .map(TryInto::try_into)
-                    .collect()
-            }
+    pub fn new(inner: impl QueueConsumer + 'static) -> Self {
+        Self {
+            inner: inner.into_dyn(),
         }
     }
-}
 
-/// Used by TaskQueueDeliveries to Ack/Nack itself
-#[derive(Debug)]
-enum Acker {
-    Omni(Delivery),
+    pub async fn receive_all(&mut self) -> Result<Vec<TaskQueueDelivery>> {
+        const MAX_MESSAGES: usize = 128;
+        // FIXME(onelson): need to figure out what deadline/duration to use here
+        self.inner
+            .receive_all(MAX_MESSAGES, Duration::from_secs(30))
+            .await
+            .map_err(Into::into)
+            .trace()?
+            .into_iter()
+            .map(TryInto::try_into)
+            .collect()
+    }
 }
 
 #[derive(Debug)]
 pub struct TaskQueueDelivery {
     pub id: String,
     pub task: Arc<QueueTask>,
-    acker: Acker,
+    acker: Delivery,
 }
 
 impl TaskQueueDelivery {
@@ -203,22 +206,15 @@ impl TaskQueueDelivery {
         loop {
             if let Some(result) = retry
                 .run(|| async {
-                    let acker_ref = acker
-                        .as_ref()
+                    let delivery = acker
+                        .take()
                         .expect("acker is always Some when trying to ack");
-                    match acker_ref {
-                        Acker::Omni(_) => match acker.take() {
-                            Some(Acker::Omni(delivery)) => {
-                                delivery.ack().await.map_err(|(e, delivery)| {
-                                    // Put the delivery back in acker beforr retrying, to
-                                    // satisfy the expect above.
-                                    acker = Some(Acker::Omni(delivery));
-                                    e.into()
-                                })
-                            }
-                            _ => unreachable!(),
-                        },
-                    }
+                    delivery.ack().await.map_err(|(e, delivery)| {
+                        // Put the delivery back in acker before retrying, to
+                        // satisfy the expect above.
+                        acker = Some(delivery);
+                        e.into()
+                    })
                 })
                 .await
             {
@@ -235,26 +231,20 @@ impl TaskQueueDelivery {
         loop {
             if let Some(result) = retry
                 .run(|| async {
-                    let acker_ref = acker
-                        .as_ref()
+                    let delivery = acker
+                        .take()
                         .expect("acker is always Some when trying to ack");
-                    match acker_ref {
-                        Acker::Omni(_) => match acker.take() {
-                            Some(Acker::Omni(delivery)) => {
-                                delivery
-                                    .nack()
-                                    .await
-                                    .map_err(|(e, delivery)| {
-                                        // Put the delivery back in acker beforr retrying, to
-                                        // satisfy the expect above.
-                                        acker = Some(Acker::Omni(delivery));
-                                        e.into()
-                                    })
-                                    .trace()
-                            }
-                            _ => unreachable!(),
-                        },
-                    }
+
+                    delivery
+                        .nack()
+                        .await
+                        .map_err(|(e, delivery)| {
+                            // Put the delivery back in acker beforr retrying, to
+                            // satisfy the expect above.
+                            acker = Some(delivery);
+                            e.into()
+                        })
+                        .trace()
                 })
                 .await
             {
@@ -278,7 +268,7 @@ impl TryFrom<Delivery> for TaskQueueDelivery {
                     .map_err(|_| Error::queue("Failed to decode queue task"))?
                     .ok_or_else(|| Error::queue("Unexpected empty delivery"))?,
             ),
-            acker: Acker::Omni(value),
+            acker: value,
         })
     }
 }

@@ -30,10 +30,7 @@
 use std::{num::NonZeroUsize, sync::Arc, time::Duration};
 
 use bb8_redis::RedisMultiplexedConnectionManager;
-use omniqueue::{
-    backends::{redis::RedisClusterConnectionManager, RedisBackend, RedisConfig},
-    QueueConsumer as _, ScheduledQueueProducer as _,
-};
+use omniqueue::backends::{redis::RedisClusterConnectionManager, RedisBackend, RedisConfig};
 use redis::{AsyncCommands as _, RedisResult};
 
 use super::{QueueTask, TaskQueueConsumer, TaskQueueProducer};
@@ -223,8 +220,8 @@ async fn new_pair_inner(
                     .await
                     .expect("Error initializing redis-cluster queue");
 
-            let producer = TaskQueueProducer::Omni(Arc::new(producer.into_dyn_scheduled()));
-            let consumer = TaskQueueConsumer::Omni(consumer.into_dyn());
+            let producer = TaskQueueProducer::new(producer);
+            let consumer = TaskQueueConsumer::new(consumer);
             (producer, consumer)
         }
         _ => {
@@ -234,8 +231,8 @@ async fn new_pair_inner(
                     .await
                     .expect("Error initializing redis queue");
 
-            let producer = TaskQueueProducer::Omni(Arc::new(producer.into_dyn_scheduled()));
-            let consumer = TaskQueueConsumer::Omni(consumer.into_dyn());
+            let producer = TaskQueueProducer::new(producer);
+            let consumer = TaskQueueConsumer::new(consumer);
             (producer, consumer)
         }
     }
