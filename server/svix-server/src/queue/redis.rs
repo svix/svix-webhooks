@@ -1120,8 +1120,16 @@ pub mod tests {
         // 2 second delay on the delayed and pending queue is inserted after main queue, so first
         // the 6-10 should appear, then 1-5, then 11-15
 
+        let mut items = c.receive_all().await.unwrap();
+        while items.len() < 15 {
+            let more_tasks = c.receive_all().await.unwrap();
+            assert!(!more_tasks.is_empty(), "failed to receive all the tasks");
+            items.extend(more_tasks);
+        }
+
+        let mut items = items.into_iter();
         for num in 6..=10 {
-            let recv = c.receive_all().await.unwrap().pop().unwrap();
+            let recv = items.next().unwrap();
             assert_eq!(
                 &*recv.task,
                 &QueueTask::MessageV1(MessageTask {
@@ -1135,7 +1143,7 @@ pub mod tests {
             recv.ack().await.unwrap();
         }
         for num in 1..=5 {
-            let recv = c.receive_all().await.unwrap().pop().unwrap();
+            let recv = items.next().unwrap();
             assert_eq!(
                 &*recv.task,
                 &QueueTask::MessageV1(MessageTask {
@@ -1149,7 +1157,7 @@ pub mod tests {
             recv.ack().await.unwrap();
         }
         for num in 11..=15 {
-            let recv = c.receive_all().await.unwrap().pop().unwrap();
+            let recv = items.next().unwrap();
             assert_eq!(
                 &*recv.task,
                 &QueueTask::MessageV1(MessageTask {
@@ -1161,6 +1169,10 @@ pub mod tests {
                 })
             );
             recv.ack().await.unwrap();
+        }
+
+        if items.len() != 0 {
+            panic!("received more than the expected number of tasks, rest: {items:?}");
         }
     }
 }
