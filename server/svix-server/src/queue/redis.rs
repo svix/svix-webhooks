@@ -34,7 +34,7 @@ use axum::async_trait;
 use chrono::Utc;
 use redis::{
     streams::{StreamClaimReply, StreamId, StreamReadOptions, StreamReadReply},
-    AsyncCommands as _, Cmd, FromRedisValue, RedisResult, RedisWrite, ToRedisArgs,
+    AsyncCommands as _, Cmd, FromRedisValue, RedisResult,
 };
 use tokio::time::sleep;
 
@@ -414,25 +414,6 @@ async fn new_pair_inner(
     )
 }
 
-/// Enum for the LEFT | RIGHT args used by some commands
-pub enum Direction {
-    Left,
-    Right,
-}
-
-impl ToRedisArgs for Direction {
-    fn write_redis_args<W>(&self, out: &mut W)
-    where
-        W: ?Sized + RedisWrite,
-    {
-        let s: &[u8] = match self {
-            Direction::Left => b"LEFT",
-            Direction::Right => b"RIGHT",
-        };
-        out.write_arg(s);
-    }
-}
-
 #[derive(Debug)]
 pub(super) struct RedisQueueInner {
     pool: RedisPool,
@@ -691,11 +672,9 @@ pub mod tests {
 
     use assert_matches::assert_matches;
     use chrono::Utc;
-    use redis::{streams::StreamReadReply, AsyncCommands as _};
+    use redis::{streams::StreamReadReply, AsyncCommands as _, Direction};
 
-    use super::{
-        migrate_list, migrate_list_to_stream, migrate_sset, new_pair_inner, to_redis_key, Direction,
-    };
+    use super::{migrate_list, migrate_list_to_stream, migrate_sset, new_pair_inner, to_redis_key};
 
     use crate::{
         cfg::{CacheType, Configuration},
@@ -1097,14 +1076,16 @@ pub mod tests {
 
             // Move the first five of v1_main to v1_processing
             for _ in 0..5 {
-                let mut cmd = redis::cmd("BLMOVE");
-                cmd.arg(v1_main)
-                    .arg(v1_processing)
-                    .arg(Direction::Left)
-                    .arg(Direction::Right)
-                    .arg(0u8);
-
-                let _: () = conn.query_async(cmd).await.unwrap();
+                let _: () = conn
+                    .blmove(
+                        v1_main,
+                        v1_processing,
+                        Direction::Left,
+                        Direction::Right,
+                        0.0,
+                    )
+                    .await
+                    .unwrap();
             }
 
             // v1 to v2
