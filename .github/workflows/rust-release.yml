@@ -36,6 +36,8 @@ jobs:
           workspaces: "rust -> target"
           # only restore cache for faster publishing, don't save back results
           save-if: false
+          # use the cache from rust-lint/stable
+          prefix-key: "rust-client-stable"
 
       - name: Publish
         env:
