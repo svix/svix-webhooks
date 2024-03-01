@@ -7,6 +7,7 @@
 use dotenv::dotenv;
 use svix_server::core::types::{EndpointSecretInternal, OrganizationId};
 use svix_server::db::wipe_org;
+use tracing_subscriber::util::SubscriberInitExt;
 use validator::Validate;
 
 use svix_server::core::security::{default_org_id, generate_org_token};
@@ -110,7 +111,8 @@ async fn main() {
     let args = Args::parse();
     let cfg = cfg::load().expect("Error loading configuration");
 
-    let _guard = setup_tracing(&cfg);
+    let (tracing_subscriber, _guard) = setup_tracing(&cfg);
+    tracing_subscriber.init();
 
     if let Some(wait_for_seconds) = args.wait_for {
         let mut wait_for = Vec::with_capacity(2);

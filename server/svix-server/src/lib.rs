@@ -21,7 +21,7 @@ use std::{
 };
 use tower::ServiceBuilder;
 use tower_http::cors::{AllowHeaders, Any, CorsLayer};
-use tracing_subscriber::{prelude::*, util::SubscriberInitExt};
+use tracing_subscriber::layer::SubscriberExt as _;
 
 use crate::{
     cfg::{CacheBackend, Configuration},
@@ -226,8 +226,12 @@ pub async fn run_with_prefix(
     expired_message_cleaner_loop.expect("Error initializing expired message cleaner")
 }
 
-pub fn setup_tracing(cfg: &ConfigurationInner) -> impl Drop {
-    if std::env::var_os("RUST_LOG").is_none() {
+pub fn setup_tracing(cfg: &ConfigurationInner) -> (tracing::Dispatch, sentry::ClientInitGuard) {
+    let filter_directives = std::env::var("RUST_LOG").unwrap_or_else(|e| {
+        if let std::env::VarError::NotUnicode(_) = e {
+            eprintln!("RUST_LOG environment variable has non-utf8 contents, ignoring!");
+        }
+
         let level = cfg.log_level.to_string();
         let mut var = vec![
             format!("{CRATE_NAME}={level}"),
@@ -238,8 +242,8 @@ pub fn setup_tracing(cfg: &ConfigurationInner) -> impl Drop {
             var.push(format!("sqlx={level}"));
         }
 
-        std::env::set_var("RUST_LOG", var.join(","));
-    }
+        var.join(",")
+    });
 
     let otel_layer = cfg.opentelemetry_address.as_ref().map(|addr| {
         // Configure the OpenTelemetry tracing layer
@@ -283,18 +287,17 @@ pub fn setup_tracing(cfg: &ConfigurationInner) -> impl Drop {
             _ => EventFilter::Ignore,
         });
 
-    // Then initialize logging with an additional layer printing to stdout. This additional layer is
-    // either formatted normally or in JSON format
-    // Fails if the subscriber was already initialized, which we can safely and silently ignore
-    let _ = match cfg.log_format {
+    // Then create a subscriber with an additional layer printing to stdout.
+    // This additional layer is either formatted normally or in JSON format.
+    let dispatch = match cfg.log_format {
         cfg::LogFormat::Default => {
             let stdout_layer = tracing_subscriber::fmt::layer();
             tracing_subscriber::Registry::default()
                 .with(otel_layer)
                 .with(sentry_layer)
                 .with(stdout_layer)
-                .with(tracing_subscriber::EnvFilter::from_default_env())
-                .try_init()
+                .with(tracing_subscriber::EnvFilter::new(filter_directives))
+                .into()
         }
         cfg::LogFormat::Json => {
             let fmt = tracing_subscriber::fmt::format().json().flatten_event(true);
@@ -308,11 +311,12 @@ pub fn setup_tracing(cfg: &ConfigurationInner) -> impl Drop {
                 .with(otel_layer)
                 .with(sentry_layer)
                 .with(stdout_layer)
-                .with(tracing_subscriber::EnvFilter::from_default_env())
-                .try_init()
+                .with(tracing_subscriber::EnvFilter::new(filter_directives))
+                .into()
         }
     };
-    sentry_guard
+
+    (dispatch, sentry_guard)
 }
 
 mod docs {
