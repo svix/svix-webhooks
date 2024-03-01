@@ -24,6 +24,7 @@ use svix_server::{
 };
 
 use http::HeaderMap;
+use tracing::instrument::WithSubscriber;
 
 pub mod common_calls;
 
@@ -271,7 +272,7 @@ pub async fn start_svix_server_with_cfg_and_org_id(
     cfg: &ConfigurationInner,
     org_id: OrganizationId,
 ) -> (TestClient, tokio::task::JoinHandle<()>) {
-    let _guard = setup_tracing(cfg);
+    let (tracing_subscriber, _guard) = setup_tracing(cfg);
 
     let cfg = Arc::new(cfg.clone());
 
@@ -279,11 +280,14 @@ pub async fn start_svix_server_with_cfg_and_org_id(
     let listener = TcpListener::bind("127.0.0.1:0").unwrap();
     let base_uri = format!("http://{}", listener.local_addr().unwrap());
 
-    let jh = tokio::spawn(svix_server::run_with_prefix(
-        Some(svix_ksuid::Ksuid::new(None, None).to_string()),
-        cfg,
-        Some(listener),
-    ));
+    let jh = tokio::spawn(
+        svix_server::run_with_prefix(
+            Some(svix_ksuid::Ksuid::new(None, None).to_string()),
+            cfg,
+            Some(listener),
+        )
+        .with_subscriber(tracing_subscriber),
+    );
 
     (TestClient::new(base_uri, &token), jh)
 }

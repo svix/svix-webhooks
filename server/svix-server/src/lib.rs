@@ -21,7 +21,7 @@ use std::{
 };
 use tower::ServiceBuilder;
 use tower_http::cors::{AllowHeaders, Any, CorsLayer};
-use tracing_subscriber::{prelude::*, util::SubscriberInitExt};
+use tracing_subscriber::prelude::*;
 
 use crate::{
     cfg::{CacheBackend, Configuration},
@@ -226,7 +226,7 @@ pub async fn run_with_prefix(
     expired_message_cleaner_loop.expect("Error initializing expired message cleaner")
 }
 
-pub fn setup_tracing(cfg: &ConfigurationInner) -> impl Drop {
+pub fn setup_tracing(cfg: &ConfigurationInner) -> (tracing::Dispatch, sentry::ClientInitGuard) {
     let filter_directives = std::env::var("RUST_LOG").unwrap_or_else(|e| {
         if let std::env::VarError::NotUnicode(_) = e {
             eprintln!("RUST_LOG environment variable has non-utf8 contents, ignoring!");
@@ -287,10 +287,9 @@ pub fn setup_tracing(cfg: &ConfigurationInner) -> impl Drop {
             _ => EventFilter::Ignore,
         });
 
-    // Then initialize logging with an additional layer printing to stdout. This additional layer is
-    // either formatted normally or in JSON format
-    // Fails if the subscriber was already initialized, which we can safely and silently ignore
-    let _ = match cfg.log_format {
+    // Then create a subscriber with an additional layer printing to stdout.
+    // This additional layer is either formatted normally or in JSON format.
+    let dispatch = match cfg.log_format {
         cfg::LogFormat::Default => {
             let stdout_layer = tracing_subscriber::fmt::layer();
             tracing_subscriber::Registry::default()
@@ -298,7 +297,7 @@ pub fn setup_tracing(cfg: &ConfigurationInner) -> impl Drop {
                 .with(sentry_layer)
                 .with(stdout_layer)
                 .with(tracing_subscriber::EnvFilter::new(filter_directives))
-                .try_init()
+                .into()
         }
         cfg::LogFormat::Json => {
             let fmt = tracing_subscriber::fmt::format().json().flatten_event(true);
@@ -313,10 +312,11 @@ pub fn setup_tracing(cfg: &ConfigurationInner) -> impl Drop {
                 .with(sentry_layer)
                 .with(stdout_layer)
                 .with(tracing_subscriber::EnvFilter::new(filter_directives))
-                .try_init()
+                .into()
         }
     };
-    sentry_guard
+
+    (dispatch, sentry_guard)
 }
 
 mod docs {
