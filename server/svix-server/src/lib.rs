@@ -227,7 +227,11 @@ pub async fn run_with_prefix(
 }
 
 pub fn setup_tracing(cfg: &ConfigurationInner) -> impl Drop {
-    if std::env::var_os("RUST_LOG").is_none() {
+    let filter_directives = std::env::var("RUST_LOG").unwrap_or_else(|e| {
+        if let std::env::VarError::NotUnicode(_) = e {
+            eprintln!("RUST_LOG environment variable has non-utf8 contents, ignoring!");
+        }
+
         let level = cfg.log_level.to_string();
         let mut var = vec![
             format!("{CRATE_NAME}={level}"),
@@ -238,8 +242,8 @@ pub fn setup_tracing(cfg: &ConfigurationInner) -> impl Drop {
             var.push(format!("sqlx={level}"));
         }
 
-        std::env::set_var("RUST_LOG", var.join(","));
-    }
+        var.join(",")
+    });
 
     let otel_layer = cfg.opentelemetry_address.as_ref().map(|addr| {
         // Configure the OpenTelemetry tracing layer
@@ -293,7 +297,7 @@ pub fn setup_tracing(cfg: &ConfigurationInner) -> impl Drop {
                 .with(otel_layer)
                 .with(sentry_layer)
                 .with(stdout_layer)
-                .with(tracing_subscriber::EnvFilter::from_default_env())
+                .with(tracing_subscriber::EnvFilter::new(filter_directives))
                 .try_init()
         }
         cfg::LogFormat::Json => {
@@ -308,7 +312,7 @@ pub fn setup_tracing(cfg: &ConfigurationInner) -> impl Drop {
                 .with(otel_layer)
                 .with(sentry_layer)
                 .with(stdout_layer)
-                .with(tracing_subscriber::EnvFilter::from_default_env())
+                .with(tracing_subscriber::EnvFilter::new(filter_directives))
                 .try_init()
         }
     };

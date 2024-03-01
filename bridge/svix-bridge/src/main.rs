@@ -52,7 +52,11 @@ fn get_svc_identifiers(cfg: &Config) -> opentelemetry_sdk::Resource {
 }
 
 fn setup_tracing(cfg: &Config) {
-    if std::env::var_os("RUST_LOG").is_none() {
+    let filter_directives = std::env::var("RUST_LOG").unwrap_or_else(|e| {
+        if let std::env::VarError::NotUnicode(_) = e {
+            eprintln!("RUST_LOG environment variable has non-utf8 contents, ignoring!");
+        }
+
         const CRATE_NAME: &str = env!("CARGO_CRATE_NAME");
         let level = cfg.log_level.to_string();
         let var = [
@@ -60,8 +64,8 @@ fn setup_tracing(cfg: &Config) {
             // XXX: Assuming this applies to the Producer side (aka `og-ingester`) when we fold it back in.
             format!("tower_http={level}"),
         ];
-        std::env::set_var("RUST_LOG", var.join(","));
-    }
+        var.join(",")
+    });
 
     let otel_layer = cfg.opentelemetry.as_ref().map(|otel_cfg| {
         // Configure the OpenTelemetry tracing layer
@@ -94,14 +98,13 @@ fn setup_tracing(cfg: &Config) {
 
     // Then initialize logging with an additional layer printing to stdout. This additional layer is
     // either formatted normally or in JSON format
-    // Fails if the subscriber was already initialized, which we can safely and silently ignore.
     let _ = match cfg.log_format {
         config::LogFormat::Default => {
             let stdout_layer = tracing_subscriber::fmt::layer();
             tracing_subscriber::Registry::default()
                 .with(otel_layer)
                 .with(stdout_layer)
-                .with(tracing_subscriber::EnvFilter::from_default_env())
+                .with(tracing_subscriber::EnvFilter::new(filter_directives))
                 .try_init()
         }
         config::LogFormat::Json => {
@@ -115,7 +118,7 @@ fn setup_tracing(cfg: &Config) {
             tracing_subscriber::Registry::default()
                 .with(otel_layer)
                 .with(stdout_layer)
-                .with(tracing_subscriber::EnvFilter::from_default_env())
+                .with(tracing_subscriber::EnvFilter::new(filter_directives))
                 .try_init()
         }
     };
