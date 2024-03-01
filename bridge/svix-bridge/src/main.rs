@@ -96,16 +96,16 @@ fn setup_tracing(cfg: &Config) {
         tracing_opentelemetry::layer().with_tracer(tracer)
     });
 
-    // Then initialize logging with an additional layer printing to stdout. This additional layer is
-    // either formatted normally or in JSON format
-    let _ = match cfg.log_format {
+    // Then create a subscriber with an additional layer printing to stdout.
+    // This additional layer is either formatted normally or in JSON format.
+    match cfg.log_format {
         config::LogFormat::Default => {
             let stdout_layer = tracing_subscriber::fmt::layer();
             tracing_subscriber::Registry::default()
                 .with(otel_layer)
                 .with(stdout_layer)
                 .with(tracing_subscriber::EnvFilter::new(filter_directives))
-                .try_init()
+                .init()
         }
         config::LogFormat::Json => {
             let fmt = tracing_subscriber::fmt::format().json().flatten_event(true);
@@ -119,7 +119,7 @@ fn setup_tracing(cfg: &Config) {
                 .with(otel_layer)
                 .with(stdout_layer)
                 .with(tracing_subscriber::EnvFilter::new(filter_directives))
-                .try_init()
+                .init()
         }
     };
 }
