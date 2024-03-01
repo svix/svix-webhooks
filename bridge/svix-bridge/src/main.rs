@@ -14,7 +14,7 @@ use svix_ksuid::{KsuidLike as _, KsuidMs};
 #[cfg(all(not(target_env = "msvc"), feature = "jemalloc"))]
 use tikv_jemallocator::Jemalloc;
 use tracing::Instrument;
-use tracing_subscriber::prelude::*;
+use tracing_subscriber::{layer::SubscriberExt as _, util::SubscriberInitExt as _};
 
 mod allocator;
 mod config;

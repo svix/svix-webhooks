@@ -21,7 +21,7 @@ use std::{
 };
 use tower::ServiceBuilder;
 use tower_http::cors::{AllowHeaders, Any, CorsLayer};
-use tracing_subscriber::prelude::*;
+use tracing_subscriber::layer::SubscriberExt as _;
 
 use crate::{
     cfg::{CacheBackend, Configuration},
