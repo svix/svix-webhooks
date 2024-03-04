@@ -945,7 +945,7 @@ pub async fn queue_handler(
             break;
         }
 
-        match queue_rx.receive_all().await {
+        match queue_rx.receive_all(None).await {
             Ok(batch) => {
                 for delivery in batch {
                     let cfg = cfg.clone();

@@ -175,13 +175,18 @@ pub enum TaskQueueConsumer {
 }
 
 impl TaskQueueConsumer {
-    pub async fn receive_all(&mut self) -> Result<Vec<TaskQueueDelivery>> {
+    pub async fn receive_all(
+        &mut self,
+        deadline: Option<Duration>,
+    ) -> Result<Vec<TaskQueueDelivery>> {
         match self {
-            TaskQueueConsumer::Redis(q) => q.receive_all().await.trace(),
+            TaskQueueConsumer::Redis(q) => q.receive_all(deadline).await.trace(),
             TaskQueueConsumer::Omni(q) => {
                 const MAX_MESSAGES: usize = 128;
                 // FIXME(onelson): need to figure out what deadline/duration to use here
-                q.receive_all(MAX_MESSAGES, Duration::from_secs(30))
+                const DEFAULT_DEADLINE: Duration = Duration::from_secs(30);
+
+                q.receive_all(MAX_MESSAGES, deadline.unwrap_or(DEFAULT_DEADLINE))
                     .await
                     .map_err(Into::into)
                     .trace()?
@@ -315,5 +320,5 @@ trait TaskQueueSend: Sync + Send {
 
 #[async_trait]
 trait TaskQueueReceive {
-    async fn receive_all(&mut self) -> Result<Vec<TaskQueueDelivery>>;
+    async fn receive_all(&mut self, deadline: Option<Duration>) -> Result<Vec<TaskQueueDelivery>>;
 }

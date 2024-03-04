@@ -93,18 +93,15 @@ async fn test_many_queue_consumers_inner(prefix: &str, delay: Option<Duration>) 
                 let mut read = 0;
 
                 loop {
-                    tokio::select! {
-                        recv = c.receive_all() => {
-                            let recv = recv.unwrap();
-                            read += recv.len();
-                            for r in recv {
-                                out.push(task_queue_delivery_to_u16(&r));
-                                r.ack().await.unwrap();
-                            }
-                        }
-                        _ = tokio::time::sleep(Duration::from_millis(1000)) => {
-                            break;
-                        }
+                    let recv = c.receive_all(Some(Duration::from_secs(1))).await.unwrap();
+                    if recv.is_empty() {
+                        break;
+                    }
+
+                    read += recv.len();
+                    for r in recv {
+                        out.push(task_queue_delivery_to_u16(&r));
+                        r.ack().await.unwrap();
                     }
                 }
 

@@ -524,11 +524,18 @@ pub struct RedisQueueConsumer(Arc<RedisQueueInner>);
 
 #[async_trait]
 impl TaskQueueReceive for RedisQueueConsumer {
-    async fn receive_all(&mut self) -> Result<Vec<TaskQueueDelivery>> {
+    async fn receive_all(&mut self, deadline: Option<Duration>) -> Result<Vec<TaskQueueDelivery>> {
         let consumer = self.clone();
         tokio::spawn(async move {
             // TODO: Receive messages in batches so it's not always a Vec with one member
             let mut pool = consumer.0.pool.get().await?;
+
+            let block = deadline.map_or(10_000, |duration| {
+                duration
+                    .as_millis()
+                    .try_into()
+                    .expect("unreasonably large duration passed")
+            });
 
             // There is no way to make it await a message for unbounded times, so simply block for a short
             // amount of time (to avoid locking) and loop if no messages were retrieved
@@ -539,7 +546,7 @@ impl TaskQueueReceive for RedisQueueConsumer {
                     &StreamReadOptions::default()
                         .group(WORKERS_GROUP, WORKER_CONSUMER)
                         .count(1)
-                        .block(10_000),
+                        .block(block),
                 )
                 .await?;
 
@@ -763,17 +770,12 @@ pub mod tests {
     /// Reads and acknowledges all items in the queue with the given name for clearing out entries
     /// from previous test runs
     async fn flush_stale_queue_items(_p: TaskQueueProducer, c: &mut TaskQueueConsumer) {
-        loop {
-            tokio::select! {
-                recv = c.receive_all() => {
-                    let recv = recv.unwrap().pop().unwrap();
-                    recv.ack().await.unwrap();
-                }
-
-                _ = tokio::time::sleep(Duration::from_millis(100)) => {
-                    break;
-                }
-            }
+        let recv = c
+            .receive_all(Some(Duration::from_millis(100)))
+            .await
+            .unwrap();
+        for r in recv {
+            r.ack().await.unwrap();
         }
     }
 
@@ -804,30 +806,25 @@ pub mod tests {
         });
         p.send(mt.clone(), None).await.unwrap();
 
-        tokio::select! {
-            recv = c.receive_all() => {
-                assert_eq!(*recv.unwrap()[0].task, mt);
-            }
-
-            _ = tokio::time::sleep(Duration::from_secs(5)) => {
-                panic!("`c.receive()` has timed out")
-            }
-        }
+        let [recv]: [_; 1] = c
+            .receive_all(Some(Duration::from_secs(5)))
+            .await
+            .unwrap()
+            .try_into()
+            .unwrap();
+        assert_eq!(*recv.task, mt);
 
         tokio::time::sleep(Duration::from_millis(100)).await;
 
-        tokio::select! {
-            recv = c.receive_all() => {
-                let recv = recv.unwrap().pop().unwrap();
-                assert_eq!(*recv.task, mt);
-                // Acknowledge so the queue isn't further polluted
-                recv.ack().await.unwrap();
-            }
-
-            _ = tokio::time::sleep(Duration::from_secs(5)) => {
-                panic!("`c.receive()` has timed out")
-            }
-        }
+        let [recv]: [_; 1] = c
+            .receive_all(Some(Duration::from_secs(5)))
+            .await
+            .unwrap()
+            .try_into()
+            .unwrap();
+        assert_eq!(*recv.task, mt);
+        // Acknowledge so the queue isn't further polluted
+        recv.ack().await.unwrap();
 
         // And assert that the task has been deleted
         let mut conn = pool
@@ -880,16 +877,13 @@ pub mod tests {
         });
         p.send(mt.clone(), None).await.unwrap();
 
-        let recv = c.receive_all().await.unwrap().pop().unwrap();
+        let recv = c.receive_all(None).await.unwrap().pop().unwrap();
         assert_eq!(*recv.task, mt);
         recv.ack().await.unwrap();
 
-        tokio::select! {
-            recv = c.receive_all() => {
-                panic!("Received unexpected QueueTask {:?}", recv.unwrap()[0].task);
-            }
-
-            _ = tokio::time::sleep(Duration::from_secs(1)) => {}
+        let recv = c.receive_all(Some(Duration::from_secs(1))).await.unwrap();
+        if !recv.is_empty() {
+            panic!("Received unexpected QueueTask {:?}", recv[0].task);
         }
 
         // And assert that the task has been deleted
@@ -929,19 +923,18 @@ pub mod tests {
         });
         p.send(mt.clone(), None).await.unwrap();
 
-        let recv = c.receive_all().await.unwrap().pop().unwrap();
+        let recv = c.receive_all(None).await.unwrap().pop().unwrap();
         assert_eq!(*recv.task, mt);
         recv.nack().await.unwrap();
 
-        tokio::select! {
-            recv = c.receive_all() => {
-                assert_eq!(*recv.unwrap().pop().unwrap().task, mt);
-            }
-
-            _ = tokio::time::sleep(Duration::from_secs(1)) => {
-                panic!("Expected QueueTask");
-            }
-        }
+        let [recv]: [_; 1] = c
+            .receive_all(Some(Duration::from_secs(5)))
+            .await
+            .unwrap()
+            .try_into()
+            .unwrap();
+        assert_eq!(*recv.task, mt);
+        recv.ack().await.unwrap();
     }
 
     #[tokio::test]
@@ -983,15 +976,11 @@ pub mod tests {
             .unwrap();
         p.send(mt2.clone(), None).await.unwrap();
 
-        let mut recv = c.receive_all().await.unwrap();
-        if recv.len() < 2 {
-            recv.extend(c.receive_all().await.unwrap());
-        }
-        let [recv2, recv1]: [_; 2] = recv.try_into().unwrap();
-
+        let [recv2] = c.receive_all(None).await.unwrap().try_into().unwrap();
         assert_eq!(*recv2.task, mt2);
         recv2.ack().await.unwrap();
 
+        let [recv1] = c.receive_all(None).await.unwrap().try_into().unwrap();
         assert_eq!(*recv1.task, mt1);
         recv1.ack().await.unwrap();
     }
@@ -1124,9 +1113,9 @@ pub mod tests {
         // 2 second delay on the delayed and pending queue is inserted after main queue, so first
         // the 6-10 should appear, then 1-5, then 11-15
 
-        let mut items = c.receive_all().await.unwrap();
+        let mut items = c.receive_all(None).await.unwrap();
         while items.len() < 15 {
-            let more_tasks = c.receive_all().await.unwrap();
+            let more_tasks = c.receive_all(None).await.unwrap();
             assert!(!more_tasks.is_empty(), "failed to receive all the tasks");
             items.extend(more_tasks);
         }
