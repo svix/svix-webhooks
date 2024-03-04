@@ -983,11 +983,15 @@ pub mod tests {
             .unwrap();
         p.send(mt2.clone(), None).await.unwrap();
 
-        let recv2 = c.receive_all().await.unwrap().pop().unwrap();
+        let mut recv = c.receive_all().await.unwrap();
+        if recv.len() < 2 {
+            recv.extend(c.receive_all().await.unwrap());
+        }
+        let [recv2, recv1]: [_; 2] = recv.try_into().unwrap();
+
         assert_eq!(*recv2.task, mt2);
         recv2.ack().await.unwrap();
 
-        let recv1 = c.receive_all().await.unwrap().pop().unwrap();
         assert_eq!(*recv1.task, mt1);
         recv1.ack().await.unwrap();
     }
