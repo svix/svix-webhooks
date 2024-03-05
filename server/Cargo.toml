@@ -16,5 +16,8 @@ mut_mut = "warn"
 nonstandard_macro_braces = "warn"
 todo = "warn"
 
+[profile.dev.package]
+quote = { opt-level = 2 }
+
 [patch.crates-io]
 hyper = { git = "https://github.com/svix/hyper/", rev = "63efac5a6719937359d61a1bb1b93d9ce88f0e3d" }
