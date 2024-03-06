@@ -3,6 +3,13 @@
 ## Next
 * 
 
+## Version 1.21.0
+* Server: Improve error information on failed assertions in Redis module
+* Server: Use omniqueue for Redis queue implementation
+* Server: Upgrade OpenTelemetry dependencies
+* Bridge: Upgrade dependencies
+* Libs/Rust: Print more detailed error messages for generic errors
+
 ## Version 1.20.0
 * Server and Bridge: Performance improvements in test setup
 * Libs/C#: don't serialize nulls in PATCH endpoints

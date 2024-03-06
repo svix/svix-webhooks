@@ -5,7 +5,7 @@ data class SvixOptions(
     val initialRetryDelayMillis: Long? = null,
     val numRetries: Int? = null,
 ) {
-    private val version = "1.20.0"
+    private val version = "1.21.0"
 
     var serverUrl: String
         get() = this.wantedServerUrl ?: DEFAULT_URL
