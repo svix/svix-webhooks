@@ -2,7 +2,7 @@ use std::{sync::Arc, time::Duration};
 
 use axum::async_trait;
 use omniqueue::{
-    backends::InMemoryBackend, Delivery, DynConsumer, DynScheduledQueueProducer, QueueConsumer,
+    backends::InMemoryBackend, Delivery, DynConsumer, DynScheduledProducer, QueueConsumer,
     ScheduledQueueProducer,
 };
 use serde::{Deserialize, Serialize};
@@ -143,7 +143,7 @@ impl QueueTask {
 
 #[derive(Clone)]
 pub struct TaskQueueProducer {
-    inner: Arc<DynScheduledQueueProducer>,
+    inner: Arc<DynScheduledProducer>,
 }
 
 impl TaskQueueProducer {
