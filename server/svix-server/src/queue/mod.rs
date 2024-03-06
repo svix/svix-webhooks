@@ -1,12 +1,11 @@
 use std::{sync::Arc, time::Duration};
 
 use axum::async_trait;
-use chrono::{DateTime, Utc};
 use omniqueue::{
-    backends::InMemoryBackend, Delivery, DynConsumer, QueueConsumer, ScheduledQueueProducer,
+    backends::InMemoryBackend, Delivery, DynConsumer, DynScheduledQueueProducer, QueueConsumer,
+    ScheduledQueueProducer,
 };
 use serde::{Deserialize, Serialize};
-use svix_ksuid::*;
 
 use crate::error::Traceable;
 use crate::{
@@ -17,8 +16,6 @@ use crate::{
     },
     error::{Error, ErrorType, Result},
 };
-
-use self::redis::{RedisQueueConsumer, RedisQueueInner, RedisQueueProducer};
 
 pub mod rabbitmq;
 pub mod redis;
@@ -38,13 +35,8 @@ pub async fn new_pair(
     prefix: Option<&str>,
 ) -> (TaskQueueProducer, TaskQueueConsumer) {
     match cfg.queue_backend() {
-        QueueBackend::Redis(dsn) => {
-            let pool = crate::redis::new_redis_pool(dsn, cfg).await;
-            redis::new_pair(pool, prefix).await
-        }
-        QueueBackend::RedisCluster(dsn) => {
-            let pool = crate::redis::new_redis_pool_clustered(dsn, cfg).await;
-            redis::new_pair(pool, prefix).await
+        QueueBackend::Redis(_) | QueueBackend::RedisCluster(_) => {
+            redis::new_pair(cfg, prefix).await
         }
         QueueBackend::Memory => {
             let (producer, consumer) = InMemoryBackend::builder()
@@ -53,8 +45,8 @@ pub async fn new_pair(
                 .expect("building in-memory queue can't fail");
 
             (
-                TaskQueueProducer::Omni(Arc::new(producer.into_dyn_scheduled())),
-                TaskQueueConsumer::Omni(consumer.into_dyn()),
+                TaskQueueProducer::new(producer),
+                TaskQueueConsumer::new(consumer),
             )
         }
         QueueBackend::RabbitMq(dsn) => {
@@ -139,28 +131,40 @@ impl QueueTask {
             QueueTask::MessageBatch(_) => "MessageBatch",
         }
     }
+
+    pub fn msg_id(&self) -> Option<&str> {
+        match self {
+            QueueTask::HealthCheck => None,
+            QueueTask::MessageV1(v1) => Some(&v1.msg_id),
+            QueueTask::MessageBatch(batch) => Some(&batch.msg_id),
+        }
+    }
 }
 
 #[derive(Clone)]
-pub enum TaskQueueProducer {
-    Redis(RedisQueueProducer),
-    Omni(Arc<omniqueue::DynScheduledQueueProducer>),
+pub struct TaskQueueProducer {
+    inner: Arc<DynScheduledQueueProducer>,
 }
 
 impl TaskQueueProducer {
+    pub fn new(inner: impl ScheduledQueueProducer + 'static) -> Self {
+        Self {
+            inner: Arc::new(inner.into_dyn_scheduled()),
+        }
+    }
+
     pub async fn send(&self, task: QueueTask, delay: Option<Duration>) -> Result<()> {
         let task = Arc::new(task);
         run_with_retries(
             || async {
-                match self {
-                    TaskQueueProducer::Redis(q) => q.send(task.clone(), delay).await,
-                    TaskQueueProducer::Omni(q) => if let Some(delay) = delay {
-                        q.send_serde_json_scheduled(task.as_ref(), delay).await
-                    } else {
-                        q.send_serde_json(task.as_ref()).await
-                    }
-                    .map_err(Into::into),
+                if let Some(delay) = delay {
+                    self.inner
+                        .send_serde_json_scheduled(task.as_ref(), delay)
+                        .await
+                } else {
+                    self.inner.send_serde_json(task.as_ref()).await
                 }
+                .map_err(Into::into)
             },
             should_retry,
             RETRY_SCHEDULE,
@@ -169,80 +173,55 @@ impl TaskQueueProducer {
     }
 }
 
-pub enum TaskQueueConsumer {
-    Redis(RedisQueueConsumer),
-    Omni(DynConsumer),
+pub struct TaskQueueConsumer {
+    inner: DynConsumer,
 }
 
 impl TaskQueueConsumer {
-    pub async fn receive_all(&mut self) -> Result<Vec<TaskQueueDelivery>> {
-        match self {
-            TaskQueueConsumer::Redis(q) => q.receive_all().await.trace(),
-            TaskQueueConsumer::Omni(q) => {
-                const MAX_MESSAGES: usize = 128;
-                // FIXME(onelson): need to figure out what deadline/duration to use here
-                q.receive_all(MAX_MESSAGES, Duration::from_secs(30))
-                    .await
-                    .map_err(Into::into)
-                    .trace()?
-                    .into_iter()
-                    .map(TryInto::try_into)
-                    .collect()
-            }
+    pub fn new(inner: impl QueueConsumer + 'static) -> Self {
+        Self {
+            inner: inner.into_dyn(),
         }
     }
-}
 
-/// Used by TaskQueueDeliveries to Ack/Nack itself
-#[derive(Debug)]
-enum Acker {
-    Redis(Arc<RedisQueueInner>),
-    Omni(Delivery),
+    pub async fn receive_all(&mut self) -> Result<Vec<TaskQueueDelivery>> {
+        const MAX_MESSAGES: usize = 128;
+        // FIXME(onelson): need to figure out what deadline/duration to use here
+        self.inner
+            .receive_all(MAX_MESSAGES, Duration::from_secs(30))
+            .await
+            .map_err(Into::into)
+            .trace()?
+            .into_iter()
+            .map(TryInto::try_into)
+            .collect()
+    }
 }
 
 #[derive(Debug)]
 pub struct TaskQueueDelivery {
-    pub id: String,
     pub task: Arc<QueueTask>,
-    acker: Acker,
+    acker: Delivery,
 }
 
 impl TaskQueueDelivery {
-    /// The `timestamp` is when this message will be delivered at
-    fn from_arc(task: Arc<QueueTask>, timestamp: Option<DateTime<Utc>>, acker: Acker) -> Self {
-        let ksuid = KsuidMs::new(timestamp, None);
-        Self {
-            id: ksuid.to_string(),
-            task,
-            acker,
-        }
-    }
-
     pub async fn ack(self) -> Result<()> {
-        tracing::trace!("ack {}", self.id);
+        tracing::trace!(msg_id = self.task.msg_id(), "ack");
 
         let mut retry = Retry::new(should_retry, RETRY_SCHEDULE);
         let mut acker = Some(self.acker);
         loop {
             if let Some(result) = retry
                 .run(|| async {
-                    let acker_ref = acker
-                        .as_ref()
+                    let delivery = acker
+                        .take()
                         .expect("acker is always Some when trying to ack");
-                    match acker_ref {
-                        Acker::Redis(q) => q.ack(&self.id, &self.task).await.trace(),
-                        Acker::Omni(_) => match acker.take() {
-                            Some(Acker::Omni(delivery)) => {
-                                delivery.ack().await.map_err(|(e, delivery)| {
-                                    // Put the delivery back in acker beforr retrying, to
-                                    // satisfy the expect above.
-                                    acker = Some(Acker::Omni(delivery));
-                                    e.into()
-                                })
-                            }
-                            _ => unreachable!(),
-                        },
-                    }
+                    delivery.ack().await.map_err(|(e, delivery)| {
+                        // Put the delivery back in acker before retrying, to
+                        // satisfy the expect above.
+                        acker = Some(delivery);
+                        e.into()
+                    })
                 })
                 .await
             {
@@ -252,34 +231,27 @@ impl TaskQueueDelivery {
     }
 
     pub async fn nack(self) -> Result<()> {
-        tracing::trace!("nack {}", self.id);
+        tracing::trace!(msg_id = self.task.msg_id(), "nack");
 
         let mut retry = Retry::new(should_retry, RETRY_SCHEDULE);
         let mut acker = Some(self.acker);
         loop {
             if let Some(result) = retry
                 .run(|| async {
-                    let acker_ref = acker
-                        .as_ref()
+                    let delivery = acker
+                        .take()
                         .expect("acker is always Some when trying to ack");
-                    match acker_ref {
-                        Acker::Redis(q) => q.nack(&self.id, &self.task).await.trace(),
-                        Acker::Omni(_) => match acker.take() {
-                            Some(Acker::Omni(delivery)) => {
-                                delivery
-                                    .nack()
-                                    .await
-                                    .map_err(|(e, delivery)| {
-                                        // Put the delivery back in acker beforr retrying, to
-                                        // satisfy the expect above.
-                                        acker = Some(Acker::Omni(delivery));
-                                        e.into()
-                                    })
-                                    .trace()
-                            }
-                            _ => unreachable!(),
-                        },
-                    }
+
+                    delivery
+                        .nack()
+                        .await
+                        .map_err(|(e, delivery)| {
+                            // Put the delivery back in acker beforr retrying, to
+                            // satisfy the expect above.
+                            acker = Some(delivery);
+                            e.into()
+                        })
+                        .trace()
                 })
                 .await
             {
@@ -293,17 +265,13 @@ impl TryFrom<Delivery> for TaskQueueDelivery {
     type Error = Error;
     fn try_from(value: Delivery) -> Result<Self> {
         Ok(TaskQueueDelivery {
-            // FIXME(onelson): ksuid for the id?
-            //   Since ack/nack is all handled internally by the omniqueue delivery, maybe it
-            //   doesn't matter.
-            id: "".to_string(),
             task: Arc::new(
                 value
                     .payload_serde_json()
                     .map_err(|_| Error::queue("Failed to decode queue task"))?
                     .ok_or_else(|| Error::queue("Unexpected empty delivery"))?,
             ),
-            acker: Acker::Omni(value),
+            acker: value,
         })
     }
 }
