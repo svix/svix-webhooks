@@ -50,9 +50,9 @@ pub async fn run(
 
 #[instrument(
     skip_all,
-    level="error",
+    level = "error",
     fields(
-        integration_id=integration_id.as_ref(),
+        integration_id = integration_id.as_ref(),
     )
 )]
 async fn route(

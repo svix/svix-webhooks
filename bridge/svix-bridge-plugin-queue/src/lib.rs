@@ -223,8 +223,8 @@ async fn run_inner(consumer: &(impl Consumer + Send + Sync)) -> std::io::Result<
     }
 }
 
-#[tracing::instrument(skip_all, level="error", fields(
-    app_id = app_id,
+#[tracing::instrument(skip_all, level = "error", fields(
+    app_id,
     event_type = message.event_type
 ))]
 async fn create_svix_message(

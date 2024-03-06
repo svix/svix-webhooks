@@ -402,7 +402,7 @@ async fn make_http_call(
     }
 }
 
-#[tracing::instrument(skip_all, fields(response_code, msg_dest_id=msg_dest.id.0))]
+#[tracing::instrument(skip_all, fields(response_code, msg_dest_id = msg_dest.id.0))]
 async fn handle_successful_dispatch(
     WorkerContext { cache, db, .. }: &WorkerContext<'_>,
     DispatchContext {
@@ -445,7 +445,7 @@ fn calculate_retry_delay(duration: Duration, err: Error) -> Duration {
         .gen_range(duration.mul_f32(1.0 - JITTER_DELTA)..=duration.mul_f32(1.0 + JITTER_DELTA))
 }
 
-#[tracing::instrument(skip_all, fields(response_code, msg_dest_id=msg_dest.id.0))]
+#[tracing::instrument(skip_all, fields(response_code, msg_dest_id = msg_dest.id.0))]
 async fn handle_failed_dispatch(
     WorkerContext {
         db,
