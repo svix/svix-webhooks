@@ -49,6 +49,7 @@ jobs:
           VALIDATE_RUST_2018: false
           VALIDATE_RUST_2021: false
           VALIDATE_RUST_CLIPPY: false
+          VALIDATE_SHELL_SHFMT: false
           VALIDATE_SQL: false
           VALIDATE_SQLFLUFF: false
           FILTER_REGEX_EXCLUDE: (gradlew|javascript/tsconfig.json)
