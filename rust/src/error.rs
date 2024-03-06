@@ -23,7 +23,7 @@ pub enum Error {
 
 impl Error {
     pub(crate) fn generic(err: impl std::error::Error) -> Self {
-        Self::Generic(err.to_string())
+        Self::Generic(format!("{err:?}"))
     }
 
     pub(crate) async fn from_response(status_code: http1::StatusCode, body: Incoming) -> Self {
