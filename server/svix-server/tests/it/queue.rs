@@ -55,13 +55,16 @@ async fn test_many_queue_consumers_inner(prefix: &str, delay: Option<Duration>) 
         producers_and_consumers.push(new_pair(&cfg, Some(prefix)).await);
     }
 
-    // Add 50 test messages with unique message IDs to each producer for a total of 1000 unique
-    // messagues
+    // Add 200 test messages¹ with unique message IDs to each producer for a
+    // total of 4000 unique messages
+    //
+    // ¹ it is important for this number to be no smaller than MAX_MESSAGES in
+    //   TaskQueueConsumer::receive_all
     for (index, (p, _c)) in producers_and_consumers.iter().enumerate() {
-        for num in 1..=50 {
+        for num in 0..200 {
             p.send(
                 QueueTask::MessageV1(MessageTask {
-                    msg_id: MessageId(format!("{}", index * 50 + num)),
+                    msg_id: MessageId(format!("{}", index * 200 + num)),
                     app_id: ApplicationId("TestApplicationId".to_owned()),
                     endpoint_id: EndpointId("TestEndpointId".to_owned()),
                     trigger_type: MessageAttemptTriggerType::Manual,
@@ -116,7 +119,7 @@ async fn test_many_queue_consumers_inner(prefix: &str, delay: Option<Duration>) 
         let (mut jh_out, read): (Vec<u16>, usize) = jh.join().unwrap();
         out.append(&mut jh_out);
 
-        if read < 5 {
+        if read < 20 {
             panic!("Consumer starved, only read {read} messages");
         }
     }
@@ -125,13 +128,9 @@ async fn test_many_queue_consumers_inner(prefix: &str, delay: Option<Duration>) 
     out.sort();
 
     // Then assert that all the messages are there
-
-    // This range loop is actually important so it panics if there are less than 1000 messages.
-    // With the proposed solution by Clippy, it accepts any smaller vector that's also 1..n.
-    // Genreally, however, this lint is actually good practice.
-    #[allow(clippy::needless_range_loop)]
-    for index in 0..1000 {
-        assert_eq!(out[index] as usize, index + 1);
+    assert_eq!(out.len(), 4000);
+    for (idx, &num) in out.iter().enumerate() {
+        assert_eq!(idx, num as usize);
     }
 }
 

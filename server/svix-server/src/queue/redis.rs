@@ -29,24 +29,15 @@
 
 use std::{num::NonZeroUsize, sync::Arc, time::Duration};
 
-use axum::async_trait;
+use bb8_redis::RedisMultiplexedConnectionManager;
+use omniqueue::backends::{redis::RedisClusterConnectionManager, RedisBackend, RedisConfig};
+use redis::{AsyncCommands as _, RedisResult};
 
-use chrono::Utc;
-use redis::{
-    streams::{StreamClaimReply, StreamId, StreamReadOptions, StreamReadReply},
-    AsyncCommands as _, Cmd, FromRedisValue, RedisResult,
-};
-use tokio::time::sleep;
-
+use super::{QueueTask, TaskQueueConsumer, TaskQueueProducer};
 use crate::{
-    error::{Error, Result},
-    queue::Acker,
+    cfg::{Configuration, QueueType},
+    error::Result,
     redis::{PooledConnection, RedisPool},
-};
-
-use super::{
-    QueueTask, TaskQueueConsumer, TaskQueueDelivery, TaskQueueProducer, TaskQueueReceive,
-    TaskQueueSend,
 };
 
 /// This is the key of the main queue. As a KV store, redis places the entire stream under this key.
@@ -79,23 +70,18 @@ const WORKER_CONSUMER: &str = "svix_workers_consumer";
 
 /// Special ID for XADD command's which generates a stream ID automatically
 const GENERATE_STREAM_ID: &str = "*";
-/// Special ID for XREADGROUP commands which reads any new messages
-const LISTEN_STREAM_ID: &str = ">";
 
 /// Each queue item has a set of KV pairs associated with it, for simplicity a sing key, "data" is
 /// used with the entire [`QueueTask`] as the value in serialized JSON
 const QUEUE_KV_KEY: &str = "data";
 
-/// The maximum number of pending messages to reinsert into the queue after becoming stale per loop
-const PENDING_BATCH_SIZE: i16 = 1000;
-
 /// Generates a [`TaskQueueProducer`] and a [`TaskQueueConsumer`] backed by Redis.
 pub async fn new_pair(
-    pool: RedisPool,
+    cfg: &Configuration,
     prefix: Option<&str>,
 ) -> (TaskQueueProducer, TaskQueueConsumer) {
     new_pair_inner(
-        pool,
+        cfg,
         Duration::from_secs(45),
         prefix.unwrap_or_default(),
         MAIN,
@@ -105,177 +91,23 @@ pub async fn new_pair(
     .await
 }
 
-struct StreamAutoclaimReply {
-    ids: Vec<StreamId>,
-}
-
-impl FromRedisValue for StreamAutoclaimReply {
-    fn from_redis_value(v: &redis::Value) -> RedisResult<Self> {
-        // First try the two member array from before Redis 7.0
-        match <((), StreamClaimReply)>::from_redis_value(v) {
-            Ok(res) => Ok(StreamAutoclaimReply { ids: res.1.ids }),
-
-            // If it's a type error, then try the three member array from Redis 7.0 and after
-            Err(e) if e.kind() == redis::ErrorKind::TypeError => {
-                <((), StreamClaimReply, ())>::from_redis_value(v)
-                    .map(|ok| StreamAutoclaimReply { ids: ok.1.ids })
-            }
-
-            // Any other error should be returned as is
-            Err(e) => Err(e),
-        }
-    }
-}
-
-async fn background_task_pending(
-    pool: RedisPool,
-    main_queue_name: String,
-    pending_duration: i64,
-) -> Result<()> {
-    let mut pool = pool.get().await?;
-
-    // Every iteration checks whether the processing queue has items that should be picked back up,
-    // claiming them in the process
-    let mut cmd = redis::cmd("XAUTOCLAIM");
-    cmd.arg(&main_queue_name)
-        .arg(WORKERS_GROUP)
-        .arg(WORKER_CONSUMER)
-        .arg(pending_duration)
-        .arg("-")
-        .arg("COUNT")
-        .arg(PENDING_BATCH_SIZE);
-
-    let StreamAutoclaimReply { ids } = pool.query_async(cmd).await?;
-
-    if !ids.is_empty() {
-        let mut pipe = redis::pipe();
-
-        // And reinsert the map of KV pairs into the MAIN qunue with a new stream ID
-        for StreamId { map, .. } in &ids {
-            let _ = pipe.xadd(
-                &main_queue_name,
-                GENERATE_STREAM_ID,
-                &map.iter()
-                    .filter_map(|(k, v)| {
-                        if let redis::Value::Data(data) = v {
-                            Some((k.as_str(), data.as_slice()))
-                        } else {
-                            None
-                        }
-                    })
-                    .collect::<Vec<(&str, &[u8])>>(),
-            );
-        }
-
-        let _: () = pool.query_async_pipeline(pipe).await?;
-
-        // Acknowledge all the stale ones so the pending queue is cleared
-        let ids: Vec<_> = ids.iter().map(|wrapped| &wrapped.id).collect();
-
-        let mut pipe = redis::pipe();
-        pipe.add_command(Cmd::xack(&main_queue_name, WORKERS_GROUP, &ids));
-        pipe.add_command(Cmd::xdel(&main_queue_name, &ids));
-
-        let _: () = pool.query_async_pipeline(pipe).await?;
-    } else {
-        // Wait for half a second before attempting to fetch again if nothing was found
-        sleep(Duration::from_millis(500)).await;
-    }
-
-    Ok(())
-}
-
-async fn background_task_delayed(
-    pool: RedisPool,
-    main_queue_name: String,
-    delayed_queue_name: String,
-    delayed_lock: &str,
-) -> Result<()> {
-    let batch_size: isize = 50;
-
-    let mut pool = pool.get().await?;
-
-    // There is a lock on the delayed queue processing to avoid race conditions. So first try to
-    // acquire the lock should it not already exist. The lock expires after five seconds in case a
-    // worker crashes while holding the lock.
-    let mut cmd = redis::cmd("SET");
-    cmd.arg(delayed_lock)
-        .arg(true)
-        .arg("NX")
-        .arg("PX")
-        .arg(5000);
-    // WIll be Some("OK") when set or None when not set
-    let resp: Option<String> = pool.query_async(cmd).await?;
-
-    if resp.as_deref() == Some("OK") {
-        // First look for delayed keys whose time is up and add them to the main qunue
-        let timestamp = Utc::now().timestamp();
-        let keys: Vec<String> = pool
-            .zrangebyscore_limit(&delayed_queue_name, 0isize, timestamp, 0isize, batch_size)
-            .await?;
-
-        if !keys.is_empty() {
-            let tasks: Vec<&str> = keys
-                .iter()
-                // All information is stored in the key in which the ID and JSON formatted task
-                // are separated by a `|`. So, take the key, then take the part after the `|`
-                .map(|x| x.split('|').nth(1).expect("Improper key format"))
-                .collect();
-
-            // For each task, XADD them to the MAIN queue
-            let mut pipe = redis::pipe();
-            for task in tasks {
-                let _ = pipe.xadd(
-                    &main_queue_name,
-                    GENERATE_STREAM_ID,
-                    &[(QUEUE_KV_KEY, task)],
-                );
-            }
-            let _: () = pool.query_async_pipeline(pipe).await?;
-
-            // Then remove the tasks from the delayed queue so they aren't resent
-            let _: () = pool.zrem(&delayed_queue_name, keys).await?;
-
-            // Make sure to release the lock after done processing
-            let _: () = pool.del(delayed_lock).await?;
-        } else {
-            // Make sure to release the lock before sleeping
-            let _: () = pool.del(delayed_lock).await?;
-            // Wait for half a second before attempting to fetch again if nothing was found
-            sleep(Duration::from_millis(500)).await;
-        }
-    } else {
-        // Also sleep half a second if the lock could not be fetched
-        sleep(Duration::from_millis(500)).await;
-    }
-
-    Ok(())
-}
-
 /// Runs Redis queue migrations with the given delay schedule. Migrations are run on this schedule
 /// such that if an old instance of the server is online after the migrations are made, that no data
 /// will be lost assuming the old server is taken offline before the last scheduled delay.
 async fn run_migration_schedule(delays: &[Duration], pool: RedisPool) {
-    for delay in delays {
-        let mut pool = match pool.get().await {
-            Ok(pool) => pool,
-            Err(e) => {
-                tracing::error!(
-                    "Error fetching Redis connection from pool in migration schedule: {}",
-                    e
-                );
-                tokio::time::sleep(*delay).await;
-                continue;
-            }
-        };
+    let mut conn = pool
+        .get()
+        .await
+        .expect("Error retrieving connection from Redis pool");
 
+    for delay in delays {
         // drain legacy queues:
-        if let Err(e) = migrate_v1_to_v2_queues(&mut pool).await {
+        if let Err(e) = migrate_v1_to_v2_queues(&mut conn).await {
             tracing::error!("Error migrating queue: {}", e);
             tokio::time::sleep(*delay).await;
             continue;
         }
-        if let Err(e) = migrate_v2_to_v3_queues(&mut pool).await {
+        if let Err(e) = migrate_v2_to_v3_queues(&mut conn).await {
             tracing::error!("Error migrating queue: {}", e);
             tokio::time::sleep(*delay).await;
             continue;
@@ -287,16 +119,25 @@ async fn run_migration_schedule(delays: &[Duration], pool: RedisPool) {
 
 /// An inner function allowing key constants to be variable for testing purposes
 async fn new_pair_inner(
-    pool: RedisPool,
+    cfg: &Configuration,
     pending_duration: Duration,
     queue_prefix: &str,
     main_queue_name: &'static str,
     delayed_queue_name: &'static str,
-    delayed_lock: &'static str,
+    delayed_lock_name: &'static str,
 ) -> (TaskQueueProducer, TaskQueueConsumer) {
     let main_queue_name = format!("{queue_prefix}{main_queue_name}");
     let delayed_queue_name = format!("{queue_prefix}{delayed_queue_name}");
-    let delayed_lock = format!("{queue_prefix}{delayed_lock}");
+    let delayed_lock_name = format!("{queue_prefix}{delayed_lock_name}");
+
+    // This fn is only called from
+    // - `queue::new_pair` if the queue type is redis and a DSN is set
+    // - redis tests that only makes sense to run with the DSN set
+    let dsn = cfg.redis_dsn.as_deref().unwrap();
+    let pool = match &cfg.queue_type {
+        QueueType::RedisCluster => crate::redis::new_redis_pool_clustered(dsn, cfg).await,
+        _ => crate::redis::new_redis_pool(dsn, cfg).await,
+    };
 
     // Create the stream and consumer group for the MAIN queue should it not already exist. The
     // consumer is created automatically upon use so it does not have to be created here.
@@ -334,257 +175,90 @@ async fn new_pair_inner(
         .try_into()
         .expect("Pending duration out of bounds");
 
-    let worker_pool = pool.clone();
-    let mqn = main_queue_name.clone();
-    let dqn = delayed_queue_name.clone();
-
     // Migrate v1 queues to v2 and v2 queues to v3 on a loop with exponential backoff.
-    tokio::spawn({
-        let pool = pool.clone();
+    tokio::spawn(async move {
+        let delays = [
+            // 11.25 min
+            Duration::from_secs(60 * 11 + 15),
+            // 22.5 min
+            Duration::from_secs(60 * 22 + 30),
+            // 45 min
+            Duration::from_secs(60 * 45),
+            // 1.5 hours
+            Duration::from_secs(60 * 30 * 3),
+            // 3 hours
+            Duration::from_secs(60 * 60 * 3),
+            // 6 hours
+            Duration::from_secs(60 * 60 * 6),
+            // 12 hours
+            Duration::from_secs(60 * 60 * 12),
+            // 24 hours
+            Duration::from_secs(60 * 60 * 24),
+        ];
 
-        async move {
-            let delays = [
-                // 11.25 min
-                Duration::from_secs(60 * 11 + 15),
-                // 22.5  min
-                Duration::from_secs(60 * 22 + 30),
-                // 45 min
-                Duration::from_secs(60 * 45),
-                // 1.5 hours
-                Duration::from_secs(60 * 30 * 3),
-                // 3  hours
-                Duration::from_secs(60 * 60 * 3),
-                // 6 hours
-                Duration::from_secs(60 * 60 * 6),
-                // 12 hours
-                Duration::from_secs(60 * 60 * 12),
-                // 24 hours
-                Duration::from_secs(60 * 60 * 24),
-            ];
+        run_migration_schedule(&delays, pool).await;
+    });
 
-            run_migration_schedule(&delays, pool).await;
+    let config = RedisConfig {
+        dsn: dsn.to_owned(),
+        max_connections: cfg.redis_pool_max_size,
+        reinsert_on_nack: false, // TODO
+        queue_key: main_queue_name,
+        delayed_queue_key: delayed_queue_name,
+        delayed_lock_key: delayed_lock_name,
+        consumer_group: WORKERS_GROUP.to_owned(),
+        consumer_name: WORKER_CONSUMER.to_owned(),
+        payload_key: QUEUE_KV_KEY.to_owned(),
+        ack_deadline_ms: pending_duration,
+    };
+
+    match &cfg.queue_type {
+        QueueType::RedisCluster => {
+            let (producer, consumer) =
+                RedisBackend::<RedisClusterConnectionManager>::builder(config)
+                    .build_pair()
+                    .await
+                    .expect("Error initializing redis-cluster queue");
+
+            let producer = TaskQueueProducer::new(producer);
+            let consumer = TaskQueueConsumer::new(consumer);
+            (producer, consumer)
         }
-    });
+        _ => {
+            let (producer, consumer) =
+                RedisBackend::<RedisMultiplexedConnectionManager>::builder(config)
+                    .build_pair()
+                    .await
+                    .expect("Error initializing redis queue");
 
-    tokio::spawn({
-        let pool = pool.clone();
-        let mqn = mqn.clone();
-        async move {
-            loop {
-                if let Err(err) =
-                    background_task_delayed(pool.clone(), mqn.clone(), dqn.clone(), &delayed_lock)
-                        .await
-                {
-                    tracing::error!("{}", err);
-                    tokio::time::sleep(Duration::from_millis(500)).await;
-                    continue;
-                };
-            }
+            let producer = TaskQueueProducer::new(producer);
+            let consumer = TaskQueueConsumer::new(consumer);
+            (producer, consumer)
         }
-    });
-
-    tokio::spawn({
-        let pool = pool.clone();
-        async move {
-            loop {
-                if let Err(err) =
-                    background_task_pending(pool.clone(), mqn.clone(), pending_duration).await
-                {
-                    tracing::error!("{}", err);
-                    tokio::time::sleep(Duration::from_millis(500)).await;
-                    continue;
-                }
-            }
-        }
-    });
-
-    let inner = Arc::new(RedisQueueInner {
-        pool: worker_pool,
-        main_queue_name,
-    });
-
-    // Once the background thread has been started, simply return the [`TaskQueueProducer`] and
-    // [`TaskQueueConsumer`]
-    (
-        TaskQueueProducer::Redis(RedisQueueProducer {
-            inner: inner.clone(),
-            delayed_queue_name: Arc::new(delayed_queue_name),
-        }),
-        TaskQueueConsumer::Redis(RedisQueueConsumer(inner)),
-    )
+    }
 }
 
-#[derive(Debug)]
-pub(super) struct RedisQueueInner {
-    pool: RedisPool,
-    main_queue_name: String,
-}
-
-#[derive(Clone)]
-pub struct RedisQueueProducer {
-    inner: Arc<RedisQueueInner>,
-    delayed_queue_name: Arc<String>,
-}
-
-fn to_redis_key(delivery_id: &str, task: &QueueTask) -> String {
-    format!("{delivery_id}|{}", serde_json::to_string(&task).unwrap())
-}
-
-fn from_redis_key(key: &str) -> Arc<QueueTask> {
+fn task_from_redis_key(key: &str) -> Arc<QueueTask> {
     // Get the first delimiter -> it has to have the |
     let pos = key.find('|').unwrap();
     serde_json::from_str(&key[pos + 1..]).unwrap()
 }
 
-impl RedisQueueInner {
-    async fn send_immediately(&self, task: Arc<QueueTask>) -> Result<()> {
-        let mut pool = self.pool.get().await?;
-
-        let _: () = pool
-            .xadd(
-                &self.main_queue_name,
-                GENERATE_STREAM_ID,
-                &[(
-                    QUEUE_KV_KEY,
-                    serde_json::to_string(&task)
-                        .map_err(|e| Error::generic(format!("serialization error: {}", e)))?,
-                )],
-            )
-            .await?;
-
-        Ok(())
-    }
-
-    /// ACKing the delivery, XACKs the message in the queue so it will no longer be retried
-    pub(super) async fn ack(&self, delivery_id: &str, task: &QueueTask) -> Result<()> {
-        let mut pool = self.pool.get().await?;
-
-        let mut pipe = redis::pipe();
-
-        pipe.add_command(Cmd::xack(
-            &self.main_queue_name,
-            WORKERS_GROUP,
-            &[delivery_id],
-        ))
-        .add_command(Cmd::xdel(&self.main_queue_name, &[delivery_id]));
-
-        let (acked, deleted): (u8, u8) = pool.query_async_pipeline(pipe).await?;
-        if acked != 1 || deleted != 1 {
-            tracing::warn!(
-                "Expected to remove 1 from the list, acked {acked}, deleted {deleted},\
-                 for {delivery_id}|{}",
-                serde_json::to_string(task)
-                    .map_err(|e| Error::generic(format!("serialization error: {e}")))?
-            );
-        }
-
-        Ok(())
-    }
-
-    pub(super) async fn nack(&self, delivery_id: &str, task: &Arc<QueueTask>) -> Result<()> {
-        tracing::debug!("nack {delivery_id}");
-        self.send_immediately(task.clone()).await?;
-        self.ack(delivery_id, task).await
-    }
-}
-
-#[async_trait]
-impl TaskQueueSend for RedisQueueProducer {
-    async fn send(&self, task: Arc<QueueTask>, delay: Option<Duration>) -> Result<()> {
-        let timestamp = if let Some(delay) = delay {
-            Utc::now()
-                + chrono::Duration::from_std(delay)
-                    .map_err(|_| Error::generic("Duration out of bounds"))?
-        } else {
-            tracing::trace!("RedisQueue: event sent (no delay)");
-            return self.inner.send_immediately(task).await;
-        };
-
-        // If there's a delay, add it to the DELAYED queue by ZADDING the Redis-key-ified
-        // delivery
-        let mut pool = self.inner.pool.get().await?;
-        let delivery = TaskQueueDelivery::from_arc(
-            task.clone(),
-            Some(timestamp),
-            Acker::Redis(self.inner.clone()),
-        );
-        let key = to_redis_key(&delivery.id, &delivery.task);
-        let delayed_queue_name: &str = &self.delayed_queue_name;
-        let _: () = pool
-            .zadd(delayed_queue_name, key, timestamp.timestamp())
-            .await?;
-
-        tracing::trace!("RedisQueue: event sent > (delay: {:?})", delay);
-        Ok(())
-    }
-}
-
-#[derive(Clone)]
-pub struct RedisQueueConsumer(Arc<RedisQueueInner>);
-
-#[async_trait]
-impl TaskQueueReceive for RedisQueueConsumer {
-    async fn receive_all(&mut self) -> Result<Vec<TaskQueueDelivery>> {
-        let consumer = self.clone();
-        tokio::spawn(async move {
-            // TODO: Receive messages in batches so it's not always a Vec with one member
-            let mut pool = consumer.0.pool.get().await?;
-
-            // There is no way to make it await a message for unbounded times, so simply block for a short
-            // amount of time (to avoid locking) and loop if no messages were retrieved
-            let resp: StreamReadReply = pool
-                .xread_options(
-                    &[&consumer.0.main_queue_name],
-                    &[LISTEN_STREAM_ID],
-                    &StreamReadOptions::default()
-                        .group(WORKERS_GROUP, WORKER_CONSUMER)
-                        .count(1)
-                        .block(10_000),
-                )
-                .await?;
-
-            if !resp.keys.is_empty() && !resp.keys[0].ids.is_empty() {
-                let element = &resp.keys[0].ids[0];
-                let id = element.id.clone();
-                let map = &element.map;
-
-                let task: QueueTask = if let Some(redis::Value::Data(data)) = map.get("data") {
-                    serde_json::from_slice(data).expect("Invalid QueueTask")
-                } else {
-                    panic!("No QueueTask associated with key");
-                };
-
-                tracing::trace!("RedisQueue: event recv <");
-
-                Ok(vec![TaskQueueDelivery {
-                    id,
-                    task: Arc::new(task),
-                    acker: Acker::Redis(consumer.0.clone()),
-                }])
-            } else {
-                Ok(Vec::new())
-            }
-        })
-        .await
-        .map_err(|e| Error::generic(format!("task join error {}", e)))?
-    }
-}
-
-async fn migrate_v2_to_v3_queues(pool: &mut PooledConnection<'_>) -> Result<()> {
-    migrate_list_to_stream(pool, LEGACY_V2_MAIN, MAIN).await?;
-    migrate_list_to_stream(pool, LEGACY_V2_PROCESSING, MAIN).await?;
+async fn migrate_v2_to_v3_queues(conn: &mut PooledConnection<'_>) -> Result<()> {
+    migrate_list_to_stream(conn, LEGACY_V2_MAIN, MAIN).await?;
+    migrate_list_to_stream(conn, LEGACY_V2_PROCESSING, MAIN).await?;
 
     Ok(())
 }
 
 async fn migrate_list_to_stream(
-    pool: &mut PooledConnection<'_>,
+    conn: &mut PooledConnection<'_>,
     legacy_queue: &str,
     queue: &str,
 ) -> Result<()> {
     let batch_size = 1000;
     loop {
-        let legacy_keys: Vec<String> = pool
+        let legacy_keys: Vec<String> = conn
             .lpop(legacy_queue, NonZeroUsize::new(batch_size))
             .await?;
         if legacy_keys.is_empty() {
@@ -598,7 +272,7 @@ async fn migrate_list_to_stream(
 
         let mut pipe = redis::pipe();
         for key in legacy_keys {
-            let task = from_redis_key(&key);
+            let task = task_from_redis_key(&key);
             let _ = pipe.xadd(
                 queue,
                 GENERATE_STREAM_ID,
@@ -606,27 +280,27 @@ async fn migrate_list_to_stream(
             );
         }
 
-        let _: () = pool.query_async_pipeline(pipe).await?;
+        let _: () = pipe.query_async(conn).await?;
     }
 }
 
-async fn migrate_v1_to_v2_queues(pool: &mut PooledConnection<'_>) -> Result<()> {
-    migrate_list(pool, LEGACY_V1_MAIN, LEGACY_V2_MAIN).await?;
-    migrate_list(pool, LEGACY_V1_PROCESSING, LEGACY_V2_PROCESSING).await?;
-    migrate_sset(pool, LEGACY_V1_DELAYED, DELAYED).await?;
+async fn migrate_v1_to_v2_queues(conn: &mut PooledConnection<'_>) -> Result<()> {
+    migrate_list(conn, LEGACY_V1_MAIN, LEGACY_V2_MAIN).await?;
+    migrate_list(conn, LEGACY_V1_PROCESSING, LEGACY_V2_PROCESSING).await?;
+    migrate_sset(conn, LEGACY_V1_DELAYED, DELAYED).await?;
 
     Ok(())
 }
 
 async fn migrate_list(
-    pool: &mut PooledConnection<'_>,
+    conn: &mut PooledConnection<'_>,
     legacy_queue: &str,
     queue: &str,
 ) -> Result<()> {
     let batch_size = 1000;
     loop {
         // Checking for old messages from queue
-        let legacy_keys: Vec<String> = pool
+        let legacy_keys: Vec<String> = conn
             .lpop(legacy_queue, NonZeroUsize::new(batch_size))
             .await?;
         if legacy_keys.is_empty() {
@@ -637,19 +311,19 @@ async fn migrate_list(
             legacy_keys.len(),
             legacy_queue
         );
-        let _: () = pool.rpush(queue, legacy_keys).await?;
+        let _: () = conn.rpush(queue, legacy_keys).await?;
     }
 }
 
 async fn migrate_sset(
-    pool: &mut PooledConnection<'_>,
+    conn: &mut PooledConnection<'_>,
     legacy_queue: &str,
     queue: &str,
 ) -> Result<()> {
     let batch_size = 1000;
     loop {
         // Checking for old messages from LEGACY_DELAYED
-        let legacy_keys: Vec<(String, f64)> = pool.zpopmin(legacy_queue, batch_size).await?;
+        let legacy_keys: Vec<(String, f64)> = conn.zpopmin(legacy_queue, batch_size).await?;
 
         if legacy_keys.is_empty() {
             break Ok(());
@@ -662,7 +336,7 @@ async fn migrate_sset(
         let legacy_keys: Vec<(f64, String)> =
             legacy_keys.into_iter().map(|(x, y)| (y, x)).collect();
 
-        let _: () = pool.zadd_multiple(queue, &legacy_keys).await?;
+        let _: () = conn.zadd_multiple(queue, &legacy_keys).await?;
     }
 }
 
@@ -674,7 +348,7 @@ pub mod tests {
     use chrono::Utc;
     use redis::{streams::StreamReadReply, AsyncCommands as _, Direction};
 
-    use super::{migrate_list, migrate_list_to_stream, migrate_sset, new_pair_inner, to_redis_key};
+    use super::{migrate_list, migrate_list_to_stream, migrate_sset, new_pair_inner};
 
     use crate::{
         cfg::{CacheType, Configuration},
@@ -683,23 +357,19 @@ pub mod tests {
         redis::RedisPool,
     };
 
-    pub async fn get_pool(cfg: Configuration) -> RedisPool {
+    async fn get_pool(cfg: &Configuration) -> RedisPool {
         match cfg.cache_type {
             CacheType::RedisCluster => {
-                crate::redis::new_redis_pool_clustered(
-                    cfg.redis_dsn.as_ref().unwrap().as_str(),
-                    &cfg,
-                )
-                .await
+                crate::redis::new_redis_pool_clustered(cfg.redis_dsn.as_deref().unwrap(), cfg).await
             }
-            _ => crate::redis::new_redis_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg).await,
+            _ => crate::redis::new_redis_pool(cfg.redis_dsn.as_deref().unwrap(), cfg).await,
         }
     }
 
     #[tokio::test]
     async fn test_migrate_list() {
         let cfg = crate::cfg::load().unwrap();
-        let pool = get_pool(cfg).await;
+        let pool = get_pool(&cfg).await;
         let mut pool = pool.get().await.unwrap();
 
         const TEST_QUEUE: &str = "{queue}_svix_test_queue_list";
@@ -731,7 +401,7 @@ pub mod tests {
     #[tokio::test]
     async fn test_migrate_sset() {
         let cfg = crate::cfg::load().unwrap();
-        let pool = get_pool(cfg).await;
+        let pool = get_pool(&cfg).await;
         let mut pool = pool.get().await.unwrap();
 
         const TEST_QUEUE: &str = "{queue}_svix_test_queue_sset";
@@ -780,10 +450,10 @@ pub mod tests {
     #[tokio::test]
     async fn test_idle_period() {
         let cfg = crate::cfg::load().unwrap();
-        let pool = get_pool(cfg).await;
+        let pool = get_pool(&cfg).await;
 
         let (p, mut c) = new_pair_inner(
-            pool.clone(),
+            &cfg,
             Duration::from_millis(100),
             "",
             "{test}_idle_period",
@@ -845,7 +515,7 @@ pub mod tests {
     #[tokio::test]
     async fn test_ack() {
         let cfg = crate::cfg::load().unwrap();
-        let pool = get_pool(cfg).await;
+        let pool = get_pool(&cfg).await;
 
         // Delete the keys used in this test to ensure nothing pollutes the output
         let mut conn = pool
@@ -862,7 +532,7 @@ pub mod tests {
             .unwrap();
 
         let (p, mut c) = new_pair_inner(
-            pool.clone(),
+            &cfg,
             Duration::from_millis(5000),
             "",
             "{test}_ack",
@@ -904,10 +574,9 @@ pub mod tests {
     #[tokio::test]
     async fn test_nack() {
         let cfg = crate::cfg::load().unwrap();
-        let pool = get_pool(cfg).await;
 
         let (p, mut c) = new_pair_inner(
-            pool,
+            &cfg,
             Duration::from_millis(500),
             "",
             "{test}_nack",
@@ -947,10 +616,9 @@ pub mod tests {
     #[tokio::test]
     async fn test_delay() {
         let cfg = crate::cfg::load().unwrap();
-        let pool = get_pool(cfg).await;
 
         let (p, mut c) = new_pair_inner(
-            pool,
+            &cfg,
             Duration::from_millis(500),
             "",
             "{test}_delay",
@@ -983,19 +651,23 @@ pub mod tests {
             .unwrap();
         p.send(mt2.clone(), None).await.unwrap();
 
-        let recv2 = c.receive_all().await.unwrap().pop().unwrap();
+        let [recv2] = c.receive_all().await.unwrap().try_into().unwrap();
         assert_eq!(*recv2.task, mt2);
         recv2.ack().await.unwrap();
 
-        let recv1 = c.receive_all().await.unwrap().pop().unwrap();
+        let [recv1] = c.receive_all().await.unwrap().try_into().unwrap();
         assert_eq!(*recv1.task, mt1);
         recv1.ack().await.unwrap();
+    }
+
+    fn to_redis_key(id: &str, task: &QueueTask) -> String {
+        format!("{id}|{}", serde_json::to_string(task).unwrap())
     }
 
     #[tokio::test]
     async fn test_migrations() {
         let cfg = crate::cfg::load().unwrap();
-        let pool = get_pool(cfg).await;
+        let pool = get_pool(&cfg).await;
 
         // Test queue name constants
         let v1_main = "{test}_migrations_main_v1";
@@ -1108,7 +780,7 @@ pub mod tests {
 
         // Read
         let (_p, mut c) = new_pair_inner(
-            pool,
+            &cfg,
             Duration::from_secs(5),
             "",
             v3_main,

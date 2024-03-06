@@ -3,14 +3,10 @@ use lapin::{
     types::{AMQPValue, FieldTable},
     ConnectionProperties,
 };
-use omniqueue::{
-    backends::{RabbitMqBackend, RabbitMqConfig},
-    QueueConsumer, ScheduledQueueProducer,
-};
+use omniqueue::backends::{RabbitMqBackend, RabbitMqConfig};
 use svix_ksuid::{KsuidLike, KsuidMs};
 
 use crate::error::{Result, Traceable};
-use std::sync::Arc;
 
 use super::{TaskQueueConsumer, TaskQueueProducer};
 
@@ -85,8 +81,8 @@ pub async fn new_pair(
     .await
     .expect("Error initializing rabbitmq queue");
 
-    let producer = TaskQueueProducer::Omni(Arc::new(producer.into_dyn_scheduled()));
-    let consumer = TaskQueueConsumer::Omni(consumer.into_dyn());
+    let producer = TaskQueueProducer::new(producer);
+    let consumer = TaskQueueConsumer::new(consumer);
 
     Ok((producer, consumer))
 }
