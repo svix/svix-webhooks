@@ -160,3 +160,69 @@ async fn declare_bound_queue(
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use futures::StreamExt as _;
+    use lapin::options::{BasicConsumeOptions, BasicQosOptions};
+    use svix_ksuid::{KsuidLike as _, KsuidMs};
+
+    use crate::{cfg, queue::QueueTask};
+
+    #[tokio::test]
+    // run with `cargo test -- --ignored rabbitmq` only when rabbitmq is up and configured
+    #[ignore]
+    async fn test_messages_have_ids() {
+        const QUEUE_NAME: &str = "test_messages_have_ids_q";
+
+        let cfg = cfg::load().expect("Error loading configuration");
+        let cfg::QueueBackend::RabbitMq(dsn) = cfg.queue_backend() else {
+            panic!("This test must only run when the rabbitmq backend is enabled");
+        };
+        let prefetch_size = cfg.rabbit_consumer_prefetch_size.unwrap_or(1);
+
+        // Send message with omniqueue
+        {
+            let (producer, _) = super::new_pair(dsn, QUEUE_NAME.to_owned(), prefetch_size)
+                .await
+                .unwrap();
+
+            producer.send(QueueTask::HealthCheck, None).await.unwrap();
+        }
+
+        // Receive with lapin consumer
+        {
+            let conn = lapin::Connection::connect(dsn, lapin::ConnectionProperties::default())
+                .await
+                .unwrap();
+            let channel = conn.create_channel().await.unwrap();
+
+            let consumer_tag = format!(
+                "{QUEUE_NAME}-consumer-{}",
+                KsuidMs::new(None, None).to_string()
+            );
+
+            let opts = BasicConsumeOptions {
+                no_local: false,
+                no_ack: false,
+                exclusive: false,
+                nowait: false,
+            };
+
+            channel
+                .basic_qos(prefetch_size, BasicQosOptions { global: false })
+                .await
+                .unwrap();
+
+            let mut consumer = channel
+                .basic_consume(QUEUE_NAME, &consumer_tag, opts, Default::default())
+                .await
+                .unwrap();
+
+            let delivery = consumer.next().await.unwrap().unwrap();
+
+            // ... to assert that there is a message ID
+            delivery.properties.message_id().as_ref().unwrap();
+        }
+    }
+}
