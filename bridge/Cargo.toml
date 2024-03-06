@@ -10,3 +10,6 @@ members = [
     "svix-bridge",
     "svix-bridge-plugin-queue",
 ]
+
+[profile.dev.package]
+quote = { opt-level = 2 }
