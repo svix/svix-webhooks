@@ -1802,7 +1802,7 @@ dependencies = [
  "httpdate",
  "itoa",
  "pin-project-lite",
- "socket2 0.4.10",
+ "socket2 0.5.6",
  "tokio",
  "tower-service",
  "tracing",
@@ -2521,8 +2521,9 @@ dependencies = [
 
 [[package]]
 name = "omniqueue"
-version = "0.1.0"
-source = "git+https://github.com/svix/omniqueue-rs.git?rev=044fc688670759859f193bb646fac043bbfd08ba#044fc688670759859f193bb646fac043bbfd08ba"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cba3b7f69e420be6e32a580307e38aef7f53ac01cc09c3bb6851aec37d710894"
 dependencies = [
  "async-trait",
  "bb8",

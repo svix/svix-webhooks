@@ -2894,9 +2894,9 @@ dependencies = [
 
 [[package]]
 name = "google-cloud-pubsub"
-version = "0.22.1"
+version = "0.23.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0f6e4fdcd8303ad0d0cdb8b5722aa3a57de9534af27d4da71fc4d3179174a896"
+checksum = "1da196da473976944d408a91213bafe078e7223e10694d3f8ed36b6e210fa130"
 dependencies = [
  "async-channel 1.9.0",
  "async-stream",
@@ -3940,8 +3940,9 @@ dependencies = [
 
 [[package]]
 name = "omniqueue"
-version = "0.1.0"
-source = "git+https://github.com/svix/omniqueue-rs?rev=044fc688670759859f193bb646fac043bbfd08ba#044fc688670759859f193bb646fac043bbfd08ba"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cba3b7f69e420be6e32a580307e38aef7f53ac01cc09c3bb6851aec37d710894"
 dependencies = [
  "async-trait",
  "aws-config",
