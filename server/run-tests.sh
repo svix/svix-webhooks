@@ -43,8 +43,11 @@ SVIX_REDIS_DSN="redis://localhost:6379" \
 ${TEST_COMMAND}
 
 echo "*********** RUN 6 ***********"
-SVIX_QUEUE_TYPE="rabbitmq" \
-SVIX_CACHE_TYPE="redis" \
-SVIX_REDIS_DSN="redis://localhost:6379" \
-SVIX_RABBIT_DSN="amqp://xivs:xivs@localhost:5672/%2f" \
-${TEST_COMMAND}
+(
+    export SVIX_QUEUE_TYPE="rabbitmq"
+    export SVIX_CACHE_TYPE="redis"
+    export SVIX_REDIS_DSN="redis://localhost:6379"
+    export SVIX_RABBIT_DSN="amqp://xivs:xivs@localhost:5672/%2f"
+    ${TEST_COMMAND}
+    cargo test -- --ignored rabbitmq
+)
