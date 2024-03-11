@@ -133,14 +133,15 @@ impl Webhook {
 
     fn verify_timestamp(ts: i64) -> Result<(), WebhookError> {
         let now = OffsetDateTime::now_utc().unix_timestamp();
-        if now - ts > TOLERANCE_IN_SECONDS {
-            Err(WebhookError::TimestampTooOldError)
-        } else if ts > now + TOLERANCE_IN_SECONDS {
-            Err(WebhookError::FutureTimestampError)
-        } else {
-            Ok(())
+        let timestamp_diff = now - ts;
+
+        match timestamp_diff {
+            diff if diff > TOLERANCE_IN_SECONDS => Err(WebhookError::TimestampTooOldError),
+            diff if diff < -TOLERANCE_IN_SECONDS => Err(WebhookError::FutureTimestampError),
+            _ => Ok(()),
         }
     }
+
 }
 
 /// Trait to abstract over the `HeaderMap` types from both v0.2 and v1.0 of the `http` crate.
