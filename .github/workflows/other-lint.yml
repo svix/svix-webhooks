@@ -25,6 +25,7 @@ jobs:
           VALIDATE_ALL_CODEBASE: false
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_BASH: false
           VALIDATE_CHECKOV: false
           VALIDATE_PYTHON: false
           VALIDATE_GOOGLE_JAVA_FORMAT: false # Only use checkstyle
