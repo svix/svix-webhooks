@@ -1,5 +1,6 @@
 {
   "npmName": "svix",
   "useObjectParameters": true,
-  "supportsES6": true
+  "supportsES6": true,
+  "platform": "browser"
 }

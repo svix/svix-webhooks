@@ -1,6 +1,3 @@
-// typings of url-parse are incorrect...
-// @ts-ignore
-import * as URLParse from "url-parse";
 import { Observable, from } from "../rxjsStub";
 
 export * from "./isomorphic-fetch";
@@ -18,22 +15,6 @@ export enum HttpMethod {
   OPTIONS = "OPTIONS",
   TRACE = "TRACE",
   PATCH = "PATCH",
-}
-
-function qsStringify(queryParams: Record<string, any>) {
-  const res = [];
-  for (let paramName in queryParams)
-    if (queryParams.hasOwnProperty(paramName)) {
-      const value = queryParams[paramName];
-      if (Array.isArray(value)) {
-        for (let i = 0; i < value.length; i++) {
-          res.push(`${encodeURIComponent(paramName)}=${encodeURIComponent(value[i])}`);
-        }
-      } else {
-        res.push(`${encodeURIComponent(paramName)}=${encodeURIComponent(value)}`);
-      }
-    }
-  return res.join("&");
 }
 
 /**
@@ -58,7 +39,7 @@ export type RequestBody = undefined | string | FormData;
 export class RequestContext {
   private headers: { [key: string]: string } = {};
   private body: RequestBody = undefined;
-  private url: URLParse;
+  private url: URL;
 
   /**
    * Creates the request context using a http method and request resource url
@@ -66,16 +47,19 @@ export class RequestContext {
    * @param url url of the requested resource
    * @param httpMethod http method
    */
-  public constructor(url: string, private httpMethod: HttpMethod) {
-    this.url = new URLParse(url, true);
+  public constructor(
+    url: string,
+    private httpMethod: HttpMethod
+  ) {
+    this.url = new globalThis.URL(url);
   }
 
   /*
    * Returns the url set in the constructor including the query string
    *
    */
-  public getUrl(): string {
-    return this.url.toString(qsStringify);
+  public getUrl(): URL {
+    return this.url;
   }
 
   /**
@@ -83,7 +67,7 @@ export class RequestContext {
    *
    */
   public setUrl(url: string) {
-    this.url = new URLParse(url, true);
+    this.url = new globalThis.URL(url);
   }
 
   /**
@@ -112,9 +96,7 @@ export class RequestContext {
   }
 
   public setQueryParam(name: string, value: string) {
-    let queryObj = this.url.query;
-    queryObj[name] = value;
-    this.url.set("query", queryObj);
+    this.url.searchParams.set(name, value);
   }
 
   /**
