@@ -12,6 +12,9 @@ use std::{
 use axum::headers::{authorization::Credentials, Authorization};
 use bytes::Bytes;
 use futures::{future::BoxFuture, FutureExt};
+use hickory_resolver::{
+    error::ResolveError, lookup_ip::LookupIpIntoIter, AsyncResolver, TokioAsyncResolver,
+};
 use http::header::HeaderName;
 use http::{HeaderMap, HeaderValue, Method, Response, StatusCode, Version};
 use hyper::{
@@ -26,10 +29,6 @@ use serde::Serialize;
 use thiserror::Error;
 use tokio::sync::Mutex;
 use tower::Service;
-use trust_dns_resolver::{
-    error::ResolveError, lookup_ip::LookupIpIntoIter, AsyncResolver, TokioConnection,
-    TokioConnectionProvider, TokioHandle,
-};
 
 pub type CaseSensitiveHeaderMap = HashMap<String, HeaderValue>;
 
@@ -461,7 +460,7 @@ struct NonLocalDnsResolver {
 #[derive(Clone, Debug)]
 enum DnsState {
     Init,
-    Ready(Arc<AsyncResolver<TokioConnection, TokioConnectionProvider>>),
+    Ready(Arc<TokioAsyncResolver>),
 }
 
 impl NonLocalDnsResolver {
@@ -556,9 +555,8 @@ impl Iterator for SocketAddrs {
     }
 }
 
-async fn new_resolver(
-) -> Result<Arc<AsyncResolver<TokioConnection, TokioConnectionProvider>>, ResolveError> {
-    Ok(Arc::new(AsyncResolver::from_system_conf(TokioHandle)?))
+async fn new_resolver() -> Result<Arc<TokioAsyncResolver>, ResolveError> {
+    Ok(Arc::new(AsyncResolver::tokio_from_system_conf()?))
 }
 
 fn is_allowed(addr: IpAddr) -> bool {
