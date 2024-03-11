@@ -281,7 +281,7 @@ async fn sporadically_failing_route(
     }
 }
 
-/// This tests that if an endpoint succceeds, that its record is cleared in the cache and it is not
+/// This tests that if an endpoint succeeds, that its record is cleared in the cache and it is not
 /// disabled after the grace period following a failure.
 #[tokio::test]
 async fn test_endpoint_disable_on_sporadic_failure() {

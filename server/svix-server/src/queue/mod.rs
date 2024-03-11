@@ -246,7 +246,7 @@ impl TaskQueueDelivery {
                         .nack()
                         .await
                         .map_err(|(e, delivery)| {
-                            // Put the delivery back in acker beforr retrying, to
+                            // Put the delivery back in acker before retrying, to
                             // satisfy the expect above.
                             acker = Some(delivery);
                             e.into()
