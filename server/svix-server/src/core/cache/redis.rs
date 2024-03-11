@@ -116,11 +116,16 @@ mod tests {
     async fn get_pool(redis_dsn: &str, cfg: &crate::cfg::Configuration) -> RedisPool {
         match cfg.cache_type {
             CacheType::RedisCluster => crate::redis::new_redis_pool_clustered(redis_dsn, cfg).await,
-            _ => crate::redis::new_redis_pool(redis_dsn, cfg).await,
+            CacheType::Redis => crate::redis::new_redis_pool(redis_dsn, cfg).await,
+            _ => panic!(
+                "This test should only be run when redis is configured as the cache provider"
+            ),
         }
     }
 
     #[tokio::test]
+    // run with `cargo test -- --ignored redis` only when redis is up and configured
+    #[ignore]
     async fn test_cache_crud_no_ttl() {
         dotenv::dotenv().ok();
         let cfg = crate::cfg::load().unwrap();
@@ -197,6 +202,7 @@ mod tests {
     }
 
     #[tokio::test]
+    #[ignore]
     async fn test_cache_ttl() {
         dotenv::dotenv().ok();
         let cfg = crate::cfg::load().unwrap();
@@ -215,6 +221,7 @@ mod tests {
     }
 
     #[tokio::test]
+    #[ignore]
     async fn test_cache_nx_status() {
         dotenv::dotenv().ok();
         let cfg = crate::cfg::load().unwrap();

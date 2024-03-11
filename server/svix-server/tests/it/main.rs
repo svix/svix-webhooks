@@ -8,6 +8,6 @@ mod e2e_message;
 mod e2e_operational_webhooks;
 mod integ_webhook_http_client;
 mod message_app;
-mod queue;
+mod redis_queue;
 mod utils;
 mod worker;

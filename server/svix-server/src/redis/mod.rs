@@ -168,12 +168,17 @@ mod tests {
     async fn get_pool(redis_dsn: &str, cfg: &Configuration) -> RedisPool {
         match cfg.cache_type {
             CacheType::RedisCluster => crate::redis::new_redis_pool_clustered(redis_dsn, cfg).await,
-            _ => crate::redis::new_redis_pool(redis_dsn, cfg).await,
+            CacheType::Redis => crate::redis::new_redis_pool(redis_dsn, cfg).await,
+            _ => panic!(
+                "This test should only be run when redis is configured as the cache provider"
+            ),
         }
     }
 
     // Ensure basic set/get works -- should test sharding as well:
     #[tokio::test]
+    // run with `cargo test -- --ignored redis` only when redis is up and configured
+    #[ignore]
     async fn test_set_read_random_keys() {
         dotenv::dotenv().ok();
         let cfg = crate::cfg::load().unwrap();
