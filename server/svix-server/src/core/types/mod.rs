@@ -1234,7 +1234,7 @@ macro_rules! repr_enum {
 /// 3. The string description to be used in the docs.
 /// Remaining arguments must be the variants in order. For example:
 ///
-/// ```
+/// ```ignore
 /// #[derive(IntoPrimitive)]
 /// #[repr(u8)]
 /// enum MyEnum {
@@ -1243,7 +1243,7 @@ macro_rules! repr_enum {
 ///     Qux = 5,
 /// }
 ///
-/// jsonschema_for_repr_enum{
+/// jsonschema_for_repr_enum! {
 ///     MyEnum,
 ///     u8,
 ///     "My nice little enum",
