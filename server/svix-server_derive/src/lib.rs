@@ -72,7 +72,7 @@ pub fn derive_model_out(input: proc_macro::TokenStream) -> proc_macro::TokenStre
 /// ID, summary and description.
 ///
 /// # Example
-/// ```
+/// ```ignore
 /// /// This is foo!
 /// #[aide_annotate]
 /// fn foo() {

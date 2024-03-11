@@ -22,7 +22,8 @@ pub async fn get_pool(cfg: Configuration) -> RedisPool {
         CacheType::RedisCluster => {
             new_redis_pool_clustered(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg).await
         }
-        _ => new_redis_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg).await,
+        CacheType::Redis => new_redis_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg).await,
+        _ => panic!("This test should only be run when redis is configured as the cache provider"),
     }
 }
 
@@ -137,6 +138,8 @@ async fn test_many_queue_consumers_inner(prefix: &str, delay: Option<Duration>) 
 // Without the `multi_thread` and `worker_threads` directive, the `block_on` call will never return
 // and the test will hang.
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+// run with `cargo test -- --ignored redis` only when redis is up and configured
+#[ignore]
 async fn test_many_queue_consumers() {
     test_many_queue_consumers_inner("test_many_queue_consumers_", None).await;
 }
@@ -144,6 +147,7 @@ async fn test_many_queue_consumers() {
 // Without the `multi_thread` and `worker_threads` directive, the `block_on` call will never return
 // and the test will hang.
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+#[ignore]
 async fn test_many_queue_consumers_delayed() {
     test_many_queue_consumers_inner(
         "test_many_queue_consumers_delayed_",

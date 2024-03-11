@@ -362,11 +362,18 @@ pub mod tests {
             CacheType::RedisCluster => {
                 crate::redis::new_redis_pool_clustered(cfg.redis_dsn.as_deref().unwrap(), cfg).await
             }
-            _ => crate::redis::new_redis_pool(cfg.redis_dsn.as_deref().unwrap(), cfg).await,
+            CacheType::Redis => {
+                crate::redis::new_redis_pool(cfg.redis_dsn.as_deref().unwrap(), cfg).await
+            }
+            _ => {
+                panic!("This test should only be run when redis is configured as the queue backend")
+            }
         }
     }
 
     #[tokio::test]
+    // run with `cargo test -- --ignored redis` only when redis is up and configured
+    #[ignore]
     async fn test_migrate_list() {
         let cfg = crate::cfg::load().unwrap();
         let pool = get_pool(&cfg).await;
@@ -399,6 +406,7 @@ pub mod tests {
     }
 
     #[tokio::test]
+    #[ignore]
     async fn test_migrate_sset() {
         let cfg = crate::cfg::load().unwrap();
         let pool = get_pool(&cfg).await;
@@ -448,6 +456,7 @@ pub mod tests {
     }
 
     #[tokio::test]
+    #[ignore]
     async fn test_idle_period() {
         let cfg = crate::cfg::load().unwrap();
         let pool = get_pool(&cfg).await;
@@ -513,6 +522,7 @@ pub mod tests {
     }
 
     #[tokio::test]
+    #[ignore]
     async fn test_ack() {
         let cfg = crate::cfg::load().unwrap();
         let pool = get_pool(&cfg).await;
@@ -572,6 +582,7 @@ pub mod tests {
     }
 
     #[tokio::test]
+    #[ignore]
     async fn test_nack() {
         let cfg = crate::cfg::load().unwrap();
 
@@ -614,6 +625,7 @@ pub mod tests {
     }
 
     #[tokio::test]
+    #[ignore]
     async fn test_delay() {
         let cfg = crate::cfg::load().unwrap();
 
@@ -665,6 +677,7 @@ pub mod tests {
     }
 
     #[tokio::test]
+    #[ignore]
     async fn test_migrations() {
         let cfg = crate::cfg::load().unwrap();
         let pool = get_pool(&cfg).await;
