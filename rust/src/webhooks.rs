@@ -143,7 +143,8 @@ impl Webhook {
     }
 }
 
-/// Trait to abstract over the `HeaderMap` types from both v0.2 and v1.0 of the `http` crate.
+/// Trait to abstract over the `HeaderMap` types from both v0.2 and v1.0 of the
+/// `http` crate.
 pub trait HeaderMap: private::HeaderMapSealed {}
 
 impl HeaderMap for http02::HeaderMap {}
@@ -186,9 +187,9 @@ mod private {
 
 #[cfg(test)]
 mod tests {
+    use http02::HeaderMap;
 
     use super::*;
-    use http02::HeaderMap;
 
     fn get_svix_headers(msg_id: &str, signature: &str) -> HeaderMap {
         let mut headers = HeaderMap::new();

@@ -24,6 +24,20 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  check-fmt:
+    name: Check formatting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: rustfmt
+
+      - name: rustfmt
+        run: cargo fmt -- --check
+        working-directory: rust
+
   test-versions:
     name: Rust Lint
     runs-on: ubuntu-latest
@@ -41,7 +55,7 @@ jobs:
     - uses: dtolnay/rust-toolchain@master
       with:
         toolchain: ${{ matrix.rust }}
-        components: clippy, rustfmt
+        components: clippy
 
     - uses: Swatinem/rust-cache@v2
       with:
@@ -54,10 +68,6 @@ jobs:
 
     - name: Clippy
       run: cargo clippy --all-targets --all-features -- -D warnings
-      working-directory: rust
-
-    - name: rustfmt
-      run: cargo fmt -- --check
       working-directory: rust
 
     - name: Run tests

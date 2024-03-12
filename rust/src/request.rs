@@ -1,4 +1,5 @@
-// Modified version of the file openapi-generator would usually put in apis/request.rs
+// Modified version of the file openapi-generator would usually put in
+// apis/request.rs
 
 use std::collections::HashMap;
 
@@ -14,9 +15,9 @@ pub(crate) enum Auth {
     Bearer,
 }
 
-/// If the authorization type is unspecified then it will be automatically detected based
-/// on the configuration. This functionality is useful when the OpenAPI definition does not
-/// include an authorization scheme.
+/// If the authorization type is unspecified then it will be automatically
+/// detected based on the configuration. This functionality is useful when the
+/// OpenAPI definition does not include an authorization scheme.
 pub(crate) struct Request {
     auth: Option<Auth>,
     method: http1::Method,
@@ -93,9 +94,9 @@ impl Request {
 
         let mut uri = format!("{}{}", conf.base_path, path);
 
-        // Work around rustc issue - we need to make sure that `query_string` is not captured
-        // by the outer `async` generator. Using `drop(query_string)` is insufficient, so we
-        // create a new scope
+        // Work around rustc issue - we need to make sure that `query_string` is
+        // not captured by the outer `async` generator. Using
+        // `drop(query_string)` is insufficient, so we create a new scope
         {
             let mut query_string = ::url::form_urlencoded::Serializer::new("".to_owned());
             for (key, val) in self.query_params {

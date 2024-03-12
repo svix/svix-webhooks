@@ -1,16 +1,17 @@
-use hyper_util::client::legacy::Client as HyperClient;
-use hyper_util::rt::TokioExecutor;
+use hyper_util::{client::legacy::Client as HyperClient, rt::TokioExecutor};
 
-use crate::apis::{
-    application_api, authentication_api, background_tasks_api, endpoint_api, event_type_api,
-    integration_api, message_api, message_attempt_api, statistics_api,
+use crate::{
+    apis::{
+        application_api, authentication_api, background_tasks_api, endpoint_api, event_type_api,
+        integration_api, message_api, message_attempt_api, statistics_api,
+    },
+    error::Result,
+    Configuration,
 };
-use crate::error::Result;
-pub use crate::models::*;
-use crate::Configuration;
 
 #[cfg(feature = "svix_beta")]
-pub use message_api::{V1MessageStreamError, V1MessageStreamParams};
+pub use crate::apis::message_api::{V1MessageStreamError, V1MessageStreamParams};
+pub use crate::models::*;
 
 const CRATE_VERSION: &str = env!("CARGO_PKG_VERSION");
 
