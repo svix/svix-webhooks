@@ -324,7 +324,6 @@ mod docs {
     use axum::{
         response::{Html, IntoResponse, Redirect},
         routing::get,
-        Json,
     };
 
     // TODO: switch to generated docs instead of hardcoded JSON once generated
@@ -342,8 +341,7 @@ mod docs {
     }
 
     async fn get_openapi_json() -> impl IntoResponse {
-        let json: serde_json::Value = serde_json::from_str(include_str!("static/openapi.json"))
-            .expect("Error: openapi.json does not exist");
-        Json(json)
+        static BODY: &str = include_str!("static/openapi.json");
+        ([(http::header::CONTENT_TYPE, "application/json")], BODY)
     }
 }
