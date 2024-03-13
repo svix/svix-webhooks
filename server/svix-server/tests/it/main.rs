@@ -4,6 +4,7 @@ mod e2e_attempt;
 mod e2e_auth;
 mod e2e_endpoint;
 mod e2e_event_type;
+mod e2e_health;
 mod e2e_message;
 mod e2e_operational_webhooks;
 mod integ_webhook_http_client;

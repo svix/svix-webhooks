@@ -875,22 +875,22 @@ pub fn router() -> ApiRouter<AppState> {
     ApiRouter::new()
         // NOTE: [`list_messageattempts`] is deprecated
         .api_route_with(
-            "/app/:app_id/msg/:msg_id/attempt/",
+            "/app/:app_id/msg/:msg_id/attempt",
             get_with(list_messageattempts, list_messageattempts_operation),
             &tag,
         )
         .api_route_with(
-            "/app/:app_id/msg/:msg_id/attempt/:attempt_id/",
+            "/app/:app_id/msg/:msg_id/attempt/:attempt_id",
             get_with(get_messageattempt, get_messageattempt_operation),
             &tag,
         )
         .api_route_with(
-            "/app/:app_id/msg/:msg_id/attempt/:attempt_id/content/",
+            "/app/:app_id/msg/:msg_id/attempt/:attempt_id/content",
             delete_with(expunge_attempt_content, expunge_attempt_content_operation),
             &tag,
         )
         .api_route_with(
-            "/app/:app_id/msg/:msg_id/endpoint/",
+            "/app/:app_id/msg/:msg_id/endpoint",
             get_with(
                 list_attempted_destinations,
                 list_attempted_destinations_operation,
@@ -898,13 +898,13 @@ pub fn router() -> ApiRouter<AppState> {
             &tag,
         )
         .api_route_with(
-            "/app/:app_id/msg/:msg_id/endpoint/:endpoint_id/resend/",
+            "/app/:app_id/msg/:msg_id/endpoint/:endpoint_id/resend",
             post_with(resend_webhook, resend_webhook_operation),
             &tag,
         )
         // NOTE: [`list_attempts_for_endpoint`] is deprecated
         .api_route_with(
-            "/app/:app_id/msg/:msg_id/endpoint/:endpoint_id/attempt/",
+            "/app/:app_id/msg/:msg_id/endpoint/:endpoint_id/attempt",
             get_with(
                 list_attempts_for_endpoint,
                 list_attempts_for_endpoint_operation,
@@ -912,12 +912,12 @@ pub fn router() -> ApiRouter<AppState> {
             &tag,
         )
         .api_route_with(
-            "/app/:app_id/endpoint/:endpoint_id/msg/",
+            "/app/:app_id/endpoint/:endpoint_id/msg",
             get_with(list_attempted_messages, list_attempted_messages_operation),
             &tag,
         )
         .api_route_with(
-            "/app/:app_id/attempt/endpoint/:endpoint_id/",
+            "/app/:app_id/attempt/endpoint/:endpoint_id",
             get_with(
                 list_attempts_by_endpoint,
                 list_attempts_by_endpoint_operation,
@@ -925,7 +925,7 @@ pub fn router() -> ApiRouter<AppState> {
             &tag,
         )
         .api_route_with(
-            "/app/:app_id/attempt/msg/:msg_id/",
+            "/app/:app_id/attempt/msg/:msg_id",
             get_with(list_attempts_by_msg, list_attempts_by_msg_operation),
             tag,
         )

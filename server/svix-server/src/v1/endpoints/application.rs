@@ -389,13 +389,13 @@ pub fn router() -> ApiRouter<AppState> {
     let tag = openapi_tag("Application");
     ApiRouter::new()
         .api_route_with(
-            "/app/",
+            "/app",
             post_with(create_application, create_application_operation)
                 .get_with(list_applications, list_applications_operation),
             &tag,
         )
         .api_route_with(
-            "/app/:app_id/",
+            "/app/:app_id",
             get_with(get_application, get_application_operation)
                 .put_with(update_application, update_application_operation)
                 .patch_with(patch_application, patch_application_operation)

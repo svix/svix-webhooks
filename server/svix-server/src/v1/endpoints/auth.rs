@@ -129,17 +129,17 @@ pub fn router() -> ApiRouter<AppState> {
     let tag = openapi_tag("Authentication");
     ApiRouter::new()
         .api_route_with(
-            "/auth/dashboard-access/:app_id/",
+            "/auth/dashboard-access/:app_id",
             post_with(dashboard_access, dashboard_access_operation),
             &tag,
         )
         .api_route_with(
-            "/auth/logout/",
+            "/auth/logout",
             post_with(api_not_implemented, logout_operation),
             &tag,
         )
         .api_route_with(
-            "/auth/app-portal-access/:app_id/",
+            "/auth/app-portal-access/:app_id",
             post_with(app_portal_access, app_portal_access_operation),
             tag,
         )

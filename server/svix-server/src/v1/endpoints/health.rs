@@ -133,9 +133,9 @@ pub fn router() -> ApiRouter<AppState> {
     let tag = openapi_tag("Health");
 
     ApiRouter::new()
-        .api_route("/health/ping/", get(ping).head(ping))
+        .api_route("/health/ping", get(ping).head(ping))
         .api_route_with(
-            "/health/",
+            "/health",
             get_with(health, |op| op.response::<204, ()>().with(health_operation))
                 .head_with(health, health_operation),
             tag,

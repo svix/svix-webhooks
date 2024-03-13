@@ -26,7 +26,7 @@ hyper-openssl = "0.9.2"
 openssl = "0.10.60"
 tokio = { version = "1.24.2", features = ["full"] }
 tower = "0.4.11"
-tower-http = { version = "0.4.0", features = ["trace", "cors", "request-id"] }
+tower-http = { version = "0.4.4", features = ["trace", "cors", "normalize-path", "request-id"] }
 serde = { version = "1.0.184", features = ["derive"] }
 serde_json = { version = "1.0.74", features = ["arbitrary_precision", "raw_value"] }
 serde_path_to_error = "0.1.7"

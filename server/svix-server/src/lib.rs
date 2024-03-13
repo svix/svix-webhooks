@@ -19,8 +19,11 @@ use std::{
     sync::atomic::{AtomicBool, Ordering},
     time::Duration,
 };
-use tower::ServiceBuilder;
-use tower_http::cors::{AllowHeaders, Any, CorsLayer};
+use tower::layer::layer_fn;
+use tower_http::{
+    cors::{AllowHeaders, Any, CorsLayer},
+    normalize_path::NormalizePath,
+};
 use tracing_subscriber::layer::SubscriberExt as _;
 
 use crate::{
@@ -149,25 +152,25 @@ pub async fn run_with_prefix(
 
     let openapi = openapi::postprocess_spec(openapi);
     let docs_router = docs::router(openapi);
-    let app = app
-        .merge(docs_router)
-        .layer(
-            ServiceBuilder::new().layer_fn(move |service| IdempotencyService {
-                cache: svc_cache.clone(),
-                service,
-            }),
-        )
-        .layer(
-            CorsLayer::new()
-                .allow_origin(Any)
-                .allow_methods(Any)
-                .allow_headers(AllowHeaders::mirror_request())
-                .max_age(Duration::from_secs(600)),
-        );
+    let app = app.merge(docs_router).layer((
+        layer_fn(move |service| IdempotencyService {
+            cache: svc_cache.clone(),
+            service,
+        }),
+        CorsLayer::new()
+            .allow_origin(Any)
+            .allow_methods(Any)
+            .allow_headers(AllowHeaders::mirror_request())
+            .max_age(Duration::from_secs(600)),
+    ));
+    let svc = tower::make::Shared::new(
+        // It is important that this service wraps the router instead of being
+        // applied via `Router::layer`, as it would run after routing then.
+        NormalizePath::trim_trailing_slash(app),
+    );
 
     let with_api = cfg.api_enabled;
     let with_worker = cfg.worker_enabled;
-
     let listen_address = cfg.listen_address;
 
     let (server, worker_loop, expired_message_cleaner_loop) = tokio::join!(
@@ -177,13 +180,13 @@ pub async fn run_with_prefix(
                     tracing::debug!("API: Listening on {}", l.local_addr().unwrap());
                     axum::Server::from_tcp(l)
                         .expect("Error starting http server")
-                        .serve(app.into_make_service())
+                        .serve(svc)
                         .with_graceful_shutdown(graceful_shutdown_handler())
                         .await
                 } else {
                     tracing::debug!("API: Listening on {}", listen_address);
                     axum::Server::bind(&listen_address)
-                        .serve(app.into_make_service())
+                        .serve(svc)
                         .with_graceful_shutdown(graceful_shutdown_handler())
                         .await
                 }
