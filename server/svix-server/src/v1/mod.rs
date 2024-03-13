@@ -71,6 +71,6 @@ mod development {
     }
 
     pub fn router() -> Router<AppState> {
-        Router::new().route("/development/echo/", get(echo).post(echo))
+        Router::new().route("/development/echo", get(echo).post(echo))
     }
 }
