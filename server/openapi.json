@@ -2040,7 +2040,7 @@
     },
     "openapi": "3.0.2",
     "paths": {
-        "/api/v1/app/": {
+        "/api/v1/app": {
             "get": {
                 "description": "List of all the organization's applications.",
                 "operationId": "v1.application.list",
@@ -2281,7 +2281,7 @@
                 ]
             }
         },
-        "/api/v1/app/{app_id}/": {
+        "/api/v1/app/{app_id}": {
             "delete": {
                 "description": "Delete an application.",
                 "operationId": "v1.application.delete",
@@ -2641,7 +2641,7 @@
                 ]
             }
         },
-        "/api/v1/app/{app_id}/attempt/endpoint/{endpoint_id}/": {
+        "/api/v1/app/{app_id}/attempt/endpoint/{endpoint_id}": {
             "get": {
                 "description": "List attempts by endpoint id",
                 "operationId": "v1.message-attempt.list-by-endpoint",
@@ -2864,7 +2864,7 @@
                 ]
             }
         },
-        "/api/v1/app/{app_id}/attempt/msg/{msg_id}/": {
+        "/api/v1/app/{app_id}/attempt/msg/{msg_id}": {
             "get": {
                 "description": "List attempts by message id",
                 "operationId": "v1.message-attempt.list-by-msg",
@@ -3102,7 +3102,7 @@
                 ]
             }
         },
-        "/api/v1/app/{app_id}/endpoint/": {
+        "/api/v1/app/{app_id}/endpoint": {
             "get": {
                 "description": "List the application's endpoints.",
                 "operationId": "v1.endpoint.list",
@@ -3348,7 +3348,7 @@
                 ]
             }
         },
-        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/": {
+        "/api/v1/app/{app_id}/endpoint/{endpoint_id}": {
             "delete": {
                 "description": "Delete an endpoint.",
                 "operationId": "v1.endpoint.delete",
@@ -3805,7 +3805,7 @@
                 ]
             }
         },
-        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers/": {
+        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers": {
             "get": {
                 "description": "Get the additional headers to be sent with the webhook",
                 "operationId": "v1.endpoint.get-headers",
@@ -4137,7 +4137,7 @@
                 ]
             }
         },
-        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg/": {
+        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg": {
             "get": {
                 "description": "List messages for a particular endpoint. Additionally includes metadata about the latest message attempt.\n\nThe `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.",
                 "operationId": "v1.message-attempt.list-attempted-messages",
@@ -4349,7 +4349,7 @@
                 ]
             }
         },
-        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover/": {
+        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover": {
             "post": {
                 "description": "Resend all failed messages since a given time.",
                 "operationId": "v1.endpoint.recover",
@@ -4471,7 +4471,7 @@
                 ]
             }
         },
-        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/": {
+        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret": {
             "get": {
                 "description": "Get the endpoint's signing secret.\n\nThis is used to verify the authenticity of the webhook.\nFor more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).",
                 "operationId": "v1.endpoint.get-secret",
@@ -4581,7 +4581,7 @@
                 ]
             }
         },
-        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate/": {
+        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate": {
             "post": {
                 "description": "Rotates the endpoint's signing secret.  The previous secret will be valid for the next 24 hours.",
                 "operationId": "v1.endpoint.rotate-secret",
@@ -4703,7 +4703,7 @@
                 ]
             }
         },
-        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/send-example/": {
+        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/send-example": {
             "post": {
                 "description": "Send an example message for an event",
                 "operationId": "v1.endpoint.send-example",
@@ -4832,7 +4832,7 @@
                 ]
             }
         },
-        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/stats/": {
+        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/stats": {
             "get": {
                 "description": "Get basic statistics for the endpoint.",
                 "operationId": "v1.endpoint.get-stats",
@@ -4962,7 +4962,7 @@
                 ]
             }
         },
-        "/api/v1/app/{app_id}/msg/": {
+        "/api/v1/app/{app_id}/msg": {
             "get": {
                 "description": "List all of the application's messages.\n\nThe `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.\nThe `after` parameter lets you filter all items created after a certain date and is ignored if an iterator is passed.\n`before` and `after` cannot be used simultaneously.",
                 "operationId": "v1.message.list",
@@ -5249,7 +5249,7 @@
                 ]
             }
         },
-        "/api/v1/app/{app_id}/msg/{msg_id}/": {
+        "/api/v1/app/{app_id}/msg/{msg_id}": {
             "get": {
                 "description": "Get a message by its ID or eventID.",
                 "operationId": "v1.message.get",
@@ -5370,7 +5370,7 @@
                 ]
             }
         },
-        "/api/v1/app/{app_id}/msg/{msg_id}/attempt/": {
+        "/api/v1/app/{app_id}/msg/{msg_id}/attempt": {
             "get": {
                 "description": "Deprecated: Please use \"List Attempts by Endpoint\" and \"List Attempts by Msg\" instead.\n\n`msg_id`: Use a message id or a message `eventId`",
                 "operationId": "v1.message-attempt.list-by-msg-deprecated",
@@ -5586,7 +5586,7 @@
                 ]
             }
         },
-        "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/": {
+        "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}": {
             "get": {
                 "description": "`msg_id`: Use a message id or a message `eventId`",
                 "operationId": "v1.message-attempt.get",
@@ -5706,7 +5706,7 @@
                 ]
             }
         },
-        "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/content/": {
+        "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/content": {
             "delete": {
                 "description": "Deletes the given attempt's response body. Useful when an endpoint accidentally returned sensitive content.",
                 "operationId": "v1.message-attempt.expunge-content",
@@ -5816,7 +5816,7 @@
                 ]
             }
         },
-        "/api/v1/app/{app_id}/msg/{msg_id}/content/": {
+        "/api/v1/app/{app_id}/msg/{msg_id}/content": {
             "delete": {
                 "description": "Delete the given message's payload. Useful in cases when a message was accidentally sent with sensitive content.\n\nThe message can't be replayed or resent once its payload has been deleted or expired.",
                 "operationId": "v1.message.expunge-content",
@@ -5916,7 +5916,7 @@
                 ]
             }
         },
-        "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/": {
+        "/api/v1/app/{app_id}/msg/{msg_id}/endpoint": {
             "get": {
                 "description": "`msg_id`: Use a message id or a message `eventId`",
                 "operationId": "v1.message-attempt.list-attempted-destinations",
@@ -6050,7 +6050,7 @@
                 ]
             }
         },
-        "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/attempt/": {
+        "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/attempt": {
             "get": {
                 "description": "DEPRECATED: please use list_attempts with endpoint_id as a query parameter instead.\n\nList the message attempts for a particular endpoint.\n\nReturning the endpoint.\n\nThe `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.",
                 "operationId": "v1.message-attempt.list-by-endpoint-deprecated",
@@ -6264,7 +6264,7 @@
                 ]
             }
         },
-        "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/resend/": {
+        "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/resend": {
             "post": {
                 "description": "Resend a message to the specified endpoint.",
                 "operationId": "v1.message-attempt.resend",
@@ -6389,7 +6389,7 @@
                 ]
             }
         },
-        "/api/v1/auth/app-portal-access/{app_id}/": {
+        "/api/v1/auth/app-portal-access/{app_id}": {
             "post": {
                 "description": "Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.",
                 "operationId": "v1.authentication.app-portal-access",
@@ -6505,7 +6505,7 @@
                 ]
             }
         },
-        "/api/v1/auth/dashboard-access/{app_id}/": {
+        "/api/v1/auth/dashboard-access/{app_id}": {
             "post": {
                 "description": "DEPRECATED: Please use `app-portal-access` instead.\n\nUse this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.",
                 "operationId": "v1.authentication.dashboard-access",
@@ -6611,7 +6611,7 @@
                 ]
             }
         },
-        "/api/v1/auth/logout/": {
+        "/api/v1/auth/logout": {
             "post": {
                 "description": "\nLogout an app token.\n\nTrying to log out other tokens will fail.\n",
                 "operationId": "logout_api_v1_auth_logout__post",
@@ -6637,7 +6637,7 @@
                 ]
             }
         },
-        "/api/v1/event-type/": {
+        "/api/v1/event-type": {
             "get": {
                 "description": "Return the list of event types.",
                 "operationId": "v1.event-type.list",
@@ -6881,7 +6881,7 @@
                 ]
             }
         },
-        "/api/v1/event-type/schema/generate-example/": {
+        "/api/v1/event-type/schema/generate-example": {
             "post": {
                 "description": "Generates a fake example from the given JSONSchema",
                 "parameters": [
@@ -6905,7 +6905,7 @@
                 ]
             }
         },
-        "/api/v1/event-type/{event_type_name}/": {
+        "/api/v1/event-type/{event_type_name}": {
             "delete": {
                 "description": "Archive an event type.\n\nEndpoints already configured to filter on an event type will continue to do so after archival.\nHowever, new messages can not be sent with it and endpoints can not filter on it.\nAn event type can be unarchived with the\n[create operation](#operation/create_event_type_api_v1_event_type__post).",
                 "operationId": "v1.event-type.delete",
@@ -7306,7 +7306,7 @@
                 ]
             }
         },
-        "/api/v1/health/": {
+        "/api/v1/health": {
             "get": {
                 "description": "Verify the API server is up and running.",
                 "operationId": "v1.health.get",
@@ -7451,7 +7451,7 @@
                 ]
             }
         },
-        "/api/v1/health/ping/": {
+        "/api/v1/health/ping": {
             "get": {
                 "responses": {
                     "204": {

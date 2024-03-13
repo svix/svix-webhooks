@@ -454,18 +454,18 @@ pub fn router() -> ApiRouter<AppState> {
     let tag = openapi_tag("Message");
     ApiRouter::new()
         .api_route_with(
-            "/app/:app_id/msg/",
+            "/app/:app_id/msg",
             post_with(create_message, create_message_operation)
                 .get_with(list_messages, list_messages_operation),
             &tag,
         )
         .api_route_with(
-            "/app/:app_id/msg/:msg_id/",
+            "/app/:app_id/msg/:msg_id",
             get_with(get_message, get_message_operation),
             &tag,
         )
         .api_route_with(
-            "/app/:app_id/msg/:msg_id/content/",
+            "/app/:app_id/msg/:msg_id/content",
             delete_with(expunge_message_content, expunge_message_content_operation),
             tag,
         )

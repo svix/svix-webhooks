@@ -818,13 +818,13 @@ pub fn router() -> ApiRouter<AppState> {
     let tag = openapi_tag("Endpoint");
     ApiRouter::new()
         .api_route_with(
-            "/app/:app_id/endpoint/",
+            "/app/:app_id/endpoint",
             post_with(crud::create_endpoint, crud::create_endpoint_operation)
                 .get_with(crud::list_endpoints, crud::list_endpoints_operation),
             &tag,
         )
         .api_route_with(
-            "/app/:app_id/endpoint/:endpoint_id/",
+            "/app/:app_id/endpoint/:endpoint_id",
             get_with(crud::get_endpoint, crud::get_endpoint_operation)
                 .put_with(crud::update_endpoint, crud::update_endpoint_operation)
                 .patch_with(crud::patch_endpoint, crud::patch_endpoint_operation)
@@ -832,7 +832,7 @@ pub fn router() -> ApiRouter<AppState> {
             &tag,
         )
         .api_route_with(
-            "/app/:app_id/endpoint/:endpoint_id/secret/",
+            "/app/:app_id/endpoint/:endpoint_id/secret",
             get_with(
                 secrets::get_endpoint_secret,
                 secrets::get_endpoint_secret_operation,
@@ -840,7 +840,7 @@ pub fn router() -> ApiRouter<AppState> {
             &tag,
         )
         .api_route_with(
-            "/app/:app_id/endpoint/:endpoint_id/secret/rotate/",
+            "/app/:app_id/endpoint/:endpoint_id/secret/rotate",
             post_with(
                 secrets::rotate_endpoint_secret,
                 secrets::rotate_endpoint_secret_operation,
@@ -848,17 +848,17 @@ pub fn router() -> ApiRouter<AppState> {
             &tag,
         )
         .api_route_with(
-            "/app/:app_id/endpoint/:endpoint_id/stats/",
+            "/app/:app_id/endpoint/:endpoint_id/stats",
             get_with(endpoint_stats, endpoint_stats_operation),
             &tag,
         )
         .api_route_with(
-            "/app/:app_id/endpoint/:endpoint_id/send-example/",
+            "/app/:app_id/endpoint/:endpoint_id/send-example",
             post_with(send_example, send_example_operation),
             &tag,
         )
         .api_route_with(
-            "/app/:app_id/endpoint/:endpoint_id/recover/",
+            "/app/:app_id/endpoint/:endpoint_id/recover",
             post_with(
                 recovery::recover_failed_webhooks,
                 recovery::recover_failed_webhooks_operation,
@@ -866,7 +866,7 @@ pub fn router() -> ApiRouter<AppState> {
             &tag,
         )
         .api_route_with(
-            "/app/:app_id/endpoint/:endpoint_id/headers/",
+            "/app/:app_id/endpoint/:endpoint_id/headers",
             get_with(
                 headers::get_endpoint_headers,
                 headers::get_endpoint_headers_operation,
