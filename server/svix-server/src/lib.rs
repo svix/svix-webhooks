@@ -19,7 +19,7 @@ use std::{
     sync::atomic::{AtomicBool, Ordering},
     time::Duration,
 };
-use tower::ServiceBuilder;
+use tower::layer::layer_fn;
 use tower_http::cors::{AllowHeaders, Any, CorsLayer};
 use tracing_subscriber::layer::SubscriberExt as _;
 
@@ -149,21 +149,17 @@ pub async fn run_with_prefix(
 
     let openapi = openapi::postprocess_spec(openapi);
     let docs_router = docs::router(openapi);
-    let app = app
-        .merge(docs_router)
-        .layer(
-            ServiceBuilder::new().layer_fn(move |service| IdempotencyService {
-                cache: svc_cache.clone(),
-                service,
-            }),
-        )
-        .layer(
-            CorsLayer::new()
-                .allow_origin(Any)
-                .allow_methods(Any)
-                .allow_headers(AllowHeaders::mirror_request())
-                .max_age(Duration::from_secs(600)),
-        );
+    let app = app.merge(docs_router).layer((
+        layer_fn(move |service| IdempotencyService {
+            cache: svc_cache.clone(),
+            service,
+        }),
+        CorsLayer::new()
+            .allow_origin(Any)
+            .allow_methods(Any)
+            .allow_headers(AllowHeaders::mirror_request())
+            .max_age(Duration::from_secs(600)),
+    ));
 
     let with_api = cfg.api_enabled;
     let with_worker = cfg.worker_enabled;
