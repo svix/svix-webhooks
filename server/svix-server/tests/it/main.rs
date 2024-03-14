@@ -12,3 +12,8 @@ mod message_app;
 mod redis_queue;
 mod utils;
 mod worker;
+
+#[ctor::ctor]
+fn test_setup() {
+    svix_server::setup_tracing_for_tests();
+}
