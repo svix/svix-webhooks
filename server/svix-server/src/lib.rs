@@ -322,6 +322,28 @@ pub fn setup_tracing(
     (registry, sentry_guard)
 }
 
+pub fn setup_tracing_for_tests() {
+    use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+
+    tracing_subscriber::registry()
+        .with(
+            tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| {
+                // Output is only printed for failing tests, but still we shouldn't overload
+                // the output with unnecessary info. When debugging a specific test, it's easy
+                // to override this default by setting the `RUST_LOG` environment variable.
+                "svix_server=debug".into()
+            }),
+        )
+        .with(tracing_subscriber::fmt::layer().with_test_writer())
+        .init();
+}
+
+#[cfg(test)]
+#[ctor::ctor]
+fn test_setup() {
+    setup_tracing_for_tests();
+}
+
 mod docs {
     use aide::{axum::ApiRouter, openapi::OpenApi};
     use axum::{

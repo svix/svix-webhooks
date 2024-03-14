@@ -619,12 +619,15 @@ mod tests {
         net::{IpAddr, TcpListener},
         path::PathBuf,
         str::FromStr,
+        sync::Arc,
     };
 
     use axum::{routing, Router};
     use axum_server::tls_openssl::{OpenSSLAcceptor, OpenSSLConfig};
+    use http::{HeaderValue, Method, Version};
+    use ipnet::IpNet;
 
-    use super::*;
+    use super::{is_allowed, CaseSensitiveHeaderMap, RequestBuilder, WebhookClient};
 
     #[test]
     fn is_allowed_test() {

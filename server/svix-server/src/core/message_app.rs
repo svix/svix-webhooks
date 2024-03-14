@@ -1,8 +1,4 @@
-use std::{
-    collections::HashSet,
-    convert::{TryFrom, TryInto},
-    time::Duration,
-};
+use std::{collections::HashSet, time::Duration};
 
 use chrono::{DateTime, FixedOffset, Utc};
 use sea_orm::{DatabaseConnection, DatabaseTransaction, TransactionTrait};
@@ -219,9 +215,16 @@ impl AppEndpointKey {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use crate::core::cryptography::Encryption;
-    use crate::core::types::{EndpointSecret, ExpiringSigningKey};
+    use chrono::Utc;
+
+    use super::CreateMessageEndpoint;
+    use crate::core::{
+        cryptography::Encryption,
+        types::{
+            EndpointId, EndpointSecret, EndpointSecretInternal, ExpiringSigningKey,
+            ExpiringSigningKeys,
+        },
+    };
 
     #[test]
     fn test_valid_signing_keys() {

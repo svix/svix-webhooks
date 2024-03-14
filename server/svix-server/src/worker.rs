@@ -1004,13 +1004,16 @@ pub async fn queue_handler(
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use crate::core::cryptography::AsymmetricKey;
-    use crate::core::types::{BaseId, EndpointSecret};
+    use std::collections::HashMap;
 
     use bytes::Bytes;
     use ed25519_compact::Signature;
-    use std::collections::HashMap;
+
+    use super::{bytes_to_string, generate_msg_headers, sign_msg, CaseSensitiveHeaderMap};
+    use crate::core::{
+        cryptography::{AsymmetricKey, Encryption},
+        types::{BaseId, EndpointHeaders, EndpointSecret, EndpointSecretInternal, MessageId},
+    };
 
     // [`generate_msg_headers`] tests
     const TIMESTAMP: i64 = 1;

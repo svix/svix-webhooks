@@ -109,7 +109,7 @@ impl Default for Encryption {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::Encryption;
 
     #[test]
     fn test_encryption() {
