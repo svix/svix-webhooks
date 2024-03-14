@@ -4,13 +4,14 @@
 use chrono::{Duration, Utc};
 use reqwest::StatusCode;
 use sea_orm::{sea_query::Expr, ColumnTrait, EntityTrait, QueryFilter};
-
 use svix_server::{
     db::models::messagecontent,
     expired_message_cleaner,
     v1::{
-        endpoints::attempt::MessageAttemptOut,
-        endpoints::message::{MessageOut, RawPayload},
+        endpoints::{
+            attempt::MessageAttemptOut,
+            message::{MessageOut, RawPayload},
+        },
         utils::ListResponse,
     },
 };

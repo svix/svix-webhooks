@@ -9,10 +9,9 @@ use std::{
 
 use anyhow::{Context, Result};
 use axum::response::IntoResponse;
+use http::HeaderMap;
 use reqwest::{Client, RequestBuilder, StatusCode};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
-use tokio::sync::mpsc;
-
 use svix_ksuid::KsuidLike;
 use svix_server::{
     cfg::ConfigurationInner,
@@ -22,8 +21,7 @@ use svix_server::{
     },
     setup_tracing,
 };
-
-use http::HeaderMap;
+use tokio::sync::mpsc;
 use tracing::instrument::WithSubscriber;
 
 pub mod common_calls;

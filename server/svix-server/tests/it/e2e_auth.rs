@@ -3,7 +3,6 @@
 //! from the endpoint is valid in the process.
 
 use reqwest::StatusCode;
-
 use serde_json::Value;
 use svix_server::{
     core::{
@@ -15,10 +14,8 @@ use svix_server::{
 
 use crate::utils::{
     common_calls::{app_portal_access, application_in},
-    start_svix_server, IgnoredResponse,
+    get_default_test_config, start_svix_server, IgnoredResponse,
 };
-
-use crate::utils::get_default_test_config;
 
 #[tokio::test]
 /// Users with application-level tokens should only be allowed to read the information related to

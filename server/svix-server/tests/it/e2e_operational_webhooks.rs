@@ -5,7 +5,6 @@ use std::{net::TcpListener, sync::Arc, time::Duration};
 
 use chrono::{DateTime, Utc};
 use http::StatusCode;
-
 use reqwest::Url;
 use serde::Deserialize;
 use svix::api::EventTypeOut;
@@ -26,11 +25,11 @@ use svix_server::{
 };
 
 use crate::utils::{
-    common_calls::{create_test_app, create_test_endpoint, create_test_message},
+    common_calls::{
+        create_test_app, create_test_endpoint, create_test_message, default_test_endpoint,
+    },
     get_default_test_config, IgnoredResponse, TestClient, TestReceiver,
 };
-
-use crate::utils::common_calls::default_test_endpoint;
 
 /// Sent when an endpoint has been automatically disabled after continuous failures.
 #[derive(Debug, Deserialize)]
