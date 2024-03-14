@@ -349,7 +349,6 @@ pub mod tests {
     use redis::{streams::StreamReadReply, AsyncCommands as _, Direction};
 
     use super::{migrate_list, migrate_list_to_stream, migrate_sset, new_pair_inner};
-
     use crate::{
         cfg::{CacheType, Configuration},
         core::types::{ApplicationId, EndpointId, MessageAttemptTriggerType, MessageId},
