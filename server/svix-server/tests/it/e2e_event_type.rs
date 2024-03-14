@@ -4,7 +4,6 @@
 use std::collections::HashSet;
 
 use reqwest::StatusCode;
-
 use svix_server::{
     core::types::{ApplicationId, EventTypeName, FeatureFlag, FeatureFlagSet},
     db::models::eventtype::Schema,

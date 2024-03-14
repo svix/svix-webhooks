@@ -6,7 +6,6 @@ use std::{collections::HashSet, time::Duration};
 use anyhow::Result;
 use chrono::{DateTime, Utc};
 use reqwest::{StatusCode, Url};
-
 use serde::{de::DeserializeOwned, Serialize};
 use svix::api::DashboardAccessOut;
 use svix_server::{

@@ -6,9 +6,8 @@ use lapin::{
 use omniqueue::backends::{RabbitMqBackend, RabbitMqConfig};
 use svix_ksuid::{KsuidLike, KsuidMs};
 
-use crate::error::{Result, Traceable};
-
 use super::{TaskQueueConsumer, TaskQueueProducer};
+use crate::error::{Result, Traceable};
 
 /// Returns a new_pair producers/consumers that use RabbitMQ under the hood.
 ///

@@ -1,8 +1,9 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use reqwest::StatusCode;
+use std::time::Duration;
 
+use reqwest::StatusCode;
 use svix_server::{
     core::types::{EndpointUid, MessageStatus},
     v1::{
@@ -22,8 +23,6 @@ use crate::utils::{
     get_default_test_config, run_with_retries, start_svix_server, start_svix_server_with_cfg,
     IgnoredResponse, TestReceiver,
 };
-
-use std::time::Duration;
 
 #[tokio::test]
 async fn test_expunge_attempt_response_body() {

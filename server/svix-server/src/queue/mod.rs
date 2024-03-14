@@ -7,14 +7,13 @@ use omniqueue::{
 };
 use serde::{Deserialize, Serialize};
 
-use crate::error::Traceable;
 use crate::{
     cfg::{Configuration, QueueBackend},
     core::{
         retry::{run_with_retries, Retry},
         types::{ApplicationId, EndpointId, MessageAttemptTriggerType, MessageId},
     },
-    error::{Error, ErrorType, Result},
+    error::{Error, ErrorType, Result, Traceable},
 };
 
 pub mod rabbitmq;
