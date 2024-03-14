@@ -219,9 +219,16 @@ impl AppEndpointKey {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use crate::core::cryptography::Encryption;
-    use crate::core::types::{EndpointSecret, ExpiringSigningKey};
+    use chrono::Utc;
+
+    use super::CreateMessageEndpoint;
+    use crate::core::{
+        cryptography::Encryption,
+        types::{
+            EndpointId, EndpointSecret, EndpointSecretInternal, ExpiringSigningKey,
+            ExpiringSigningKeys,
+        },
+    };
 
     #[test]
     fn test_valid_signing_keys() {

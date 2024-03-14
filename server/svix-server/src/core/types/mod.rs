@@ -1371,11 +1371,15 @@ pub type FeatureFlagSet = HashSet<FeatureFlag>;
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use crate::core::types::{EventChannel, EventTypeName};
-
     use std::collections::HashMap;
+
     use validator::Validate;
+
+    use super::{
+        validate_header_map, ApplicationId, ApplicationUid, EndpointHeaders, EndpointHeadersPatch,
+        EndpointSecret, EventChannel, EventTypeName,
+    };
+    use crate::core::cryptography::AsymmetricKey;
 
     #[test]
     fn test_id_validation() {

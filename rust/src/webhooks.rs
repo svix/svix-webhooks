@@ -188,8 +188,12 @@ mod private {
 #[cfg(test)]
 mod tests {
     use http02::HeaderMap;
+    use time::OffsetDateTime;
 
-    use super::*;
+    use super::{
+        Webhook, SVIX_MSG_ID_KEY, SVIX_MSG_SIGNATURE_KEY, SVIX_MSG_TIMESTAMP_KEY,
+        UNBRANDED_MSG_ID_KEY, UNBRANDED_MSG_SIGNATURE_KEY, UNBRANDED_MSG_TIMESTAMP_KEY,
+    };
 
     fn get_svix_headers(msg_id: &str, signature: &str) -> HeaderMap {
         let mut headers = HeaderMap::new();

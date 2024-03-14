@@ -397,8 +397,15 @@ pub fn load() -> Result<Arc<ConfigurationInner>> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use crate::core::security::JWTAlgorithm;
+    use std::{sync::Arc, time::Duration};
+
+    use figment::{
+        providers::{Format as _, Toml},
+        Figment,
+    };
+
+    use super::{load, CacheBackend, CacheType, QueueBackend, QueueType};
+    use crate::core::security::{JWTAlgorithm, JwtSigningConfig};
 
     #[test]
     fn test_retry_schedule_parsing() {
