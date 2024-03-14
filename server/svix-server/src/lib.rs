@@ -24,7 +24,7 @@ use tower_http::{
     cors::{AllowHeaders, Any, CorsLayer},
     normalize_path::NormalizePath,
 };
-use tracing_subscriber::layer::SubscriberExt as _;
+use tracing_subscriber::{layer::SubscriberExt as _, Layer as _};
 
 use crate::{
     cfg::{CacheBackend, Configuration},
@@ -229,7 +229,10 @@ pub async fn run_with_prefix(
     expired_message_cleaner_loop.expect("Error initializing expired message cleaner")
 }
 
-pub fn setup_tracing(cfg: &ConfigurationInner) -> (tracing::Dispatch, sentry::ClientInitGuard) {
+pub fn setup_tracing(
+    cfg: &ConfigurationInner,
+    for_test: bool,
+) -> (tracing::Dispatch, sentry::ClientInitGuard) {
     let filter_directives = std::env::var("RUST_LOG").unwrap_or_else(|e| {
         if let std::env::VarError::NotUnicode(_) = e {
             eprintln!("RUST_LOG environment variable has non-utf8 contents, ignoring!");
@@ -292,34 +295,31 @@ pub fn setup_tracing(cfg: &ConfigurationInner) -> (tracing::Dispatch, sentry::Cl
 
     // Then create a subscriber with an additional layer printing to stdout.
     // This additional layer is either formatted normally or in JSON format.
-    let dispatch = match cfg.log_format {
-        cfg::LogFormat::Default => {
-            let stdout_layer = tracing_subscriber::fmt::layer();
-            tracing_subscriber::Registry::default()
-                .with(otel_layer)
-                .with(sentry_layer)
-                .with(stdout_layer)
-                .with(tracing_subscriber::EnvFilter::new(filter_directives))
-                .into()
-        }
-        cfg::LogFormat::Json => {
-            let fmt = tracing_subscriber::fmt::format().json().flatten_event(true);
-            let json_fields = tracing_subscriber::fmt::format::JsonFields::new();
+    let stdout_layer = if for_test {
+        tracing_subscriber::fmt::layer().with_test_writer().boxed()
+    } else {
+        match cfg.log_format {
+            cfg::LogFormat::Default => tracing_subscriber::fmt::layer().boxed(),
+            cfg::LogFormat::Json => {
+                let fmt = tracing_subscriber::fmt::format().json().flatten_event(true);
+                let json_fields = tracing_subscriber::fmt::format::JsonFields::new();
 
-            let stdout_layer = tracing_subscriber::fmt::layer()
-                .event_format(fmt)
-                .fmt_fields(json_fields);
-
-            tracing_subscriber::Registry::default()
-                .with(otel_layer)
-                .with(sentry_layer)
-                .with(stdout_layer)
-                .with(tracing_subscriber::EnvFilter::new(filter_directives))
-                .into()
+                tracing_subscriber::fmt::layer()
+                    .event_format(fmt)
+                    .fmt_fields(json_fields)
+                    .boxed()
+            }
         }
     };
 
-    (dispatch, sentry_guard)
+    let registry = tracing_subscriber::Registry::default()
+        .with(otel_layer)
+        .with(sentry_layer)
+        .with(stdout_layer)
+        .with(tracing_subscriber::EnvFilter::new(filter_directives))
+        .into();
+
+    (registry, sentry_guard)
 }
 
 mod docs {
