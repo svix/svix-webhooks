@@ -209,7 +209,7 @@ impl AppEndpointKey {
     // FIXME: Rewrite doc comment when AppEndpointValue members are known
     /// Returns a key for fetching all cached endpoints for a given organization and application.
     pub fn new(org: &OrganizationId, app: &ApplicationId) -> AppEndpointKey {
-        AppEndpointKey(format!("SVIX_CACHE_APP_v3_{}_{}", org, app))
+        AppEndpointKey(format!("SVIX_CACHE_APP_v3_{org}_{app}"))
     }
 }
 

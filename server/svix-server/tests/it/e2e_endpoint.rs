@@ -843,7 +843,7 @@ async fn test_uid() {
 
     client
         .put::<_, IgnoredResponse>(
-            &format!("api/v1/app/{}/endpoint/{}/", app_id, ep_2.id),
+            &format!("api/v1/app/{app_id}/endpoint/{}/", ep_2.id),
             ep_2_with_duplicate_uid,
             StatusCode::CONFLICT,
         )
@@ -857,7 +857,7 @@ async fn test_uid() {
 
     let ep_1_updated = client
         .put::<_, EndpointOut>(
-            &format!("api/v1/app/{}/endpoint/{}/", app_id, ep_1.id),
+            &format!("api/v1/app/{app_id}/endpoint/{}/", ep_1.id),
             ep_1_with_duplicate_id,
             StatusCode::OK,
         )
@@ -914,7 +914,7 @@ async fn test_endpoint_secret_get_and_rotation() {
 
     let former_secret: EndpointSecretOut = client
         .get(
-            &format!("api/v1/app/{}/endpoint/{}/secret/", app_id, ep.id),
+            &format!("api/v1/app/{app_id}/endpoint/{}/secret/", ep.id),
             StatusCode::OK,
         )
         .await
@@ -922,7 +922,7 @@ async fn test_endpoint_secret_get_and_rotation() {
 
     let _: IgnoredResponse = client
         .post(
-            &format!("api/v1/app/{}/endpoint/{}/secret/rotate/", app_id, ep.id),
+            &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", ep.id),
             serde_json::json!({ "key": null }),
             StatusCode::NO_CONTENT,
         )
@@ -933,7 +933,7 @@ async fn test_endpoint_secret_get_and_rotation() {
         former_secret,
         client
             .get(
-                &format!("api/v1/app/{}/endpoint/{}/secret/", app_id, ep.id),
+                &format!("api/v1/app/{app_id}/endpoint/{}/secret/", ep.id),
                 StatusCode::OK
             )
             .await
@@ -942,7 +942,7 @@ async fn test_endpoint_secret_get_and_rotation() {
 
     let _: IgnoredResponse = client
         .post(
-            &format!("api/v1/app/{}/endpoint/{}/secret/rotate/", app_id, ep.id),
+            &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", ep.id),
             &former_secret,
             StatusCode::NO_CONTENT,
         )
@@ -953,7 +953,7 @@ async fn test_endpoint_secret_get_and_rotation() {
         former_secret,
         client
             .get(
-                &format!("api/v1/app/{}/endpoint/{}/secret/", app_id, ep.id),
+                &format!("api/v1/app/{app_id}/endpoint/{}/secret/", ep.id),
                 StatusCode::OK
             )
             .await
@@ -1092,7 +1092,7 @@ async fn test_endpoint_rotate_signing_e2e() {
 
     let secret1: EndpointSecretOut = client
         .get(
-            &format!("api/v1/app/{}/endpoint/{}/secret/", app_id, endp.id),
+            &format!("api/v1/app/{app_id}/endpoint/{}/secret/", endp.id),
             StatusCode::OK,
         )
         .await
@@ -1100,7 +1100,7 @@ async fn test_endpoint_rotate_signing_e2e() {
 
     let _: IgnoredResponse = client
         .post(
-            &format!("api/v1/app/{}/endpoint/{}/secret/rotate/", app_id, endp.id),
+            &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", endp.id),
             serde_json::json!({ "key": null }),
             StatusCode::NO_CONTENT,
         )
@@ -1109,7 +1109,7 @@ async fn test_endpoint_rotate_signing_e2e() {
 
     let secret2: EndpointSecretOut = client
         .get(
-            &format!("api/v1/app/{}/endpoint/{}/secret/", app_id, endp.id),
+            &format!("api/v1/app/{app_id}/endpoint/{}/secret/", endp.id),
             StatusCode::OK,
         )
         .await
@@ -1124,7 +1124,7 @@ async fn test_endpoint_rotate_signing_e2e() {
 
     let _: IgnoredResponse = client
         .post(
-            &format!("api/v1/app/{}/endpoint/{}/secret/rotate/", app_id, endp.id),
+            &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", endp.id),
             serde_json::json!({ "key": secret3_key }),
             StatusCode::NO_CONTENT,
         )
@@ -1133,7 +1133,7 @@ async fn test_endpoint_rotate_signing_e2e() {
 
     let secret3: EndpointSecretOut = client
         .get(
-            &format!("api/v1/app/{}/endpoint/{}/secret/", app_id, endp.id),
+            &format!("api/v1/app/{app_id}/endpoint/{}/secret/", endp.id),
             StatusCode::OK,
         )
         .await
@@ -1191,7 +1191,7 @@ async fn test_endpoint_rotate_signing_symmetric_and_asymmetric() {
     // Rotate to asmmetric
     let _: IgnoredResponse = client
         .post(
-            &format!("api/v1/app/{}/endpoint/{}/secret/rotate/", app_id, endp.id),
+            &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", endp.id),
             serde_json::json!({ "key": "whsk_6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg==" }),
             StatusCode::NO_CONTENT,
         )
@@ -1201,7 +1201,7 @@ async fn test_endpoint_rotate_signing_symmetric_and_asymmetric() {
     // Rotate back to symmetric
     let _: IgnoredResponse = client
         .post(
-            &format!("api/v1/app/{}/endpoint/{}/secret/rotate/", app_id, endp.id),
+            &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", endp.id),
             serde_json::json!({ "key": secret_3.serialize_public_key() }),
             StatusCode::NO_CONTENT,
         )
@@ -1236,7 +1236,7 @@ async fn test_endpoint_rotate_signing_symmetric_and_asymmetric() {
                     .unwrap()
                     .to_str()
                     .unwrap();
-                let to_sign = format!("{}.{}.{}", msg_id, timestamp, &last_body);
+                let to_sign = format!("{msg_id}.{timestamp}.{}", &last_body);
                 let found =
                     signatures
                         .split(' ')
@@ -1277,7 +1277,7 @@ async fn test_endpoint_secret_config() {
 
     let key1 = client
         .get::<EndpointSecretOutTest>(
-            &format!("api/v1/app/{}/endpoint/{}/secret/", app_id, ep.id),
+            &format!("api/v1/app/{app_id}/endpoint/{}/secret/", ep.id),
             StatusCode::OK,
         )
         .await
@@ -1289,7 +1289,7 @@ async fn test_endpoint_secret_config() {
     // Rotate to asmmetric
     let _: IgnoredResponse = client
         .post(
-            &format!("api/v1/app/{}/endpoint/{}/secret/rotate/", app_id, ep.id),
+            &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", ep.id),
             serde_json::json!({ "key": null }),
             StatusCode::NO_CONTENT,
         )
@@ -1298,7 +1298,7 @@ async fn test_endpoint_secret_config() {
 
     let key2 = client
         .get::<EndpointSecretOutTest>(
-            &format!("api/v1/app/{}/endpoint/{}/secret/", app_id, ep.id),
+            &format!("api/v1/app/{app_id}/endpoint/{}/secret/", ep.id),
             StatusCode::OK,
         )
         .await
@@ -1348,7 +1348,7 @@ async fn test_custom_endpoint_secret() {
         .unwrap();
     let _: IgnoredResponse = client
         .post(
-            &format!("api/v1/app/{}/endpoint/{}/secret/rotate/", app_id, endp_3.id),
+            &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", endp_3.id),
             serde_json::json!({ "key": "whsk_6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg==" }),
             StatusCode::NO_CONTENT,
         )
@@ -1365,7 +1365,7 @@ async fn test_custom_endpoint_secret() {
             secret.serialize_public_key(),
             client
                 .get::<EndpointSecretOutTest>(
-                    &format!("api/v1/app/{}/endpoint/{}/secret/", app_id, ep.id),
+                    &format!("api/v1/app/{app_id}/endpoint/{}/secret/", ep.id),
                     StatusCode::OK
                 )
                 .await
@@ -1396,7 +1396,7 @@ async fn test_endpoint_secret_encryption() {
 
     let secret = client
         .get::<EndpointSecretOutTest>(
-            &format!("api/v1/app/{}/endpoint/{}/secret/", app_id, ep.id),
+            &format!("api/v1/app/{app_id}/endpoint/{}/secret/", ep.id),
             StatusCode::OK,
         )
         .await
@@ -1411,7 +1411,7 @@ async fn test_endpoint_secret_encryption() {
 
     let secret2 = client
         .get::<EndpointSecretOutTest>(
-            &format!("api/v1/app/{}/endpoint/{}/secret/", app_id, ep.id),
+            &format!("api/v1/app/{app_id}/endpoint/{}/secret/", ep.id),
             StatusCode::OK,
         )
         .await
@@ -1424,7 +1424,7 @@ async fn test_endpoint_secret_encryption() {
     // Generate a new encrypted secret
     let _: IgnoredResponse = client
         .post(
-            &format!("api/v1/app/{}/endpoint/{}/secret/rotate/", app_id, ep.id),
+            &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", ep.id),
             serde_json::json!({ "key": secret }),
             StatusCode::NO_CONTENT,
         )
@@ -1433,7 +1433,7 @@ async fn test_endpoint_secret_encryption() {
 
     let secret2 = client
         .get::<EndpointSecretOutTest>(
-            &format!("api/v1/app/{}/endpoint/{}/secret/", app_id, ep.id),
+            &format!("api/v1/app/{app_id}/endpoint/{}/secret/", ep.id),
             StatusCode::OK,
         )
         .await
@@ -1449,7 +1449,7 @@ async fn test_endpoint_secret_encryption() {
     let (client, _jh) = start_svix_server_with_cfg_and_org_id(&cfg, org_id.clone()).await;
     client
         .get::<IgnoredResponse>(
-            &format!("api/v1/app/{}/endpoint/{}/secret/", app_id, ep.id),
+            &format!("api/v1/app/{app_id}/endpoint/{}/secret/", ep.id),
             StatusCode::INTERNAL_SERVER_ERROR,
         )
         .await
@@ -1675,7 +1675,7 @@ async fn test_legacy_endpoint_secret() {
         secret.serialize_public_key(),
         client
             .get::<EndpointSecretOutTest>(
-                &format!("api/v1/app/{}/endpoint/{}/secret/", app_id, ep.id),
+                &format!("api/v1/app/{app_id}/endpoint/{}/secret/", ep.id),
                 StatusCode::OK
             )
             .await
@@ -1801,7 +1801,7 @@ async fn test_endpoint_filter_events() {
 
     let ep_removed_events: EndpointOut = client
         .put(
-            &format!("api/v1/app/{}/endpoint/{}/", app_id, ep_with_valid_event.id),
+            &format!("api/v1/app/{app_id}/endpoint/{}/", ep_with_valid_event.id),
             ep_no_events.to_owned(),
             StatusCode::OK,
         )
@@ -1818,7 +1818,7 @@ async fn test_endpoint_filter_events() {
 
     let ep_updated_events: EndpointOut = client
         .put(
-            &format!("api/v1/app/{}/endpoint/{}/", app_id, ep_with_valid_event.id),
+            &format!("api/v1/app/{app_id}/endpoint/{}/", ep_with_valid_event.id),
             ep_with_events.to_owned(),
             StatusCode::OK,
         )
@@ -1882,7 +1882,7 @@ async fn test_endpoint_filter_channels() {
 
     let ep_with_deleted_channel: EndpointOut = client
         .put(
-            &format!("api/v1/app/{}/endpoint/{}/", app_id, ep_with_channel.id),
+            &format!("api/v1/app/{app_id}/endpoint/{}/", ep_with_channel.id),
             ep_without_channels,
             StatusCode::OK,
         )
@@ -1902,8 +1902,8 @@ async fn test_endpoint_filter_channels() {
     let updated_ep_with_channel: EndpointOut = client
         .put(
             &format!(
-                "api/v1/app/{}/endpoint/{}/",
-                app_id, ep_with_deleted_channel.id
+                "api/v1/app/{app_id}/endpoint/{}/",
+                ep_with_deleted_channel.id
             ),
             ep_with_channels,
             StatusCode::OK,
@@ -2104,7 +2104,7 @@ async fn test_endpoint_headers_manipulation() {
 
     let _: IgnoredResponse = client
         .patch(
-            &format!("api/v1/app/{}/endpoint/{}/headers/", app_id, endp.id),
+            &format!("api/v1/app/{app_id}/endpoint/{}/headers/", endp.id),
             patched_headers_in,
             StatusCode::NO_CONTENT,
         )
@@ -2113,7 +2113,7 @@ async fn test_endpoint_headers_manipulation() {
 
     let recvd_headers: EndpointHeadersOut = client
         .get(
-            &format!("api/v1/app/{}/endpoint/{}/headers/", app_id, endp.id),
+            &format!("api/v1/app/{app_id}/endpoint/{}/headers/", endp.id),
             StatusCode::OK,
         )
         .await
@@ -2138,7 +2138,7 @@ async fn test_endpoint_headers_manipulation() {
     ] {
         let _: IgnoredResponse = client
             .put(
-                &format!("api/v1/app/{}/endpoint/{}/headers/", app_id, endp.id),
+                &format!("api/v1/app/{app_id}/endpoint/{}/headers/", endp.id),
                 serde_json::json!({ "headers": { bad_hdr: "123"}}),
                 StatusCode::UNPROCESSABLE_ENTITY,
             )
@@ -2163,7 +2163,7 @@ async fn test_endpoint_headers_manipulation() {
     for hdrs in [&org_headers, &updated_headers] {
         let _: IgnoredResponse = client
             .put(
-                &format!("api/v1/app/{}/endpoint/{}/headers/", app_id, endp.id),
+                &format!("api/v1/app/{app_id}/endpoint/{}/headers/", endp.id),
                 hdrs,
                 StatusCode::NO_CONTENT,
             )
@@ -2172,7 +2172,7 @@ async fn test_endpoint_headers_manipulation() {
 
         let recvd_headers: EndpointHeadersOut = client
             .get(
-                &format!("api/v1/app/{}/endpoint/{}/headers/", app_id, endp.id),
+                &format!("api/v1/app/{app_id}/endpoint/{}/headers/", endp.id),
                 StatusCode::OK,
             )
             .await
@@ -2190,7 +2190,7 @@ async fn test_endpoint_headers_manipulation() {
 
     let _: IgnoredResponse = client
         .patch(
-            &format!("api/v1/app/{}/endpoint/{}/headers/", app_id, endp.id),
+            &format!("api/v1/app/{app_id}/endpoint/{}/headers/", endp.id),
             &patched_headers_in,
             StatusCode::NO_CONTENT,
         )
@@ -2199,7 +2199,7 @@ async fn test_endpoint_headers_manipulation() {
 
     let recvd_headers: EndpointHeadersOut = client
         .get(
-            &format!("api/v1/app/{}/endpoint/{}/headers/", app_id, endp.id),
+            &format!("api/v1/app/{app_id}/endpoint/{}/headers/", endp.id),
             StatusCode::OK,
         )
         .await
@@ -2222,7 +2222,7 @@ async fn test_endpoint_headers_manipulation() {
 
     let _: IgnoredResponse = client
         .put(
-            &format!("api/v1/app/{}/endpoint/{}/headers/", app_id, endp.id),
+            &format!("api/v1/app/{app_id}/endpoint/{}/headers/", endp.id),
             redacted_headers,
             StatusCode::NO_CONTENT,
         )
@@ -2231,7 +2231,7 @@ async fn test_endpoint_headers_manipulation() {
 
     let recvd_headers: EndpointHeadersOut = client
         .get(
-            &format!("api/v1/app/{}/endpoint/{}/headers/", app_id, endp.id),
+            &format!("api/v1/app/{app_id}/endpoint/{}/headers/", endp.id),
             StatusCode::OK,
         )
         .await
@@ -2269,7 +2269,7 @@ async fn test_endpoint_headers_sending() {
 
     let _: IgnoredResponse = client
         .put(
-            &format!("api/v1/app/{}/endpoint/{}/headers/", app_id, endp.id),
+            &format!("api/v1/app/{app_id}/endpoint/{}/headers/", endp.id),
             &headers,
             StatusCode::NO_CONTENT,
         )
@@ -2308,7 +2308,7 @@ async fn test_endpoint_header_key_capitalization() {
 
     let _: IgnoredResponse = client
         .put(
-            &format!("api/v1/app/{}/endpoint/{}/headers/", app_id, endp.id),
+            &format!("api/v1/app/{app_id}/endpoint/{}/headers/", endp.id),
             &headers,
             StatusCode::NO_CONTENT,
         )
@@ -2317,7 +2317,7 @@ async fn test_endpoint_header_key_capitalization() {
 
     let retrieved_headers: EndpointHeadersOut = client
         .get(
-            &format!("api/v1/app/{}/endpoint/{}/headers/", app_id, endp.id),
+            &format!("api/v1/app/{app_id}/endpoint/{}/headers/", endp.id),
             StatusCode::OK,
         )
         .await

@@ -264,7 +264,7 @@ pub async fn common_test_list<
 
     let list = client
         .get::<ListResponse<ModelOut>>(
-            &format!("{}?limit=6&iterator={}", path, list.iterator.unwrap()),
+            &format!("{path}?limit=6&iterator={}", list.iterator.unwrap()),
             StatusCode::OK,
         )
         .await
@@ -275,7 +275,7 @@ pub async fn common_test_list<
 
     let prev = client
         .get::<ListResponse<ModelOut>>(
-            &format!("{}?limit=3&iterator={}", path, list.prev_iterator.unwrap()),
+            &format!("{path}?limit=3&iterator={}", list.prev_iterator.unwrap()),
             StatusCode::OK,
         )
         .await

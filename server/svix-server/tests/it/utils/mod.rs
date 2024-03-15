@@ -61,7 +61,7 @@ impl TestClient {
     }
 
     fn build_uri(&self, endpoint: &str) -> String {
-        format!("{}/{}", self.base_uri, endpoint)
+        format!("{}/{endpoint}", self.base_uri)
     }
 
     fn add_headers(&self, request: RequestBuilder) -> RequestBuilder {

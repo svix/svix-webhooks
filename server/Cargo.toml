@@ -15,6 +15,7 @@ macro_use_imports = "warn"
 mut_mut = "warn"
 nonstandard_macro_braces = "warn"
 todo = "warn"
+uninlined_format_args = "warn"
 
 [profile.dev.package]
 quote = { opt-level = 2 }

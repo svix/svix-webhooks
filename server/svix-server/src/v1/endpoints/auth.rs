@@ -84,7 +84,7 @@ async fn app_portal_access(
     let login_key = base64::encode(login_key);
 
     // Included for API compatibility, but this URL will not be useful
-    let url = format!("{}/login#key={}", &cfg.internal.app_portal_url, login_key);
+    let url = format!("{}/login#key={login_key}", &cfg.internal.app_portal_url);
 
     Ok(Json(AppPortalAccessOut::from(DashboardAccessOut {
         url,

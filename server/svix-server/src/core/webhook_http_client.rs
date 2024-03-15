@@ -381,7 +381,7 @@ impl RequestBuilder {
         let uri = self.uri.unwrap();
         let authority = uri.authority().expect("Missing authority");
         let host = match authority.port() {
-            Some(port) => format!("{}:{}", authority.host(), port),
+            Some(port) => format!("{}:{port}", authority.host()),
             None => authority.host().to_string(),
         };
 

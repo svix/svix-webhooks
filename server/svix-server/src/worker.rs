@@ -80,10 +80,7 @@ impl FailureCacheKey {
         app_id: &ApplicationId,
         endp_id: &EndpointId,
     ) -> FailureCacheKey {
-        FailureCacheKey(format!(
-            "SVIX_FAILURE_CACHE_{}_{}_{}",
-            org_id, app_id, endp_id
-        ))
+        FailureCacheKey(format!("SVIX_FAILURE_CACHE_{org_id}_{app_id}_{endp_id}"))
     }
 }
 
@@ -177,7 +174,7 @@ fn sign_msg(
                 EndpointSecretType::Hmac256 => "v1",
                 EndpointSecretType::Ed25519 => "v1a",
             };
-            format!("{},{}", version, base64::encode(sig))
+            format!("{version},{}", base64::encode(sig))
         })
         .collect::<Vec<String>>()
         .join(" ")
@@ -579,8 +576,8 @@ async fn handle_failed_dispatch(
                 .await?
                 .ok_or_else(|| {
                     Error::generic(format!(
-                        "Endpoint not found {} {}",
-                        app_id, &msg_task.endpoint_id
+                        "Endpoint not found {app_id} {}",
+                        &msg_task.endpoint_id
                     ))
                 })?;
 

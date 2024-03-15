@@ -145,7 +145,7 @@ async fn test_list_attempted_messages() {
 
         let list_2_uid: ListResponse<EndpointMessageOut> = client
             .get(
-                &format!("api/v1/app/{}/endpoint/{}/msg/", app_id, "test"),
+                &format!("api/v1/app/{app_id}/endpoint/{}/msg/", "test"),
                 StatusCode::OK,
             )
             .await
@@ -390,7 +390,7 @@ async fn test_message_attempts() {
 
         for i in list.data.iter() {
             assert_eq!(i.status, msg_status);
-            println!("{} {}", i.response_status_code, status_code);
+            println!("{} {status_code}", i.response_status_code);
             assert_eq!(
                 i.response_status_code,
                 TryInto::<i16>::try_into(status_code.as_u16()).unwrap()
@@ -466,7 +466,7 @@ async fn test_message_attempts_empty_retry_schedule() {
 
     for i in list.data.iter() {
         assert_eq!(i.status, msg_status);
-        println!("{} {}", i.response_status_code, status_code);
+        println!("{} {status_code}", i.response_status_code);
         assert_eq!(
             i.response_status_code,
             TryInto::<i16>::try_into(status_code.as_u16()).unwrap()
@@ -524,7 +524,7 @@ async fn test_pagination_by_endpoint() {
         for endp_id in eps.iter().map(|ep| &ep.id) {
             let list: ListResponse<MessageAttemptOut> = client
                 .get(
-                    &format!("api/v1/app/{}/attempt/endpoint/{}/", app.id, endp_id),
+                    &format!("api/v1/app/{}/attempt/endpoint/{endp_id}/", app.id),
                     StatusCode::OK,
                 )
                 .await
@@ -713,7 +713,7 @@ async fn test_pagination_by_msg() {
         for endp_id in eps.iter().map(|ep| &ep.id) {
             let list: ListResponse<MessageAttemptOut> = client
                 .get(
-                    &format!("api/v1/app/{}/attempt/endpoint/{}/", app.id, endp_id),
+                    &format!("api/v1/app/{}/attempt/endpoint/{endp_id}/", app.id),
                     StatusCode::OK,
                 )
                 .await
@@ -726,8 +726,8 @@ async fn test_pagination_by_msg() {
             let list_filtered: ListResponse<MessageAttemptOut> = client
                 .get(
                     &format!(
-                        "api/v1/app/{}/attempt/endpoint/{}/?channel=news",
-                        app.id, endp_id
+                        "api/v1/app/{}/attempt/endpoint/{endp_id}/?channel=news",
+                        app.id
                     ),
                     StatusCode::OK,
                 )
@@ -966,8 +966,8 @@ async fn test_pagination_forward_and_back() {
         let mut out: ListResponse<MessageAttemptOut> = client
             .get(
                 &format!(
-                    "api/v1/app/{}/attempt/endpoint/{}/?limit=10{}",
-                    app.id, ep.id, iter_suffix
+                    "api/v1/app/{}/attempt/endpoint/{}/?limit=10{iter_suffix}",
+                    app.id, ep.id
                 ),
                 StatusCode::OK,
             )
@@ -996,8 +996,8 @@ async fn test_pagination_forward_and_back() {
         let mut out: ListResponse<MessageAttemptOut> = client
             .get(
                 &format!(
-                    "api/v1/app/{}/attempt/endpoint/{}/?limit=10{}",
-                    app.id, ep.id, iter_suffix
+                    "api/v1/app/{}/attempt/endpoint/{}/?limit=10{iter_suffix}",
+                    app.id, ep.id
                 ),
                 StatusCode::OK,
             )
