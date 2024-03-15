@@ -1,26 +1,6 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use crate::{
-    core::{
-        cache::Cache,
-        message_app::CreateMessageApp,
-        permissions,
-        types::{
-            EndpointId, EventChannel, EventChannelSet, EventTypeName, EventTypeNameSet,
-            MessageAttemptTriggerType, MessageId, MessageUid,
-        },
-    },
-    db::models::{application, messagecontent},
-    error::{HttpError, Result},
-    queue::{MessageTaskBatch, TaskQueueProducer},
-    v1::utils::{
-        apply_pagination_desc, iterator_from_before_or_after, openapi_tag, validation_error,
-        ApplicationMsgPath, EventTypesQueryParams, JsonStatus, ListResponse, ModelIn, ModelOut,
-        PaginationDescending, PaginationLimit, ReversibleIterator, ValidatedJson, ValidatedQuery,
-    },
-    AppState,
-};
 use aide::axum::{
     routing::{delete_with, get_with, post_with},
     ApiRouter,
@@ -33,17 +13,32 @@ use chrono::{DateTime, Duration, Utc};
 use futures::FutureExt;
 use hyper::StatusCode;
 use schemars::JsonSchema;
-use sea_orm::{entity::prelude::*, IntoActiveModel};
-use sea_orm::{sea_query::Expr, ActiveValue::Set};
-use sea_orm::{ActiveModelTrait, TransactionTrait};
+use sea_orm::{entity::prelude::*, ActiveValue::Set, IntoActiveModel, TransactionTrait};
 use serde::{Deserialize, Serialize};
-
 use serde_json::value::RawValue;
 use svix_server_derive::{aide_annotate, ModelIn, ModelOut};
 use validator::{Validate, ValidationError};
 
-use crate::db::models::message;
-use crate::error::Error;
+use crate::{
+    core::{
+        cache::Cache,
+        message_app::CreateMessageApp,
+        permissions,
+        types::{
+            EndpointId, EventChannel, EventChannelSet, EventTypeName, EventTypeNameSet,
+            MessageAttemptTriggerType, MessageId, MessageUid,
+        },
+    },
+    db::models::{application, message, messagecontent},
+    error::{Error, HttpError, Result},
+    queue::{MessageTaskBatch, TaskQueueProducer},
+    v1::utils::{
+        apply_pagination_desc, iterator_from_before_or_after, openapi_tag, validation_error,
+        ApplicationMsgPath, EventTypesQueryParams, JsonStatus, ListResponse, ModelIn, ModelOut,
+        PaginationDescending, PaginationLimit, ReversibleIterator, ValidatedJson, ValidatedQuery,
+    },
+    AppState,
+};
 
 pub fn validate_channels_msg(channels: &EventChannelSet) -> Result<(), ValidationError> {
     let len = channels.0.len();
@@ -473,12 +468,13 @@ pub fn router() -> ApiRouter<AppState> {
 
 #[cfg(test)]
 mod tests {
+    use serde_json::json;
+    use validator::Validate;
+
     use super::{
         default_true, CreateMessageQueryParams, GetMessageQueryParams, ListMessagesQueryParams,
         MessageIn,
     };
-    use serde_json::json;
-    use validator::Validate;
 
     const CHANNEL_INVALID: &str = "$$invalid-channel";
     const CHANNEL_VALID: &str = "valid-channel";

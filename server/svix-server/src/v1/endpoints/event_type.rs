@@ -1,6 +1,21 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
+use aide::axum::{
+    routing::{get_with, post_with},
+    ApiRouter,
+};
+use axum::{
+    extract::{Path, State},
+    Json,
+};
+use chrono::{DateTime, Utc};
+use schemars::JsonSchema;
+use sea_orm::{entity::prelude::*, ActiveValue::Set};
+use serde::{Deserialize, Serialize};
+use svix_server_derive::{aide_annotate, ModelIn, ModelOut};
+use validator::Validate;
+
 use crate::{
     core::{
         permissions,
@@ -21,20 +36,6 @@ use crate::{
     },
     AppState,
 };
-use aide::axum::{
-    routing::{get_with, post_with},
-    ApiRouter,
-};
-use axum::{
-    extract::{Path, State},
-    Json,
-};
-use chrono::{DateTime, Utc};
-use schemars::JsonSchema;
-use sea_orm::{entity::prelude::*, ActiveModelTrait, ActiveValue::Set};
-use serde::{Deserialize, Serialize};
-use svix_server_derive::{aide_annotate, ModelIn, ModelOut};
-use validator::Validate;
 
 fn example_event_archived() -> bool {
     false
@@ -440,8 +441,9 @@ pub fn router() -> ApiRouter<AppState> {
 #[cfg(test)]
 mod tests {
 
-    use super::ListFetchQueryParams;
     use serde_json::json;
+
+    use super::ListFetchQueryParams;
 
     #[test]
     fn test_list_fetch_options_default() {

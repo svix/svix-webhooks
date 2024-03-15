@@ -1,16 +1,14 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use crate::core::types::{
-    ApplicationId, ApplicationIdOrUid, ApplicationUid, BaseId, OrganizationId,
-};
-use crate::error;
 use chrono::Utc;
-use sea_orm::ActiveValue::Set;
-use sea_orm::ConnectionTrait;
-use sea_orm::{entity::prelude::*, Condition};
+use sea_orm::{entity::prelude::*, ActiveValue::Set, Condition};
 
 use super::applicationmetadata;
+use crate::{
+    core::types::{ApplicationId, ApplicationIdOrUid, ApplicationUid, BaseId, OrganizationId},
+    error,
+};
 
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(table_name = "application")]

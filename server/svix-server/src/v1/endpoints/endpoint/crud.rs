@@ -4,13 +4,12 @@ use axum::{
     extract::{Path, State},
     Json,
 };
-use sea_orm::{entity::prelude::*, ActiveValue::Set, TransactionTrait};
-use sea_orm::{ActiveModelTrait, DatabaseConnection, QuerySelect};
+use sea_orm::{entity::prelude::*, ActiveValue::Set, QuerySelect, TransactionTrait};
 use svix_server_derive::aide_annotate;
 use url::Url;
 
+use self::hack::EventTypeNameResult;
 use super::{EndpointIn, EndpointOut, EndpointPatch, EndpointUpdate};
-use crate::error::Traceable;
 use crate::{
     cfg::Configuration,
     core::{
@@ -19,7 +18,7 @@ use crate::{
         types::{EndpointId, EventTypeName, EventTypeNameSet, OrganizationId},
     },
     db::models::{application, endpoint, endpointmetadata, eventtype},
-    error::{http_error_on_conflict, HttpError, Result, ValidationErrorItem},
+    error::{http_error_on_conflict, HttpError, Result, Traceable, ValidationErrorItem},
     v1::utils::{
         apply_pagination,
         patch::{patch_field_non_nullable, UnrequiredField, UnrequiredNullableField},
@@ -29,7 +28,6 @@ use crate::{
     },
     AppState,
 };
-use hack::EventTypeNameResult;
 
 /// List the application's endpoints.
 #[aide_annotate(op_id = "v1.endpoint.list")]

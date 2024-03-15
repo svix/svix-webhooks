@@ -1,15 +1,13 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
-use crate::core::types::EndpointId;
-
-use crate::core::types::metadata::Metadata;
-use crate::error;
 
 use chrono::Utc;
-use sea_orm::entity::prelude::*;
-use sea_orm::sea_query::OnConflict;
-use sea_orm::ActiveValue::Set;
-use sea_orm::{ConnectionTrait, TryIntoModel};
+use sea_orm::{entity::prelude::*, sea_query::OnConflict, ActiveValue::Set, TryIntoModel};
+
+use crate::{
+    core::types::{metadata::Metadata, EndpointId},
+    error,
+};
 
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(table_name = "endpointmetadata")]
