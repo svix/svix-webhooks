@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use std::{borrow::Cow, collections::HashMap, net::SocketAddr, sync::Arc, time::Duration};
+use std::{borrow::Cow, collections::HashMap, fmt, net::SocketAddr, sync::Arc, time::Duration};
 
 use figment::{
     providers::{Env, Format, Toml},
@@ -12,7 +12,10 @@ use serde::{Deserialize, Deserializer};
 use tracing::Level;
 use validator::{Validate, ValidationError};
 
-use crate::{core::cryptography::Encryption, core::security::JwtSigningConfig, error::Result};
+use crate::{
+    core::{cryptography::Encryption, security::JwtSigningConfig},
+    error::Result,
+};
 
 fn deserialize_main_secret<'de, D>(deserializer: D) -> Result<Encryption, D::Error>
 where
@@ -365,16 +368,17 @@ impl std::fmt::Display for Environment {
     }
 }
 
-impl ToString for LogLevel {
-    fn to_string(&self) -> String {
+impl fmt::Display for LogLevel {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Info => Level::INFO,
             Self::Debug => Level::DEBUG,
             Self::Trace => Level::TRACE,
         }
-        .to_string()
+        .fmt(f)
     }
 }
+
 pub fn load() -> Result<Arc<ConfigurationInner>> {
     if let Ok(db_url) = std::env::var("DATABASE_URL") {
         // If we have DATABASE_URL set, we should potentially use it.

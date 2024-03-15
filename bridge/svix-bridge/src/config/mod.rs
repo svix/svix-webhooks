@@ -2,6 +2,7 @@ use std::{
     borrow::Cow,
     collections::HashMap,
     convert::Infallible,
+    fmt,
     io::{Error, ErrorKind},
     net::SocketAddr,
     num::NonZeroUsize,
@@ -121,14 +122,14 @@ pub enum LogLevel {
     Trace,
 }
 
-impl ToString for LogLevel {
-    fn to_string(&self) -> String {
+impl fmt::Display for LogLevel {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Info => Level::INFO,
             Self::Debug => Level::DEBUG,
             Self::Trace => Level::TRACE,
         }
-        .to_string()
+        .fmt(f)
     }
 }
 
