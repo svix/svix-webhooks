@@ -5,16 +5,19 @@ use std::time::Duration;
 
 use redis::{AsyncCommands, Client};
 use serde_json::json;
-use svix_bridge_plugin_queue::config::RedisInputOpts;
-use svix_bridge_plugin_queue::config::SenderInputOpts;
-use svix_bridge_plugin_queue::sender_input::QueueSender;
+use svix_bridge_plugin_queue::{
+    config::{RedisInputOpts, SenderInputOpts},
+    sender_input::QueueSender,
+};
 use svix_bridge_types::{
     svix::api::MessageIn, CreateMessageRequest, SenderInput, SenderOutputOpts, SvixOptions,
     SvixSenderOutputOpts, TransformationConfig, TransformerInput, TransformerInputFormat,
     TransformerJob, TransformerOutput,
 };
-use wiremock::matchers::{body_partial_json, method};
-use wiremock::{Mock, MockServer, ResponseTemplate};
+use wiremock::{
+    matchers::{body_partial_json, method},
+    Mock, MockServer, ResponseTemplate,
+};
 
 fn get_test_plugin(
     svix_url: String,

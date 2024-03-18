@@ -1,7 +1,8 @@
-use super::{run_script_inner, validate_script};
 use deno_runtime::deno_core::JsRuntime;
 use serde_json::json;
 use svix_bridge_types::{TransformerInput, TransformerOutput};
+
+use super::{run_script_inner, validate_script};
 
 fn get_test_rt() -> JsRuntime {
     JsRuntime::new(Default::default())

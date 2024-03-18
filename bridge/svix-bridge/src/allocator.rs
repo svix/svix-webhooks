@@ -14,6 +14,7 @@ pub use unsupported::*;
 #[cfg(all(not(target_env = "msvc"), feature = "jemalloc"))]
 mod supported {
     use std::sync::Arc;
+
     use tikv_jemalloc_ctl::{epoch, stats};
 
     pub struct AllocatorStatMibs {
@@ -50,8 +51,10 @@ mod supported {
 
 #[cfg(any(target_env = "msvc", not(feature = "jemalloc")))]
 mod unsupported {
-    use anyhow::anyhow;
     use std::sync::Arc;
+
+    use anyhow::anyhow;
+
     pub struct AllocatorStatMibs;
 
     pub fn get_allocator_stats(

@@ -1,4 +1,9 @@
-use self::config::Config;
+use std::{
+    io::{Error, ErrorKind, Result},
+    path::PathBuf,
+    time::Duration,
+};
+
 use clap::Parser;
 use once_cell::sync::Lazy;
 use opentelemetry_otlp::WithExportConfig;
@@ -6,9 +11,6 @@ use opentelemetry_sdk::{
     metrics::{data::Temporality, reader::TemporalitySelector, InstrumentKind, MeterProvider},
     runtime::Tokio,
 };
-use std::io::{Error, ErrorKind, Result};
-use std::path::PathBuf;
-use std::time::Duration;
 use svix_bridge_types::{SenderInput, TransformerJob};
 use svix_ksuid::{KsuidLike as _, KsuidMs};
 #[cfg(all(not(target_env = "msvc"), feature = "jemalloc"))]
@@ -16,14 +18,18 @@ use tikv_jemallocator::Jemalloc;
 use tracing::Instrument;
 use tracing_subscriber::{layer::SubscriberExt as _, util::SubscriberInitExt as _};
 
+use self::config::Config;
+
 mod allocator;
 mod config;
 mod metrics;
 mod runtime;
 mod webhook_receiver;
 
-use crate::allocator::{get_allocator_stat_mibs, get_allocator_stats};
-use crate::metrics::CommonMetrics;
+use crate::{
+    allocator::{get_allocator_stat_mibs, get_allocator_stats},
+    metrics::CommonMetrics,
+};
 
 #[cfg(all(not(target_env = "msvc"), feature = "jemalloc"))]
 #[global_allocator]

@@ -1,7 +1,9 @@
-use crate::error::{Error, Result};
+use std::path::PathBuf;
+
 use omniqueue::{backends, DynConsumer, DynProducer};
 use serde::Deserialize;
-use std::path::PathBuf;
+
+use crate::error::{Error, Result};
 
 #[derive(Debug, Default, Deserialize)]
 pub struct GCPPubSubInputOpts {
