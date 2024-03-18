@@ -45,6 +45,8 @@ jobs:
         # include relevant information in the cache name
         prefix-key: "server-${{ matrix.rust }}"
 
+    - uses: taiki-e/install-action@nextest
+
     - name: rustfmt
       run: cargo fmt -- --check
       working-directory: server
