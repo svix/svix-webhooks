@@ -66,10 +66,12 @@ jobs:
         # include relevant information in the cache name
         prefix-key: "rust-client-${{ matrix.rust }}"
 
+    - uses: taiki-e/install-action@nextest
+
     - name: Clippy
       run: cargo clippy --all-targets --all-features -- -D warnings
       working-directory: rust
 
     - name: Run tests
-      run: cargo test --all
+      run: cargo nextest run
       working-directory: rust
