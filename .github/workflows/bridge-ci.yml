@@ -24,6 +24,20 @@ env:
   RUST_BACKTRACE: 1
 
 jobs:
+  check-fmt:
+    name: Check formatting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: rustfmt
+
+      - name: rustfmt
+        run: cargo fmt -- --check
+        working-directory: bridge
+
   test-versions:
     name: Webhook Bridge CI
     runs-on: ubuntu-latest
@@ -32,10 +46,12 @@ jobs:
         rust: [stable, beta]
     steps:
     - uses: actions/checkout@v4
+
     - uses: dtolnay/rust-toolchain@master
       with:
         toolchain: ${{ matrix.rust }}
-        components: clippy, rustfmt
+        components: clippy
+
     - uses: Swatinem/rust-cache@v2
       with:
         workspaces: "bridge -> target"
@@ -46,10 +62,6 @@ jobs:
         prefix-key: "bridge-${{ matrix.rust }}"
 
     - uses: taiki-e/install-action@nextest
-
-    - name: rustfmt
-      run: cargo fmt -- --check
-      working-directory: bridge
 
     - name: Install dependencies
       # Packages should align with whatever is in the bridge/Dockerfile
