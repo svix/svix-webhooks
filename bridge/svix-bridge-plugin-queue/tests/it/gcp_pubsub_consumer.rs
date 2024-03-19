@@ -3,23 +3,28 @@
 //!
 //! Use `run-tests.sh` to use the requisite environment for testing.
 
-use google_cloud_googleapis::pubsub::v1::{DeadLetterPolicy, PubsubMessage};
-use google_cloud_pubsub::client::{Client, ClientConfig};
-use google_cloud_pubsub::subscription::{Subscription, SubscriptionConfig};
-use google_cloud_pubsub::topic::Topic;
 use std::time::Duration;
 
+use google_cloud_googleapis::pubsub::v1::{DeadLetterPolicy, PubsubMessage};
+use google_cloud_pubsub::{
+    client::{Client, ClientConfig},
+    subscription::{Subscription, SubscriptionConfig},
+    topic::Topic,
+};
 use serde_json::json;
-use svix_bridge_plugin_queue::config::GCPPubSubInputOpts;
-use svix_bridge_plugin_queue::config::SenderInputOpts;
-use svix_bridge_plugin_queue::sender_input::QueueSender;
+use svix_bridge_plugin_queue::{
+    config::{GCPPubSubInputOpts, SenderInputOpts},
+    sender_input::QueueSender,
+};
 use svix_bridge_types::{
     svix::api::MessageIn, CreateMessageRequest, SenderInput, SenderOutputOpts, SvixOptions,
     SvixSenderOutputOpts, TransformationConfig, TransformerInput, TransformerInputFormat,
     TransformerJob, TransformerOutput,
 };
-use wiremock::matchers::{body_partial_json, method};
-use wiremock::{Mock, MockServer, ResponseTemplate};
+use wiremock::{
+    matchers::{body_partial_json, method},
+    Mock, MockServer, ResponseTemplate,
+};
 
 const DEFAULT_PUBSUB_EMULATOR_HOST: &str = "localhost:8085";
 

@@ -2,8 +2,7 @@ pub use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 pub use svix;
 use svix::api::{MessageIn, PostOptions as PostOptions_, SvixOptions as _SvixOptions};
-use tokio::sync::mpsc;
-use tokio::sync::oneshot;
+use tokio::sync::{mpsc, oneshot};
 
 #[derive(Deserialize, Default, Eq, PartialEq, Copy, Clone)]
 #[serde(rename_all = "lowercase")]

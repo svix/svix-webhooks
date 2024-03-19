@@ -1,5 +1,5 @@
-use super::verification::{NoVerifier, SvixVerifier, VerificationMethod, Verifier};
-use crate::config::ReceiverConfig;
+use std::{collections::HashMap, marker::PhantomData, sync::Arc};
+
 use anyhow::Result;
 use axum::{
     async_trait,
@@ -9,10 +9,12 @@ use axum::{
 };
 use http::{HeaderMap, HeaderValue, Request};
 use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, marker::PhantomData, sync::Arc};
 use svix_bridge_types::{
     svix, ReceiverInputOpts, ReceiverOutput, TransformationConfig, TransformerTx, WebhookVerifier,
 };
+
+use super::verification::{NoVerifier, SvixVerifier, VerificationMethod, Verifier};
+use crate::config::ReceiverConfig;
 
 #[derive(Clone)]
 /// The [`InternalState`] is passed to the Axum route and is used to map the "IntegrationId" in the

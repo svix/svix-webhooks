@@ -1,10 +1,11 @@
-use crate::config::SenderInputOpts;
-use crate::{error::Error, gcp_pubsub, rabbitmq, run_inner, sqs, Consumer};
 use omniqueue::DynConsumer;
-
-use svix_bridge_types::svix::api::Svix;
 use svix_bridge_types::{
-    async_trait, SenderInput, SenderOutputOpts, TransformationConfig, TransformerTx,
+    async_trait, svix::api::Svix, SenderInput, SenderOutputOpts, TransformationConfig,
+    TransformerTx,
+};
+
+use crate::{
+    config::SenderInputOpts, error::Error, gcp_pubsub, rabbitmq, run_inner, sqs, Consumer,
 };
 
 pub struct QueueSender {

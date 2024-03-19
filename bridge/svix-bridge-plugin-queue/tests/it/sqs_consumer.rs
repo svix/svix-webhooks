@@ -7,17 +7,19 @@ use std::time::Duration;
 
 use aws_sdk_sqs::Client;
 use serde_json::json;
-use svix_bridge_plugin_queue::config::SenderInputOpts;
-use svix_bridge_plugin_queue::config::SqsInputOpts;
-use svix_bridge_plugin_queue::sender_input::QueueSender;
-use svix_bridge_types::svix::api::MessageIn;
-use svix_bridge_types::{
-    CreateMessageRequest, SenderInput, SenderOutputOpts, SvixOptions, SvixSenderOutputOpts,
-    TransformationConfig, TransformerInput, TransformerInputFormat, TransformerJob,
-    TransformerOutput,
+use svix_bridge_plugin_queue::{
+    config::{SenderInputOpts, SqsInputOpts},
+    sender_input::QueueSender,
 };
-use wiremock::matchers::{body_partial_json, method};
-use wiremock::{Mock, MockServer, ResponseTemplate};
+use svix_bridge_types::{
+    svix::api::MessageIn, CreateMessageRequest, SenderInput, SenderOutputOpts, SvixOptions,
+    SvixSenderOutputOpts, TransformationConfig, TransformerInput, TransformerInputFormat,
+    TransformerJob, TransformerOutput,
+};
+use wiremock::{
+    matchers::{body_partial_json, method},
+    Mock, MockServer, ResponseTemplate,
+};
 
 const ROOT_URL: &str = "http://localhost:9324";
 const DEFAULT_CFG: [(&str, &str); 3] = [

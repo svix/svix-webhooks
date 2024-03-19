@@ -1,6 +1,7 @@
-use crate::error::{Error, Result};
 use omniqueue::{backends, DynConsumer, DynProducer};
 use serde::Deserialize;
+
+use crate::error::{Error, Result};
 
 #[derive(Debug, Deserialize)]
 pub struct RabbitMqInputOpts {

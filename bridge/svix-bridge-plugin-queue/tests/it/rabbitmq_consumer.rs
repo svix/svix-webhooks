@@ -2,22 +2,26 @@
 //! default guest/guest credentials.
 //! Try using the `testing-docker-compose.yml` in the repo root to get this going.
 
+use std::time::Duration;
+
 use lapin::{
     options::QueueDeclareOptions, types::FieldTable, Channel, Connection, ConnectionProperties,
     Queue,
 };
 use serde_json::json;
-use std::time::Duration;
-use svix_bridge_plugin_queue::config::RabbitMqInputOpts;
-use svix_bridge_plugin_queue::config::SenderInputOpts;
-use svix_bridge_plugin_queue::sender_input::QueueSender;
+use svix_bridge_plugin_queue::{
+    config::{RabbitMqInputOpts, SenderInputOpts},
+    sender_input::QueueSender,
+};
 use svix_bridge_types::{
     svix::api::MessageIn, CreateMessageRequest, SenderInput, SenderOutputOpts, SvixOptions,
     SvixSenderOutputOpts, TransformationConfig, TransformerInput, TransformerInputFormat,
     TransformerJob, TransformerOutput,
 };
-use wiremock::matchers::{body_partial_json, method};
-use wiremock::{Mock, MockServer, ResponseTemplate};
+use wiremock::{
+    matchers::{body_partial_json, method},
+    Mock, MockServer, ResponseTemplate,
+};
 
 fn get_test_plugin(
     svix_url: String,

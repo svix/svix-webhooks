@@ -1,8 +1,10 @@
-use super::Config;
-use crate::config::{LogFormat, LogLevel, SenderConfig};
 use std::collections::HashMap;
+
 use svix_bridge_plugin_queue::config::{QueueConsumerConfig, RabbitMqInputOpts, SenderInputOpts};
 use svix_bridge_types::{SenderOutputOpts, SvixSenderOutputOpts};
+
+use super::Config;
+use crate::config::{LogFormat, LogLevel, SenderConfig};
 
 /// This is meant to be a kitchen sink config, hitting as many possible
 /// configuration options as possible to ensure they parse correctly.

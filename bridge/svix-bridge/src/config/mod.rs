@@ -1,11 +1,14 @@
+use std::{
+    borrow::Cow,
+    collections::HashMap,
+    convert::Infallible,
+    io::{Error, ErrorKind},
+    net::SocketAddr,
+    num::NonZeroUsize,
+};
+
 use serde::Deserialize;
 use shellexpand::LookupError;
-use std::borrow::Cow;
-use std::collections::HashMap;
-use std::convert::Infallible;
-use std::io::{Error, ErrorKind};
-use std::net::SocketAddr;
-use std::num::NonZeroUsize;
 use svix_bridge_plugin_queue::config::{
     into_receiver_output, QueueConsumerConfig, ReceiverOutputOpts as QueueOutOpts,
 };

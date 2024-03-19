@@ -1,8 +1,9 @@
-use crate::config::ReceiverOutputOpts;
-use crate::error::Result;
-use omniqueue::DynProducer;
 use std::sync::Arc;
+
+use omniqueue::DynProducer;
 use svix_bridge_types::{async_trait, ForwardRequest, ReceiverOutput};
+
+use crate::{config::ReceiverOutputOpts, error::Result};
 
 #[derive(Clone)]
 pub struct QueueForwarder {

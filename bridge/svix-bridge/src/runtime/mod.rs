@@ -1,3 +1,5 @@
+use std::num::NonZeroUsize;
+
 use anyhow::Result;
 use deadpool::unmanaged::Pool;
 use deno_ast::{MediaType, ParseParams, SourceTextInfo};
@@ -6,7 +8,6 @@ use deno_runtime::deno_core::{
     v8::{self},
     JsRuntime,
 };
-use std::num::NonZeroUsize;
 use svix_bridge_types::{JsObject, TransformerInput, TransformerOutput};
 use tokio::sync::oneshot;
 

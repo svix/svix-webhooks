@@ -1,12 +1,15 @@
-pub use crate::gcp_pubsub::{GCPPubSubInputOpts, GCPPubSubOutputOpts};
-pub use crate::rabbitmq::{RabbitMqInputOpts, RabbitMqOutputOpts};
-pub use crate::receiver_output::QueueForwarder;
-pub use crate::redis::{RedisInputOpts, RedisOutputOpts};
-use crate::sender_input::QueueSender;
-pub use crate::sqs::{SqsInputOpts, SqsOutputOpts};
 use serde::Deserialize;
 use svix_bridge_types::{
     ReceiverOutput, SenderInput, SenderOutputOpts, TransformationConfig, TransformerInputFormat,
+};
+
+use crate::sender_input::QueueSender;
+pub use crate::{
+    gcp_pubsub::{GCPPubSubInputOpts, GCPPubSubOutputOpts},
+    rabbitmq::{RabbitMqInputOpts, RabbitMqOutputOpts},
+    receiver_output::QueueForwarder,
+    redis::{RedisInputOpts, RedisOutputOpts},
+    sqs::{SqsInputOpts, SqsOutputOpts},
 };
 
 #[derive(Deserialize)]
@@ -85,12 +88,14 @@ pub enum ReceiverOutputOpts {
 
 #[cfg(test)]
 mod tests {
-    use super::into_receiver_output;
-    use super::QueueConsumerConfig;
-    use crate::config::{ReceiverOutputOpts, SenderInputOpts};
-    use crate::redis::{RedisInputOpts, RedisOutputOpts};
     use svix_bridge_types::{
         SenderOutputOpts, SvixSenderOutputOpts, TransformationConfig, TransformerInputFormat,
+    };
+
+    use super::{into_receiver_output, QueueConsumerConfig};
+    use crate::{
+        config::{ReceiverOutputOpts, SenderInputOpts},
+        redis::{RedisInputOpts, RedisOutputOpts},
     };
 
     // FIXME: can't support raw payload access for redis because it requires JSON internally.
