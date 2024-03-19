@@ -156,12 +156,11 @@ async fn new_pair_inner(
         if let Err(e) = consumer_group_resp {
             if !e.to_string().contains("BUSYGROUP") {
                 panic!(
-                    "error creating consumer group or stream: {:?}, {:?}, {:?}, {:?}, {:?}",
+                    "error creating consumer group or stream: {:?}, {:?}, {:?}, {:?}, {e:?}",
                     e.kind(),
                     e.detail(),
                     e.code(),
-                    e.category(),
-                    e
+                    e.category()
                 )
             };
         }

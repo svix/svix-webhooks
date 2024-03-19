@@ -230,7 +230,7 @@ async fn test_failed_message_gets_recorded() {
     run_with_retries(|| async {
         let attempts: ListResponse<MessageAttemptOut> = client
             .get(
-                &format!("api/v1/app/{}/attempt/msg/{}/", app_id, msg_res.id),
+                &format!("api/v1/app/{app_id}/attempt/msg/{}/", msg_res.id),
                 StatusCode::OK,
             )
             .await
@@ -302,7 +302,7 @@ async fn test_multiple_endpoints() {
     run_with_retries(|| async {
         let attempts: ListResponse<MessageAttemptOut> = client
             .get(
-                &format!("api/v1/app/{}/attempt/msg/{}/", app_id, msg_res.id),
+                &format!("api/v1/app/{app_id}/attempt/msg/{}/", msg_res.id),
                 StatusCode::OK,
             )
             .await
@@ -355,7 +355,7 @@ async fn test_failed_message_gets_requeued() {
     run_with_retries(|| async {
         let attempts: ListResponse<MessageAttemptOut> = client
             .get(
-                &format!("api/v1/app/{}/attempt/msg/{}/", app_id, msg_res.id),
+                &format!("api/v1/app/{app_id}/attempt/msg/{}/", msg_res.id),
                 StatusCode::OK,
             )
             .await

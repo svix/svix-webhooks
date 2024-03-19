@@ -3,6 +3,23 @@
 
 use std::collections::HashMap;
 
+use aide::axum::{
+    routing::{delete_with, get_with, post_with},
+    ApiRouter,
+};
+use axum::{
+    extract::{Path, State},
+    Json,
+};
+use chrono::{DateTime, Utc};
+use hyper::StatusCode;
+use schemars::JsonSchema;
+use sea_orm::{entity::prelude::*, IntoActiveModel, QueryOrder, QuerySelect};
+use serde::{Deserialize, Deserializer, Serialize};
+use serde_json::value::RawValue;
+use svix_server_derive::{aide_annotate, ModelOut};
+use validator::Validate;
+
 use crate::{
     core::{
         permissions,
@@ -12,7 +29,7 @@ use crate::{
             StatusCodeClass,
         },
     },
-    db::models::{endpoint, message, messagecontent, messagedestination},
+    db::models::{endpoint, message, messageattempt, messagecontent, messagedestination},
     error::{Error, HttpError, Result},
     queue::MessageTask,
     v1::{
@@ -26,29 +43,6 @@ use crate::{
     },
     AppState,
 };
-use aide::axum::{
-    routing::{delete_with, get_with, post_with},
-    ApiRouter,
-};
-use axum::{
-    extract::{Path, State},
-    Json,
-};
-use chrono::{DateTime, Utc};
-
-use hyper::StatusCode;
-use schemars::JsonSchema;
-use sea_orm::{
-    entity::prelude::*, sea_query::Expr, DatabaseConnection, IntoActiveModel, QueryOrder,
-    QuerySelect,
-};
-use serde::{Deserialize, Deserializer, Serialize};
-
-use serde_json::value::RawValue;
-use svix_server_derive::{aide_annotate, ModelOut};
-use validator::Validate;
-
-use crate::db::models::messageattempt;
 
 fn example_status_code() -> i16 {
     200
@@ -419,7 +413,7 @@ async fn list_attempts_by_endpoint(
         .into_iter()
         .map(|mut attempt| {
             if !with_content {
-                attempt.response = "{}".to_owned()
+                "{}".clone_into(&mut attempt.response)
             }
 
             attempt
@@ -513,7 +507,7 @@ async fn list_attempts_by_msg(
         .into_iter()
         .map(|mut attempt| {
             if !with_content {
-                attempt.response = "{}".to_owned()
+                "{}".clone_into(&mut attempt.response)
             }
 
             attempt
@@ -933,13 +927,14 @@ pub fn router() -> ApiRouter<AppState> {
 
 #[cfg(test)]
 mod tests {
+    use serde_json::json;
+    use validator::Validate;
+
     use super::{
         AttemptListFetchQueryParams, ListAttemptedMessagesQueryParams,
         ListAttemptsByEndpointQueryParams, ListAttemptsByMsgQueryParams,
         ListAttemptsForEndpointQueryParams,
     };
-    use serde_json::json;
-    use validator::Validate;
 
     const INVALID_CHANNEL: &str = "$$invalid-channel";
     const VALID_CHANNEL: &str = "valid-channel";

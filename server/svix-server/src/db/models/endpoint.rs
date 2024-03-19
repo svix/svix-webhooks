@@ -1,17 +1,18 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use crate::core::types::{
-    ApplicationId, BaseId, EndpointHeaders, EndpointId, EndpointIdOrUid, EndpointSecretInternal,
-    EndpointUid, EventChannelSet, EventTypeNameSet, ExpiringSigningKeys,
-};
-use crate::error;
 use chrono::Utc;
-use sea_orm::ActiveValue::Set;
-use sea_orm::{entity::prelude::*, Condition};
-use sea_orm::{ConnectionTrait, IntoActiveModel};
+use sea_orm::{entity::prelude::*, ActiveValue::Set, Condition, IntoActiveModel};
 
 use super::endpointmetadata;
+use crate::{
+    core::types::{
+        ApplicationId, BaseId, EndpointHeaders, EndpointId, EndpointIdOrUid,
+        EndpointSecretInternal, EndpointUid, EventChannelSet, EventTypeNameSet,
+        ExpiringSigningKeys,
+    },
+    error,
+};
 
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(table_name = "endpoint")]

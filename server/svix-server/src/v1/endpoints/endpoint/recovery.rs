@@ -1,11 +1,9 @@
 use axum::extract::{Path, State};
 use chrono::{DateTime, Utc};
-use sea_orm::{entity::prelude::*, QueryOrder};
-use sea_orm::{DatabaseConnection, QuerySelect};
+use sea_orm::{entity::prelude::*, QueryOrder, QuerySelect};
 use svix_server_derive::aide_annotate;
 
 use super::RecoverIn;
-use crate::v1::utils::NoContentWithCode;
 use crate::{
     core::{
         permissions,
@@ -14,7 +12,7 @@ use crate::{
     db::models::{application, endpoint, messagedestination},
     error::{HttpError, Result, ValidationErrorItem},
     queue::{MessageTask, TaskQueueProducer},
-    v1::utils::{ApplicationEndpointPath, ValidatedJson},
+    v1::utils::{ApplicationEndpointPath, NoContentWithCode, ValidatedJson},
     AppState,
 };
 

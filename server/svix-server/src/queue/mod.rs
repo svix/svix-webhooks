@@ -1,6 +1,5 @@
 use std::{sync::Arc, time::Duration};
 
-use axum::async_trait;
 use omniqueue::{
     backends::InMemoryBackend, Delivery, DynConsumer, DynScheduledProducer, QueueConsumer,
     ScheduledQueueProducer,
@@ -273,14 +272,4 @@ impl TryFrom<Delivery> for TaskQueueDelivery {
             acker: value,
         })
     }
-}
-
-#[async_trait]
-trait TaskQueueSend: Sync + Send {
-    async fn send(&self, task: Arc<QueueTask>, delay: Option<Duration>) -> Result<()>;
-}
-
-#[async_trait]
-trait TaskQueueReceive {
-    async fn receive_all(&mut self) -> Result<Vec<TaskQueueDelivery>>;
 }

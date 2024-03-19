@@ -376,8 +376,8 @@ impl fmt::Display for HttpError {
         match &self.body {
             HttpErrorBody::Standard(StandardHttpError { code, detail }) => write!(
                 f,
-                "status={} code=\"{}\" detail=\"{}\"",
-                self.status, code, detail
+                "status={} code=\"{code}\" detail=\"{detail}\"",
+                self.status
             ),
 
             HttpErrorBody::Validation(ValidationHttpError { detail }) => {
