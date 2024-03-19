@@ -413,7 +413,7 @@ async fn list_attempts_by_endpoint(
         .into_iter()
         .map(|mut attempt| {
             if !with_content {
-                attempt.response = "{}".to_owned()
+                "{}".clone_into(&mut attempt.response)
             }
 
             attempt
@@ -507,7 +507,7 @@ async fn list_attempts_by_msg(
         .into_iter()
         .map(|mut attempt| {
             if !with_content {
-                attempt.response = "{}".to_owned()
+                "{}".clone_into(&mut attempt.response)
             }
 
             attempt
