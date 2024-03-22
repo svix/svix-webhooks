@@ -2,8 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 use chrono::Utc;
-use sea_orm::entity::prelude::*;
-use sea_orm::ActiveValue::Set;
+use sea_orm::{entity::prelude::*, ActiveValue::Set};
 
 use crate::core::types::{
     BaseId, EndpointId, MessageAttemptId, MessageAttemptTriggerType, MessageEndpointId, MessageId,

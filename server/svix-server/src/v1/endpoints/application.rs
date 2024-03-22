@@ -1,14 +1,29 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use crate::error::Traceable;
+use aide::axum::{
+    routing::{get_with, post_with},
+    ApiRouter,
+};
+use axum::{
+    extract::{Path, State},
+    Json,
+};
+use chrono::{DateTime, Utc};
+use futures::FutureExt;
+use schemars::JsonSchema;
+use sea_orm::{ActiveModelTrait, ActiveValue::Set, TransactionTrait};
+use serde::{Deserialize, Serialize};
+use svix_server_derive::{aide_annotate, ModelOut};
+use validator::{Validate, ValidationError};
+
 use crate::{
     core::{
         permissions,
         types::{metadata::Metadata, ApplicationId, ApplicationUid},
     },
     db::models::{application, applicationmetadata},
-    error::{http_error_on_conflict, HttpError, Result},
+    error::{http_error_on_conflict, HttpError, Result, Traceable},
     v1::utils::{
         apply_pagination, openapi_tag,
         patch::{
@@ -22,22 +37,6 @@ use crate::{
     },
     AppState,
 };
-use aide::axum::{
-    routing::{get_with, post_with},
-    ApiRouter,
-};
-use axum::{
-    extract::{Path, State},
-    Json,
-};
-use chrono::{DateTime, Utc};
-use futures::FutureExt;
-use schemars::JsonSchema;
-use sea_orm::ActiveValue::Set;
-use sea_orm::{ActiveModelTrait, TransactionTrait};
-use serde::{Deserialize, Serialize};
-use svix_server_derive::{aide_annotate, ModelOut};
-use validator::{Validate, ValidationError};
 
 fn application_name_example() -> &'static str {
     "My first application"
@@ -406,9 +405,10 @@ pub fn router() -> ApiRouter<AppState> {
 
 #[cfg(test)]
 mod tests {
-    use super::{ApplicationIn, ApplicationPatch};
     use serde_json::json;
     use validator::Validate;
+
+    use super::{ApplicationIn, ApplicationPatch};
 
     const APP_NAME_INVALID: &str = "";
     const APP_NAME_VALID: &str = "test-app";

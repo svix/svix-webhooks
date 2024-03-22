@@ -4,21 +4,20 @@
 #![warn(clippy::all)]
 #![forbid(unsafe_code)]
 
-use aide::axum::ApiRouter;
-use sentry::integrations::tracing::EventFilter;
-
-use crate::core::cache::Cache;
-use cfg::ConfigurationInner;
-use opentelemetry_otlp::WithExportConfig;
-use opentelemetry_sdk::runtime::Tokio;
-use queue::TaskQueueProducer;
-use sea_orm::DatabaseConnection;
 use std::{
     borrow::Cow,
     net::TcpListener,
     sync::atomic::{AtomicBool, Ordering},
     time::Duration,
 };
+
+use aide::axum::ApiRouter;
+use cfg::ConfigurationInner;
+use opentelemetry_otlp::WithExportConfig;
+use opentelemetry_sdk::runtime::Tokio;
+use queue::TaskQueueProducer;
+use sea_orm::DatabaseConnection;
+use sentry::integrations::tracing::EventFilter;
 use tower::layer::layer_fn;
 use tower_http::{
     cors::{AllowHeaders, Any, CorsLayer},
@@ -30,6 +29,7 @@ use crate::{
     cfg::{CacheBackend, Configuration},
     core::{
         cache,
+        cache::Cache,
         idempotency::IdempotencyService,
         operational_webhooks::{OperationalWebhookSender, OperationalWebhookSenderInner},
     },

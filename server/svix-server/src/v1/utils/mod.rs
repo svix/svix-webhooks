@@ -27,7 +27,6 @@ use regex::Regex;
 use schemars::JsonSchema;
 use sea_orm::{ColumnTrait, QueryFilter, QueryOrder, QuerySelect};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
-
 use validator::{Validate, ValidationError};
 
 use crate::{
@@ -769,12 +768,11 @@ impl<T: JsonSchema + Serialize> OperationOutput for JsonStatusUpsert<T> {
 
 #[cfg(test)]
 mod tests {
+    use serde_json::json;
     use validator::Validate;
 
     use super::{default_limit, validate_no_control_characters, validation_errors, Pagination};
-    use crate::core::types::ApplicationUid;
-    use crate::error::ValidationErrorItem;
-    use serde_json::json;
+    use crate::{core::types::ApplicationUid, error::ValidationErrorItem};
 
     #[derive(Debug, Validate)]
     struct ValidationErrorTestStruct {

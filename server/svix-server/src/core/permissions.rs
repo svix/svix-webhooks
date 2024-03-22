@@ -5,16 +5,14 @@ use axum::{
     http::request::Parts,
 };
 
-use crate::error::Traceable;
-use crate::{
-    db::models::{application, applicationmetadata},
-    error::{Error, HttpError, Result},
-    AppState,
-};
-
 use super::{
     security::{permissions_from_bearer, AccessLevel, Permissions},
     types::{ApplicationId, ApplicationIdOrUid, FeatureFlagSet, OrganizationId},
+};
+use crate::{
+    db::models::{application, applicationmetadata},
+    error::{Error, HttpError, Result, Traceable},
+    AppState,
 };
 
 pub struct ReadAll {

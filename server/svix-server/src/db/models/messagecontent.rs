@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use crate::core::types::MessageId;
 use chrono::Utc;
-use sea_orm::entity::prelude::*;
-use sea_orm::ActiveValue::Set;
+use sea_orm::{entity::prelude::*, ActiveValue::Set};
+
+use crate::core::types::MessageId;
 
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(table_name = "messagecontent")]

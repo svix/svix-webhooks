@@ -7,20 +7,16 @@ use axum::{
     extract::{FromRequestParts, TypedHeader},
     headers::{authorization::Bearer, Authorization},
 };
-
 use http::request::Parts;
 use jwt_simple::prelude::*;
 use serde::Deserializer;
-
 use validator::Validate;
 
-use crate::error::Error;
+use super::types::{ApplicationId, FeatureFlagSet, OrganizationId};
 use crate::{
-    error::{HttpError, Result},
+    error::{Error, HttpError, Result},
     AppState,
 };
-
-use super::types::{ApplicationId, FeatureFlagSet, OrganizationId};
 
 /// The default org_id we use (useful for generating JWTs when testing).
 pub fn default_org_id() -> OrganizationId {

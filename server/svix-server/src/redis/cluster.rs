@@ -1,5 +1,4 @@
 use axum::async_trait;
-
 use redis::{
     cluster::{ClusterClient, ClusterClientBuilder},
     ErrorKind, IntoConnectionInfo, RedisError,

@@ -4,6 +4,7 @@ use chrono::{DateTime, FixedOffset, Utc};
 use sea_orm::{DatabaseConnection, DatabaseTransaction, TransactionTrait};
 use serde::{Deserialize, Serialize};
 
+use super::types::EventTypeName;
 use crate::{
     core::{
         cache::{kv_def, Cache, CacheBehavior, CacheKey, CacheValue},
@@ -16,8 +17,6 @@ use crate::{
     db::models::{application, endpoint},
     error::{Error, Result},
 };
-
-use super::types::EventTypeName;
 
 /// The information cached during the creation of a message. Includes a [`Vec`] of all endpoints
 /// associated with the given application and organization ID.

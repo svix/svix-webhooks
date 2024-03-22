@@ -3,18 +3,18 @@
 
 use std::collections::HashMap;
 
+use chrono::Utc;
+use jsonschema::{Draft, JSONSchema};
+use schemars::JsonSchema;
+use sea_orm::{entity::prelude::*, ActiveValue::Set};
+use serde::{Deserialize, Serialize};
+
 use crate::{
     core::types::{
         BaseId, EventTypeId, EventTypeName, FeatureFlag, FeatureFlagSet, OrganizationId,
     },
     json_wrapper,
 };
-use chrono::Utc;
-use jsonschema::{Draft, JSONSchema};
-use schemars::JsonSchema;
-use sea_orm::entity::prelude::*;
-use sea_orm::ActiveValue::Set;
-use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
 #[sea_orm(table_name = "eventtype")]

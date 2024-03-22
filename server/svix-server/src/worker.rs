@@ -1,47 +1,50 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-Licensepub(crate) -Identifier: MIT
 
-use crate::cfg::Configuration;
-
-use crate::core::cache::{kv_def, Cache, CacheBehavior, CacheKey, CacheValue};
-use crate::core::cryptography::Encryption;
-use crate::core::message_app::{CreateMessageApp, CreateMessageEndpoint};
-use crate::core::operational_webhooks::{
-    EndpointDisabledEventData, MessageAttemptEvent, OperationalWebhook, OperationalWebhookSender,
+use std::{
+    collections::HashMap,
+    sync::{
+        atomic::{AtomicU64, AtomicUsize, Ordering},
+        Arc,
+    },
+    time::Duration,
 };
-use crate::core::types::{
-    ApplicationId, ApplicationUid, BaseId, EndpointHeaders, EndpointId, EndpointSecretInternal,
-    EndpointSecretType, MessageAttemptId, MessageAttemptTriggerType, MessageId, MessageStatus,
-    MessageUid, OrganizationId,
-};
-use crate::core::webhook_http_client::{
-    Error as WebhookClientError, RequestBuilder, WebhookClient,
-};
-use crate::db::models::{endpoint, message, messageattempt, messagecontent, messagedestination};
-use crate::error::{Error, ErrorType, HttpError, Result};
-use crate::queue::{MessageTask, QueueTask, TaskQueueConsumer, TaskQueueProducer};
-use crate::v1::utils::get_unix_timestamp;
 
 use chrono::Utc;
-
 use futures::future;
 use http::{HeaderValue, StatusCode, Version};
 use once_cell::sync::Lazy;
 use rand::Rng;
-
-use sea_orm::prelude::DateTimeUtc;
 use sea_orm::{
-    ActiveModelBehavior, ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait,
-    QueryFilter, Set, TryIntoModel,
+    prelude::DateTimeUtc, ActiveModelBehavior, ActiveModelTrait, ColumnTrait, DatabaseConnection,
+    EntityTrait, QueryFilter, Set, TryIntoModel,
 };
 use serde::{Deserialize, Serialize};
 use tokio::time::sleep;
 use tracing::Instrument;
 
-use std::collections::HashMap;
-use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering};
-use std::sync::Arc;
-use std::time::Duration;
+use crate::{
+    cfg::Configuration,
+    core::{
+        cache::{kv_def, Cache, CacheBehavior, CacheKey, CacheValue},
+        cryptography::Encryption,
+        message_app::{CreateMessageApp, CreateMessageEndpoint},
+        operational_webhooks::{
+            EndpointDisabledEventData, MessageAttemptEvent, OperationalWebhook,
+            OperationalWebhookSender,
+        },
+        types::{
+            ApplicationId, ApplicationUid, BaseId, EndpointHeaders, EndpointId,
+            EndpointSecretInternal, EndpointSecretType, MessageAttemptId,
+            MessageAttemptTriggerType, MessageId, MessageStatus, MessageUid, OrganizationId,
+        },
+        webhook_http_client::{Error as WebhookClientError, RequestBuilder, WebhookClient},
+    },
+    db::models::{endpoint, message, messageattempt, messagecontent, messagedestination},
+    error::{Error, ErrorType, HttpError, Result},
+    queue::{MessageTask, QueueTask, TaskQueueConsumer, TaskQueueProducer},
+    v1::utils::get_unix_timestamp,
+};
 
 pub type CaseSensitiveHeaderMap = HashMap<String, HeaderValue>;
 

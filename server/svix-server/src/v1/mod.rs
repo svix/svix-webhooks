@@ -41,9 +41,11 @@ mod development {
     use axum::{async_trait, extract::FromRequestParts, routing::get, Json, Router};
     use http::request::Parts;
 
-    use crate::error::{Error, Result};
-    use crate::v1::utils::EmptyResponse;
-    use crate::AppState;
+    use crate::{
+        error::{Error, Result},
+        v1::utils::EmptyResponse,
+        AppState,
+    };
 
     struct EchoData {
         pub headers: String,
