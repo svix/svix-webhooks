@@ -14,10 +14,8 @@ use axum::{
     http::{Request, Response, StatusCode},
     response::IntoResponse,
 };
-
 use blake2::{Blake2b512, Digest};
 use http::request::Parts;
-
 use serde::{Deserialize, Serialize};
 use tower::Service;
 

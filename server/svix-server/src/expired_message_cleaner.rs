@@ -1,14 +1,17 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use std::sync::atomic::Ordering;
+use std::{
+    sync::atomic::Ordering,
+    time::{Duration, Instant},
+};
 
-use crate::error::{Error, Result};
 use sea_orm::{
     ConnectionTrait, DatabaseConnection, DbErr, ExecResult, QueryResult, Statement,
     TransactionTrait, UpdateResult,
 };
-use std::time::{Duration, Instant};
+
+use crate::error::{Error, Result};
 
 type DbResult<T> = std::result::Result<T, DbErr>;
 

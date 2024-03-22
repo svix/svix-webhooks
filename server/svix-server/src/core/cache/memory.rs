@@ -1,15 +1,14 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
+use std::{collections::HashMap, sync::Arc};
+
+use axum::async_trait;
 use tokio::{
     sync::RwLock,
     task,
     time::{sleep, Duration, Instant},
 };
-
-use axum::async_trait;
-use std::collections::HashMap;
-use std::sync::Arc;
 
 use super::{Cache, CacheBehavior, CacheKey, Result};
 
@@ -105,12 +104,13 @@ fn check_is_expired(vw: &ValueWrapper) -> bool {
 
 #[cfg(test)]
 mod tests {
+    use serde::{Deserialize, Serialize};
+
     use super::{
         super::{kv_def, CacheValue},
         *,
     };
     use crate::core::cache::string_kv_def;
-    use serde::{Deserialize, Serialize};
 
     // Test structures
 

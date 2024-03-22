@@ -1,21 +1,17 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-use std::error;
-use std::fmt;
-use std::panic::Location;
+use std::{error, fmt, panic::Location};
 
 use aide::OperationOutput;
-use axum::extract::rejection::ExtensionRejection;
-use axum::extract::rejection::PathRejection;
-use axum::response::IntoResponse;
-use axum::response::Response;
-use axum::Json;
+use axum::{
+    extract::rejection::{ExtensionRejection, PathRejection},
+    response::{IntoResponse, Response},
+    Json,
+};
 use hyper::StatusCode;
 use schemars::JsonSchema;
-use sea_orm::DbErr;
-use sea_orm::RuntimeErr;
-use sea_orm::TransactionError;
+use sea_orm::{DbErr, RuntimeErr, TransactionError};
 use serde::Serialize;
 use serde_json::json;
 

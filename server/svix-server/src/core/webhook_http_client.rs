@@ -15,8 +15,7 @@ use futures::{future::BoxFuture, FutureExt};
 use hickory_resolver::{
     error::ResolveError, lookup_ip::LookupIpIntoIter, AsyncResolver, TokioAsyncResolver,
 };
-use http::header::HeaderName;
-use http::{HeaderMap, HeaderValue, Method, Response, StatusCode, Version};
+use http::{header::HeaderName, HeaderMap, HeaderValue, Method, Response, StatusCode, Version};
 use hyper::{
     client::connect::{dns::Name, HttpConnector},
     ext::HeaderCaseMap,

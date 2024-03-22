@@ -1,8 +1,9 @@
 use std::collections::HashMap;
 
-use crate::json_wrapper;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+
+use crate::json_wrapper;
 
 pub const MAX_METADATA_SIZE: usize = 4096;
 

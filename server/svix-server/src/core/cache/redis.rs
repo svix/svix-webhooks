@@ -6,9 +6,8 @@ use std::time::Duration;
 use axum::async_trait;
 use redis::AsyncCommands as _;
 
-use crate::redis::RedisPool;
-
 use super::{Cache, CacheBehavior, CacheKey, Error, Result};
+use crate::redis::RedisPool;
 
 pub fn new(redis: RedisPool) -> Cache {
     RedisCache { redis }.into()
@@ -76,12 +75,12 @@ impl CacheBehavior for RedisCache {
 
 #[cfg(test)]
 mod tests {
+    use serde::{Deserialize, Serialize};
+
     use super::{
         super::{kv_def, string_kv_def, CacheValue},
         *,
     };
-    use serde::{Deserialize, Serialize};
-
     use crate::cfg::CacheType;
 
     // Test structures

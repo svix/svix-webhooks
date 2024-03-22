@@ -3,8 +3,10 @@
 
 use std::fmt::Debug;
 
-use chacha20poly1305::aead::{Aead, KeyInit};
-use chacha20poly1305::{Key, XChaCha20Poly1305, XNonce};
+use chacha20poly1305::{
+    aead::{Aead, KeyInit},
+    Key, XChaCha20Poly1305, XNonce,
+};
 use ed25519_compact::*;
 use rand::Rng;
 

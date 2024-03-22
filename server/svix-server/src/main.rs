@@ -4,17 +4,20 @@
 #![warn(clippy::all)]
 #![forbid(unsafe_code)]
 
+use clap::{Parser, Subcommand};
 use dotenv::dotenv;
-use svix_server::core::types::{EndpointSecretInternal, OrganizationId};
-use svix_server::db::wipe_org;
+use svix_server::{
+    cfg,
+    core::{
+        security::{default_org_id, generate_org_token},
+        types::{EndpointSecretInternal, OrganizationId},
+    },
+    db,
+    db::wipe_org,
+    run, setup_tracing,
+};
 use tracing_subscriber::util::SubscriberInitExt;
 use validator::Validate;
-
-use svix_server::core::security::{default_org_id, generate_org_token};
-
-use svix_server::{cfg, db, run, setup_tracing};
-
-use clap::{Parser, Subcommand};
 
 #[cfg(all(target_env = "msvc", feature = "jemalloc"))]
 compile_error!("jemalloc cannot be enabled on msvc");

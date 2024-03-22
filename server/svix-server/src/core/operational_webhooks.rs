@@ -18,8 +18,8 @@ use super::{
         MessageUid, OrganizationId,
     },
 };
-use crate::core::security::JwtSigningConfig;
 use crate::{
+    core::security::JwtSigningConfig,
     db::models::{endpoint, messageattempt},
     error::{Error, HttpError, Result},
 };
