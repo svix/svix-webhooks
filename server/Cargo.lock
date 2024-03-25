@@ -1121,16 +1121,6 @@ dependencies = [
 
 [[package]]
 name = "ed25519-compact"
-version = "1.0.16"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e18997d4604542d0736fae2c5ad6de987f0a50530cbcc14a7ce5a685328a252d"
-dependencies = [
- "ct-codecs",
- "getrandom",
-]
-
-[[package]]
-name = "ed25519-compact"
 version = "2.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e9b3460f44bea8cd47f45a0c70892f1eff856d97cd55358b2f73f663789f6190"
@@ -2146,7 +2136,7 @@ dependencies = [
  "binstring",
  "coarsetime",
  "ct-codecs",
- "ed25519-compact 2.1.1",
+ "ed25519-compact",
  "hmac-sha1-compact",
  "hmac-sha256",
  "hmac-sha512",
@@ -4359,7 +4349,7 @@ dependencies = [
  "clap",
  "ctor",
  "dotenv",
- "ed25519-compact 1.0.16",
+ "ed25519-compact",
  "enum_dispatch",
  "figment",
  "form_urlencoded",
