@@ -11,11 +11,13 @@ on:
       - 'server/**/Cargo.toml'
       - 'server/**/Cargo.lock'
       - '.github/workflows/server-security.yml'
+      - 'deny.toml'
   pull_request:
     paths:
       - 'server/**/Cargo.toml'
       - 'server/**/Cargo.lock'
       - '.github/workflows/server-security.yml'
+      - 'deny.toml'
 
 jobs:
   security_audit:
