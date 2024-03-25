@@ -7,7 +7,6 @@ RUN apt-get update && apt-get install -y \
     curl=7.* \
     libssl-dev=* \
     pkg-config=0.29.* \
-    protobuf-compiler=* \
     zlib1g-dev=1:* \
     --no-install-recommends
 
