@@ -126,7 +126,7 @@ mod tests {
     // run with `cargo test -- --ignored redis` only when redis is up and configured
     #[ignore]
     async fn test_cache_crud_no_ttl() {
-        dotenv::dotenv().ok();
+        dotenvy::dotenv().ok();
         let cfg = crate::cfg::load().unwrap();
 
         let redis_pool = get_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg).await;
@@ -203,7 +203,7 @@ mod tests {
     #[tokio::test]
     #[ignore]
     async fn test_cache_ttl() {
-        dotenv::dotenv().ok();
+        dotenvy::dotenv().ok();
         let cfg = crate::cfg::load().unwrap();
 
         let redis_pool = get_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg).await;
@@ -222,7 +222,7 @@ mod tests {
     #[tokio::test]
     #[ignore]
     async fn test_cache_nx_status() {
-        dotenv::dotenv().ok();
+        dotenvy::dotenv().ok();
         let cfg = crate::cfg::load().unwrap();
 
         let redis_pool = get_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg).await;

@@ -374,7 +374,7 @@ async fn test_failed_message_gets_requeued() {
 #[tokio::test]
 async fn test_payload_retention_period() {
     let (client, _jh) = start_svix_server().await;
-    dotenv::dotenv().ok();
+    dotenvy::dotenv().ok();
     let cfg = svix_server::cfg::load().expect("Error loading configuration");
     let pool = svix_server::db::init_db(&cfg).await;
 

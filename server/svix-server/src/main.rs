@@ -5,7 +5,7 @@
 #![forbid(unsafe_code)]
 
 use clap::{Parser, Subcommand};
-use dotenv::dotenv;
+use dotenvy::dotenv;
 use svix_server::{
     cfg,
     core::{

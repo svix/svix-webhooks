@@ -180,7 +180,7 @@ mod tests {
     // run with `cargo test -- --ignored redis` only when redis is up and configured
     #[ignore]
     async fn test_set_read_random_keys() {
-        dotenv::dotenv().ok();
+        dotenvy::dotenv().ok();
         let cfg = crate::cfg::load().unwrap();
 
         let pool = get_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg).await;

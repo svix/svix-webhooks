@@ -23,7 +23,7 @@ use crate::utils::{
 /// Ensures that a deleted application returns `None` when using [`layered_fetch`]
 #[tokio::test]
 async fn test_app_deletion() {
-    dotenv::dotenv().ok();
+    dotenvy::dotenv().ok();
     let cfg = svix_server::cfg::load().expect("Error loading Configuration");
     let org_id = OrganizationId::new(None, None);
     let (client, _jh) =
@@ -103,7 +103,7 @@ async fn test_app_deletion() {
 
 #[tokio::test]
 async fn test_endp_deletion() {
-    dotenv::dotenv().ok();
+    dotenvy::dotenv().ok();
     let cfg = svix_server::cfg::load().expect("Error loading Configuration");
     let org_id = OrganizationId::new(None, None);
     let (client, _jh) =
