@@ -3265,9 +3265,9 @@ checksum = "c08c74e62047bb2de4ff487b251e4a92e24f48745648451635cec7d591162d9f"
 
 [[package]]
 name = "reqwest"
-version = "0.11.24"
+version = "0.11.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c6920094eb85afde5e4a138be3f2de8bbdf28000f0029e72c45025a56b042251"
+checksum = "dd67538700a17451e7cba03ac727fb961abb7607553461627b97de0b89cf4a62"
 dependencies = [
  "base64 0.21.7",
  "bytes",
@@ -3275,6 +3275,7 @@ dependencies = [
  "futures-core",
  "futures-util",
  "h2",
+ "hickory-resolver",
  "http",
  "http-body",
  "hyper",
@@ -3300,7 +3301,6 @@ dependencies = [
  "tokio-native-tls",
  "tokio-rustls",
  "tower-service",
- "trust-dns-resolver",
  "url",
  "wasm-bindgen",
  "wasm-bindgen-futures",
@@ -4867,52 +4867,6 @@ dependencies = [
  "tracing-core",
  "tracing-log",
  "tracing-serde",
-]
-
-[[package]]
-name = "trust-dns-proto"
-version = "0.23.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3119112651c157f4488931a01e586aa459736e9d6046d3bd9105ffb69352d374"
-dependencies = [
- "async-trait",
- "cfg-if",
- "data-encoding",
- "enum-as-inner",
- "futures-channel",
- "futures-io",
- "futures-util",
- "idna 0.4.0",
- "ipnet",
- "once_cell",
- "rand",
- "smallvec",
- "thiserror",
- "tinyvec",
- "tokio",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "trust-dns-resolver"
-version = "0.23.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "10a3e6c3aff1718b3c73e395d1f35202ba2ffa847c6a62eea0db8fb4cfe30be6"
-dependencies = [
- "cfg-if",
- "futures-util",
- "ipconfig",
- "lru-cache",
- "once_cell",
- "parking_lot",
- "rand",
- "resolv-conf",
- "smallvec",
- "thiserror",
- "tokio",
- "tracing",
- "trust-dns-proto",
 ]
 
 [[package]]
