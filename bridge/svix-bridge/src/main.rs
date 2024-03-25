@@ -8,7 +8,7 @@ use clap::Parser;
 use once_cell::sync::Lazy;
 use opentelemetry_otlp::WithExportConfig;
 use opentelemetry_sdk::{
-    metrics::{data::Temporality, reader::TemporalitySelector, InstrumentKind, MeterProvider},
+    metrics::{data::Temporality, reader::TemporalitySelector, InstrumentKind, SdkMeterProvider},
     runtime::Tokio,
 };
 use svix_bridge_types::{SenderInput, TransformerJob};
@@ -144,7 +144,7 @@ impl TemporalitySelector for DeltaTemporalitySelector {
     }
 }
 
-pub fn setup_metrics(cfg: &Config) -> Option<MeterProvider> {
+pub fn setup_metrics(cfg: &Config) -> Option<SdkMeterProvider> {
     cfg.opentelemetry.as_ref().map(|otel_cfg| {
         let exporter = opentelemetry_otlp::new_exporter()
             .tonic()
