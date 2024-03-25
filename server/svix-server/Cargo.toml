@@ -16,7 +16,7 @@ svix-server_derive = { path = "../svix-server_derive" }
 
 svix = "1.17.0"
 svix-ksuid = "^0.5.1"
-dotenv = "0.15.0"
+dotenvy = "0.15.7"
 hmac-sha256 = "1"
 clap = { version = "4.1.8", features = ["derive"] }
 axum = { version = "0.6.1", features = ["headers"] }
@@ -42,9 +42,9 @@ opentelemetry = "0.22.0"
 opentelemetry_sdk = { version = "0.22.1", features = ["rt-tokio"] }
 opentelemetry-http = "0.11.0"
 opentelemetry-otlp = { version = "0.15.0" }
-validator = { version = "0.14.0", features = ["derive"] }
+validator = { version = "0.16.0", features = ["derive"] }
 jwt-simple = "0.11.6"
-ed25519-compact = "1.0.11"
+ed25519-compact = "2.1.1"
 chrono = { version="0.4.26", features = ["serde"] }
 reqwest = { version = "0.11.9", features = ["json", "rustls-tls", "trust-dns"], default-features = false }
 bb8 = "0.8"

@@ -36,7 +36,7 @@ fn task_queue_delivery_to_u16(tqd: &TaskQueueDelivery) -> u16 {
 }
 
 async fn test_many_queue_consumers_inner(prefix: &str, delay: Option<Duration>) {
-    dotenv::dotenv().ok();
+    dotenvy::dotenv().ok();
     let cfg = svix_server::cfg::load().expect("Error loading configuration");
 
     // This test assumes an empty queue, so load Redis and delete the test key

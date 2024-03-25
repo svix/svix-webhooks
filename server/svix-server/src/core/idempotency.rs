@@ -378,7 +378,7 @@ mod tests {
     async fn start_service(
         wait: Option<std::time::Duration>,
     ) -> (JoinHandle<()>, String, Arc<Mutex<u16>>) {
-        dotenv::dotenv().ok();
+        dotenvy::dotenv().ok();
 
         let cache = cache::memory::new();
 
@@ -430,7 +430,7 @@ mod tests {
         let client = Client::new();
 
         // Generate a new token so that keys are unique
-        dotenv::dotenv().ok();
+        dotenvy::dotenv().ok();
         let cfg = crate::cfg::load().unwrap();
         let token = generate_org_token(&cfg.jwt_signing_config, OrganizationId::new(None, None))
             .unwrap()
@@ -531,7 +531,7 @@ mod tests {
         let client = Client::new();
 
         // Generate a new token so that keys are unique
-        dotenv::dotenv().ok();
+        dotenvy::dotenv().ok();
         let cfg = crate::cfg::load().unwrap();
 
         let token = generate_org_token(&cfg.jwt_signing_config, OrganizationId::new(None, None))
@@ -577,7 +577,7 @@ mod tests {
     /// Starts a server just like [`start_service`] but it returns an empty body. The count is
     /// recorded in the HTTP status code.
     async fn start_empty_service() -> (JoinHandle<()>, String, Arc<Mutex<u16>>) {
-        dotenv::dotenv().ok();
+        dotenvy::dotenv().ok();
 
         let cache = cache::memory::new();
 
@@ -627,7 +627,7 @@ mod tests {
         let client = Client::new();
 
         // Generate a new token so that keys are unique
-        dotenv::dotenv().ok();
+        dotenvy::dotenv().ok();
         let cfg = crate::cfg::load().unwrap();
         let token = generate_org_token(&cfg.jwt_signing_config, OrganizationId::new(None, None))
             .unwrap()

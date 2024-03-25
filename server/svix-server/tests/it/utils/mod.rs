@@ -250,7 +250,7 @@ impl TestClient {
 }
 
 pub fn get_default_test_config() -> ConfigurationInner {
-    let _ = dotenv::dotenv();
+    let _ = dotenvy::dotenv();
     let cfg = svix_server::cfg::load().unwrap();
 
     cfg.as_ref().clone()
