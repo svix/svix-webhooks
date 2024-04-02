@@ -166,7 +166,7 @@ async fn new_pair_inner(
         }
     }
 
-    // Redis durationns are given in integer numbers of milliseconds, so the pending_duration (the
+    // Redis durations are given in integer numbers of milliseconds, so the pending_duration (the
     // time in which a task is allowed to be processing before being restarted) must be converted to
     // one.
     let pending_duration: i64 = pending_duration

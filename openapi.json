@@ -17392,7 +17392,7 @@
         },
         "/api/v1/event-type/import/openapi/": {
             "post": {
-                "description": "Given an OpenAPI spec, create new or update existing event types.\nIf an existing `archived` event type is updated, it will be unarchvied.\n\nThe importer will convert all webhooks found in the either the `webhooks` or `x-webhooks`\ntop-level.",
+                "description": "Given an OpenAPI spec, create new or update existing event types.\nIf an existing `archived` event type is updated, it will be unarchived.\n\nThe importer will convert all webhooks found in the either the `webhooks` or `x-webhooks`\ntop-level.",
                 "operationId": "v1.event-type.import-openapi",
                 "parameters": [
                     {
