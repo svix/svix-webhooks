@@ -70,13 +70,13 @@ cargo watch -x run
 
 This however will fail, as you also need to point the server to the database and setup a few other configurations.
 
-The easiest way to achieve that is to use docker-compose to setup a dockerize development environment, and the related config.
+The easiest way to achieve that is to use docker compose to setup a dockerize development environment, and the related config.
 
 ```
 # From the svix inner directory
 cp development.env .env
 # Set up docker (may need sudo depending on your setup)
-docker-compose up
+docker compose up
 ```
 
 Now run `cargo watch -x run` again to start the development server against your local docker environment.

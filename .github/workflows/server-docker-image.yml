@@ -21,11 +21,11 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Build server image
-      run: docker-compose build
+      run: docker compose build
       working-directory: ./server
 
     - name: Run server with docker-compose
-      run: docker-compose up -d
+      run: docker compose up -d
       working-directory: ./server
 
     - name: Check server container is up and running
@@ -33,10 +33,10 @@ jobs:
 
     - name: Display server container logs
       if: failure()
-      run: docker-compose logs backend
+      run: docker compose logs backend
       working-directory: ./server
 
-    - name: Terminate docker-compose created containers
+    - name: Terminate docker compose created containers
       if: always()
-      run: docker-compose down -v
+      run: docker compose down -v
       working-directory: ./server
