@@ -894,13 +894,13 @@ async fn test_pagination_by_msg() {
     }
 
     /// Adds 5ms to a [`chrono::DateTime`] for testing `before` and `after`
-    fn add_5ms<T: chrono::TimeZone>(dur: chrono::DateTime<T>) -> chrono::DateTime<T> {
-        dur + chrono::Duration::from_std(std::time::Duration::from_millis(5)).unwrap()
+    fn add_5ms<T: chrono::TimeZone>(ts: chrono::DateTime<T>) -> chrono::DateTime<T> {
+        ts + chrono::Duration::from_std(std::time::Duration::from_millis(5)).unwrap()
     }
 
     /// Subtracts 5ms to a [`chrono::DateTime`] for testing `before` and `after`
-    fn sub_5ms<T: chrono::TimeZone>(dur: chrono::DateTime<T>) -> chrono::DateTime<T> {
-        dur - chrono::Duration::from_std(std::time::Duration::from_millis(5)).unwrap()
+    fn sub_5ms<T: chrono::TimeZone>(ts: chrono::DateTime<T>) -> chrono::DateTime<T> {
+        ts - chrono::Duration::from_std(std::time::Duration::from_millis(5)).unwrap()
     }
 }
 

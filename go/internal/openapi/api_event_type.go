@@ -1148,7 +1148,7 @@ func (r ApiV1EventTypeImportOpenapiRequest) Execute() (EventTypeImportOpenApiOut
 /*
  * V1EventTypeImportOpenapi Event Type Import From Openapi
  * Given an OpenAPI spec, create new or update existing event types.
-If an existing `archived` event type is updated, it will be unarchvied.
+If an existing `archived` event type is updated, it will be unarchived.
 
 The importer will convert all webhooks found in the either the `webhooks` or `x-webhooks`
 top-level.

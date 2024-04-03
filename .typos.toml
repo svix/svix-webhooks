@@ -1,3 +1,9 @@
+[default]
+extend-ignore-re = [
+    # Mock token
+    ";iuani;ansd;ifgjbnai;sdjfgb",
+]
+
 [files]
 extend-exclude = [
     # Typo "achived" is a breaking change to fix
