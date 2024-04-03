@@ -139,17 +139,17 @@ Please refer to the [server configuration](#server-configuration) section below 
 
 You can use the official Svix Docker image from [Docker Hub](https://hub.docker.com/r/svix/svix-server). You can either use the `latest` tag, or one of [the versioned tags](https://hub.docker.com/r/svix/svix-server/tags) instead.
 
-You can either use the example [docker-compose.yml](./server/docker-compose.yml) file with `docker-compose` (easiest), `docker swarm` (advanced), or run the container standalone.
+You can either use the example [docker-compose.yml](./server/docker-compose.yml) file with `docker compose` (easiest), `docker swarm` (advanced), or run the container standalone.
 
 #### With Docker Compose
 
 This alternative is the easiest because it will also boot up and configure `redis` and `postgresql`.
 
-This assumes you have docker-compose installed.
+This assumes you have Docker Compose v2 installed.
 
 ```
 cd server
-docker-compose up
+docker compose up
 ```
 
 #### Standalone container

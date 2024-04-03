@@ -79,7 +79,7 @@ jobs:
       working-directory: bridge
 
     - name: Start dependencies
-      run: docker-compose -f "bridge/testing-docker-compose.yml" up -d
+      run: docker compose -f "bridge/testing-docker-compose.yml" up -d
 
     - name: Clippy
       run: cargo clippy --all-targets --all-features -- -D warnings
@@ -90,7 +90,7 @@ jobs:
       run: ./run-tests.sh
 
     - name: Stop dependencies
-      run: docker-compose -f "bridge/testing-docker-compose.yml" down
+      run: docker compose -f "bridge/testing-docker-compose.yml" down
 
 #  deny-check:
 #    name: cargo-deny check
