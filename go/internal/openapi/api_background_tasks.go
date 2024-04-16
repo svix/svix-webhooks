@@ -72,7 +72,7 @@ func (a *BackgroundTasksApiService) GetBackgroundTaskExecute(r ApiGetBackgroundT
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/background-task/{task_id}/"
+	localVarPath := localBasePath + "/api/v1/background-task/{task_id}"
 	localVarPath = strings.Replace(localVarPath, "{"+"task_id"+"}", _neturl.PathEscape(parameterToString(r.taskId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -269,7 +269,7 @@ func (a *BackgroundTasksApiService) ListBackgroundTasksExecute(r ApiListBackgrou
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/background-task/"
+	localVarPath := localBasePath + "/api/v1/background-task"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}

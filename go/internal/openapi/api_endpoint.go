@@ -85,7 +85,7 @@ func (a *EndpointApiService) V1EndpointCreateExecute(r ApiV1EndpointCreateReques
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -275,7 +275,7 @@ func (a *EndpointApiService) V1EndpointDeleteExecute(r ApiV1EndpointDeleteReques
 		return nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"endpoint_id"+"}", _neturl.PathEscape(parameterToString(r.endpointId, "")), -1)
 
@@ -457,7 +457,7 @@ func (a *EndpointApiService) V1EndpointGetExecute(r ApiV1EndpointGetRequest) (En
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"endpoint_id"+"}", _neturl.PathEscape(parameterToString(r.endpointId, "")), -1)
 
@@ -648,7 +648,7 @@ func (a *EndpointApiService) V1EndpointGetHeadersExecute(r ApiV1EndpointGetHeade
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"endpoint_id"+"}", _neturl.PathEscape(parameterToString(r.endpointId, "")), -1)
 
@@ -842,7 +842,7 @@ func (a *EndpointApiService) V1EndpointGetSecretExecute(r ApiV1EndpointGetSecret
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"endpoint_id"+"}", _neturl.PathEscape(parameterToString(r.endpointId, "")), -1)
 
@@ -1043,7 +1043,7 @@ func (a *EndpointApiService) V1EndpointGetStatsExecute(r ApiV1EndpointGetStatsRe
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}/stats/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}/stats"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"endpoint_id"+"}", _neturl.PathEscape(parameterToString(r.endpointId, "")), -1)
 
@@ -1252,7 +1252,7 @@ func (a *EndpointApiService) V1EndpointListExecute(r ApiV1EndpointListRequest) (
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -1450,7 +1450,7 @@ func (a *EndpointApiService) V1EndpointPatchExecute(r ApiV1EndpointPatchRequest)
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"endpoint_id"+"}", _neturl.PathEscape(parameterToString(r.endpointId, "")), -1)
 
@@ -1649,7 +1649,7 @@ func (a *EndpointApiService) V1EndpointPatchHeadersExecute(r ApiV1EndpointPatchH
 		return nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"endpoint_id"+"}", _neturl.PathEscape(parameterToString(r.endpointId, "")), -1)
 
@@ -1846,7 +1846,7 @@ func (a *EndpointApiService) V1EndpointRecoverExecute(r ApiV1EndpointRecoverRequ
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"endpoint_id"+"}", _neturl.PathEscape(parameterToString(r.endpointId, "")), -1)
 
@@ -2055,7 +2055,7 @@ func (a *EndpointApiService) V1EndpointReplayExecute(r ApiV1EndpointReplayReques
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}/replay-missing/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}/replay-missing"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"endpoint_id"+"}", _neturl.PathEscape(parameterToString(r.endpointId, "")), -1)
 
@@ -2262,7 +2262,7 @@ func (a *EndpointApiService) V1EndpointRotateSecretExecute(r ApiV1EndpointRotate
 		return nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"endpoint_id"+"}", _neturl.PathEscape(parameterToString(r.endpointId, "")), -1)
 
@@ -2462,7 +2462,7 @@ func (a *EndpointApiService) V1EndpointSendExampleExecute(r ApiV1EndpointSendExa
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}/send-example/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}/send-example"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"endpoint_id"+"}", _neturl.PathEscape(parameterToString(r.endpointId, "")), -1)
 
@@ -2661,7 +2661,7 @@ func (a *EndpointApiService) V1EndpointTransformationGetExecute(r ApiV1EndpointT
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"endpoint_id"+"}", _neturl.PathEscape(parameterToString(r.endpointId, "")), -1)
 
@@ -2855,7 +2855,7 @@ func (a *EndpointApiService) V1EndpointTransformationPartialUpdateExecute(r ApiV
 		return nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"endpoint_id"+"}", _neturl.PathEscape(parameterToString(r.endpointId, "")), -1)
 
@@ -3052,7 +3052,7 @@ func (a *EndpointApiService) V1EndpointTransformationSimulateExecute(r ApiV1Endp
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation/simulate/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation/simulate"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"endpoint_id"+"}", _neturl.PathEscape(parameterToString(r.endpointId, "")), -1)
 
@@ -3256,7 +3256,7 @@ func (a *EndpointApiService) V1EndpointUpdateExecute(r ApiV1EndpointUpdateReques
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"endpoint_id"+"}", _neturl.PathEscape(parameterToString(r.endpointId, "")), -1)
 
@@ -3455,7 +3455,7 @@ func (a *EndpointApiService) V1EndpointUpdateHeadersExecute(r ApiV1EndpointUpdat
 		return nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"endpoint_id"+"}", _neturl.PathEscape(parameterToString(r.endpointId, "")), -1)
 

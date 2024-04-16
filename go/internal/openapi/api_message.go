@@ -88,7 +88,7 @@ func (a *MessageApiService) CreateMessageAttemptForEndpointExecute(r ApiCreateMe
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg/test-attempt/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg/test-attempt"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"endpoint_id"+"}", _neturl.PathEscape(parameterToString(r.endpointId, "")), -1)
 
@@ -307,7 +307,7 @@ func (a *MessageApiService) V1MessageCreateExecute(r ApiV1MessageCreateRequest) 
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/msg/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/msg"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -512,7 +512,7 @@ func (a *MessageApiService) V1MessageExpungeContentExecute(r ApiV1MessageExpunge
 		return nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/msg/{msg_id}/content/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/msg/{msg_id}/content"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"msg_id"+"}", _neturl.PathEscape(parameterToString(r.msgId, "")), -1)
 
@@ -699,7 +699,7 @@ func (a *MessageApiService) V1MessageGetExecute(r ApiV1MessageGetRequest) (Messa
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/msg/{msg_id}/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/msg/{msg_id}"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"msg_id"+"}", _neturl.PathEscape(parameterToString(r.msgId, "")), -1)
 
@@ -893,7 +893,7 @@ func (a *MessageApiService) V1MessageGetRawPayloadExecute(r ApiV1MessageGetRawPa
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/msg/{msg_id}/raw/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/msg/{msg_id}/raw"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"msg_id"+"}", _neturl.PathEscape(parameterToString(r.msgId, "")), -1)
 
@@ -1130,7 +1130,7 @@ func (a *MessageApiService) V1MessageListExecute(r ApiV1MessageListRequest) (Lis
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/msg/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/msg"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -1363,7 +1363,7 @@ func (a *MessageApiService) V1MessageStreamExecute(r ApiV1MessageStreamRequest) 
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/events/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/events"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)

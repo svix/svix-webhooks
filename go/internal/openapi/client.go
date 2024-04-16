@@ -68,6 +68,8 @@ type APIClient struct {
 
 	EventTypeApi *EventTypeApiService
 
+	EventsApi *EventsApiService
+
 	HealthApi *HealthApiService
 
 	InboundApi *InboundApiService
@@ -107,6 +109,7 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.EnvironmentApi = (*EnvironmentApiService)(&c.common)
 	c.EnvironmentSettingsApi = (*EnvironmentSettingsApiService)(&c.common)
 	c.EventTypeApi = (*EventTypeApiService)(&c.common)
+	c.EventsApi = (*EventsApiService)(&c.common)
 	c.HealthApi = (*HealthApiService)(&c.common)
 	c.InboundApi = (*InboundApiService)(&c.common)
 	c.IntegrationApi = (*IntegrationApiService)(&c.common)
