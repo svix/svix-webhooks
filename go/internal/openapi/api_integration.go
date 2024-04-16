@@ -776,7 +776,6 @@ type ApiV1IntegrationListRequest struct {
 	appId string
 	limit *int32
 	iterator *string
-	order *Ordering
 }
 
 func (r ApiV1IntegrationListRequest) Limit(limit int32) ApiV1IntegrationListRequest {
@@ -785,10 +784,6 @@ func (r ApiV1IntegrationListRequest) Limit(limit int32) ApiV1IntegrationListRequ
 }
 func (r ApiV1IntegrationListRequest) Iterator(iterator string) ApiV1IntegrationListRequest {
 	r.iterator = &iterator
-	return r
-}
-func (r ApiV1IntegrationListRequest) Order(order Ordering) ApiV1IntegrationListRequest {
-	r.order = &order
 	return r
 }
 
@@ -848,9 +843,6 @@ func (a *IntegrationApiService) V1IntegrationListExecute(r ApiV1IntegrationListR
 	}
 	if r.iterator != nil {
 		localVarQueryParams.Add("iterator", parameterToString(*r.iterator, ""))
-	}
-	if r.order != nil {
-		localVarQueryParams.Add("order", parameterToString(*r.order, ""))
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
