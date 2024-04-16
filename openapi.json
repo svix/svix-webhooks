@@ -950,6 +950,30 @@
                 ],
                 "type": "object"
             },
+            "EndpointOauthConfigIn": {
+                "properties": {
+                    "authMethod": {
+                        "$ref": "#/components/schemas/Oauth2AuthMethod"
+                    },
+                    "clientId": {
+                        "type": "string"
+                    },
+                    "grantType": {
+                        "$ref": "#/components/schemas/Oauth2GrantType"
+                    },
+                    "tokenUrl": {
+                        "format": "uri",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "authMethod",
+                    "clientId",
+                    "grantType",
+                    "tokenUrl"
+                ],
+                "type": "object"
+            },
             "EndpointOut": {
                 "properties": {
                     "channels": {
@@ -3283,6 +3307,91 @@
                     "iterator"
                 ],
                 "type": "object"
+            },
+            "Oauth2AuthMethod": {
+                "oneOf": [
+                    {
+                        "properties": {
+                            "jwtSecretBase64": {
+                                "type": "string"
+                            },
+                            "jwtSecretId": {
+                                "nullable": true,
+                                "type": "string"
+                            },
+                            "signingAlgorithm": {
+                                "$ref": "#/components/schemas/OauthJwsSigningAlgorithm"
+                            },
+                            "tokenExpirySecs": {
+                                "format": "uint64",
+                                "minimum": 0,
+                                "nullable": true,
+                                "type": "integer"
+                            },
+                            "type": {
+                                "enum": [
+                                    "clientSecretJwt"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "jwtSecretBase64",
+                            "signingAlgorithm",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "clientSecret": {
+                                "type": "string"
+                            },
+                            "type": {
+                                "enum": [
+                                    "clientSecretBasic"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "clientSecret",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "clientSecret": {
+                                "type": "string"
+                            },
+                            "type": {
+                                "enum": [
+                                    "clientSecretPost"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "clientSecret",
+                            "type"
+                        ],
+                        "type": "object"
+                    }
+                ],
+                "type": "object"
+            },
+            "Oauth2GrantType": {
+                "enum": [
+                    "clientCredentials"
+                ],
+                "type": "string"
+            },
+            "OauthJwsSigningAlgorithm": {
+                "enum": [
+                    "RS256"
+                ],
+                "type": "string"
             },
             "OauthPayloadIn": {
                 "properties": {
@@ -8242,6 +8351,382 @@
                 ]
             }
         },
+        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth": {
+            "delete": {
+                "description": "Delete endpoint OAuth configuration",
+                "operationId": "v1.endpoint.delete-oauth-config",
+                "parameters": [
+                    {
+                        "description": "The app's ID or UID",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The app's ID or UID",
+                            "example": "unique-app-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The ep's ID or UID",
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The ep's ID or UID",
+                            "example": "unique-ep-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "no content"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Delete Endpoint Oauth Config",
+                "tags": [
+                    "Endpoint"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.endpoint.deleteOauthConfig(\"app_id\", \"endpoint_id\");"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.endpoint.deleteOauthConfig(\"app_id\", \"endpoint_id\");"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "svix.endpoint.delete_oauth_config(\"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "await svix.endpoint.delete_oauth_config(\"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "err := svixClient.Endpoint.DeleteOauthConfig(ctx, \"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "svix.endpoint.deleteOauthConfig(\"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "svix.getEndpoint().deleteOauthConfig(\"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "svix.endpoint.delete_oauth_config(\"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "svix.endpoint().delete_oauth_config(\"app_id\", \"endpoint_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "await svix.Endpoint.DeleteOauthConfigAsync(\"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix endpoint delete-oauth-config \"app_id\" \"endpoint_id\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            },
+            "put": {
+                "description": "Create/update endpoint OAuth configuration",
+                "operationId": "v1.endpoint.update-oauth-config",
+                "parameters": [
+                    {
+                        "description": "The app's ID or UID",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The app's ID or UID",
+                            "example": "unique-app-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The ep's ID or UID",
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The ep's ID or UID",
+                            "example": "unique-ep-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EndpointOauthConfigIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "no content"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Update Endpoint Oauth Config",
+                "tags": [
+                    "Endpoint"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.endpoint.updateOauthConfig(\"app_id\", \"endpoint_id\", \n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.endpoint.updateOauthConfig(\"app_id\", \"endpoint_id\", \n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "svix.endpoint.update_oauth_config(\"app_id\", \"endpoint_id\", EndpointOauthConfigIn\n))"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "await svix.endpoint.update_oauth_config(\"app_id\", \"endpoint_id\", EndpointOauthConfigIn\n))"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "err := svixClient.Endpoint.UpdateOauthConfig(ctx, \"app_id\", \"endpoint_id\", &EndpointOauthConfigIn{\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "svix.endpoint.updateOauthConfig(\"app_id\", \"endpoint_id\", EndpointOauthConfigIn()\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "svix.getEndpoint().updateOauthConfig(\"app_id\", \"endpoint_id\", new EndpointOauthConfigIn()\n)"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "svix.endpoint.update_oauth_config(\"app_id\", \"endpoint_id\", Svix::EndpointOauthConfigIn.new(\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "svix.endpoint().update_oauth_config(\"app_id\", \"endpoint_id\", EndpointOauthConfigIn {\n}).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "await svix.Endpoint.UpdateOauthConfigAsync(\"app_id\", \"endpoint_id\", new EndpointOauthConfigIn\n})"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix endpoint update-oauth-config \"app_id\" \"endpoint_id\" '\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '\n    }'"
+                    }
+                ]
+            }
+        },
         "/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover": {
             "post": {
                 "description": "Resend all failed messages since a given time.",
@@ -10759,7 +11244,6 @@
                         },
                         "style": "form"
                     }
-
                 ],
                 "responses": {
                     "200": {
