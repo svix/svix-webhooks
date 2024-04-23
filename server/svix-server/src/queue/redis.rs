@@ -29,8 +29,7 @@
 
 use std::{num::NonZeroUsize, sync::Arc, time::Duration};
 
-use bb8_redis::RedisMultiplexedConnectionManager;
-use omniqueue::backends::{redis::RedisClusterConnectionManager, RedisBackend, RedisConfig};
+use omniqueue::backends::{RedisBackend, RedisConfig};
 use redis::{AsyncCommands as _, RedisResult};
 
 use super::{QueueTask, TaskQueueConsumer, TaskQueueProducer};
@@ -213,22 +212,20 @@ async fn new_pair_inner(
 
     match &cfg.queue_type {
         QueueType::RedisCluster => {
-            let (producer, consumer) =
-                RedisBackend::<RedisClusterConnectionManager>::builder(config)
-                    .build_pair()
-                    .await
-                    .expect("Error initializing redis-cluster queue");
+            let (producer, consumer) = RedisBackend::cluster_builder(config)
+                .build_pair()
+                .await
+                .expect("Error initializing redis-cluster queue");
 
             let producer = TaskQueueProducer::new(producer);
             let consumer = TaskQueueConsumer::new(consumer);
             (producer, consumer)
         }
         _ => {
-            let (producer, consumer) =
-                RedisBackend::<RedisMultiplexedConnectionManager>::builder(config)
-                    .build_pair()
-                    .await
-                    .expect("Error initializing redis queue");
+            let (producer, consumer) = RedisBackend::builder(config)
+                .build_pair()
+                .await
+                .expect("Error initializing redis queue");
 
             let producer = TaskQueueProducer::new(producer);
             let consumer = TaskQueueConsumer::new(consumer);
