@@ -6,7 +6,7 @@
     "module": "CommonJS",
     "moduleResolution": "node",
     "declaration": true,
-    "allowJs": true,
+    "allowJs": false,
 
     /* Additional Checks */
     "noUnusedLocals": false /* Report errors on unused locals. */, // TODO: reenable (unused imports!)
@@ -15,16 +15,11 @@
     "noFallthroughCasesInSwitch": true /* Report errors for fallthrough cases in switch statement. */,
 
     "removeComments": true,
-    "sourceMap": true,
+    "sourceMap": false,
     "outDir": "./dist",
     "noLib": false,
-    "lib": ["es6", "dom"]
+    "lib": ["es6", "dom"],
   },
-  "exclude": [
-    "dist",
-    "node_modules",
-    "jest.config.js",
-    "src/**/*.test.ts",
-  ],
-  "filesGlob": ["./src/**/*.ts"]
+  "exclude": ["dist", "node_modules", "jest.config.js", "src/**/*.test.ts"],
+  "include": ["./src/**/*.ts"],
 }
