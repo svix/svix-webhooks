@@ -73,7 +73,7 @@ func (a *EnvironmentApiService) V1EnvironmentExportExecute(r ApiV1EnvironmentExp
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/environment/export/"
+	localVarPath := localBasePath + "/api/v1/environment/export"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
@@ -247,7 +247,7 @@ func (a *EnvironmentApiService) V1EnvironmentExportGetExecute(r ApiV1Environment
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/environment/export/"
+	localVarPath := localBasePath + "/api/v1/environment/export"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
@@ -427,7 +427,7 @@ func (a *EnvironmentApiService) V1EnvironmentImportExecute(r ApiV1EnvironmentImp
 		return nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/environment/import/"
+	localVarPath := localBasePath + "/api/v1/environment/import"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}

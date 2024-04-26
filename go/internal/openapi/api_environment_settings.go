@@ -68,7 +68,7 @@ func (a *EnvironmentSettingsApiService) V1EnvironmentGetSettingsExecute(r ApiV1E
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/environment/settings/"
+	localVarPath := localBasePath + "/api/v1/environment/settings"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}

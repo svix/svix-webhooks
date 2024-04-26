@@ -83,7 +83,7 @@ func (a *StatisticsApiService) V1StatisticsAggregateAppStatsExecute(r ApiV1Stati
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/stats/usage/app/"
+	localVarPath := localBasePath + "/api/v1/stats/usage/app"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
@@ -265,7 +265,7 @@ func (a *StatisticsApiService) V1StatisticsAggregateEventTypesExecute(r ApiV1Sta
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/stats/usage/event-types/"
+	localVarPath := localBasePath + "/api/v1/stats/usage/event-types"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
@@ -449,7 +449,7 @@ func (a *StatisticsApiService) V1StatsAppAttemptsExecute(r ApiV1StatsAppAttempts
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/stats/app/{app_id}/attempt/"
+	localVarPath := localBasePath + "/api/v1/stats/app/{app_id}/attempt"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -649,7 +649,7 @@ func (a *StatisticsApiService) V1StatsEndpointAttemptsExecute(r ApiV1StatsEndpoi
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/stats/app/{app_id}/ep/{endpoint_id}/attempt/"
+	localVarPath := localBasePath + "/api/v1/stats/app/{app_id}/ep/{endpoint_id}/attempt"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"endpoint_id"+"}", _neturl.PathEscape(parameterToString(r.endpointId, "")), -1)
 

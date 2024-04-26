@@ -90,7 +90,7 @@ func (a *ApplicationApiService) GetAppUsageStatsApiV1AppStatsUsageGetExecute(r A
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/stats/usage/"
+	localVarPath := localBasePath + "/api/v1/app/stats/usage"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
@@ -290,7 +290,7 @@ func (a *ApplicationApiService) V1ApplicationCreateExecute(r ApiV1ApplicationCre
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/"
+	localVarPath := localBasePath + "/api/v1/app"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
@@ -473,7 +473,7 @@ func (a *ApplicationApiService) V1ApplicationDeleteExecute(r ApiV1ApplicationDel
 		return nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -645,7 +645,7 @@ func (a *ApplicationApiService) V1ApplicationGetExecute(r ApiV1ApplicationGetReq
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -836,7 +836,7 @@ func (a *ApplicationApiService) V1ApplicationGetStatsExecute(r ApiV1ApplicationG
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/stats/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/stats"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -1037,7 +1037,7 @@ func (a *ApplicationApiService) V1ApplicationListExecute(r ApiV1ApplicationListR
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/"
+	localVarPath := localBasePath + "/api/v1/app"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
@@ -1225,7 +1225,7 @@ func (a *ApplicationApiService) V1ApplicationPatchExecute(r ApiV1ApplicationPatc
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -1416,7 +1416,7 @@ func (a *ApplicationApiService) V1ApplicationUpdateExecute(r ApiV1ApplicationUpd
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)

@@ -83,7 +83,7 @@ func (a *EventTypeApiService) V1EventTypeCreateExecute(r ApiV1EventTypeCreateReq
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/event-type/"
+	localVarPath := localBasePath + "/api/v1/event-type"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
@@ -273,7 +273,7 @@ func (a *EventTypeApiService) V1EventTypeDeleteExecute(r ApiV1EventTypeDeleteReq
 		return nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/event-type/{event_type_name}/"
+	localVarPath := localBasePath + "/api/v1/event-type/{event_type_name}"
 	localVarPath = strings.Replace(localVarPath, "{"+"event_type_name"+"}", _neturl.PathEscape(parameterToString(r.eventTypeName, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -448,7 +448,7 @@ func (a *EventTypeApiService) V1EventTypeExportOpenapiExecute(r ApiV1EventTypeEx
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/event-type/export/openapi/"
+	localVarPath := localBasePath + "/api/v1/event-type/export/openapi"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
@@ -632,7 +632,7 @@ func (a *EventTypeApiService) V1EventTypeGenerateExampleExecute(r ApiV1EventType
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/event-type/schema/generate-example/"
+	localVarPath := localBasePath + "/api/v1/event-type/schema/generate-example"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
@@ -814,7 +814,7 @@ func (a *EventTypeApiService) V1EventTypeGetExecute(r ApiV1EventTypeGetRequest) 
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/event-type/{event_type_name}/"
+	localVarPath := localBasePath + "/api/v1/event-type/{event_type_name}"
 	localVarPath = strings.Replace(localVarPath, "{"+"event_type_name"+"}", _neturl.PathEscape(parameterToString(r.eventTypeName, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -992,7 +992,7 @@ func (a *EventTypeApiService) V1EventTypeGetRetryScheduleExecute(r ApiV1EventTyp
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/event-type/{event_type_name}/retry-schedule/"
+	localVarPath := localBasePath + "/api/v1/event-type/{event_type_name}/retry-schedule"
 	localVarPath = strings.Replace(localVarPath, "{"+"event_type_name"+"}", _neturl.PathEscape(parameterToString(r.eventTypeName, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -1181,7 +1181,7 @@ func (a *EventTypeApiService) V1EventTypeImportOpenapiExecute(r ApiV1EventTypeIm
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/event-type/import/openapi/"
+	localVarPath := localBasePath + "/api/v1/event-type/import/openapi"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
@@ -1385,7 +1385,7 @@ func (a *EventTypeApiService) V1EventTypeListExecute(r ApiV1EventTypeListRequest
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/event-type/"
+	localVarPath := localBasePath + "/api/v1/event-type"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
@@ -1579,7 +1579,7 @@ func (a *EventTypeApiService) V1EventTypePatchExecute(r ApiV1EventTypePatchReque
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/event-type/{event_type_name}/"
+	localVarPath := localBasePath + "/api/v1/event-type/{event_type_name}"
 	localVarPath = strings.Replace(localVarPath, "{"+"event_type_name"+"}", _neturl.PathEscape(parameterToString(r.eventTypeName, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -1767,7 +1767,7 @@ func (a *EventTypeApiService) V1EventTypeUpdateExecute(r ApiV1EventTypeUpdateReq
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/event-type/{event_type_name}/"
+	localVarPath := localBasePath + "/api/v1/event-type/{event_type_name}"
 	localVarPath = strings.Replace(localVarPath, "{"+"event_type_name"+"}", _neturl.PathEscape(parameterToString(r.eventTypeName, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -1955,7 +1955,7 @@ func (a *EventTypeApiService) V1EventTypeUpdateRetryScheduleExecute(r ApiV1Event
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/event-type/{event_type_name}/retry-schedule/"
+	localVarPath := localBasePath + "/api/v1/event-type/{event_type_name}/retry-schedule"
 	localVarPath = strings.Replace(localVarPath, "{"+"event_type_name"+"}", _neturl.PathEscape(parameterToString(r.eventTypeName, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
