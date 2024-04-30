@@ -19,7 +19,7 @@ class Authentication internal constructor(token: String, options: SvixOptions) {
     suspend fun appPortalAccess(
         appId: String,
         appPortalAccessIn: AppPortalAccessIn,
-        options: PostOptions = PostOptions()
+        options: PostOptions = PostOptions(),
     ): AppPortalAccessOut {
         try {
             return api.v1AuthenticationAppPortalAccess(appId, appPortalAccessIn, options.idempotencyKey)
@@ -28,7 +28,10 @@ class Authentication internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun dashboardAccess(appId: String, options: PostOptions = PostOptions()): DashboardAccessOut {
+    suspend fun dashboardAccess(
+        appId: String,
+        options: PostOptions = PostOptions(),
+    ): DashboardAccessOut {
         try {
             return api.v1AuthenticationDashboardAccess(appId, options.idempotencyKey)
         } catch (e: Exception) {

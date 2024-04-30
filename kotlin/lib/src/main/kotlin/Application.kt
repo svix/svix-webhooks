@@ -25,7 +25,10 @@ class Application internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun create(applicationIn: ApplicationIn, options: PostOptions = PostOptions()): ApplicationOut {
+    suspend fun create(
+        applicationIn: ApplicationIn,
+        options: PostOptions = PostOptions(),
+    ): ApplicationOut {
         try {
             return api.v1ApplicationCreate(applicationIn, null, options.idempotencyKey)
         } catch (e: Exception) {
@@ -33,7 +36,10 @@ class Application internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun getOrCreate(applicationIn: ApplicationIn, options: PostOptions = PostOptions()): ApplicationOut {
+    suspend fun getOrCreate(
+        applicationIn: ApplicationIn,
+        options: PostOptions = PostOptions(),
+    ): ApplicationOut {
         try {
             return api.v1ApplicationCreate(applicationIn, true, options.idempotencyKey)
         } catch (e: Exception) {
@@ -49,7 +55,10 @@ class Application internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun update(appId: String, applicationIn: ApplicationIn): ApplicationOut {
+    suspend fun update(
+        appId: String,
+        applicationIn: ApplicationIn,
+    ): ApplicationOut {
         try {
             return api.v1ApplicationUpdate(appId, applicationIn)
         } catch (e: Exception) {
@@ -57,7 +66,10 @@ class Application internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun patch(appId: String, applicationPatch: ApplicationPatch): ApplicationOut {
+    suspend fun patch(
+        appId: String,
+        applicationPatch: ApplicationPatch,
+    ): ApplicationOut {
         try {
             return api.v1ApplicationPatch(appId, applicationPatch)
         } catch (e: Exception) {

@@ -18,7 +18,10 @@ class Integration internal constructor(token: String, options: SvixOptions) {
         options.numRetries?.let { api.numRetries = it }
     }
 
-    suspend fun list(appId: String, options: IntegrationListOptions = IntegrationListOptions()): ListResponseIntegrationOut {
+    suspend fun list(
+        appId: String,
+        options: IntegrationListOptions = IntegrationListOptions(),
+    ): ListResponseIntegrationOut {
         try {
             return api.v1IntegrationList(appId, options.limit, options.iterator)
         } catch (e: Exception) {
@@ -26,7 +29,11 @@ class Integration internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun create(appId: String, integIn: IntegrationIn, options: PostOptions = PostOptions()): IntegrationOut {
+    suspend fun create(
+        appId: String,
+        integIn: IntegrationIn,
+        options: PostOptions = PostOptions(),
+    ): IntegrationOut {
         try {
             return api.v1IntegrationCreate(appId, integIn, options.idempotencyKey)
         } catch (e: Exception) {
@@ -34,7 +41,10 @@ class Integration internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun get(appId: String, integId: String): IntegrationOut {
+    suspend fun get(
+        appId: String,
+        integId: String,
+    ): IntegrationOut {
         try {
             return api.v1IntegrationGet(appId, integId)
         } catch (e: Exception) {
@@ -42,7 +52,11 @@ class Integration internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun update(appId: String, integId: String, integUpdate: IntegrationUpdate): IntegrationOut {
+    suspend fun update(
+        appId: String,
+        integId: String,
+        integUpdate: IntegrationUpdate,
+    ): IntegrationOut {
         try {
             return api.v1IntegrationUpdate(appId, integId, integUpdate)
         } catch (e: Exception) {
@@ -50,7 +64,10 @@ class Integration internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun delete(appId: String, integId: String) {
+    suspend fun delete(
+        appId: String,
+        integId: String,
+    ) {
         try {
             api.v1IntegrationDelete(appId, integId)
         } catch (e: Exception) {
@@ -58,7 +75,10 @@ class Integration internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun getKey(appId: String, integId: String): IntegrationKeyOut {
+    suspend fun getKey(
+        appId: String,
+        integId: String,
+    ): IntegrationKeyOut {
         try {
             return api.v1IntegrationGetKey(appId, integId)
         } catch (e: Exception) {
@@ -66,12 +86,16 @@ class Integration internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun rotateKey(appId: String, integId: String, options: PostOptions = PostOptions()): IntegrationKeyOut {
+    suspend fun rotateKey(
+        appId: String,
+        integId: String,
+        options: PostOptions = PostOptions(),
+    ): IntegrationKeyOut {
         try {
             return api.v1IntegrationRotateKey(
                 appId,
                 integId,
-                options.idempotencyKey
+                options.idempotencyKey,
             )
         } catch (e: Exception) {
             throw ApiException.wrap(e)

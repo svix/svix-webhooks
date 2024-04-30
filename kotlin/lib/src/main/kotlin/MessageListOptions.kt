@@ -13,6 +13,7 @@ class MessageListOptions : ListOptions() {
     fun eventTypes(eventTypes: List<String>) = apply { this.eventTypes = eventTypes }
 
     fun before(before: OffsetDateTime) = apply { this.before = before }
+
     fun after(after: OffsetDateTime) = apply { this.after = after }
 
     fun channel(channel: String) = apply { this.channel = channel }
@@ -22,5 +23,6 @@ class MessageListOptions : ListOptions() {
     override fun limit(limit: Int) = apply { super.limit(limit) }
 
     fun withContent(withContent: Boolean) = apply { this.withContent = withContent }
+
     fun tag(tag: String) = apply { this.tag = tag }
 }

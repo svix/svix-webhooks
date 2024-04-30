@@ -16,7 +16,10 @@ class Message internal constructor(token: String, options: SvixOptions) {
         options.numRetries?.let { api.numRetries = it }
     }
 
-    suspend fun list(appId: String, options: MessageListOptions = MessageListOptions()): ListResponseMessageOut {
+    suspend fun list(
+        appId: String,
+        options: MessageListOptions = MessageListOptions(),
+    ): ListResponseMessageOut {
         try {
             return api.v1MessageList(
                 appId,
@@ -27,14 +30,18 @@ class Message internal constructor(token: String, options: SvixOptions) {
                 options.after,
                 options.withContent,
                 options.tag,
-                HashSet(options.eventTypes)
+                HashSet(options.eventTypes),
             )
         } catch (e: Exception) {
             throw ApiException.wrap(e)
         }
     }
 
-    suspend fun create(appId: String, messageIn: MessageIn, options: PostOptions = PostOptions()): MessageOut {
+    suspend fun create(
+        appId: String,
+        messageIn: MessageIn,
+        options: PostOptions = PostOptions(),
+    ): MessageOut {
         try {
             return api.v1MessageCreate(appId, messageIn, null, options.idempotencyKey)
         } catch (e: Exception) {
@@ -42,7 +49,10 @@ class Message internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun get(msgId: String, appId: String): MessageOut {
+    suspend fun get(
+        msgId: String,
+        appId: String,
+    ): MessageOut {
         try {
             return api.v1MessageGet(appId, msgId, null)
         } catch (e: Exception) {
@@ -50,7 +60,10 @@ class Message internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun expungeContent(msgId: String, appId: String) {
+    suspend fun expungeContent(
+        msgId: String,
+        appId: String,
+    ) {
         try {
             return api.v1MessageExpungeContent(appId, msgId)
         } catch (e: Exception) {

@@ -28,7 +28,10 @@ class EventType internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun create(eventTypeIn: EventTypeIn, options: PostOptions = PostOptions()): EventTypeOut {
+    suspend fun create(
+        eventTypeIn: EventTypeIn,
+        options: PostOptions = PostOptions(),
+    ): EventTypeOut {
         try {
             return api.v1EventTypeCreate(eventTypeIn, options.idempotencyKey)
         } catch (e: Exception) {
@@ -44,7 +47,10 @@ class EventType internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun update(eventTypeName: String, eventTypeUpdate: EventTypeUpdate): EventTypeOut {
+    suspend fun update(
+        eventTypeName: String,
+        eventTypeUpdate: EventTypeUpdate,
+    ): EventTypeOut {
         try {
             return api.v1EventTypeUpdate(eventTypeName, eventTypeUpdate)
         } catch (e: Exception) {
@@ -52,7 +58,10 @@ class EventType internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun patch(eventTypeName: String, eventTypePatch: EventTypePatch): EventTypeOut {
+    suspend fun patch(
+        eventTypeName: String,
+        eventTypePatch: EventTypePatch,
+    ): EventTypeOut {
         try {
             return api.v1EventTypePatch(eventTypeName, eventTypePatch)
         } catch (e: Exception) {
@@ -68,7 +77,10 @@ class EventType internal constructor(token: String, options: SvixOptions) {
         }
     }
 
-    suspend fun importOpenApi(eventTypeImportOpenApiIn: EventTypeImportOpenApiIn, options: PostOptions = PostOptions()): EventTypeImportOpenApiOut {
+    suspend fun importOpenApi(
+        eventTypeImportOpenApiIn: EventTypeImportOpenApiIn,
+        options: PostOptions = PostOptions(),
+    ): EventTypeImportOpenApiOut {
         try {
             return api.v1EventTypeImportOpenapi(eventTypeImportOpenApiIn, options.idempotencyKey)
         } catch (e: Exception) {

@@ -1,7 +1,6 @@
 package com.svix.kotlin
 
 class Svix(token: String, options: SvixOptions = SvixOptions()) {
-
     init {
         val tokenParts = token.split(".")
         if (options.wantedServerUrl == null) {
