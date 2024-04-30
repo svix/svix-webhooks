@@ -16,10 +16,12 @@ import (
 
 // AppPortalAccessIn struct for AppPortalAccessIn
 type AppPortalAccessIn struct {
-	// How long the token will be valid for, in seconds. Valid values are between 1 hour and 7 days. The default is 7 days.
+	// How long the token will be valid for, in seconds.  Valid values are between 1 hour and 7 days. The default is 7 days.
 	Expiry NullableInt32 `json:"expiry,omitempty"`
 	// The set of feature flags the created token will have access to.
 	FeatureFlags *[]string `json:"featureFlags,omitempty"`
+	// Whether the app portal should be in read-only mode.
+	ReadOnly NullableBool `json:"readOnly,omitempty"`
 }
 
 // NewAppPortalAccessIn instantiates a new AppPortalAccessIn object
@@ -117,6 +119,48 @@ func (o *AppPortalAccessIn) SetFeatureFlags(v []string) {
 	o.FeatureFlags = &v
 }
 
+// GetReadOnly returns the ReadOnly field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *AppPortalAccessIn) GetReadOnly() bool {
+	if o == nil || o.ReadOnly.Get() == nil {
+		var ret bool
+		return ret
+	}
+	return *o.ReadOnly.Get()
+}
+
+// GetReadOnlyOk returns a tuple with the ReadOnly field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *AppPortalAccessIn) GetReadOnlyOk() (*bool, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return o.ReadOnly.Get(), o.ReadOnly.IsSet()
+}
+
+// HasReadOnly returns a boolean if a field has been set.
+func (o *AppPortalAccessIn) HasReadOnly() bool {
+	if o != nil && o.ReadOnly.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetReadOnly gets a reference to the given NullableBool and assigns it to the ReadOnly field.
+func (o *AppPortalAccessIn) SetReadOnly(v bool) {
+	o.ReadOnly.Set(&v)
+}
+// SetReadOnlyNil sets the value for ReadOnly to be an explicit nil
+func (o *AppPortalAccessIn) SetReadOnlyNil() {
+	o.ReadOnly.Set(nil)
+}
+
+// UnsetReadOnly ensures that no value is present for ReadOnly, not even an explicit nil
+func (o *AppPortalAccessIn) UnsetReadOnly() {
+	o.ReadOnly.Unset()
+}
+
 func (o AppPortalAccessIn) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if o.Expiry.IsSet() {
@@ -124,6 +168,9 @@ func (o AppPortalAccessIn) MarshalJSON() ([]byte, error) {
 	}
 	if o.FeatureFlags != nil {
 		toSerialize["featureFlags"] = o.FeatureFlags
+	}
+	if o.ReadOnly.IsSet() {
+		toSerialize["readOnly"] = o.ReadOnly.Get()
 	}
 	return json.Marshal(toSerialize)
 }

@@ -78,7 +78,7 @@ func (a *BroadcastApiService) CreateBroadcastMessageExecute(r ApiCreateBroadcast
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/msg/broadcast/"
+	localVarPath := localBasePath + "/api/v1/msg/broadcast"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}

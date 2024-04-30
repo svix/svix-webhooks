@@ -90,7 +90,7 @@ func (a *InboundApiService) V1InboundMsgExecute(r ApiV1InboundMsgRequest) (Messa
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/inbound/msg/{inbound_token}/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/inbound/msg/{inbound_token}"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"inbound_token"+"}", _neturl.PathEscape(parameterToString(r.inboundToken, "")), -1)
 
@@ -289,7 +289,7 @@ func (a *InboundApiService) V1InboundRotateUrlExecute(r ApiV1InboundRotateUrlReq
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/inbound/rotate-url/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/inbound/rotate-url"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)

@@ -79,7 +79,7 @@ func (a *TransformationTemplateApiService) V1TransformationTemplateCreateExecute
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/transformation-template/"
+	localVarPath := localBasePath + "/api/v1/transformation-template"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
@@ -801,7 +801,7 @@ func (a *TransformationTemplateApiService) V1TransformationTemplateListExecute(r
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/transformation-template/"
+	localVarPath := localBasePath + "/api/v1/transformation-template"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
