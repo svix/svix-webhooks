@@ -3,6 +3,14 @@
 ## Next
 * 
 
+## Version 1.22.0
+* Server: Don't require trailing slash at the end of request paths
+* Server: Improve testing performance and reduce redundant test runs
+* Server: Improve performance of `/api/v1/openapi.json` route
+* Server: Upgrade dependencies and improve code formatting
+* Server: Upgrade to Docker Compose v2
+* Libs/Ruby: Add PATCH endpoints
+
 ## Version 1.21.0
 * Server: Improve error information on failed assertions in Redis module
 * Server: Use omniqueue for Redis queue implementation
