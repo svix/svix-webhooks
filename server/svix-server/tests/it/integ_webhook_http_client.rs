@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 use svix_server::core::webhook_http_client::{Error, RequestBuilder, WebhookClient};
 use tokio::sync::mpsc;
 
+#[allow(dead_code)]
 pub struct TestReceiver {
     pub uri: String,
     pub jh: tokio::task::JoinHandle<()>,
