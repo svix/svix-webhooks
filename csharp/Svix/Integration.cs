@@ -205,7 +205,8 @@ namespace Svix
                 var lResult = _integrationApi.V1IntegrationList(
                     appId,
                     options?.Limit,
-                    options?.Iterator);
+                    options?.Iterator,
+                    options?.Order);
 
                 return lResult;
             }
@@ -229,6 +230,7 @@ namespace Svix
                     appId,
                     options?.Limit,
                     options?.Iterator,
+                    options?.Order,
                     cancellationToken);
 
                 return lResult;

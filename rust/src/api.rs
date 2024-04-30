@@ -598,7 +598,12 @@ impl<'a> Endpoint<'a> {
     }
 }
 
-pub type IntegrationListOptions = ListOptions;
+#[derive(Default)]
+pub struct IntegrationListOptions {
+    pub iterator: Option<String>,
+    pub limit: Option<i32>,
+    pub order: Option<Ordering>,
+}
 
 pub struct Integration<'a> {
     cfg: &'a Configuration,
@@ -614,13 +619,18 @@ impl<'a> Integration<'a> {
         app_id: String,
         options: Option<IntegrationListOptions>,
     ) -> Result<ListResponseIntegrationOut> {
-        let IntegrationListOptions { iterator, limit } = options.unwrap_or_default();
+        let IntegrationListOptions {
+            iterator,
+            limit,
+            order,
+        } = options.unwrap_or_default();
         integration_api::v1_integration_list(
             self.cfg,
             integration_api::V1IntegrationListParams {
                 app_id,
                 iterator,
                 limit,
+                order,
             },
         )
         .await
