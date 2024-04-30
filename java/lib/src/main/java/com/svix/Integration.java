@@ -17,7 +17,7 @@ public final class Integration {
 
 	public ListResponseIntegrationOut list(final String appId, final IntegrationListOptions options) throws ApiException {
 		try {
-			return api.v1IntegrationList(appId, options.getLimit(), options.getIterator());
+			return api.v1IntegrationList(appId, options.getLimit(), options.getIterator(), options.getOrder());
 		} catch (com.svix.internal.ApiException e) {
 			throw Utils.wrapInternalApiException(e);
 		}

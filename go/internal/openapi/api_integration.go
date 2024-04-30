@@ -82,7 +82,7 @@ func (a *IntegrationApiService) V1IntegrationCreateExecute(r ApiV1IntegrationCre
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/integration/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/integration"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -272,7 +272,7 @@ func (a *IntegrationApiService) V1IntegrationDeleteExecute(r ApiV1IntegrationDel
 		return nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/integration/{integ_id}/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/integration/{integ_id}"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"integ_id"+"}", _neturl.PathEscape(parameterToString(r.integId, "")), -1)
 
@@ -448,7 +448,7 @@ func (a *IntegrationApiService) V1IntegrationGetExecute(r ApiV1IntegrationGetReq
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/integration/{integ_id}/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/integration/{integ_id}"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"integ_id"+"}", _neturl.PathEscape(parameterToString(r.integId, "")), -1)
 
@@ -633,7 +633,7 @@ func (a *IntegrationApiService) V1IntegrationGetKeyExecute(r ApiV1IntegrationGet
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/integration/{integ_id}/key/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/integration/{integ_id}/key"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"integ_id"+"}", _neturl.PathEscape(parameterToString(r.integId, "")), -1)
 
@@ -776,6 +776,7 @@ type ApiV1IntegrationListRequest struct {
 	appId string
 	limit *int32
 	iterator *string
+	order *Ordering
 }
 
 func (r ApiV1IntegrationListRequest) Limit(limit int32) ApiV1IntegrationListRequest {
@@ -784,6 +785,10 @@ func (r ApiV1IntegrationListRequest) Limit(limit int32) ApiV1IntegrationListRequ
 }
 func (r ApiV1IntegrationListRequest) Iterator(iterator string) ApiV1IntegrationListRequest {
 	r.iterator = &iterator
+	return r
+}
+func (r ApiV1IntegrationListRequest) Order(order Ordering) ApiV1IntegrationListRequest {
+	r.order = &order
 	return r
 }
 
@@ -825,7 +830,7 @@ func (a *IntegrationApiService) V1IntegrationListExecute(r ApiV1IntegrationListR
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/integration/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/integration"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -843,6 +848,9 @@ func (a *IntegrationApiService) V1IntegrationListExecute(r ApiV1IntegrationListR
 	}
 	if r.iterator != nil {
 		localVarQueryParams.Add("iterator", parameterToString(*r.iterator, ""))
+	}
+	if r.order != nil {
+		localVarQueryParams.Add("order", parameterToString(*r.order, ""))
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -1020,7 +1028,7 @@ func (a *IntegrationApiService) V1IntegrationRotateKeyExecute(r ApiV1Integration
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/integration/{integ_id}/key/rotate/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/integration/{integ_id}/key/rotate"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"integ_id"+"}", _neturl.PathEscape(parameterToString(r.integId, "")), -1)
 
@@ -1213,7 +1221,7 @@ func (a *IntegrationApiService) V1IntegrationUpdateExecute(r ApiV1IntegrationUpd
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/app/{app_id}/integration/{integ_id}/"
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/integration/{integ_id}"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"integ_id"+"}", _neturl.PathEscape(parameterToString(r.integId, "")), -1)
 

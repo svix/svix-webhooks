@@ -82,7 +82,7 @@ func (a *AuthenticationApiService) V1AuthenticationAppPortalAccessExecute(r ApiV
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/auth/app-portal-access/{app_id}/"
+	localVarPath := localBasePath + "/api/v1/auth/app-portal-access/{app_id}"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -278,7 +278,7 @@ func (a *AuthenticationApiService) V1AuthenticationDashboardAccessExecute(r ApiV
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/auth/dashboard-access/{app_id}/"
+	localVarPath := localBasePath + "/api/v1/auth/dashboard-access/{app_id}"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -469,7 +469,7 @@ func (a *AuthenticationApiService) V1AuthenticationExchangeOneTimeTokenExecute(r
 		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/auth/one-time-token/"
+	localVarPath := localBasePath + "/api/v1/auth/one-time-token"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
@@ -659,7 +659,7 @@ func (a *AuthenticationApiService) V1AuthenticationExpireAllExecute(r ApiV1Authe
 		return nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/auth/app/{app_id}/expire-all/"
+	localVarPath := localBasePath + "/api/v1/auth/app/{app_id}/expire-all"
 	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -841,7 +841,7 @@ func (a *AuthenticationApiService) V1AuthenticationLogoutExecute(r ApiV1Authenti
 		return nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/auth/logout/"
+	localVarPath := localBasePath + "/api/v1/auth/logout"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}

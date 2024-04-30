@@ -16,6 +16,7 @@ import (
 	_ioutil "io/ioutil"
 	_nethttp "net/http"
 	_neturl "net/url"
+	"reflect"
 )
 
 // Linger please
@@ -23,27 +24,47 @@ var (
 	_ _context.Context
 )
 
-// HealthApiService HealthApi service
-type HealthApiService service
+// EventsApiService EventsApi service
+type EventsApiService service
 
-type ApiV1HealthGetRequest struct {
+type ApiV1EventsRequest struct {
 	ctx _context.Context
-	ApiService *HealthApiService
+	ApiService *EventsApiService
+	limit *int32
+	iterator *string
+	eventTypes *[]string
+	channels *[]string
 }
 
+func (r ApiV1EventsRequest) Limit(limit int32) ApiV1EventsRequest {
+	r.limit = &limit
+	return r
+}
+func (r ApiV1EventsRequest) Iterator(iterator string) ApiV1EventsRequest {
+	r.iterator = &iterator
+	return r
+}
+func (r ApiV1EventsRequest) EventTypes(eventTypes []string) ApiV1EventsRequest {
+	r.eventTypes = &eventTypes
+	return r
+}
+func (r ApiV1EventsRequest) Channels(channels []string) ApiV1EventsRequest {
+	r.channels = &channels
+	return r
+}
 
-func (r ApiV1HealthGetRequest) Execute() (*_nethttp.Response, error) {
-	return r.ApiService.V1HealthGetExecute(r)
+func (r ApiV1EventsRequest) Execute() (MessageStreamOut, *_nethttp.Response, error) {
+	return r.ApiService.V1EventsExecute(r)
 }
 
 /*
- * V1HealthGet Health
- * Verify the API server is up and running.
+ * V1Events Events
+ * Reads the stream of operational webhook events for this environment
  * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @return ApiV1HealthGetRequest
+ * @return ApiV1EventsRequest
  */
-func (a *HealthApiService) V1HealthGet(ctx _context.Context) ApiV1HealthGetRequest {
-	return ApiV1HealthGetRequest{
+func (a *EventsApiService) V1Events(ctx _context.Context) ApiV1EventsRequest {
+	return ApiV1EventsRequest{
 		ApiService: a,
 		ctx: ctx,
 	}
@@ -51,27 +72,57 @@ func (a *HealthApiService) V1HealthGet(ctx _context.Context) ApiV1HealthGetReque
 
 /*
  * Execute executes the request
+ * @return MessageStreamOut
  */
-func (a *HealthApiService) V1HealthGetExecute(r ApiV1HealthGetRequest) (*_nethttp.Response, error) {
+func (a *EventsApiService) V1EventsExecute(r ApiV1EventsRequest) (MessageStreamOut, *_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodGet
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
+		localVarReturnValue  MessageStreamOut
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "HealthApiService.V1HealthGet")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "EventsApiService.V1Events")
 	if err != nil {
-		return nil, GenericOpenAPIError{error: err.Error()}
+		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/health"
+	localVarPath := localBasePath + "/api/v1/events"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
 
+	if r.limit != nil {
+		localVarQueryParams.Add("limit", parameterToString(*r.limit, ""))
+	}
+	if r.iterator != nil {
+		localVarQueryParams.Add("iterator", parameterToString(*r.iterator, ""))
+	}
+	if r.eventTypes != nil {
+		t := *r.eventTypes
+		if reflect.TypeOf(t).Kind() == reflect.Slice {
+			s := reflect.ValueOf(t)
+			for i := 0; i < s.Len(); i++ {
+				localVarQueryParams.Add("event_types", parameterToString(s.Index(i), "multi"))
+			}
+		} else {
+			localVarQueryParams.Add("event_types", parameterToString(t, "multi"))
+		}
+	}
+	if r.channels != nil {
+		t := *r.channels
+		if reflect.TypeOf(t).Kind() == reflect.Slice {
+			s := reflect.ValueOf(t)
+			for i := 0; i < s.Len(); i++ {
+				localVarQueryParams.Add("channels", parameterToString(s.Index(i), "multi"))
+			}
+		} else {
+			localVarQueryParams.Add("channels", parameterToString(t, "multi"))
+		}
+	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -91,19 +142,19 @@ func (a *HealthApiService) V1HealthGetExecute(r ApiV1HealthGetRequest) (*_nethtt
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
-		return nil, err
+		return localVarReturnValue, nil, err
 	}
 
 	localVarHTTPResponse, err := a.client.callAPI(req)
 	if err != nil || localVarHTTPResponse == nil {
-		return localVarHTTPResponse, err
+		return localVarReturnValue, localVarHTTPResponse, err
 	}
 
 	localVarBody, err := _ioutil.ReadAll(localVarHTTPResponse.Body)
 	localVarHTTPResponse.Body.Close()
 	localVarHTTPResponse.Body = _ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
-		return localVarHTTPResponse, err
+		return localVarReturnValue, localVarHTTPResponse, err
 	}
 
 	if localVarHTTPResponse.StatusCode >= 300 {
@@ -116,72 +167,81 @@ func (a *HealthApiService) V1HealthGetExecute(r ApiV1HealthGetRequest) (*_nethtt
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarHTTPResponse, newErr
+				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
 			newErr.model = v
-			return localVarHTTPResponse, newErr
+			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
 			var v HttpErrorOut
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarHTTPResponse, newErr
+				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
 			newErr.model = v
-			return localVarHTTPResponse, newErr
+			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
 			var v HttpErrorOut
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarHTTPResponse, newErr
+				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
 			newErr.model = v
-			return localVarHTTPResponse, newErr
+			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
 			var v HttpErrorOut
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarHTTPResponse, newErr
+				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
 			newErr.model = v
-			return localVarHTTPResponse, newErr
+			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
 			var v HttpErrorOut
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarHTTPResponse, newErr
+				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
 			newErr.model = v
-			return localVarHTTPResponse, newErr
+			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 422 {
 			var v HTTPValidationError
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarHTTPResponse, newErr
+				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
 			newErr.model = v
-			return localVarHTTPResponse, newErr
+			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
 			var v HttpErrorOut
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarHTTPResponse, newErr
+				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
 			newErr.model = v
 		}
-		return localVarHTTPResponse, newErr
+		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
-	return localVarHTTPResponse, nil
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
 }
