@@ -7,11 +7,16 @@ use serde::{Deserialize, Serialize};
 use svix_server::core::webhook_http_client::{Error, RequestBuilder, WebhookClient};
 use tokio::sync::mpsc;
 
-#[allow(dead_code)]
 pub struct TestReceiver {
     pub uri: String,
-    pub jh: tokio::task::JoinHandle<()>,
+    pub server_jh: tokio::task::JoinHandle<()>,
     pub req_recv: mpsc::Receiver<Request<Body>>,
+}
+
+impl Drop for TestReceiver {
+    fn drop(&mut self) {
+        self.server_jh.abort();
+    }
 }
 
 #[derive(Clone)]
@@ -35,7 +40,7 @@ impl TestReceiver {
             })
             .into_make_service();
 
-        let jh = tokio::spawn(async move {
+        let server_jh = tokio::spawn(async move {
             axum::Server::from_tcp(listener)
                 .unwrap()
                 .serve(routes)
@@ -43,7 +48,11 @@ impl TestReceiver {
                 .unwrap();
         });
 
-        TestReceiver { uri, jh, req_recv }
+        TestReceiver {
+            uri,
+            server_jh,
+            req_recv,
+        }
     }
 }
 
