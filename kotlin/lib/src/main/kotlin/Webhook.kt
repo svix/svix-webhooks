@@ -15,7 +15,10 @@ class Webhook {
     private val key: ByteArray
 
     @Throws(WebhookVerificationException::class)
-    fun verify(payload: String?, headers: HttpHeaders) {
+    fun verify(
+        payload: String?,
+        headers: HttpHeaders,
+    ) {
         var msgId = headers.firstValue(SVIX_MSG_ID_KEY)
         var msgSignature = headers.firstValue(SVIX_MSG_SIGNATURE_KEY)
         var msgTimestamp = headers.firstValue(SVIX_MSG_TIMESTAMP_KEY)
@@ -29,11 +32,12 @@ class Webhook {
             }
         }
         val timestamp: Long = verifyTimestamp(msgTimestamp.get())
-        val expectedSignature: String = try {
-            sign(msgId.get(), timestamp, payload).split(",".toRegex()).toTypedArray()[1]
-        } catch (e: WebhookSigningException) {
-            throw WebhookVerificationException("Failed to generate expected signature")
-        }
+        val expectedSignature: String =
+            try {
+                sign(msgId.get(), timestamp, payload).split(",".toRegex()).toTypedArray()[1]
+            } catch (e: WebhookSigningException) {
+                throw WebhookVerificationException("Failed to generate expected signature")
+            }
         val msgSignatures = msgSignature.get().split(" ".toRegex()).toTypedArray()
         for (versionedSignature in msgSignatures) {
             val sigParts = versionedSignature.split(",".toRegex()).toTypedArray()
@@ -53,7 +57,11 @@ class Webhook {
     }
 
     @Throws(WebhookSigningException::class)
-    fun sign(msgId: String?, timestamp: Long, payload: String?): String {
+    fun sign(
+        msgId: String?,
+        timestamp: Long,
+        payload: String?,
+    ): String {
         return try {
             val toSign = String.format("%s.%s.%s", msgId, timestamp, payload)
             val sha512Hmac: Mac = Mac.getInstance(HMAC_SHA256)
@@ -84,11 +92,12 @@ class Webhook {
         @Throws(WebhookVerificationException::class)
         private fun verifyTimestamp(timestampHeader: String): Long {
             val now: Long = System.currentTimeMillis() / SECOND_IN_MS
-            val timestamp: Long = try {
-                timestampHeader.toLong()
-            } catch (e: NumberFormatException) {
-                throw WebhookVerificationException("Invalid Signature Headers")
-            }
+            val timestamp: Long =
+                try {
+                    timestampHeader.toLong()
+                } catch (e: NumberFormatException) {
+                    throw WebhookVerificationException("Invalid Signature Headers")
+                }
 
             if (timestamp < now - TOLERANCE_IN_SECONDS) {
                 throw WebhookVerificationException("Message timestamp too old")

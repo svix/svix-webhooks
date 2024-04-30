@@ -11,7 +11,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class WebhookTest {
-
     @Test
     fun verifyValidPayloadAndheader() {
         val testPayload = TestPayload(System.currentTimeMillis())
@@ -34,12 +33,14 @@ class WebhookTest {
     @Test
     fun verifyValidPayloadWithMultipleSignaturesIsValid() {
         val testPayload = TestPayload(System.currentTimeMillis())
-        val sigs = arrayOf(
-            "v1,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
-            "v2,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
-            testPayload.headerMap["svix-signature"]!![0], // valid signature
-            "v1,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc="
-        )
+        val sigs =
+            arrayOf(
+                "v1,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
+                "v2,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
+                // valid signature
+                testPayload.headerMap["svix-signature"]!![0],
+                "v1,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
+            )
         testPayload.headerMap["svix-signature"] = ArrayList(listOf(sigs.joinToString(" ")))
         val webhook = Webhook(testPayload.secret)
         webhook.verify(testPayload.payload, testPayload.headers())
@@ -52,7 +53,7 @@ class WebhookTest {
         assertFailsWith<WebhookVerificationException>(
             block = {
                 verify(testPayload)
-            }
+            },
         )
     }
 
@@ -63,7 +64,7 @@ class WebhookTest {
         assertFailsWith<WebhookVerificationException>(
             block = {
                 verify(testPayload)
-            }
+            },
         )
     }
 
@@ -74,7 +75,7 @@ class WebhookTest {
         assertFailsWith<WebhookVerificationException>(
             block = {
                 verify(testPayload)
-            }
+            },
         )
     }
 
@@ -85,7 +86,7 @@ class WebhookTest {
         assertFailsWith<WebhookVerificationException>(
             block = {
                 verify(testPayload)
-            }
+            },
         )
     }
 
@@ -96,7 +97,7 @@ class WebhookTest {
         assertFailsWith<WebhookVerificationException>(
             block = {
                 verify(testPayload)
-            }
+            },
         )
     }
 
@@ -107,7 +108,7 @@ class WebhookTest {
         assertFailsWith<WebhookVerificationException>(
             block = {
                 verify(testPayload)
-            }
+            },
         )
     }
 
@@ -117,7 +118,7 @@ class WebhookTest {
         assertFailsWith<WebhookVerificationException>(
             block = {
                 verify(testPayload)
-            }
+            },
         )
     }
 
@@ -127,7 +128,7 @@ class WebhookTest {
         assertFailsWith<WebhookVerificationException>(
             block = {
                 verify(testPayload)
-            }
+            },
         )
     }
 
@@ -164,6 +165,7 @@ class WebhookTest {
         val secret: String
         private var signature: String? = null
         var headerMap: HashMap<String, ArrayList<String>>
+
         fun headers(): HttpHeaders {
             val map = HashMap<String, List<String>>()
             for ((key, value) in headerMap) {
