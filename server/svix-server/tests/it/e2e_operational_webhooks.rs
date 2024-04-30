@@ -34,6 +34,7 @@ use crate::utils::{
 /// Sent when an endpoint has been automatically disabled after continuous failures.
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
+#[allow(dead_code)]
 pub struct EndpointDisabledEvent {
     pub app_id: ApplicationId,
     pub app_uid: Option<ApplicationUid>,
@@ -54,6 +55,7 @@ pub struct EndpointEvent {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
+#[allow(dead_code)]
 pub struct MessageAttempetLast {
     pub id: MessageAttemptId,
     pub response_status_code: i16,
@@ -65,6 +67,7 @@ pub struct MessageAttempetLast {
 /// event.
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
+#[allow(dead_code)]
 pub struct MessageAttemptEvent {
     pub app_id: ApplicationId,
     pub app_uid: Option<ApplicationUid>,
@@ -76,6 +79,7 @@ pub struct MessageAttemptEvent {
 
 #[derive(Debug, Deserialize)]
 #[serde(tag = "type", content = "data")]
+#[allow(dead_code)]
 pub enum OperationalWebhookTest {
     #[serde(rename = "endpoint.disabled")]
     EndpointDisabled(EndpointDisabledEvent),
