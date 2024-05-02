@@ -395,6 +395,9 @@ class Endpoint {
     });
   }
 
+  /**
+   * @deprecated Since version 1.23.0. Use `headersUpdate` instead.
+   */
   public updateHeaders(
     appId: string,
     endpointId: string,
@@ -407,7 +410,34 @@ class Endpoint {
     });
   }
 
+  public headersUpdate(
+    appId: string,
+    endpointId: string,
+    endpointHeadersIn: EndpointHeadersIn
+  ): Promise<void> {
+    return this.api.v1EndpointUpdateHeaders({
+      appId,
+      endpointId,
+      endpointHeadersIn,
+    });
+  }
+
+  /**
+   * @deprecated Since version 1.23.0. Use `headersPatch` instead.
+   */
   public patchHeaders(
+    appId: string,
+    endpointId: string,
+    endpointHeadersPatchIn: EndpointHeadersPatchIn
+  ): Promise<void> {
+    return this.api.v1EndpointPatchHeaders({
+      appId,
+      endpointId,
+      endpointHeadersPatchIn,
+    });
+  }
+
+  public headersPatch(
     appId: string,
     endpointId: string,
     endpointHeadersPatchIn: EndpointHeadersPatchIn
