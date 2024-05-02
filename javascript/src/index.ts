@@ -68,6 +68,7 @@ import {
   AppUsageStatsIn,
   AppUsageStatsOut,
   AggregateEventTypesOut,
+  EndpointOauthConfigIn,
 } from "./openapi/index";
 export * from "./openapi/models/all";
 export * from "./openapi/apis/exception";
@@ -455,6 +456,25 @@ class Endpoint {
     return this.api.v1EndpointSendExample(
       { appId, endpointId, eventExampleIn, ...options }
     );
+  }
+
+  public updateOauthConfig(
+    appId: string,
+    endpointId: string,
+    endpointOauthConfigIn: EndpointOauthConfigIn,
+  ): Promise<void> {
+    return this.api.v1EndpointUpdateOauthConfig({
+      appId, endpointId, endpointOauthConfigIn
+    });
+  }
+
+  public deleteOauthConfig(
+    appId: string,
+    endpointId: string,
+  ): Promise<void> {
+    return this.api.v1EndpointDeleteOauthConfig({
+      appId, endpointId
+    });
   }
 }
 
