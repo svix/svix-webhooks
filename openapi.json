@@ -10612,6 +10612,16 @@
                             "uniqueItems": true
                         },
                         "style": "form"
+                    },
+                    {
+                        "in": "query",
+                        "name": "after",
+                        "schema": {
+                            "format": "date-time",
+                            "nullable": true,
+                            "type": "string"
+                        },
+                        "style": "form"
                     }
                 ],
                 "responses": {
@@ -19379,6 +19389,16 @@
                             "nullable": true,
                             "type": "array",
                             "uniqueItems": true
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "in": "query",
+                        "name": "after",
+                        "schema": {
+                            "format": "date-time",
+                            "nullable": true,
+                            "type": "string"
                         },
                         "style": "form"
                     }
