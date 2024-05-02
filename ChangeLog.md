@@ -3,6 +3,10 @@
 ## Next
 * 
 
+## Version 1.23.0
+* Libs/Javascript: Fix method naming consistency
+* Add oauth support to javascript
+
 ## Version 1.22.0
 * Server: Don't require trailing slash at the end of request paths
 * Server: Improve testing performance and reduce redundant test runs
