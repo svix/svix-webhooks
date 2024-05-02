@@ -458,7 +458,7 @@ class Endpoint {
     );
   }
 
-  public updateOauthConfig(
+  public oauthConfigUpdate(
     appId: string,
     endpointId: string,
     endpointOauthConfigIn: EndpointOauthConfigIn,
@@ -468,7 +468,7 @@ class Endpoint {
     });
   }
 
-  public deleteOauthConfig(
+  public oauthConfigDelete(
     appId: string,
     endpointId: string,
   ): Promise<void> {
