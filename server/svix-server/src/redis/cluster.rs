@@ -1,7 +1,8 @@
 use axum::async_trait;
 use redis::{
     cluster::{ClusterClient, ClusterClientBuilder},
-    ErrorKind, IntoConnectionInfo, RedisError,
+    cluster_routing::{MultipleNodeRoutingInfo, ResponsePolicy, RoutingInfo},
+    ErrorKind, FromRedisValue, IntoConnectionInfo, RedisError,
 };
 
 /// ConnectionManager that implements `bb8::ManageConnection` and supports
@@ -31,7 +32,16 @@ impl bb8::ManageConnection for RedisClusterConnectionManager {
     }
 
     async fn is_valid(&self, conn: &mut Self::Connection) -> Result<(), Self::Error> {
-        let pong: String = redis::cmd("PING").query_async(&mut *conn).await?;
+        let pong = conn
+            .route_command(
+                &redis::cmd("PING"),
+                RoutingInfo::MultiNode((
+                    MultipleNodeRoutingInfo::AllMasters,
+                    Some(ResponsePolicy::OneSucceeded),
+                )),
+            )
+            .await
+            .and_then(|v| String::from_redis_value(&v))?;
         match pong.as_str() {
             "PONG" => Ok(()),
             _ => Err((ErrorKind::ResponseError, "ping request").into()),
