@@ -3,17 +3,17 @@
 
 //! Module defining utilities for crating `tracing` spans compatible with OpenTelemetry's
 //! conventions.
-use std::{borrow::Cow, net::SocketAddr};
+use std::net::SocketAddr;
 
 use axum::extract::{ConnectInfo, MatchedPath};
-use http::{header, uri::Scheme, Method, Version};
+use http::header;
 use opentelemetry::trace::TraceContextExt;
 use svix_ksuid::{KsuidLike, KsuidMs};
 use tower_http::{
     classify::ServerErrorsFailureClass,
     trace::{MakeSpan, OnFailure, OnResponse},
 };
-use tracing::field::Empty;
+use tracing::field::{debug, Empty};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 
 /// An implementor of [`MakeSpan`] which creates `tracing` spans populated with information about
@@ -26,37 +26,22 @@ impl<B> MakeSpan<B> for AxumOtelSpanCreator {
         let user_agent = request
             .headers()
             .get(header::USER_AGENT)
-            .map_or("", |header| header.to_str().unwrap_or(""));
+            .and_then(|header| header.to_str().ok());
 
         let host = request
             .headers()
             .get(header::HOST)
-            .map_or("", |header| header.to_str().unwrap_or(""));
+            .and_then(|header| header.to_str().ok());
 
-        let scheme = request.uri().scheme().map_or_else(
-            || "HTTP".into(),
-            |scheme| -> Cow<'static, str> {
-                if scheme == &Scheme::HTTP {
-                    "http".into()
-                } else if scheme == &Scheme::HTTPS {
-                    "https".into()
-                } else {
-                    scheme.to_string().into()
-                }
-            },
-        );
+        let http_route = request
+            .extensions()
+            .get::<MatchedPath>()
+            .map(|p| p.as_str());
 
-        let http_route = if let Some(matched_path) = request.extensions().get::<MatchedPath>() {
-            matched_path.as_str().to_owned()
-        } else {
-            request.uri().path().to_owned()
-        };
-
-        let client_ip: Cow<'static, str> = request
+        let client_ip = request
             .extensions()
             .get::<ConnectInfo<SocketAddr>>()
-            .map(|ConnectInfo(ip)| Cow::from(ip.to_string()))
-            .unwrap_or_default();
+            .map(|ConnectInfo(ip)| debug(ip));
 
         let request_id = request
             .headers()
@@ -79,29 +64,7 @@ impl<B> MakeSpan<B> for AxumOtelSpanCreator {
         let span_context = remote_span.span_context();
         let trace_id = span_context
             .is_valid()
-            .then(|| Cow::from(span_context.trace_id().to_string()))
-            .unwrap_or_default();
-
-        let flavor: Cow<'static, str> = match request.version() {
-            Version::HTTP_09 => "0.9".into(),
-            Version::HTTP_10 => "1.0".into(),
-            Version::HTTP_11 => "1.1".into(),
-            Version::HTTP_2 => "2.0".into(),
-            Version::HTTP_3 => "3.0".into(),
-            other => format!("{other:?}").into(),
-        };
-
-        let method: Cow<'static, str> = match request.method() {
-            &Method::CONNECT => "CONNECT".into(),
-            &Method::DELETE => "DELETE".into(),
-            &Method::GET => "GET".into(),
-            &Method::OPTIONS => "OPTIONS".into(),
-            &Method::PATCH => "PATCH".into(),
-            &Method::POST => "POST".into(),
-            &Method::PUT => "PUT".into(),
-            &Method::TRACE => "TRACE".into(),
-            other => other.to_string().into(),
-        };
+            .then(|| span_context.trace_id().to_string());
 
         let idempotency_key = request
             .headers()
@@ -111,27 +74,23 @@ impl<B> MakeSpan<B> for AxumOtelSpanCreator {
         let span = tracing::error_span!(
             "HTTP request",
             grpc.code = Empty,
-            http.client_ip = %client_ip,
-            http.flavor = %flavor,
-            http.host = %host,
-            http.method = %method,
-            http.route = %http_route,
-            http.scheme = %scheme,
+            http.client_ip = client_ip,
+            http.versions = ?request.version(),
+            http.host = host,
+            http.method = ?request.method(),
+            http.route = http_route,
+            http.scheme = request.uri().scheme().map(debug),
             http.status_code = Empty,
-            http.target = %request.uri().path_and_query().map_or("", |p| p.as_str()),
-            http.user_agent = %user_agent,
+            http.target = request.uri().path_and_query().map(|p| p.as_str()),
+            http.user_agent = user_agent,
             otel.kind = "server",
             otel.status_code = Empty,
-            request_id = %request_id,
-            trace_id = %trace_id,
-            idempotency_key = tracing::field::Empty,
+            request_id,
+            trace_id,
+            idempotency_key,
             org_id = tracing::field::Empty,
             app_id = tracing::field::Empty,
         );
-
-        if let Some(key) = idempotency_key {
-            span.record("idempotency_key", key);
-        }
 
         span.set_parent(remote_context);
 
