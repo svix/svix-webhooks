@@ -3,6 +3,11 @@
 ## Next
 * 
 
+## Version 1.24.0 
+* Server: Update redis health check
+* Server: Clean up tracing spans for HTTP requests
+* Libs: Update OpenAPI
+
 ## Version 1.23.0
 * Libs/Javascript: Fix method naming consistency
 * Add oauth support to javascript
