@@ -396,16 +396,20 @@
             "ClientSecretJwtParamsIn": {
                 "properties": {
                     "secretBase64": {
+                        "description": "The base64-encoded secret used for signing the JWT.",
                         "type": "string"
                     },
                     "secretId": {
+                        "description": "Optional secret identifier. If supplied, this will be populated in the JWT header in the `kid` field.",
                         "nullable": true,
                         "type": "string"
                     },
                     "signingAlgorithm": {
-                        "$ref": "#/components/schemas/OauthJwsSigningAlgorithm"
+                        "$ref": "#/components/schemas/OauthJwsSigningAlgorithm",
+                        "description": "The algorithm used to sign the JWT."
                     },
                     "tokenExpirySecs": {
+                        "description": "Optional number of seconds after which the JWT should expire. Defaults to 300 seconds.",
                         "format": "uint64",
                         "minimum": 0,
                         "nullable": true,
@@ -980,26 +984,64 @@
                 ],
                 "type": "object"
             },
+            "EndpointMtlsConfigIn": {
+                "properties": {
+                    "caCert": {
+                        "description": "A PEM encoded X509 certificate used to verify the webhook receiver's certificate.",
+                        "type": "string"
+                    },
+                    "identity": {
+                        "description": "A PEM encoded private key and X509 certificate to identify the webhook sender.",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "caCert",
+                    "identity"
+                ],
+                "type": "object"
+            },
             "EndpointOauthConfigIn": {
                 "properties": {
                     "authMethod": {
                         "$ref": "#/components/schemas/Oauth2AuthMethodIn"
                     },
                     "clientId": {
+                        "description": "The client ID. Required for all authentication types.",
                         "type": "string"
                     },
                     "clientSecret": {
+                        "description": "Optional client secret. This is only used for `clientSecretBasic` and `clientSecretPost`.\n\nFor `clientSecretBasic`, the secret will be appended to the `Authorization` header. For `clientSecretPost`, this will be added to the body in a `client_secret` parameter.",
                         "nullable": true,
                         "type": "string"
                     },
+                    "extraParams": {
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "description": "Extra parameters added to the request body as key-value pairs.",
+                        "nullable": true,
+                        "type": "object"
+                    },
                     "grantType": {
-                        "$ref": "#/components/schemas/Oauth2GrantType"
+                        "$ref": "#/components/schemas/Oauth2GrantType",
+                        "description": "The OAuth grant type. Currently only `clientCredentials` is supported."
                     },
                     "jwtParams": {
                         "$ref": "#/components/schemas/ClientSecretJwtParamsIn",
+                        "description": "Optional JWT parameters. Only required for `clientSecretJwt`",
                         "nullable": true
                     },
+                    "scopes": {
+                        "description": "Optional OAuth scopes added to the request body.",
+                        "items": {
+                            "type": "string"
+                        },
+                        "nullable": true,
+                        "type": "array"
+                    },
                     "tokenUrl": {
+                        "description": "The URL of the authorization server.",
                         "format": "uri",
                         "type": "string"
                     }
@@ -3347,6 +3389,7 @@
                 "type": "object"
             },
             "Oauth2AuthMethodIn": {
+                "description": "The method used for authenticating to the OAuth authorization server. `clientSecretJwt` will construct a JWT used for authentication with the oauth authorization server. This method is less commonly used and may not be supported by all oauth providers. `clientSecretBasic` will authenticate to the oauth authorization server using an `Authorization` header with the client secret as the value. This is the most common means of authentication. `clientSecretPost` will authenticate to the oauth authorization server by passing the client secret in a `client_secret` field in the request body. This method may not be supported by all oauth providers, and in general `clientSecretBasic` should be preferred.",
                 "enum": [
                     "clientSecretJwt",
                     "clientSecretBasic",
@@ -8321,6 +8364,382 @@
                 "summary": "Create Message Attempt For Endpoint",
                 "tags": [
                     "Message"
+                ]
+            }
+        },
+        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/mtls": {
+            "delete": {
+                "description": "Delete endpoint mTLS configuration",
+                "operationId": "v1.endpoint.delete-mtls-config",
+                "parameters": [
+                    {
+                        "description": "The app's ID or UID",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The app's ID or UID",
+                            "example": "unique-app-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The ep's ID or UID",
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The ep's ID or UID",
+                            "example": "unique-ep-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "no content"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Delete Endpoint Mtls Config",
+                "tags": [
+                    "Endpoint"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.endpoint.deleteMtlsConfig(\"app_id\", \"endpoint_id\");"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.endpoint.deleteMtlsConfig(\"app_id\", \"endpoint_id\");"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "svix.endpoint.delete_mtls_config(\"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "await svix.endpoint.delete_mtls_config(\"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "err := svixClient.Endpoint.DeleteMtlsConfig(ctx, \"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "svix.endpoint.deleteMtlsConfig(\"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "svix.getEndpoint().deleteMtlsConfig(\"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "svix.endpoint.delete_mtls_config(\"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "svix.endpoint().delete_mtls_config(\"app_id\", \"endpoint_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "await svix.Endpoint.DeleteMtlsConfigAsync(\"app_id\", \"endpoint_id\")"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix endpoint delete-mtls-config \"app_id\" \"endpoint_id\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/mtls' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            },
+            "put": {
+                "description": "Create/update endpoint mTLS configuration",
+                "operationId": "v1.endpoint.update-mtls-config",
+                "parameters": [
+                    {
+                        "description": "The app's ID or UID",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The app's ID or UID",
+                            "example": "unique-app-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The ep's ID or UID",
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The ep's ID or UID",
+                            "example": "unique-ep-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EndpointMtlsConfigIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "no content"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Update Endpoint Mtls Config",
+                "tags": [
+                    "Endpoint"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.endpoint.updateMtlsConfig(\"app_id\", \"endpoint_id\", \n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.endpoint.updateMtlsConfig(\"app_id\", \"endpoint_id\", \n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "svix.endpoint.update_mtls_config(\"app_id\", \"endpoint_id\", EndpointMtlsConfigIn\n))"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "await svix.endpoint.update_mtls_config(\"app_id\", \"endpoint_id\", EndpointMtlsConfigIn\n))"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "err := svixClient.Endpoint.UpdateMtlsConfig(ctx, \"app_id\", \"endpoint_id\", &EndpointMtlsConfigIn{\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "svix.endpoint.updateMtlsConfig(\"app_id\", \"endpoint_id\", EndpointMtlsConfigIn()\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "svix.getEndpoint().updateMtlsConfig(\"app_id\", \"endpoint_id\", new EndpointMtlsConfigIn()\n)"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "svix.endpoint.update_mtls_config(\"app_id\", \"endpoint_id\", Svix::EndpointMtlsConfigIn.new(\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "svix.endpoint().update_mtls_config(\"app_id\", \"endpoint_id\", EndpointMtlsConfigIn {\n}).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "await svix.Endpoint.UpdateMtlsConfigAsync(\"app_id\", \"endpoint_id\", new EndpointMtlsConfigIn\n})"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix endpoint update-mtls-config \"app_id\" \"endpoint_id\" '\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/mtls' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '\n    }'"
+                    }
                 ]
             }
         },
@@ -22338,7 +22757,7 @@
             "name": "Message Attempt"
         },
         {
-            "description": "Endpoints are the URLs messages will be sent to. Each application can have multiple endpoints and each message sent to that application will be sent to all of them (unless they are not subscribed to the sent event type).",
+            "description": "Endpoints are the URLs messages will be sent to. Each application can have up to 50 endpoints and each message sent to that application will be sent to all of them (unless they are not subscribed to the sent event type).",
             "name": "Endpoint"
         },
         {
