@@ -49,7 +49,7 @@ chrono = { version="0.4.26", features = ["serde"] }
 reqwest = { version = "0.11.27", features = ["json", "rustls-tls", "hickory-resolver"], default-features = false }
 bb8 = "0.8"
 bb8-redis = "0.14.0"
-redis = { version = "0.24.0", features = ["tokio-comp", "tokio-native-tls-comp", "streams", "cluster-async"] }
+redis = { version = "0.24.0", features = ["tokio-comp", "tokio-native-tls-comp", "streams", "cluster-async", "tcp_nodelay"] }
 thiserror = "1.0.30"
 bytes = "1.1.0"
 blake2 = "0.10.4"
