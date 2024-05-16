@@ -234,10 +234,12 @@ async fn new_pair_inner(
     }
 }
 
-fn task_from_redis_key(key: &str) -> Arc<QueueTask> {
+fn task_from_redis_key(key: &str) -> serde_json::Result<Arc<QueueTask>> {
     // Get the first delimiter -> it has to have the |
-    let pos = key.find('|').unwrap();
-    serde_json::from_str(&key[pos + 1..]).unwrap()
+    let pos = key
+        .find('|')
+        .ok_or_else(|| serde::de::Error::custom("key must contain '|'"))?;
+    serde_json::from_str(&key[pos + 1..])
 }
 
 async fn migrate_v2_to_v3_queues(conn: &mut PooledConnection<'_>) -> Result<()> {
@@ -268,7 +270,14 @@ async fn migrate_list_to_stream(
 
         let mut pipe = redis::pipe();
         for key in legacy_keys {
-            let task = task_from_redis_key(&key);
+            let task = match task_from_redis_key(&key) {
+                Ok(t) => t,
+                #[allow(trivial_casts)]
+                Err(e) => {
+                    tracing::error!(error = &e as &dyn std::error::Error, "Invalid legacy key");
+                    continue;
+                }
+            };
             let _ = pipe.xadd(
                 queue,
                 GENERATE_STREAM_ID,
