@@ -780,7 +780,7 @@ async fn process_queue_task_inner(
         return Ok(());
     };
 
-    let create_message_app = match CreateMessageApp::layered_fetch(
+    let Some(create_message_app) = CreateMessageApp::layered_fetch(
         cache,
         db,
         None,
@@ -789,12 +789,9 @@ async fn process_queue_task_inner(
         Duration::from_secs(30),
     )
     .await?
-    {
-        Some(create_message_app) => create_message_app,
-        None => {
-            tracing::info!("Application doesn't exist: {}", &msg.app_id);
-            return Ok(());
-        }
+    else {
+        tracing::info!("Application doesn't exist: {}", &msg.app_id);
+        return Ok(());
     };
 
     let endpoints: Vec<CreateMessageEndpoint> = create_message_app

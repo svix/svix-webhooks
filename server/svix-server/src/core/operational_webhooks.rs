@@ -125,10 +125,7 @@ impl OperationalWebhookSenderInner {
         recipient_org_id: &OrganizationId,
         payload: OperationalWebhook,
     ) -> Result<()> {
-        let url = match self.url.as_ref() {
-            Some(url) => url,
-            None => return Ok(()),
-        };
+        let Some(url) = &self.url else { return Ok(()) };
 
         let op_webhook_token =
             generate_management_token(&self.signing_config).map_err(Error::generic)?;
