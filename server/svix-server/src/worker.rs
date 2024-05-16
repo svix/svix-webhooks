@@ -726,7 +726,9 @@ async fn process_queue_task_inner(
                     .find_also_related(messagecontent::Entity)
                     .one(db)
                     .await?
-                    .ok_or_else(|| Error::generic("Unexpected: message doesn't exist"))?;
+                    .ok_or_else(|| {
+                        Error::generic(format!("Unexpected: message doesn't exist {}", task.msg_id))
+                    })?;
 
                 let destination =
                     messagedestination::Entity::secure_find_by_msg(task.msg_id.clone())
@@ -750,11 +752,13 @@ async fn process_queue_task_inner(
                 )
             }
             QueueTask::MessageBatch(task) => {
-                let (msg, msg_content) = message::Entity::find_by_id(task.msg_id)
+                let (msg, msg_content) = message::Entity::find_by_id(task.msg_id.clone())
                     .find_also_related(messagecontent::Entity)
                     .one(db)
                     .await?
-                    .ok_or_else(|| Error::generic("Unexpected: message doesn't exist"))?;
+                    .ok_or_else(|| {
+                        Error::generic(format!("Unexpected: message doesn't exist {}", task.msg_id))
+                    })?;
                 (
                     msg,
                     msg_content,
