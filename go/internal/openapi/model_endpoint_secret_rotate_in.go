@@ -26,8 +26,6 @@ type EndpointSecretRotateIn struct {
 // will change when the set of required properties is changed
 func NewEndpointSecretRotateIn() *EndpointSecretRotateIn {
 	this := EndpointSecretRotateIn{}
-	var key string = "null"
-	this.Key = *NewNullableString(&key)
 	return &this
 }
 
@@ -36,8 +34,6 @@ func NewEndpointSecretRotateIn() *EndpointSecretRotateIn {
 // but it doesn't guarantee that properties required by API are set
 func NewEndpointSecretRotateInWithDefaults() *EndpointSecretRotateIn {
 	this := EndpointSecretRotateIn{}
-	var key string = "null"
-	this.Key = *NewNullableString(&key)
 	return &this
 }
 

@@ -1024,13 +1024,18 @@
                         "type": "object"
                     },
                     "grantType": {
-                        "$ref": "#/components/schemas/Oauth2GrantType",
-                        "description": "The OAuth grant type. Currently only `clientCredentials` is supported."
+                        "$ref": "#/components/schemas/Oauth2GrantTypeIn",
+                        "description": "The OAuth grant type."
                     },
                     "jwtParams": {
                         "$ref": "#/components/schemas/ClientSecretJwtParamsIn",
                         "description": "Optional JWT parameters. Only required for `clientSecretJwt`",
                         "nullable": true
+                    },
+                    "refreshToken": {
+                        "description": "For `refreshToken` grant type",
+                        "nullable": true,
+                        "type": "string"
                     },
                     "scopes": {
                         "description": "Optional OAuth scopes added to the request body.",
@@ -1250,7 +1255,6 @@
             "EndpointSecretRotateIn": {
                 "properties": {
                     "key": {
-                        "default": null,
                         "description": "The endpoint's verification secret. If `null` is passed, a secret is automatically generated. Format: `base64` encoded random bytes optionally prefixed with `whsec_`. Recommended size: 24.",
                         "example": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD",
                         "nullable": true,
@@ -1680,9 +1684,59 @@
                 ],
                 "type": "object"
             },
+            "EventTypeFromOpenApi": {
+                "properties": {
+                    "description": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "description": "The event type's name",
+                        "example": "user.signup",
+                        "maxLength": 256,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "type": "string"
+                    },
+                    "schemas": {
+                        "additionalProperties": {
+                            "type": "object"
+                        },
+                        "example": {
+                            "description": "An invoice was paid by a user",
+                            "properties": {
+                                "invoiceId": {
+                                    "description": "The invoice id",
+                                    "type": "string"
+                                },
+                                "userId": {
+                                    "description": "The user id",
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "invoiceId",
+                                "userId"
+                            ],
+                            "title": "Invoice Paid Event",
+                            "type": "object"
+                        },
+                        "nullable": true,
+                        "type": "object"
+                    }
+                },
+                "required": [
+                    "description",
+                    "name"
+                ],
+                "type": "object"
+            },
             "EventTypeImportOpenApiIn": {
                 "description": "Import a list of event types from webhooks defined in an OpenAPI spec.\n\nThe OpenAPI spec can be specified as either `spec` given the spec as a JSON object, or as `specRaw` (a `string`) which will be parsed as YAML or JSON by the server. Sending neither or both is invalid, resulting in a `400` **Bad Request**.",
                 "properties": {
+                    "dry_run": {
+                        "default": false,
+                        "description": "If `true`, return the event types that would be modified without actually modifying them.",
+                        "type": "boolean"
+                    },
                     "spec": {
                         "additionalProperties": {
                             "type": "object"
@@ -1806,6 +1860,13 @@
                             "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "type": "string"
                         },
+                        "type": "array"
+                    },
+                    "to_modify": {
+                        "items": {
+                            "$ref": "#/components/schemas/EventTypeFromOpenApi"
+                        },
+                        "nullable": true,
                         "type": "array"
                     }
                 },
@@ -2175,6 +2236,17 @@
                 "title": "HttpError",
                 "type": "object"
             },
+            "HubspotOauthConfigIn": {
+                "properties": {
+                    "refresh_token": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "refresh_token"
+                ],
+                "type": "object"
+            },
             "InboundPathParams": {
                 "properties": {
                     "app_id": {
@@ -2193,6 +2265,24 @@
                     "app_id",
                     "inbound_token"
                 ],
+                "type": "object"
+            },
+            "IncomingWebhookPayloadOut": {
+                "properties": {
+                    "channel": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "error": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "incomingWebhookUrl": {
+                        "format": "uri",
+                        "nullable": true,
+                        "type": "string"
+                    }
+                },
                 "type": "object"
             },
             "IntegrationIn": {
@@ -3388,28 +3478,7 @@
                 ],
                 "type": "object"
             },
-            "Oauth2AuthMethodIn": {
-                "description": "The method used for authenticating to the OAuth authorization server. `clientSecretJwt` will construct a JWT used for authentication with the oauth authorization server. This method is less commonly used and may not be supported by all oauth providers. `clientSecretBasic` will authenticate to the oauth authorization server using an `Authorization` header with the client secret as the value. This is the most common means of authentication. `clientSecretPost` will authenticate to the oauth authorization server by passing the client secret in a `client_secret` field in the request body. This method may not be supported by all oauth providers, and in general `clientSecretBasic` should be preferred.",
-                "enum": [
-                    "clientSecretJwt",
-                    "clientSecretBasic",
-                    "clientSecretPost"
-                ],
-                "type": "string"
-            },
-            "Oauth2GrantType": {
-                "enum": [
-                    "clientCredentials"
-                ],
-                "type": "string"
-            },
-            "OauthJwsSigningAlgorithm": {
-                "enum": [
-                    "RS256"
-                ],
-                "type": "string"
-            },
-            "OauthPayloadIn": {
+            "OAuthPayloadIn": {
                 "properties": {
                     "code": {
                         "type": "string"
@@ -3424,9 +3493,9 @@
                 ],
                 "type": "object"
             },
-            "OauthPayloadOut": {
+            "OAuthPayloadOut": {
                 "properties": {
-                    "channel": {
+                    "accessToken": {
                         "nullable": true,
                         "type": "string"
                     },
@@ -3434,13 +3503,34 @@
                         "nullable": true,
                         "type": "string"
                     },
-                    "incomingWebhookUrl": {
-                        "format": "uri",
+                    "refreshToken": {
                         "nullable": true,
                         "type": "string"
                     }
                 },
                 "type": "object"
+            },
+            "Oauth2AuthMethodIn": {
+                "description": "The method used for authenticating to the OAuth authorization server. `clientSecretJwt` will construct a JWT used for authentication with the oauth authorization server. This method is less commonly used and may not be supported by all oauth providers. `clientSecretBasic` will authenticate to the oauth authorization server using an `Authorization` header with the client secret as the value. This is the most common means of authentication. `clientSecretPost` will authenticate to the oauth authorization server by passing the client secret in a `client_secret` field in the request body. This method may not be supported by all oauth providers, and in general `clientSecretBasic` should be preferred.",
+                "enum": [
+                    "clientSecretJwt",
+                    "clientSecretBasic",
+                    "clientSecretPost"
+                ],
+                "type": "string"
+            },
+            "Oauth2GrantTypeIn": {
+                "enum": [
+                    "clientCredentials",
+                    "refreshToken"
+                ],
+                "type": "string"
+            },
+            "OauthJwsSigningAlgorithm": {
+                "enum": [
+                    "RS256"
+                ],
+                "type": "string"
             },
             "OneTimeTokenIn": {
                 "properties": {
@@ -3800,7 +3890,6 @@
                         "type": "string"
                     },
                     "instructionsLink": {
-                        "default": null,
                         "format": "uri",
                         "nullable": true,
                         "type": "string"
@@ -9059,62 +9148,62 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "await svix.endpoint.updateOauthConfig(\"app_id\", \"endpoint_id\", {\n    jwtParams: null,\n    clientSecret: null,\n    scopes: null,\n    extraParams: null\n});"
+                        "source": "await svix.endpoint.updateOauthConfig(\"app_id\", \"endpoint_id\", {\n    jwtParams: null,\n    clientSecret: null,\n    scopes: null,\n    extraParams: null,\n    refreshToken: null\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "await svix.endpoint.updateOauthConfig(\"app_id\", \"endpoint_id\", {\n    jwtParams: null,\n    clientSecret: null,\n    scopes: null,\n    extraParams: null\n});"
+                        "source": "await svix.endpoint.updateOauthConfig(\"app_id\", \"endpoint_id\", {\n    jwtParams: null,\n    clientSecret: null,\n    scopes: null,\n    extraParams: null,\n    refreshToken: null\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "svix.endpoint.update_oauth_config(\"app_id\", \"endpoint_id\", EndpointOauthConfigIn(\n    jwt_params=None,\n    client_secret=None,\n    scopes=None,\n    extra_params=None\n))"
+                        "source": "svix.endpoint.update_oauth_config(\"app_id\", \"endpoint_id\", EndpointOauthConfigIn(\n    jwt_params=None,\n    client_secret=None,\n    scopes=None,\n    extra_params=None,\n    refresh_token=None\n))"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "await svix.endpoint.update_oauth_config(\"app_id\", \"endpoint_id\", EndpointOauthConfigIn(\n    jwt_params=None,\n    client_secret=None,\n    scopes=None,\n    extra_params=None\n))"
+                        "source": "await svix.endpoint.update_oauth_config(\"app_id\", \"endpoint_id\", EndpointOauthConfigIn(\n    jwt_params=None,\n    client_secret=None,\n    scopes=None,\n    extra_params=None,\n    refresh_token=None\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "err := svixClient.Endpoint.UpdateOauthConfig(ctx, \"app_id\", \"endpoint_id\", &EndpointOauthConfigIn{\n    JwtParams: nil,\n    ClientSecret: nil,\n    Scopes: nil,\n    ExtraParams: nil,\n})"
+                        "source": "err := svixClient.Endpoint.UpdateOauthConfig(ctx, \"app_id\", \"endpoint_id\", &EndpointOauthConfigIn{\n    JwtParams: nil,\n    ClientSecret: nil,\n    Scopes: nil,\n    ExtraParams: nil,\n    RefreshToken: nil,\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "svix.endpoint.updateOauthConfig(\"app_id\", \"endpoint_id\", EndpointOauthConfigIn()\n    .jwtParams(null)\n    .clientSecret(null)\n    .scopes(null)\n    .extraParams(null)\n)"
+                        "source": "svix.endpoint.updateOauthConfig(\"app_id\", \"endpoint_id\", EndpointOauthConfigIn()\n    .jwtParams(null)\n    .clientSecret(null)\n    .scopes(null)\n    .extraParams(null)\n    .refreshToken(null)\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "svix.getEndpoint().updateOauthConfig(\"app_id\", \"endpoint_id\", new EndpointOauthConfigIn()\n    .jwtParams(null)\n    .clientSecret(null)\n    .scopes(null)\n    .extraParams(null)\n)"
+                        "source": "svix.getEndpoint().updateOauthConfig(\"app_id\", \"endpoint_id\", new EndpointOauthConfigIn()\n    .jwtParams(null)\n    .clientSecret(null)\n    .scopes(null)\n    .extraParams(null)\n    .refreshToken(null)\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "svix.endpoint.update_oauth_config(\"app_id\", \"endpoint_id\", Svix::EndpointOauthConfigIn.new({\n    \"jwt_params\": nil,\n    \"client_secret\": nil,\n    \"scopes\": nil,\n    \"extra_params\": nil\n}))"
+                        "source": "svix.endpoint.update_oauth_config(\"app_id\", \"endpoint_id\", Svix::EndpointOauthConfigIn.new({\n    \"jwt_params\": nil,\n    \"client_secret\": nil,\n    \"scopes\": nil,\n    \"extra_params\": nil,\n    \"refresh_token\": nil\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "svix.endpoint().update_oauth_config(\"app_id\", \"endpoint_id\", EndpointOauthConfigIn {\n    jwt_params: None,\n    client_secret: None,\n    scopes: None,\n    extra_params: None,\n}).await?;"
+                        "source": "svix.endpoint().update_oauth_config(\"app_id\", \"endpoint_id\", EndpointOauthConfigIn {\n    jwt_params: None,\n    client_secret: None,\n    scopes: None,\n    extra_params: None,\n    refresh_token: None,\n}).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "await svix.Endpoint.UpdateOauthConfigAsync(\"app_id\", \"endpoint_id\", new EndpointOauthConfigIn{\n    jwtParams: null,\n    clientSecret: null,\n    scopes: null,\n    extraParams: null\n})"
+                        "source": "await svix.Endpoint.UpdateOauthConfigAsync(\"app_id\", \"endpoint_id\", new EndpointOauthConfigIn{\n    jwtParams: null,\n    clientSecret: null,\n    scopes: null,\n    extraParams: null,\n    refreshToken: null\n})"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix endpoint update-oauth-config \"app_id\" \"endpoint_id\" '{\n    \"jwtParams\": null,\n    \"clientSecret\": null,\n    \"scopes\": null,\n    \"extraParams\": null\n}'"
+                        "source": "svix endpoint update-oauth-config \"app_id\" \"endpoint_id\" '{\n    \"jwtParams\": null,\n    \"clientSecret\": null,\n    \"scopes\": null,\n    \"extraParams\": null,\n    \"refreshToken\": null\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"jwtParams\": null,\n        \"clientSecret\": null,\n        \"scopes\": null,\n        \"extraParams\": null\n    }'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"jwtParams\": null,\n        \"clientSecret\": null,\n        \"scopes\": null,\n        \"extraParams\": null,\n        \"refreshToken\": null\n    }'"
                     }
                 ]
             }
@@ -10737,6 +10826,200 @@
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"code\": null\n    }'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation-template/oauth/hubspot": {
+            "put": {
+                "description": "Create/update endpoint Hubsport OAuth configuration\nSpecific private endpoint just for us, to avoid exposing the Hubspot secret to the client.",
+                "operationId": "v1.endpoint.update-hubspot-oauth-config",
+                "parameters": [
+                    {
+                        "description": "The app's ID or UID",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The app's ID or UID",
+                            "example": "unique-app-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The ep's ID or UID",
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The ep's ID or UID",
+                            "example": "unique-ep-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/HubspotOauthConfigIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "no content"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Update Hubspot Oauth Config",
+                "tags": [
+                    "Transformation Template"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.endpoint.updateHubspotOauthConfig(\"app_id\", \"endpoint_id\", \n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.endpoint.updateHubspotOauthConfig(\"app_id\", \"endpoint_id\", \n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "svix.endpoint.update_hubspot_oauth_config(\"app_id\", \"endpoint_id\", HubspotOauthConfigIn\n))"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "await svix.endpoint.update_hubspot_oauth_config(\"app_id\", \"endpoint_id\", HubspotOauthConfigIn\n))"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "err := svixClient.Endpoint.UpdateHubspotOauthConfig(ctx, \"app_id\", \"endpoint_id\", &HubspotOauthConfigIn{\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "svix.endpoint.updateHubspotOauthConfig(\"app_id\", \"endpoint_id\", HubspotOauthConfigIn()\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "svix.getEndpoint().updateHubspotOauthConfig(\"app_id\", \"endpoint_id\", new HubspotOauthConfigIn()\n)"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "svix.endpoint.update_hubspot_oauth_config(\"app_id\", \"endpoint_id\", Svix::HubspotOauthConfigIn.new(\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "svix.endpoint().update_hubspot_oauth_config(\"app_id\", \"endpoint_id\", HubspotOauthConfigIn {\n}).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "await svix.Endpoint.UpdateHubspotOauthConfigAsync(\"app_id\", \"endpoint_id\", new HubspotOauthConfigIn\n})"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix endpoint update-hubspot-oauth-config \"app_id\" \"endpoint_id\" '\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation-template/oauth/hubspot' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '\n    }'"
                     }
                 ]
             }
@@ -21514,7 +21797,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/OauthPayloadIn"
+                                "$ref": "#/components/schemas/OAuthPayloadIn"
                             }
                         }
                     },
@@ -21525,7 +21808,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/OauthPayloadOut"
+                                    "$ref": "#/components/schemas/IncomingWebhookPayloadOut"
                                 }
                             }
                         },
@@ -21615,52 +21898,52 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const oauthPayloadOut = await svix.transformationTemplate.oauth(\n});"
+                        "source": "const incomingWebhookPayloadOut = await svix.transformationTemplate.oauth(\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const oauthPayloadOut = await svix.transformationTemplate.oauth(\n});"
+                        "source": "const incomingWebhookPayloadOut = await svix.transformationTemplate.oauth(\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "oauth_payload_out = svix.transformation_template.oauth(OauthPayloadIn\n), None)"
+                        "source": "incoming_webhook_payload_out = svix.transformation_template.oauth(OAuthPayloadIn\n), None)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "oauth_payload_out = await svix.transformation_template.oauth(OauthPayloadIn\n), None)"
+                        "source": "incoming_webhook_payload_out = await svix.transformation_template.oauth(OAuthPayloadIn\n), None)"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "oauthPayloadOut, err := svixClient.TransformationTemplate.Oauth(ctx, &OauthPayloadIn{\n})"
+                        "source": "incomingWebhookPayloadOut, err := svixClient.TransformationTemplate.Oauth(ctx, &OAuthPayloadIn{\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val oauthPayloadOut = svix.transformationTemplate.oauth(OauthPayloadIn()\n)"
+                        "source": "val incomingWebhookPayloadOut = svix.transformationTemplate.oauth(OAuthPayloadIn()\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "OauthPayloadOut oauthPayloadOut = svix.getTransformationTemplate().oauth(new OauthPayloadIn()\n)"
+                        "source": "IncomingWebhookPayloadOut incomingWebhookPayloadOut = svix.getTransformationTemplate().oauth(new OAuthPayloadIn()\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "oauth_payload_out = svix.transformation_template.oauth(Svix::OauthPayloadIn.new(\n}))"
+                        "source": "incoming_webhook_payload_out = svix.transformation_template.oauth(Svix::OAuthPayloadIn.new(\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let oauth_payload_out = svix.transformation_template().oauth(OauthPayloadIn {\n}, None).await?;"
+                        "source": "let incoming_webhook_payload_out = svix.transformation_template().oauth(OAuthPayloadIn {\n}, None).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var oauthPayloadOut = await svix.TransformationTemplate.OauthAsync(new OauthPayloadIn\n})"
+                        "source": "var incomingWebhookPayloadOut = await svix.TransformationTemplate.OauthAsync(new OAuthPayloadIn\n})"
                     },
                     {
                         "label": "CLI",
@@ -21671,6 +21954,186 @@
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/oauth/discord' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '\n    }'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/transformation-template/oauth/hubspot": {
+            "post": {
+                "description": "Get Hubspot access token using authorization code",
+                "operationId": "v1.transformation-template.oauth.hubspot",
+                "parameters": [
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/OAuthPayloadIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OAuthPayloadOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Authorize Hubspot",
+                "tags": [
+                    "Transformation Template"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const oAuthPayloadOut = await svix.transformationTemplate.oauth(\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const oAuthPayloadOut = await svix.transformationTemplate.oauth(\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "o_auth_payload_out = svix.transformation_template.oauth(OAuthPayloadIn\n), None)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "o_auth_payload_out = await svix.transformation_template.oauth(OAuthPayloadIn\n), None)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "oAuthPayloadOut, err := svixClient.TransformationTemplate.Oauth(ctx, &OAuthPayloadIn{\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val oAuthPayloadOut = svix.transformationTemplate.oauth(OAuthPayloadIn()\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "OAuthPayloadOut oAuthPayloadOut = svix.getTransformationTemplate().oauth(new OAuthPayloadIn()\n)"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "o_auth_payload_out = svix.transformation_template.oauth(Svix::OAuthPayloadIn.new(\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let o_auth_payload_out = svix.transformation_template().oauth(OAuthPayloadIn {\n}, None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var oAuthPayloadOut = await svix.TransformationTemplate.OauthAsync(new OAuthPayloadIn\n})"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix transformation-template oauth '\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/transformation-template/oauth/hubspot' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '\n    }'"
                     }
                 ]
             }
@@ -21694,7 +22157,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/OauthPayloadIn"
+                                "$ref": "#/components/schemas/OAuthPayloadIn"
                             }
                         }
                     },
@@ -21705,7 +22168,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/OauthPayloadOut"
+                                    "$ref": "#/components/schemas/IncomingWebhookPayloadOut"
                                 }
                             }
                         },
@@ -21795,52 +22258,52 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const oauthPayloadOut = await svix.transformationTemplate.oauth(\n});"
+                        "source": "const incomingWebhookPayloadOut = await svix.transformationTemplate.oauth(\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const oauthPayloadOut = await svix.transformationTemplate.oauth(\n});"
+                        "source": "const incomingWebhookPayloadOut = await svix.transformationTemplate.oauth(\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "oauth_payload_out = svix.transformation_template.oauth(OauthPayloadIn\n), None)"
+                        "source": "incoming_webhook_payload_out = svix.transformation_template.oauth(OAuthPayloadIn\n), None)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "oauth_payload_out = await svix.transformation_template.oauth(OauthPayloadIn\n), None)"
+                        "source": "incoming_webhook_payload_out = await svix.transformation_template.oauth(OAuthPayloadIn\n), None)"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "oauthPayloadOut, err := svixClient.TransformationTemplate.Oauth(ctx, &OauthPayloadIn{\n})"
+                        "source": "incomingWebhookPayloadOut, err := svixClient.TransformationTemplate.Oauth(ctx, &OAuthPayloadIn{\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val oauthPayloadOut = svix.transformationTemplate.oauth(OauthPayloadIn()\n)"
+                        "source": "val incomingWebhookPayloadOut = svix.transformationTemplate.oauth(OAuthPayloadIn()\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "OauthPayloadOut oauthPayloadOut = svix.getTransformationTemplate().oauth(new OauthPayloadIn()\n)"
+                        "source": "IncomingWebhookPayloadOut incomingWebhookPayloadOut = svix.getTransformationTemplate().oauth(new OAuthPayloadIn()\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "oauth_payload_out = svix.transformation_template.oauth(Svix::OauthPayloadIn.new(\n}))"
+                        "source": "incoming_webhook_payload_out = svix.transformation_template.oauth(Svix::OAuthPayloadIn.new(\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let oauth_payload_out = svix.transformation_template().oauth(OauthPayloadIn {\n}, None).await?;"
+                        "source": "let incoming_webhook_payload_out = svix.transformation_template().oauth(OAuthPayloadIn {\n}, None).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var oauthPayloadOut = await svix.TransformationTemplate.OauthAsync(new OauthPayloadIn\n})"
+                        "source": "var incomingWebhookPayloadOut = await svix.TransformationTemplate.OauthAsync(new OAuthPayloadIn\n})"
                     },
                     {
                         "label": "CLI",

@@ -1306,6 +1306,7 @@ type ApiV1MessageStreamRequest struct {
 	iterator *string
 	eventTypes *[]string
 	channels *[]string
+	after *time.Time
 }
 
 func (r ApiV1MessageStreamRequest) Limit(limit int32) ApiV1MessageStreamRequest {
@@ -1322,6 +1323,10 @@ func (r ApiV1MessageStreamRequest) EventTypes(eventTypes []string) ApiV1MessageS
 }
 func (r ApiV1MessageStreamRequest) Channels(channels []string) ApiV1MessageStreamRequest {
 	r.channels = &channels
+	return r
+}
+func (r ApiV1MessageStreamRequest) After(after time.Time) ApiV1MessageStreamRequest {
+	r.after = &after
 	return r
 }
 
@@ -1403,6 +1408,9 @@ func (a *MessageApiService) V1MessageStreamExecute(r ApiV1MessageStreamRequest) 
 		} else {
 			localVarQueryParams.Add("channels", parameterToString(t, "multi"))
 		}
+	}
+	if r.after != nil {
+		localVarQueryParams.Add("after", parameterToString(*r.after, ""))
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}

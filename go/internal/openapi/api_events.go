@@ -17,6 +17,7 @@ import (
 	_nethttp "net/http"
 	_neturl "net/url"
 	"reflect"
+	"time"
 )
 
 // Linger please
@@ -34,6 +35,7 @@ type ApiV1EventsRequest struct {
 	iterator *string
 	eventTypes *[]string
 	channels *[]string
+	after *time.Time
 }
 
 func (r ApiV1EventsRequest) Limit(limit int32) ApiV1EventsRequest {
@@ -50,6 +52,10 @@ func (r ApiV1EventsRequest) EventTypes(eventTypes []string) ApiV1EventsRequest {
 }
 func (r ApiV1EventsRequest) Channels(channels []string) ApiV1EventsRequest {
 	r.channels = &channels
+	return r
+}
+func (r ApiV1EventsRequest) After(after time.Time) ApiV1EventsRequest {
+	r.after = &after
 	return r
 }
 
@@ -122,6 +128,9 @@ func (a *EventsApiService) V1EventsExecute(r ApiV1EventsRequest) (MessageStreamO
 		} else {
 			localVarQueryParams.Add("channels", parameterToString(t, "multi"))
 		}
+	}
+	if r.after != nil {
+		localVarQueryParams.Add("after", parameterToString(*r.after, ""))
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
