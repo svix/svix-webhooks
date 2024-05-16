@@ -101,13 +101,12 @@ impl ActiveModel {
         app_id: ApplicationId,
         endp_id: EndpointIdOrUid,
     ) -> error::Result<Option<(Self, endpointmetadata::ActiveModel)>> {
-        let (endp, metadata) = match Entity::secure_find_by_id_or_uid(app_id, endp_id)
+        let Some((endp, metadata)) = Entity::secure_find_by_id_or_uid(app_id, endp_id)
             .find_also_related(endpointmetadata::Entity)
             .one(db)
             .await?
-        {
-            Some(models) => models,
-            None => return Ok(None),
+        else {
+            return Ok(None);
         };
 
         let metadata = metadata

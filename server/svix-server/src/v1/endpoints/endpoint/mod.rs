@@ -779,21 +779,16 @@ async fn send_example(
                 .ok_or_else(|| HttpError::not_found(None, None))?;
 
         let example = event_type.schemas.and_then(|schema| {
-            schema
-                .example()
-                .and_then(|ex| serde_json::to_string(ex).ok())
+            let ex = schema.example()?;
+            serde_json::to_string(ex).ok()
         });
 
-        match example {
-            Some(example) => example,
-            None => {
-                return Err(HttpError::bad_request(
-                    Some("invalid_scheme".to_owned()),
-                    Some("Unable to generate example message from event-type schema".to_owned()),
-                )
-                .into());
-            }
-        }
+        example.ok_or_else(|| {
+            HttpError::bad_request(
+                Some("invalid_scheme".to_owned()),
+                Some("Unable to generate example message from event-type schema".to_owned()),
+            )
+        })?
     };
 
     let msg_in = MessageIn {
