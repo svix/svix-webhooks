@@ -27,6 +27,197 @@ var (
 // TransformationTemplateApiService TransformationTemplateApi service
 type TransformationTemplateApiService service
 
+type ApiV1EndpointUpdateHubspotOauthConfigRequest struct {
+	ctx _context.Context
+	ApiService *TransformationTemplateApiService
+	appId string
+	endpointId string
+	hubspotOauthConfigIn *HubspotOauthConfigIn
+}
+
+func (r ApiV1EndpointUpdateHubspotOauthConfigRequest) HubspotOauthConfigIn(hubspotOauthConfigIn HubspotOauthConfigIn) ApiV1EndpointUpdateHubspotOauthConfigRequest {
+	r.hubspotOauthConfigIn = &hubspotOauthConfigIn
+	return r
+}
+
+func (r ApiV1EndpointUpdateHubspotOauthConfigRequest) Execute() (*_nethttp.Response, error) {
+	return r.ApiService.V1EndpointUpdateHubspotOauthConfigExecute(r)
+}
+
+/*
+ * V1EndpointUpdateHubspotOauthConfig Update Hubspot Oauth Config
+ * Create/update endpoint Hubsport OAuth configuration
+Specific private endpoint just for us, to avoid exposing the Hubspot secret to the client.
+ * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ * @param appId The app's ID or UID
+ * @param endpointId The ep's ID or UID
+ * @return ApiV1EndpointUpdateHubspotOauthConfigRequest
+ */
+func (a *TransformationTemplateApiService) V1EndpointUpdateHubspotOauthConfig(ctx _context.Context, appId string, endpointId string) ApiV1EndpointUpdateHubspotOauthConfigRequest {
+	return ApiV1EndpointUpdateHubspotOauthConfigRequest{
+		ApiService: a,
+		ctx: ctx,
+		appId: appId,
+		endpointId: endpointId,
+	}
+}
+
+/*
+ * Execute executes the request
+ */
+func (a *TransformationTemplateApiService) V1EndpointUpdateHubspotOauthConfigExecute(r ApiV1EndpointUpdateHubspotOauthConfigRequest) (*_nethttp.Response, error) {
+	var (
+		localVarHTTPMethod   = _nethttp.MethodPut
+		localVarPostBody     interface{}
+		localVarFormFileName string
+		localVarFileName     string
+		localVarFileBytes    []byte
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TransformationTemplateApiService.V1EndpointUpdateHubspotOauthConfig")
+	if err != nil {
+		return nil, GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation-template/oauth/hubspot"
+	localVarPath = strings.Replace(localVarPath, "{"+"app_id"+"}", _neturl.PathEscape(parameterToString(r.appId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"endpoint_id"+"}", _neturl.PathEscape(parameterToString(r.endpointId, "")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := _neturl.Values{}
+	localVarFormParams := _neturl.Values{}
+	if strlen(r.appId) < 1 {
+		return nil, reportError("appId must have at least 1 elements")
+	}
+	if strlen(r.appId) > 256 {
+		return nil, reportError("appId must have less than 256 elements")
+	}
+	if strlen(r.endpointId) < 1 {
+		return nil, reportError("endpointId must have at least 1 elements")
+	}
+	if strlen(r.endpointId) > 256 {
+		return nil, reportError("endpointId must have less than 256 elements")
+	}
+	if r.hubspotOauthConfigIn == nil {
+		return nil, reportError("hubspotOauthConfigIn is required and must be specified")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	// body params
+	localVarPostBody = r.hubspotOauthConfigIn
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarHTTPResponse, err
+	}
+
+	localVarBody, err := _ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = _ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 400 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 401 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 403 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 404 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 409 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 422 {
+			var v HTTPValidationError
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+		}
+		return localVarHTTPResponse, newErr
+	}
+
+	return localVarHTTPResponse, nil
+}
+
 type ApiV1TransformationTemplateCreateRequest struct {
 	ctx _context.Context
 	ApiService *TransformationTemplateApiService
@@ -942,12 +1133,12 @@ func (a *TransformationTemplateApiService) V1TransformationTemplateListExecute(r
 type ApiV1TransformationTemplateOauthDiscordRequest struct {
 	ctx _context.Context
 	ApiService *TransformationTemplateApiService
-	oauthPayloadIn *OauthPayloadIn
+	oAuthPayloadIn *OAuthPayloadIn
 	idempotencyKey *string
 }
 
-func (r ApiV1TransformationTemplateOauthDiscordRequest) OauthPayloadIn(oauthPayloadIn OauthPayloadIn) ApiV1TransformationTemplateOauthDiscordRequest {
-	r.oauthPayloadIn = &oauthPayloadIn
+func (r ApiV1TransformationTemplateOauthDiscordRequest) OAuthPayloadIn(oAuthPayloadIn OAuthPayloadIn) ApiV1TransformationTemplateOauthDiscordRequest {
+	r.oAuthPayloadIn = &oAuthPayloadIn
 	return r
 }
 func (r ApiV1TransformationTemplateOauthDiscordRequest) IdempotencyKey(idempotencyKey string) ApiV1TransformationTemplateOauthDiscordRequest {
@@ -955,7 +1146,7 @@ func (r ApiV1TransformationTemplateOauthDiscordRequest) IdempotencyKey(idempoten
 	return r
 }
 
-func (r ApiV1TransformationTemplateOauthDiscordRequest) Execute() (OauthPayloadOut, *_nethttp.Response, error) {
+func (r ApiV1TransformationTemplateOauthDiscordRequest) Execute() (IncomingWebhookPayloadOut, *_nethttp.Response, error) {
 	return r.ApiService.V1TransformationTemplateOauthDiscordExecute(r)
 }
 
@@ -974,16 +1165,16 @@ func (a *TransformationTemplateApiService) V1TransformationTemplateOauthDiscord(
 
 /*
  * Execute executes the request
- * @return OauthPayloadOut
+ * @return IncomingWebhookPayloadOut
  */
-func (a *TransformationTemplateApiService) V1TransformationTemplateOauthDiscordExecute(r ApiV1TransformationTemplateOauthDiscordRequest) (OauthPayloadOut, *_nethttp.Response, error) {
+func (a *TransformationTemplateApiService) V1TransformationTemplateOauthDiscordExecute(r ApiV1TransformationTemplateOauthDiscordRequest) (IncomingWebhookPayloadOut, *_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPost
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  OauthPayloadOut
+		localVarReturnValue  IncomingWebhookPayloadOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TransformationTemplateApiService.V1TransformationTemplateOauthDiscord")
@@ -996,8 +1187,8 @@ func (a *TransformationTemplateApiService) V1TransformationTemplateOauthDiscordE
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
-	if r.oauthPayloadIn == nil {
-		return localVarReturnValue, nil, reportError("oauthPayloadIn is required and must be specified")
+	if r.oAuthPayloadIn == nil {
+		return localVarReturnValue, nil, reportError("oAuthPayloadIn is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -1021,7 +1212,196 @@ func (a *TransformationTemplateApiService) V1TransformationTemplateOauthDiscordE
 		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	// body params
-	localVarPostBody = r.oauthPayloadIn
+	localVarPostBody = r.oAuthPayloadIn
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := _ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = _ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 400 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 401 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 403 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 404 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 409 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 422 {
+			var v HTTPValidationError
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v HttpErrorOut
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiV1TransformationTemplateOauthHubspotRequest struct {
+	ctx _context.Context
+	ApiService *TransformationTemplateApiService
+	oAuthPayloadIn *OAuthPayloadIn
+	idempotencyKey *string
+}
+
+func (r ApiV1TransformationTemplateOauthHubspotRequest) OAuthPayloadIn(oAuthPayloadIn OAuthPayloadIn) ApiV1TransformationTemplateOauthHubspotRequest {
+	r.oAuthPayloadIn = &oAuthPayloadIn
+	return r
+}
+func (r ApiV1TransformationTemplateOauthHubspotRequest) IdempotencyKey(idempotencyKey string) ApiV1TransformationTemplateOauthHubspotRequest {
+	r.idempotencyKey = &idempotencyKey
+	return r
+}
+
+func (r ApiV1TransformationTemplateOauthHubspotRequest) Execute() (OAuthPayloadOut, *_nethttp.Response, error) {
+	return r.ApiService.V1TransformationTemplateOauthHubspotExecute(r)
+}
+
+/*
+ * V1TransformationTemplateOauthHubspot Authorize Hubspot
+ * Get Hubspot access token using authorization code
+ * @param ctx _context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ * @return ApiV1TransformationTemplateOauthHubspotRequest
+ */
+func (a *TransformationTemplateApiService) V1TransformationTemplateOauthHubspot(ctx _context.Context) ApiV1TransformationTemplateOauthHubspotRequest {
+	return ApiV1TransformationTemplateOauthHubspotRequest{
+		ApiService: a,
+		ctx: ctx,
+	}
+}
+
+/*
+ * Execute executes the request
+ * @return OAuthPayloadOut
+ */
+func (a *TransformationTemplateApiService) V1TransformationTemplateOauthHubspotExecute(r ApiV1TransformationTemplateOauthHubspotRequest) (OAuthPayloadOut, *_nethttp.Response, error) {
+	var (
+		localVarHTTPMethod   = _nethttp.MethodPost
+		localVarPostBody     interface{}
+		localVarFormFileName string
+		localVarFileName     string
+		localVarFileBytes    []byte
+		localVarReturnValue  OAuthPayloadOut
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TransformationTemplateApiService.V1TransformationTemplateOauthHubspot")
+	if err != nil {
+		return localVarReturnValue, nil, GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/api/v1/transformation-template/oauth/hubspot"
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := _neturl.Values{}
+	localVarFormParams := _neturl.Values{}
+	if r.oAuthPayloadIn == nil {
+		return localVarReturnValue, nil, reportError("oAuthPayloadIn is required and must be specified")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
+	}
+	// body params
+	localVarPostBody = r.oAuthPayloadIn
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -1131,12 +1511,12 @@ func (a *TransformationTemplateApiService) V1TransformationTemplateOauthDiscordE
 type ApiV1TransformationTemplateOauthSlackRequest struct {
 	ctx _context.Context
 	ApiService *TransformationTemplateApiService
-	oauthPayloadIn *OauthPayloadIn
+	oAuthPayloadIn *OAuthPayloadIn
 	idempotencyKey *string
 }
 
-func (r ApiV1TransformationTemplateOauthSlackRequest) OauthPayloadIn(oauthPayloadIn OauthPayloadIn) ApiV1TransformationTemplateOauthSlackRequest {
-	r.oauthPayloadIn = &oauthPayloadIn
+func (r ApiV1TransformationTemplateOauthSlackRequest) OAuthPayloadIn(oAuthPayloadIn OAuthPayloadIn) ApiV1TransformationTemplateOauthSlackRequest {
+	r.oAuthPayloadIn = &oAuthPayloadIn
 	return r
 }
 func (r ApiV1TransformationTemplateOauthSlackRequest) IdempotencyKey(idempotencyKey string) ApiV1TransformationTemplateOauthSlackRequest {
@@ -1144,7 +1524,7 @@ func (r ApiV1TransformationTemplateOauthSlackRequest) IdempotencyKey(idempotency
 	return r
 }
 
-func (r ApiV1TransformationTemplateOauthSlackRequest) Execute() (OauthPayloadOut, *_nethttp.Response, error) {
+func (r ApiV1TransformationTemplateOauthSlackRequest) Execute() (IncomingWebhookPayloadOut, *_nethttp.Response, error) {
 	return r.ApiService.V1TransformationTemplateOauthSlackExecute(r)
 }
 
@@ -1163,16 +1543,16 @@ func (a *TransformationTemplateApiService) V1TransformationTemplateOauthSlack(ct
 
 /*
  * Execute executes the request
- * @return OauthPayloadOut
+ * @return IncomingWebhookPayloadOut
  */
-func (a *TransformationTemplateApiService) V1TransformationTemplateOauthSlackExecute(r ApiV1TransformationTemplateOauthSlackRequest) (OauthPayloadOut, *_nethttp.Response, error) {
+func (a *TransformationTemplateApiService) V1TransformationTemplateOauthSlackExecute(r ApiV1TransformationTemplateOauthSlackRequest) (IncomingWebhookPayloadOut, *_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodPost
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  OauthPayloadOut
+		localVarReturnValue  IncomingWebhookPayloadOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TransformationTemplateApiService.V1TransformationTemplateOauthSlack")
@@ -1185,8 +1565,8 @@ func (a *TransformationTemplateApiService) V1TransformationTemplateOauthSlackExe
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := _neturl.Values{}
 	localVarFormParams := _neturl.Values{}
-	if r.oauthPayloadIn == nil {
-		return localVarReturnValue, nil, reportError("oauthPayloadIn is required and must be specified")
+	if r.oAuthPayloadIn == nil {
+		return localVarReturnValue, nil, reportError("oAuthPayloadIn is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -1210,7 +1590,7 @@ func (a *TransformationTemplateApiService) V1TransformationTemplateOauthSlackExe
 		localVarHeaderParams["idempotency-key"] = parameterToString(*r.idempotencyKey, "")
 	}
 	// body params
-	localVarPostBody = r.oauthPayloadIn
+	localVarPostBody = r.oAuthPayloadIn
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFormFileName, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return localVarReturnValue, nil, err

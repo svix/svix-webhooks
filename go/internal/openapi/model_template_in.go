@@ -37,8 +37,6 @@ func NewTemplateIn(logo string, name string, transformation string) *TemplateIn 
 	this.Description = &description
 	var instructions string = ""
 	this.Instructions = &instructions
-	var instructionsLink string = "null"
-	this.InstructionsLink = *NewNullableString(&instructionsLink)
 	this.Logo = logo
 	this.Name = name
 	this.Transformation = transformation
@@ -54,8 +52,6 @@ func NewTemplateInWithDefaults() *TemplateIn {
 	this.Description = &description
 	var instructions string = ""
 	this.Instructions = &instructions
-	var instructionsLink string = "null"
-	this.InstructionsLink = *NewNullableString(&instructionsLink)
 	return &this
 }
 

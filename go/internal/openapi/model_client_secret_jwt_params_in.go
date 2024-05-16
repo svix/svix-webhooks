@@ -16,9 +16,12 @@ import (
 
 // ClientSecretJwtParamsIn struct for ClientSecretJwtParamsIn
 type ClientSecretJwtParamsIn struct {
+	// The base64-encoded secret used for signing the JWT.
 	SecretBase64 string `json:"secretBase64"`
+	// Optional secret identifier. If supplied, this will be populated in the JWT header in the `kid` field.
 	SecretId NullableString `json:"secretId,omitempty"`
 	SigningAlgorithm OauthJwsSigningAlgorithm `json:"signingAlgorithm"`
+	// Optional number of seconds after which the JWT should expire. Defaults to 300 seconds.
 	TokenExpirySecs NullableInt32 `json:"tokenExpirySecs,omitempty"`
 }
 
