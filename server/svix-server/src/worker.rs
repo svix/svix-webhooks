@@ -266,6 +266,9 @@ struct PendingDispatch {
     created_at: DateTimeUtc,
 }
 
+// Clippy fails to compute the first variant's size, stating it as
+// "at least 0 bytes". They're actually very similar in size.
+#[allow(clippy::large_enum_variant)]
 enum CompletedDispatch {
     Failed(FailedDispatch),
     Successful(SuccessfulDispatch),
