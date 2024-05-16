@@ -47,6 +47,9 @@ func NullableInt32(num *int32) *openapi.NullableInt32 {
 func Int32(i int32) *int32 {
 	return &i
 }
+func NullableBool(b *bool) *openapi.NullableBool {
+	return openapi.NewNullableBool(b)
+}
 
 func New(token string, options *SvixOptions) *Svix {
 	conf := openapi.NewConfiguration()
