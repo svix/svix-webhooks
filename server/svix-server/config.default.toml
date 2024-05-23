@@ -91,7 +91,7 @@ cache_type = "memory"
 whitelabel_headers = false
 
 # If true, only allow https endpoints, otherwise also allow http.
-endpoint_https_only = false
+endpoint_https_only = true
 
 # How long of a period an endpoint must be consistently failing to be disabled. If a message is
 # successfully sent during this time, then the endpoint will not disable. Measured in hours.

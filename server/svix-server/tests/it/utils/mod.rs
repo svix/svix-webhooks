@@ -251,9 +251,11 @@ impl TestClient {
 
 pub fn get_default_test_config() -> ConfigurationInner {
     let _ = dotenvy::dotenv();
-    let cfg = svix_server::cfg::load().unwrap();
+    let mut cfg = svix_server::cfg::load().unwrap().as_ref().clone();
 
-    cfg.as_ref().clone()
+    cfg.endpoint_https_only = false;
+
+    cfg
 }
 
 pub async fn start_svix_server() -> (TestClient, tokio::task::JoinHandle<()>) {
