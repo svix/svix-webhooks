@@ -114,7 +114,6 @@ mod tests {
 
     async fn get_pool(redis_dsn: &str, cfg: &crate::cfg::Configuration) -> RedisPool {
         match cfg.cache_type {
-            CacheType::RedisCluster => crate::redis::new_redis_pool_clustered(redis_dsn, cfg).await,
             CacheType::RedisClusterUnpooled => {
                 crate::redis::new_redis_clustered_unpooled(redis_dsn).await
             }

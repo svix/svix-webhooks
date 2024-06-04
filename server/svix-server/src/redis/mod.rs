@@ -245,7 +245,6 @@ mod tests {
 
     async fn get_pool(redis_dsn: &str, cfg: &Configuration) -> RedisPool {
         match cfg.cache_type {
-            CacheType::RedisCluster => super::new_redis_pool_clustered(redis_dsn, cfg).await,
             CacheType::RedisClusterUnpooled => super::new_redis_clustered_unpooled(redis_dsn).await,
             CacheType::Redis => super::new_redis_pool(redis_dsn, cfg).await,
             _ => panic!(
