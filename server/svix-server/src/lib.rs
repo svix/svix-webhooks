@@ -110,7 +110,7 @@ pub async fn run_with_prefix(
         CacheBackend::None => cache::none::new(),
         CacheBackend::Memory => cache::memory::new(),
         CacheBackend::Redis(dsn) => {
-            let mgr = crate::redis::new_redis_pool(dsn, &cfg).await;
+            let mgr = crate::redis::new_redis_unpooled(dsn).await;
             cache::redis::new(mgr)
         }
         CacheBackend::RedisCluster(dsn) => {
