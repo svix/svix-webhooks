@@ -355,22 +355,19 @@ pub mod tests {
 
     use super::{migrate_list, migrate_list_to_stream, migrate_sset, new_pair_inner};
     use crate::{
-        cfg::{CacheType, Configuration},
+        cfg::{Configuration, QueueType},
         core::types::{ApplicationId, EndpointId, MessageAttemptTriggerType, MessageId},
         queue::{MessageTask, QueueTask, TaskQueueConsumer, TaskQueueProducer},
         redis::RedisPool,
     };
 
     async fn get_pool(cfg: &Configuration) -> RedisPool {
-        match cfg.cache_type {
-            CacheType::RedisCluster => {
+        match cfg.queue_type {
+            QueueType::RedisCluster => {
                 crate::redis::new_redis_pool_clustered(cfg.redis_dsn.as_deref().unwrap(), cfg).await
             }
-            CacheType::Redis => {
+            QueueType::Redis => {
                 crate::redis::new_redis_pool(cfg.redis_dsn.as_deref().unwrap(), cfg).await
-            }
-            CacheType::RedisClusterUnpooled => {
-                crate::redis::new_redis_clustered_unpooled(cfg.redis_dsn.as_deref().unwrap()).await
             }
             _ => {
                 panic!("This test should only be run when redis is configured as the queue backend")

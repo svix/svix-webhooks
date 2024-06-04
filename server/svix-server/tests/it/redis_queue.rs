@@ -8,25 +8,24 @@ use std::{str::FromStr, time::Duration};
 
 use redis::AsyncCommands as _;
 use svix_server::{
-    cfg::{CacheType, Configuration},
+    cfg::{Configuration, QueueType},
     core::types::{ApplicationId, EndpointId, MessageAttemptTriggerType, MessageId},
     queue::{
         new_pair, MessageTask, QueueTask, TaskQueueConsumer, TaskQueueDelivery, TaskQueueProducer,
     },
-    redis::{new_redis_clustered_unpooled, new_redis_pool, new_redis_pool_clustered, RedisPool},
+    redis::{new_redis_pool, new_redis_pool_clustered, RedisPool},
 };
 
 // TODO: Don't copy this from the Redis queue test directly, place the fn somewhere both can access
-pub async fn get_pool(cfg: Configuration) -> RedisPool {
-    match cfg.cache_type {
-        CacheType::RedisCluster => {
-            new_redis_pool_clustered(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg).await
+async fn get_pool(cfg: &Configuration) -> RedisPool {
+    match cfg.queue_type {
+        QueueType::RedisCluster => {
+            new_redis_pool_clustered(cfg.redis_dsn.as_deref().unwrap(), cfg).await
         }
-        CacheType::RedisClusterUnpooled => {
-            new_redis_clustered_unpooled(cfg.redis_dsn.as_ref().unwrap().as_str()).await
+        QueueType::Redis => new_redis_pool(cfg.redis_dsn.as_deref().unwrap(), cfg).await,
+        _ => {
+            panic!("This test should only be run when redis is configured as the queue backend")
         }
-        CacheType::Redis => new_redis_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg).await,
-        _ => panic!("This test should only be run when redis is configured as the cache provider"),
     }
 }
 
@@ -44,7 +43,7 @@ async fn test_many_queue_consumers_inner(prefix: &str, delay: Option<Duration>) 
 
     // This test assumes an empty queue, so load Redis and delete the test key
     {
-        let pool = get_pool(cfg.clone()).await;
+        let pool = get_pool(&cfg).await;
         let mut conn = pool.get().await.unwrap();
 
         let _: () = conn
