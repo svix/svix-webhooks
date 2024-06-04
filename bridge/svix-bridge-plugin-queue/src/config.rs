@@ -13,7 +13,7 @@ pub use crate::{
 };
 
 #[derive(Deserialize)]
-pub struct QueueConsumerConfig {
+pub struct QueueSenderConfig {
     pub name: String,
     pub input: SenderInputOpts,
     #[serde(default)]
@@ -21,7 +21,7 @@ pub struct QueueConsumerConfig {
     pub output: SenderOutputOpts,
 }
 
-impl QueueConsumerConfig {
+impl QueueSenderConfig {
     pub fn into_sender_input(self) -> Result<Box<dyn SenderInput>, &'static str> {
         // FIXME: see if this check is still needed. String transforms worked for the omniqueue redis receiver, I think?
         if matches!(self.input, SenderInputOpts::Redis(_))
@@ -92,7 +92,7 @@ mod tests {
         SenderOutputOpts, SvixSenderOutputOpts, TransformationConfig, TransformerInputFormat,
     };
 
-    use super::{into_receiver_output, QueueConsumerConfig};
+    use super::{into_receiver_output, QueueSenderConfig};
     use crate::{
         config::{ReceiverOutputOpts, SenderInputOpts},
         redis::{RedisInputOpts, RedisOutputOpts},
@@ -102,7 +102,7 @@ mod tests {
     //   Revisit after `omniqueue` adoption.
     #[test]
     fn redis_sender_with_string_transformation_is_err() {
-        let cfg = QueueConsumerConfig {
+        let cfg = QueueSenderConfig {
             name: "redis-with-string-transformation".to_string(),
             input: SenderInputOpts::Redis(RedisInputOpts {
                 dsn: "".to_string(),

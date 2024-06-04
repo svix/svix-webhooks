@@ -11,7 +11,7 @@ use std::{
 use serde::Deserialize;
 use shellexpand::LookupError;
 use svix_bridge_plugin_queue::config::{
-    into_receiver_output, QueueConsumerConfig, ReceiverOutputOpts as QueueOutOpts,
+    into_receiver_output, QueueSenderConfig, ReceiverOutputOpts as QueueOutOpts,
 };
 use svix_bridge_types::{ReceiverInputOpts, ReceiverOutput, SenderInput, TransformationConfig};
 use tracing::Level;
@@ -150,18 +150,18 @@ pub enum SenderConfig {
         feature = "redis",
         feature = "sqs"
     ))]
-    QueueConsumer(QueueConsumerConfig),
+    Queue(QueueSenderConfig),
 }
 
 impl SenderConfig {
     pub fn name(&self) -> &str {
         match self {
-            SenderConfig::QueueConsumer(cfg) => &cfg.name,
+            SenderConfig::Queue(cfg) => &cfg.name,
         }
     }
     pub fn transformation(&self) -> Option<&TransformationConfig> {
         match self {
-            SenderConfig::QueueConsumer(cfg) => cfg.transformation.as_ref(),
+            SenderConfig::Queue(cfg) => cfg.transformation.as_ref(),
         }
     }
 }
@@ -176,7 +176,7 @@ impl TryFrom<SenderConfig> for Box<dyn SenderInput> {
                 feature = "redis",
                 feature = "sqs"
             ))]
-            SenderConfig::QueueConsumer(backend) => backend.into_sender_input(),
+            SenderConfig::Queue(backend) => backend.into_sender_input(),
         }
     }
 }
@@ -199,13 +199,13 @@ pub enum ReceiverOut {
         feature = "redis",
         feature = "sqs"
     ))]
-    QueueProducer(QueueOutOpts),
+    Queue(QueueOutOpts),
 }
 
 impl ReceiverConfig {
     pub async fn into_receiver_output(self) -> std::io::Result<Box<dyn ReceiverOutput>> {
         match self.output {
-            ReceiverOut::QueueProducer(x) => {
+            ReceiverOut::Queue(x) => {
                 into_receiver_output(self.name.clone(), x, self.transformation.as_ref())
                     .await
                     .map_err(Into::into)

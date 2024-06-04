@@ -161,14 +161,13 @@ pub enum WebhookVerifier {
 }
 
 #[derive(Debug, Clone, Deserialize)]
-#[serde(tag = "type", rename_all = "lowercase")]
+#[serde(tag = "type", rename_all = "kebab-case")]
 pub enum ReceiverInputOpts {
     Webhook {
         path_id: String,
         #[serde(default)]
         verification: WebhookVerifier,
     },
-    #[serde(rename = "svix-webhook")]
     SvixWebhook {
         path_id: String,
         endpoint_secret: String,
