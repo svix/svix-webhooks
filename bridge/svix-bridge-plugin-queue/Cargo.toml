@@ -6,7 +6,6 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-omniqueue = { git = "https://github.com/svix/omniqueue-rs", rev = "62ca8fa5cb0ac47bbfbad4b1939bcfe7d4cdfb6b" }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 svix-bridge-types = { path = "../svix-bridge-types" }
@@ -14,6 +13,12 @@ tokio = { version = "1", features = ["full"] }
 tokio-executor-trait = "2.1"
 tokio-reactor-trait = "1.1"
 tracing = "0.1"
+
+[dependencies.omniqueue]
+git = "https://github.com/svix/omniqueue-rs"
+rev = "62ca8fa5cb0ac47bbfbad4b1939bcfe7d4cdfb6b"
+default-features = false
+features = ["gcp_pubsub", "rabbitmq", "redis", "sqs"]
 
 [dev-dependencies]
 aws-config = "1.1.5"
