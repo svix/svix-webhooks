@@ -50,7 +50,7 @@ echo "*********** RUN 3 ***********"
 echo "*********** RUN 4 ***********"
 (
     export SVIX_QUEUE_TYPE="rediscluster"
-    export SVIX_CACHE_TYPE="redisclusterunpooled"
+    export SVIX_CACHE_TYPE="rediscluster"
     export SVIX_REDIS_DSN="redis://localhost:6380"
     ${TEST_COMMAND}
     ${TEST_COMMAND} -- --ignored redis

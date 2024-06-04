@@ -114,9 +114,7 @@ mod tests {
 
     async fn get_pool(redis_dsn: &str, cfg: &crate::cfg::Configuration) -> RedisPool {
         match cfg.cache_type {
-            CacheType::RedisClusterUnpooled => {
-                crate::redis::new_redis_clustered_unpooled(redis_dsn).await
-            }
+            CacheType::RedisCluster => crate::redis::new_redis_clustered_unpooled(redis_dsn).await,
             CacheType::Redis => crate::redis::new_redis_pool(redis_dsn, cfg).await,
             _ => panic!(
                 "This test should only be run when redis is configured as the cache provider"
