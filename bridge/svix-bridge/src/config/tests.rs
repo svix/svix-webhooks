@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use svix_bridge_plugin_queue::config::{QueueConsumerConfig, RabbitMqInputOpts, SenderInputOpts};
+use svix_bridge_plugin_queue::config::{QueueSenderConfig, RabbitMqInputOpts, SenderInputOpts};
 use svix_bridge_types::{SenderOutputOpts, SvixSenderOutputOpts};
 
 use super::Config;
@@ -340,7 +340,7 @@ fn test_senders_example() {
 #[test]
 fn test_variable_substitution_missing_vars() {
     let src = r#"
-    opentelemetry: 
+    opentelemetry:
         address: "${OTEL_ADDR}"
     "#;
     let vars = HashMap::new();
@@ -455,7 +455,7 @@ fn test_variable_substitution_repeated_lookups() {
     vars.insert(String::from("SVIX_TOKEN"), String::from("x"));
     let cfg = Config::from_src(src, Some(&vars)).unwrap();
 
-    if let SenderConfig::QueueConsumer(QueueConsumerConfig {
+    if let SenderConfig::Queue(QueueSenderConfig {
         input:
             SenderInputOpts::RabbitMQ(RabbitMqInputOpts {
                 uri, queue_name, ..
@@ -471,7 +471,7 @@ fn test_variable_substitution_repeated_lookups() {
         panic!("sender did not match expected pattern");
     }
 
-    if let SenderConfig::QueueConsumer(QueueConsumerConfig {
+    if let SenderConfig::Queue(QueueSenderConfig {
         input:
             SenderInputOpts::RabbitMQ(RabbitMqInputOpts {
                 uri, queue_name, ..
