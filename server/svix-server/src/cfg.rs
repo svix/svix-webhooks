@@ -193,7 +193,7 @@ pub struct ConfigurationInner {
 fn validate_config_complete(config: &ConfigurationInner) -> Result<(), ValidationError> {
     match config.cache_type {
         CacheType::None | CacheType::Memory => {}
-        CacheType::Redis | CacheType::RedisClusterUnpooled => {
+        CacheType::Redis | CacheType::RedisCluster => {
             if config.cache_dsn().is_none() {
                 return Err(ValidationError {
                     code: Cow::from("missing field"),
@@ -266,9 +266,7 @@ impl ConfigurationInner {
             CacheType::None => CacheBackend::None,
             CacheType::Memory => CacheBackend::Memory,
             CacheType::Redis => CacheBackend::Redis(self.cache_dsn().expect(err)),
-            CacheType::RedisClusterUnpooled => {
-                CacheBackend::RedisClusterUnpooled(self.cache_dsn().expect(err))
-            }
+            CacheType::RedisCluster => CacheBackend::RedisCluster(self.cache_dsn().expect(err)),
         }
     }
 }
@@ -305,7 +303,7 @@ pub enum CacheBackend<'a> {
     None,
     Memory,
     Redis(&'a str),
-    RedisClusterUnpooled(&'a str),
+    RedisCluster(&'a str),
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -337,7 +335,7 @@ pub enum QueueType {
 pub enum CacheType {
     Memory,
     Redis,
-    RedisClusterUnpooled,
+    RedisCluster,
     None,
 }
 

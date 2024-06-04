@@ -69,7 +69,7 @@ async fn test_app_deletion() {
             let mgr = new_redis_pool(dsn, &cfg).await;
             cache::redis::new(mgr)
         }
-        CacheBackend::RedisClusterUnpooled(dsn) => {
+        CacheBackend::RedisCluster(dsn) => {
             let mgr = new_redis_clustered_unpooled(dsn).await;
             cache::redis::new(mgr)
         }
@@ -153,7 +153,7 @@ async fn test_endp_deletion() {
             let mgr = new_redis_pool(dsn, &cfg).await;
             cache::redis::new(mgr)
         }
-        CacheBackend::RedisClusterUnpooled(dsn) => {
+        CacheBackend::RedisCluster(dsn) => {
             let mgr = new_redis_clustered_unpooled(dsn).await;
             cache::redis::new(mgr)
         }
