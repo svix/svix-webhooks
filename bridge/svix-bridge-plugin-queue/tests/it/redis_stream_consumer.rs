@@ -59,7 +59,7 @@ async fn create_test_stream(client: &Client) -> String {
         .take(8)
         .collect();
 
-    let mut conn = client.get_async_connection().await.unwrap();
+    let mut conn = client.get_multiplexed_async_connection().await.unwrap();
 
     let _: () = conn
         .xgroup_create_mkstream(&name, "test_cg", 0i8)
@@ -70,12 +70,12 @@ async fn create_test_stream(client: &Client) -> String {
 }
 
 async fn delete_test_stream(client: &Client, key: &str) {
-    let mut conn = client.get_async_connection().await.unwrap();
+    let mut conn = client.get_multiplexed_async_connection().await.unwrap();
     let _: () = conn.del(key).await.unwrap();
 }
 
 async fn publish(client: &Client, key: &str, payload: &str) {
-    let mut conn = client.get_async_connection().await.unwrap();
+    let mut conn = client.get_multiplexed_async_connection().await.unwrap();
     // N.b. the redis code relies on the messages being json with a `payload` key in there.
     // The `payload` key can be any valid JSON value.
     let _: () = conn.xadd(key, "*", &[("payload", payload)]).await.unwrap();
