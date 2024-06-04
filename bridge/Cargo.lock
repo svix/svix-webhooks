@@ -963,9 +963,9 @@ dependencies = [
 
 [[package]]
 name = "bb8-redis"
-version = "0.14.0"
+version = "0.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4094bc17b933090cfded54315a86db01d67ec999583d4bab894c520f8c097d1f"
+checksum = "7eb4f141b33a750b5f667c445bd8588de10b8f2b045cd2aabc040ca746fb53ae"
 dependencies = [
  "async-trait",
  "bb8",
@@ -1075,6 +1075,12 @@ dependencies = [
  "bytes",
  "either",
 ]
+
+[[package]]
+name = "bytesize"
+version = "1.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a3e368af43e418a04d52505cf3dbc23dda4e3407ae2fa99fd0e4f308ce546acc"
 
 [[package]]
 name = "cache_control"
@@ -2834,9 +2840,9 @@ checksum = "d2fabcfbdc87f4758337ca535fb41a6d701b65693ce38287d856d1674551ec9b"
 
 [[package]]
 name = "google-cloud-auth"
-version = "0.13.1"
+version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c3798ce9d99d548f28a7f942dcd546befae21c9a1310a7b54e920a7ee241aca3"
+checksum = "fe54dd8b6eb2bcd5390998238bcc39d1daed4dbb70df2845832532540384fc41"
 dependencies = [
  "async-trait",
  "base64 0.21.7",
@@ -2894,9 +2900,9 @@ dependencies = [
 
 [[package]]
 name = "google-cloud-pubsub"
-version = "0.23.0"
+version = "0.24.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1da196da473976944d408a91213bafe078e7223e10694d3f8ed36b6e210fa130"
+checksum = "0b2184a5c70b994e6d77eb1c140e193e7f5fe6015e9115322fac24f7e33f003c"
 dependencies = [
  "async-channel 1.9.0",
  "async-stream",
@@ -3940,15 +3946,15 @@ dependencies = [
 
 [[package]]
 name = "omniqueue"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cba3b7f69e420be6e32a580307e38aef7f53ac01cc09c3bb6851aec37d710894"
+version = "0.2.1"
+source = "git+https://github.com/svix/omniqueue-rs?rev=62ca8fa5cb0ac47bbfbad4b1939bcfe7d4cdfb6b#62ca8fa5cb0ac47bbfbad4b1939bcfe7d4cdfb6b"
 dependencies = [
  "async-trait",
  "aws-config",
  "aws-sdk-sqs",
  "bb8",
  "bb8-redis",
+ "bytesize",
  "futures-util",
  "google-cloud-googleapis",
  "google-cloud-pubsub",
@@ -3958,6 +3964,7 @@ dependencies = [
  "serde_json",
  "svix-ksuid 0.8.0",
  "thiserror",
+ "time",
  "tokio",
  "tracing",
 ]
@@ -4753,9 +4760,9 @@ dependencies = [
 
 [[package]]
 name = "redis"
-version = "0.24.0"
+version = "0.25.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c580d9cbbe1d1b479e8d67cf9daf6a62c957e6846048408b80b43ac3f6af84cd"
+checksum = "e0d7a6955c7511f60f3ba9e86c6d02b3c3f144f8c24b288d1f4e18074ab8bbec"
 dependencies = [
  "async-trait",
  "bytes",
@@ -4771,7 +4778,7 @@ dependencies = [
  "rand 0.8.5",
  "ryu",
  "sha1_smol",
- "socket2 0.4.10",
+ "socket2 0.5.6",
  "tokio",
  "tokio-native-tls",
  "tokio-util",
