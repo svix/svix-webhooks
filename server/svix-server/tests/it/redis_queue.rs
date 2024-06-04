@@ -13,16 +13,16 @@ use svix_server::{
     queue::{
         new_pair, MessageTask, QueueTask, TaskQueueConsumer, TaskQueueDelivery, TaskQueueProducer,
     },
-    redis::{new_redis_pool, new_redis_pool_clustered, RedisPool},
+    redis::{new_redis_clustered_pooled, new_redis_pooled, RedisPool},
 };
 
 // TODO: Don't copy this from the Redis queue test directly, place the fn somewhere both can access
 async fn get_pool(cfg: &Configuration) -> RedisPool {
     match cfg.queue_type {
         QueueType::RedisCluster => {
-            new_redis_pool_clustered(cfg.redis_dsn.as_deref().unwrap(), cfg).await
+            new_redis_clustered_pooled(cfg.redis_dsn.as_deref().unwrap(), cfg).await
         }
-        QueueType::Redis => new_redis_pool(cfg.redis_dsn.as_deref().unwrap(), cfg).await,
+        QueueType::Redis => new_redis_pooled(cfg.redis_dsn.as_deref().unwrap(), cfg).await,
         _ => {
             panic!("This test should only be run when redis is configured as the queue backend")
         }

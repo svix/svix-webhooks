@@ -134,8 +134,8 @@ async fn new_pair_inner(
     // - redis tests that only makes sense to run with the DSN set
     let dsn = cfg.redis_dsn.as_deref().unwrap();
     let pool = match &cfg.queue_type {
-        QueueType::RedisCluster => crate::redis::new_redis_pool_clustered(dsn, cfg).await,
-        _ => crate::redis::new_redis_pool(dsn, cfg).await,
+        QueueType::RedisCluster => crate::redis::new_redis_clustered_pooled(dsn, cfg).await,
+        _ => crate::redis::new_redis_pooled(dsn, cfg).await,
     };
 
     // Create the stream and consumer group for the MAIN queue should it not already exist. The
@@ -364,10 +364,11 @@ pub mod tests {
     async fn get_pool(cfg: &Configuration) -> RedisPool {
         match cfg.queue_type {
             QueueType::RedisCluster => {
-                crate::redis::new_redis_pool_clustered(cfg.redis_dsn.as_deref().unwrap(), cfg).await
+                crate::redis::new_redis_clustered_pooled(cfg.redis_dsn.as_deref().unwrap(), cfg)
+                    .await
             }
             QueueType::Redis => {
-                crate::redis::new_redis_pool(cfg.redis_dsn.as_deref().unwrap(), cfg).await
+                crate::redis::new_redis_pooled(cfg.redis_dsn.as_deref().unwrap(), cfg).await
             }
             _ => {
                 panic!("This test should only be run when redis is configured as the queue backend")

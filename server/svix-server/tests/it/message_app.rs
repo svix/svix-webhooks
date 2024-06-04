@@ -12,7 +12,7 @@ use svix_server::{
         message_app::AppEndpointKey,
         types::{BaseId, OrganizationId},
     },
-    redis::{new_redis_clustered_unpooled, new_redis_pool},
+    redis::{new_redis_clustered_unpooled, new_redis_unpooled},
 };
 
 use crate::utils::{
@@ -66,7 +66,7 @@ async fn test_app_deletion() {
     let cache = match cfg.cache_backend() {
         CacheBackend::None => cache::none::new(),
         CacheBackend::Redis(dsn) => {
-            let mgr = new_redis_pool(dsn, &cfg).await;
+            let mgr = new_redis_unpooled(dsn).await;
             cache::redis::new(mgr)
         }
         CacheBackend::RedisCluster(dsn) => {
@@ -150,7 +150,7 @@ async fn test_endp_deletion() {
     let cache = match cfg.cache_backend() {
         CacheBackend::None => cache::none::new(),
         CacheBackend::Redis(dsn) => {
-            let mgr = new_redis_pool(dsn, &cfg).await;
+            let mgr = new_redis_unpooled(dsn).await;
             cache::redis::new(mgr)
         }
         CacheBackend::RedisCluster(dsn) => {
