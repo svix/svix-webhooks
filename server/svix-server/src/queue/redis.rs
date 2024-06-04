@@ -369,6 +369,9 @@ pub mod tests {
             CacheType::Redis => {
                 crate::redis::new_redis_pool(cfg.redis_dsn.as_deref().unwrap(), cfg).await
             }
+            CacheType::RedisClusterUnpooled => {
+                crate::redis::new_redis_clustered_unpooled(cfg.redis_dsn.as_deref().unwrap()).await
+            }
             _ => {
                 panic!("This test should only be run when redis is configured as the queue backend")
             }

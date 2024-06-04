@@ -117,6 +117,10 @@ pub async fn run_with_prefix(
             let mgr = crate::redis::new_redis_pool_clustered(dsn, &cfg).await;
             cache::redis::new(mgr)
         }
+        CacheBackend::RedisClusterUnpooled(dsn) => {
+            let mgr = crate::redis::new_redis_clustered_unpooled(dsn).await;
+            cache::redis::new(mgr)
+        }
     };
     tracing::debug!("Cache: Started");
 

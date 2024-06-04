@@ -551,24 +551,13 @@ dependencies = [
 
 [[package]]
 name = "bb8-redis"
-version = "0.14.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4094bc17b933090cfded54315a86db01d67ec999583d4bab894c520f8c097d1f"
-dependencies = [
- "async-trait",
- "bb8",
- "redis 0.24.0",
-]
-
-[[package]]
-name = "bb8-redis"
 version = "0.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7eb4f141b33a750b5f667c445bd8588de10b8f2b045cd2aabc040ca746fb53ae"
 dependencies = [
  "async-trait",
  "bb8",
- "redis 0.25.3",
+ "redis",
 ]
 
 [[package]]
@@ -2553,11 +2542,11 @@ source = "git+https://github.com/svix/omniqueue-rs?rev=5ae22000e2ea214ba707cac81
 dependencies = [
  "async-trait",
  "bb8",
- "bb8-redis 0.15.0",
+ "bb8-redis",
  "bytesize",
  "futures-util",
  "lapin",
- "redis 0.25.3",
+ "redis",
  "serde",
  "serde_json",
  "svix-ksuid 0.8.0",
@@ -3202,36 +3191,9 @@ dependencies = [
 
 [[package]]
 name = "redis"
-version = "0.24.0"
+version = "0.25.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c580d9cbbe1d1b479e8d67cf9daf6a62c957e6846048408b80b43ac3f6af84cd"
-dependencies = [
- "async-trait",
- "bytes",
- "combine",
- "crc16",
- "futures",
- "futures-util",
- "itoa",
- "log",
- "native-tls",
- "percent-encoding",
- "pin-project-lite",
- "rand",
- "ryu",
- "sha1_smol",
- "socket2 0.4.10",
- "tokio",
- "tokio-native-tls",
- "tokio-util",
- "url",
-]
-
-[[package]]
-name = "redis"
-version = "0.25.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6472825949c09872e8f2c50bde59fcefc17748b6be5c90fd67cd8b4daca73bfd"
+checksum = "e0d7a6955c7511f60f3ba9e86c6d02b3c3f144f8c24b288d1f4e18074ab8bbec"
 dependencies = [
  "async-trait",
  "bytes",
@@ -4362,7 +4324,7 @@ dependencies = [
  "axum-server",
  "base64 0.13.1",
  "bb8",
- "bb8-redis 0.14.0",
+ "bb8-redis",
  "blake2",
  "bytes",
  "chacha20poly1305",
@@ -4394,7 +4356,7 @@ dependencies = [
  "opentelemetry-otlp",
  "opentelemetry_sdk",
  "rand",
- "redis 0.24.0",
+ "redis",
  "regex",
  "reqwest",
  "schemars",
