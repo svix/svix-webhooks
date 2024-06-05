@@ -12,7 +12,7 @@ use svix_server::{
         message_app::AppEndpointKey,
         types::{BaseId, OrganizationId},
     },
-    redis::{new_redis_clustered_unpooled, new_redis_unpooled},
+    redis::RedisManager,
 };
 
 use crate::utils::{
@@ -65,12 +65,8 @@ async fn test_app_deletion() {
     // Delete the cached [`CreateMessageApp`] here instead of waiting 30s for it to expire
     let cache = match cfg.cache_backend() {
         CacheBackend::None => cache::none::new(),
-        CacheBackend::Redis(dsn) => {
-            let mgr = new_redis_unpooled(dsn).await;
-            cache::redis::new(mgr)
-        }
-        CacheBackend::RedisCluster(dsn) => {
-            let mgr = new_redis_clustered_unpooled(dsn).await;
+        CacheBackend::Redis(_) | CacheBackend::RedisCluster(_) => {
+            let mgr = RedisManager::from_cache_backend(&cfg.cache_backend()).await;
             cache::redis::new(mgr)
         }
 
@@ -149,12 +145,8 @@ async fn test_endp_deletion() {
     // Delete the cached [`CreateMessageApp`] here instead of waiting 30s for it to expire
     let cache = match cfg.cache_backend() {
         CacheBackend::None => cache::none::new(),
-        CacheBackend::Redis(dsn) => {
-            let mgr = new_redis_unpooled(dsn).await;
-            cache::redis::new(mgr)
-        }
-        CacheBackend::RedisCluster(dsn) => {
-            let mgr = new_redis_clustered_unpooled(dsn).await;
+        CacheBackend::Redis(_) | CacheBackend::RedisCluster(_) => {
+            let mgr = RedisManager::from_cache_backend(&cfg.cache_backend()).await;
             cache::redis::new(mgr)
         }
 

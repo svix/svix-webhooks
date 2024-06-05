@@ -133,10 +133,8 @@ async fn new_pair_inner(
     // - `queue::new_pair` if the queue type is redis and a DSN is set
     // - redis tests that only makes sense to run with the DSN set
     let dsn = cfg.redis_dsn.as_deref().unwrap();
-    let pool = match &cfg.queue_type {
-        QueueType::RedisCluster => crate::redis::new_redis_clustered_pooled(dsn, cfg).await,
-        _ => crate::redis::new_redis_pooled(dsn, cfg).await,
-    };
+    let pool =
+        RedisManager::from_queue_backend(&cfg.queue_backend(), cfg.redis_pool_max_size).await;
 
     // Create the stream and consumer group for the MAIN queue should it not already exist. The
     // consumer is created automatically upon use so it does not have to be created here.
@@ -355,25 +353,14 @@ pub mod tests {
 
     use super::{migrate_list, migrate_list_to_stream, migrate_sset, new_pair_inner};
     use crate::{
-        cfg::{Configuration, QueueType},
+        cfg::Configuration,
         core::types::{ApplicationId, EndpointId, MessageAttemptTriggerType, MessageId},
         queue::{MessageTask, QueueTask, TaskQueueConsumer, TaskQueueProducer},
         redis::RedisManager,
     };
 
     async fn get_pool(cfg: &Configuration) -> RedisManager {
-        match cfg.queue_type {
-            QueueType::RedisCluster => {
-                crate::redis::new_redis_clustered_pooled(cfg.redis_dsn.as_deref().unwrap(), cfg)
-                    .await
-            }
-            QueueType::Redis => {
-                crate::redis::new_redis_pooled(cfg.redis_dsn.as_deref().unwrap(), cfg).await
-            }
-            _ => {
-                panic!("This test should only be run when redis is configured as the queue backend")
-            }
-        }
+        RedisManager::from_queue_backend(&cfg.queue_backend(), cfg.redis_pool_max_size).await
     }
 
     #[tokio::test]

@@ -81,7 +81,7 @@ mod tests {
         super::{kv_def, string_kv_def, CacheValue},
         *,
     };
-    use crate::cfg::CacheType;
+    use crate::cfg::Configuration;
 
     // Test structures
 
@@ -112,14 +112,8 @@ mod tests {
         }
     }
 
-    async fn get_pool(redis_dsn: &str, cfg: &crate::cfg::Configuration) -> RedisManager {
-        match cfg.cache_type {
-            CacheType::RedisCluster => crate::redis::new_redis_clustered_unpooled(redis_dsn).await,
-            CacheType::Redis => crate::redis::new_redis_unpooled(redis_dsn).await,
-            _ => panic!(
-                "This test should only be run when redis is configured as the cache provider"
-            ),
-        }
+    async fn get_pool(cfg: &Configuration) -> RedisManager {
+        RedisManager::from_cache_backend(&cfg.cache_backend()).await
     }
 
     #[tokio::test]
@@ -129,7 +123,7 @@ mod tests {
         dotenvy::dotenv().ok();
         let cfg = crate::cfg::load().unwrap();
 
-        let redis_pool = get_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg).await;
+        let redis_pool = get_pool(&cfg).await;
         let cache = super::new(redis_pool);
 
         let (first_key, first_val_a, first_val_b) =
@@ -206,7 +200,7 @@ mod tests {
         dotenvy::dotenv().ok();
         let cfg = crate::cfg::load().unwrap();
 
-        let redis_pool = get_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg).await;
+        let redis_pool = get_pool(&cfg).await;
         let cache = super::new(redis_pool);
 
         let key = TestKeyA::new("key".to_owned());
@@ -225,7 +219,7 @@ mod tests {
         dotenvy::dotenv().ok();
         let cfg = crate::cfg::load().unwrap();
 
-        let redis_pool = get_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg).await;
+        let redis_pool = get_pool(&cfg).await;
         let cache = super::new(redis_pool);
 
         let key = TestKeyA::new("nx_status_test_key".to_owned());

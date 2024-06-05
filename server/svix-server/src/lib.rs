@@ -16,6 +16,7 @@ use cfg::ConfigurationInner;
 use opentelemetry_otlp::WithExportConfig;
 use opentelemetry_sdk::runtime::Tokio;
 use queue::TaskQueueProducer;
+use redis::RedisManager;
 use sea_orm::DatabaseConnection;
 use sentry::integrations::tracing::EventFilter;
 use tower::layer::layer_fn;
@@ -106,15 +107,12 @@ pub async fn run_with_prefix(
     tracing::debug!("DB: Started");
 
     tracing::debug!("Cache: Initializing {:?}", cfg.cache_type);
-    let cache = match cfg.cache_backend() {
+    let cache_backend = cfg.cache_backend();
+    let cache = match &cache_backend {
         CacheBackend::None => cache::none::new(),
         CacheBackend::Memory => cache::memory::new(),
-        CacheBackend::Redis(dsn) => {
-            let mgr = crate::redis::new_redis_unpooled(dsn).await;
-            cache::redis::new(mgr)
-        }
-        CacheBackend::RedisCluster(dsn) => {
-            let mgr = crate::redis::new_redis_clustered_unpooled(dsn).await;
+        CacheBackend::Redis(_) | CacheBackend::RedisCluster(_) => {
+            let mgr = RedisManager::from_cache_backend(&cache_backend).await;
             cache::redis::new(mgr)
         }
     };
