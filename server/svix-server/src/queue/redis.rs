@@ -36,7 +36,7 @@ use super::{QueueTask, TaskQueueConsumer, TaskQueueProducer};
 use crate::{
     cfg::{Configuration, QueueType},
     error::Result,
-    redis::{PooledConnection, RedisPool},
+    redis::{PooledConnection, RedisManager},
 };
 
 /// This is the key of the main queue. As a KV store, redis places the entire stream under this key.
@@ -93,7 +93,7 @@ pub async fn new_pair(
 /// Runs Redis queue migrations with the given delay schedule. Migrations are run on this schedule
 /// such that if an old instance of the server is online after the migrations are made, that no data
 /// will be lost assuming the old server is taken offline before the last scheduled delay.
-async fn run_migration_schedule(delays: &[Duration], pool: RedisPool) {
+async fn run_migration_schedule(delays: &[Duration], pool: RedisManager) {
     let mut conn = pool
         .get()
         .await
@@ -358,10 +358,10 @@ pub mod tests {
         cfg::{Configuration, QueueType},
         core::types::{ApplicationId, EndpointId, MessageAttemptTriggerType, MessageId},
         queue::{MessageTask, QueueTask, TaskQueueConsumer, TaskQueueProducer},
-        redis::RedisPool,
+        redis::RedisManager,
     };
 
-    async fn get_pool(cfg: &Configuration) -> RedisPool {
+    async fn get_pool(cfg: &Configuration) -> RedisManager {
         match cfg.queue_type {
             QueueType::RedisCluster => {
                 crate::redis::new_redis_clustered_pooled(cfg.redis_dsn.as_deref().unwrap(), cfg)

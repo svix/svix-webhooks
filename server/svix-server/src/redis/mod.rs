@@ -12,14 +12,14 @@ use crate::cfg::Configuration;
 pub const REDIS_CONN_TIMEOUT: Duration = Duration::from_secs(2);
 
 #[derive(Clone, Debug)]
-pub enum RedisPool {
+pub enum RedisManager {
     Clustered(ClusteredRedisPool),
     ClusteredUnpooled(ClusteredRedisUnpooled),
     NonClustered(NonClusteredRedisPool),
     NonClusteredUnpooled(NonClusteredRedisUnpooled),
 }
 
-impl RedisPool {
+impl RedisManager {
     pub async fn get(&self) -> Result<PooledConnection<'_>, RunError<RedisError>> {
         match self {
             Self::Clustered(pool) => pool.get().await,
@@ -234,7 +234,7 @@ async fn new_redis_pool_helper(
     redis_dsn: &str,
     clustered: bool,
     max_connections: u16,
-) -> RedisPool {
+) -> RedisManager {
     if clustered {
         let mgr = RedisClusterConnectionManager::new(redis_dsn)
             .expect("Error initializing redis cluster client");
@@ -244,7 +244,7 @@ async fn new_redis_pool_helper(
             .await
             .expect("Error initializing redis cluster connection pool");
         let pool = ClusteredRedisPool { pool };
-        RedisPool::Clustered(pool)
+        RedisManager::Clustered(pool)
     } else {
         let mgr = RedisConnectionManager::new(redis_dsn).expect("Error initializing redis client");
         let pool = bb8::Pool::builder()
@@ -253,11 +253,11 @@ async fn new_redis_pool_helper(
             .await
             .expect("Error initializing redis connection pool");
         let pool = NonClusteredRedisPool { pool };
-        RedisPool::NonClustered(pool)
+        RedisManager::NonClustered(pool)
     }
 }
 
-async fn new_redis_unpooled_helper(redis_dsn: &str, clustered: bool) -> RedisPool {
+async fn new_redis_unpooled_helper(redis_dsn: &str, clustered: bool) -> RedisManager {
     if clustered {
         let cli = redis::cluster::ClusterClient::builder(vec![redis_dsn])
             .retries(1)
@@ -268,7 +268,7 @@ async fn new_redis_unpooled_helper(redis_dsn: &str, clustered: bool) -> RedisPoo
             .get_async_connection()
             .await
             .expect("Failed to get redis-cluster-unpooled connection");
-        RedisPool::ClusteredUnpooled(ClusteredRedisUnpooled { con })
+        RedisManager::ClusteredUnpooled(ClusteredRedisUnpooled { con })
     } else {
         let cli = redis::Client::open(redis_dsn).expect("Error initializing redis unpooled client");
         let con = redis::aio::ConnectionManager::new_with_backoff_and_timeouts(
@@ -281,23 +281,23 @@ async fn new_redis_unpooled_helper(redis_dsn: &str, clustered: bool) -> RedisPoo
         )
         .await
         .expect("Failed to get redis-unpooled connection manager");
-        RedisPool::NonClusteredUnpooled(NonClusteredRedisUnpooled { con })
+        RedisManager::NonClusteredUnpooled(NonClusteredRedisUnpooled { con })
     }
 }
 
-pub async fn new_redis_clustered_pooled(redis_dsn: &str, cfg: &Configuration) -> RedisPool {
+pub async fn new_redis_clustered_pooled(redis_dsn: &str, cfg: &Configuration) -> RedisManager {
     new_redis_pool_helper(redis_dsn, true, cfg.redis_pool_max_size).await
 }
 
-pub async fn new_redis_clustered_unpooled(redis_dsn: &str) -> RedisPool {
+pub async fn new_redis_clustered_unpooled(redis_dsn: &str) -> RedisManager {
     new_redis_unpooled_helper(redis_dsn, true).await
 }
 
-pub async fn new_redis_pooled(redis_dsn: &str, cfg: &Configuration) -> RedisPool {
+pub async fn new_redis_pooled(redis_dsn: &str, cfg: &Configuration) -> RedisManager {
     new_redis_pool_helper(redis_dsn, false, cfg.redis_pool_max_size).await
 }
 
-pub async fn new_redis_unpooled(redis_dsn: &str) -> RedisPool {
+pub async fn new_redis_unpooled(redis_dsn: &str) -> RedisManager {
     new_redis_unpooled_helper(redis_dsn, false).await
 }
 
@@ -305,10 +305,10 @@ pub async fn new_redis_unpooled(redis_dsn: &str) -> RedisPool {
 mod tests {
     use redis::AsyncCommands;
 
-    use super::RedisPool;
+    use super::RedisManager;
     use crate::cfg::{CacheType, Configuration};
 
-    async fn get_pool(redis_dsn: &str, cfg: &Configuration) -> RedisPool {
+    async fn get_pool(redis_dsn: &str, cfg: &Configuration) -> RedisManager {
         match cfg.cache_type {
             CacheType::RedisCluster => super::new_redis_clustered_unpooled(redis_dsn).await,
             CacheType::Redis => super::new_redis_unpooled(redis_dsn).await,
