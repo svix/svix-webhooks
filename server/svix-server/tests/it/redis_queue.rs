@@ -13,11 +13,11 @@ use svix_server::{
     queue::{
         new_pair, MessageTask, QueueTask, TaskQueueConsumer, TaskQueueDelivery, TaskQueueProducer,
     },
-    redis::{new_redis_clustered_pooled, new_redis_pooled, RedisPool},
+    redis::{new_redis_clustered_pooled, new_redis_pooled, RedisManager},
 };
 
 // TODO: Don't copy this from the Redis queue test directly, place the fn somewhere both can access
-async fn get_pool(cfg: &Configuration) -> RedisPool {
+async fn get_pool(cfg: &Configuration) -> RedisManager {
     match cfg.queue_type {
         QueueType::RedisCluster => {
             new_redis_clustered_pooled(cfg.redis_dsn.as_deref().unwrap(), cfg).await

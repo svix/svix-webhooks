@@ -7,15 +7,15 @@ use axum::async_trait;
 use redis::AsyncCommands as _;
 
 use super::{Cache, CacheBehavior, CacheKey, Error, Result};
-use crate::redis::RedisPool;
+use crate::redis::RedisManager;
 
-pub fn new(redis: RedisPool) -> Cache {
+pub fn new(redis: RedisManager) -> Cache {
     RedisCache { redis }.into()
 }
 
 #[derive(Clone)]
 pub struct RedisCache {
-    redis: RedisPool,
+    redis: RedisManager,
 }
 
 #[async_trait]
@@ -112,7 +112,7 @@ mod tests {
         }
     }
 
-    async fn get_pool(redis_dsn: &str, cfg: &crate::cfg::Configuration) -> RedisPool {
+    async fn get_pool(redis_dsn: &str, cfg: &crate::cfg::Configuration) -> RedisManager {
         match cfg.cache_type {
             CacheType::RedisCluster => crate::redis::new_redis_clustered_unpooled(redis_dsn).await,
             CacheType::Redis => crate::redis::new_redis_unpooled(redis_dsn).await,
