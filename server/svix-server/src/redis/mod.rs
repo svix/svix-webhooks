@@ -7,7 +7,7 @@ use bb8_redis::RedisConnectionManager;
 use redis::{FromRedisValue, RedisError, RedisResult};
 
 pub use self::cluster::RedisClusterConnectionManager;
-use crate::cfg::Configuration;
+use crate::cfg::{CacheBackend, QueueBackend};
 
 pub const REDIS_CONN_TIMEOUT: Duration = Duration::from_secs(2);
 
@@ -20,6 +20,73 @@ pub enum RedisManager {
 }
 
 impl RedisManager {
+    async fn new_pooled(dsn: &str, clustered: bool, max_conns: u16) -> Self {
+        if clustered {
+            let mgr = RedisClusterConnectionManager::new(dsn)
+                .expect("Error initializing redis cluster client");
+            let pool = bb8::Pool::builder()
+                .max_size(max_conns.into())
+                .build(mgr)
+                .await
+                .expect("Error initializing redis cluster connection pool");
+            let pool = ClusteredRedisPool { pool };
+            RedisManager::Clustered(pool)
+        } else {
+            let mgr = RedisConnectionManager::new(dsn).expect("Error initializing redis client");
+            let pool = bb8::Pool::builder()
+                .max_size(max_conns.into())
+                .build(mgr)
+                .await
+                .expect("Error initializing redis connection pool");
+            let pool = NonClusteredRedisPool { pool };
+            RedisManager::NonClustered(pool)
+        }
+    }
+
+    async fn new_unpooled(dsn: &str, clustered: bool) -> Self {
+        if clustered {
+            let cli = redis::cluster::ClusterClient::builder(vec![dsn])
+                .retries(1)
+                .connection_timeout(REDIS_CONN_TIMEOUT)
+                .build()
+                .expect("Error initializing redis-unpooled cluster client");
+            let con = cli
+                .get_async_connection()
+                .await
+                .expect("Failed to get redis-cluster-unpooled connection");
+            RedisManager::ClusteredUnpooled(ClusteredRedisUnpooled { con })
+        } else {
+            let cli = redis::Client::open(dsn).expect("Error initializing redis unpooled client");
+            let con = redis::aio::ConnectionManager::new_with_backoff_and_timeouts(
+                cli,
+                2,
+                100,
+                1,
+                Duration::MAX,
+                REDIS_CONN_TIMEOUT,
+            )
+            .await
+            .expect("Failed to get redis-unpooled connection manager");
+            RedisManager::NonClusteredUnpooled(NonClusteredRedisUnpooled { con })
+        }
+    }
+
+    pub async fn from_cache_backend(cache_backend: &CacheBackend<'_>) -> Self {
+        match cache_backend {
+            CacheBackend::Redis(dsn) => Self::new_unpooled(dsn, false).await,
+            CacheBackend::RedisCluster(dsn) => Self::new_unpooled(dsn, true).await,
+            _ => panic!("Queue type not supported with redis"),
+        }
+    }
+
+    pub async fn from_queue_backend(queue_backend: &QueueBackend<'_>, max_conns: u16) -> Self {
+        match queue_backend {
+            QueueBackend::Redis(dsn) => Self::new_pooled(dsn, false, max_conns).await,
+            QueueBackend::RedisCluster(dsn) => Self::new_pooled(dsn, true, max_conns).await,
+            _ => panic!("Queue type not supported with redis"),
+        }
+    }
+
     pub async fn get(&self) -> Result<PooledConnection<'_>, RunError<RedisError>> {
         match self {
             Self::Clustered(pool) => pool.get().await,
@@ -230,93 +297,11 @@ impl ClusteredUnpooledConnection {
     }
 }
 
-async fn new_redis_pool_helper(
-    redis_dsn: &str,
-    clustered: bool,
-    max_connections: u16,
-) -> RedisManager {
-    if clustered {
-        let mgr = RedisClusterConnectionManager::new(redis_dsn)
-            .expect("Error initializing redis cluster client");
-        let pool = bb8::Pool::builder()
-            .max_size(max_connections.into())
-            .build(mgr)
-            .await
-            .expect("Error initializing redis cluster connection pool");
-        let pool = ClusteredRedisPool { pool };
-        RedisManager::Clustered(pool)
-    } else {
-        let mgr = RedisConnectionManager::new(redis_dsn).expect("Error initializing redis client");
-        let pool = bb8::Pool::builder()
-            .max_size(max_connections.into())
-            .build(mgr)
-            .await
-            .expect("Error initializing redis connection pool");
-        let pool = NonClusteredRedisPool { pool };
-        RedisManager::NonClustered(pool)
-    }
-}
-
-async fn new_redis_unpooled_helper(redis_dsn: &str, clustered: bool) -> RedisManager {
-    if clustered {
-        let cli = redis::cluster::ClusterClient::builder(vec![redis_dsn])
-            .retries(1)
-            .connection_timeout(REDIS_CONN_TIMEOUT)
-            .build()
-            .expect("Error initializing redis-unpooled cluster client");
-        let con = cli
-            .get_async_connection()
-            .await
-            .expect("Failed to get redis-cluster-unpooled connection");
-        RedisManager::ClusteredUnpooled(ClusteredRedisUnpooled { con })
-    } else {
-        let cli = redis::Client::open(redis_dsn).expect("Error initializing redis unpooled client");
-        let con = redis::aio::ConnectionManager::new_with_backoff_and_timeouts(
-            cli,
-            2,
-            100,
-            1,
-            Duration::MAX,
-            REDIS_CONN_TIMEOUT,
-        )
-        .await
-        .expect("Failed to get redis-unpooled connection manager");
-        RedisManager::NonClusteredUnpooled(NonClusteredRedisUnpooled { con })
-    }
-}
-
-pub async fn new_redis_clustered_pooled(redis_dsn: &str, cfg: &Configuration) -> RedisManager {
-    new_redis_pool_helper(redis_dsn, true, cfg.redis_pool_max_size).await
-}
-
-pub async fn new_redis_clustered_unpooled(redis_dsn: &str) -> RedisManager {
-    new_redis_unpooled_helper(redis_dsn, true).await
-}
-
-pub async fn new_redis_pooled(redis_dsn: &str, cfg: &Configuration) -> RedisManager {
-    new_redis_pool_helper(redis_dsn, false, cfg.redis_pool_max_size).await
-}
-
-pub async fn new_redis_unpooled(redis_dsn: &str) -> RedisManager {
-    new_redis_unpooled_helper(redis_dsn, false).await
-}
-
 #[cfg(test)]
 mod tests {
     use redis::AsyncCommands;
 
     use super::RedisManager;
-    use crate::cfg::{CacheType, Configuration};
-
-    async fn get_pool(redis_dsn: &str, cfg: &Configuration) -> RedisManager {
-        match cfg.cache_type {
-            CacheType::RedisCluster => super::new_redis_clustered_unpooled(redis_dsn).await,
-            CacheType::Redis => super::new_redis_unpooled(redis_dsn).await,
-            _ => panic!(
-                "This test should only be run when redis is configured as the cache provider"
-            ),
-        }
-    }
 
     // Ensure basic set/get works -- should test sharding as well:
     #[tokio::test]
@@ -326,8 +311,8 @@ mod tests {
         dotenvy::dotenv().ok();
         let cfg = crate::cfg::load().unwrap();
 
-        let pool = get_pool(cfg.redis_dsn.as_ref().unwrap().as_str(), &cfg).await;
-        let mut conn = pool.get().await.unwrap();
+        let mgr = RedisManager::from_cache_backend(&cfg.cache_backend()).await;
+        let mut conn = mgr.get().await.unwrap();
 
         for (val, key) in "abcdefghijklmnopqrstuvwxyz".chars().enumerate() {
             let key = key.to_string();

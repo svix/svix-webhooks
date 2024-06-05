@@ -8,25 +8,17 @@ use std::{str::FromStr, time::Duration};
 
 use redis::AsyncCommands as _;
 use svix_server::{
-    cfg::{Configuration, QueueType},
+    cfg::Configuration,
     core::types::{ApplicationId, EndpointId, MessageAttemptTriggerType, MessageId},
     queue::{
         new_pair, MessageTask, QueueTask, TaskQueueConsumer, TaskQueueDelivery, TaskQueueProducer,
     },
-    redis::{new_redis_clustered_pooled, new_redis_pooled, RedisManager},
+    redis::RedisManager,
 };
 
 // TODO: Don't copy this from the Redis queue test directly, place the fn somewhere both can access
 async fn get_pool(cfg: &Configuration) -> RedisManager {
-    match cfg.queue_type {
-        QueueType::RedisCluster => {
-            new_redis_clustered_pooled(cfg.redis_dsn.as_deref().unwrap(), cfg).await
-        }
-        QueueType::Redis => new_redis_pooled(cfg.redis_dsn.as_deref().unwrap(), cfg).await,
-        _ => {
-            panic!("This test should only be run when redis is configured as the queue backend")
-        }
-    }
+    RedisManager::from_queue_backend(&cfg.queue_backend(), cfg.redis_pool_max_size).await
 }
 
 fn task_queue_delivery_to_u16(tqd: &TaskQueueDelivery) -> u16 {
