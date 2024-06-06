@@ -10,10 +10,10 @@ use std::{
 
 use serde::Deserialize;
 use shellexpand::LookupError;
-use svix_bridge_plugin_queue::config::{
-    into_receiver_output, QueueSenderConfig, ReceiverOutputOpts as QueueOutOpts,
+use svix_bridge_plugin_queue::config::{QueueInputOpts, QueueOutputOpts};
+use svix_bridge_types::{
+    ReceiverInputOpts, ReceiverOutput, SenderInput, SenderOutputOpts, TransformationConfig,
 };
-use svix_bridge_types::{ReceiverInputOpts, ReceiverOutput, SenderInput, TransformationConfig};
 use tracing::Level;
 
 #[derive(Deserialize)]
@@ -145,30 +145,48 @@ pub enum LogFormat {
 
 /// Config for reading messages from plugins and forwarding to Svix.
 #[derive(Deserialize)]
+pub struct WebhookSenderConfig {
+    pub name: String,
+    pub input: SenderInputOpts,
+    #[serde(default)]
+    pub transformation: Option<TransformationConfig>,
+    pub output: SenderOutputOpts,
+}
+
+#[derive(Deserialize)]
 #[serde(untagged)]
-pub enum WebhookSenderConfig {
-    Queue(QueueSenderConfig),
+pub enum SenderInputOpts {
+    Queue(QueueInputOpts),
+}
+
+impl WebhookSenderConfig {
+    pub fn into_sender_input(self) -> Result<Box<dyn SenderInput>, &'static str> {
+        match self.input {
+            SenderInputOpts::Queue(input_opts) => svix_bridge_plugin_queue::into_sender_input(
+                self.name,
+                input_opts,
+                self.transformation,
+                self.output,
+            ),
+        }
+    }
 }
 
 impl WebhookSenderConfig {
     pub fn name(&self) -> &str {
-        match self {
-            WebhookSenderConfig::Queue(cfg) => &cfg.name,
-        }
+        &self.name
     }
+
     pub fn transformation(&self) -> Option<&TransformationConfig> {
-        match self {
-            WebhookSenderConfig::Queue(cfg) => cfg.transformation.as_ref(),
-        }
+        self.transformation.as_ref()
     }
 }
 
 impl TryFrom<WebhookSenderConfig> for Box<dyn SenderInput> {
     type Error = &'static str;
+
     fn try_from(value: WebhookSenderConfig) -> Result<Self, Self::Error> {
-        match value {
-            WebhookSenderConfig::Queue(backend) => backend.into_sender_input(),
-        }
+        value.into_sender_input()
     }
 }
 
@@ -179,23 +197,25 @@ pub struct WebhookReceiverConfig {
     pub input: ReceiverInputOpts,
     #[serde(default)]
     pub transformation: Option<TransformationConfig>,
-    pub output: ReceiverOut,
+    pub output: ReceiverOutputOpts,
 }
 
 #[derive(Deserialize)]
 #[serde(untagged)]
-pub enum ReceiverOut {
-    Queue(QueueOutOpts),
+pub enum ReceiverOutputOpts {
+    Queue(QueueOutputOpts),
 }
 
 impl WebhookReceiverConfig {
     pub async fn into_receiver_output(self) -> std::io::Result<Box<dyn ReceiverOutput>> {
         match self.output {
-            ReceiverOut::Queue(x) => {
-                into_receiver_output(self.name.clone(), x, self.transformation.as_ref())
-                    .await
-                    .map_err(Into::into)
-            }
+            ReceiverOutputOpts::Queue(x) => svix_bridge_plugin_queue::into_receiver_output(
+                self.name.clone(),
+                x,
+                self.transformation.as_ref(),
+            )
+            .await
+            .map_err(Into::into),
         }
     }
 }

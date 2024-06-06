@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 
-use svix_bridge_plugin_queue::config::{QueueSenderConfig, RabbitMqInputOpts, SenderInputOpts};
+use svix_bridge_plugin_queue::config::{QueueInputOpts, RabbitMqInputOpts};
 use svix_bridge_types::{SenderOutputOpts, SvixSenderOutputOpts};
 
-use super::Config;
+use super::{Config, SenderInputOpts};
 use crate::config::{LogFormat, LogLevel, WebhookSenderConfig};
 
 /// This is meant to be a kitchen sink config, hitting as many possible
@@ -455,14 +455,14 @@ fn test_variable_substitution_repeated_lookups() {
     vars.insert(String::from("SVIX_TOKEN"), String::from("x"));
     let cfg = Config::from_src(src, Some(&vars)).unwrap();
 
-    if let WebhookSenderConfig::Queue(QueueSenderConfig {
+    if let WebhookSenderConfig {
         input:
-            SenderInputOpts::RabbitMQ(RabbitMqInputOpts {
+            SenderInputOpts::Queue(QueueInputOpts::RabbitMQ(RabbitMqInputOpts {
                 uri, queue_name, ..
-            }),
+            })),
         output: SenderOutputOpts::Svix(SvixSenderOutputOpts { token, .. }),
         ..
-    }) = &cfg.senders[0]
+    } = &cfg.senders[0]
     {
         assert_eq!(uri, "amqp://guest:guest@localhost:5672/%2f");
         assert_eq!(queue_name, "one");
@@ -471,14 +471,14 @@ fn test_variable_substitution_repeated_lookups() {
         panic!("sender did not match expected pattern");
     }
 
-    if let WebhookSenderConfig::Queue(QueueSenderConfig {
+    if let WebhookSenderConfig {
         input:
-            SenderInputOpts::RabbitMQ(RabbitMqInputOpts {
+            SenderInputOpts::Queue(QueueInputOpts::RabbitMQ(RabbitMqInputOpts {
                 uri, queue_name, ..
-            }),
+            })),
         output: SenderOutputOpts::Svix(SvixSenderOutputOpts { token, .. }),
         ..
-    }) = &cfg.senders[1]
+    } = &cfg.senders[1]
     {
         assert_eq!(uri, "amqp://guest:guest@localhost:5672/%2f");
         assert_eq!(queue_name, "two");
