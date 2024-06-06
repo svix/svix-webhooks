@@ -4,15 +4,13 @@ use svix_bridge_types::{
     TransformerTx,
 };
 
-use crate::{
-    config::SenderInputOpts, error::Error, gcp_pubsub, rabbitmq, run_inner, sqs, Consumer,
-};
+use crate::{config::QueueInputOpts, error::Error, gcp_pubsub, rabbitmq, run_inner, sqs, Consumer};
 
 pub struct QueueSender {
     name: String,
     source: String,
     system: String,
-    input_opts: SenderInputOpts,
+    input_opts: QueueInputOpts,
     transformation: Option<TransformationConfig>,
     transformer_tx: Option<TransformerTx>,
     svix_client: Svix,
@@ -24,28 +22,28 @@ impl std::fmt::Debug for QueueSender {
     }
 }
 
-fn system_name(opts: &SenderInputOpts) -> &'static str {
+fn system_name(opts: &QueueInputOpts) -> &'static str {
     match opts {
-        SenderInputOpts::GCPPubSub(_) => "gcp-pubsub",
-        SenderInputOpts::RabbitMQ(_) => "rabbitmq",
-        SenderInputOpts::Redis(_) => "redis",
-        SenderInputOpts::SQS(_) => "sqs",
+        QueueInputOpts::GCPPubSub(_) => "gcp-pubsub",
+        QueueInputOpts::RabbitMQ(_) => "rabbitmq",
+        QueueInputOpts::Redis(_) => "redis",
+        QueueInputOpts::SQS(_) => "sqs",
     }
 }
 
-fn source_name(opts: &SenderInputOpts) -> &str {
+fn source_name(opts: &QueueInputOpts) -> &str {
     match opts {
-        SenderInputOpts::GCPPubSub(opts) => &opts.subscription_id,
-        SenderInputOpts::RabbitMQ(opts) => &opts.queue_name,
-        SenderInputOpts::Redis(opts) => &opts.queue_key,
-        SenderInputOpts::SQS(opts) => &opts.queue_dsn,
+        QueueInputOpts::GCPPubSub(opts) => &opts.subscription_id,
+        QueueInputOpts::RabbitMQ(opts) => &opts.queue_name,
+        QueueInputOpts::Redis(opts) => &opts.queue_key,
+        QueueInputOpts::SQS(opts) => &opts.queue_dsn,
     }
 }
 
 impl QueueSender {
     pub fn new(
         name: String,
-        input: SenderInputOpts,
+        input: QueueInputOpts,
         transformation: Option<TransformationConfig>,
         output: SenderOutputOpts,
     ) -> Self {
@@ -89,10 +87,10 @@ impl Consumer for QueueSender {
 
     async fn consumer(&self) -> std::io::Result<DynConsumer> {
         Ok(match &self.input_opts {
-            SenderInputOpts::GCPPubSub(cfg) => gcp_pubsub::consumer(cfg).await,
-            SenderInputOpts::RabbitMQ(cfg) => rabbitmq::consumer(cfg).await,
-            SenderInputOpts::Redis(cfg) => crate::redis::consumer(cfg).await,
-            SenderInputOpts::SQS(cfg) => sqs::consumer(cfg).await,
+            QueueInputOpts::GCPPubSub(cfg) => gcp_pubsub::consumer(cfg).await,
+            QueueInputOpts::RabbitMQ(cfg) => rabbitmq::consumer(cfg).await,
+            QueueInputOpts::Redis(cfg) => crate::redis::consumer(cfg).await,
+            QueueInputOpts::SQS(cfg) => sqs::consumer(cfg).await,
         }
         .map_err(Error::from)?)
     }

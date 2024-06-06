@@ -8,7 +8,7 @@ use std::time::Duration;
 use aws_sdk_sqs::Client;
 use serde_json::json;
 use svix_bridge_plugin_queue::{
-    config::{SenderInputOpts, SqsInputOpts},
+    config::{QueueInputOpts, SqsInputOpts},
     sender_input::QueueSender,
 };
 use svix_bridge_types::{
@@ -35,7 +35,7 @@ fn get_test_plugin(
 ) -> QueueSender {
     QueueSender::new(
         "test".into(),
-        SenderInputOpts::SQS(SqsInputOpts {
+        QueueInputOpts::SQS(SqsInputOpts {
             queue_dsn,
             override_endpoint: true,
         }),

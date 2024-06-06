@@ -10,7 +10,7 @@ use lapin::{
 };
 use serde_json::json;
 use svix_bridge_plugin_queue::{
-    config::{RabbitMqInputOpts, SenderInputOpts},
+    config::{QueueInputOpts, RabbitMqInputOpts},
     sender_input::QueueSender,
 };
 use svix_bridge_types::{
@@ -31,7 +31,7 @@ fn get_test_plugin(
 ) -> QueueSender {
     QueueSender::new(
         "test".into(),
-        SenderInputOpts::RabbitMQ(RabbitMqInputOpts {
+        QueueInputOpts::RabbitMQ(RabbitMqInputOpts {
             uri: mq_uri.to_string(),
             queue_name: queue_name.to_string(),
             consumer_tag: None,

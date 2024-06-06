@@ -13,7 +13,7 @@ use google_cloud_pubsub::{
 };
 use serde_json::json;
 use svix_bridge_plugin_queue::{
-    config::{GCPPubSubInputOpts, SenderInputOpts},
+    config::{GCPPubSubInputOpts, QueueInputOpts},
     sender_input::QueueSender,
 };
 use svix_bridge_types::{
@@ -35,7 +35,7 @@ fn get_test_plugin(
 ) -> QueueSender {
     QueueSender::new(
         "test".into(),
-        SenderInputOpts::GCPPubSub(GCPPubSubInputOpts {
+        QueueInputOpts::GCPPubSub(GCPPubSubInputOpts {
             subscription_id,
             credentials_file: None,
         }),

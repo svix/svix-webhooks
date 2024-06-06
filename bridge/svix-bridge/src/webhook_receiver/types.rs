@@ -14,7 +14,7 @@ use svix_bridge_types::{
 };
 
 use super::verification::{NoVerifier, SvixVerifier, VerificationMethod, Verifier};
-use crate::config::ReceiverConfig;
+use crate::config::WebhookReceiverConfig;
 
 #[derive(Clone)]
 /// The [`InternalState`] is passed to the Axum route and is used to map the "IntegrationId" in the
@@ -50,7 +50,7 @@ impl InternalState {
     }
 
     pub async fn from_receiver_configs(
-        routes: Vec<ReceiverConfig>,
+        routes: Vec<WebhookReceiverConfig>,
         transformer_tx: TransformerTx,
     ) -> Result<Self> {
         let mut state_map = HashMap::new();

@@ -1,7 +1,7 @@
 use serde::Deserialize;
 use svix_bridge_types::{TransformationConfig, WebhookVerifier};
 
-use crate::config::ReceiverConfig;
+use crate::config::WebhookReceiverConfig;
 
 /// The [`IntegrationConfig`] is the struct associated with a given [`IntegrationId`]. When the route
 /// associated with an [`IntegrationId`] receives a webhook, or any other HTTP request, then it will
@@ -11,7 +11,7 @@ use crate::config::ReceiverConfig;
 #[derive(Deserialize)]
 #[allow(dead_code)]
 pub struct IntegrationConfig {
-    pub receiver_cfg: ReceiverConfig,
+    pub receiver_cfg: WebhookReceiverConfig,
     pub verification: WebhookVerifier,
     #[serde(default)]
     pub transformation: Option<TransformationConfig>,

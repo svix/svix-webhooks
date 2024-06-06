@@ -10,19 +10,21 @@ use std::{
 
 use serde::Deserialize;
 use shellexpand::LookupError;
-use svix_bridge_plugin_queue::config::{
-    into_receiver_output, QueueSenderConfig, ReceiverOutputOpts as QueueOutOpts,
+use svix_bridge_plugin_queue::config::{QueueInputOpts, QueueOutputOpts};
+use svix_bridge_types::{
+    ReceiverInputOpts, ReceiverOutput, SenderInput, SenderOutputOpts, TransformationConfig,
 };
-use svix_bridge_types::{ReceiverInputOpts, ReceiverOutput, SenderInput, TransformationConfig};
 use tracing::Level;
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Config {
+    /// Config for reading messages from plugins and forwarding to Svix.
     #[serde(default)]
-    pub senders: Vec<SenderConfig>,
+    pub senders: Vec<WebhookSenderConfig>,
+    /// Config for receiving webhooks and forwarding them to plugins.
     #[serde(default)]
-    pub receivers: Vec<ReceiverConfig>,
+    pub receivers: Vec<WebhookReceiverConfig>,
     /// The log level to run the service with. Supported: info, debug, trace
     #[serde(default)]
     pub log_level: LogLevel,
@@ -141,75 +143,79 @@ pub enum LogFormat {
     Json,
 }
 
+/// Config for reading messages from plugins and forwarding to Svix.
 #[derive(Deserialize)]
-#[serde(untagged)]
-pub enum SenderConfig {
-    #[cfg(any(
-        feature = "gcp-pubsub",
-        feature = "rabbitmq",
-        feature = "redis",
-        feature = "sqs"
-    ))]
-    Queue(QueueSenderConfig),
+pub struct WebhookSenderConfig {
+    pub name: String,
+    pub input: SenderInputOpts,
+    #[serde(default)]
+    pub transformation: Option<TransformationConfig>,
+    pub output: SenderOutputOpts,
 }
 
-impl SenderConfig {
+#[derive(Deserialize)]
+#[serde(untagged)]
+pub enum SenderInputOpts {
+    Queue(QueueInputOpts),
+}
+
+impl WebhookSenderConfig {
+    pub fn into_sender_input(self) -> Result<Box<dyn SenderInput>, &'static str> {
+        match self.input {
+            SenderInputOpts::Queue(input_opts) => svix_bridge_plugin_queue::into_sender_input(
+                self.name,
+                input_opts,
+                self.transformation,
+                self.output,
+            ),
+        }
+    }
+}
+
+impl WebhookSenderConfig {
     pub fn name(&self) -> &str {
-        match self {
-            SenderConfig::Queue(cfg) => &cfg.name,
-        }
+        &self.name
     }
+
     pub fn transformation(&self) -> Option<&TransformationConfig> {
-        match self {
-            SenderConfig::Queue(cfg) => cfg.transformation.as_ref(),
-        }
+        self.transformation.as_ref()
     }
 }
 
-impl TryFrom<SenderConfig> for Box<dyn SenderInput> {
+impl TryFrom<WebhookSenderConfig> for Box<dyn SenderInput> {
     type Error = &'static str;
-    fn try_from(value: SenderConfig) -> Result<Self, Self::Error> {
-        match value {
-            #[cfg(any(
-                feature = "gcp-pubsub",
-                feature = "rabbitmq",
-                feature = "redis",
-                feature = "sqs"
-            ))]
-            SenderConfig::Queue(backend) => backend.into_sender_input(),
-        }
+
+    fn try_from(value: WebhookSenderConfig) -> Result<Self, Self::Error> {
+        value.into_sender_input()
     }
 }
 
+/// Config for receiving webhooks and forwarding them to plugins.
 #[derive(Deserialize)]
-pub struct ReceiverConfig {
+pub struct WebhookReceiverConfig {
     pub name: String,
     pub input: ReceiverInputOpts,
     #[serde(default)]
     pub transformation: Option<TransformationConfig>,
-    pub output: ReceiverOut,
+    pub output: ReceiverOutputOpts,
 }
 
 #[derive(Deserialize)]
 #[serde(untagged)]
-pub enum ReceiverOut {
-    #[cfg(any(
-        feature = "gcp-pubsub",
-        feature = "rabbitmq",
-        feature = "redis",
-        feature = "sqs"
-    ))]
-    Queue(QueueOutOpts),
+pub enum ReceiverOutputOpts {
+    Queue(QueueOutputOpts),
 }
 
-impl ReceiverConfig {
+impl WebhookReceiverConfig {
     pub async fn into_receiver_output(self) -> std::io::Result<Box<dyn ReceiverOutput>> {
         match self.output {
-            ReceiverOut::Queue(x) => {
-                into_receiver_output(self.name.clone(), x, self.transformation.as_ref())
-                    .await
-                    .map_err(Into::into)
-            }
+            ReceiverOutputOpts::Queue(x) => svix_bridge_plugin_queue::into_receiver_output(
+                self.name.clone(),
+                x,
+                self.transformation.as_ref(),
+            )
+            .await
+            .map_err(Into::into),
         }
     }
 }

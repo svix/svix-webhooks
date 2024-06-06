@@ -6,7 +6,7 @@ use std::time::Duration;
 use redis::{AsyncCommands, Client};
 use serde_json::json;
 use svix_bridge_plugin_queue::{
-    config::{RedisInputOpts, SenderInputOpts},
+    config::{QueueInputOpts, RedisInputOpts},
     sender_input::QueueSender,
 };
 use svix_bridge_types::{
@@ -26,7 +26,7 @@ fn get_test_plugin(
 ) -> QueueSender {
     QueueSender::new(
         "test".into(),
-        SenderInputOpts::Redis(RedisInputOpts {
+        QueueInputOpts::Redis(RedisInputOpts {
             dsn: "redis://localhost/".to_owned(),
             max_connections: 8,
             reinsert_on_nack: false,

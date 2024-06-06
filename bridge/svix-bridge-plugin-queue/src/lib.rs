@@ -18,7 +18,8 @@ mod redis;
 pub mod sender_input;
 mod sqs;
 
-use error::Error;
+pub use self::config::{into_receiver_output, into_sender_input};
+use self::error::Error;
 
 /// Newtype for [`omniqueue::queue::Delivery`].
 ///

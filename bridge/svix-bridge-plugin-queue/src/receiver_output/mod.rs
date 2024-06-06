@@ -3,7 +3,7 @@ use std::sync::Arc;
 use omniqueue::DynProducer;
 use svix_bridge_types::{async_trait, ForwardRequest, ReceiverOutput};
 
-use crate::{config::ReceiverOutputOpts, error::Result};
+use crate::{config::QueueOutputOpts, error::Result};
 
 #[derive(Clone)]
 pub struct QueueForwarder {
@@ -16,13 +16,13 @@ pub struct QueueForwarder {
 impl QueueForwarder {
     pub async fn from_receiver_output_opts(
         name: String,
-        opts: ReceiverOutputOpts,
+        opts: QueueOutputOpts,
     ) -> Result<QueueForwarder> {
         let sender = match opts {
-            ReceiverOutputOpts::GCPPubSub(cfg) => crate::gcp_pubsub::producer(&cfg).await?,
-            ReceiverOutputOpts::RabbitMQ(cfg) => crate::rabbitmq::producer(&cfg).await?,
-            ReceiverOutputOpts::Redis(cfg) => crate::redis::producer(&cfg).await?,
-            ReceiverOutputOpts::SQS(cfg) => crate::sqs::producer(&cfg).await?,
+            QueueOutputOpts::GCPPubSub(cfg) => crate::gcp_pubsub::producer(&cfg).await?,
+            QueueOutputOpts::RabbitMQ(cfg) => crate::rabbitmq::producer(&cfg).await?,
+            QueueOutputOpts::Redis(cfg) => crate::redis::producer(&cfg).await?,
+            QueueOutputOpts::SQS(cfg) => crate::sqs::producer(&cfg).await?,
         };
         Ok(QueueForwarder {
             name,
