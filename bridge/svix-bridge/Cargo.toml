@@ -19,7 +19,7 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 serde_yaml = "0.9"
 svix-ksuid = "0.7.0"
-svix-bridge-plugin-queue = { optional=true, path = "../svix-bridge-plugin-queue" }
+svix-bridge-plugin-queue = { path = "../svix-bridge-plugin-queue" }
 svix-bridge-types = { path = "../svix-bridge-types" }
 tokio = { version = "1", features = ["full"] }
 tracing = "0.1"
@@ -41,11 +41,5 @@ chrono = "0.4"
 tower = "0.4"
 
 [features]
-default = ["gcp-pubsub", "rabbitmq", "redis", "sqs", "jemalloc"]
-
-gcp-pubsub = ["generic-queue"]
-generic-queue = ["dep:svix-bridge-plugin-queue"]
-rabbitmq = ["generic-queue"]
-redis = ["generic-queue"]
-sqs = ["generic-queue"]
+default = ["jemalloc"]
 jemalloc = ["tikv-jemallocator", "tikv-jemalloc-ctl"]

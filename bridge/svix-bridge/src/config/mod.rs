@@ -147,12 +147,6 @@ pub enum LogFormat {
 #[derive(Deserialize)]
 #[serde(untagged)]
 pub enum WebhookSenderConfig {
-    #[cfg(any(
-        feature = "gcp-pubsub",
-        feature = "rabbitmq",
-        feature = "redis",
-        feature = "sqs"
-    ))]
     Queue(QueueSenderConfig),
 }
 
@@ -173,12 +167,6 @@ impl TryFrom<WebhookSenderConfig> for Box<dyn SenderInput> {
     type Error = &'static str;
     fn try_from(value: WebhookSenderConfig) -> Result<Self, Self::Error> {
         match value {
-            #[cfg(any(
-                feature = "gcp-pubsub",
-                feature = "rabbitmq",
-                feature = "redis",
-                feature = "sqs"
-            ))]
             WebhookSenderConfig::Queue(backend) => backend.into_sender_input(),
         }
     }
@@ -197,12 +185,6 @@ pub struct WebhookReceiverConfig {
 #[derive(Deserialize)]
 #[serde(untagged)]
 pub enum ReceiverOut {
-    #[cfg(any(
-        feature = "gcp-pubsub",
-        feature = "rabbitmq",
-        feature = "redis",
-        feature = "sqs"
-    ))]
     Queue(QueueOutOpts),
 }
 
