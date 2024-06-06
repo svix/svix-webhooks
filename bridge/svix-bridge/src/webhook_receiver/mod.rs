@@ -13,7 +13,7 @@ use svix_bridge_types::{
 use tracing::instrument;
 use types::{IntegrationId, IntegrationState, InternalState, SerializableRequest, Unvalidated};
 
-use crate::{config::ReceiverConfig, webhook_receiver::types::SerializablePayload};
+use crate::{config::WebhookReceiverConfig, webhook_receiver::types::SerializablePayload};
 
 mod config;
 mod types;
@@ -33,7 +33,7 @@ fn router() -> Router<InternalState, Body> {
 
 pub async fn run(
     listen_addr: SocketAddr,
-    routes: Vec<ReceiverConfig>,
+    routes: Vec<WebhookReceiverConfig>,
     transformer_tx: TransformerTx,
 ) -> std::io::Result<()> {
     let state = InternalState::from_receiver_configs(routes, transformer_tx)

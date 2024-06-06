@@ -19,10 +19,12 @@ use tracing::Level;
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Config {
+    /// Config for reading messages from plugins and forwarding to Svix.
     #[serde(default)]
-    pub senders: Vec<SenderConfig>,
+    pub senders: Vec<WebhookSenderConfig>,
+    /// Config for receiving webhooks and forwarding them to plugins.
     #[serde(default)]
-    pub receivers: Vec<ReceiverConfig>,
+    pub receivers: Vec<WebhookReceiverConfig>,
     /// The log level to run the service with. Supported: info, debug, trace
     #[serde(default)]
     pub log_level: LogLevel,
@@ -141,9 +143,10 @@ pub enum LogFormat {
     Json,
 }
 
+/// Config for reading messages from plugins and forwarding to Svix.
 #[derive(Deserialize)]
 #[serde(untagged)]
-pub enum SenderConfig {
+pub enum WebhookSenderConfig {
     #[cfg(any(
         feature = "gcp-pubsub",
         feature = "rabbitmq",
@@ -153,22 +156,22 @@ pub enum SenderConfig {
     Queue(QueueSenderConfig),
 }
 
-impl SenderConfig {
+impl WebhookSenderConfig {
     pub fn name(&self) -> &str {
         match self {
-            SenderConfig::Queue(cfg) => &cfg.name,
+            WebhookSenderConfig::Queue(cfg) => &cfg.name,
         }
     }
     pub fn transformation(&self) -> Option<&TransformationConfig> {
         match self {
-            SenderConfig::Queue(cfg) => cfg.transformation.as_ref(),
+            WebhookSenderConfig::Queue(cfg) => cfg.transformation.as_ref(),
         }
     }
 }
 
-impl TryFrom<SenderConfig> for Box<dyn SenderInput> {
+impl TryFrom<WebhookSenderConfig> for Box<dyn SenderInput> {
     type Error = &'static str;
-    fn try_from(value: SenderConfig) -> Result<Self, Self::Error> {
+    fn try_from(value: WebhookSenderConfig) -> Result<Self, Self::Error> {
         match value {
             #[cfg(any(
                 feature = "gcp-pubsub",
@@ -176,13 +179,14 @@ impl TryFrom<SenderConfig> for Box<dyn SenderInput> {
                 feature = "redis",
                 feature = "sqs"
             ))]
-            SenderConfig::Queue(backend) => backend.into_sender_input(),
+            WebhookSenderConfig::Queue(backend) => backend.into_sender_input(),
         }
     }
 }
 
+/// Config for receiving webhooks and forwarding them to plugins.
 #[derive(Deserialize)]
-pub struct ReceiverConfig {
+pub struct WebhookReceiverConfig {
     pub name: String,
     pub input: ReceiverInputOpts,
     #[serde(default)]
@@ -202,7 +206,7 @@ pub enum ReceiverOut {
     Queue(QueueOutOpts),
 }
 
-impl ReceiverConfig {
+impl WebhookReceiverConfig {
     pub async fn into_receiver_output(self) -> std::io::Result<Box<dyn ReceiverOutput>> {
         match self.output {
             ReceiverOut::Queue(x) => {

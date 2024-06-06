@@ -4,7 +4,7 @@ use svix_bridge_plugin_queue::config::{QueueSenderConfig, RabbitMqInputOpts, Sen
 use svix_bridge_types::{SenderOutputOpts, SvixSenderOutputOpts};
 
 use super::Config;
-use crate::config::{LogFormat, LogLevel, SenderConfig};
+use crate::config::{LogFormat, LogLevel, WebhookSenderConfig};
 
 /// This is meant to be a kitchen sink config, hitting as many possible
 /// configuration options as possible to ensure they parse correctly.
@@ -241,7 +241,7 @@ receivers:
 
 #[test]
 fn test_sender_parses_ok() {
-    let conf: Result<SenderConfig, _> = serde_yaml::from_str(
+    let conf: Result<WebhookSenderConfig, _> = serde_yaml::from_str(
         r#"
 name: "from-rabbit-local-to-svix"
 input:
@@ -260,7 +260,7 @@ output:
 
 #[test]
 fn test_senders_parses_ok() {
-    let conf: Result<Vec<SenderConfig>, _> = serde_yaml::from_str(
+    let conf: Result<Vec<WebhookSenderConfig>, _> = serde_yaml::from_str(
         r#"
 
 - name: "from-rabbit-local-to-svix"
@@ -455,7 +455,7 @@ fn test_variable_substitution_repeated_lookups() {
     vars.insert(String::from("SVIX_TOKEN"), String::from("x"));
     let cfg = Config::from_src(src, Some(&vars)).unwrap();
 
-    if let SenderConfig::Queue(QueueSenderConfig {
+    if let WebhookSenderConfig::Queue(QueueSenderConfig {
         input:
             SenderInputOpts::RabbitMQ(RabbitMqInputOpts {
                 uri, queue_name, ..
@@ -471,7 +471,7 @@ fn test_variable_substitution_repeated_lookups() {
         panic!("sender did not match expected pattern");
     }
 
-    if let SenderConfig::Queue(QueueSenderConfig {
+    if let WebhookSenderConfig::Queue(QueueSenderConfig {
         input:
             SenderInputOpts::RabbitMQ(RabbitMqInputOpts {
                 uri, queue_name, ..
