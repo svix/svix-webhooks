@@ -46,7 +46,9 @@ class Webhook:
 
         timestamp = self.__verify_timestamp(msg_timestamp)
 
-        expected_sig = base64.b64decode(self.sign(msg_id=msg_id, timestamp=timestamp, data=data).split(",")[1])
+        expected_sig = base64.b64decode(
+            self.sign(msg_id=msg_id, timestamp=timestamp, data=data).split(",")[1]
+        )
         passed_sigs = msg_signature.split(" ")
         for versioned_sig in passed_sigs:
             (version, signature) = versioned_sig.split(",")

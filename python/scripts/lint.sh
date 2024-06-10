@@ -3,6 +3,5 @@
 set -ex
 
 mypy svix
-isort --check-only svix
-black svix --check
-flake8 svix
+ruff check svix
+ruff format --check svix

@@ -1,9 +1,4 @@
-autoflake
-black
-isort
-flake8
-flake8-print
-pep8-naming
+ruff
 mypy>=1.4.0
 pip-tools>=6.13.0
 pytest
