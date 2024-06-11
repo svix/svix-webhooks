@@ -9,6 +9,7 @@ members = [
     "svix-bridge-types",
     "svix-bridge",
     "svix-bridge-plugin-queue",
+    "svix-bridge-plugin-kafka",
 ]
 
 [profile.dev.package]

@@ -214,7 +214,7 @@ pub struct SvixSenderOutputOpts {
 
 #[derive(Clone, Default, Deserialize, Serialize)]
 pub struct PostOptions {
-    idempotency_key: Option<String>,
+    pub idempotency_key: Option<String>,
 }
 
 impl From<PostOptions> for PostOptions_ {
