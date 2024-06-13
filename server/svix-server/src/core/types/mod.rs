@@ -1232,6 +1232,7 @@ macro_rules! repr_enum {
 /// 1. Name of the enum type, `Foo`
 /// 2. The repr type used, e.g. in case of `repr(i16)` it must be `i16`
 /// 3. The string description to be used in the docs.
+///
 /// Remaining arguments must be the variants in order. For example:
 ///
 /// ```ignore
