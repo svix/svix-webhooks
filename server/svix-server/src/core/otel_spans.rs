@@ -109,7 +109,7 @@ impl<B> OnResponse<B> for AxumOtelOnResponse {
         span: &tracing::Span,
     ) {
         let status = response.status().as_u16().to_string();
-        span.record("http.status_code", &tracing::field::display(status));
+        span.record("http.status_code", tracing::field::display(status));
         span.record("otel.status_code", "OK");
 
         tracing::debug!(
