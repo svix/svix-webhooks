@@ -133,7 +133,7 @@ impl OperationalWebhookSenderInner {
             op_webhook_token,
             Some(SvixOptions {
                 server_url: Some(url.to_string()),
-                debug: false,
+                ..Default::default()
             }),
         );
 
