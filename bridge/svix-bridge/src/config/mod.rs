@@ -8,8 +8,11 @@ use std::{
     num::NonZeroUsize,
 };
 
+use anyhow::anyhow;
 use serde::Deserialize;
 use shellexpand::LookupError;
+#[cfg(feature = "kafka")]
+use svix_bridge_plugin_kafka::KafkaInputOpts;
 use svix_bridge_plugin_queue::config::{QueueInputOpts, QueueOutputOpts};
 use svix_bridge_types::{
     ReceiverInputOpts, ReceiverOutput, SenderInput, SenderOutputOpts, TransformationConfig,
@@ -156,19 +159,29 @@ pub struct WebhookSenderConfig {
 #[derive(Deserialize)]
 #[serde(untagged)]
 pub enum SenderInputOpts {
+    #[cfg(feature = "kafka")]
+    Kafka(KafkaInputOpts),
     Queue(QueueInputOpts),
 }
 
 impl WebhookSenderConfig {
-    pub fn into_sender_input(self) -> Result<Box<dyn SenderInput>, &'static str> {
-        match self.input {
+    pub fn into_sender_input(self) -> anyhow::Result<Box<dyn SenderInput>> {
+        Ok(match self.input {
+            #[cfg(feature = "kafka")]
+            SenderInputOpts::Kafka(input_opts) => svix_bridge_plugin_kafka::into_sender_input(
+                self.name,
+                input_opts,
+                self.transformation,
+                self.output,
+            )?,
             SenderInputOpts::Queue(input_opts) => svix_bridge_plugin_queue::into_sender_input(
                 self.name,
                 input_opts,
                 self.transformation,
                 self.output,
-            ),
-        }
+            )
+            .map_err(|e| anyhow!("{e}"))?,
+        })
     }
 }
 
@@ -183,7 +196,7 @@ impl WebhookSenderConfig {
 }
 
 impl TryFrom<WebhookSenderConfig> for Box<dyn SenderInput> {
-    type Error = &'static str;
+    type Error = anyhow::Error;
 
     fn try_from(value: WebhookSenderConfig) -> Result<Self, Self::Error> {
         value.into_sender_input()

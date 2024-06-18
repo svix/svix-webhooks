@@ -20,6 +20,7 @@ serde_json = "1"
 serde_yaml = "0.9"
 svix-ksuid = "0.7.0"
 svix-bridge-plugin-queue = { path = "../svix-bridge-plugin-queue" }
+svix-bridge-plugin-kafka = { optional = true, path = "../svix-bridge-plugin-kafka" }
 svix-bridge-types = { path = "../svix-bridge-types" }
 tokio = { version = "1", features = ["full"] }
 tracing = "0.1"
@@ -41,5 +42,6 @@ chrono = "0.4"
 tower = "0.4"
 
 [features]
-default = ["jemalloc"]
+default = ["kafka", "jemalloc"]
+kafka = ["dep:svix-bridge-plugin-kafka"]
 jemalloc = ["tikv-jemallocator", "tikv-jemalloc-ctl"]
