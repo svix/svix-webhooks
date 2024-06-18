@@ -41,13 +41,36 @@ impl Default for SvixOptions {
 /// Svix API client.
 pub struct Svix {
     cfg: Configuration,
+    server_url: Option<String>,
 }
 
 impl Svix {
     pub fn new(token: String, options: Option<SvixOptions>) -> Self {
         let options = options.unwrap_or_default();
 
-        let base_path = options.server_url.unwrap_or_else(|| {
+        let cfg = Configuration {
+            user_agent: Some(format!("svix-libs/{CRATE_VERSION}/rust")),
+            client: HyperClient::builder(TokioExecutor::new()).build(crate::default_connector()),
+            timeout: options.timeout,
+            // These fields will be set by `with_token` below
+            base_path: String::new(),
+            bearer_access_token: None,
+        };
+        let svix = Self {
+            cfg,
+            server_url: options.server_url,
+        };
+        svix.with_token(token)
+    }
+
+    /// Creates a new `Svix` API client with a different token,
+    /// re-using all of the settings and the Hyper client from
+    /// an existing `Svix` instance.
+    ///
+    /// This can be used to change the token without incurring
+    /// the cost of TLS initialization.
+    pub fn with_token(&self, token: String) -> Self {
+        let base_path = self.server_url.clone().unwrap_or_else(|| {
             match token.split('.').last() {
                 Some("us") => "https://api.us.svix.com",
                 Some("eu") => "https://api.eu.svix.com",
@@ -58,13 +81,16 @@ impl Svix {
         });
         let cfg = Configuration {
             base_path,
-            user_agent: Some(format!("svix-libs/{CRATE_VERSION}/rust")),
+            user_agent: self.cfg.user_agent.clone(),
             bearer_access_token: Some(token),
-            client: HyperClient::builder(TokioExecutor::new()).build(crate::default_connector()),
-            timeout: options.timeout,
+            client: self.cfg.client.clone(),
+            timeout: self.cfg.timeout,
         };
 
-        Self { cfg }
+        Self {
+            cfg,
+            server_url: self.server_url.clone(),
+        }
     }
 
     pub fn authentication(&self) -> Authentication<'_> {
