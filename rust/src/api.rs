@@ -1217,6 +1217,7 @@ pub struct BackgroundTaskListOptions {
     pub task: Option<BackgroundTaskType>,
 }
 
+#[allow(unused)]
 pub struct BackgroundTask<'a> {
     cfg: &'a Configuration,
 }
