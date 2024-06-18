@@ -12,7 +12,7 @@ use anyhow::anyhow;
 use serde::Deserialize;
 use shellexpand::LookupError;
 #[cfg(feature = "kafka")]
-use svix_bridge_plugin_kafka::KafkaInputOpts;
+use svix_bridge_plugin_kafka::{KafkaInputOpts, KafkaOutputOpts};
 use svix_bridge_plugin_queue::config::{QueueInputOpts, QueueOutputOpts};
 use svix_bridge_types::{
     ReceiverInputOpts, ReceiverOutput, SenderInput, SenderOutputOpts, TransformationConfig,
@@ -216,12 +216,17 @@ pub struct WebhookReceiverConfig {
 #[derive(Deserialize)]
 #[serde(untagged)]
 pub enum ReceiverOutputOpts {
+    #[cfg(feature = "kafka")]
+    Kafka(KafkaOutputOpts),
     Queue(QueueOutputOpts),
 }
 
 impl WebhookReceiverConfig {
-    pub async fn into_receiver_output(self) -> std::io::Result<Box<dyn ReceiverOutput>> {
+    pub async fn into_receiver_output(self) -> anyhow::Result<Box<dyn ReceiverOutput>> {
         match self.output {
+            ReceiverOutputOpts::Kafka(opts) => {
+                svix_bridge_plugin_kafka::into_receiver_output(self.name, opts).map_err(Into::into)
+            }
             ReceiverOutputOpts::Queue(x) => svix_bridge_plugin_queue::into_receiver_output(
                 self.name.clone(),
                 x,

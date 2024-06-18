@@ -1,8 +1,10 @@
-use rdkafka::{consumer::StreamConsumer, error::KafkaResult, ClientConfig};
+use rdkafka::{
+    consumer::StreamConsumer, error::KafkaResult, producer::FutureProducer, ClientConfig,
+};
 use serde::Deserialize;
-use svix_bridge_types::{SenderInput, SenderOutputOpts, TransformationConfig};
+use svix_bridge_types::{ReceiverOutput, SenderInput, SenderOutputOpts, TransformationConfig};
 
-use crate::{input::KafkaConsumer, Result};
+use crate::{input::KafkaConsumer, KafkaProducer, Result};
 
 #[derive(Clone, Deserialize)]
 pub struct KafkaInputOpts {
@@ -40,25 +42,45 @@ impl KafkaInputOpts {
             // messages are committed manually after webhook delivery was successful.
             .set("enable.auto.commit", "false");
 
-        match self.security_protocol {
-            KafkaSecurityProtocol::Plaintext => {
-                config.set("security.protocol", "plaintext");
-            }
-            KafkaSecurityProtocol::Ssl => {
-                config.set("security.protocol", "ssl");
-            }
-            KafkaSecurityProtocol::SaslSsl {
-                sasl_username,
-                sasl_password,
-            } => {
-                config
-                    .set("security.protocol", "sasl_ssl")
-                    .set("sasl.mechanisms", "SCRAM-SHA-512")
-                    .set("sasl.username", sasl_username)
-                    .set("sasl.password", sasl_password);
+        self.security_protocol.apply(&mut config);
+        if let Some(debug_contexts) = self.debug_contexts {
+            if !debug_contexts.is_empty() {
+                config.set("debug", debug_contexts);
             }
         }
 
+        config.create()
+    }
+}
+
+#[derive(Clone, Deserialize)]
+pub struct KafkaOutputOpts {
+    /// Comma-separated list of addresses.
+    ///
+    /// Example: `localhost:9094`
+    #[serde(rename = "kafka_bootstrap_brokers")]
+    pub bootstrap_brokers: String,
+
+    /// The topic to listen to.
+    #[serde(rename = "kafka_topic")]
+    pub topic: String,
+
+    /// The value for 'security.protocol' in the kafka config.
+    #[serde(flatten)]
+    pub security_protocol: KafkaSecurityProtocol,
+
+    /// The 'debug' config value for rdkafka - enables more verbose logging
+    /// for the selected 'contexts'
+    #[serde(rename = "kafka_debug_contexts")]
+    pub debug_contexts: Option<String>,
+}
+
+impl KafkaOutputOpts {
+    pub(crate) fn create_producer(self) -> KafkaResult<FutureProducer> {
+        let mut config = ClientConfig::new();
+        config.set("bootstrap.servers", self.bootstrap_brokers);
+
+        self.security_protocol.apply(&mut config);
         if let Some(debug_contexts) = self.debug_contexts {
             if !debug_contexts.is_empty() {
                 config.set("debug", debug_contexts);
@@ -82,6 +104,29 @@ pub enum KafkaSecurityProtocol {
     },
 }
 
+impl KafkaSecurityProtocol {
+    fn apply(self, config: &mut ClientConfig) {
+        match self {
+            KafkaSecurityProtocol::Plaintext => {
+                config.set("security.protocol", "plaintext");
+            }
+            KafkaSecurityProtocol::Ssl => {
+                config.set("security.protocol", "ssl");
+            }
+            KafkaSecurityProtocol::SaslSsl {
+                sasl_username,
+                sasl_password,
+            } => {
+                config
+                    .set("security.protocol", "sasl_ssl")
+                    .set("sasl.mechanisms", "SCRAM-SHA-512")
+                    .set("sasl.username", sasl_username)
+                    .set("sasl.password", sasl_password);
+            }
+        }
+    }
+}
+
 pub fn into_sender_input(
     name: String,
     opts: KafkaInputOpts,
@@ -94,4 +139,11 @@ pub fn into_sender_input(
         transformation,
         output,
     )?))
+}
+
+pub fn into_receiver_output(
+    name: String,
+    opts: KafkaOutputOpts,
+) -> Result<Box<dyn ReceiverOutput>> {
+    Ok(Box::new(KafkaProducer::new(name, opts)?))
 }

@@ -5,10 +5,7 @@
 use std::time::Duration;
 
 use rdkafka::{
-    admin::{AdminClient, NewTopic, TopicReplication},
-    client::DefaultClientContext,
     producer::{FutureProducer, FutureRecord},
-    types::RDKafkaErrorCode,
     util::Timeout,
     ClientConfig,
 };
@@ -24,6 +21,8 @@ use wiremock::{
     matchers::{body_partial_json, method},
     Mock, MockServer, ResponseTemplate,
 };
+
+use crate::{create_topic, delete_topic, kafka_admin_client, BROKER_HOST};
 
 #[ctor::ctor]
 fn test_setup() {
@@ -44,10 +43,8 @@ fn test_setup() {
 
 /// Time to wait for the plugin to connect.
 const CONNECT_WAIT_TIME: Duration = Duration::from_secs(10);
-/// Teimt to wait for the plugin to receive a message sent by a test.
+/// Time to wait for the plugin to receive a message sent by a test.
 const CONSUME_WAIT_TIME: Duration = Duration::from_secs(1);
-/// These tests assume a "vanilla" rabbitmq instance, using the default port, creds, exchange...
-const BROKER_HOST: &str = "localhost:9094";
 
 fn get_test_plugin(
     svix_url: String,
@@ -87,14 +84,6 @@ fn kafka_producer() -> FutureProducer {
         .unwrap()
 }
 
-fn kafka_admin_client() -> AdminClient<DefaultClientContext> {
-    // create does block I/O, but we don't care in tests
-    ClientConfig::new()
-        .set("bootstrap.servers", BROKER_HOST)
-        .create()
-        .unwrap()
-}
-
 async fn publish(producer: &FutureProducer, topic: &str, payload: &[u8]) {
     info!(topic, "publishing message");
     producer
@@ -104,40 +93,6 @@ async fn publish(producer: &FutureProducer, topic: &str, payload: &[u8]) {
         )
         .await
         .unwrap();
-}
-
-async fn create_topic(admin_client: &AdminClient<DefaultClientContext>, topic: &str) {
-    let new_topic = NewTopic::new(topic, 1, TopicReplication::Fixed(1));
-    if let Err(e) = admin_client
-        .create_topics(&[new_topic], &Default::default())
-        .await
-    {
-        if e.rdkafka_error_code() != Some(RDKafkaErrorCode::TopicAlreadyExists) {
-            panic!("{e}");
-        }
-    }
-}
-
-async fn delete_topic(admin_client: &AdminClient<DefaultClientContext>, topic: &str) {
-    admin_client
-        .delete_topics(&[topic], &Default::default())
-        .await
-        .unwrap();
-}
-
-macro_rules! unique_topic_name {
-    () => {
-        &format!(
-            "test_{}_{}",
-            file!()
-                .split('/')
-                .next_back()
-                .unwrap()
-                .strip_suffix(".rs")
-                .unwrap(),
-            line!()
-        )
-    };
 }
 
 /// Push a msg on the queue.
