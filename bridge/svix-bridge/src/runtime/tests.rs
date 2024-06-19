@@ -1,4 +1,4 @@
-use deno_runtime::deno_core::JsRuntime;
+use deno_core::JsRuntime;
 use serde_json::json;
 use svix_bridge_types::{TransformerInput, TransformerOutput};
 
