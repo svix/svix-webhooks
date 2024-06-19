@@ -2,7 +2,6 @@ pub use omniqueue::QueueError;
 use svix_bridge_types::svix;
 
 pub enum Error {
-    Payload(String),
     Json(serde_json::Error),
     Queue(QueueError),
     Svix(svix::error::Error),
@@ -37,7 +36,6 @@ impl From<String> for Error {
 impl From<Error> for std::io::Error {
     fn from(value: Error) -> Self {
         match value {
-            Error::Payload(e) => std::io::Error::new(std::io::ErrorKind::Other, e),
             Error::Json(e) => std::io::Error::new(std::io::ErrorKind::Other, e),
             Error::Queue(e) => std::io::Error::new(std::io::ErrorKind::Other, e),
             Error::Svix(e) => std::io::Error::new(std::io::ErrorKind::Other, e),
