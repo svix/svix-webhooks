@@ -75,6 +75,10 @@ impl Svix {
         Application::new(&self.cfg)
     }
 
+    pub fn background_task(&self) -> BackgroundTask<'_> {
+        BackgroundTask::new(&self.cfg)
+    }
+
     pub fn endpoint(&self) -> Endpoint<'_> {
         Endpoint::new(&self.cfg)
     }
@@ -1222,6 +1226,10 @@ pub struct BackgroundTask<'a> {
 }
 
 impl<'a> BackgroundTask<'a> {
+    fn new(cfg: &'a Configuration) -> Self {
+        Self { cfg }
+    }
+
     pub async fn list(
         &self,
         options: Option<BackgroundTaskListOptions>,
