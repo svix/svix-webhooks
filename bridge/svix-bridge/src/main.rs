@@ -166,17 +166,10 @@ async fn supervise_senders(inputs: Vec<Box<dyn SenderInput>>) -> Result<()> {
         set.spawn(async move {
             // FIXME: needs much better signaling for termination
             loop {
-                let fut = input.run();
                 // If this future returns, the consumer terminated unexpectedly.
-                if let Err(e) = fut.await {
-                    tracing::warn!(
-                        "sender input {} unexpectedly terminated: {}",
-                        input.name(),
-                        e
-                    );
-                } else {
-                    tracing::warn!("sender input {} unexpectedly terminated", input.name());
-                }
+                input.run().await;
+
+                tracing::warn!("sender input {} unexpectedly terminated", input.name());
                 tokio::time::sleep(Duration::from_secs(1)).await;
             }
         });

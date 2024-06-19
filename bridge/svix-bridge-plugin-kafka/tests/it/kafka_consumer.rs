@@ -173,7 +173,7 @@ async fn test_consume_ok() {
     let plugin = get_test_plugin(mock_server.uri(), topic, None);
 
     let handle = tokio::spawn(async move {
-        plugin.run().await.unwrap();
+        plugin.run().await;
     });
     // Wait for the consumer to connect
     tokio::time::sleep(CONNECT_WAIT_TIME).await;
@@ -245,7 +245,7 @@ async fn test_consume_transformed_json_ok() {
     plugin.set_transformer(Some(transformer_tx));
 
     let handle = tokio::spawn(async move {
-        plugin.run().await.unwrap();
+        plugin.run().await;
     });
     // Wait for the consumer to connect
     tokio::time::sleep(CONNECT_WAIT_TIME).await;
@@ -330,7 +330,7 @@ async fn test_consume_transformed_string_ok() {
     plugin.set_transformer(Some(transformer_tx));
 
     let handle = tokio::spawn(async move {
-        plugin.run().await.unwrap();
+        plugin.run().await;
     });
     // Wait for the consumer to connect
     tokio::time::sleep(CONNECT_WAIT_TIME).await;
@@ -365,7 +365,7 @@ async fn test_missing_app_id_nack() {
     let plugin = get_test_plugin(mock_server.uri(), topic, None);
 
     let handle = tokio::spawn(async move {
-        plugin.run().await.unwrap();
+        plugin.run().await;
     });
 
     // Wait for the consumer to connect
@@ -415,7 +415,7 @@ async fn test_missing_event_type_nack() {
     let plugin = get_test_plugin(mock_server.uri(), topic, None);
 
     let handle = tokio::spawn(async move {
-        plugin.run().await.unwrap();
+        plugin.run().await;
     });
 
     // Wait for the consumer to connect
@@ -467,7 +467,7 @@ async fn test_consume_svix_503() {
     let plugin = get_test_plugin(mock_server.uri(), topic, None);
 
     let handle = tokio::spawn(async move {
-        plugin.run().await.unwrap();
+        plugin.run().await;
     });
     // Wait for the consumer to connect
     tokio::time::sleep(CONNECT_WAIT_TIME).await;
@@ -510,7 +510,7 @@ async fn test_consume_svix_offline() {
     drop(mock_server);
 
     let handle = tokio::spawn(async move {
-        plugin.run().await.unwrap();
+        plugin.run().await;
     });
     // Wait for the consumer to connect
     tokio::time::sleep(CONNECT_WAIT_TIME).await;

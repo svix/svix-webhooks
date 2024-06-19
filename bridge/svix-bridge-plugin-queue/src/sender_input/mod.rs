@@ -101,10 +101,12 @@ impl SenderInput for QueueSender {
     fn name(&self) -> &str {
         &self.name
     }
+
     fn set_transformer(&mut self, tx: Option<TransformerTx>) {
         self.transformer_tx = tx;
     }
-    async fn run(&self) -> std::io::Result<()> {
+
+    async fn run(&self) {
         run_inner(self).await
     }
 }

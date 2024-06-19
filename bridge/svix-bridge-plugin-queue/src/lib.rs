@@ -197,7 +197,7 @@ trait Consumer {
     }
 }
 
-async fn run_inner(consumer: &(impl Consumer + Send + Sync)) -> std::io::Result<()> {
+async fn run_inner(consumer: &(impl Consumer + Send + Sync)) -> ! {
     let mut fails: u64 = 0;
     let mut last_fail = Instant::now();
     let system_name = consumer.system();

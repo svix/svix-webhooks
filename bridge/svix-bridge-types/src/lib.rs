@@ -137,7 +137,7 @@ pub trait SenderInput: Send {
     /// For plugins that want to run JS transformations on payloads.
     /// Giving them a sender lets them pass messages to the JS executor.
     fn set_transformer(&mut self, _tx: Option<TransformerTx>) {}
-    async fn run(&self) -> std::io::Result<()>;
+    async fn run(&self);
 }
 
 /// Represents something we can hand a webhook payload to.
