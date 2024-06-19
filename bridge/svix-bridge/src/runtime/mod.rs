@@ -3,7 +3,7 @@ use std::num::NonZeroUsize;
 use anyhow::Result;
 use deadpool::unmanaged::Pool;
 use deno_ast::{MediaType, ParseParams, SourceTextInfo};
-use deno_runtime::deno_core::{
+use deno_core::{
     serde_v8,
     v8::{self},
     JsRuntime,
