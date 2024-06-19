@@ -13,7 +13,7 @@ pub enum Error {
     #[error("{0}")]
     Generic(String),
 }
-pub type Result<T> = std::result::Result<T, Error>;
+pub type Result<T, E = Error> = std::result::Result<T, E>;
 
 impl From<Error> for std::io::Error {
     fn from(value: Error) -> Self {

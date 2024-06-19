@@ -140,6 +140,8 @@ pub trait SenderInput: Send {
     async fn run(&self);
 }
 
+pub type BoxError = Box<dyn std::error::Error + Send + Sync>;
+
 /// Represents something we can hand a webhook payload to.
 /// Aka a "forwarder."
 ///
@@ -147,7 +149,7 @@ pub trait SenderInput: Send {
 #[async_trait]
 pub trait ReceiverOutput: Send + Sync {
     fn name(&self) -> &str;
-    async fn handle(&self, request: ForwardRequest) -> std::io::Result<()>;
+    async fn handle(&self, request: ForwardRequest) -> Result<(), BoxError>;
 }
 
 #[derive(Deserialize, Debug, Clone, Default)]
