@@ -15,4 +15,4 @@ tracing = "0.1.40"
 [dev-dependencies]
 ctor = "0.2.8"
 tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
-wiremock = "0.5.18"
+wiremock = "0.6.0"
