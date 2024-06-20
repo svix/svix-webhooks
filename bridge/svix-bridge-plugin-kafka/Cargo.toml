@@ -2,6 +2,7 @@
 name = "svix-bridge-plugin-kafka"
 version = "0.1.0"
 edition = "2021"
+publish = false
 
 [dependencies]
 rdkafka = { version = "0.36.0", features = ["cmake-build", "ssl", "tracing"] }
