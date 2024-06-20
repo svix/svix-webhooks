@@ -2,17 +2,18 @@
 name = "svix-bridge-plugin-kafka"
 version = "0.1.0"
 edition = "2021"
+publish = false
 
 [dependencies]
 rdkafka = { version = "0.36.0", features = ["cmake-build", "ssl", "tracing"] }
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0.117"
-svix-bridge-types = { path = "../svix-bridge-types" }
-thiserror = "1.0.61"
-tokio = { version = "1.28.1", features = ["time"] }
-tracing = "0.1.40"
+serde.workspace = true
+serde_json.workspace = true
+svix-bridge-types.workspace = true
+thiserror.workspace = true
+tokio = { workspace = true, features = ["time"] }
+tracing.workspace = true
 
 [dev-dependencies]
 ctor = "0.2.8"
-tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
-wiremock = "0.6.0"
+tracing-subscriber.workspace = true
+wiremock.workspace = true
