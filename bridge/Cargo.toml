@@ -6,11 +6,21 @@
 resolver = "2"
 
 members = [
-    "svix-bridge-types",
     "svix-bridge",
+    "svix-bridge-types",
     "svix-bridge-plugin-queue",
     "svix-bridge-plugin-kafka",
 ]
+
+[workspace.dependencies]
+serde = { version = "1.0.203", features = ["derive"] }
+serde_json = "1.0.117"
+svix-bridge-types = { path = "svix-bridge-types" }
+thiserror = "1.0.61"
+tokio = "1.38.0"
+tracing = "0.1.40"
+tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
+wiremock = "0.6.0"
 
 [profile.dev.package]
 quote = { opt-level = 2 }
