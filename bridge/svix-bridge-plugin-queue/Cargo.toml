@@ -29,4 +29,4 @@ google-cloud-pubsub = "0.24.0"
 lapin = "2"
 redis = { version = "0.25.4", features = ["tokio-comp", "streams"] }
 tracing-subscriber = "0.3"
-wiremock = "0.5.18"
+wiremock = "0.6.0"
