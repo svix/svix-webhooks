@@ -137,8 +137,10 @@ pub trait SenderInput: Send {
     /// For plugins that want to run JS transformations on payloads.
     /// Giving them a sender lets them pass messages to the JS executor.
     fn set_transformer(&mut self, _tx: Option<TransformerTx>) {}
-    async fn run(&self) -> std::io::Result<()>;
+    async fn run(&self);
 }
+
+pub type BoxError = Box<dyn std::error::Error + Send + Sync>;
 
 /// Represents something we can hand a webhook payload to.
 /// Aka a "forwarder."
@@ -147,7 +149,7 @@ pub trait SenderInput: Send {
 #[async_trait]
 pub trait ReceiverOutput: Send + Sync {
     fn name(&self) -> &str;
-    async fn handle(&self, request: ForwardRequest) -> std::io::Result<()>;
+    async fn handle(&self, request: ForwardRequest) -> Result<(), BoxError>;
 }
 
 #[derive(Deserialize, Debug, Clone, Default)]

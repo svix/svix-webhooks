@@ -9,6 +9,7 @@ edition = "2021"
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 svix-bridge-types = { path = "../svix-bridge-types" }
+thiserror = "1.0.61"
 tokio = { version = "1", features = ["full"] }
 tokio-executor-trait = "2.1"
 tokio-reactor-trait = "1.1"

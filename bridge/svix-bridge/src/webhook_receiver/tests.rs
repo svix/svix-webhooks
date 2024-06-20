@@ -6,8 +6,9 @@ use axum::{
 };
 use serde_json::json;
 use svix_bridge_types::{
-    async_trait, svix::webhooks::Webhook, ForwardRequest, ReceiverOutput, TransformationConfig,
-    TransformerInput, TransformerInputFormat, TransformerJob, TransformerOutput,
+    async_trait, svix::webhooks::Webhook, BoxError, ForwardRequest, ReceiverOutput,
+    TransformationConfig, TransformerInput, TransformerInputFormat, TransformerJob,
+    TransformerOutput,
 };
 use tower::{Service, ServiceExt};
 
@@ -37,8 +38,8 @@ impl ReceiverOutput for FakeReceiverOutput {
         "fake output"
     }
 
-    async fn handle(&self, request: ForwardRequest) -> std::io::Result<()> {
-        self.tx.send(request.payload).unwrap();
+    async fn handle(&self, request: ForwardRequest) -> Result<(), BoxError> {
+        self.tx.send(request.payload)?;
         Ok(())
     }
 }

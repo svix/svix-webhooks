@@ -199,7 +199,7 @@ impl SenderInput for KafkaConsumer {
         self.transformer_tx = tx;
     }
 
-    async fn run(&self) -> std::io::Result<()> {
+    async fn run(&self) {
         let mut fails: u64 = 0;
         let mut last_fail = Instant::now();
 

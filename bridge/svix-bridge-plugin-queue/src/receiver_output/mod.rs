@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use omniqueue::DynProducer;
-use svix_bridge_types::{async_trait, ForwardRequest, ReceiverOutput};
+use svix_bridge_types::{async_trait, BoxError, ForwardRequest, ReceiverOutput};
 
 use crate::{config::QueueOutputOpts, error::Result};
 
@@ -42,11 +42,9 @@ impl ReceiverOutput for QueueForwarder {
     fn name(&self) -> &str {
         &self.name
     }
-    async fn handle(&self, request: ForwardRequest) -> std::io::Result<()> {
-        Ok(self
-            .sender
-            .send_serde_json(&request.payload)
-            .await
-            .map_err(crate::Error::from)?)
+
+    async fn handle(&self, request: ForwardRequest) -> Result<(), BoxError> {
+        self.sender.send_serde_json(&request.payload).await?;
+        Ok(())
     }
 }

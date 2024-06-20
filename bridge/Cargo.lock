@@ -4164,6 +4164,7 @@ dependencies = [
  "serde",
  "serde_json",
  "svix-bridge-types",
+ "thiserror",
  "tokio",
  "tokio-executor-trait",
  "tokio-reactor-trait",
