@@ -9,7 +9,7 @@ serde.workspace = true
 serde_json.workspace = true
 svix-bridge-types.workspace = true
 thiserror.workspace = true
-tokio = { workspace = true, features = ["full"] }
+tokio.workspace = true
 tokio-executor-trait = "2.1"
 tokio-reactor-trait = "1.1"
 tracing = "0.1"

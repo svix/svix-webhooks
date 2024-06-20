@@ -21,7 +21,7 @@ svix-ksuid = "0.7.0"
 svix-bridge-plugin-queue = { path = "../svix-bridge-plugin-queue" }
 svix-bridge-plugin-kafka = { optional = true, path = "../svix-bridge-plugin-kafka" }
 svix-bridge-types.workspace = true
-tokio = { workspace = true, features = ["full"] }
+tokio.workspace = true
 tracing.workspace = true
 tracing-opentelemetry = "0.23.0"
 tracing-subscriber = { workspace = true, features = ["fmt", "json"] }
