@@ -550,6 +550,7 @@ create_id_type!(
 );
 create_id_type!(MessageEndpointId, "msgep_");
 create_id_type!(EventTypeId, "evtype_");
+create_id_type!(QueueBackgroundTaskId, "qtask_");
 
 create_all_id_types!(ApplicationId, ApplicationUid, ApplicationIdOrUid, "app_");
 create_all_id_types!(EndpointId, EndpointUid, EndpointIdOrUid, "ep_");

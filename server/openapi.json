@@ -149,6 +149,18 @@
                 },
                 "type": "object"
             },
+            "BackgroundTaskStatus": {
+                "enum": [
+                    "running"
+                ],
+                "type": "string"
+            },
+            "BackgroundTaskType": {
+                "enum": [
+                    "endpoint.recover"
+                ],
+                "type": "string"
+            },
             "DashboardAccessOut": {
                 "properties": {
                     "token": {
@@ -1977,6 +1989,25 @@
                 },
                 "required": [
                     "since"
+                ],
+                "type": "object"
+            },
+            "RecoverOut": {
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/BackgroundTaskStatus"
+                    },
+                    "task": {
+                        "$ref": "#/components/schemas/BackgroundTaskType"
+                    }
+                },
+                "required": [
+                    "id",
+                    "status",
+                    "task"
                 ],
                 "type": "object"
             },
@@ -4402,7 +4433,14 @@
                 },
                 "responses": {
                     "202": {
-                        "description": "no content"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RecoverOut"
+                                }
+                            }
+                        },
+                        "description": ""
                     },
                     "401": {
                         "content": {
