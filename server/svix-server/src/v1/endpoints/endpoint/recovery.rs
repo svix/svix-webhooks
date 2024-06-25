@@ -1,18 +1,23 @@
 use axum::extract::{Path, State};
 use chrono::{DateTime, Utc};
+use schemars::JsonSchema;
 use sea_orm::{entity::prelude::*, QueryOrder, QuerySelect};
+use serde::{Deserialize, Serialize};
 use svix_server_derive::aide_annotate;
 
 use super::RecoverIn;
 use crate::{
     core::{
         permissions,
-        types::{BaseId, MessageAttemptTriggerType, MessageEndpointId, MessageStatus},
+        types::{
+            BaseId, MessageAttemptTriggerType, MessageEndpointId, MessageStatus,
+            QueueBackgroundTaskId,
+        },
     },
     db::models::{application, endpoint, messagedestination},
     error::{HttpError, Result, ValidationErrorItem},
     queue::{MessageTask, TaskQueueProducer},
-    v1::utils::{ApplicationEndpointPath, NoContentWithCode, ValidatedJson},
+    v1::utils::{ApplicationEndpointPath, JsonStatus, ValidatedJson},
     AppState,
 };
 
@@ -66,6 +71,26 @@ async fn bulk_recover_failed_messages(
     Ok(())
 }
 
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub enum BackgroundTaskStatus {
+    Running,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize, JsonSchema)]
+pub enum BackgroundTaskType {
+    #[serde(rename = "endpoint.recover")]
+    Recover,
+}
+
+#[derive(Debug, Serialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct RecoverOut {
+    id: QueueBackgroundTaskId,
+    status: BackgroundTaskStatus,
+    task: BackgroundTaskType,
+}
+
 /// Resend all failed messages since a given time.
 #[aide_annotate(op_id = "v1.endpoint.recover")]
 pub(super) async fn recover_failed_webhooks(
@@ -75,7 +100,7 @@ pub(super) async fn recover_failed_webhooks(
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
     ValidatedJson(data): ValidatedJson<RecoverIn>,
-) -> Result<NoContentWithCode<202>> {
+) -> Result<JsonStatus<202, RecoverOut>> {
     // Add five minutes so that people can easily just do `now() - two_weeks` without having to worry about clock sync
     let timeframe = chrono::Duration::days(14);
     let timeframe = timeframe + chrono::Duration::minutes(5);
@@ -100,5 +125,9 @@ pub(super) async fn recover_failed_webhooks(
         async move { bulk_recover_failed_messages(db, queue_tx, app, endp, data.since).await },
     );
 
-    Ok(NoContentWithCode)
+    Ok(JsonStatus(RecoverOut {
+        id: QueueBackgroundTaskId::new(None, None),
+        status: BackgroundTaskStatus::Running,
+        task: BackgroundTaskType::Recover,
+    }))
 }
