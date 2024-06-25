@@ -542,6 +542,7 @@ pub struct EndpointSecretOut {
 #[serde(rename_all = "camelCase")]
 pub struct RecoverIn {
     pub since: DateTime<Utc>,
+    pub until: Option<DateTime<Utc>>,
 }
 
 fn endpoint_headers_example() -> HashMap<&'static str, &'static str> {

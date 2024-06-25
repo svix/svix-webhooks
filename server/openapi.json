@@ -1985,6 +1985,11 @@
                     "since": {
                         "format": "date-time",
                         "type": "string"
+                    },
+                    "until": {
+                        "format": "date-time",
+                        "nullable": true,
+                        "type": "string"
                     }
                 },
                 "required": [

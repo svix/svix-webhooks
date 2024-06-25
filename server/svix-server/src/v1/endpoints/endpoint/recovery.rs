@@ -1,5 +1,5 @@
 use axum::extract::{Path, State};
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, Duration, Utc};
 use schemars::JsonSchema;
 use sea_orm::{entity::prelude::*, QueryOrder, QuerySelect};
 use serde::{Deserialize, Serialize};
@@ -27,6 +27,7 @@ async fn bulk_recover_failed_messages(
     app: application::Model,
     endp: endpoint::Model,
     since: DateTime<Utc>,
+    until: DateTime<Utc>,
 ) -> Result<()> {
     const RECOVER_LIMIT: u64 = 10_000;
     const BATCH_SIZE: u64 = 100;
@@ -36,6 +37,7 @@ async fn bulk_recover_failed_messages(
     loop {
         let mut query = messagedestination::Entity::secure_find_by_endpoint(endp.id.clone())
             .filter(messagedestination::Column::Id.gte(MessageEndpointId::start_id(since)))
+            .filter(messagedestination::Column::Id.lt(MessageEndpointId::start_id(until)))
             .filter(messagedestination::Column::Status.eq(MessageStatus::Fail))
             .order_by_asc(messagedestination::Column::Id)
             .limit(RECOVER_LIMIT);
@@ -99,16 +101,20 @@ pub(super) async fn recover_failed_webhooks(
     }): State<AppState>,
     Path(ApplicationEndpointPath { endpoint_id, .. }): Path<ApplicationEndpointPath>,
     permissions::Application { app }: permissions::Application,
-    ValidatedJson(data): ValidatedJson<RecoverIn>,
+    ValidatedJson(RecoverIn { since, until }): ValidatedJson<RecoverIn>,
 ) -> Result<JsonStatus<202, RecoverOut>> {
-    // Add five minutes so that people can easily just do `now() - two_weeks` without having to worry about clock sync
-    let timeframe = chrono::Duration::days(14);
-    let timeframe = timeframe + chrono::Duration::minutes(5);
+    let until = until.unwrap_or_else(Utc::now);
 
-    if data.since < Utc::now() - timeframe {
+    // Add five minutes so that people can easily just do `now() - two_weeks` without having to worry about clock sync
+    let max_timeframe = Duration::days(14) + Duration::minutes(5);
+
+    if since < until - max_timeframe {
         return Err(HttpError::unprocessable_entity(vec![ValidationErrorItem {
             loc: vec!["body".to_owned(), "since".to_owned()],
-            msg: "Cannot recover messages more than 14 days old.".to_owned(),
+            msg: format!(
+                "Cannot recover more than {} days of messages",
+                max_timeframe.num_days()
+            ),
             ty: "value_error".to_owned(),
         }])
         .into());
@@ -121,9 +127,9 @@ pub(super) async fn recover_failed_webhooks(
 
     let db = db.clone();
     let queue_tx = queue_tx.clone();
-    tokio::spawn(
-        async move { bulk_recover_failed_messages(db, queue_tx, app, endp, data.since).await },
-    );
+    tokio::spawn(async move {
+        bulk_recover_failed_messages(db, queue_tx, app, endp, since, until).await
+    });
 
     Ok(JsonStatus(RecoverOut {
         id: QueueBackgroundTaskId::new(None, None),

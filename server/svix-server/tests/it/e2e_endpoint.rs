@@ -979,6 +979,7 @@ async fn test_recovery_should_fail_if_start_time_too_old() {
             &format!("api/v1/app/{app_id}/endpoint/{endp_id}/recover/"),
             RecoverIn {
                 since: Utc::now() - chrono::Duration::weeks(3),
+                until: None,
             },
             StatusCode::UNPROCESSABLE_ENTITY,
         )

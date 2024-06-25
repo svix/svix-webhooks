@@ -368,7 +368,7 @@ pub async fn common_test_list<
 
 pub async fn recover_webhooks(client: &TestClient, since: DateTime<Utc>, url: &str) {
     client
-        .post_without_response(url, RecoverIn { since }, StatusCode::ACCEPTED)
+        .post_without_response(url, RecoverIn { since, until: None }, StatusCode::ACCEPTED)
         .await
         .unwrap();
 }
