@@ -40,6 +40,7 @@ jobs:
           VALIDATE_PYTHON_MYPY: false
           VALIDATE_PYTHON_PYLINT: false
           VALIDATE_GO: false
+          VALIDATE_GO_MODULE: false
           VALIDATE_JSCPD: false
           VALIDATE_PHP_PHPSTAN: false
           VALIDATE_PHP_PSALM: false

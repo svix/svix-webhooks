@@ -10,8 +10,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v2
+        uses: golangci/golangci-lint-action@v6
         with:
           version: latest
           working-directory: go
-
+          args: --verbose
