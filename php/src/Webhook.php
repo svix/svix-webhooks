@@ -70,8 +70,7 @@ class Webhook
 
     public function sign($msgId, $timestamp, $payload)
     {
-        $is_positive_integer = is_numeric($timestamp) && (int) $timestamp == $timestamp && (int) $timestamp > 0;
-        if (!$is_positive_integer) {
+        if (!self::isPositiveInteger($timestamp)) {
             throw new Exception\WebhookSigningException("Invalid timestamp");
         }
         $toSign = "{$msgId}.{$timestamp}.{$payload}";
@@ -96,5 +95,10 @@ class Webhook
             throw new Exception\WebhookVerificationException("Message timestamp too new");
         }
         return $timestamp;
+    }
+
+    private function isPositiveInteger($v)
+    {
+        return is_numeric($v) && !is_float($v + 0) && (int) $v == $v && (int) $v > 0;
     }
 }
