@@ -112,6 +112,10 @@ final class WebhookTest extends \PHPUnit\Framework\TestCase
 
     public function testMultiSigPayloadIsValid()
     {
+        // We're checking that `verify()` doesn't throw an exception.
+        // It doesn't return anything we can assert about.
+        $this->expectNotToPerformAssertions();
+
         $testPayload = new TestPayload(time());
         $sigs = [
             "v1,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=",
@@ -127,6 +131,10 @@ final class WebhookTest extends \PHPUnit\Framework\TestCase
 
     public function testSignatureVerificationWithAndWithoutPrefix()
     {
+        // We're checking that `verify()` doesn't throw an exception.
+        // It doesn't return anything we can assert about.
+        $this->expectNotToPerformAssertions();
+
         $testPayload = new TestPayload(time());
 
         $wh = new \Svix\Webhook($testPayload->secret);
