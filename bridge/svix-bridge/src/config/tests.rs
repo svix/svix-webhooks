@@ -146,6 +146,33 @@ senders:
       # Required (the Svix token to use when creating messages with this consumer)
       token: "XYZ"
 
+  # Kafka Consumer
+  - name: "kafka-example"
+    input:
+      kafka_bootstrap_brokers: "localhost:9094"
+      kafka_group_id: "kafka_example_consumer_group"
+      kafka_topic: "foobar"
+      # Other valid values: "plaintext", "ssl"
+      kafka_security_protocol: "sasl_ssl"
+      # Only for SASL
+      kafka_sasl_username: "user"
+      kafka_sasl_password: "pass"
+    # Optional - when unset, messages from the queue will be sent to Svix as-is.
+    transformation: |
+      function handler(input) {
+        return {
+          appId: input.key,
+          message: {
+            eventType: input.event_type,
+            payload: input.data
+          }
+        };
+      }
+    output:
+      type: "svix"
+      # Required (the Svix token to use when creating messages with this consumer)
+      token: "XYZ"
+
 
 # Receivers are HTTP endpoints that can have webhooks sent to them.
 # When a webhook is POST'ed to a matching URL, it is (optionally) verified,
@@ -237,6 +264,22 @@ receivers:
       # - `AWS_SECRET_ACCESS_KEY`
       type: "sqs"
       queue_dsn: "https://example.aws.com/my-queue"
+
+  - name: "forward-to-kafka-example"
+    input:
+      type: "webhook"
+      path_id: "kafka"
+      verification:
+        type: "none"
+    output:
+      kafka_bootstrap_brokers: "localhost:9094"
+      kafka_topic: "foobar"
+      # Other valid values: "plaintext", "ssl"
+      kafka_security_protocol: "sasl_ssl"
+      # Only for SASL
+      kafka_sasl_username: "user"
+      kafka_sasl_password: "pass"
+
 "#;
 
 #[test]

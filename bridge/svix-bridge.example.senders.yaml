@@ -135,3 +135,30 @@ senders:
       type: "svix"
       # Required (the Svix token to use when creating messages with this consumer)
       token: "XYZ"
+
+  # Kafka Consumer
+  - name: "kafka-example"
+    input:
+      kafka_bootstrap_brokers: "localhost:9094"
+      kafka_group_id: "kafka_example_consumer_group"
+      kafka_topic: "foobar"
+      # Other valid values: "plaintext", "ssl"
+      kafka_security_protocol: "sasl_ssl"
+      # Only for SASL
+      kafka_sasl_username: "user"
+      kafka_sasl_password: "pass"
+    # Optional - when unset, messages from the queue will be sent to Svix as-is.
+    transformation: |
+      function handler(input) {
+        return {
+          appId: input.key,
+          message: {
+            eventType: input.event_type,
+            payload: input.data
+          }
+        };
+      }
+    output:
+      type: "svix"
+      # Required (the Svix token to use when creating messages with this consumer)
+      token: "XYZ"
