@@ -32,11 +32,16 @@ export class IsomorphicFetchHttpLibrary implements HttpLibrary {
     let method = request.getHttpMethod().toString();
     let body = request.getBody();
 
+    // Cloudflare Workers fail if the credentials option is used in a fetch call.
+    // This work around that. Source:
+    // https://github.com/cloudflare/workers-sdk/issues/2514#issuecomment-2178070014
+    const isCredentialsSupported = "credentials" in Request.prototype;
+
     return fetch(request.getUrl(), {
       method: method,
       body: body as any,
       headers: request.getHeaders(),
-      credentials: "same-origin"
+      credentials: isCredentialsSupported ? "same-origin" : undefined
     }).then((resp: any) => {
       const headers: { [name: string]: string } = {};
       resp.headers.forEach((value: string, name: string) => {
