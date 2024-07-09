@@ -109,3 +109,18 @@ receivers:
       # - `AWS_SECRET_ACCESS_KEY`
       type: "sqs"
       queue_dsn: "https://aws.example.com/my-queue"
+
+  - name: "forward-to-kafka-example"
+    input:
+      type: "webhook"
+      path_id: "kafka"
+      verification:
+        type: "none"
+    output:
+      kafka_bootstrap_brokers: "localhost:9094"
+      kafka_topic: "foobar"
+      # Other valid values: "plaintext", "ssl"
+      kafka_security_protocol: "sasl_ssl"
+      # Only for SASL
+      kafka_sasl_username: "user"
+      kafka_sasl_password: "pass"
