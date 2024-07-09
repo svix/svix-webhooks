@@ -609,3 +609,23 @@ fn test_var_substitution_json_values_ok() {
     // Should not be an error
     let _cfg = Config::from_src(src, Some(&vars)).unwrap();
 }
+
+#[test]
+fn test_pollers_parse_ok() {
+    let src = r#"
+    receivers:
+      - name: "forward-to-rabbitmq-example"
+        input:
+          type: "svix-events"
+          app_id: "xxx"
+          subscription_id: "xxx"
+          svix_token: "xxx"
+        output:
+          type: "rabbitmq"
+          uri: "amqp://guest:guest@localhost:5672/%2f"
+          exchange: ""
+          routing_key: "example"
+          "#;
+    // Should not be an error
+    let _cfg = Config::from_src(src, None).unwrap();
+}

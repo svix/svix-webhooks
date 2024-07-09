@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 pub use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 pub use svix;
@@ -140,6 +142,13 @@ pub trait SenderInput: Send {
     async fn run(&self);
 }
 
+#[async_trait]
+pub trait PollerInput: Send {
+    fn name(&self) -> &str;
+    fn set_transformer(&mut self, _tx: Option<TransformerTx>) {}
+    async fn run(&self);
+}
+
 pub type BoxError = Box<dyn std::error::Error + Send + Sync>;
 
 /// Represents something we can hand a webhook payload to.
@@ -186,16 +195,27 @@ impl ReceiverInputOpts {
 }
 
 // N.b. the codegen types we get from openapi don't impl Deserialize so we need our own version.
-#[derive(Debug, Default, Deserialize)]
+#[derive(Clone, Debug, Default, Deserialize)]
 pub struct SvixOptions {
     #[serde(default)]
     pub debug: bool,
     pub server_url: Option<String>,
+    pub timeout_secs: Option<u64>,
 }
 
 impl From<SvixOptions> for _SvixOptions {
-    fn from(SvixOptions { debug, server_url }: SvixOptions) -> Self {
-        _SvixOptions { debug, server_url }
+    fn from(
+        SvixOptions {
+            debug,
+            server_url,
+            timeout_secs,
+        }: SvixOptions,
+    ) -> Self {
+        _SvixOptions {
+            debug,
+            server_url,
+            timeout: timeout_secs.map(Duration::from_secs),
+        }
     }
 }
 
