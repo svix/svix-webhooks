@@ -17,8 +17,16 @@ nonstandard_macro_braces = "warn"
 todo = "warn"
 uninlined_format_args = "warn"
 
+[profile.dev]
+# optimize host dependencies for faster rebuilds.
+# slows down compilation of those dependencies, but they'll not be compiled
+# nearly as often as workspace crates in local development.
+build-override.opt-level = 2
+
 [profile.dev.package]
-quote = { opt-level = 2 }
+# not worth optimizing, much more likely to change than other host deps
+# and not cached in CI.
+svix-server_derive = { opt-level = 0 }
 
 [patch.crates-io]
 hyper = { git = "https://github.com/svix/hyper/", rev = "63efac5a6719937359d61a1bb1b93d9ce88f0e3d" }
