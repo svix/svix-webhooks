@@ -4161,6 +4161,7 @@ dependencies = [
  "deno_core",
  "enum_dispatch",
  "http 0.2.12",
+ "itertools",
  "once_cell",
  "opentelemetry",
  "opentelemetry-otlp",

@@ -5,6 +5,7 @@ use std::{
 };
 
 use clap::Parser;
+use itertools::{Either, Itertools};
 use once_cell::sync::Lazy;
 use opentelemetry_otlp::WithExportConfig;
 use opentelemetry_sdk::{
@@ -361,22 +362,16 @@ async fn main() -> Result<()> {
     if cfg.receivers.is_empty() {
         tracing::warn!("No receivers configured.")
     }
-    let (webhook_receivers, poller_receivers) = cfg.receivers.into_iter().fold(
-        (
-            Vec::<WebhookReceiverConfig>::new(),
-            Vec::<PollerReceiverConfig>::new(),
-        ),
-        |mut acc, either| match either {
-            EitherReceiver::Webhook(x) => {
-                acc.0.push(x);
-                acc
-            }
-            EitherReceiver::Poller(y) => {
-                acc.1.push(y);
-                acc
-            }
-        },
-    );
+    let (webhook_receivers, poller_receivers): (
+        Vec<WebhookReceiverConfig>,
+        Vec<PollerReceiverConfig>,
+    ) = cfg
+        .receivers
+        .into_iter()
+        .partition_map(|either| match either {
+            EitherReceiver::Webhook(x) => Either::Left(x),
+            EitherReceiver::Poller(y) => Either::Right(y),
+        });
 
     let webhook_receivers_fut =
         webhook_receiver::run(cfg.http_listen_address, webhook_receivers, xform_tx.clone());
