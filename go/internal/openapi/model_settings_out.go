@@ -33,6 +33,7 @@ type SettingsOut struct {
 	EventCatalogPublished *bool `json:"eventCatalogPublished,omitempty"`
 	ReadOnly *bool `json:"readOnly,omitempty"`
 	ShowUseSvixPlay *bool `json:"showUseSvixPlay,omitempty"`
+	WipeSuccessfulPayload *bool `json:"wipeSuccessfulPayload,omitempty"`
 }
 
 // NewSettingsOut instantiates a new SettingsOut object
@@ -57,6 +58,8 @@ func NewSettingsOut() *SettingsOut {
 	this.ReadOnly = &readOnly
 	var showUseSvixPlay bool = true
 	this.ShowUseSvixPlay = &showUseSvixPlay
+	var wipeSuccessfulPayload bool = false
+	this.WipeSuccessfulPayload = &wipeSuccessfulPayload
 	return &this
 }
 
@@ -81,6 +84,8 @@ func NewSettingsOutWithDefaults() *SettingsOut {
 	this.ReadOnly = &readOnly
 	var showUseSvixPlay bool = true
 	this.ShowUseSvixPlay = &showUseSvixPlay
+	var wipeSuccessfulPayload bool = false
+	this.WipeSuccessfulPayload = &wipeSuccessfulPayload
 	return &this
 }
 
@@ -688,6 +693,38 @@ func (o *SettingsOut) SetShowUseSvixPlay(v bool) {
 	o.ShowUseSvixPlay = &v
 }
 
+// GetWipeSuccessfulPayload returns the WipeSuccessfulPayload field value if set, zero value otherwise.
+func (o *SettingsOut) GetWipeSuccessfulPayload() bool {
+	if o == nil || o.WipeSuccessfulPayload == nil {
+		var ret bool
+		return ret
+	}
+	return *o.WipeSuccessfulPayload
+}
+
+// GetWipeSuccessfulPayloadOk returns a tuple with the WipeSuccessfulPayload field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *SettingsOut) GetWipeSuccessfulPayloadOk() (*bool, bool) {
+	if o == nil || o.WipeSuccessfulPayload == nil {
+		return nil, false
+	}
+	return o.WipeSuccessfulPayload, true
+}
+
+// HasWipeSuccessfulPayload returns a boolean if a field has been set.
+func (o *SettingsOut) HasWipeSuccessfulPayload() bool {
+	if o != nil && o.WipeSuccessfulPayload != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetWipeSuccessfulPayload gets a reference to the given bool and assigns it to the WipeSuccessfulPayload field.
+func (o *SettingsOut) SetWipeSuccessfulPayload(v bool) {
+	o.WipeSuccessfulPayload = &v
+}
+
 func (o SettingsOut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if o.ColorPaletteDark != nil {
@@ -740,6 +777,9 @@ func (o SettingsOut) MarshalJSON() ([]byte, error) {
 	}
 	if o.ShowUseSvixPlay != nil {
 		toSerialize["showUseSvixPlay"] = o.ShowUseSvixPlay
+	}
+	if o.WipeSuccessfulPayload != nil {
+		toSerialize["wipeSuccessfulPayload"] = o.WipeSuccessfulPayload
 	}
 	return json.Marshal(toSerialize)
 }
