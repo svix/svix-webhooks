@@ -320,8 +320,8 @@ async fn run_inner(poller: &SvixEventsPoller) -> ! {
                     }
                 }
                 tracing::trace!(
-                    iterator =? &iterator,
-                    next_iterator =? &resp.iterator,
+                    ?iterator,
+                    next_iterator = ?resp.iterator,
                     "batch handled, updating local iterator"
                 );
                 // Update the iterator _after we've handled all the messages in the batch_.
@@ -337,8 +337,8 @@ async fn run_inner(poller: &SvixEventsPoller) -> ! {
 
             Err(err) => {
                 tracing::trace!(
-                    error =? err,
-                    iterator =? &iterator,
+                    error = ?err,
+                    ?iterator,
                     "request failed, retrying current iterator"
                 );
                 // BACKOFF
@@ -347,7 +347,7 @@ async fn run_inner(poller: &SvixEventsPoller) -> ! {
         }
 
         if !sleep_time.is_zero() {
-            tracing::trace!(sleep_time=?sleep_time, "sleeping");
+            tracing::trace!(?sleep_time, "sleeping");
             tokio::time::sleep(sleep_time).await;
         }
     }
