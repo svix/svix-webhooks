@@ -14,7 +14,7 @@ import (
 	"encoding/json"
 )
 
-// EndpointDeletedEventData struct for EndpointDeletedEventData
+// EndpointDeletedEventData Sent when an endpoint is created, updated, or deleted
 type EndpointDeletedEventData struct {
 	// The app's ID
 	AppId string `json:"appId"`
