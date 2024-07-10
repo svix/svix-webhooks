@@ -16,7 +16,9 @@ use tracing::instrument;
 use types::{IntegrationId, IntegrationState, InternalState, SerializableRequest, Unvalidated};
 
 use crate::{
-    config::{PollerInputOpts, PollerReceiverConfig, WebhookReceiverConfig},
+    config::{
+        MessageStreamBridgeConfig, PollerInputOpts, PollerReceiverConfig, WebhookReceiverConfig,
+    },
     webhook_receiver::types::SerializablePayload,
 };
 
@@ -256,8 +258,12 @@ async fn run_inner(poller: &SvixEventsPoller) -> ! {
     let mut sleep_time = NO_SLEEP;
 
     let PollerInputOpts::SvixEvents {
-        app_id,
-        subscription_id,
+        subscription_token:
+            MessageStreamBridgeConfig {
+                app_id,
+                subscription_id,
+                ..
+            },
         ..
     } = &poller.input_opts;
 

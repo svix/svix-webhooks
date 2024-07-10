@@ -4154,6 +4154,7 @@ version = "1.25.0"
 dependencies = [
  "anyhow",
  "axum",
+ "base64 0.13.1",
  "chrono",
  "clap",
  "deadpool 0.9.5",
