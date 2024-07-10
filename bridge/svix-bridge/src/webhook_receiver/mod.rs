@@ -8,7 +8,7 @@ use axum::{
 };
 use svix_bridge_types::{
     async_trait,
-    svix::api::{Svix, V1MessageStreamParams},
+    svix::api::{Svix, V1MessageEventsSubscriptionParams},
     ForwardRequest, PollerInput, ReceiverOutput, TransformationConfig, TransformerInput,
     TransformerInputFormat, TransformerJob, TransformerOutput, TransformerTx,
 };
@@ -274,9 +274,10 @@ async fn run_inner(poller: &SvixEventsPoller) -> ! {
         match poller
             .svix_client
             .message()
-            .events(V1MessageStreamParams {
+            .events_subscription(V1MessageEventsSubscriptionParams {
                 // FIXME: expose more params as poller input cfg
                 app_id: app_id.clone(),
+                subscription_id: subscription_id.clone(),
                 limit: None,
                 iterator: iterator.clone(),
                 event_types: None,
