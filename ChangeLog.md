@@ -3,6 +3,18 @@
 ## Next
 * 
 
+## Version 1.25.0
+* Server: Enable redis `tcp_nodelay`
+* Server: Improve database error classification
+* Server: Update dependencies
+* Bridge: Upgrade omniqueue and other dependencies
+* Bridge: Add Kafka as an input
+* Libs/Javascript: Apply workaround for incomplete fetch support in Cloudflare Worker
+* Libs/Go: Add NullableBool function
+* Libs/Python: Update dependencies and switch to ruff
+* Libs/Rust: Add `Svix::with_token` to allow changing API token
+* Libs/PHP: Replace ctype_digit for PHP 8.1 deprecation of non-string arguments
+
 ## Version 1.24.0 
 * Server: Update redis health check
 * Server: Clean up tracing spans for HTTP requests
