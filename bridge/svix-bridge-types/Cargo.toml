@@ -9,4 +9,4 @@ async-trait = "0.1"
 tokio.workspace = true
 serde.workspace = true
 serde_json.workspace = true
-svix = "1.17.0"
+svix = { version = "1.25.0", features = ["svix_beta"] }

@@ -5,13 +5,14 @@ use std::{
 };
 
 use clap::Parser;
+use itertools::{Either, Itertools};
 use once_cell::sync::Lazy;
 use opentelemetry_otlp::WithExportConfig;
 use opentelemetry_sdk::{
     metrics::{data::Temporality, reader::TemporalitySelector, InstrumentKind, SdkMeterProvider},
     runtime::Tokio,
 };
-use svix_bridge_types::{SenderInput, TransformerJob};
+use svix_bridge_types::{PollerInput, SenderInput, TransformerJob};
 use svix_ksuid::{KsuidLike as _, KsuidMs};
 #[cfg(all(not(target_env = "msvc"), feature = "jemalloc"))]
 use tikv_jemallocator::Jemalloc;
@@ -28,6 +29,7 @@ mod webhook_receiver;
 
 use crate::{
     allocator::{get_allocator_stat_mibs, get_allocator_stats},
+    config::{EitherReceiver, PollerReceiverConfig, WebhookReceiverConfig},
     metrics::CommonMetrics,
 };
 
@@ -193,6 +195,40 @@ async fn supervise_senders(inputs: Vec<Box<dyn SenderInput>>) -> Result<()> {
     Ok(())
 }
 
+/// Pollers make HTTP requests in a loop and forward what they fetch to their `ReceiverOutput`
+async fn supervise_pollers(inputs: Vec<Box<dyn PollerInput>>) -> std::io::Result<()> {
+    let mut set = tokio::task::JoinSet::new();
+    for input in inputs {
+        set.spawn(async move {
+            // FIXME: needs much better signaling for termination
+            loop {
+                // If this future returns, the consumer terminated unexpectedly.
+                input.run().await;
+
+                tracing::warn!("poller input {} unexpectedly terminated", input.name());
+                tokio::time::sleep(Duration::from_secs(1)).await;
+            }
+        });
+    }
+
+    // FIXME: add signal handling to trigger a (intentional) graceful shutdown.
+
+    // FIXME: when a plugin exits unexpectedly, what do?
+    //   Most consumers are probably stateful/brittle and may disconnect from time to time.
+    //   Ideally none of these tasks would ever return Ok or Err. They'd run forever.
+    //   Having the tasks themselves try to recover means if we see a task finish here, something
+    //   must be really wrong, so maybe we trigger a shutdown of the rest when one stops here.
+    while let Some(_res) = set.join_next().await {
+        // In order for plugins to coordinate a shutdown, maybe they could:
+        // - have a shutdown method and handle their own internal signalling, or maybe
+        // - take a oneshot channel as an arg to `run()`
+        // Basically we need something that formalizes the shutdown flow in a cross-crate
+        // friendly way.
+        todo!("graceful shutdown");
+    }
+    Ok(())
+}
+
 #[derive(Parser)]
 pub struct Args {
     #[arg(long, env = "SVIX_BRIDGE_CFG_FILE", help = "Path to the config file.")]
@@ -326,9 +362,28 @@ async fn main() -> Result<()> {
     if cfg.receivers.is_empty() {
         tracing::warn!("No receivers configured.")
     }
-    let receivers_fut = webhook_receiver::run(cfg.http_listen_address, cfg.receivers, xform_tx);
+    let (webhook_receivers, poller_receivers): (
+        Vec<WebhookReceiverConfig>,
+        Vec<PollerReceiverConfig>,
+    ) = cfg
+        .receivers
+        .into_iter()
+        .partition_map(|either| match either {
+            EitherReceiver::Webhook(x) => Either::Left(x),
+            EitherReceiver::Poller(y) => Either::Right(y),
+        });
 
-    match tokio::try_join!(senders_fut, receivers_fut) {
+    let webhook_receivers_fut =
+        webhook_receiver::run(cfg.http_listen_address, webhook_receivers, xform_tx.clone());
+
+    let mut pollers: Vec<Box<dyn PollerInput>> = Vec::with_capacity(poller_receivers.len());
+    for poller_cfg in poller_receivers {
+        pollers.push(poller_cfg.into_poller_input(xform_tx.clone()).await?);
+    }
+
+    let poller_receivers_fut = supervise_pollers(pollers);
+
+    match tokio::try_join!(senders_fut, webhook_receivers_fut, poller_receivers_fut) {
         Ok(_) => tracing::error!("unexpectedly exiting"),
         Err(e) => tracing::error!("unexpectedly exiting: {}", e),
     }

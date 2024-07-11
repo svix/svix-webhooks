@@ -609,3 +609,41 @@ fn test_var_substitution_json_values_ok() {
     // Should not be an error
     let _cfg = Config::from_src(src, Some(&vars)).unwrap();
 }
+
+#[test]
+fn test_pollers_parse_ok() {
+    let src = r#"
+    receivers:
+      - name: "poller-to-rabbitmq-example"
+        input:
+          type: "svix-events"
+          subscription_token: "eyJ0b2tlbiI6InRlc3Rza19hcHBfNTN0ZTBWNnJIdUs4R205VUNhYkxJOE5ieExTOGJ5MzEuZXUiLCJhcHBJZCI6ImFwcF8yajFvOGs1NFo4dXVscEVPb3k5VmZ6WUR0aE4iLCJzdWJzY3JpcHRpb25JZCI6Im15LWNvbnN1bWVyIn0="
+        output:
+          type: "rabbitmq"
+          uri: "amqp://guest:guest@localhost:5672/%2f"
+          exchange: ""
+          routing_key: "example"
+          "#;
+    // Should not be an error
+    let _cfg = Config::from_src(src, None).unwrap();
+}
+
+#[test]
+fn test_pollers_parse_garbage_token_err() {
+    let src = r#"
+    receivers:
+      - name: "poller-to-rabbitmq-example"
+        input:
+          type: "svix-events"
+          subscription_token: "not a real token"
+        output:
+          type: "rabbitmq"
+          uri: "amqp://guest:guest@localhost:5672/%2f"
+          exchange: ""
+          routing_key: "example"
+          "#;
+    // Unfortunately the actual message is not great and won't help users:
+    // `Failed to parse config: receivers: data did not match any variant of untagged enum EitherReceiver at line 3 column 7`
+    // FIXME: need to do an overhaul on the config parser diagnostics. This isn't the only weak spot.
+    assert!(Config::from_src(src, None).is_err());
+}

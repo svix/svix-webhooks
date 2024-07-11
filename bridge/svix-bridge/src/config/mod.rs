@@ -9,15 +9,23 @@ use std::{
 };
 
 use anyhow::anyhow;
-use serde::Deserialize;
+use serde::{de, Deserialize, Deserializer};
 use shellexpand::LookupError;
 #[cfg(feature = "kafka")]
 use svix_bridge_plugin_kafka::{KafkaInputOpts, KafkaOutputOpts};
 use svix_bridge_plugin_queue::config::{QueueInputOpts, QueueOutputOpts};
 use svix_bridge_types::{
-    ReceiverInputOpts, ReceiverOutput, SenderInput, SenderOutputOpts, TransformationConfig,
+    svix::api::Svix, ReceiverInputOpts, ReceiverOutput, SenderInput, SenderOutputOpts, SvixOptions,
+    TransformationConfig,
 };
 use tracing::Level;
+
+#[derive(Deserialize)]
+#[serde(untagged)]
+pub enum EitherReceiver {
+    Webhook(WebhookReceiverConfig),
+    Poller(PollerReceiverConfig),
+}
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -27,7 +35,7 @@ pub struct Config {
     pub senders: Vec<WebhookSenderConfig>,
     /// Config for receiving webhooks and forwarding them to plugins.
     #[serde(default)]
-    pub receivers: Vec<WebhookReceiverConfig>,
+    pub receivers: Vec<EitherReceiver>,
     /// The log level to run the service with. Supported: info, debug, trace
     #[serde(default)]
     pub log_level: LogLevel,
@@ -81,18 +89,25 @@ impl Config {
             }
         }
 
-        for rc in &cfg.receivers {
-            if let Some(tc) = &rc.transformation {
-                crate::runtime::validate_script(tc.source().as_str()).map_err(|e| {
-                    Error::new(
-                        ErrorKind::Other,
-                        format!(
-                            "failed to parse transformation for receiver `{}`: {:?}",
-                            &rc.name, e,
-                        ),
-                    )
-                })?;
-            }
+        for (name, tc) in cfg.receivers.iter().filter_map(|either| match either {
+            EitherReceiver::Webhook(receiver) => receiver
+                .transformation
+                .as_ref()
+                .map(|tc| (&receiver.name, tc)),
+            EitherReceiver::Poller(receiver) => receiver
+                .transformation
+                .as_ref()
+                .map(|tc| (&receiver.name, tc)),
+        }) {
+            crate::runtime::validate_script(tc.source().as_str()).map_err(|e| {
+                Error::new(
+                    ErrorKind::Other,
+                    format!(
+                        "failed to parse transformation for receiver `{}`: {:?}",
+                        name, e,
+                    ),
+                )
+            })?;
         }
 
         Ok(cfg)
@@ -222,6 +237,84 @@ pub enum ReceiverOutputOpts {
 }
 
 impl WebhookReceiverConfig {
+    pub async fn into_receiver_output(self) -> anyhow::Result<Box<dyn ReceiverOutput>> {
+        match self.output {
+            ReceiverOutputOpts::Kafka(opts) => {
+                svix_bridge_plugin_kafka::into_receiver_output(self.name, opts).map_err(Into::into)
+            }
+            ReceiverOutputOpts::Queue(x) => svix_bridge_plugin_queue::into_receiver_output(
+                self.name.clone(),
+                x,
+                self.transformation.as_ref(),
+            )
+            .await
+            .map_err(Into::into),
+        }
+    }
+}
+
+#[derive(Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct MessageStreamBridgeConfig {
+    pub token: String,
+    pub app_id: String,
+    pub subscription_id: String,
+}
+
+fn deserialize_message_stream_bridge_config<'de, D>(
+    deserializer: D,
+) -> Result<MessageStreamBridgeConfig, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let buf = String::deserialize(deserializer)?;
+    let decoded = base64::decode(buf)
+        .map_err(|e| de::Error::custom(format!("failed to decode subscription config: {e:?}")))?;
+    serde_json::from_slice(&decoded)
+        .map_err(|e| de::Error::custom(format!("failed to decode subscription config: {e:?}")))
+}
+
+#[derive(Clone, Deserialize)]
+#[serde(tag = "type", rename_all = "kebab-case")]
+pub enum PollerInputOpts {
+    SvixEvents {
+        /// This is the base64 encoded JSON given as `bridgeConfig` in the response from
+        /// `v1.message.events-subscription.create-token`.
+        #[serde(deserialize_with = "deserialize_message_stream_bridge_config")]
+        subscription_token: MessageStreamBridgeConfig,
+        #[serde(default)]
+        svix_options: Option<SvixOptions>,
+    },
+}
+
+impl PollerInputOpts {
+    pub fn svix_client(&self) -> Option<Svix> {
+        match self {
+            PollerInputOpts::SvixEvents {
+                subscription_token,
+                svix_options,
+                ..
+            } => Some(Svix::new(
+                subscription_token.token.clone(),
+                svix_options.clone().map(Into::into),
+            )),
+        }
+    }
+}
+
+/// Config for fetching from HTTP endpoints and forwarding them to plugins.
+#[derive(Deserialize)]
+pub struct PollerReceiverConfig {
+    pub name: String,
+    pub input: PollerInputOpts,
+    // FIXME: add a configurable polling schedule or interval
+    #[serde(default)]
+    pub transformation: Option<TransformationConfig>,
+    pub output: ReceiverOutputOpts,
+}
+
+impl PollerReceiverConfig {
+    // FIXME: duplicate from WebhookReceiverConfig. Extract/refactor as TryFrom ReceiverOutputOpts?
     pub async fn into_receiver_output(self) -> anyhow::Result<Box<dyn ReceiverOutput>> {
         match self.output {
             ReceiverOutputOpts::Kafka(opts) => {
