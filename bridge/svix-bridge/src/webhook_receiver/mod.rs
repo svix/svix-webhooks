@@ -350,7 +350,7 @@ async fn run_inner(poller: &SvixEventsPoller) -> ! {
             }
 
             Err(err) => {
-                tracing::trace!(
+                tracing::error!(
                     error = ?err,
                     ?iterator,
                     "request failed, retrying current iterator"
