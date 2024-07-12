@@ -288,7 +288,8 @@ async fn run_inner(poller: &SvixEventsPoller) -> ! {
         {
             Ok(resp) => {
                 let mut has_failure = false;
-                tracing::trace!(count = resp.data.len(), "got messages");
+                let count = resp.data.len();
+                tracing::trace!(count, "got messages");
                 'inner: for msg in resp.data.into_iter() {
                     let payload = match parse_payload(
                         &SerializablePayload::Standard(
@@ -339,8 +340,8 @@ async fn run_inner(poller: &SvixEventsPoller) -> ! {
                     );
                     // Update the iterator _after we've handled all the messages in the batch_.
                     iterator = Some(resp.iterator.clone());
-                    // If the iterator is "done" we can backoff to wait for new messages to arrive.
-                    sleep_time = if resp.done {
+                    // If the iterator is empty we can backoff to wait for new messages to arrive.
+                    sleep_time = if count == 0 {
                         // BACKOFF
                         (sleep_time * 2).clamp(MIN_SLEEP, MAX_SLEEP)
                     } else {
