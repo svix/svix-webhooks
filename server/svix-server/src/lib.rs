@@ -273,8 +273,7 @@ pub fn setup_tracing(
                         opentelemetry::KeyValue::new(
                             "service.name",
                             cfg.opentelemetry_service_name
-                                .clone()
-                                .unwrap_or_else(|| "svix_server".to_string()),
+                                .clone(),
                         ),
                     ])),
             )
