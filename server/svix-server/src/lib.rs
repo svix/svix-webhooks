@@ -272,8 +272,7 @@ pub fn setup_tracing(
                     .with_resource(opentelemetry_sdk::Resource::new(vec![
                         opentelemetry::KeyValue::new(
                             "service.name",
-                            cfg.opentelemetry_service_name
-                                .clone(),
+                            cfg.opentelemetry_service_name.clone(),
                         ),
                     ])),
             )
