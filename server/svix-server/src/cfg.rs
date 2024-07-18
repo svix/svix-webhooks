@@ -109,6 +109,8 @@ pub struct ConfigurationInner {
     /// The ratio at which to sample spans when sending to OpenTelemetry. When not given it defaults
     /// to always sending. If the OpenTelemetry address is not set, this will do nothing.
     pub opentelemetry_sample_ratio: Option<f64>,
+    /// The service name to use for OpenTelemetry. If not provided, it defaults to "svix_server".
+    pub opentelemetry_service_name: Option<String>,
     /// Whether to enable the logging of the databases at the configured log level. This may be
     /// useful for analyzing their response times.
     pub db_tracing: bool,

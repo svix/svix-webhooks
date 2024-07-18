@@ -270,7 +270,12 @@ pub fn setup_tracing(
                             .unwrap_or(opentelemetry_sdk::trace::Sampler::AlwaysOn),
                     )
                     .with_resource(opentelemetry_sdk::Resource::new(vec![
-                        opentelemetry::KeyValue::new("service.name", "svix_server"),
+                        opentelemetry::KeyValue::new(
+                            "service.name",
+                            cfg.opentelemetry_service_name
+                                .clone()
+                                .unwrap_or_else(|| "svix_server".to_string()),
+                        ),
                     ])),
             )
             .install_batch(Tokio)

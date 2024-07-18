@@ -39,6 +39,10 @@ log_format = "default"
 # always sending. If the OpenTelemetry address is not set, this will do nothing.
 # opentelemetry_sample_ratio = 1.0
 
+# The name of the service to use when sending spans to OpenTelemetry. If not set, the service name
+# will default to "svix_server".
+# opentelemetry_service_name = "svix_server"
+
 # The Sentry DSN to use for error reporting. Disabled when omitted/null
 # sentry_dsn = "https://somedsn.ingest.sentry.io/12345"
 
