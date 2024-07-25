@@ -100,6 +100,7 @@ messaging systems:
 - RabbitMQ
 - Redis
 - SQS
+- Kafka
 
 > Important to note that queues, exchanges, topics, etc should be created and configured independently,
 > prior to using launching Bridge. Bridge will not automatically attempt to create these resources, it will only try

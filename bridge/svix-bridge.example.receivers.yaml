@@ -117,6 +117,7 @@ receivers:
       verification:
         type: "none"
     output:
+      type: "kafka"
       kafka_bootstrap_brokers: "localhost:9094"
       kafka_topic: "foobar"
       # Other valid values: "plaintext", "ssl"
