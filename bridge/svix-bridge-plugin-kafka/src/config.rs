@@ -7,43 +7,56 @@ use svix_bridge_types::{ReceiverOutput, SenderInput, SenderOutputOpts, Transform
 use crate::{input::KafkaConsumer, KafkaProducer, Result};
 
 #[derive(Clone, Deserialize)]
-pub struct KafkaInputOpts {
-    /// Comma-separated list of addresses.
-    ///
-    /// Example: `localhost:9094`
-    #[serde(rename = "kafka_bootstrap_brokers")]
-    pub bootstrap_brokers: String,
+#[serde(tag = "type")]
+pub enum KafkaInputOpts {
+    // Single-variant enum so we can require the "type": "kafka" field in deserialization
+    #[serde(rename = "kafka")]
+    Inner {
+        /// Comma-separated list of addresses.
+        ///
+        /// Example: `localhost:9094`
+        #[serde(rename = "kafka_bootstrap_brokers")]
+        bootstrap_brokers: String,
 
-    /// The consumer group ID, used to track the stream offset between restarts
-    /// (due to host maintenance, upgrades, crashes, etc.).
-    #[serde(rename = "kafka_group_id")]
-    pub group_id: String,
+        /// The consumer group ID, used to track the stream offset between restarts
+        /// (due to host maintenance, upgrades, crashes, etc.).
+        #[serde(rename = "kafka_group_id")]
+        group_id: String,
 
-    /// The topic to listen to.
-    #[serde(rename = "kafka_topic")]
-    pub topic: String,
+        /// The topic to listen to.
+        #[serde(rename = "kafka_topic")]
+        topic: String,
 
-    /// The value for 'security.protocol' in the kafka config.
-    #[serde(flatten)]
-    pub security_protocol: KafkaSecurityProtocol,
+        /// The value for 'security.protocol' in the kafka config.
+        #[serde(flatten)]
+        security_protocol: KafkaSecurityProtocol,
 
-    /// The 'debug' config value for rdkafka - enables more verbose logging
-    /// for the selected 'contexts'
-    #[serde(rename = "kafka_debug_contexts")]
-    pub debug_contexts: Option<String>,
+        /// The 'debug' config value for rdkafka - enables more verbose logging
+        /// for the selected 'contexts'
+        #[serde(rename = "kafka_debug_contexts")]
+        debug_contexts: Option<String>,
+    },
 }
 
 impl KafkaInputOpts {
     pub(crate) fn create_consumer(self) -> KafkaResult<StreamConsumer> {
+        let Self::Inner {
+            bootstrap_brokers,
+            group_id,
+            security_protocol,
+            debug_contexts,
+            ..
+        } = self;
+
         let mut config = ClientConfig::new();
         config
-            .set("group.id", self.group_id)
-            .set("bootstrap.servers", self.bootstrap_brokers)
+            .set("group.id", group_id)
+            .set("bootstrap.servers", bootstrap_brokers)
             // messages are committed manually after webhook delivery was successful.
             .set("enable.auto.commit", "false");
 
-        self.security_protocol.apply(&mut config);
-        if let Some(debug_contexts) = self.debug_contexts {
+        security_protocol.apply(&mut config);
+        if let Some(debug_contexts) = debug_contexts {
             if !debug_contexts.is_empty() {
                 config.set("debug", debug_contexts);
             }
@@ -54,34 +67,46 @@ impl KafkaInputOpts {
 }
 
 #[derive(Clone, Deserialize)]
-pub struct KafkaOutputOpts {
-    /// Comma-separated list of addresses.
-    ///
-    /// Example: `localhost:9094`
-    #[serde(rename = "kafka_bootstrap_brokers")]
-    pub bootstrap_brokers: String,
+#[serde(tag = "type")]
+pub enum KafkaOutputOpts {
+    // Single-variant enum so we can require the "type": "kafka" field in deserialization
+    #[serde(rename = "kafka")]
+    Inner {
+        /// Comma-separated list of addresses.
+        ///
+        /// Example: `localhost:9094`
+        #[serde(rename = "kafka_bootstrap_brokers")]
+        bootstrap_brokers: String,
 
-    /// The topic to listen to.
-    #[serde(rename = "kafka_topic")]
-    pub topic: String,
+        /// The topic to listen to.
+        #[serde(rename = "kafka_topic")]
+        topic: String,
 
-    /// The value for 'security.protocol' in the kafka config.
-    #[serde(flatten)]
-    pub security_protocol: KafkaSecurityProtocol,
+        /// The value for 'security.protocol' in the kafka config.
+        #[serde(flatten)]
+        security_protocol: KafkaSecurityProtocol,
 
-    /// The 'debug' config value for rdkafka - enables more verbose logging
-    /// for the selected 'contexts'
-    #[serde(rename = "kafka_debug_contexts")]
-    pub debug_contexts: Option<String>,
+        /// The 'debug' config value for rdkafka - enables more verbose logging
+        /// for the selected 'contexts'
+        #[serde(rename = "kafka_debug_contexts")]
+        debug_contexts: Option<String>,
+    },
 }
 
 impl KafkaOutputOpts {
     pub(crate) fn create_producer(self) -> KafkaResult<FutureProducer> {
-        let mut config = ClientConfig::new();
-        config.set("bootstrap.servers", self.bootstrap_brokers);
+        let Self::Inner {
+            bootstrap_brokers,
+            security_protocol,
+            debug_contexts,
+            ..
+        } = self;
 
-        self.security_protocol.apply(&mut config);
-        if let Some(debug_contexts) = self.debug_contexts {
+        let mut config = ClientConfig::new();
+        config.set("bootstrap.servers", bootstrap_brokers);
+
+        security_protocol.apply(&mut config);
+        if let Some(debug_contexts) = debug_contexts {
             if !debug_contexts.is_empty() {
                 config.set("debug", debug_contexts);
             }

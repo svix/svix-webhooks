@@ -75,15 +75,14 @@ impl KafkaConsumer {
             mut post_options,
         } = payload;
 
+        let KafkaInputOpts::Inner {
+            group_id, topic, ..
+        } = &self.opts;
+
         // If committing the message fails or the process crashes after posting the webhook but
         // before committing, this makes sure that the next run of this fn with the same kafka
         // message doesn't end up creating a duplicate webhook in svix.
-        let idempotency_key = format!(
-            "svix_bridge_kafka_{}_{}_{}",
-            self.opts.group_id,
-            self.opts.topic,
-            msg.offset()
-        );
+        let idempotency_key = format!("svix_bridge_kafka_{group_id}_{topic}_{}", msg.offset());
         post_options
             .get_or_insert_with(Default::default)
             .idempotency_key = Some(idempotency_key);
@@ -124,7 +123,8 @@ impl KafkaConsumer {
         // `ClientConfig::create` does blocking I/O.
         // Same for subscribe, most likely.
         let consumer = spawn_blocking(move || {
-            let topic = opts.topic.clone();
+            let KafkaInputOpts::Inner { topic, .. } = &opts;
+            let topic = topic.clone();
 
             let consumer = opts.create_consumer()?;
             tracing::debug!("Created StreamConsumer");
@@ -197,7 +197,8 @@ impl SenderInput for KafkaConsumer {
         let mut fails: u64 = 0;
         let mut last_fail = Instant::now();
 
-        tracing::info!(topic = self.opts.topic, "Starting to listen for messages");
+        let KafkaInputOpts::Inner { topic, .. } = &self.opts;
+        tracing::info!(topic, "Starting to listen for messages");
 
         loop {
             if let Err(e) = self.run_inner().await {

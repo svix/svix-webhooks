@@ -41,7 +41,7 @@ async fn test_produce_ok() {
     // Only then actually send a message
     let producer = KafkaProducer::new(
         "test".into(),
-        KafkaOutputOpts {
+        KafkaOutputOpts::Inner {
             bootstrap_brokers: BROKER_HOST.to_owned(),
             topic: topic.to_owned(),
             security_protocol: svix_bridge_plugin_kafka::KafkaSecurityProtocol::Plaintext,

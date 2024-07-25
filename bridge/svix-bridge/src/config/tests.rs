@@ -149,6 +149,7 @@ senders:
   # Kafka Consumer
   - name: "kafka-example"
     input:
+      type: "kafka"
       kafka_bootstrap_brokers: "localhost:9094"
       kafka_group_id: "kafka_example_consumer_group"
       kafka_topic: "foobar"
@@ -272,6 +273,7 @@ receivers:
       verification:
         type: "none"
     output:
+      type: "kafka"
       kafka_bootstrap_brokers: "localhost:9094"
       kafka_topic: "foobar"
       # Other valid values: "plaintext", "ssl"
