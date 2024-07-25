@@ -22,6 +22,7 @@ type AuthTokenOut struct {
 	// The key's ID
 	Id string `json:"id"`
 	Name NullableString `json:"name,omitempty"`
+	Scopes []string `json:"scopes,omitempty"`
 	Token string `json:"token"`
 }
 
@@ -177,6 +178,39 @@ func (o *AuthTokenOut) UnsetName() {
 	o.Name.Unset()
 }
 
+// GetScopes returns the Scopes field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *AuthTokenOut) GetScopes() []string {
+	if o == nil  {
+		var ret []string
+		return ret
+	}
+	return o.Scopes
+}
+
+// GetScopesOk returns a tuple with the Scopes field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *AuthTokenOut) GetScopesOk() (*[]string, bool) {
+	if o == nil || o.Scopes == nil {
+		return nil, false
+	}
+	return &o.Scopes, true
+}
+
+// HasScopes returns a boolean if a field has been set.
+func (o *AuthTokenOut) HasScopes() bool {
+	if o != nil && o.Scopes != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetScopes gets a reference to the given []string and assigns it to the Scopes field.
+func (o *AuthTokenOut) SetScopes(v []string) {
+	o.Scopes = v
+}
+
 // GetToken returns the Token field value
 func (o *AuthTokenOut) GetToken() string {
 	if o == nil {
@@ -214,6 +248,9 @@ func (o AuthTokenOut) MarshalJSON() ([]byte, error) {
 	}
 	if o.Name.IsSet() {
 		toSerialize["name"] = o.Name.Get()
+	}
+	if o.Scopes != nil {
+		toSerialize["scopes"] = o.Scopes
 	}
 	if true {
 		toSerialize["token"] = o.Token

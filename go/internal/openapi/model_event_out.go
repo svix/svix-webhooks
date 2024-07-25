@@ -12,20 +12,23 @@ package openapi
 
 import (
 	"encoding/json"
+	"time"
 )
 
 // EventOut struct for EventOut
 type EventOut struct {
 	Payload string `json:"payload"`
+	Timestamp time.Time `json:"timestamp"`
 }
 
 // NewEventOut instantiates a new EventOut object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEventOut(payload string) *EventOut {
+func NewEventOut(payload string, timestamp time.Time) *EventOut {
 	this := EventOut{}
 	this.Payload = payload
+	this.Timestamp = timestamp
 	return &this
 }
 
@@ -61,10 +64,37 @@ func (o *EventOut) SetPayload(v string) {
 	o.Payload = v
 }
 
+// GetTimestamp returns the Timestamp field value
+func (o *EventOut) GetTimestamp() time.Time {
+	if o == nil {
+		var ret time.Time
+		return ret
+	}
+
+	return o.Timestamp
+}
+
+// GetTimestampOk returns a tuple with the Timestamp field value
+// and a boolean to check if the value has been set.
+func (o *EventOut) GetTimestampOk() (*time.Time, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.Timestamp, true
+}
+
+// SetTimestamp sets field value
+func (o *EventOut) SetTimestamp(v time.Time) {
+	o.Timestamp = v
+}
+
 func (o EventOut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
 		toSerialize["payload"] = o.Payload
+	}
+	if true {
+		toSerialize["timestamp"] = o.Timestamp
 	}
 	return json.Marshal(toSerialize)
 }
