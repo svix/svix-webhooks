@@ -59,7 +59,7 @@ func (r ApiV1EventsRequest) After(after time.Time) ApiV1EventsRequest {
 	return r
 }
 
-func (r ApiV1EventsRequest) Execute() (MessageStreamOut, *_nethttp.Response, error) {
+func (r ApiV1EventsRequest) Execute() (MessageEventsOut, *_nethttp.Response, error) {
 	return r.ApiService.V1EventsExecute(r)
 }
 
@@ -78,16 +78,16 @@ func (a *EventsApiService) V1Events(ctx _context.Context) ApiV1EventsRequest {
 
 /*
  * Execute executes the request
- * @return MessageStreamOut
+ * @return MessageEventsOut
  */
-func (a *EventsApiService) V1EventsExecute(r ApiV1EventsRequest) (MessageStreamOut, *_nethttp.Response, error) {
+func (a *EventsApiService) V1EventsExecute(r ApiV1EventsRequest) (MessageEventsOut, *_nethttp.Response, error) {
 	var (
 		localVarHTTPMethod   = _nethttp.MethodGet
 		localVarPostBody     interface{}
 		localVarFormFileName string
 		localVarFileName     string
 		localVarFileBytes    []byte
-		localVarReturnValue  MessageStreamOut
+		localVarReturnValue  MessageEventsOut
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "EventsApiService.V1Events")

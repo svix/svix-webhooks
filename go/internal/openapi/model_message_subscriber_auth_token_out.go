@@ -16,7 +16,7 @@ import (
 
 // MessageSubscriberAuthTokenOut struct for MessageSubscriberAuthTokenOut
 type MessageSubscriberAuthTokenOut struct {
-	BridgeConfig string `json:"bridgeConfig"`
+	BridgeToken string `json:"bridgeToken"`
 	Token string `json:"token"`
 }
 
@@ -24,9 +24,9 @@ type MessageSubscriberAuthTokenOut struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewMessageSubscriberAuthTokenOut(bridgeConfig string, token string) *MessageSubscriberAuthTokenOut {
+func NewMessageSubscriberAuthTokenOut(bridgeToken string, token string) *MessageSubscriberAuthTokenOut {
 	this := MessageSubscriberAuthTokenOut{}
-	this.BridgeConfig = bridgeConfig
+	this.BridgeToken = bridgeToken
 	this.Token = token
 	return &this
 }
@@ -39,28 +39,28 @@ func NewMessageSubscriberAuthTokenOutWithDefaults() *MessageSubscriberAuthTokenO
 	return &this
 }
 
-// GetBridgeConfig returns the BridgeConfig field value
-func (o *MessageSubscriberAuthTokenOut) GetBridgeConfig() string {
+// GetBridgeToken returns the BridgeToken field value
+func (o *MessageSubscriberAuthTokenOut) GetBridgeToken() string {
 	if o == nil {
 		var ret string
 		return ret
 	}
 
-	return o.BridgeConfig
+	return o.BridgeToken
 }
 
-// GetBridgeConfigOk returns a tuple with the BridgeConfig field value
+// GetBridgeTokenOk returns a tuple with the BridgeToken field value
 // and a boolean to check if the value has been set.
-func (o *MessageSubscriberAuthTokenOut) GetBridgeConfigOk() (*string, bool) {
+func (o *MessageSubscriberAuthTokenOut) GetBridgeTokenOk() (*string, bool) {
 	if o == nil  {
 		return nil, false
 	}
-	return &o.BridgeConfig, true
+	return &o.BridgeToken, true
 }
 
-// SetBridgeConfig sets field value
-func (o *MessageSubscriberAuthTokenOut) SetBridgeConfig(v string) {
-	o.BridgeConfig = v
+// SetBridgeToken sets field value
+func (o *MessageSubscriberAuthTokenOut) SetBridgeToken(v string) {
+	o.BridgeToken = v
 }
 
 // GetToken returns the Token field value
@@ -90,7 +90,7 @@ func (o *MessageSubscriberAuthTokenOut) SetToken(v string) {
 func (o MessageSubscriberAuthTokenOut) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
-		toSerialize["bridgeConfig"] = o.BridgeConfig
+		toSerialize["bridgeToken"] = o.BridgeToken
 	}
 	if true {
 		toSerialize["token"] = o.Token

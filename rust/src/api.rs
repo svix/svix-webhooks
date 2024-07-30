@@ -11,8 +11,8 @@ use crate::{
 
 #[cfg(feature = "svix_beta")]
 pub use crate::apis::message_api::{
-    V1MessageEventsSubscriptionError, V1MessageEventsSubscriptionParams, V1MessageStreamError,
-    V1MessageStreamParams,
+    V1MessageCreateError, V1MessageCreateParams, V1MessageEventsSubscriptionError,
+    V1MessageEventsSubscriptionParams,
 };
 pub use crate::models::*;
 
@@ -964,16 +964,16 @@ impl<'a> Message<'a> {
     #[cfg(feature = "svix_beta")]
     pub async fn events(
         &self,
-        params: message_api::V1MessageStreamParams,
-    ) -> Result<crate::models::MessageStreamOut> {
-        message_api::v1_message_stream(self.cfg, params).await
+        params: message_api::V1MessageCreateParams,
+    ) -> Result<crate::models::MessageOut> {
+        message_api::v1_message_create(self.cfg, params).await
     }
 
     #[cfg(feature = "svix_beta")]
     pub async fn events_subscription(
         &self,
         params: message_api::V1MessageEventsSubscriptionParams,
-    ) -> Result<crate::models::MessageStreamOut> {
+    ) -> Result<crate::models::MessageEventsOut> {
         message_api::v1_message_events_subscription(self.cfg, params).await
     }
 }

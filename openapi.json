@@ -341,6 +341,13 @@
                         "nullable": true,
                         "type": "string"
                     },
+                    "scopes": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "nullable": true,
+                        "type": "array"
+                    },
                     "token": {
                         "type": "string"
                     }
@@ -519,6 +526,9 @@
                 "required": [
                     "events"
                 ],
+                "type": "object"
+            },
+            "CreateStreamOut": {
                 "type": "object"
             },
             "CustomColorPalette": {
@@ -1750,10 +1760,37 @@
                 "properties": {
                     "payload": {
                         "type": "string"
+                    },
+                    "timestamp": {
+                        "format": "date-time",
+                        "type": "string"
                     }
                 },
                 "required": [
-                    "payload"
+                    "payload",
+                    "timestamp"
+                ],
+                "type": "object"
+            },
+            "EventStreamOut": {
+                "properties": {
+                    "data": {
+                        "items": {
+                            "$ref": "#/components/schemas/EventOut"
+                        },
+                        "type": "array"
+                    },
+                    "done": {
+                        "type": "boolean"
+                    },
+                    "iterator": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "data",
+                    "done",
+                    "iterator"
                 ],
                 "type": "object"
             },
@@ -1987,6 +2024,14 @@
                         "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "type": "string"
                     },
+                    "groupName": {
+                        "description": "The event type group's name",
+                        "example": "user",
+                        "maxLength": 256,
+                        "nullable": true,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "type": "string"
+                    },
                     "name": {
                         "description": "The event type's name",
                         "example": "user.signup",
@@ -2052,6 +2097,14 @@
                         "pattern": "^[a-zA-Z0-9\\-_.]+$",
                         "type": "string"
                     },
+                    "groupName": {
+                        "description": "The event type group's name",
+                        "example": "user",
+                        "maxLength": 256,
+                        "nullable": true,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "type": "string"
+                    },
                     "name": {
                         "description": "The event type's name",
                         "example": "user.signup",
@@ -2111,6 +2164,14 @@
                     },
                     "featureFlag": {
                         "example": "cool-new-feature",
+                        "maxLength": 256,
+                        "nullable": true,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "type": "string"
+                    },
+                    "groupName": {
+                        "description": "The event type group's name",
+                        "example": "user",
                         "maxLength": 256,
                         "nullable": true,
                         "pattern": "^[a-zA-Z0-9\\-_.]+$",
@@ -2188,6 +2249,14 @@
                     },
                     "featureFlag": {
                         "example": "cool-new-feature",
+                        "maxLength": 256,
+                        "nullable": true,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "type": "string"
+                    },
+                    "groupName": {
+                        "description": "The event type group's name",
+                        "example": "user",
                         "maxLength": 256,
                         "nullable": true,
                         "pattern": "^[a-zA-Z0-9\\-_.]+$",
@@ -2568,34 +2637,6 @@
                     "data": {
                         "items": {
                             "$ref": "#/components/schemas/EndpointOut"
-                        },
-                        "type": "array"
-                    },
-                    "done": {
-                        "type": "boolean"
-                    },
-                    "iterator": {
-                        "example": "iterator",
-                        "nullable": true,
-                        "type": "string"
-                    },
-                    "prevIterator": {
-                        "example": "-iterator",
-                        "nullable": true,
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "data",
-                    "done"
-                ],
-                "type": "object"
-            },
-            "ListResponse_EventOut_": {
-                "properties": {
-                    "data": {
-                        "items": {
-                            "$ref": "#/components/schemas/EventOut"
                         },
                         "type": "array"
                     },
@@ -3425,6 +3466,28 @@
                 ],
                 "type": "object"
             },
+            "MessageEventsOut": {
+                "properties": {
+                    "data": {
+                        "items": {
+                            "$ref": "#/components/schemas/MessageOut"
+                        },
+                        "type": "array"
+                    },
+                    "done": {
+                        "type": "boolean"
+                    },
+                    "iterator": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "data",
+                    "done",
+                    "iterator"
+                ],
+                "type": "object"
+            },
             "MessageIn": {
                 "properties": {
                     "application": {
@@ -3614,31 +3677,9 @@
                     "Sending"
                 ]
             },
-            "MessageStreamOut": {
-                "properties": {
-                    "data": {
-                        "items": {
-                            "$ref": "#/components/schemas/MessageOut"
-                        },
-                        "type": "array"
-                    },
-                    "done": {
-                        "type": "boolean"
-                    },
-                    "iterator": {
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "data",
-                    "done",
-                    "iterator"
-                ],
-                "type": "object"
-            },
             "MessageSubscriberAuthTokenOut": {
                 "properties": {
-                    "bridgeConfig": {
+                    "bridgeToken": {
                         "type": "string"
                     },
                     "token": {
@@ -3646,7 +3687,7 @@
                     }
                 },
                 "required": [
-                    "bridgeConfig",
+                    "bridgeToken",
                     "token"
                 ],
                 "type": "object"
@@ -11838,7 +11879,7 @@
         "/api/v1/app/{app_id}/events": {
             "get": {
                 "description": "Reads the stream of created messages for an application",
-                "operationId": "v1.message.stream",
+                "operationId": "v1.message.events",
                 "parameters": [
                     {
                         "description": "The app's ID or UID",
@@ -11932,7 +11973,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/MessageStreamOut"
+                                    "$ref": "#/components/schemas/MessageEventsOut"
                                 }
                             }
                         },
@@ -12014,7 +12055,7 @@
                         "HTTPBearer": []
                     }
                 ],
-                "summary": "Stream Events",
+                "summary": "Message Events",
                 "tags": [
                     "Message"
                 ],
@@ -12022,57 +12063,57 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const messageStreamOut = await svix.message.stream(\"app_id\");"
+                        "source": "const messageEventsOut = await svix.message.events(\"app_id\");"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const messageStreamOut = await svix.message.stream(\"app_id\");"
+                        "source": "const messageEventsOut = await svix.message.events(\"app_id\");"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "message_stream_out = svix.message.stream(\"app_id\")"
+                        "source": "message_events_out = svix.message.events(\"app_id\")"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "message_stream_out = await svix.message.stream(\"app_id\")"
+                        "source": "message_events_out = await svix.message.events(\"app_id\")"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "messageStreamOut, err := svixClient.Message.Stream(ctx, \"app_id\")"
+                        "source": "messageEventsOut, err := svixClient.Message.Events(ctx, \"app_id\")"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val messageStreamOut = svix.message.stream(\"app_id\")"
+                        "source": "val messageEventsOut = svix.message.events(\"app_id\")"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "MessageStreamOut messageStreamOut = svix.getMessage().stream(\"app_id\")"
+                        "source": "MessageEventsOut messageEventsOut = svix.getMessage().events(\"app_id\")"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "message_stream_out = svix.message.stream(\"app_id\")"
+                        "source": "message_events_out = svix.message.events(\"app_id\")"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let message_stream_out = svix.message().stream(\"app_id\").await?;"
+                        "source": "let message_events_out = svix.message().events(\"app_id\").await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var messageStreamOut = await svix.Message.StreamAsync(\"app_id\")"
+                        "source": "var messageEventsOut = await svix.Message.EventsAsync(\"app_id\")"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix message stream \"app_id\""
+                        "source": "svix message events \"app_id\""
                     },
                     {
                         "label": "cURL",
@@ -12194,7 +12235,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/MessageStreamOut"
+                                    "$ref": "#/components/schemas/MessageEventsOut"
                                 }
                             }
                         },
@@ -12276,7 +12317,7 @@
                         "HTTPBearer": []
                     }
                 ],
-                "summary": "Stream Events Subscription",
+                "summary": "Message Events Subscription",
                 "tags": [
                     "Message"
                 ],
@@ -12284,52 +12325,52 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const messageStreamOut = await svix.message.eventsSubscription(\"app_id\", \"subscription_id\");"
+                        "source": "const messageEventsOut = await svix.message.eventsSubscription(\"app_id\", \"subscription_id\");"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const messageStreamOut = await svix.message.eventsSubscription(\"app_id\", \"subscription_id\");"
+                        "source": "const messageEventsOut = await svix.message.eventsSubscription(\"app_id\", \"subscription_id\");"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "message_stream_out = svix.message.events_subscription(\"app_id\", \"subscription_id\")"
+                        "source": "message_events_out = svix.message.events_subscription(\"app_id\", \"subscription_id\")"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "message_stream_out = await svix.message.events_subscription(\"app_id\", \"subscription_id\")"
+                        "source": "message_events_out = await svix.message.events_subscription(\"app_id\", \"subscription_id\")"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "messageStreamOut, err := svixClient.Message.EventsSubscription(ctx, \"app_id\", \"subscription_id\")"
+                        "source": "messageEventsOut, err := svixClient.Message.EventsSubscription(ctx, \"app_id\", \"subscription_id\")"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val messageStreamOut = svix.message.eventsSubscription(\"app_id\", \"subscription_id\")"
+                        "source": "val messageEventsOut = svix.message.eventsSubscription(\"app_id\", \"subscription_id\")"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "MessageStreamOut messageStreamOut = svix.getMessage().eventsSubscription(\"app_id\", \"subscription_id\")"
+                        "source": "MessageEventsOut messageEventsOut = svix.getMessage().eventsSubscription(\"app_id\", \"subscription_id\")"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "message_stream_out = svix.message.events_subscription(\"app_id\", \"subscription_id\")"
+                        "source": "message_events_out = svix.message.events_subscription(\"app_id\", \"subscription_id\")"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let message_stream_out = svix.message().events_subscription(\"app_id\", \"subscription_id\").await?;"
+                        "source": "let message_events_out = svix.message().events_subscription(\"app_id\", \"subscription_id\").await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var messageStreamOut = await svix.Message.EventsSubscriptionAsync(\"app_id\", \"subscription_id\")"
+                        "source": "var messageEventsOut = await svix.Message.EventsSubscriptionAsync(\"app_id\", \"subscription_id\")"
                     },
                     {
                         "label": "CLI",
@@ -12344,7 +12385,7 @@
                 ]
             }
         },
-        "/api/v1/app/{app_id}/events/subscription/{subscription_id}/create_token": {
+        "/api/v1/app/{app_id}/events/subscription/{subscription_id}/create-token": {
             "post": {
                 "description": "Creates an auth token that can be used with the `v1.message.events-subscription` endpoint",
                 "operationId": "v1.message.events-subscription.create-token",
@@ -12476,7 +12517,7 @@
                         "HTTPBearer": []
                     }
                 ],
-                "summary": "Stream Events Create Token",
+                "summary": "Message Events Create Token",
                 "tags": [
                     "Message"
                 ],
@@ -12539,7 +12580,7 @@
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/events/subscription/{subscription_id}/create_token' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/events/subscription/{subscription_id}/create-token' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
                     }
                 ]
             }
@@ -17836,244 +17877,6 @@
                 ]
             }
         },
-        "/api/v1/app/{app_id}/stream": {
-            "get": {
-                "description": "List streaming events.",
-                "operationId": "list_stream",
-                "parameters": [
-                    {
-                        "description": "The app's ID or UID",
-                        "in": "path",
-                        "name": "app_id",
-                        "required": true,
-                        "schema": {
-                            "description": "The app's ID or UID",
-                            "example": "unique-app-identifier",
-                            "maxLength": 256,
-                            "minLength": 1,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                            "type": "string"
-                        },
-                        "style": "simple"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ListResponse_EventOut_"
-                                }
-                            }
-                        },
-                        "description": ""
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Bad request"
-                    },
-                    "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Not Found"
-                    },
-                    "409": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Conflict"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        },
-                        "description": "Validation Error"
-                    },
-                    "429": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Too Many Requests"
-                    }
-                },
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ],
-                "summary": "List Stream",
-                "tags": [
-                    "Streams"
-                ]
-            },
-            "post": {
-                "description": "Creates streaming events.",
-                "operationId": "append_to_stream",
-                "parameters": [
-                    {
-                        "description": "The app's ID or UID",
-                        "in": "path",
-                        "name": "app_id",
-                        "required": true,
-                        "schema": {
-                            "description": "The app's ID or UID",
-                            "example": "unique-app-identifier",
-                            "maxLength": 256,
-                            "minLength": 1,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                            "type": "string"
-                        },
-                        "style": "simple"
-                    },
-                    {
-                        "description": "The request's idempotency key",
-                        "in": "header",
-                        "name": "idempotency-key",
-                        "schema": {
-                            "type": "string"
-                        },
-                        "style": "simple"
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/CreateStreamIn"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "204": {
-                        "description": "no content"
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Bad request"
-                    },
-                    "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Not Found"
-                    },
-                    "409": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Conflict"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        },
-                        "description": "Validation Error"
-                    },
-                    "429": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        },
-                        "description": "Too Many Requests"
-                    }
-                },
-                "security": [
-                    {
-                        "HTTPBearer": []
-                    }
-                ],
-                "summary": "Append To Stream",
-                "tags": [
-                    "Streams"
-                ]
-            }
-        },
         "/api/v1/auth/app-portal-access/{app_id}": {
             "post": {
                 "description": "Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.",
@@ -18265,6 +18068,201 @@
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/app-portal-access/{app_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"featureFlags\": [],\n        \"expiry\": null,\n        \"readOnly\": null\n    }'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/auth/app/{app_id}/create-message-token": {
+            "post": {
+                "description": "Create a new access token that only allows creating messages inside this application.",
+                "operationId": "v1.authentication.create-message-token",
+                "parameters": [
+                    {
+                        "description": "The app's ID or UID",
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "description": "The app's ID or UID",
+                            "example": "unique-app-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateMessageTokenIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthTokenOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Create Cmg Token",
+                "tags": [
+                    "Authentication"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const authTokenOut = await svix.authentication.createMessageToken(\"app_id\", {\n    expiry: null\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const authTokenOut = await svix.authentication.createMessageToken(\"app_id\", {\n    expiry: null\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "auth_token_out = svix.authentication.create_message_token(\"app_id\", CreateMessageTokenIn(\n    expiry=None\n), None)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "auth_token_out = await svix.authentication.create_message_token(\"app_id\", CreateMessageTokenIn(\n    expiry=None\n), None)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "authTokenOut, err := svixClient.Authentication.CreateMessageToken(ctx, \"app_id\", &CreateMessageTokenIn{\n    Expiry: nil,\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val authTokenOut = svix.authentication.createMessageToken(\"app_id\", CreateMessageTokenIn()\n    .expiry(null)\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "AuthTokenOut authTokenOut = svix.getAuthentication().createMessageToken(\"app_id\", new CreateMessageTokenIn()\n    .expiry(null)\n)"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "auth_token_out = svix.authentication.create_message_token(\"app_id\", Svix::CreateMessageTokenIn.new({\n    \"expiry\": nil\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let auth_token_out = svix.authentication().create_message_token(\"app_id\", CreateMessageTokenIn {\n    expiry: None,\n}, None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var authTokenOut = await svix.Authentication.CreateMessageTokenAsync(\"app_id\", new CreateMessageTokenIn{\n    expiry: null\n})"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix authentication create-message-token \"app_id\" '{\n    \"expiry\": null\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/auth/app/{app_id}/create-message-token' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"expiry\": null\n    }'"
                     }
                 ]
             }
@@ -20248,62 +20246,62 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const eventTypeOut = await svix.eventType.create({\n    name: \"user.signup\",\n    description: \"A user has signed up\",\n    archived: false,\n    schemas: {\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}},\n    featureFlag: \"cool-new-feature\"\n});"
+                        "source": "const eventTypeOut = await svix.eventType.create({\n    name: \"user.signup\",\n    description: \"A user has signed up\",\n    archived: false,\n    schemas: {\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}},\n    featureFlag: \"cool-new-feature\",\n    groupName: \"user\"\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const eventTypeOut = await svix.eventType.create({\n    name: \"user.signup\",\n    description: \"A user has signed up\",\n    archived: false,\n    schemas: {\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}},\n    featureFlag: \"cool-new-feature\"\n});"
+                        "source": "const eventTypeOut = await svix.eventType.create({\n    name: \"user.signup\",\n    description: \"A user has signed up\",\n    archived: false,\n    schemas: {\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}},\n    featureFlag: \"cool-new-feature\",\n    groupName: \"user\"\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "event_type_out = svix.event_type.create(EventTypeIn(\n    name=\"user.signup\",\n    description=\"A user has signed up\",\n    archived=False,\n    schemas={\"1\": {\"description\": \"An invoice was paid by a user\", \"properties\": {\"invoiceId\": {\"description\": \"The invoice id\", \"type\": \"string\"}, \"userId\": {\"description\": \"The user id\", \"type\": \"string\"}}, \"required\": [\"invoiceId\", \"userId\"], \"title\": \"Invoice Paid Event\", \"type\": \"object\"}},\n    feature_flag=\"cool-new-feature\"\n), None)"
+                        "source": "event_type_out = svix.event_type.create(EventTypeIn(\n    name=\"user.signup\",\n    description=\"A user has signed up\",\n    archived=False,\n    schemas={\"1\": {\"description\": \"An invoice was paid by a user\", \"properties\": {\"invoiceId\": {\"description\": \"The invoice id\", \"type\": \"string\"}, \"userId\": {\"description\": \"The user id\", \"type\": \"string\"}}, \"required\": [\"invoiceId\", \"userId\"], \"title\": \"Invoice Paid Event\", \"type\": \"object\"}},\n    feature_flag=\"cool-new-feature\",\n    group_name=\"user\"\n), None)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "event_type_out = await svix.event_type.create(EventTypeIn(\n    name=\"user.signup\",\n    description=\"A user has signed up\",\n    archived=False,\n    schemas={\"1\": {\"description\": \"An invoice was paid by a user\", \"properties\": {\"invoiceId\": {\"description\": \"The invoice id\", \"type\": \"string\"}, \"userId\": {\"description\": \"The user id\", \"type\": \"string\"}}, \"required\": [\"invoiceId\", \"userId\"], \"title\": \"Invoice Paid Event\", \"type\": \"object\"}},\n    feature_flag=\"cool-new-feature\"\n), None)"
+                        "source": "event_type_out = await svix.event_type.create(EventTypeIn(\n    name=\"user.signup\",\n    description=\"A user has signed up\",\n    archived=False,\n    schemas={\"1\": {\"description\": \"An invoice was paid by a user\", \"properties\": {\"invoiceId\": {\"description\": \"The invoice id\", \"type\": \"string\"}, \"userId\": {\"description\": \"The user id\", \"type\": \"string\"}}, \"required\": [\"invoiceId\", \"userId\"], \"title\": \"Invoice Paid Event\", \"type\": \"object\"}},\n    feature_flag=\"cool-new-feature\",\n    group_name=\"user\"\n), None)"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "eventTypeOut, err := svixClient.EventType.Create(ctx, &EventTypeIn{\n    Name: \"user.signup\",\n    Description: \"A user has signed up\",\n    Archived: false,\n    Schemas: map[interface{}]interface{}{\"1\": map[string]interface{}{\"description\": \"An invoice was paid by a user\", \"properties\": map[interface{}]interface{}{\"invoiceId\": map[string]interface{}{\"description\": \"The invoice id\", \"type\": \"string\"}, \"userId\": map[string]interface{}{\"description\": \"The user id\", \"type\": \"string\"}}, \"required\": []string{\"invoiceId\", \"userId\"}, \"title\": \"Invoice Paid Event\", \"type\": \"object\"}},\n    FeatureFlag: \"cool-new-feature\",\n})"
+                        "source": "eventTypeOut, err := svixClient.EventType.Create(ctx, &EventTypeIn{\n    Name: \"user.signup\",\n    Description: \"A user has signed up\",\n    Archived: false,\n    Schemas: map[interface{}]interface{}{\"1\": map[string]interface{}{\"description\": \"An invoice was paid by a user\", \"properties\": map[interface{}]interface{}{\"invoiceId\": map[string]interface{}{\"description\": \"The invoice id\", \"type\": \"string\"}, \"userId\": map[string]interface{}{\"description\": \"The user id\", \"type\": \"string\"}}, \"required\": []string{\"invoiceId\", \"userId\"}, \"title\": \"Invoice Paid Event\", \"type\": \"object\"}},\n    FeatureFlag: \"cool-new-feature\",\n    GroupName: \"user\",\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val eventTypeOut = svix.eventType.create(EventTypeIn()\n    .name(\"user.signup\")\n    .description(\"A user has signed up\")\n    .archived(false)\n    .schemas(/* ... */)\n    .featureFlag(\"cool-new-feature\")\n)"
+                        "source": "val eventTypeOut = svix.eventType.create(EventTypeIn()\n    .name(\"user.signup\")\n    .description(\"A user has signed up\")\n    .archived(false)\n    .schemas(/* ... */)\n    .featureFlag(\"cool-new-feature\")\n    .groupName(\"user\")\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "EventTypeOut eventTypeOut = svix.getEventType().create(new EventTypeIn()\n    .name(\"user.signup\")\n    .description(\"A user has signed up\")\n    .archived(false)\n    .schemas(/* ... */)\n    .featureFlag(\"cool-new-feature\")\n)"
+                        "source": "EventTypeOut eventTypeOut = svix.getEventType().create(new EventTypeIn()\n    .name(\"user.signup\")\n    .description(\"A user has signed up\")\n    .archived(false)\n    .schemas(/* ... */)\n    .featureFlag(\"cool-new-feature\")\n    .groupName(\"user\")\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "event_type_out = svix.event_type.create(Svix::EventTypeIn.new({\n    \"name\": \"user.signup\",\n    \"description\": \"A user has signed up\",\n    \"archived\": false,\n    \"schemas\": {\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}},\n    \"feature_flag\": \"cool-new-feature\"\n}))"
+                        "source": "event_type_out = svix.event_type.create(Svix::EventTypeIn.new({\n    \"name\": \"user.signup\",\n    \"description\": \"A user has signed up\",\n    \"archived\": false,\n    \"schemas\": {\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}},\n    \"feature_flag\": \"cool-new-feature\",\n    \"group_name\": \"user\"\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let event_type_out = svix.event_type().create(EventTypeIn {\n    name: \"user.signup\".to_string(),\n    description: \"A user has signed up\".to_string(),\n    archived: Some(false),\n    schemas: Some(json!({\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}})),\n    feature_flag: Some(\"cool-new-feature\".to_string()),\n}, None).await?;"
+                        "source": "let event_type_out = svix.event_type().create(EventTypeIn {\n    name: \"user.signup\".to_string(),\n    description: \"A user has signed up\".to_string(),\n    archived: Some(false),\n    schemas: Some(json!({\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}})),\n    feature_flag: Some(\"cool-new-feature\".to_string()),\n    group_name: Some(\"user\".to_string()),\n}, None).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var eventTypeOut = await svix.EventType.CreateAsync(new EventTypeIn{\n    name: \"user.signup\",\n    description: \"A user has signed up\",\n    archived: false,\n    schemas: /* ... */,\n    featureFlag: \"cool-new-feature\"\n})"
+                        "source": "var eventTypeOut = await svix.EventType.CreateAsync(new EventTypeIn{\n    name: \"user.signup\",\n    description: \"A user has signed up\",\n    archived: false,\n    schemas: /* ... */,\n    featureFlag: \"cool-new-feature\",\n    groupName: \"user\"\n})"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix event-type create '{\n    \"name\": \"user.signup\",\n    \"description\": \"A user has signed up\",\n    \"archived\": false,\n    \"schemas\": {\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}},\n    \"featureFlag\": \"cool-new-feature\"\n}'"
+                        "source": "svix event-type create '{\n    \"name\": \"user.signup\",\n    \"description\": \"A user has signed up\",\n    \"archived\": false,\n    \"schemas\": {\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}},\n    \"featureFlag\": \"cool-new-feature\",\n    \"groupName\": \"user\"\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/event-type' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"name\": \"user.signup\",\n        \"description\": \"A user has signed up\",\n        \"archived\": false,\n        \"schemas\": {\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}},\n        \"featureFlag\": \"cool-new-feature\"\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/event-type' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"name\": \"user.signup\",\n        \"description\": \"A user has signed up\",\n        \"archived\": false,\n        \"schemas\": {\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}},\n        \"featureFlag\": \"cool-new-feature\",\n        \"groupName\": \"user\"\n    }'"
                     }
                 ]
             }
@@ -21314,62 +21312,62 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const eventTypeOut = await svix.eventType.patch(\"event_type_name\", {\n    schemas: {\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"},\n    featureFlag: \"cool-new-feature\"\n});"
+                        "source": "const eventTypeOut = await svix.eventType.patch(\"event_type_name\", {\n    schemas: {\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"},\n    featureFlag: \"cool-new-feature\",\n    groupName: \"user\"\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const eventTypeOut = await svix.eventType.patch(\"event_type_name\", {\n    schemas: {\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"},\n    featureFlag: \"cool-new-feature\"\n});"
+                        "source": "const eventTypeOut = await svix.eventType.patch(\"event_type_name\", {\n    schemas: {\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"},\n    featureFlag: \"cool-new-feature\",\n    groupName: \"user\"\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "event_type_out = svix.event_type.patch(\"event_type_name\", EventTypePatch(\n    schemas={\"description\": \"An invoice was paid by a user\", \"properties\": {\"invoiceId\": {\"description\": \"The invoice id\", \"type\": \"string\"}, \"userId\": {\"description\": \"The user id\", \"type\": \"string\"}}, \"required\": [\"invoiceId\", \"userId\"], \"title\": \"Invoice Paid Event\", \"type\": \"object\"},\n    feature_flag=\"cool-new-feature\"\n))"
+                        "source": "event_type_out = svix.event_type.patch(\"event_type_name\", EventTypePatch(\n    schemas={\"description\": \"An invoice was paid by a user\", \"properties\": {\"invoiceId\": {\"description\": \"The invoice id\", \"type\": \"string\"}, \"userId\": {\"description\": \"The user id\", \"type\": \"string\"}}, \"required\": [\"invoiceId\", \"userId\"], \"title\": \"Invoice Paid Event\", \"type\": \"object\"},\n    feature_flag=\"cool-new-feature\",\n    group_name=\"user\"\n))"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "event_type_out = await svix.event_type.patch(\"event_type_name\", EventTypePatch(\n    schemas={\"description\": \"An invoice was paid by a user\", \"properties\": {\"invoiceId\": {\"description\": \"The invoice id\", \"type\": \"string\"}, \"userId\": {\"description\": \"The user id\", \"type\": \"string\"}}, \"required\": [\"invoiceId\", \"userId\"], \"title\": \"Invoice Paid Event\", \"type\": \"object\"},\n    feature_flag=\"cool-new-feature\"\n))"
+                        "source": "event_type_out = await svix.event_type.patch(\"event_type_name\", EventTypePatch(\n    schemas={\"description\": \"An invoice was paid by a user\", \"properties\": {\"invoiceId\": {\"description\": \"The invoice id\", \"type\": \"string\"}, \"userId\": {\"description\": \"The user id\", \"type\": \"string\"}}, \"required\": [\"invoiceId\", \"userId\"], \"title\": \"Invoice Paid Event\", \"type\": \"object\"},\n    feature_flag=\"cool-new-feature\",\n    group_name=\"user\"\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "eventTypeOut, err := svixClient.EventType.Patch(ctx, \"event_type_name\", &EventTypePatch{\n    Schemas: map[string]interface{}{\"description\": \"An invoice was paid by a user\", \"properties\": map[interface{}]interface{}{\"invoiceId\": map[string]interface{}{\"description\": \"The invoice id\", \"type\": \"string\"}, \"userId\": map[string]interface{}{\"description\": \"The user id\", \"type\": \"string\"}}, \"required\": []string{\"invoiceId\", \"userId\"}, \"title\": \"Invoice Paid Event\", \"type\": \"object\"},\n    FeatureFlag: \"cool-new-feature\",\n})"
+                        "source": "eventTypeOut, err := svixClient.EventType.Patch(ctx, \"event_type_name\", &EventTypePatch{\n    Schemas: map[string]interface{}{\"description\": \"An invoice was paid by a user\", \"properties\": map[interface{}]interface{}{\"invoiceId\": map[string]interface{}{\"description\": \"The invoice id\", \"type\": \"string\"}, \"userId\": map[string]interface{}{\"description\": \"The user id\", \"type\": \"string\"}}, \"required\": []string{\"invoiceId\", \"userId\"}, \"title\": \"Invoice Paid Event\", \"type\": \"object\"},\n    FeatureFlag: \"cool-new-feature\",\n    GroupName: \"user\",\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val eventTypeOut = svix.eventType.patch(\"event_type_name\", EventTypePatch()\n    .schemas(/* ... */)\n    .featureFlag(\"cool-new-feature\")\n)"
+                        "source": "val eventTypeOut = svix.eventType.patch(\"event_type_name\", EventTypePatch()\n    .schemas(/* ... */)\n    .featureFlag(\"cool-new-feature\")\n    .groupName(\"user\")\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "EventTypeOut eventTypeOut = svix.getEventType().patch(\"event_type_name\", new EventTypePatch()\n    .schemas(/* ... */)\n    .featureFlag(\"cool-new-feature\")\n)"
+                        "source": "EventTypeOut eventTypeOut = svix.getEventType().patch(\"event_type_name\", new EventTypePatch()\n    .schemas(/* ... */)\n    .featureFlag(\"cool-new-feature\")\n    .groupName(\"user\")\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "event_type_out = svix.event_type.patch(\"event_type_name\", Svix::EventTypePatch.new({\n    \"schemas\": {\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"},\n    \"feature_flag\": \"cool-new-feature\"\n}))"
+                        "source": "event_type_out = svix.event_type.patch(\"event_type_name\", Svix::EventTypePatch.new({\n    \"schemas\": {\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"},\n    \"feature_flag\": \"cool-new-feature\",\n    \"group_name\": \"user\"\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let event_type_out = svix.event_type().patch(\"event_type_name\", EventTypePatch {\n    schemas: Some(json!({\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"})),\n    feature_flag: Some(\"cool-new-feature\".to_string()),\n}).await?;"
+                        "source": "let event_type_out = svix.event_type().patch(\"event_type_name\", EventTypePatch {\n    schemas: Some(json!({\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"})),\n    feature_flag: Some(\"cool-new-feature\".to_string()),\n    group_name: Some(\"user\".to_string()),\n}).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var eventTypeOut = await svix.EventType.PatchAsync(\"event_type_name\", new EventTypePatch{\n    schemas: /* ... */,\n    featureFlag: \"cool-new-feature\"\n})"
+                        "source": "var eventTypeOut = await svix.EventType.PatchAsync(\"event_type_name\", new EventTypePatch{\n    schemas: /* ... */,\n    featureFlag: \"cool-new-feature\",\n    groupName: \"user\"\n})"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix event-type patch \"event_type_name\" '{\n    \"schemas\": {\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"},\n    \"featureFlag\": \"cool-new-feature\"\n}'"
+                        "source": "svix event-type patch \"event_type_name\" '{\n    \"schemas\": {\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"},\n    \"featureFlag\": \"cool-new-feature\",\n    \"groupName\": \"user\"\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/event-type/{event_type_name}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"schemas\": {\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"},\n        \"featureFlag\": \"cool-new-feature\"\n    }'"
+                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/event-type/{event_type_name}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"schemas\": {\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"},\n        \"featureFlag\": \"cool-new-feature\",\n        \"groupName\": \"user\"\n    }'"
                     }
                 ]
             },
@@ -21507,62 +21505,62 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const eventTypeOut = await svix.eventType.update(\"event_type_name\", {\n    description: \"A user has signed up\",\n    archived: false,\n    schemas: {\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}},\n    featureFlag: \"cool-new-feature\"\n});"
+                        "source": "const eventTypeOut = await svix.eventType.update(\"event_type_name\", {\n    description: \"A user has signed up\",\n    archived: false,\n    schemas: {\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}},\n    featureFlag: \"cool-new-feature\",\n    groupName: \"user\"\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const eventTypeOut = await svix.eventType.update(\"event_type_name\", {\n    description: \"A user has signed up\",\n    archived: false,\n    schemas: {\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}},\n    featureFlag: \"cool-new-feature\"\n});"
+                        "source": "const eventTypeOut = await svix.eventType.update(\"event_type_name\", {\n    description: \"A user has signed up\",\n    archived: false,\n    schemas: {\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}},\n    featureFlag: \"cool-new-feature\",\n    groupName: \"user\"\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "event_type_out = svix.event_type.update(\"event_type_name\", EventTypeUpdate(\n    description=\"A user has signed up\",\n    archived=False,\n    schemas={\"1\": {\"description\": \"An invoice was paid by a user\", \"properties\": {\"invoiceId\": {\"description\": \"The invoice id\", \"type\": \"string\"}, \"userId\": {\"description\": \"The user id\", \"type\": \"string\"}}, \"required\": [\"invoiceId\", \"userId\"], \"title\": \"Invoice Paid Event\", \"type\": \"object\"}},\n    feature_flag=\"cool-new-feature\"\n))"
+                        "source": "event_type_out = svix.event_type.update(\"event_type_name\", EventTypeUpdate(\n    description=\"A user has signed up\",\n    archived=False,\n    schemas={\"1\": {\"description\": \"An invoice was paid by a user\", \"properties\": {\"invoiceId\": {\"description\": \"The invoice id\", \"type\": \"string\"}, \"userId\": {\"description\": \"The user id\", \"type\": \"string\"}}, \"required\": [\"invoiceId\", \"userId\"], \"title\": \"Invoice Paid Event\", \"type\": \"object\"}},\n    feature_flag=\"cool-new-feature\",\n    group_name=\"user\"\n))"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "event_type_out = await svix.event_type.update(\"event_type_name\", EventTypeUpdate(\n    description=\"A user has signed up\",\n    archived=False,\n    schemas={\"1\": {\"description\": \"An invoice was paid by a user\", \"properties\": {\"invoiceId\": {\"description\": \"The invoice id\", \"type\": \"string\"}, \"userId\": {\"description\": \"The user id\", \"type\": \"string\"}}, \"required\": [\"invoiceId\", \"userId\"], \"title\": \"Invoice Paid Event\", \"type\": \"object\"}},\n    feature_flag=\"cool-new-feature\"\n))"
+                        "source": "event_type_out = await svix.event_type.update(\"event_type_name\", EventTypeUpdate(\n    description=\"A user has signed up\",\n    archived=False,\n    schemas={\"1\": {\"description\": \"An invoice was paid by a user\", \"properties\": {\"invoiceId\": {\"description\": \"The invoice id\", \"type\": \"string\"}, \"userId\": {\"description\": \"The user id\", \"type\": \"string\"}}, \"required\": [\"invoiceId\", \"userId\"], \"title\": \"Invoice Paid Event\", \"type\": \"object\"}},\n    feature_flag=\"cool-new-feature\",\n    group_name=\"user\"\n))"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "eventTypeOut, err := svixClient.EventType.Update(ctx, \"event_type_name\", &EventTypeUpdate{\n    Description: \"A user has signed up\",\n    Archived: false,\n    Schemas: map[interface{}]interface{}{\"1\": map[string]interface{}{\"description\": \"An invoice was paid by a user\", \"properties\": map[interface{}]interface{}{\"invoiceId\": map[string]interface{}{\"description\": \"The invoice id\", \"type\": \"string\"}, \"userId\": map[string]interface{}{\"description\": \"The user id\", \"type\": \"string\"}}, \"required\": []string{\"invoiceId\", \"userId\"}, \"title\": \"Invoice Paid Event\", \"type\": \"object\"}},\n    FeatureFlag: \"cool-new-feature\",\n})"
+                        "source": "eventTypeOut, err := svixClient.EventType.Update(ctx, \"event_type_name\", &EventTypeUpdate{\n    Description: \"A user has signed up\",\n    Archived: false,\n    Schemas: map[interface{}]interface{}{\"1\": map[string]interface{}{\"description\": \"An invoice was paid by a user\", \"properties\": map[interface{}]interface{}{\"invoiceId\": map[string]interface{}{\"description\": \"The invoice id\", \"type\": \"string\"}, \"userId\": map[string]interface{}{\"description\": \"The user id\", \"type\": \"string\"}}, \"required\": []string{\"invoiceId\", \"userId\"}, \"title\": \"Invoice Paid Event\", \"type\": \"object\"}},\n    FeatureFlag: \"cool-new-feature\",\n    GroupName: \"user\",\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val eventTypeOut = svix.eventType.update(\"event_type_name\", EventTypeUpdate()\n    .description(\"A user has signed up\")\n    .archived(false)\n    .schemas(/* ... */)\n    .featureFlag(\"cool-new-feature\")\n)"
+                        "source": "val eventTypeOut = svix.eventType.update(\"event_type_name\", EventTypeUpdate()\n    .description(\"A user has signed up\")\n    .archived(false)\n    .schemas(/* ... */)\n    .featureFlag(\"cool-new-feature\")\n    .groupName(\"user\")\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "EventTypeOut eventTypeOut = svix.getEventType().update(\"event_type_name\", new EventTypeUpdate()\n    .description(\"A user has signed up\")\n    .archived(false)\n    .schemas(/* ... */)\n    .featureFlag(\"cool-new-feature\")\n)"
+                        "source": "EventTypeOut eventTypeOut = svix.getEventType().update(\"event_type_name\", new EventTypeUpdate()\n    .description(\"A user has signed up\")\n    .archived(false)\n    .schemas(/* ... */)\n    .featureFlag(\"cool-new-feature\")\n    .groupName(\"user\")\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "event_type_out = svix.event_type.update(\"event_type_name\", Svix::EventTypeUpdate.new({\n    \"description\": \"A user has signed up\",\n    \"archived\": false,\n    \"schemas\": {\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}},\n    \"feature_flag\": \"cool-new-feature\"\n}))"
+                        "source": "event_type_out = svix.event_type.update(\"event_type_name\", Svix::EventTypeUpdate.new({\n    \"description\": \"A user has signed up\",\n    \"archived\": false,\n    \"schemas\": {\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}},\n    \"feature_flag\": \"cool-new-feature\",\n    \"group_name\": \"user\"\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let event_type_out = svix.event_type().update(\"event_type_name\", EventTypeUpdate {\n    description: \"A user has signed up\".to_string(),\n    archived: Some(false),\n    schemas: Some(json!({\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}})),\n    feature_flag: Some(\"cool-new-feature\".to_string()),\n}).await?;"
+                        "source": "let event_type_out = svix.event_type().update(\"event_type_name\", EventTypeUpdate {\n    description: \"A user has signed up\".to_string(),\n    archived: Some(false),\n    schemas: Some(json!({\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}})),\n    feature_flag: Some(\"cool-new-feature\".to_string()),\n    group_name: Some(\"user\".to_string()),\n}).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var eventTypeOut = await svix.EventType.UpdateAsync(\"event_type_name\", new EventTypeUpdate{\n    description: \"A user has signed up\",\n    archived: false,\n    schemas: /* ... */,\n    featureFlag: \"cool-new-feature\"\n})"
+                        "source": "var eventTypeOut = await svix.EventType.UpdateAsync(\"event_type_name\", new EventTypeUpdate{\n    description: \"A user has signed up\",\n    archived: false,\n    schemas: /* ... */,\n    featureFlag: \"cool-new-feature\",\n    groupName: \"user\"\n})"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix event-type update \"event_type_name\" '{\n    \"description\": \"A user has signed up\",\n    \"archived\": false,\n    \"schemas\": {\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}},\n    \"featureFlag\": \"cool-new-feature\"\n}'"
+                        "source": "svix event-type update \"event_type_name\" '{\n    \"description\": \"A user has signed up\",\n    \"archived\": false,\n    \"schemas\": {\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}},\n    \"featureFlag\": \"cool-new-feature\",\n    \"groupName\": \"user\"\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/event-type/{event_type_name}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"description\": \"A user has signed up\",\n        \"archived\": false,\n        \"schemas\": {\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}},\n        \"featureFlag\": \"cool-new-feature\"\n    }'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/event-type/{event_type_name}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"description\": \"A user has signed up\",\n        \"archived\": false,\n        \"schemas\": {\"1\":{\"description\":\"An invoice was paid by a user\",\"properties\":{\"invoiceId\":{\"description\":\"The invoice id\",\"type\":\"string\"},\"userId\":{\"description\":\"The user id\",\"type\":\"string\"}},\"required\":[\"invoiceId\",\"userId\"],\"title\":\"Invoice Paid Event\",\"type\":\"object\"}},\n        \"featureFlag\": \"cool-new-feature\",\n        \"groupName\": \"user\"\n    }'"
                     }
                 ]
             }
@@ -22007,7 +22005,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/MessageStreamOut"
+                                    "$ref": "#/components/schemas/MessageEventsOut"
                                 }
                             }
                         },
@@ -22097,52 +22095,52 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const messageStreamOut = await svix.even.s();"
+                        "source": "const messageEventsOut = await svix.even.s();"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const messageStreamOut = await svix.even.s();"
+                        "source": "const messageEventsOut = await svix.even.s();"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "message_stream_out = svix.even.s()"
+                        "source": "message_events_out = svix.even.s()"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "message_stream_out = await svix.even.s()"
+                        "source": "message_events_out = await svix.even.s()"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "messageStreamOut, err := svixClient.Even.S(ctx)"
+                        "source": "messageEventsOut, err := svixClient.Even.S(ctx)"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val messageStreamOut = svix.even.s()"
+                        "source": "val messageEventsOut = svix.even.s()"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "MessageStreamOut messageStreamOut = svix.getEven().s()"
+                        "source": "MessageEventsOut messageEventsOut = svix.getEven().s()"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "message_stream_out = svix.even.s()"
+                        "source": "message_events_out = svix.even.s()"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let message_stream_out = svix.even().s().await?;"
+                        "source": "let message_events_out = svix.even().s().await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var messageStreamOut = await svix.Even.SAsync()"
+                        "source": "var messageEventsOut = await svix.Even.SAsync()"
                     },
                     {
                         "label": "CLI",

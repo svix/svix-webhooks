@@ -82,8 +82,6 @@ type APIClient struct {
 
 	StatisticsApi *StatisticsApiService
 
-	StreamsApi *StreamsApiService
-
 	TransformationTemplateApi *TransformationTemplateApiService
 }
 
@@ -118,7 +116,6 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.MessageApi = (*MessageApiService)(&c.common)
 	c.MessageAttemptApi = (*MessageAttemptApiService)(&c.common)
 	c.StatisticsApi = (*StatisticsApiService)(&c.common)
-	c.StreamsApi = (*StreamsApiService)(&c.common)
 	c.TransformationTemplateApi = (*TransformationTemplateApiService)(&c.common)
 
 	return c

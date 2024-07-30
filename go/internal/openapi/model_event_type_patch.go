@@ -19,6 +19,8 @@ type EventTypePatch struct {
 	Archived *bool `json:"archived,omitempty"`
 	Description *string `json:"description,omitempty"`
 	FeatureFlag NullableString `json:"featureFlag,omitempty"`
+	// The event type group's name
+	GroupName NullableString `json:"groupName,omitempty"`
 	Schemas map[string]map[string]interface{} `json:"schemas,omitempty"`
 }
 
@@ -145,6 +147,48 @@ func (o *EventTypePatch) UnsetFeatureFlag() {
 	o.FeatureFlag.Unset()
 }
 
+// GetGroupName returns the GroupName field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *EventTypePatch) GetGroupName() string {
+	if o == nil || o.GroupName.Get() == nil {
+		var ret string
+		return ret
+	}
+	return *o.GroupName.Get()
+}
+
+// GetGroupNameOk returns a tuple with the GroupName field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *EventTypePatch) GetGroupNameOk() (*string, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return o.GroupName.Get(), o.GroupName.IsSet()
+}
+
+// HasGroupName returns a boolean if a field has been set.
+func (o *EventTypePatch) HasGroupName() bool {
+	if o != nil && o.GroupName.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetGroupName gets a reference to the given NullableString and assigns it to the GroupName field.
+func (o *EventTypePatch) SetGroupName(v string) {
+	o.GroupName.Set(&v)
+}
+// SetGroupNameNil sets the value for GroupName to be an explicit nil
+func (o *EventTypePatch) SetGroupNameNil() {
+	o.GroupName.Set(nil)
+}
+
+// UnsetGroupName ensures that no value is present for GroupName, not even an explicit nil
+func (o *EventTypePatch) UnsetGroupName() {
+	o.GroupName.Unset()
+}
+
 // GetSchemas returns the Schemas field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *EventTypePatch) GetSchemas() map[string]map[string]interface{} {
 	if o == nil  {
@@ -188,6 +232,9 @@ func (o EventTypePatch) MarshalJSON() ([]byte, error) {
 	}
 	if o.FeatureFlag.IsSet() {
 		toSerialize["featureFlag"] = o.FeatureFlag.Get()
+	}
+	if o.GroupName.IsSet() {
+		toSerialize["groupName"] = o.GroupName.Get()
 	}
 	if o.Schemas != nil {
 		toSerialize["schemas"] = o.Schemas
