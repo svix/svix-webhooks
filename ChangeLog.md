@@ -3,6 +3,11 @@
 ## Next
 * 
 
+## Version 1.26.0
+* Server: add configuration to for changing service name on OpenTelemetry
+* Bridge: add `/events` poller
+* Bridge: log svix client errors as error, not trace
+
 ## Version 1.25.0
 * Server: Enable redis `tcp_nodelay`
 * Server: Improve database error classification
