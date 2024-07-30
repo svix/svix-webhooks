@@ -222,6 +222,11 @@ export interface MessageAttemptListOptions extends ListOptions {
   after?: Date;
   statusCodeClass?: StatusCodeClass;
   channel?: string;
+  withContent?: boolean;
+}
+
+export interface MessageAttemptListByEndpointOptions extends MessageAttemptListOptions {
+  withMsg?: boolean;
 }
 
 export interface BackgroundTaskListOptions extends ListOptions {
@@ -689,7 +694,7 @@ class MessageAttempt {
   public listByEndpoint(
     appId: string,
     endpointId: string,
-    options?: MessageAttemptListOptions
+    options?: MessageAttemptListByEndpointOptions
   ): Promise<ListResponseMessageAttemptOut> {
     return this.api.v1MessageAttemptListByEndpoint({
       appId,
