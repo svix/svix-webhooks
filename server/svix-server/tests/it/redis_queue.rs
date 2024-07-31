@@ -39,7 +39,7 @@ async fn test_many_queue_consumers_inner(prefix: &str, delay: Option<Duration>) 
         let mut conn = pool.get().await.unwrap();
 
         let _: () = conn
-            .del(&format!("{prefix}{{queue}}_svix_v3_main"))
+            .del(format!("{prefix}{{queue}}_svix_v3_main"))
             .await
             .unwrap();
     }

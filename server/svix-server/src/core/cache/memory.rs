@@ -132,8 +132,6 @@ mod tests {
         }
     }
 
-    #[derive(Deserialize, Serialize, Debug, PartialEq)]
-    struct StringTestVal(String);
     string_kv_def!(StringTestKey);
     impl StringTestKey {
         fn new(id: String) -> StringTestKey {

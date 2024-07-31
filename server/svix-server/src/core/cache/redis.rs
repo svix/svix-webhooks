@@ -67,7 +67,7 @@ impl CacheBehavior for RedisCache {
     async fn delete<T: CacheKey>(&self, key: &T) -> Result<()> {
         let mut pool = self.redis.get().await?;
 
-        pool.del(key.as_ref()).await?;
+        let _: () = pool.del(key.as_ref()).await?;
 
         Ok(())
     }
@@ -103,8 +103,6 @@ mod tests {
         }
     }
 
-    #[derive(Deserialize, Serialize, Debug, PartialEq)]
-    struct StringTestVal(String);
     string_kv_def!(StringTestKey);
     impl StringTestKey {
         fn new(id: String) -> StringTestKey {
