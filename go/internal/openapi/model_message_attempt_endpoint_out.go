@@ -25,6 +25,7 @@ type MessageAttemptEndpointOut struct {
 	// The msg's ID
 	MsgId string `json:"msgId"`
 	Response string `json:"response"`
+	ResponseDurationMs int64 `json:"responseDurationMs"`
 	ResponseStatusCode int32 `json:"responseStatusCode"`
 	Status MessageStatus `json:"status"`
 	Timestamp time.Time `json:"timestamp"`
@@ -36,12 +37,13 @@ type MessageAttemptEndpointOut struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewMessageAttemptEndpointOut(endpointId string, id string, msgId string, response string, responseStatusCode int32, status MessageStatus, timestamp time.Time, triggerType MessageAttemptTriggerType, url string) *MessageAttemptEndpointOut {
+func NewMessageAttemptEndpointOut(endpointId string, id string, msgId string, response string, responseDurationMs int64, responseStatusCode int32, status MessageStatus, timestamp time.Time, triggerType MessageAttemptTriggerType, url string) *MessageAttemptEndpointOut {
 	this := MessageAttemptEndpointOut{}
 	this.EndpointId = endpointId
 	this.Id = id
 	this.MsgId = msgId
 	this.Response = response
+	this.ResponseDurationMs = responseDurationMs
 	this.ResponseStatusCode = responseStatusCode
 	this.Status = status
 	this.Timestamp = timestamp
@@ -186,6 +188,30 @@ func (o *MessageAttemptEndpointOut) SetResponse(v string) {
 	o.Response = v
 }
 
+// GetResponseDurationMs returns the ResponseDurationMs field value
+func (o *MessageAttemptEndpointOut) GetResponseDurationMs() int64 {
+	if o == nil {
+		var ret int64
+		return ret
+	}
+
+	return o.ResponseDurationMs
+}
+
+// GetResponseDurationMsOk returns a tuple with the ResponseDurationMs field value
+// and a boolean to check if the value has been set.
+func (o *MessageAttemptEndpointOut) GetResponseDurationMsOk() (*int64, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.ResponseDurationMs, true
+}
+
+// SetResponseDurationMs sets field value
+func (o *MessageAttemptEndpointOut) SetResponseDurationMs(v int64) {
+	o.ResponseDurationMs = v
+}
+
 // GetResponseStatusCode returns the ResponseStatusCode field value
 func (o *MessageAttemptEndpointOut) GetResponseStatusCode() int32 {
 	if o == nil {
@@ -322,6 +348,9 @@ func (o MessageAttemptEndpointOut) MarshalJSON() ([]byte, error) {
 	}
 	if true {
 		toSerialize["response"] = o.Response
+	}
+	if true {
+		toSerialize["responseDurationMs"] = o.ResponseDurationMs
 	}
 	if true {
 		toSerialize["responseStatusCode"] = o.ResponseStatusCode

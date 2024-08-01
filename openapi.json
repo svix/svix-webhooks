@@ -2909,6 +2909,10 @@
                         "example": "{}",
                         "type": "string"
                     },
+                    "responseDurationMs": {
+                        "format": "int64",
+                        "type": "integer"
+                    },
                     "responseStatusCode": {
                         "example": 200,
                         "format": "int16",
@@ -2937,6 +2941,7 @@
                     "id",
                     "msgId",
                     "response",
+                    "responseDurationMs",
                     "responseStatusCode",
                     "status",
                     "timestamp",
@@ -3163,6 +3168,10 @@
                         "example": "{}",
                         "type": "string"
                     },
+                    "responseDurationMs": {
+                        "format": "int64",
+                        "type": "integer"
+                    },
                     "responseStatusCode": {
                         "example": 200,
                         "format": "int16",
@@ -3191,6 +3200,7 @@
                     "id",
                     "msgId",
                     "response",
+                    "responseDurationMs",
                     "responseStatusCode",
                     "status",
                     "timestamp",
