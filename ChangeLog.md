@@ -3,6 +3,9 @@
 ## Next
 * 
 
+## Version 1.27.0
+* Libs/Python: add missing 'get_stats' function
+
 ## Version 1.26.0
 * Server: add configuration to for changing service name on OpenTelemetry
 * Bridge: add `/events` poller
