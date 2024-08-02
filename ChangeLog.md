@@ -3,6 +3,9 @@
 ## Next
 * 
 
+## Version 1.28.0
+* Libs: Update OpenAPI spec
+
 ## Version 1.27.0
 * Libs/Python: add missing 'get_stats' function
 

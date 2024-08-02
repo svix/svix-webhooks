@@ -77,7 +77,7 @@ import * as base64 from "@stablelib/base64";
 import * as sha256 from "fast-sha256";
 
 const WEBHOOK_TOLERANCE_IN_SECONDS = 5 * 60; // 5 minutes
-const VERSION = "1.27.0";
+const VERSION = "1.28.0";
 
 class UserAgentMiddleware implements Middleware {
   public pre(context: RequestContext): Promise<RequestContext> {
@@ -402,7 +402,7 @@ class Endpoint {
   }
 
   /**
-   * @deprecated Since version 1.27.0. Use `headersUpdate` instead.
+   * @deprecated Since version 1.28.0. Use `headersUpdate` instead.
    */
   public updateHeaders(
     appId: string,
@@ -429,7 +429,7 @@ class Endpoint {
   }
 
   /**
-   * @deprecated Since version 1.27.0. Use `headersPatch` instead.
+   * @deprecated Since version 1.28.0. Use `headersPatch` instead.
    */
   public patchHeaders(
     appId: string,
