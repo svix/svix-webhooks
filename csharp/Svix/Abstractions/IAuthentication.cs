@@ -6,6 +6,11 @@ namespace Svix.Abstractions
 {
     public interface IAuthentication
     {
+        AppPortalAccessOut GetAppPortalAccess(string appId, AppPortalAccessIn appPortalAccess, string idempotencyKey = default);
+
+        Task<AppPortalAccessOut> GetAppPortalAccessAsync(string appId, AppPortalAccessIn appPortalAccess,
+            string idempotencyKey = default, CancellationToken cancellationToken = default);
+
         DashboardAccessOut GetDashboardAccess(string appId, string idempotencyKey = default);
 
         Task<DashboardAccessOut> GetDashboardAccessAsync(string appId, string idempotencyKey = default,
