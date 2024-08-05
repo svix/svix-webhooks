@@ -65,7 +65,7 @@ where
 pub enum TransformerInput {
     /// Transformations accept arbitrary json here, not restricted to an Object type.
     /// The thing receiving the value will error if it can't marshall into a type it needs.
-    JSON(serde_json::Value),
+    Json(serde_json::Value),
     /// Aka "raw", we take the input as a utf-8 string and the transformation does whatever it
     /// wants with it.
     String(String),
@@ -73,7 +73,7 @@ pub enum TransformerInput {
 
 impl From<serde_json::Value> for TransformerInput {
     fn from(value: serde_json::Value) -> Self {
-        Self::JSON(value)
+        Self::Json(value)
     }
 }
 

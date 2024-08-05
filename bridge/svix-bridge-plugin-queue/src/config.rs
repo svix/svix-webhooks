@@ -5,7 +5,7 @@ use svix_bridge_types::{
 
 use crate::sender_input::QueueSender;
 pub use crate::{
-    gcp_pubsub::{GCPPubSubInputOpts, GCPPubSubOutputOpts},
+    gcp_pubsub::{GcpPubSubInputOpts, GcpPubSubOutputOpts},
     rabbitmq::{RabbitMqInputOpts, RabbitMqOutputOpts},
     receiver_output::QueueForwarder,
     redis::{RedisInputOpts, RedisOutputOpts},
@@ -63,20 +63,20 @@ pub async fn into_receiver_output(
 #[serde(tag = "type", rename_all = "lowercase")]
 pub enum QueueInputOpts {
     #[serde(rename = "gcp-pubsub")]
-    GCPPubSub(GCPPubSubInputOpts),
+    GcpPubSub(GcpPubSubInputOpts),
     RabbitMQ(RabbitMqInputOpts),
     Redis(RedisInputOpts),
-    SQS(SqsInputOpts),
+    Sqs(SqsInputOpts),
 }
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(tag = "type", rename_all = "lowercase")]
 pub enum QueueOutputOpts {
     #[serde(rename = "gcp-pubsub")]
-    GCPPubSub(GCPPubSubOutputOpts),
+    GcpPubSub(GcpPubSubOutputOpts),
     RabbitMQ(RabbitMqOutputOpts),
     Redis(RedisOutputOpts),
-    SQS(SqsOutputOpts),
+    Sqs(SqsOutputOpts),
 }
 
 #[cfg(test)]

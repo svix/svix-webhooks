@@ -169,7 +169,7 @@ async fn test_consume_transformed_json_ok() {
     let _handle = tokio::spawn(async move {
         while let Some(x) = transformer_rx.recv().await {
             let mut out = match x.input {
-                TransformerInput::JSON(input) => input.as_object().unwrap().clone(),
+                TransformerInput::Json(input) => input.as_object().unwrap().clone(),
                 _ => unreachable!(),
             };
             // Prune out the "hi" key.

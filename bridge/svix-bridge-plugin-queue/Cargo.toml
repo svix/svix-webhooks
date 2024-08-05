@@ -30,3 +30,6 @@ lapin = "2"
 redis = { version = "0.25.4", features = ["tokio-comp", "streams"] }
 tracing-subscriber.workspace = true
 wiremock.workspace = true
+
+[lints]
+workspace = true

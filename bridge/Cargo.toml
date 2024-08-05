@@ -12,6 +12,19 @@ members = [
     "svix-bridge-plugin-kafka",
 ]
 
+[workspace.lints.rust]
+rust_2018_idioms = { level = "warn", priority = -1 }
+trivial_numeric_casts = "warn"
+
+[workspace.lints.clippy]
+cloned_instead_of_copied = "warn"
+dbg_macro = "warn"
+inefficient_to_string = "warn"
+macro_use_imports = "warn"
+mut_mut = "warn"
+nonstandard_macro_braces = "warn"
+uninlined_format_args = "warn"
+
 [workspace.dependencies]
 serde = { version = "1.0.203", features = ["derive"] }
 serde_json = "1.0.117"

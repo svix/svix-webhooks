@@ -46,3 +46,6 @@ tower = "0.4"
 default = ["kafka", "jemalloc"]
 kafka = ["dep:svix-bridge-plugin-kafka"]
 jemalloc = ["tikv-jemallocator", "tikv-jemalloc-ctl"]
+
+[lints]
+workspace = true

@@ -24,19 +24,19 @@ impl std::fmt::Debug for QueueSender {
 
 fn system_name(opts: &QueueInputOpts) -> &'static str {
     match opts {
-        QueueInputOpts::GCPPubSub(_) => "gcp-pubsub",
+        QueueInputOpts::GcpPubSub(_) => "gcp-pubsub",
         QueueInputOpts::RabbitMQ(_) => "rabbitmq",
         QueueInputOpts::Redis(_) => "redis",
-        QueueInputOpts::SQS(_) => "sqs",
+        QueueInputOpts::Sqs(_) => "sqs",
     }
 }
 
 fn source_name(opts: &QueueInputOpts) -> &str {
     match opts {
-        QueueInputOpts::GCPPubSub(opts) => &opts.subscription_id,
+        QueueInputOpts::GcpPubSub(opts) => &opts.subscription_id,
         QueueInputOpts::RabbitMQ(opts) => &opts.queue_name,
         QueueInputOpts::Redis(opts) => &opts.queue_key,
-        QueueInputOpts::SQS(opts) => &opts.queue_dsn,
+        QueueInputOpts::Sqs(opts) => &opts.queue_dsn,
     }
 }
 
@@ -87,10 +87,10 @@ impl Consumer for QueueSender {
 
     async fn consumer(&self) -> std::io::Result<DynConsumer> {
         Ok(match &self.input_opts {
-            QueueInputOpts::GCPPubSub(cfg) => gcp_pubsub::consumer(cfg).await,
+            QueueInputOpts::GcpPubSub(cfg) => gcp_pubsub::consumer(cfg).await,
             QueueInputOpts::RabbitMQ(cfg) => rabbitmq::consumer(cfg).await,
             QueueInputOpts::Redis(cfg) => crate::redis::consumer(cfg).await,
-            QueueInputOpts::SQS(cfg) => sqs::consumer(cfg).await,
+            QueueInputOpts::Sqs(cfg) => sqs::consumer(cfg).await,
         }
         .map_err(Error::from)?)
     }

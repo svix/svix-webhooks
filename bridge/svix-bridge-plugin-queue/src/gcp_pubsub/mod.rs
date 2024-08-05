@@ -6,18 +6,18 @@ use serde::Deserialize;
 use crate::error::{Error, Result};
 
 #[derive(Debug, Default, Deserialize)]
-pub struct GCPPubSubInputOpts {
+pub struct GcpPubSubInputOpts {
     pub subscription_id: String,
     pub credentials_file: Option<PathBuf>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
-pub struct GCPPubSubOutputOpts {
+pub struct GcpPubSubOutputOpts {
     pub topic: String,
     pub credentials_file: Option<PathBuf>,
 }
 
-pub async fn consumer(cfg: &GCPPubSubInputOpts) -> Result<DynConsumer> {
+pub async fn consumer(cfg: &GcpPubSubInputOpts) -> Result<DynConsumer> {
     backends::GcpPubSubBackend::builder(backends::GcpPubSubConfig {
         subscription_id: cfg.subscription_id.clone(),
         credentials_file: cfg.credentials_file.clone(),
@@ -30,7 +30,7 @@ pub async fn consumer(cfg: &GCPPubSubInputOpts) -> Result<DynConsumer> {
     .map_err(Error::from)
 }
 
-pub async fn producer(cfg: &GCPPubSubOutputOpts) -> Result<DynProducer> {
+pub async fn producer(cfg: &GcpPubSubOutputOpts) -> Result<DynProducer> {
     backends::GcpPubSubBackend::builder(backends::GcpPubSubConfig {
         topic_id: cfg.topic.clone(),
         credentials_file: cfg.credentials_file.clone(),

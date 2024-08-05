@@ -72,7 +72,7 @@ impl Config {
             Cow::Borrowed(raw_src)
         };
         let cfg: Self = serde_yaml::from_str(&src)
-            .map_err(|e| Error::new(ErrorKind::Other, format!("Failed to parse config: {}", e)))?;
+            .map_err(|e| Error::new(ErrorKind::Other, format!("Failed to parse config: {e}")))?;
 
         for sc in &cfg.senders {
             if let Some(tc) = sc.transformation() {
@@ -80,9 +80,8 @@ impl Config {
                     Error::new(
                         ErrorKind::Other,
                         format!(
-                            "failed to parse transformation for sender `{}`: {:?}",
+                            "failed to parse transformation for sender `{}`: {e:?}",
                             &sc.name(),
-                            e,
                         ),
                     )
                 })?;
@@ -102,10 +101,7 @@ impl Config {
             crate::runtime::validate_script(tc.source().as_str()).map_err(|e| {
                 Error::new(
                     ErrorKind::Other,
-                    format!(
-                        "failed to parse transformation for receiver `{}`: {:?}",
-                        name, e,
-                    ),
+                    format!("failed to parse transformation for receiver `{name}`: {e:?}"),
                 )
             })?;
         }

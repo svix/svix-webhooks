@@ -116,10 +116,9 @@ fn run_script_inner(
             r#"
     (function () {{
         {script}
-        return handler({});
+        return handler({input});
     }})()
     "#,
-            input
         )
         .into(),
     );
