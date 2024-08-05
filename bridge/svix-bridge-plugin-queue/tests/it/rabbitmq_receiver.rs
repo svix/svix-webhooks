@@ -53,7 +53,7 @@ async fn proxy(
         while let Ok((mut inbound, _)) = listener.accept().await {
             let mut outbound = TcpStream::connect(server_addr.clone()).await.unwrap();
             if let Err(e) = copy_bidirectional(&mut inbound, &mut outbound).await {
-                eprintln!("Failed to transfer; error={}", e);
+                eprintln!("Failed to transfer; error={e}");
             }
         }
     });

@@ -145,7 +145,7 @@ async fn parse_payload(
                     })?)
                 }
                 TransformerInputFormat::Json => {
-                    TransformerInput::JSON(payload.as_json().map_err(|_| {
+                    TransformerInput::Json(payload.as_json().map_err(|_| {
                         tracing::error!("Unable to parse request body as json");
                         http::StatusCode::BAD_REQUEST
                     })?)

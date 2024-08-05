@@ -53,7 +53,7 @@ impl KafkaConsumer {
                 TransformerInputFormat::Json => {
                     let json_payload =
                         serde_json::from_slice(payload).map_err(Error::Deserialization)?;
-                    TransformerInput::JSON(json_payload)
+                    TransformerInput::Json(json_payload)
                 }
                 TransformerInputFormat::String => {
                     let raw_payload = str::from_utf8(payload).map_err(Error::NonUtf8Payload)?;

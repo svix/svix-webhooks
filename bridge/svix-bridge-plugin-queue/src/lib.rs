@@ -141,7 +141,7 @@ trait Consumer {
                             return Ok(());
                         }
                     };
-                    TransformerInput::JSON(json_payload)
+                    TransformerInput::Json(json_payload)
                 }
                 TransformerInputFormat::String => {
                     // N.b. our redis backend doesn't support string payloads, but higher up in the

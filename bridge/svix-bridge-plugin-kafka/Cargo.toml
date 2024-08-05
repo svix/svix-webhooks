@@ -17,3 +17,6 @@ tracing.workspace = true
 ctor = "0.2.8"
 tracing-subscriber.workspace = true
 wiremock.workspace = true
+
+[lints]
+workspace = true

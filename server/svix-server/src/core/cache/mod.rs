@@ -119,8 +119,8 @@ pub(crate) use string_kv_def;
 #[derive(Clone)]
 #[enum_dispatch]
 pub enum Cache {
-    MemoryCache(memory::MemoryCache),
-    RedisCache(redis::RedisCache),
+    Memory(memory::MemoryCache),
+    Redis(redis::RedisCache),
     None(none::NoCache),
 }
 

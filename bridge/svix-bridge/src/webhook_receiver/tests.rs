@@ -154,7 +154,7 @@ async fn test_transformation_json() {
     let _handle = tokio::spawn(async move {
         while let Some(x) = rx.recv().await {
             let mut input = match x.input {
-                TransformerInput::JSON(input) => input.as_object().unwrap().clone(),
+                TransformerInput::Json(input) => input.as_object().unwrap().clone(),
                 _ => unreachable!(),
             };
             input.insert("__TRANSFORMED__".into(), json!(true));
