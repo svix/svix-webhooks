@@ -4,7 +4,6 @@ resolver = "2"
 
 [workspace.lints.rust]
 rust_2018_idioms = { level = "warn", priority = -1 }
-trivial_casts = "warn"
 trivial_numeric_casts = "warn"
 
 [workspace.lints.clippy]

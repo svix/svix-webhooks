@@ -270,7 +270,6 @@ async fn migrate_list_to_stream(
         for key in legacy_keys {
             let task = match task_from_redis_key(&key) {
                 Ok(t) => t,
-                #[allow(trivial_casts)]
                 Err(e) => {
                     tracing::error!(error = &e as &dyn std::error::Error, "Invalid legacy key");
                     continue;
