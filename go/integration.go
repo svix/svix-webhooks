@@ -21,6 +21,8 @@ type Integration struct {
 type IntegrationListOptions struct {
 	Iterator *string
 	Limit    *int32
+	// N.b. `openapi.Ordering` aliased for re-export via `endpoint.go`
+	Order *Ordering
 }
 
 func (e *Integration) List(ctx context.Context, appId string, options *IntegrationListOptions) (*ListResponseIntegrationOut, error) {
@@ -31,6 +33,9 @@ func (e *Integration) List(ctx context.Context, appId string, options *Integrati
 		}
 		if options.Limit != nil {
 			req = req.Limit(*options.Limit)
+		}
+		if options.Order != nil {
+			req = req.Order(*options.Order)
 		}
 	}
 	out, res, err := req.Execute()
