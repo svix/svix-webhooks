@@ -18,13 +18,14 @@ type (
 )
 
 type MessageListOptions struct {
-	Iterator   *string
-	Limit      *int32
-	EventTypes *[]string
-	Before     *time.Time
-	After      *time.Time
-	Channel    *string
-	Tag        *string
+	Iterator    *string
+	Limit       *int32
+	EventTypes  *[]string
+	Before      *time.Time
+	After       *time.Time
+	Channel     *string
+	Tag         *string
+	WithContent *bool
 }
 
 func (m *Message) List(ctx context.Context, appId string, options *MessageListOptions) (*ListResponseMessageOut, error) {
@@ -50,6 +51,9 @@ func (m *Message) List(ctx context.Context, appId string, options *MessageListOp
 		}
 		if options.Tag != nil {
 			req = req.Tag(*options.Tag)
+		}
+		if options.WithContent != nil {
+			req = req.WithContent(*options.WithContent)
 		}
 	}
 	out, res, err := req.Execute()
