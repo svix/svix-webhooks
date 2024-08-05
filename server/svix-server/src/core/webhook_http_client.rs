@@ -39,7 +39,7 @@ pub enum Error {
     #[error("requests to this IP range are blocked (see the server configuration)")]
     BlockedIp,
     #[error("error resolving name: {0}")]
-    ResolveError(#[from] ResolveError),
+    Resolve(#[from] ResolveError),
 
     #[error("request timed out")]
     TimedOut,
