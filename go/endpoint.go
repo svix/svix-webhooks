@@ -25,6 +25,8 @@ type (
 	EndpointTransformationOut = openapi.EndpointTransformationOut
 	EventExampleIn            = openapi.EventExampleIn
 	Ordering                  = openapi.Ordering
+	RecoverOut                = openapi.RecoverOut
+	ReplayOut                 = openapi.ReplayOut
 )
 
 type Endpoint struct {
@@ -150,11 +152,11 @@ func (e *Endpoint) RotateSecretWithOptions(ctx context.Context, appId string, en
 	return nil
 }
 
-func (e *Endpoint) Recover(ctx context.Context, appId string, endpointId string, recoverIn *RecoverIn) error {
+func (e *Endpoint) Recover(ctx context.Context, appId string, endpointId string, recoverIn *RecoverIn) (*RecoverOut, error) {
 	return e.RecoverWithOptions(ctx, appId, endpointId, recoverIn, nil)
 }
 
-func (e *Endpoint) RecoverWithOptions(ctx context.Context, appId string, endpointId string, recoverIn *RecoverIn, options *PostOptions) error {
+func (e *Endpoint) RecoverWithOptions(ctx context.Context, appId string, endpointId string, recoverIn *RecoverIn, options *PostOptions) (*RecoverOut, error) {
 	req := e.api.EndpointApi.V1EndpointRecover(ctx, appId, endpointId)
 	req = req.RecoverIn(openapi.RecoverIn(*recoverIn))
 	if options != nil {
@@ -162,11 +164,11 @@ func (e *Endpoint) RecoverWithOptions(ctx context.Context, appId string, endpoin
 			req = req.IdempotencyKey(*options.IdempotencyKey)
 		}
 	}
-	_, res, err := req.Execute()
+	out, res, err := req.Execute()
 	if err != nil {
-		return wrapError(err, res)
+		return nil, wrapError(err, res)
 	}
-	return nil
+	return &out, nil
 }
 
 func (e *Endpoint) GetHeaders(ctx context.Context, appId string, endpointId string) (*EndpointHeadersOut, error) {
@@ -219,7 +221,7 @@ func (e *Endpoint) GetStatsWithOptions(ctx context.Context, appId string, endpoi
 	return &ret, nil
 }
 
-func (e *Endpoint) ReplayMissing(ctx context.Context, appId string, endpointId string, replayIn *ReplayIn) error {
+func (e *Endpoint) ReplayMissing(ctx context.Context, appId string, endpointId string, replayIn *ReplayIn) (*ReplayOut, error) {
 	return e.ReplayMissingWithOptions(ctx, appId, endpointId, replayIn, nil)
 }
 
@@ -229,7 +231,7 @@ func (e *Endpoint) ReplayMissingWithOptions(
 	endpointId string,
 	replayIn *ReplayIn,
 	options *PostOptions,
-) error {
+) (*ReplayOut, error) {
 	req := e.api.EndpointApi.V1EndpointReplay(ctx, appId, endpointId)
 	req.ReplayIn(openapi.ReplayIn(*replayIn))
 	if options != nil {
@@ -237,11 +239,11 @@ func (e *Endpoint) ReplayMissingWithOptions(
 			req = req.IdempotencyKey(*options.IdempotencyKey)
 		}
 	}
-	_, res, err := req.Execute()
+	out, res, err := req.Execute()
 	if err != nil {
-		return wrapError(err, res)
+		return nil, wrapError(err, res)
 	}
-	return nil
+	return &out, nil
 }
 
 func (e *Endpoint) TransformationGet(ctx context.Context, appId string, endpointId string) (*EndpointTransformationOut, error) {
