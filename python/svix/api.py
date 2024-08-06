@@ -1,6 +1,6 @@
 import typing as t
 from dataclasses import asdict, dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 
 from deprecated import deprecated
 
@@ -178,6 +178,14 @@ from .internal.openapi_client.models.status_code_class import StatusCodeClass
 DEFAULT_SERVER_URL = "https://api.svix.com"
 
 
+def dt_format(x: datetime) -> str:
+    return (
+        x.replace(tzinfo=timezone.utc)
+        .isoformat(sep="T", timespec="microseconds")
+        .replace("+00:00", "Z")
+    )
+
+
 @dataclass
 class SvixOptions:
     debug: bool = False
@@ -227,6 +235,14 @@ class MessageListOptions(ListOptions):
     channel: t.Optional[str] = None
     tag: t.Optional[str] = None
 
+    def to_dict(self) -> t.Dict[str, t.Any]:
+        d = super().to_dict()
+        if self.before is not None:
+            d["before"] = dt_format(self.before)
+        if self.after is not None:
+            d["after"] = dt_format(self.after)
+        return d
+
 
 @dataclass
 class ApplicationListOptions(ListOptions):
@@ -268,6 +284,14 @@ class MessageAttemptListOptions(ListOptions):
     after: t.Optional[datetime] = None
     channel: t.Optional[str] = None
     status_code_class: t.Optional[StatusCodeClass] = None
+
+    def to_dict(self) -> t.Dict[str, t.Any]:
+        d = super().to_dict()
+        if self.before is not None:
+            d["before"] = dt_format(self.before)
+        if self.after is not None:
+            d["after"] = dt_format(self.after)
+        return d
 
 
 class ApiBase:
