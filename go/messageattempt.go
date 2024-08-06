@@ -36,6 +36,7 @@ type MessageAttemptListOptions struct {
 	EndpointId      *string
 	WithContent     *bool
 	WithMsg         *bool
+	Tag             *string
 }
 
 // Deprecated: use `ListByMsg` or `ListByEndpoint` instead
@@ -75,6 +76,9 @@ func (m *MessageAttempt) ListByMsg(ctx context.Context, appId string, msgId stri
 		}
 		if options.WithContent != nil {
 			req = req.WithContent(*options.WithContent)
+		}
+		if options.Tag != nil {
+			req = req.Tag(*options.Tag)
 		}
 	}
 	out, res, err := req.Execute()
@@ -117,6 +121,9 @@ func (m *MessageAttempt) ListByEndpoint(ctx context.Context, appId string, endpo
 		}
 		if options.WithMsg != nil {
 			req = req.WithMsg(*options.WithMsg)
+		}
+		if options.Tag != nil {
+			req = req.Tag(*options.Tag)
 		}
 	}
 	out, res, err := req.Execute()
@@ -179,6 +186,9 @@ func (m *MessageAttempt) ListAttemptedMessages(ctx context.Context, appId string
 		if options.EventTypes != nil {
 			req = req.EventTypes(*options.EventTypes)
 		}
+		if options.Tag != nil {
+			req = req.Tag(*options.Tag)
+		}
 	}
 	out, res, err := req.Execute()
 	if err != nil {
@@ -229,6 +239,9 @@ func (m *MessageAttempt) ListAttemptsForEndpoint(ctx context.Context, appId stri
 		}
 		if options.Channel != nil {
 			req = req.Channel(*options.Channel)
+		}
+		if options.Tag != nil {
+			req = req.Tag(*options.Tag)
 		}
 	}
 	out, res, err := req.Execute()
