@@ -7,6 +7,7 @@ use figment::{
     providers::{Env, Format, Toml},
     Figment,
 };
+use http::uri::InvalidUri;
 use ipnet::IpNet;
 use serde::{Deserialize, Deserializer};
 use tracing::Level;
@@ -188,8 +189,58 @@ pub struct ConfigurationInner {
     #[serde(default)]
     pub dangerous_disable_tls_verification: bool,
 
+    /// Optional configuration for sending webhooks through a proxy.
+    #[serde(rename = "proxy")]
+    pub proxy_config: Option<ProxyConfig>,
+
     #[serde(flatten)]
     pub internal: InternalConfig,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct ProxyConfig {
+    /// SOCKS5 proxy address.
+    ///
+    /// More proxy types may be supported in the future.
+    pub addr: ProxyAddr,
+}
+
+#[derive(Clone, Debug)]
+pub struct ProxyAddr {
+    raw: String,
+    parsed: http::Uri,
+}
+
+impl ProxyAddr {
+    pub fn new(raw: impl Into<String>) -> Result<Self, InvalidUri> {
+        let raw = raw.into();
+        let parsed = raw.parse()?;
+        Ok(Self { raw, parsed })
+    }
+}
+
+impl From<ProxyAddr> for http::Uri {
+    fn from(value: ProxyAddr) -> Self {
+        value.parsed
+    }
+}
+
+impl PartialEq for ProxyAddr {
+    fn eq(&self, other: &Self) -> bool {
+        self.raw == other.raw
+    }
+}
+
+impl Eq for ProxyAddr {}
+
+impl<'de> Deserialize<'de> for ProxyAddr {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let raw = String::deserialize(deserializer)?;
+        Self::new(raw).map_err(serde::de::Error::custom)
+    }
 }
 
 fn validate_config_complete(config: &ConfigurationInner) -> Result<(), ValidationError> {
