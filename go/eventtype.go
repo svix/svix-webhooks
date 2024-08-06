@@ -26,6 +26,8 @@ type EventTypeListOptions struct {
 	Limit           *int32
 	WithContent     *bool
 	IncludeArchived *bool
+	// N.b. `openapi.Ordering` aliased for re-export via `endpoint.go`
+	Order *Ordering
 }
 
 func (e *EventType) List(ctx context.Context, options *EventTypeListOptions) (*ListResponseEventTypeOut, error) {
@@ -42,6 +44,9 @@ func (e *EventType) List(ctx context.Context, options *EventTypeListOptions) (*L
 		}
 		if options.IncludeArchived != nil {
 			req = req.IncludeArchived(*options.IncludeArchived)
+		}
+		if options.Order != nil {
+			req = req.Order(*options.Order)
 		}
 	}
 	out, res, err := req.Execute()
