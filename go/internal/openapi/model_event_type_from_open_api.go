@@ -16,6 +16,7 @@ import (
 
 // EventTypeFromOpenApi struct for EventTypeFromOpenApi
 type EventTypeFromOpenApi struct {
+	Deprecated bool `json:"deprecated"`
 	Description string `json:"description"`
 	// The event type's name
 	Name string `json:"name"`
@@ -26,8 +27,9 @@ type EventTypeFromOpenApi struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEventTypeFromOpenApi(description string, name string) *EventTypeFromOpenApi {
+func NewEventTypeFromOpenApi(deprecated bool, description string, name string) *EventTypeFromOpenApi {
 	this := EventTypeFromOpenApi{}
+	this.Deprecated = deprecated
 	this.Description = description
 	this.Name = name
 	return &this
@@ -39,6 +41,30 @@ func NewEventTypeFromOpenApi(description string, name string) *EventTypeFromOpen
 func NewEventTypeFromOpenApiWithDefaults() *EventTypeFromOpenApi {
 	this := EventTypeFromOpenApi{}
 	return &this
+}
+
+// GetDeprecated returns the Deprecated field value
+func (o *EventTypeFromOpenApi) GetDeprecated() bool {
+	if o == nil {
+		var ret bool
+		return ret
+	}
+
+	return o.Deprecated
+}
+
+// GetDeprecatedOk returns a tuple with the Deprecated field value
+// and a boolean to check if the value has been set.
+func (o *EventTypeFromOpenApi) GetDeprecatedOk() (*bool, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.Deprecated, true
+}
+
+// SetDeprecated sets field value
+func (o *EventTypeFromOpenApi) SetDeprecated(v bool) {
+	o.Deprecated = v
 }
 
 // GetDescription returns the Description field value
@@ -124,6 +150,9 @@ func (o *EventTypeFromOpenApi) SetSchemas(v map[string]map[string]interface{}) {
 
 func (o EventTypeFromOpenApi) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
+	if true {
+		toSerialize["deprecated"] = o.Deprecated
+	}
 	if true {
 		toSerialize["description"] = o.Description
 	}
