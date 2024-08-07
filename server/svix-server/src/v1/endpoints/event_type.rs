@@ -60,6 +60,8 @@ pub struct EventTypeIn {
     #[serde(default, rename = "archived")]
     #[schemars(example = "example_event_archived")]
     pub deleted: bool,
+    #[serde(default)]
+    pub deprecated: bool,
     /// The schema for the event type for a specific version as a JSON schema.
     #[schemars(example = "event_type_versioned_schemas_example")]
     pub schemas: Option<eventtype::Schema>,
@@ -78,6 +80,7 @@ impl ModelIn for EventTypeIn {
             deleted,
             schemas,
             feature_flag,
+            deprecated,
         } = self;
 
         model.name = Set(name);
@@ -85,6 +88,7 @@ impl ModelIn for EventTypeIn {
         model.deleted = Set(deleted);
         model.schemas = Set(schemas);
         model.feature_flag = Set(feature_flag);
+        model.deprecated = Set(deprecated);
     }
 }
 
@@ -97,6 +101,8 @@ struct EventTypeUpdate {
     #[serde(default, rename = "archived")]
     #[schemars(example = "example_event_archived")]
     deleted: bool,
+    #[serde(default)]
+    deprecated: bool,
     /// The schema for the event type for a specific version as a JSON schema.
     #[schemars(example = "event_type_versioned_schemas_example")]
     schemas: Option<eventtype::Schema>,
@@ -112,12 +118,14 @@ impl ModelIn for EventTypeUpdate {
         let EventTypeUpdate {
             description,
             deleted,
+            deprecated,
             schemas,
             feature_flag,
         } = self;
 
         model.description = Set(description);
         model.deleted = Set(deleted);
+        model.deprecated = Set(deprecated);
         model.schemas = Set(schemas);
         model.feature_flag = Set(feature_flag);
     }
@@ -137,6 +145,9 @@ struct EventTypePatch {
     )]
     deleted: UnrequiredField<bool>,
 
+    #[serde(default, skip_serializing_if = "UnrequiredField::is_absent")]
+    deprecated: UnrequiredField<bool>,
+
     #[serde(default, skip_serializing_if = "UnrequiredNullableField::is_absent")]
     schemas: UnrequiredNullableField<eventtype::Schema>,
 
@@ -151,12 +162,14 @@ impl ModelIn for EventTypePatch {
         let EventTypePatch {
             description,
             deleted,
+            deprecated,
             schemas,
             feature_flag,
         } = self;
 
         patch_field_non_nullable!(model, description);
         patch_field_non_nullable!(model, deleted);
+        patch_field_non_nullable!(model, deprecated);
         patch_field_nullable!(model, schemas);
         patch_field_nullable!(model, feature_flag);
     }
@@ -171,6 +184,7 @@ pub struct EventTypeOut {
     #[serde(rename = "archived")]
     #[schemars(example = "example_event_archived", default = "example_event_archived")]
     pub deleted: bool,
+    pub deprecated: bool,
     /// The schema for the event type for a specific version as a JSON schema.
     #[schemars(example = "event_type_versioned_schemas_example")]
     pub schemas: Option<eventtype::Schema>,
@@ -196,6 +210,7 @@ impl From<eventtype::Model> for EventTypeOut {
             name: model.name,
             description: model.description,
             deleted: model.deleted,
+            deprecated: model.deprecated,
             schemas: model.schemas,
             feature_flag: model.feature_flag,
 

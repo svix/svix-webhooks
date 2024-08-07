@@ -26,6 +26,7 @@ pub struct Model {
     pub org_id: OrganizationId,
     pub description: String,
     pub deleted: bool,
+    pub deprecated: bool,
     pub schemas: Option<Schema>,
     pub name: EventTypeName,
     pub feature_flag: Option<FeatureFlag>,
