@@ -19,6 +19,7 @@ import (
 type EventTypeOut struct {
 	Archived *bool `json:"archived,omitempty"`
 	CreatedAt time.Time `json:"createdAt"`
+	Deprecated bool `json:"deprecated"`
 	Description string `json:"description"`
 	FeatureFlag NullableString `json:"featureFlag,omitempty"`
 	// The event type group's name
@@ -34,11 +35,12 @@ type EventTypeOut struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEventTypeOut(createdAt time.Time, description string, name string, updatedAt time.Time) *EventTypeOut {
+func NewEventTypeOut(createdAt time.Time, deprecated bool, description string, name string, updatedAt time.Time) *EventTypeOut {
 	this := EventTypeOut{}
 	var archived bool = false
 	this.Archived = &archived
 	this.CreatedAt = createdAt
+	this.Deprecated = deprecated
 	this.Description = description
 	this.Name = name
 	this.UpdatedAt = updatedAt
@@ -109,6 +111,30 @@ func (o *EventTypeOut) GetCreatedAtOk() (*time.Time, bool) {
 // SetCreatedAt sets field value
 func (o *EventTypeOut) SetCreatedAt(v time.Time) {
 	o.CreatedAt = v
+}
+
+// GetDeprecated returns the Deprecated field value
+func (o *EventTypeOut) GetDeprecated() bool {
+	if o == nil {
+		var ret bool
+		return ret
+	}
+
+	return o.Deprecated
+}
+
+// GetDeprecatedOk returns a tuple with the Deprecated field value
+// and a boolean to check if the value has been set.
+func (o *EventTypeOut) GetDeprecatedOk() (*bool, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.Deprecated, true
+}
+
+// SetDeprecated sets field value
+func (o *EventTypeOut) SetDeprecated(v bool) {
+	o.Deprecated = v
 }
 
 // GetDescription returns the Description field value
@@ -307,6 +333,9 @@ func (o EventTypeOut) MarshalJSON() ([]byte, error) {
 	}
 	if true {
 		toSerialize["createdAt"] = o.CreatedAt
+	}
+	if true {
+		toSerialize["deprecated"] = o.Deprecated
 	}
 	if true {
 		toSerialize["description"] = o.Description

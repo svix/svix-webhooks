@@ -1817,6 +1817,9 @@
             },
             "EventTypeFromOpenApi": {
                 "properties": {
+                    "deprecated": {
+                        "type": "boolean"
+                    },
                     "description": {
                         "type": "string"
                     },
@@ -1855,6 +1858,7 @@
                     }
                 },
                 "required": [
+                    "deprecated",
                     "description",
                     "name"
                 ],
@@ -2013,6 +2017,10 @@
                         "example": false,
                         "type": "boolean"
                     },
+                    "deprecated": {
+                        "default": false,
+                        "type": "boolean"
+                    },
                     "description": {
                         "example": "A user has signed up",
                         "type": "string"
@@ -2086,6 +2094,9 @@
                         "format": "date-time",
                         "type": "string"
                     },
+                    "deprecated": {
+                        "type": "boolean"
+                    },
                     "description": {
                         "example": "A user has signed up",
                         "type": "string"
@@ -2148,6 +2159,7 @@
                 },
                 "required": [
                     "createdAt",
+                    "deprecated",
                     "description",
                     "name",
                     "updatedAt"
@@ -2157,6 +2169,9 @@
             "EventTypePatch": {
                 "properties": {
                     "archived": {
+                        "type": "boolean"
+                    },
+                    "deprecated": {
                         "type": "boolean"
                     },
                     "description": {
@@ -2241,6 +2256,10 @@
                     "archived": {
                         "default": false,
                         "example": false,
+                        "type": "boolean"
+                    },
+                    "deprecated": {
+                        "default": false,
                         "type": "boolean"
                     },
                     "description": {

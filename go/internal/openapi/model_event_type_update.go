@@ -17,6 +17,7 @@ import (
 // EventTypeUpdate struct for EventTypeUpdate
 type EventTypeUpdate struct {
 	Archived *bool `json:"archived,omitempty"`
+	Deprecated *bool `json:"deprecated,omitempty"`
 	Description string `json:"description"`
 	FeatureFlag NullableString `json:"featureFlag,omitempty"`
 	// The event type group's name
@@ -33,6 +34,8 @@ func NewEventTypeUpdate(description string) *EventTypeUpdate {
 	this := EventTypeUpdate{}
 	var archived bool = false
 	this.Archived = &archived
+	var deprecated bool = false
+	this.Deprecated = &deprecated
 	this.Description = description
 	return &this
 }
@@ -44,6 +47,8 @@ func NewEventTypeUpdateWithDefaults() *EventTypeUpdate {
 	this := EventTypeUpdate{}
 	var archived bool = false
 	this.Archived = &archived
+	var deprecated bool = false
+	this.Deprecated = &deprecated
 	return &this
 }
 
@@ -77,6 +82,38 @@ func (o *EventTypeUpdate) HasArchived() bool {
 // SetArchived gets a reference to the given bool and assigns it to the Archived field.
 func (o *EventTypeUpdate) SetArchived(v bool) {
 	o.Archived = &v
+}
+
+// GetDeprecated returns the Deprecated field value if set, zero value otherwise.
+func (o *EventTypeUpdate) GetDeprecated() bool {
+	if o == nil || o.Deprecated == nil {
+		var ret bool
+		return ret
+	}
+	return *o.Deprecated
+}
+
+// GetDeprecatedOk returns a tuple with the Deprecated field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *EventTypeUpdate) GetDeprecatedOk() (*bool, bool) {
+	if o == nil || o.Deprecated == nil {
+		return nil, false
+	}
+	return o.Deprecated, true
+}
+
+// HasDeprecated returns a boolean if a field has been set.
+func (o *EventTypeUpdate) HasDeprecated() bool {
+	if o != nil && o.Deprecated != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetDeprecated gets a reference to the given bool and assigns it to the Deprecated field.
+func (o *EventTypeUpdate) SetDeprecated(v bool) {
+	o.Deprecated = &v
 }
 
 // GetDescription returns the Description field value
@@ -224,6 +261,9 @@ func (o EventTypeUpdate) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if o.Archived != nil {
 		toSerialize["archived"] = o.Archived
+	}
+	if o.Deprecated != nil {
+		toSerialize["deprecated"] = o.Deprecated
 	}
 	if true {
 		toSerialize["description"] = o.Description

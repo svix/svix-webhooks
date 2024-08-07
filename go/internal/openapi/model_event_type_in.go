@@ -17,6 +17,7 @@ import (
 // EventTypeIn struct for EventTypeIn
 type EventTypeIn struct {
 	Archived *bool `json:"archived,omitempty"`
+	Deprecated *bool `json:"deprecated,omitempty"`
 	Description string `json:"description"`
 	FeatureFlag NullableString `json:"featureFlag,omitempty"`
 	// The event type group's name
@@ -35,6 +36,8 @@ func NewEventTypeIn(description string, name string) *EventTypeIn {
 	this := EventTypeIn{}
 	var archived bool = false
 	this.Archived = &archived
+	var deprecated bool = false
+	this.Deprecated = &deprecated
 	this.Description = description
 	this.Name = name
 	return &this
@@ -47,6 +50,8 @@ func NewEventTypeInWithDefaults() *EventTypeIn {
 	this := EventTypeIn{}
 	var archived bool = false
 	this.Archived = &archived
+	var deprecated bool = false
+	this.Deprecated = &deprecated
 	return &this
 }
 
@@ -80,6 +85,38 @@ func (o *EventTypeIn) HasArchived() bool {
 // SetArchived gets a reference to the given bool and assigns it to the Archived field.
 func (o *EventTypeIn) SetArchived(v bool) {
 	o.Archived = &v
+}
+
+// GetDeprecated returns the Deprecated field value if set, zero value otherwise.
+func (o *EventTypeIn) GetDeprecated() bool {
+	if o == nil || o.Deprecated == nil {
+		var ret bool
+		return ret
+	}
+	return *o.Deprecated
+}
+
+// GetDeprecatedOk returns a tuple with the Deprecated field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *EventTypeIn) GetDeprecatedOk() (*bool, bool) {
+	if o == nil || o.Deprecated == nil {
+		return nil, false
+	}
+	return o.Deprecated, true
+}
+
+// HasDeprecated returns a boolean if a field has been set.
+func (o *EventTypeIn) HasDeprecated() bool {
+	if o != nil && o.Deprecated != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetDeprecated gets a reference to the given bool and assigns it to the Deprecated field.
+func (o *EventTypeIn) SetDeprecated(v bool) {
+	o.Deprecated = &v
 }
 
 // GetDescription returns the Description field value
@@ -251,6 +288,9 @@ func (o EventTypeIn) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if o.Archived != nil {
 		toSerialize["archived"] = o.Archived
+	}
+	if o.Deprecated != nil {
+		toSerialize["deprecated"] = o.Deprecated
 	}
 	if true {
 		toSerialize["description"] = o.Description
