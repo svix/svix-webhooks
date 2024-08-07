@@ -7,6 +7,7 @@ mod e2e_event_type;
 mod e2e_health;
 mod e2e_message;
 mod e2e_operational_webhooks;
+mod e2e_proxy;
 mod integ_webhook_http_client;
 mod message_app;
 mod redis_queue;

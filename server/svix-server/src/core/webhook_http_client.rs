@@ -22,12 +22,15 @@ use hyper::{
     Body, Client, Uri,
 };
 use hyper_openssl::HttpsConnector;
+use hyper_socks2::SocksConnector;
 use ipnet::IpNet;
 use openssl::ssl::{SslConnector, SslMethod, SslVerifyMode};
 use serde::Serialize;
 use thiserror::Error;
-use tokio::sync::Mutex;
+use tokio::{net::TcpStream, sync::Mutex};
 use tower::Service;
+
+use crate::cfg::ProxyConfig;
 
 pub type CaseSensitiveHeaderMap = HashMap<String, HeaderValue>;
 
@@ -61,15 +64,14 @@ impl WebhookClient {
         whitelist_nets: Option<Arc<Vec<IpNet>>>,
         whitelist_names: Option<Arc<Vec<String>>>,
         dangerous_disable_tls_verification: bool,
+        proxy_config: Option<ProxyConfig>,
     ) -> Self {
         let whitelist_nets = whitelist_nets.unwrap_or_else(|| Arc::new(Vec::new()));
         let whitelist_names = whitelist_names.unwrap_or_else(|| Arc::new(Vec::new()));
 
-        let mut connector = HttpConnector::new_with_resolver(NonLocalDnsResolver::new(
-            whitelist_nets.clone(),
-            whitelist_names,
-        ));
-        connector.enforce_http(false);
+        let dns_resolver = NonLocalDnsResolver::new(whitelist_nets.clone(), whitelist_names);
+        let mut http = HttpConnector::new_with_resolver(dns_resolver);
+        http.enforce_http(false);
 
         // Openssl is required here -- in practice, rustls does not support many
         // ciphers that we encounter on a regular basis:
@@ -79,8 +81,8 @@ impl WebhookClient {
             ssl.set_verify(SslVerifyMode::NONE);
         }
 
-        let https = HttpsConnector::with_connector(NonLocalConnector { connector }, ssl)
-            .expect("HttpsConnector build failed");
+        let http = NonLocalConnector::new(http, proxy_config);
+        let https = HttpsConnector::with_connector(http, ssl).expect("HttpsConnector build failed");
 
         let client: Client<_, hyper::Body> = Client::builder()
             .http1_ignore_invalid_headers_in_responses(true)
@@ -427,25 +429,52 @@ impl RequestBuilder {
 }
 
 #[derive(Clone, Debug)]
-struct NonLocalConnector {
-    connector: HttpConnector<NonLocalDnsResolver>,
+enum NonLocalConnector {
+    Regular(HttpConnector<NonLocalDnsResolver>),
+    Proxied(SocksConnector<HttpConnector<NonLocalDnsResolver>>),
+}
+
+impl NonLocalConnector {
+    fn new(inner: HttpConnector<NonLocalDnsResolver>, proxy_cfg: Option<ProxyConfig>) -> Self {
+        match proxy_cfg {
+            Some(proxy_cfg) => Self::Proxied(SocksConnector {
+                proxy_addr: proxy_cfg.addr.into(),
+                auth: None,
+                connector: inner,
+            }),
+            None => Self::Regular(inner),
+        }
+    }
 }
 
 impl Service<Uri> for NonLocalConnector {
-    type Response = <hyper::client::HttpConnector as Service<Uri>>::Response;
-    type Error = <hyper::client::HttpConnector as Service<Uri>>::Error;
-
-    type Future = <hyper::client::HttpConnector<NonLocalDnsResolver> as Service<Uri>>::Future;
+    type Response = TcpStream;
+    type Error = hyper_socks2::Error;
+    type Future = Pin<Box<dyn Future<Output = Result<Self::Response, Self::Error>> + Send>>;
 
     fn poll_ready(
         &mut self,
         cx: &mut std::task::Context<'_>,
     ) -> std::task::Poll<Result<(), Self::Error>> {
-        self.connector.poll_ready(cx)
+        match self {
+            Self::Regular(inner) => inner
+                .poll_ready(cx)
+                .map_err(|e| hyper_socks2::Error::Connector(e.into())),
+            Self::Proxied(inner) => inner.poll_ready(cx),
+        }
     }
 
     fn call(&mut self, req: Uri) -> Self::Future {
-        self.connector.call(req)
+        match self {
+            Self::Regular(inner) => {
+                let fut = inner.call(req);
+                Box::pin(async move {
+                    fut.await
+                        .map_err(|e| hyper_socks2::Error::Connector(e.into()))
+                })
+            }
+            Self::Proxied(inner) => Box::pin(inner.call(req)),
+        }
     }
 }
 
@@ -827,11 +856,11 @@ mod tests {
 
         // Assert that a [`WebhookClient`] without the disabled flag will err on making to a request
         // to this server with the self-signed certificate
-        let whc_with_validation = WebhookClient::new(Some(whitelist.clone()), None, false);
+        let whc_with_validation = WebhookClient::new(Some(whitelist.clone()), None, false, None);
         assert!(whc_with_validation.execute(request.clone()).await.is_err());
 
         // And assert that when the flag is enabled, that it will succeed
-        let whc_without_validation = WebhookClient::new(Some(whitelist), None, true);
+        let whc_without_validation = WebhookClient::new(Some(whitelist), None, true, None);
         assert!(whc_without_validation.execute(request).await.is_ok());
     }
 }
