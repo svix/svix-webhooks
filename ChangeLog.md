@@ -3,6 +3,18 @@
 ## Next
 * 
 
+## Version 1.29.0
+* Bridge: Rebuild RabbitMQ producer on error
+* Server: Add support for SOCKS5 proxies
+* Libs/C#: add GetAppPortalAccess* methods to IAuthentication interface
+* Libs/Go: expose `with_content` for `Message.List`
+* Libs/Go: expose `with_msg` param on `MessageAttempt.ListByEndpoint`
+* Libs/Go: expose `order` in `Integtation.List` and `EventType.List`
+* Libs/Go: return response body for recover/replay
+* Libs/Go: expose `tag` for `MessageAttempt` list endpoints
+* Libs/Javascript: Publish src to npm to make it available for source maps
+* Libs/Python: ensure datetimes have a timezone
+
 ## Version 1.28.0
 * Libs: Update OpenAPI spec
 
