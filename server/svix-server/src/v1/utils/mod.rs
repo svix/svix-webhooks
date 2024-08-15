@@ -431,16 +431,9 @@ fn list_response_inner<T: ModelOut>(
 ) -> ListResponse<T> {
     let done = data.len() <= limit;
 
+    data.truncate(limit);
     if iter_direction == IteratorDirection::Prev {
         data.reverse();
-    }
-
-    if data.len() > limit {
-        if iter_direction == IteratorDirection::Prev {
-            data = data.drain(data.len() - limit..).collect();
-        } else {
-            data.truncate(limit);
-        }
     }
 
     let prev_iterator = if supports_prev_iterator {
