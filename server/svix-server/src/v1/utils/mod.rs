@@ -117,7 +117,9 @@ impl Validate for PaginationLimit {
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum ReversibleIterator<T: Validate> {
+    /// Regular iteration - backwards in time.
     Normal(T),
+    /// Reversed iteration - forwards in time.
     Prev(T),
 }
 
@@ -286,6 +288,8 @@ pub fn apply_pagination<
     use Ordering::*;
     use ReversibleIterator::*;
 
+    // Query for an extra element to be able to tell whether there's more
+    // data than the user requested.
     let query = query.limit(limit + 1);
 
     let iterator = if let Some(it) = iterator {
@@ -419,7 +423,9 @@ pub enum Ordering {
 
 #[derive(PartialEq, Eq)]
 pub(crate) enum IteratorDirection {
+    /// Regular iteration - backwards in time.
     Normal,
+    /// Reversed iteration - forwards in time.
     Prev,
 }
 
@@ -429,9 +435,15 @@ fn list_response_inner<T: ModelOut>(
     iter_direction: IteratorDirection,
     supports_prev_iterator: bool,
 ) -> ListResponse<T> {
+    // Our queries use a LIMIT of (limit + 1), so if there is more data than
+    // the user requested, `data.len()` is going to be larger than limit.
     let done = data.len() <= limit;
 
+    // Drop the excess element(s). Should be only one.
     data.truncate(limit);
+
+    // If iterating forwards in time, the query requests the DB rows in reverse
+    // to what the user actually wants.
     if iter_direction == IteratorDirection::Prev {
         data.reverse();
     }
