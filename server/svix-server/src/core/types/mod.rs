@@ -213,6 +213,18 @@ pub trait BaseId: Deref<Target = String> {
         let buf = [0xFFu8; KsuidMs::PAYLOAD_BYTES];
         Self::new(Some(start), Some(&buf[..]))
     }
+
+    fn timestamp(&self) -> DateTime<Utc> {
+        self.ksuid().timestamp()
+    }
+
+    fn ksuid(&self) -> svix_ksuid::KsuidMs {
+        let ksuid_str = self
+            .strip_prefix(Self::PREFIX)
+            .expect("ID has invalid prefix");
+        <svix_ksuid::KsuidMs as svix_ksuid::KsuidLike>::from_base62(ksuid_str)
+            .expect("ID was not encoded as valid ksuid")
+    }
 }
 
 fn validate_limited_str(s: &str) -> Result<(), ValidationErrors> {

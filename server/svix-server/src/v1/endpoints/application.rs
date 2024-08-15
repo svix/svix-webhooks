@@ -31,9 +31,9 @@ use crate::{
             UnrequiredNullableField,
         },
         validate_no_control_characters, validate_no_control_characters_unrequired,
-        validation_error, ApplicationPath, JsonStatusUpsert, ListResponse, ModelIn, ModelOut,
-        NoContent, Ordering, Pagination, PaginationLimit, ReversibleIterator, ValidatedJson,
-        ValidatedQuery,
+        validation_error, ApplicationPath, IteratorDirection, JsonStatusUpsert, ListResponse,
+        ModelIn, ModelOut, NoContent, Ordering, Pagination, PaginationLimit, ReversibleIterator,
+        ValidatedJson, ValidatedQuery,
     },
     AppState,
 };
@@ -201,7 +201,9 @@ async fn list_applications(
 ) -> Result<Json<ListResponse<ApplicationOut>>> {
     let PaginationLimit(limit) = pagination.limit;
     let iterator = pagination.iterator;
-    let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
+    let iter_direction = iterator
+        .as_ref()
+        .map_or(IteratorDirection::Normal, |iter| iter.direction());
 
     let query = apply_pagination(
         application::Entity::secure_find(org_id),
@@ -227,7 +229,7 @@ async fn list_applications(
     Ok(Json(ApplicationOut::list_response(
         results,
         limit as usize,
-        is_prev,
+        iter_direction,
     )))
 }
 

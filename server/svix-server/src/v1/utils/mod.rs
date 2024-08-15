@@ -49,6 +49,9 @@ const PAGINATION_LIMIT_CAP_LIMIT: u64 = 250;
 static PAGINATION_LIMIT_ERROR: Lazy<String> =
     Lazy::new(|| format!("Given limit must not exceed {PAGINATION_LIMIT_CAP_LIMIT}"));
 
+static FUTURE_QUERY_LIMIT: Lazy<chrono::Duration> = Lazy::new(|| chrono::Duration::hours(1));
+static LIMITED_QUERY_DURATION: Lazy<chrono::Duration> = Lazy::new(|| chrono::Duration::days(90));
+
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
 pub struct PaginationDescending<T: Validate + JsonSchema> {
     /// Limit the number of returned items
@@ -118,6 +121,15 @@ pub enum ReversibleIterator<T: Validate> {
     Prev(T),
 }
 
+impl<T: Validate> ReversibleIterator<T> {
+    pub(crate) fn direction(&self) -> IteratorDirection {
+        match self {
+            Self::Normal(_) => IteratorDirection::Normal,
+            Self::Prev(_) => IteratorDirection::Prev,
+        }
+    }
+}
+
 impl<'de, T: 'static + Deserialize<'de> + Validate + From<String>> Deserialize<'de>
     for ReversibleIterator<T>
 {
@@ -158,44 +170,99 @@ impl<T: Validate + JsonSchema> JsonSchema for ReversibleIterator<T> {
     }
 }
 
-/// For use in creating a [`ReversibleIterator`] from `before` and `after` timestamps should one not
-/// already be present
-pub fn iterator_from_before_or_after<I: BaseId<Output = I> + Validate>(
+/// Applies sorting and filtration to a query from its iterator, sort column, and limit
+/// queries based on time
+/// Our rules for limiting queries are as follows
+///
+/// If `before` is passed:
+/// * lower limit on query is `before - LIMITED_QUERY_DURATION`
+/// * upper limit is `before`
+///
+/// If `after` is passed:
+/// * lower limit is `after`
+/// * upper limit is `now + FUTURE_QUERY_LIMIT`
+///
+/// If prev-iterator is passed:
+/// * lower limit is `prev-iterator`
+/// * upper limit is `prev-iterator + LIMITED_QUERY_DURATION`
+///
+/// If (normal) iterator is passed:
+/// * lower limit is `iterator - LIMITED_QUERY_DURATION`
+/// * upper limit is `iterator`
+///
+/// If no iterator is passed:
+/// * lower limit is `now() - LIMITED_QUERY_DURATION` if
+///   neither `before` nor `after` were passed
+pub(crate) fn filter_and_paginate_time_limited<Q, I>(
+    mut query: Q,
+    sort_column: impl ColumnTrait,
+    limit: u64,
     iterator: Option<ReversibleIterator<I>>,
     before: Option<DateTime<Utc>>,
     after: Option<DateTime<Utc>>,
-) -> Option<ReversibleIterator<I>> {
-    iterator.or_else(|| {
-        before
-            .map(|time| ReversibleIterator::Normal(I::start_id(time)))
-            .or_else(|| after.map(|time| ReversibleIterator::Prev(I::start_id(time))))
-    })
-}
-
-/// Applies sorting and filtration to a query from its iterator, sort column, and limit
-pub fn apply_pagination_desc<
+) -> (Q, IteratorDirection)
+where
     Q: QuerySelect + QueryOrder + QueryFilter,
-    C: ColumnTrait,
     I: BaseId<Output = I> + Validate + Into<sea_orm::Value>,
->(
-    query: Q,
-    sort_column: C,
-    limit: u64,
-    iterator: Option<ReversibleIterator<I>>,
-) -> Q {
-    let query = query.limit(limit + 1);
+{
+    let mut limit_time = true;
+    if let Some(before) = before {
+        if limit_time {
+            query = query.filter(sort_column.gt(I::start_id(before - *LIMITED_QUERY_DURATION)));
+            limit_time = false;
+        }
+        query = query.filter(sort_column.lt(I::start_id(before)));
+    }
 
+    if let Some(after) = after {
+        if limit_time {
+            query = query.filter(sort_column.lt(I::end_id(after + *LIMITED_QUERY_DURATION)));
+            limit_time = false;
+        }
+        query = query.filter(sort_column.gt(I::start_id(after)));
+    }
+
+    let (mut query, iter_direction) = match (&iterator, before, after) {
+        (Some(ReversibleIterator::Prev(_)), _, _) | (None, None, Some(_)) => {
+            (query.order_by_asc(sort_column), IteratorDirection::Prev)
+        }
+        _ => (query.order_by_desc(sort_column), IteratorDirection::Normal),
+    };
+
+    let now = chrono::Utc::now();
+    let future_limit = now + *FUTURE_QUERY_LIMIT;
     match iterator {
         Some(ReversibleIterator::Prev(id)) => {
-            query.order_by_asc(sort_column).filter(sort_column.gt(id))
+            let ts = id.timestamp();
+            query = query.filter(sort_column.gt(id));
+            if limit_time {
+                query = query.filter(sort_column.lt(I::end_id(ts + *LIMITED_QUERY_DURATION)));
+            }
         }
 
         Some(ReversibleIterator::Normal(id)) => {
-            query.order_by_desc(sort_column).filter(sort_column.lt(id))
+            let ts = id.timestamp();
+            query = query.filter(sort_column.lt(id));
+            if limit_time {
+                query = query.filter(sort_column.gt(I::start_id(ts - *LIMITED_QUERY_DURATION)));
+            }
         }
 
-        None => query.order_by_desc(sort_column),
+        None => {
+            if limit_time {
+                query = query.filter(sort_column.gt(I::start_id(now - *LIMITED_QUERY_DURATION)));
+            }
+        }
     }
+
+    query = query
+        // Query for an extra element to be able to tell whether there's more
+        // data than the user requested.
+        .limit(limit + 1)
+        // Blanket limit on future
+        .filter(sort_column.lt(I::start_id(future_limit)));
+
+    (query, iter_direction)
 }
 
 /// Marker trait for any type that is used for iterating through results
@@ -351,9 +418,9 @@ pub enum Ordering {
 }
 
 #[derive(PartialEq, Eq)]
-enum IteratorDirection {
-    Next,
-    Previous,
+pub(crate) enum IteratorDirection {
+    Normal,
+    Prev,
 }
 
 fn list_response_inner<T: ModelOut>(
@@ -364,12 +431,12 @@ fn list_response_inner<T: ModelOut>(
 ) -> ListResponse<T> {
     let done = data.len() <= limit;
 
-    if iter_direction == IteratorDirection::Previous {
+    if iter_direction == IteratorDirection::Prev {
         data.reverse();
     }
 
     if data.len() > limit {
-        if iter_direction == IteratorDirection::Previous {
+        if iter_direction == IteratorDirection::Prev {
             data = data.drain(data.len() - limit..).collect();
         } else {
             data.truncate(limit);
@@ -391,20 +458,19 @@ fn list_response_inner<T: ModelOut>(
     }
 }
 
-pub trait ModelOut: Sized {
+pub(crate) trait ModelOut: Sized {
     fn id_copy(&self) -> String;
 
-    fn list_response(data: Vec<Self>, limit: usize, is_prev_iter: bool) -> ListResponse<Self> {
-        let direction = if is_prev_iter {
-            IteratorDirection::Previous
-        } else {
-            IteratorDirection::Next
-        };
+    fn list_response(
+        data: Vec<Self>,
+        limit: usize,
+        direction: IteratorDirection,
+    ) -> ListResponse<Self> {
         list_response_inner(data, limit, direction, true)
     }
 
     fn list_response_no_prev(data: Vec<Self>, limit: usize) -> ListResponse<Self> {
-        list_response_inner(data, limit, IteratorDirection::Next, false)
+        list_response_inner(data, limit, IteratorDirection::Normal, false)
     }
 }
 

@@ -33,9 +33,9 @@ use crate::{
     error::{Error, HttpError, Result},
     queue::{MessageTaskBatch, TaskQueueProducer},
     v1::utils::{
-        apply_pagination_desc, iterator_from_before_or_after, openapi_tag, validation_error,
-        ApplicationMsgPath, EventTypesQueryParams, JsonStatus, ListResponse, ModelIn, ModelOut,
-        PaginationDescending, PaginationLimit, ReversibleIterator, ValidatedJson, ValidatedQuery,
+        filter_and_paginate_time_limited, openapi_tag, validation_error, ApplicationMsgPath,
+        EventTypesQueryParams, JsonStatus, ListResponse, ModelIn, ModelOut, PaginationDescending,
+        PaginationLimit, ReversibleIterator, ValidatedJson, ValidatedQuery,
     },
     AppState,
 };
@@ -267,11 +267,15 @@ async fn list_messages(
         query = query.filter(Expr::cust_with_values("channels @> $1", [channel.jsonb()]));
     }
 
-    let iterator = iterator_from_before_or_after(pagination.iterator, before, after);
-    let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
-
-    let query = apply_pagination_desc(query, message::Column::Id, limit, iterator)
-        .find_also_related(messagecontent::Entity);
+    let (query, iter_direction) = filter_and_paginate_time_limited(
+        query,
+        message::Column::Id,
+        limit,
+        pagination.iterator,
+        before,
+        after,
+    );
+    let query = query.find_also_related(messagecontent::Entity);
 
     let msgs_and_content: Vec<(message::Model, Option<messagecontent::Model>)> =
         query.all(db).await?.into_iter().collect();
@@ -286,7 +290,7 @@ async fn list_messages(
     Ok(Json(MessageOut::list_response(
         msgs_and_content.into_iter().map(into).collect(),
         limit as usize,
-        is_prev,
+        iter_direction,
     )))
 }
 
