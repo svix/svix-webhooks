@@ -30,9 +30,9 @@ use crate::{
             UnrequiredNullableField,
         },
         validate_no_control_characters, validate_no_control_characters_unrequired,
-        EventTypeNamePath, JsonStatus, JsonStatusUpsert, ListResponse, ModelIn, ModelOut,
-        NoContent, Ordering, Pagination, PaginationLimit, ReversibleIterator, ValidatedJson,
-        ValidatedQuery,
+        EventTypeNamePath, IteratorDirection, JsonStatus, JsonStatusUpsert, ListResponse, ModelIn,
+        ModelOut, NoContent, Ordering, Pagination, PaginationLimit, ReversibleIterator,
+        ValidatedJson, ValidatedQuery,
     },
     AppState,
 };
@@ -229,7 +229,9 @@ async fn list_event_types(
 ) -> Result<Json<ListResponse<EventTypeOut>>> {
     let PaginationLimit(limit) = pagination.limit;
     let iterator = pagination.iterator;
-    let is_prev = matches!(iterator, Some(ReversibleIterator::Prev(_)));
+    let iter_direction = iterator
+        .as_ref()
+        .map_or(IteratorDirection::Normal, |iter| iter.direction());
 
     let mut query = eventtype::Entity::secure_find(org_id);
 
@@ -263,7 +265,7 @@ async fn list_event_types(
             })
             .collect(),
         limit as usize,
-        is_prev,
+        iter_direction,
     )))
 }
 

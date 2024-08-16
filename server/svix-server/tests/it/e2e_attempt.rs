@@ -477,6 +477,152 @@ async fn test_message_attempts_empty_retry_schedule() {
 }
 
 #[tokio::test]
+async fn test_combined_before_after_filtering() {
+    let (client, _) = start_svix_server().await;
+
+    let app = create_test_app(&client, "test_app").await.unwrap();
+
+    let receiver = TestReceiver::start(StatusCode::OK);
+
+    let ep = create_test_endpoint(&client, &app.id, &receiver.endpoint)
+        .await
+        .unwrap();
+
+    let before_first_batch = chrono::Utc::now();
+
+    // Send two initial messages
+    for i in 1..=2 {
+        create_test_message(
+            &client,
+            &app.id,
+            serde_json::json!({
+                "test": i,
+            }),
+        )
+        .await
+        .unwrap();
+    }
+
+    // Wait until all attempts were made
+    run_with_retries(|| async {
+        let list: ListResponse<MessageAttemptOut> = client
+            .get(
+                &format!("api/v1/app/{}/attempt/endpoint/{}/", app.id, ep.id),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
+
+        if list.data.len() != 2 {
+            anyhow::bail!("list len {}, not 2", list.data.len());
+        }
+
+        Ok(())
+    })
+    .await
+    .unwrap();
+
+    let before_second_batch = chrono::Utc::now();
+
+    // Send another three messages
+    for i in 1..=3 {
+        create_test_message(
+            &client,
+            &app.id,
+            serde_json::json!({
+                "test": i + 2,
+            }),
+        )
+        .await
+        .unwrap();
+    }
+
+    // Wait until all attempts were made
+    run_with_retries(|| async {
+        let list: ListResponse<MessageAttemptOut> = client
+            .get(
+                &format!("api/v1/app/{}/attempt/endpoint/{}/", app.id, ep.id),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
+
+        if list.data.len() != 5 {
+            anyhow::bail!("list len {}, not 5", list.data.len());
+        }
+
+        Ok(())
+    })
+    .await
+    .unwrap();
+
+    // No timestamp-based filtering should yield all 5 messages
+    let out: ListResponse<MessageAttemptOut> = client
+        .get(
+            &format!("api/v1/app/{}/attempt/endpoint/{}/?limit=10", app.id, ep.id),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert!(out.done);
+    assert_eq!(out.data.len(), 5);
+
+    // Limiting the time to the first batch should only yield those two messages
+    let out: ListResponse<MessageAttemptOut> = client
+        .get(
+            &format!(
+                "api/v1/app/{}/attempt/endpoint/{}/\
+                 ?limit=10&before={before_second_batch}&after={before_first_batch}",
+                app.id, ep.id
+            ),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    // We got all the data there is for the filters we supplied..
+    assert!(out.done);
+    assert_eq!(out.data.len(), 2);
+
+    // .. but we can still iterate from here when loosening filters.
+    let prev_iter = out.prev_iterator.unwrap();
+    // This iterator is currently always set, even if there is no data.
+    // Maybe we'll get smarter about this in the future, can update the test in that case.
+    let iter = out.iterator.unwrap();
+
+    // Can get the remaining three messages via pagination
+    let out: ListResponse<MessageAttemptOut> = client
+        .get(
+            &format!(
+                "api/v1/app/{}/attempt/endpoint/{}/?iterator={prev_iter}",
+                app.id, ep.id
+            ),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert!(out.done);
+    assert_eq!(out.data.len(), 3);
+
+    // No data when iterating the other direction
+    let out: ListResponse<MessageAttemptOut> = client
+        .get(
+            &format!(
+                "api/v1/app/{}/attempt/endpoint/{}/?iterator={iter}",
+                app.id, ep.id
+            ),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+
+    assert!(out.done);
+    assert_eq!(out.data.len(), 0);
+}
+
+#[tokio::test]
 async fn test_pagination_by_endpoint() {
     let (client, _jh) = start_svix_server().await;
 
