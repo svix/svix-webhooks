@@ -488,15 +488,45 @@ async fn test_combined_before_after_filtering() {
         .await
         .unwrap();
 
-    let before_first_batch = chrono::Utc::now();
+    // Send a first message
+    create_test_message(
+        &client,
+        &app.id,
+        serde_json::json!({
+            "test": 1,
+        }),
+    )
+    .await
+    .unwrap();
 
-    // Send two initial messages
+    // Wait until attempt was made
+    run_with_retries(|| async {
+        let list: ListResponse<MessageAttemptOut> = client
+            .get(
+                &format!("api/v1/app/{}/attempt/endpoint/{}/", app.id, ep.id),
+                StatusCode::OK,
+            )
+            .await
+            .unwrap();
+
+        if list.data.len() != 1 {
+            anyhow::bail!("list len {}, not 1", list.data.len());
+        }
+
+        Ok(())
+    })
+    .await
+    .unwrap();
+
+    let ts1 = chrono::Utc::now();
+
+    // Send another two messages
     for i in 1..=2 {
         create_test_message(
             &client,
             &app.id,
             serde_json::json!({
-                "test": i,
+                "test": i + 1,
             }),
         )
         .await
@@ -513,16 +543,15 @@ async fn test_combined_before_after_filtering() {
             .await
             .unwrap();
 
-        if list.data.len() != 2 {
-            anyhow::bail!("list len {}, not 2", list.data.len());
+        if list.data.len() != 3 {
+            anyhow::bail!("list len {}, not 3", list.data.len());
         }
 
         Ok(())
     })
     .await
     .unwrap();
-
-    let before_second_batch = chrono::Utc::now();
+    let ts2 = chrono::Utc::now();
 
     // Send another three messages
     for i in 1..=3 {
@@ -530,7 +559,7 @@ async fn test_combined_before_after_filtering() {
             &client,
             &app.id,
             serde_json::json!({
-                "test": i + 2,
+                "test": i + 3,
             }),
         )
         .await
@@ -547,8 +576,8 @@ async fn test_combined_before_after_filtering() {
             .await
             .unwrap();
 
-        if list.data.len() != 5 {
-            anyhow::bail!("list len {}, not 5", list.data.len());
+        if list.data.len() != 6 {
+            anyhow::bail!("list len {}, not 6", list.data.len());
         }
 
         Ok(())
@@ -556,7 +585,7 @@ async fn test_combined_before_after_filtering() {
     .await
     .unwrap();
 
-    // No timestamp-based filtering should yield all 5 messages
+    // No timestamp-based filtering should yield all 6 messages
     let out: ListResponse<MessageAttemptOut> = client
         .get(
             &format!("api/v1/app/{}/attempt/endpoint/{}/?limit=10", app.id, ep.id),
@@ -566,14 +595,14 @@ async fn test_combined_before_after_filtering() {
         .unwrap();
 
     assert!(out.done);
-    assert_eq!(out.data.len(), 5);
+    assert_eq!(out.data.len(), 6);
 
-    // Limiting the time to the first batch should only yield those two messages
+    // Limiting the time to the second batch should only yield those two messages
     let out: ListResponse<MessageAttemptOut> = client
         .get(
             &format!(
                 "api/v1/app/{}/attempt/endpoint/{}/\
-                 ?limit=10&before={before_second_batch}&after={before_first_batch}",
+                 ?limit=10&before={ts2}&after={ts1}",
                 app.id, ep.id
             ),
             StatusCode::OK,
@@ -587,11 +616,9 @@ async fn test_combined_before_after_filtering() {
 
     // .. but we can still iterate from here when loosening filters.
     let prev_iter = out.prev_iterator.unwrap();
-    // This iterator is currently always set, even if there is no data.
-    // Maybe we'll get smarter about this in the future, can update the test in that case.
     let iter = out.iterator.unwrap();
 
-    // Can get the remaining three messages via pagination
+    // Can get the older three messages via pagination
     let out: ListResponse<MessageAttemptOut> = client
         .get(
             &format!(
@@ -606,7 +633,7 @@ async fn test_combined_before_after_filtering() {
     assert!(out.done);
     assert_eq!(out.data.len(), 3);
 
-    // No data when iterating the other direction
+    // Can get the earlier message via pagination
     let out: ListResponse<MessageAttemptOut> = client
         .get(
             &format!(
@@ -619,7 +646,7 @@ async fn test_combined_before_after_filtering() {
         .unwrap();
 
     assert!(out.done);
-    assert_eq!(out.data.len(), 0);
+    assert_eq!(out.data.len(), 1);
 }
 
 #[tokio::test]
