@@ -3,6 +3,9 @@
 ## Next
 * 
 
+## Version 1.30.0
+* Server: Support filtering by before and after at the same time
+
 ## Version 1.29.0
 * Bridge: Rebuild RabbitMQ producer on error
 * Server: Add support for SOCKS5 proxies
