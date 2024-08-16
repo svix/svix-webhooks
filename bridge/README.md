@@ -11,7 +11,7 @@
 [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
 [![Join our slack](https://img.shields.io/badge/Slack-join%20the%20community-blue?logo=slack&style=social)](https://www.svix.com/slack/)
 
-# Svix Bridge (beta)
+# Svix Bridge
 
 Bridge is an agent to help integrate webhooks into your existing messaging infrastructure.
 
