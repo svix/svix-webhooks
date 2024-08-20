@@ -5,6 +5,7 @@
 use std::time::Duration;
 
 use http::StatusCode;
+use serde::de::IgnoredAny;
 use svix_server::{
     cfg::CacheBackend,
     core::{
@@ -17,7 +18,7 @@ use svix_server::{
 
 use crate::utils::{
     common_calls::{create_test_app, create_test_endpoint, create_test_message, message_in},
-    get_default_test_config, start_svix_server_with_cfg_and_org_id, IgnoredResponse, TestReceiver,
+    get_default_test_config, start_svix_server_with_cfg_and_org_id, TestReceiver,
 };
 
 /// Ensures that a deleted application returns `None` when using [`layered_fetch`]
@@ -58,7 +59,7 @@ async fn test_app_deletion() {
     );
 
     client
-        .delete::<IgnoredResponse>(&format!("api/v1/app/{app_id}/"), StatusCode::NO_CONTENT)
+        .delete::<IgnoredAny>(&format!("api/v1/app/{app_id}/"), StatusCode::NO_CONTENT)
         .await
         .unwrap();
 
@@ -81,7 +82,7 @@ async fn test_app_deletion() {
 
     // Assert message creation return a 404 with a deleted application
     client
-        .post::<_, IgnoredResponse>(
+        .post::<_, IgnoredAny>(
             &format!("api/v1/app/{app_id}/msg/"),
             message_in("test.event", payload).unwrap(),
             StatusCode::NOT_FOUND,
@@ -135,7 +136,7 @@ async fn test_endp_deletion() {
     );
 
     client
-        .delete::<IgnoredResponse>(
+        .delete::<IgnoredAny>(
             &format!("api/v1/app/{app_id}/endpoint/{endp_id}/"),
             StatusCode::NO_CONTENT,
         )
@@ -161,7 +162,7 @@ async fn test_endp_deletion() {
 
     // Assert message creation return a 202 with a deleted endpoint
     client
-        .post::<_, IgnoredResponse>(
+        .post::<_, IgnoredAny>(
             &format!("api/v1/app/{app_id}/msg/"),
             message_in("test.event", payload).unwrap(),
             StatusCode::ACCEPTED,

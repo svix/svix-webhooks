@@ -6,7 +6,7 @@ use std::{net::TcpListener, sync::Arc, time::Duration};
 use chrono::{DateTime, Utc};
 use http::StatusCode;
 use reqwest::Url;
-use serde::Deserialize;
+use serde::{de::IgnoredAny, Deserialize};
 use svix::api::EventTypeOut;
 use svix_ksuid::KsuidLike;
 use svix_server::{
@@ -28,7 +28,7 @@ use crate::utils::{
     common_calls::{
         create_test_app, create_test_endpoint, create_test_message, default_test_endpoint,
     },
-    get_default_test_config, IgnoredResponse, TestClient, TestReceiver,
+    get_default_test_config, TestClient, TestReceiver,
 };
 
 /// Sent when an endpoint has been automatically disabled after continuous failures.
@@ -239,7 +239,7 @@ async fn test_endpoint_create_update_and_delete() {
     };
 
     // Rotate secrets
-    let _: IgnoredResponse = client_regular
+    let _: IgnoredAny = client_regular
         .post(
             &format!(
                 "api/v1/app/{}/endpoint/{}/secret/rotate/",
@@ -258,7 +258,7 @@ async fn test_endpoint_create_update_and_delete() {
     );
 
     // And finally delete the endpoint
-    let _: IgnoredResponse = client_regular
+    let _: IgnoredAny = client_regular
         .delete(
             &format!(
                 "api/v1/app/{}/endpoint/{}/",

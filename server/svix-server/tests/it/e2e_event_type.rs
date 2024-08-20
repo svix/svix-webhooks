@@ -4,6 +4,7 @@
 use std::collections::HashSet;
 
 use reqwest::StatusCode;
+use serde::de::IgnoredAny;
 use svix_server::{
     core::types::{ApplicationId, EventTypeName, FeatureFlag, FeatureFlagSet},
     db::models::eventtype::Schema,
@@ -18,7 +19,7 @@ use svix_server::{
 
 use crate::utils::{
     common_calls::{app_portal_access, application_in, common_test_list, event_type_in},
-    start_svix_server, IgnoredResponse,
+    start_svix_server,
 };
 
 #[tokio::test]
@@ -275,7 +276,7 @@ async fn test_event_type_feature_flags() {
             assert!(list.data.contains(&et));
         } else {
             // If the client is not supposed to see it it shouldn't be able to retrieve it
-            let _: IgnoredResponse = client.get(&path, StatusCode::NOT_FOUND).await.unwrap();
+            let _: IgnoredAny = client.get(&path, StatusCode::NOT_FOUND).await.unwrap();
 
             // ... and it shouldn't be in the list.
             assert_eq!(list.data.len(), 1);

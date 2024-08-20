@@ -4,6 +4,7 @@
 use std::time::Duration;
 
 use reqwest::StatusCode;
+use serde::de::IgnoredAny;
 use svix_server::{
     core::types::{EndpointUid, MessageStatus},
     v1::{
@@ -21,7 +22,7 @@ use crate::utils::{
         endpoint_in, get_msg_attempt_list_and_assert_count,
     },
     get_default_test_config, run_with_retries, start_svix_server, start_svix_server_with_cfg,
-    IgnoredResponse, TestReceiver,
+    TestReceiver,
 };
 
 #[tokio::test]
@@ -66,7 +67,7 @@ async fn test_expunge_attempt_response_body() {
     assert_eq!(sensitive_response_json, attempt_response);
 
     let attempt_id = &attempt.id;
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .delete(
             &format!("api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/content/"),
             StatusCode::NO_CONTENT,

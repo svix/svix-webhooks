@@ -15,7 +15,7 @@ use sea_orm::{
     ActiveModelBehavior, ActiveModelTrait, ConnectionTrait, DatabaseBackend, QueryResult, Set,
     Statement,
 };
-use serde::Deserialize;
+use serde::{de::IgnoredAny, Deserialize};
 use svix::webhooks::Webhook;
 use svix_server::{
     cfg::DefaultSignatureType,
@@ -50,7 +50,7 @@ use crate::utils::{
         recover_webhooks,
     },
     get_default_test_config, start_svix_server, start_svix_server_with_cfg,
-    start_svix_server_with_cfg_and_org_id, IgnoredResponse, TestClient, TestReceiver,
+    start_svix_server_with_cfg_and_org_id, TestClient, TestReceiver,
 };
 
 async fn get_endpoint(
@@ -66,11 +66,7 @@ async fn get_endpoint(
         .await
 }
 
-async fn get_endpoint_404(
-    client: &TestClient,
-    app_id: &str,
-    ep_id: &str,
-) -> Result<IgnoredResponse> {
+async fn get_endpoint_404(client: &TestClient, app_id: &str, ep_id: &str) -> Result<IgnoredAny> {
     client
         .get(
             &format!("api/v1/app/{app_id}/endpoint/{ep_id}/"),
@@ -80,7 +76,7 @@ async fn get_endpoint_404(
 }
 
 async fn delete_endpoint(client: &TestClient, app_id: &ApplicationId, ep_id: &str) -> Result<()> {
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .delete(
             &format!("api/v1/app/{app_id}/endpoint/{ep_id}/"),
             StatusCode::NO_CONTENT,
@@ -824,7 +820,7 @@ async fn test_uid() {
     let ep_1 = post_endpoint(&client, &app_id, ep_1).await.unwrap();
 
     client
-        .post::<_, IgnoredResponse>(
+        .post::<_, IgnoredAny>(
             &format!("api/v1/app/{app_id}/endpoint/"),
             ep_2,
             StatusCode::CONFLICT,
@@ -842,7 +838,7 @@ async fn test_uid() {
     ep_2_with_duplicate_uid.uid = Some(uid.clone());
 
     client
-        .put::<_, IgnoredResponse>(
+        .put::<_, IgnoredAny>(
             &format!("api/v1/app/{app_id}/endpoint/{}/", ep_2.id),
             ep_2_with_duplicate_uid,
             StatusCode::CONFLICT,
@@ -873,7 +869,7 @@ async fn test_uid() {
     let mut ep_1 = endpoint_in(EP_URI_APP_1_EP_1);
     ep_1.uid = Some(uid.clone());
     client
-        .post::<_, IgnoredResponse>(
+        .post::<_, IgnoredAny>(
             &format!("api/v1/app/{}/endpoint/", &app_id),
             ep_1,
             StatusCode::CREATED,
@@ -920,7 +916,7 @@ async fn test_endpoint_secret_get_and_rotation() {
         .await
         .unwrap();
 
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .post(
             &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", ep.id),
             serde_json::json!({ "key": null }),
@@ -940,7 +936,7 @@ async fn test_endpoint_secret_get_and_rotation() {
             .unwrap()
     );
 
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .post(
             &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", ep.id),
             &former_secret,
@@ -1059,7 +1055,7 @@ async fn test_endpoint_rotate_max() {
         .id;
 
     for _ in 0..ExpiringSigningKeys::MAX_OLD_KEYS {
-        let _: IgnoredResponse = client
+        let _: IgnoredAny = client
             .post(
                 &format!("api/v1/app/{app_id}/endpoint/{endp_id}/secret/rotate/"),
                 serde_json::json!({ "key": null }),
@@ -1069,7 +1065,7 @@ async fn test_endpoint_rotate_max() {
             .unwrap();
     }
 
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .post(
             &format!("api/v1/app/{app_id}/endpoint/{endp_id}/secret/rotate/"),
             serde_json::json!({ "key": null }),
@@ -1099,7 +1095,7 @@ async fn test_endpoint_rotate_signing_e2e() {
         .await
         .unwrap();
 
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .post(
             &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", endp.id),
             serde_json::json!({ "key": null }),
@@ -1123,7 +1119,7 @@ async fn test_endpoint_rotate_signing_e2e() {
         .into_endpoint_secret(&Encryption::new_noop())
         .unwrap();
 
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .post(
             &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", endp.id),
             serde_json::json!({ "key": secret3_key }),
@@ -1190,7 +1186,7 @@ async fn test_endpoint_rotate_signing_symmetric_and_asymmetric() {
         .unwrap();
 
     // Rotate to asmmetric
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .post(
             &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", endp.id),
             serde_json::json!({ "key": "whsk_6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg==" }),
@@ -1200,7 +1196,7 @@ async fn test_endpoint_rotate_signing_symmetric_and_asymmetric() {
         .unwrap();
 
     // Rotate back to symmetric
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .post(
             &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", endp.id),
             serde_json::json!({ "key": secret_3.serialize_public_key() }),
@@ -1288,7 +1284,7 @@ async fn test_endpoint_secret_config() {
     assert!(key1.starts_with("whpk_"));
 
     // Rotate to asmmetric
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .post(
             &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", ep.id),
             serde_json::json!({ "key": null }),
@@ -1347,7 +1343,7 @@ async fn test_custom_endpoint_secret() {
     let endp_3 = post_endpoint(&client, &app_id, ep_in.clone())
         .await
         .unwrap();
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .post(
             &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", endp_3.id),
             serde_json::json!({ "key": "whsk_6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg==" }),
@@ -1423,7 +1419,7 @@ async fn test_endpoint_secret_encryption() {
     assert_eq!(secret, secret2);
 
     // Generate a new encrypted secret
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .post(
             &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", ep.id),
             serde_json::json!({ "key": secret }),
@@ -1449,7 +1445,7 @@ async fn test_endpoint_secret_encryption() {
     let cfg = get_default_test_config();
     let (client, _jh) = start_svix_server_with_cfg_and_org_id(&cfg, org_id.clone()).await;
     client
-        .get::<IgnoredResponse>(
+        .get::<IgnoredAny>(
             &format!("api/v1/app/{app_id}/endpoint/{}/secret/", ep.id),
             StatusCode::INTERNAL_SERVER_ERROR,
         )
@@ -1476,7 +1472,7 @@ async fn test_invalid_endpoint_secret() {
             "secret": sec,
         });
 
-        let _: IgnoredResponse = client
+        let _: IgnoredAny = client
             .post(
                 &format!("api/v1/app/{app_id}/endpoint/"),
                 ep_in,
@@ -1616,7 +1612,7 @@ async fn test_endpoint_stats() {
     assert_eq!(stats_filtered.pending, 0);
     assert_eq!(stats_filtered.sending, 1);
 
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .get(
             &format!(
                 "api/v1/app/{app_id}/endpoint/{endp_id}/stats/?since={}",
@@ -1762,7 +1758,7 @@ async fn test_endpoint_filter_events() {
 
     let expected_et = EventTypeNameSet(HashSet::from([EventTypeName("et1".to_owned())]));
 
-    let _ep_with_empty_events: IgnoredResponse = client
+    let _ep_with_empty_events: IgnoredAny = client
         .post(
             &format!("api/v1/app/{app_id}/endpoint/"),
             ep_empty_events,
@@ -1771,7 +1767,7 @@ async fn test_endpoint_filter_events() {
         .await
         .unwrap();
 
-    let _ep_with_nonexistent_event: IgnoredResponse = client
+    let _ep_with_nonexistent_event: IgnoredAny = client
         .post(
             &format!("api/v1/app/{app_id}/endpoint/"),
             ep_with_events.to_owned(),
@@ -1861,7 +1857,7 @@ async fn test_endpoint_filter_channels() {
 
     let expected_ec = EventChannelSet(HashSet::from([EventChannel("tag1".to_owned())]));
 
-    let _ep_w_empty_channel: IgnoredResponse = client
+    let _ep_w_empty_channel: IgnoredAny = client
         .post(
             &format!("api/v1/app/{app_id}/endpoint/"),
             ep_empty_channels,
@@ -2103,7 +2099,7 @@ async fn test_endpoint_headers_manipulation() {
         ])),
     };
 
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .patch(
             &format!("api/v1/app/{app_id}/endpoint/{}/headers/", endp.id),
             patched_headers_in,
@@ -2137,7 +2133,7 @@ async fn test_endpoint_headers_manipulation() {
         "x-svix-foo",
         "x-amzn-foo",
     ] {
-        let _: IgnoredResponse = client
+        let _: IgnoredAny = client
             .put(
                 &format!("api/v1/app/{app_id}/endpoint/{}/headers/", endp.id),
                 serde_json::json!({ "headers": { bad_hdr: "123"}}),
@@ -2162,7 +2158,7 @@ async fn test_endpoint_headers_manipulation() {
     };
 
     for hdrs in [&org_headers, &updated_headers] {
-        let _: IgnoredResponse = client
+        let _: IgnoredAny = client
             .put(
                 &format!("api/v1/app/{app_id}/endpoint/{}/headers/", endp.id),
                 hdrs,
@@ -2189,7 +2185,7 @@ async fn test_endpoint_headers_manipulation() {
         ])),
     };
 
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .patch(
             &format!("api/v1/app/{app_id}/endpoint/{}/headers/", endp.id),
             &patched_headers_in,
@@ -2221,7 +2217,7 @@ async fn test_endpoint_headers_manipulation() {
         ])),
     };
 
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .put(
             &format!("api/v1/app/{app_id}/endpoint/{}/headers/", endp.id),
             redacted_headers,
@@ -2268,7 +2264,7 @@ async fn test_endpoint_headers_sending() {
         ])),
     };
 
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .put(
             &format!("api/v1/app/{app_id}/endpoint/{}/headers/", endp.id),
             &headers,
@@ -2307,7 +2303,7 @@ async fn test_endpoint_header_key_capitalization() {
         )])),
     };
 
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .put(
             &format!("api/v1/app/{app_id}/endpoint/{}/headers/", endp.id),
             &headers,
@@ -2379,7 +2375,7 @@ async fn test_endpoint_https_only() {
         .await
         .unwrap();
 
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .post(
             &format!("api/v1/app/{app_id}/endpoint/"),
             endpoint_in(http_url),
@@ -2402,7 +2398,7 @@ async fn test_send_example() {
         .unwrap()
         .id;
 
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .post(
             &format!("api/v1/app/{app_id}/endpoint/{endp_id}/send-example/"),
             serde_json::json!({"eventType": "svix.ping"}),
