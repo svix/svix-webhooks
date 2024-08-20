@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
-
 use reqwest::StatusCode;
+use serde::de::IgnoredAny;
 use svix_server::{
     cfg::CacheType,
     core::{
@@ -13,7 +13,7 @@ use svix_server::{
 
 use crate::utils::{
     common_calls::{application_in, common_test_list, metadata},
-    get_default_test_config, start_svix_server, IgnoredResponse,
+    get_default_test_config, start_svix_server,
 };
 
 // NOTE: PATCHing must be tested exhaustively as if any of the boilerplate is missed then the
@@ -260,21 +260,21 @@ async fn test_crud() {
     );
 
     // DELETE
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .delete(&format!("api/v1/app/{}/", app_1.id), StatusCode::NO_CONTENT)
         .await
         .unwrap();
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .delete(&format!("api/v1/app/{}/", app_2.id), StatusCode::NO_CONTENT)
         .await
         .unwrap();
 
     // CONFIRM DELETION
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .get(&format!("api/v1/app/{}/", app_1.id), StatusCode::NOT_FOUND)
         .await
         .unwrap();
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .get(&format!("api/v1/app/{}/", app_2.id), StatusCode::NOT_FOUND)
         .await
         .unwrap();
@@ -375,7 +375,7 @@ async fn test_uid() {
     assert_ne!(app.id.0, app.uid.unwrap().0);
 
     // Can't create another app with the same uid twice
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .post(
             "api/v1/app/",
             ApplicationIn {
@@ -401,7 +401,7 @@ async fn test_uid() {
         .await
         .unwrap();
 
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .put(
             &format!("api/v1/app/{}/", app2.id),
             ApplicationIn {
@@ -428,7 +428,7 @@ async fn test_uid() {
         .await
         .unwrap();
 
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .put(
             &format!("api/v1/app/{}/", app2.id),
             ApplicationIn {
@@ -442,7 +442,7 @@ async fn test_uid() {
         .unwrap();
 
     // Delete app1
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .delete(&format!("api/v1/app/{}/", app.id), StatusCode::NO_CONTENT)
         .await
         .unwrap();
@@ -461,7 +461,7 @@ async fn test_uid() {
         .await
         .unwrap();
 
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .delete(
             &format!("api/v1/app/{}/", app2.uid.unwrap()),
             StatusCode::NO_CONTENT,
@@ -484,7 +484,7 @@ async fn test_uid() {
         .unwrap();
 
     // Can update an app with a UID
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .put(
             &format!("api/v1/app/{}/", app.id),
             ApplicationIn {
@@ -542,7 +542,7 @@ async fn test_uid() {
     assert!(app2.uid.is_none());
 
     // Make sure we can't fetch by the old UID
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .get(&format!("api/v1/app/{}/", "app3"), StatusCode::NOT_FOUND)
         .await
         .unwrap();
@@ -619,7 +619,7 @@ async fn test_get_or_create() {
         )
     );
 
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .post(
             "api/v1/app/",
             ApplicationIn {

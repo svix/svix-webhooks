@@ -11,7 +11,7 @@ use anyhow::{Context, Result};
 use axum::response::IntoResponse;
 use http::HeaderMap;
 use reqwest::{Client, RequestBuilder, StatusCode};
-use serde::{de::DeserializeOwned, Deserialize, Serialize};
+use serde::{de::DeserializeOwned, Serialize};
 use svix_ksuid::KsuidLike;
 use svix_server::{
     cfg::ConfigurationInner,
@@ -36,18 +36,6 @@ pub struct TestClient {
 impl TestClient {
     pub fn set_auth_header(&mut self, auth_header: String) {
         self.auth_header = format!("Bearer {auth_header}");
-    }
-}
-
-/// This struct accepts any JSON response and just ignores it.
-pub struct IgnoredResponse;
-impl<'de> Deserialize<'de> for IgnoredResponse {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let _ = serde_json::Value::deserialize(deserializer);
-        Ok(IgnoredResponse)
     }
 }
 

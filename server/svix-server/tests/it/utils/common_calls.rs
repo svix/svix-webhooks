@@ -6,7 +6,10 @@ use std::{collections::HashSet, time::Duration};
 use anyhow::Result;
 use chrono::{DateTime, Utc};
 use reqwest::{StatusCode, Url};
-use serde::{de::DeserializeOwned, Serialize};
+use serde::{
+    de::{DeserializeOwned, IgnoredAny},
+    Serialize,
+};
 use svix::api::DashboardAccessOut;
 use svix_server::{
     core::types::{
@@ -26,7 +29,7 @@ use svix_server::{
     },
 };
 
-use super::{run_with_retries, IgnoredResponse, TestClient};
+use super::{run_with_retries, TestClient};
 
 // App
 
@@ -43,7 +46,7 @@ pub async fn create_test_app(client: &TestClient, name: &str) -> Result<Applicat
         .await
 }
 
-pub async fn delete_test_app(client: &TestClient, id: ApplicationId) -> Result<IgnoredResponse> {
+pub async fn delete_test_app(client: &TestClient, id: ApplicationId) -> Result<IgnoredAny> {
     client
         .delete(&format!("api/v1/app/{id}/"), StatusCode::NO_CONTENT)
         .await
@@ -287,7 +290,7 @@ pub async fn common_test_list<
     );
 
     let _list = client
-        .get::<IgnoredResponse>(
+        .get::<IgnoredAny>(
             &format!("{path}?limit=6&iterator=BAD-$$$ITERATOR"),
             StatusCode::UNPROCESSABLE_ENTITY,
         )
@@ -346,7 +349,7 @@ pub async fn common_test_list<
     // If limits are hard, it will be a 422 UNPROCESSABLE_ENTITY response, otherwise it'll be capped
     // to 250
     if client
-        .get::<IgnoredResponse>(
+        .get::<IgnoredAny>(
             &format!("{path}?limit=300"),
             StatusCode::UNPROCESSABLE_ENTITY,
         )

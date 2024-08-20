@@ -3,6 +3,7 @@
 //! from the endpoint is valid in the process.
 
 use reqwest::StatusCode;
+use serde::de::IgnoredAny;
 use serde_json::Value;
 use svix_server::{
     core::{
@@ -14,7 +15,7 @@ use svix_server::{
 
 use crate::utils::{
     common_calls::{app_portal_access, application_in},
-    get_default_test_config, start_svix_server, IgnoredResponse,
+    get_default_test_config, start_svix_server,
 };
 
 #[tokio::test]
@@ -45,7 +46,7 @@ async fn test_restricted_application_access() {
     let client = app_portal_access(&client, &app_id, Default::default()).await;
 
     // CREATE, UPDATE, DELETE, and LIST ops
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .post(
             "api/v1/app/",
             application_in("TEST_APP_NAME"),
@@ -53,7 +54,7 @@ async fn test_restricted_application_access() {
         )
         .await
         .unwrap();
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .put(
             &format!("api/v1/app/{app_id}/"),
             application_in("TEST_APP_NAME"),
@@ -61,17 +62,17 @@ async fn test_restricted_application_access() {
         )
         .await
         .unwrap();
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .delete(&format!("api/v1/app/{app_id}/"), StatusCode::FORBIDDEN)
         .await
         .unwrap();
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .get("api/v1/app/", StatusCode::FORBIDDEN)
         .await
         .unwrap();
 
     // READ should succeed when accessing the app_id the token is auhtorized for but no others
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .get(&format!("api/v1/app/{app_id_2}/"), StatusCode::NOT_FOUND)
         .await
         .unwrap();
@@ -96,7 +97,7 @@ async fn test_dashboard_access_without_body() {
         .id;
 
     // We just need to ensure we get an OK response without a body.
-    let _: IgnoredResponse = client
+    let _: IgnoredAny = client
         .post(
             &format!("api/v1/auth/dashboard-access/{app_id}/"),
             (),
