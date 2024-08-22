@@ -349,6 +349,7 @@ pub mod tests {
     use assert_matches::assert_matches;
     use chrono::Utc;
     use redis::{streams::StreamReadReply, AsyncCommands as _, Direction};
+    use tokio::time::timeout;
 
     use super::{migrate_list, migrate_list_to_stream, migrate_sset, new_pair_inner};
     use crate::{
@@ -432,17 +433,9 @@ pub mod tests {
     /// Reads and acknowledges all items in the queue with the given name for clearing out entries
     /// from previous test runs
     async fn flush_stale_queue_items(_p: TaskQueueProducer, c: &mut TaskQueueConsumer) {
-        loop {
-            tokio::select! {
-                recv = c.receive_all() => {
-                    let recv = recv.unwrap().pop().unwrap();
-                    recv.ack().await.unwrap();
-                }
-
-                _ = tokio::time::sleep(Duration::from_millis(100)) => {
-                    break;
-                }
-            }
+        while let Ok(recv) = timeout(Duration::from_millis(100), c.receive_all()).await {
+            let recv = recv.unwrap().pop().unwrap();
+            recv.ack().await.unwrap();
         }
     }
 
@@ -474,30 +467,20 @@ pub mod tests {
         });
         p.send(mt.clone(), None).await.unwrap();
 
-        tokio::select! {
-            recv = c.receive_all() => {
-                assert_eq!(*recv.unwrap()[0].task, mt);
-            }
-
-            _ = tokio::time::sleep(Duration::from_secs(5)) => {
-                panic!("`c.receive()` has timed out")
-            }
-        }
+        let recv = timeout(Duration::from_secs(5), c.receive_all())
+            .await
+            .expect("`c.receive()` has timed out");
+        assert_eq!(*recv.unwrap()[0].task, mt);
 
         tokio::time::sleep(Duration::from_millis(100)).await;
 
-        tokio::select! {
-            recv = c.receive_all() => {
-                let recv = recv.unwrap().pop().unwrap();
-                assert_eq!(*recv.task, mt);
-                // Acknowledge so the queue isn't further polluted
-                recv.ack().await.unwrap();
-            }
-
-            _ = tokio::time::sleep(Duration::from_secs(5)) => {
-                panic!("`c.receive()` has timed out")
-            }
-        }
+        let recv = timeout(Duration::from_secs(5), c.receive_all())
+            .await
+            .expect("`c.receive()` has timed out");
+        let recv = recv.unwrap().pop().unwrap();
+        assert_eq!(*recv.task, mt);
+        // Acknowledge so the queue isn't further polluted
+        recv.ack().await.unwrap();
 
         // And assert that the task has been deleted
         let mut conn = pool
@@ -555,12 +538,8 @@ pub mod tests {
         assert_eq!(*recv.task, mt);
         recv.ack().await.unwrap();
 
-        tokio::select! {
-            recv = c.receive_all() => {
-                panic!("Received unexpected QueueTask {:?}", recv.unwrap()[0].task);
-            }
-
-            _ = tokio::time::sleep(Duration::from_secs(1)) => {}
+        if let Ok(recv) = timeout(Duration::from_secs(1), c.receive_all()).await {
+            panic!("Received unexpected QueueTask {:?}", recv.unwrap()[0].task);
         }
 
         // And assert that the task has been deleted
@@ -604,15 +583,10 @@ pub mod tests {
         assert_eq!(*recv.task, mt);
         recv.nack().await.unwrap();
 
-        tokio::select! {
-            recv = c.receive_all() => {
-                assert_eq!(*recv.unwrap().pop().unwrap().task, mt);
-            }
-
-            _ = tokio::time::sleep(Duration::from_secs(1)) => {
-                panic!("Expected QueueTask");
-            }
-        }
+        let recv = timeout(Duration::from_secs(1), c.receive_all())
+            .await
+            .expect("Expected QueueTask");
+        assert_eq!(*recv.unwrap().pop().unwrap().task, mt);
     }
 
     #[tokio::test]

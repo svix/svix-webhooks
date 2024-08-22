@@ -15,6 +15,7 @@ use svix_server::{
     },
     redis::RedisManager,
 };
+use tokio::time::timeout;
 
 // TODO: Don't copy this from the Redis queue test directly, place the fn somewhere both can access
 async fn get_pool(cfg: &Configuration) -> RedisManager {
@@ -87,19 +88,12 @@ async fn test_many_queue_consumers_inner(prefix: &str, delay: Option<Duration>) 
                 let mut out = Vec::new();
                 let mut read = 0;
 
-                loop {
-                    tokio::select! {
-                        recv = c.receive_all() => {
-                            let recv = recv.unwrap();
-                            read += recv.len();
-                            for r in recv {
-                                out.push(task_queue_delivery_to_u16(&r));
-                                r.ack().await.unwrap();
-                            }
-                        }
-                        _ = tokio::time::sleep(Duration::from_millis(1000)) => {
-                            break;
-                        }
+                while let Ok(recv) = timeout(Duration::from_secs(1), c.receive_all()).await {
+                    let recv = recv.unwrap();
+                    read += recv.len();
+                    for r in recv {
+                        out.push(task_queue_delivery_to_u16(&r));
+                        r.ack().await.unwrap();
                     }
                 }
 
