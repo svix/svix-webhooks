@@ -516,7 +516,7 @@
             },
             "CreateStreamIn": {
                 "properties": {
-                    "events": {
+                    "messages": {
                         "items": {
                             "$ref": "#/components/schemas/EventIn"
                         },
@@ -524,7 +524,7 @@
                     }
                 },
                 "required": [
-                    "events"
+                    "messages"
                 ],
                 "type": "object"
             },
@@ -2875,6 +2875,62 @@
                 ],
                 "type": "object"
             },
+            "ListResponse_StreamOut_": {
+                "properties": {
+                    "data": {
+                        "items": {
+                            "$ref": "#/components/schemas/StreamOut"
+                        },
+                        "type": "array"
+                    },
+                    "done": {
+                        "type": "boolean"
+                    },
+                    "iterator": {
+                        "example": "iterator",
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "prevIterator": {
+                        "example": "-iterator",
+                        "nullable": true,
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "data",
+                    "done"
+                ],
+                "type": "object"
+            },
+            "ListResponse_StreamSinkOut_": {
+                "properties": {
+                    "data": {
+                        "items": {
+                            "$ref": "#/components/schemas/StreamSinkOut"
+                        },
+                        "type": "array"
+                    },
+                    "done": {
+                        "type": "boolean"
+                    },
+                    "iterator": {
+                        "example": "iterator",
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "prevIterator": {
+                        "example": "-iterator",
+                        "nullable": true,
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "data",
+                    "done"
+                ],
+                "type": "object"
+            },
             "ListResponse_TemplateOut_": {
                 "properties": {
                     "data": {
@@ -3353,12 +3409,23 @@
                         },
                         "type": "object"
                     },
+                    "payloadRetentionHours": {
+                        "default": null,
+                        "description": "Optional number of hours to retain the message payload. Note that this is mutually exclusive with `payloadRetentionPeriod`.",
+                        "format": "int64",
+                        "maximum": 2160,
+                        "minimum": 1,
+                        "nullable": true,
+                        "type": "integer"
+                    },
                     "payloadRetentionPeriod": {
                         "default": 90,
+                        "description": "Optional number of days to retain the message payload. Defaults to 90. Note that this is mutually exclusive with `payloadRetentionHours`.",
                         "example": 90,
                         "format": "int64",
                         "maximum": 90,
-                        "minimum": 5,
+                        "minimum": 1,
+                        "nullable": true,
                         "type": "integer"
                     }
                 },
@@ -3559,6 +3626,7 @@
                         "type": "string"
                     },
                     "payload": {
+                        "description": "JSON payload to send as the request body of the webhook.\n\nWe also support sending non-JSON payloads. Please contact us for more information.",
                         "example": {
                             "email": "test@example.com",
                             "type": "user.created",
@@ -3566,12 +3634,23 @@
                         },
                         "type": "object"
                     },
+                    "payloadRetentionHours": {
+                        "default": null,
+                        "description": "Optional number of hours to retain the message payload. Note that this is mutually exclusive with `payloadRetentionPeriod`.",
+                        "format": "int64",
+                        "maximum": 2160,
+                        "minimum": 1,
+                        "nullable": true,
+                        "type": "integer"
+                    },
                     "payloadRetentionPeriod": {
                         "default": 90,
+                        "description": "Optional number of days to retain the message payload. Defaults to 90. Note that this is mutually exclusive with `payloadRetentionHours`.",
                         "example": 90,
                         "format": "int64",
                         "maximum": 90,
-                        "minimum": 5,
+                        "minimum": 1,
+                        "nullable": true,
                         "type": "integer"
                     },
                     "tags": {
@@ -4496,6 +4575,54 @@
                 ],
                 "type": "object"
             },
+            "SinkPayloadFormat": {
+                "enum": [
+                    "json"
+                ],
+                "type": "string"
+            },
+            "SinkStatus": {
+                "enum": [
+                    "enabled",
+                    "paused",
+                    "disabled"
+                ],
+                "type": "string"
+            },
+            "SinkStatusIn": {
+                "enum": [
+                    "enabled",
+                    "paused"
+                ],
+                "type": "string"
+            },
+            "SinkTransformIn": {
+                "properties": {
+                    "code": {
+                        "maxLength": 51200,
+                        "minLength": 10,
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "enabled": {
+                        "type": "boolean"
+                    }
+                },
+                "type": "object"
+            },
+            "SinkTransformationOut": {
+                "properties": {
+                    "code": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "enabled": {
+                        "default": true,
+                        "type": "boolean"
+                    }
+                },
+                "type": "object"
+            },
             "StatisticsPeriod": {
                 "description": "Period length for a statistics data point",
                 "enum": [
@@ -4524,6 +4651,350 @@
                     "Code4xx",
                     "Code5xx"
                 ]
+            },
+            "StreamIn": {
+                "properties": {
+                    "description": {
+                        "minLength": 1,
+                        "type": "string"
+                    },
+                    "uid": {
+                        "description": "Optional unique identifier for the stream",
+                        "nullable": true,
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "description"
+                ],
+                "type": "object"
+            },
+            "StreamOut": {
+                "properties": {
+                    "createdAt": {
+                        "format": "date-time",
+                        "type": "string"
+                    },
+                    "description": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "uid": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "updatedAt": {
+                        "format": "date-time",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "createdAt",
+                    "id",
+                    "updatedAt"
+                ],
+                "type": "object"
+            },
+            "StreamPatch": {
+                "properties": {
+                    "description": {
+                        "type": "string"
+                    },
+                    "uid": {
+                        "description": "Optional unique identifier for the stream",
+                        "nullable": true,
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "StreamSinkIn": {
+                "oneOf": [
+                    {
+                        "properties": {
+                            "config": {
+                                "properties": {
+                                    "url": {
+                                        "format": "uri",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "url"
+                                ],
+                                "type": "object"
+                            },
+                            "type": {
+                                "enum": [
+                                    "otelV1HttpTrace"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "properties": {
+                                    "url": {
+                                        "format": "uri",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "url"
+                                ],
+                                "type": "object"
+                            },
+                            "type": {
+                                "enum": [
+                                    "http"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    }
+                ],
+                "properties": {
+                    "batchSize": {
+                        "default": 100,
+                        "format": "uint16",
+                        "maximum": 1000,
+                        "minimum": 0,
+                        "type": "integer"
+                    },
+                    "format": {
+                        "$ref": "#/components/schemas/SinkPayloadFormat"
+                    },
+                    "maxWaitSecs": {
+                        "default": 0,
+                        "format": "uint16",
+                        "maximum": 3600,
+                        "minimum": 0,
+                        "type": "integer"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/SinkStatusIn"
+                    },
+                    "uid": {
+                        "nullable": true,
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "format"
+                ],
+                "type": "object"
+            },
+            "StreamSinkOut": {
+                "oneOf": [
+                    {
+                        "properties": {
+                            "config": {
+                                "properties": {
+                                    "url": {
+                                        "format": "uri",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "url"
+                                ],
+                                "type": "object"
+                            },
+                            "type": {
+                                "enum": [
+                                    "otelV1HttpTrace"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "properties": {
+                                    "url": {
+                                        "format": "uri",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "url"
+                                ],
+                                "type": "object"
+                            },
+                            "type": {
+                                "enum": [
+                                    "http"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    }
+                ],
+                "properties": {
+                    "batchSize": {
+                        "format": "int32",
+                        "type": "integer"
+                    },
+                    "createdAt": {
+                        "format": "date-time",
+                        "type": "string"
+                    },
+                    "currentIterator": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "disabledReason": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "format": {
+                        "$ref": "#/components/schemas/SinkPayloadFormat"
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "maxWaitSecs": {
+                        "format": "int32",
+                        "type": "integer"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/SinkStatus"
+                    },
+                    "uid": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "updatedAt": {
+                        "format": "date-time",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "batchSize",
+                    "createdAt",
+                    "format",
+                    "id",
+                    "maxWaitSecs",
+                    "status",
+                    "updatedAt"
+                ],
+                "type": "object"
+            },
+            "StreamSinkPatch": {
+                "oneOf": [
+                    {
+                        "properties": {
+                            "config": {
+                                "properties": {
+                                    "url": {
+                                        "format": "uri",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "url"
+                                ],
+                                "type": "object"
+                            },
+                            "type": {
+                                "enum": [
+                                    "otelV1HttpTrace"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "properties": {
+                                    "url": {
+                                        "format": "uri",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "url"
+                                ],
+                                "type": "object"
+                            },
+                            "type": {
+                                "enum": [
+                                    "http"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    }
+                ],
+                "properties": {
+                    "batchSize": {
+                        "default": null,
+                        "format": "uint16",
+                        "maximum": 1000,
+                        "minimum": 0,
+                        "nullable": true,
+                        "type": "integer"
+                    },
+                    "format": {
+                        "$ref": "#/components/schemas/SinkPayloadFormat",
+                        "default": null,
+                        "nullable": true
+                    },
+                    "maxWaitSecs": {
+                        "default": null,
+                        "format": "uint16",
+                        "maximum": 3600,
+                        "minimum": 0,
+                        "nullable": true,
+                        "type": "integer"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/SinkStatusIn",
+                        "nullable": true
+                    },
+                    "uid": {
+                        "nullable": true,
+                        "type": "string"
+                    }
+                },
+                "type": "object"
             },
             "TemplateIn": {
                 "properties": {
@@ -14808,62 +15279,62 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "const messageOut = await svix.message.create(\"app_id\", {\n    eventId: \"unique-msg-identifier\",\n    eventType: \"user.signup\",\n    payload: {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    channels: [\"project_123\", \"group_2\"],\n    payloadRetentionPeriod: 90,\n    application: null,\n    tags: [\"my_tag\", \"other\"],\n    transformationsParams: null\n});"
+                        "source": "const messageOut = await svix.message.create(\"app_id\", {\n    eventId: \"unique-msg-identifier\",\n    eventType: \"user.signup\",\n    payload: {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    channels: [\"project_123\", \"group_2\"],\n    application: null,\n    tags: [\"my_tag\", \"other\"],\n    transformationsParams: null,\n    payloadRetentionPeriod: 90,\n    payloadRetentionHours: null\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "const messageOut = await svix.message.create(\"app_id\", {\n    eventId: \"unique-msg-identifier\",\n    eventType: \"user.signup\",\n    payload: {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    channels: [\"project_123\", \"group_2\"],\n    payloadRetentionPeriod: 90,\n    application: null,\n    tags: [\"my_tag\", \"other\"],\n    transformationsParams: null\n});"
+                        "source": "const messageOut = await svix.message.create(\"app_id\", {\n    eventId: \"unique-msg-identifier\",\n    eventType: \"user.signup\",\n    payload: {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    channels: [\"project_123\", \"group_2\"],\n    application: null,\n    tags: [\"my_tag\", \"other\"],\n    transformationsParams: null,\n    payloadRetentionPeriod: 90,\n    payloadRetentionHours: null\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "message_out = svix.message.create(\"app_id\", MessageIn(\n    event_id=\"unique-msg-identifier\",\n    event_type=\"user.signup\",\n    payload={\"email\": \"test@example.com\", \"type\": \"user.created\", \"username\": \"test_user\"},\n    channels=[\"project_123\", \"group_2\"],\n    payload_retention_period=90,\n    application=None,\n    tags=[\"my_tag\", \"other\"],\n    transformations_params=None\n), None)"
+                        "source": "message_out = svix.message.create(\"app_id\", MessageIn(\n    event_id=\"unique-msg-identifier\",\n    event_type=\"user.signup\",\n    payload={\"email\": \"test@example.com\", \"type\": \"user.created\", \"username\": \"test_user\"},\n    channels=[\"project_123\", \"group_2\"],\n    application=None,\n    tags=[\"my_tag\", \"other\"],\n    transformations_params=None,\n    payload_retention_period=90,\n    payload_retention_hours=None\n), None)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "message_out = await svix.message.create(\"app_id\", MessageIn(\n    event_id=\"unique-msg-identifier\",\n    event_type=\"user.signup\",\n    payload={\"email\": \"test@example.com\", \"type\": \"user.created\", \"username\": \"test_user\"},\n    channels=[\"project_123\", \"group_2\"],\n    payload_retention_period=90,\n    application=None,\n    tags=[\"my_tag\", \"other\"],\n    transformations_params=None\n), None)"
+                        "source": "message_out = await svix.message.create(\"app_id\", MessageIn(\n    event_id=\"unique-msg-identifier\",\n    event_type=\"user.signup\",\n    payload={\"email\": \"test@example.com\", \"type\": \"user.created\", \"username\": \"test_user\"},\n    channels=[\"project_123\", \"group_2\"],\n    application=None,\n    tags=[\"my_tag\", \"other\"],\n    transformations_params=None,\n    payload_retention_period=90,\n    payload_retention_hours=None\n), None)"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "messageOut, err := svixClient.Message.Create(ctx, \"app_id\", &MessageIn{\n    EventId: \"unique-msg-identifier\",\n    EventType: \"user.signup\",\n    Payload: map[string]interface{}{\"email\": \"test@example.com\", \"type\": \"user.created\", \"username\": \"test_user\"},\n    Channels: []string{\"project_123\", \"group_2\"},\n    PayloadRetentionPeriod: 90,\n    Application: nil,\n    Tags: []string{\"my_tag\", \"other\"},\n    TransformationsParams: nil,\n})"
+                        "source": "messageOut, err := svixClient.Message.Create(ctx, \"app_id\", &MessageIn{\n    EventId: \"unique-msg-identifier\",\n    EventType: \"user.signup\",\n    Payload: map[string]interface{}{\"email\": \"test@example.com\", \"type\": \"user.created\", \"username\": \"test_user\"},\n    Channels: []string{\"project_123\", \"group_2\"},\n    Application: nil,\n    Tags: []string{\"my_tag\", \"other\"},\n    TransformationsParams: nil,\n    PayloadRetentionPeriod: 90,\n    PayloadRetentionHours: nil,\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "val messageOut = svix.message.create(\"app_id\", MessageIn()\n    .eventId(\"unique-msg-identifier\")\n    .eventType(\"user.signup\")\n    .payload(/* ... */)\n    .channels(arrayOf(\"project_123\", \"group_2\"))\n    .payloadRetentionPeriod(90)\n    .application(null)\n    .tags(arrayOf(\"my_tag\", \"other\"))\n    .transformationsParams(null)\n)"
+                        "source": "val messageOut = svix.message.create(\"app_id\", MessageIn()\n    .eventId(\"unique-msg-identifier\")\n    .eventType(\"user.signup\")\n    .payload(/* ... */)\n    .channels(arrayOf(\"project_123\", \"group_2\"))\n    .application(null)\n    .tags(arrayOf(\"my_tag\", \"other\"))\n    .transformationsParams(null)\n    .payloadRetentionPeriod(90)\n    .payloadRetentionHours(null)\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "MessageOut messageOut = svix.getMessage().create(\"app_id\", new MessageIn()\n    .eventId(\"unique-msg-identifier\")\n    .eventType(\"user.signup\")\n    .payload(/* ... */)\n    .channels(new String[]{\"project_123\", \"group_2\"})\n    .payloadRetentionPeriod(90)\n    .application(null)\n    .tags(new String[]{\"my_tag\", \"other\"})\n    .transformationsParams(null)\n)"
+                        "source": "MessageOut messageOut = svix.getMessage().create(\"app_id\", new MessageIn()\n    .eventId(\"unique-msg-identifier\")\n    .eventType(\"user.signup\")\n    .payload(/* ... */)\n    .channels(new String[]{\"project_123\", \"group_2\"})\n    .application(null)\n    .tags(new String[]{\"my_tag\", \"other\"})\n    .transformationsParams(null)\n    .payloadRetentionPeriod(90)\n    .payloadRetentionHours(null)\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "message_out = svix.message.create(\"app_id\", Svix::MessageIn.new({\n    \"event_id\": \"unique-msg-identifier\",\n    \"event_type\": \"user.signup\",\n    \"payload\": {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    \"channels\": [\"project_123\", \"group_2\"],\n    \"payload_retention_period\": 90,\n    \"application\": nil,\n    \"tags\": [\"my_tag\", \"other\"],\n    \"transformations_params\": nil\n}))"
+                        "source": "message_out = svix.message.create(\"app_id\", Svix::MessageIn.new({\n    \"event_id\": \"unique-msg-identifier\",\n    \"event_type\": \"user.signup\",\n    \"payload\": {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    \"channels\": [\"project_123\", \"group_2\"],\n    \"application\": nil,\n    \"tags\": [\"my_tag\", \"other\"],\n    \"transformations_params\": nil,\n    \"payload_retention_period\": 90,\n    \"payload_retention_hours\": nil\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "let message_out = svix.message().create(\"app_id\", MessageIn {\n    event_id: Some(\"unique-msg-identifier\".to_string()),\n    event_type: \"user.signup\".to_string(),\n    payload: json!({\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"}),\n    channels: Some(vec![\"project_123\".to_string(), \"group_2\".to_string()]),\n    payload_retention_period: Some(90),\n    application: None,\n    tags: Some(vec![\"my_tag\".to_string(), \"other\".to_string()]),\n    transformations_params: None,\n}, None).await?;"
+                        "source": "let message_out = svix.message().create(\"app_id\", MessageIn {\n    event_id: Some(\"unique-msg-identifier\".to_string()),\n    event_type: \"user.signup\".to_string(),\n    payload: json!({\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"}),\n    channels: Some(vec![\"project_123\".to_string(), \"group_2\".to_string()]),\n    application: None,\n    tags: Some(vec![\"my_tag\".to_string(), \"other\".to_string()]),\n    transformations_params: None,\n    payload_retention_period: Some(90),\n    payload_retention_hours: None,\n}, None).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "var messageOut = await svix.Message.CreateAsync(\"app_id\", new MessageIn{\n    eventId: \"unique-msg-identifier\",\n    eventType: \"user.signup\",\n    payload: /* ... */,\n    channels: new string[] {\"project_123\", \"group_2\"},\n    payloadRetentionPeriod: 90,\n    application: null,\n    tags: new string[] {\"my_tag\", \"other\"},\n    transformationsParams: null\n})"
+                        "source": "var messageOut = await svix.Message.CreateAsync(\"app_id\", new MessageIn{\n    eventId: \"unique-msg-identifier\",\n    eventType: \"user.signup\",\n    payload: /* ... */,\n    channels: new string[] {\"project_123\", \"group_2\"},\n    application: null,\n    tags: new string[] {\"my_tag\", \"other\"},\n    transformationsParams: null,\n    payloadRetentionPeriod: 90,\n    payloadRetentionHours: null\n})"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix message create \"app_id\" '{\n    \"eventId\": \"unique-msg-identifier\",\n    \"eventType\": \"user.signup\",\n    \"payload\": {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    \"channels\": [\"project_123\", \"group_2\"],\n    \"payloadRetentionPeriod\": 90,\n    \"application\": null,\n    \"tags\": [\"my_tag\", \"other\"],\n    \"transformationsParams\": null\n}'"
+                        "source": "svix message create \"app_id\" '{\n    \"eventId\": \"unique-msg-identifier\",\n    \"eventType\": \"user.signup\",\n    \"payload\": {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n    \"channels\": [\"project_123\", \"group_2\"],\n    \"application\": null,\n    \"tags\": [\"my_tag\", \"other\"],\n    \"transformationsParams\": null,\n    \"payloadRetentionPeriod\": 90,\n    \"payloadRetentionHours\": null\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"eventId\": \"unique-msg-identifier\",\n        \"eventType\": \"user.signup\",\n        \"payload\": {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n        \"channels\": [\"project_123\", \"group_2\"],\n        \"payloadRetentionPeriod\": 90,\n        \"application\": null,\n        \"tags\": [\"my_tag\", \"other\"],\n        \"transformationsParams\": null\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"eventId\": \"unique-msg-identifier\",\n        \"eventType\": \"user.signup\",\n        \"payload\": {\"email\":\"test@example.com\",\"type\":\"user.created\",\"username\":\"test_user\"},\n        \"channels\": [\"project_123\", \"group_2\"],\n        \"application\": null,\n        \"tags\": [\"my_tag\", \"other\"],\n        \"transformationsParams\": null,\n        \"payloadRetentionPeriod\": 90,\n        \"payloadRetentionHours\": null\n    }'"
                     }
                 ]
             }
