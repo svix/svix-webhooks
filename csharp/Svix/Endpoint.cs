@@ -415,8 +415,8 @@ namespace Svix
             try
             {
                 var lResponse = await _endpointApi.V1EndpointRotateSecretWithHttpInfoAsync(
-                    endpointId,
                     appId,
+                    endpointId,
                     secret,
                     idempotencyKey);
 
