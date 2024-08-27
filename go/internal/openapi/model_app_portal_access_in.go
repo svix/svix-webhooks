@@ -16,6 +16,7 @@ import (
 
 // AppPortalAccessIn struct for AppPortalAccessIn
 type AppPortalAccessIn struct {
+	Application *ApplicationIn `json:"application,omitempty"`
 	// How long the token will be valid for, in seconds.  Valid values are between 1 hour and 7 days. The default is 7 days.
 	Expiry NullableInt32 `json:"expiry,omitempty"`
 	// The set of feature flags the created token will have access to.
@@ -43,6 +44,38 @@ func NewAppPortalAccessInWithDefaults() *AppPortalAccessIn {
 	var expiry int32 = 604800
 	this.Expiry = *NewNullableInt32(&expiry)
 	return &this
+}
+
+// GetApplication returns the Application field value if set, zero value otherwise.
+func (o *AppPortalAccessIn) GetApplication() ApplicationIn {
+	if o == nil || o.Application == nil {
+		var ret ApplicationIn
+		return ret
+	}
+	return *o.Application
+}
+
+// GetApplicationOk returns a tuple with the Application field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *AppPortalAccessIn) GetApplicationOk() (*ApplicationIn, bool) {
+	if o == nil || o.Application == nil {
+		return nil, false
+	}
+	return o.Application, true
+}
+
+// HasApplication returns a boolean if a field has been set.
+func (o *AppPortalAccessIn) HasApplication() bool {
+	if o != nil && o.Application != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetApplication gets a reference to the given ApplicationIn and assigns it to the Application field.
+func (o *AppPortalAccessIn) SetApplication(v ApplicationIn) {
+	o.Application = &v
 }
 
 // GetExpiry returns the Expiry field value if set, zero value otherwise (both if not set or set to explicit null).
@@ -163,6 +196,9 @@ func (o *AppPortalAccessIn) UnsetReadOnly() {
 
 func (o AppPortalAccessIn) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
+	if o.Application != nil {
+		toSerialize["application"] = o.Application
+	}
 	if o.Expiry.IsSet() {
 		toSerialize["expiry"] = o.Expiry.Get()
 	}
