@@ -3,6 +3,12 @@
 ## Next
 * 
 
+## Version 1.31.0
+* Bridge: remove Beta tag
+* Libs/Go: prune out unused import for "time" in codegen output
+* Libs/C#: Fix appId, endpointId order in RotateSecretWithHttpInfoAsync
+* Libs: Support passing `application` to `app-portal-access` endpoint
+
 ## Version 1.30.0
 * Server: Support filtering by before and after at the same time
 
