@@ -8,6 +8,9 @@ fi
 
 yarn openapi-generator-cli generate -i openapi.json -g typescript -o javascript/src/openapi -c javascript/openapi-generator-config.json -t javascript/templates --type-mappings=set=Array
 
+# Cleanup previous codegen, allowing us to spot removals.
+# If the removals are expected, stage them eg. `git add -u`, then commit them.
+rm go/internal/openapi/*.go
 yarn openapi-generator-cli generate -i openapi.json -g go -o go/internal/openapi -c go/openapi-generator-config.json -t go/templates
 
 # Currently the generator will add unused imports for `time` to some modules.
