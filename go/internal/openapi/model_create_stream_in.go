@@ -16,16 +16,16 @@ import (
 
 // CreateStreamIn struct for CreateStreamIn
 type CreateStreamIn struct {
-	Events []EventIn `json:"events"`
+	Messages []EventIn `json:"messages"`
 }
 
 // NewCreateStreamIn instantiates a new CreateStreamIn object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCreateStreamIn(events []EventIn) *CreateStreamIn {
+func NewCreateStreamIn(messages []EventIn) *CreateStreamIn {
 	this := CreateStreamIn{}
-	this.Events = events
+	this.Messages = messages
 	return &this
 }
 
@@ -37,34 +37,34 @@ func NewCreateStreamInWithDefaults() *CreateStreamIn {
 	return &this
 }
 
-// GetEvents returns the Events field value
-func (o *CreateStreamIn) GetEvents() []EventIn {
+// GetMessages returns the Messages field value
+func (o *CreateStreamIn) GetMessages() []EventIn {
 	if o == nil {
 		var ret []EventIn
 		return ret
 	}
 
-	return o.Events
+	return o.Messages
 }
 
-// GetEventsOk returns a tuple with the Events field value
+// GetMessagesOk returns a tuple with the Messages field value
 // and a boolean to check if the value has been set.
-func (o *CreateStreamIn) GetEventsOk() (*[]EventIn, bool) {
+func (o *CreateStreamIn) GetMessagesOk() (*[]EventIn, bool) {
 	if o == nil  {
 		return nil, false
 	}
-	return &o.Events, true
+	return &o.Messages, true
 }
 
-// SetEvents sets field value
-func (o *CreateStreamIn) SetEvents(v []EventIn) {
-	o.Events = v
+// SetMessages sets field value
+func (o *CreateStreamIn) SetMessages(v []EventIn) {
+	o.Messages = v
 }
 
 func (o CreateStreamIn) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
-		toSerialize["events"] = o.Events
+		toSerialize["messages"] = o.Messages
 	}
 	return json.Marshal(toSerialize)
 }
