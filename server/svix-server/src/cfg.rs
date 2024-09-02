@@ -190,7 +190,7 @@ pub struct ConfigurationInner {
     pub dangerous_disable_tls_verification: bool,
 
     /// Optional configuration for sending webhooks through a proxy.
-    #[serde(rename = "proxy")]
+    #[serde(flatten)]
     pub proxy_config: Option<ProxyConfig>,
 
     #[serde(flatten)]
@@ -202,6 +202,7 @@ pub struct ProxyConfig {
     /// SOCKS5 proxy address.
     ///
     /// More proxy types may be supported in the future.
+    #[serde(rename = "proxy_addr")]
     pub addr: ProxyAddr,
 }
 
@@ -509,6 +510,20 @@ mod tests {
             );
 
             // Single item and empty were failing before so not testing them
+
+            Ok(())
+        });
+    }
+
+    #[test]
+    fn test_proxy_addr_from_env_parsing() {
+        figment::Jail::expect_with(|jail| {
+            jail.set_env("SVIX_QUEUE_TYPE", "memory");
+            jail.set_env("SVIX_JWT_SECRET", "x");
+            jail.set_env("SVIX_PROXY_ADDR", "x");
+
+            let cfg = load().unwrap();
+            assert!(cfg.proxy_config.is_some());
 
             Ok(())
         });
