@@ -3,6 +3,10 @@
 ## Next
 * 
 
+## Version 1.32.0
+* Libs/Go Remove modules no longer produced by the generator
+* Server: Fix parsing proxy config from process environment
+
 ## Version 1.31.0
 * Bridge: remove Beta tag
 * Libs/Go: prune out unused import for "time" in codegen output
