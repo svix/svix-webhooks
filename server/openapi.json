@@ -1504,6 +1504,11 @@
                         "example": "{}",
                         "type": "string"
                     },
+                    "responseDurationMs": {
+                        "description": "Response duration in milliseconds.\n\nCurrently, this is not actually recorded in the OSS version of Svix, so this field always has a value of `0`.",
+                        "format": "int64",
+                        "type": "integer"
+                    },
                     "responseStatusCode": {
                         "example": 200,
                         "format": "int16",
@@ -1532,6 +1537,7 @@
                     "id",
                     "msgId",
                     "response",
+                    "responseDurationMs",
                     "responseStatusCode",
                     "status",
                     "timestamp",
@@ -1684,6 +1690,11 @@
                         "example": "{}",
                         "type": "string"
                     },
+                    "responseDurationMs": {
+                        "description": "Response duration in milliseconds.\n\nCurrently, this is not actually recorded in the OSS version of Svix, so this field always has a value of `0`.",
+                        "format": "int64",
+                        "type": "integer"
+                    },
                     "responseStatusCode": {
                         "example": 200,
                         "format": "int16",
@@ -1712,6 +1723,7 @@
                     "id",
                     "msgId",
                     "response",
+                    "responseDurationMs",
                     "responseStatusCode",
                     "status",
                     "timestamp",
