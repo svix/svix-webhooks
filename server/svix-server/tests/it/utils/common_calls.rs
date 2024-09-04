@@ -184,6 +184,7 @@ pub fn event_type_in(
         deleted: false,
         schemas: schema.into().map(|s| serde_json::from_value(s).unwrap()),
         feature_flag: None,
+        deprecated: false,
     })
 }
 

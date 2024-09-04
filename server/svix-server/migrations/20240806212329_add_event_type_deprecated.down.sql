@@ -1,0 +1,1 @@
+ALTER TABLE eventtype DROP COLUMN deprecated;
