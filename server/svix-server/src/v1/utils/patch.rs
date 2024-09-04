@@ -7,13 +7,15 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-/// This is an enum that will wrap every nullable field for a PATCH request. Nonnullable fields can
-/// be represented via an [`UnrequiredField`]. This differs from an [`Option`] in that it
-/// distinguishes null values and absent values such that an optional value in a model may be made
-/// None via PATCHing while allowing omitted fields to be skipped when updating.
+/// This is an enum that will wrap every nullable field for a PATCH request.
 ///
-/// NOTE: You must tag these fields with `#[serde(default)]` in order for the serialization to work
-/// correctly.
+/// Nonnullable fields can be represented via an [`UnrequiredField`]. This
+/// differs from an [`Option`] in that it distinguishes null values and absent
+/// values such that an optional value in a model may be made `None` via
+/// PATCHing while allowing omitted fields to be skipped when updating.
+///
+/// NOTE: You must tag these fields with `#[serde(default)]` in order for the
+/// serialization to work correctly.
 #[derive(Debug)]
 pub enum UnrequiredNullableField<T> {
     Absent,
@@ -21,14 +23,16 @@ pub enum UnrequiredNullableField<T> {
     Some(T),
 }
 
-/// This enum is a non-nullable equivalent to [`UnrequiredNullableField`]. This is effectively an
-/// [`Option`] with the additional context that any field which uses this type is a member of a
-/// PATCH request model and that the field may be absent, meaning it is not to be updated. In
-/// comparison, [`Option`]s are used in other [`ModelIn`]s to define a field, that when absent,
-/// is `null`.
+/// This enum is a non-nullable equivalent to [`UnrequiredNullableField`].
 ///
-/// NOTE: You must tag these fields with `#[serde(default)]` in order for the serialization to work
-/// correctly.
+/// This is effectively an [`Option`] with the additional context that any field
+/// which uses this type is a member of a PATCH request model and that the field
+/// may be absent, meaning it is not to be updated. In comparison, [`Option`]s
+/// are used in other [`ModelIn`]s to define a field, that when absent, is
+/// `null`.
+///
+/// NOTE: You must tag these fields with `#[serde(default)]` in order for the
+/// serialization to work correctly.
 #[derive(Debug)]
 pub enum UnrequiredField<T> {
     Absent,

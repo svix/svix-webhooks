@@ -431,9 +431,11 @@ impl From<crate::core::webhook_http_client::Error> for Error {
     }
 }
 
-/// Utility function for Converting a [`DbErr`] into an [`HttpError`] (wrapped by [`Error`]) on the
-/// error "duplicate key value violates unique constraint". This is to be used in `map_err` calls
-/// on creation/update of records
+/// Utility function for Converting a [`DbErr`] into an [`Error`].
+///
+/// The error "duplicate key value violates unique constraint" is converted to
+/// an HTTP "conflict" error. This is to be used in `map_err` calls on
+/// creation/update of records.
 pub fn http_error_on_conflict(db_err: DbErr) -> Error {
     if is_conflict_err(&db_err) {
         HttpError::conflict(None, None).into()
