@@ -66,10 +66,11 @@ pub fn derive_model_out(input: proc_macro::TokenStream) -> proc_macro::TokenStre
 }
 
 #[proc_macro_attribute]
-/// Attribute macro for axum/aide handler functions that creates a new function
-/// with the same name as the handler, suffixed with `_operation`, that acts as
-/// an operation transformation function, automatically setting the operation
-/// ID, summary and description.
+/// Generate an aide operation transform for an axum handler function.
+///
+/// The generated function has the same name as the handler, suffixed with
+/// `_operation`. It automatically sets the operation ID, summary and
+/// description.
 ///
 /// # Example
 /// ```ignore

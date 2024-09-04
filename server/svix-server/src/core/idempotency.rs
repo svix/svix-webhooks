@@ -1,9 +1,12 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
-//! Defines idempotency middleware for the Axum server which first looks up the given key for an
-//! existing response before routing to the given endpoint's function, and caches any such results
-//! such that subsequent requests to that endpoint with the same key will return the same response.
+//! Idempotency middleware for the Axum server.
+//!
+//! The middleware first looks up the given key for an existing response before
+//! routing to the given endpoint's function, and caches any such results
+//! such that subsequent requests to that endpoint with the same key will return
+//! the same response.
 //!
 //! Responses are cached for twelve hours by default.
 

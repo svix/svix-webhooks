@@ -259,6 +259,7 @@ pub struct CreateMessageRequest {
 }
 
 /// Receivers convert HTTP bodies into messages forwarded to (currently only) message queues, etc.
+///
 /// The `payload` field represents the message body given to the producer, and other fields may be
 /// added in the future allowing transformations to dynamically customize the producer behavior.
 #[derive(Clone, Deserialize, Serialize)]

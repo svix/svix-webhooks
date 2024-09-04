@@ -756,6 +756,7 @@ pub struct EventTypeNamePath {
 }
 
 /// JsonStatus is a wrapper over `axum::extract::Json` as a handler output.
+///
 /// Setting the `STATUS` const parameter automatically sets the response
 /// status code, as well as inserting it into the aide documentation.
 pub struct JsonStatus<const STATUS: u16, T: JsonSchema + Serialize>(pub T);
@@ -793,10 +794,12 @@ impl<const STATUS: u16, T: JsonSchema + Serialize> OperationOutput for JsonStatu
 }
 
 /// JsonStatusUpsert is a wrapper over `axum::extract::Json` as a handler
-/// output. It is a special casing of `JsonStatus` for situations where a
-/// resource is either being updated or created within the same operation. In
-/// case of `Updated` HTTP 200 OK is returned, in case of `Created` HTTP 201
-/// CREATED is returned.
+/// output.
+///
+/// It is a special casing of `JsonStatus` for situations where a resource is
+/// either being updated or created within the same operation. In case of
+/// `Updated` HTTP 200 OK is returned, in case of `Created` HTTP 201 CREATED
+/// is returned.
 pub enum JsonStatusUpsert<T: JsonSchema + Serialize> {
     Updated(T),
     Created(T),
