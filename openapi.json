@@ -586,6 +586,19 @@
                 },
                 "type": "object"
             },
+            "CustomStringsOverride": {
+                "properties": {
+                    "channelsMany": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "channelsOne": {
+                        "nullable": true,
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
             "CustomThemeOverride": {
                 "properties": {
                     "borderRadius": {
@@ -895,7 +908,7 @@
                         "items": {
                             "example": "project_1337",
                             "maxLength": 128,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
                         "maxItems": 10,
@@ -994,10 +1007,10 @@
                         "items": {
                             "example": "project_1337",
                             "maxLength": 128,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
-                        "maxItems": 5,
+                        "maxItems": 10,
                         "minItems": 1,
                         "nullable": true,
                         "type": "array",
@@ -1151,7 +1164,7 @@
                         "items": {
                             "example": "project_1337",
                             "maxLength": 128,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
                         "maxItems": 10,
@@ -1252,7 +1265,7 @@
                         "items": {
                             "example": "project_1337",
                             "maxLength": 128,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
                         "nullable": true,
@@ -1408,7 +1421,7 @@
                         "items": {
                             "example": "project_1337",
                             "maxLength": 128,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
                         "nullable": true,
@@ -1471,7 +1484,7 @@
                         "items": {
                             "example": "project_1337",
                             "maxLength": 128,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
                         "maxItems": 10,
@@ -1699,6 +1712,10 @@
                         "minLength": 1,
                         "nullable": true,
                         "type": "string"
+                    },
+                    "customStringsOverride": {
+                        "$ref": "#/components/schemas/CustomStringsOverride",
+                        "nullable": true
                     },
                     "customThemeOverride": {
                         "$ref": "#/components/schemas/CustomThemeOverride",
@@ -3353,10 +3370,10 @@
                         "items": {
                             "example": "project_1337",
                             "maxLength": 128,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
-                        "maxItems": 5,
+                        "maxItems": 10,
                         "minItems": 1,
                         "nullable": true,
                         "type": "array",
@@ -3442,7 +3459,7 @@
                         "items": {
                             "example": "project_1337",
                             "maxLength": 128,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
                         "maxItems": 10,
@@ -3577,10 +3594,10 @@
                         "items": {
                             "example": "project_1337",
                             "maxLength": 128,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
-                        "maxItems": 5,
+                        "maxItems": 10,
                         "minItems": 1,
                         "nullable": true,
                         "type": "array",
@@ -3671,10 +3688,10 @@
                         "items": {
                             "example": "project_1337",
                             "maxLength": 128,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
-                        "maxItems": 5,
+                        "maxItems": 10,
                         "minItems": 1,
                         "nullable": true,
                         "type": "array",
@@ -3999,6 +4016,10 @@
                         "nullable": true,
                         "type": "string"
                     },
+                    "customStringsOverride": {
+                        "$ref": "#/components/schemas/CustomStringsOverride",
+                        "nullable": true
+                    },
                     "customThemeOverride": {
                         "$ref": "#/components/schemas/CustomThemeOverride",
                         "nullable": true
@@ -4085,6 +4106,10 @@
                         "minLength": 1,
                         "nullable": true,
                         "type": "string"
+                    },
+                    "customStringsOverride": {
+                        "$ref": "#/components/schemas/CustomStringsOverride",
+                        "nullable": true
                     },
                     "customThemeOverride": {
                         "$ref": "#/components/schemas/CustomThemeOverride",
@@ -4262,7 +4287,7 @@
                         "items": {
                             "example": "project_1337",
                             "maxLength": 128,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
                         "maxItems": 10,
@@ -4465,7 +4490,7 @@
                         "items": {
                             "example": "project_1337",
                             "maxLength": 128,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
                         "maxItems": 10,
@@ -4941,7 +4966,7 @@
                         "items": {
                             "example": "project_1337",
                             "maxLength": 128,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
                         "nullable": true,
@@ -6446,7 +6471,7 @@
                             "example": "project_1337",
                             "maxLength": 128,
                             "nullable": true,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
                         "style": "form"
@@ -6777,7 +6802,7 @@
                             "example": "project_1337",
                             "maxLength": 128,
                             "nullable": true,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
                         "style": "form"
@@ -8851,7 +8876,7 @@
                             "example": "project_1337",
                             "maxLength": 128,
                             "nullable": true,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
                         "style": "form"
@@ -12119,7 +12144,7 @@
                             "items": {
                                 "example": "project_1337",
                                 "maxLength": 128,
-                                "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                                "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                                 "type": "string"
                             },
                             "nullable": true,
@@ -12381,7 +12406,7 @@
                             "items": {
                                 "example": "project_1337",
                                 "maxLength": 128,
-                                "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                                "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                                 "type": "string"
                             },
                             "nullable": true,
@@ -14567,7 +14592,7 @@
                             "example": "project_1337",
                             "maxLength": 128,
                             "nullable": true,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
                         "style": "form"
@@ -15267,7 +15292,7 @@
                             "example": "project_1337",
                             "maxLength": 128,
                             "nullable": true,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
                         "style": "form"
@@ -16579,7 +16604,7 @@
                             "example": "project_1337",
                             "maxLength": 128,
                             "nullable": true,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
                         "style": "form"
@@ -22151,7 +22176,7 @@
                             "items": {
                                 "example": "project_1337",
                                 "maxLength": 128,
-                                "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                                "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                                 "type": "string"
                             },
                             "nullable": true,
