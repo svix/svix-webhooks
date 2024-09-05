@@ -36,3 +36,4 @@ test/
 test-requirements.txt
 requirements.txt
 tox.ini
+svix/internal/openapi_client/models/list_response_stream_sink_out.py
