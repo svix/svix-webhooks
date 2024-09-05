@@ -23,6 +23,7 @@ type SettingsIn struct {
 	CustomFontFamily NullableString `json:"customFontFamily,omitempty"`
 	CustomFontFamilyUrl NullableString `json:"customFontFamilyUrl,omitempty"`
 	CustomLogoUrl NullableString `json:"customLogoUrl,omitempty"`
+	CustomStringsOverride *CustomStringsOverride `json:"customStringsOverride,omitempty"`
 	CustomThemeOverride *CustomThemeOverride `json:"customThemeOverride,omitempty"`
 	DisableEndpointOnFailure *bool `json:"disableEndpointOnFailure,omitempty"`
 	DisplayName NullableString `json:"displayName,omitempty"`
@@ -361,6 +362,38 @@ func (o *SettingsIn) SetCustomLogoUrlNil() {
 // UnsetCustomLogoUrl ensures that no value is present for CustomLogoUrl, not even an explicit nil
 func (o *SettingsIn) UnsetCustomLogoUrl() {
 	o.CustomLogoUrl.Unset()
+}
+
+// GetCustomStringsOverride returns the CustomStringsOverride field value if set, zero value otherwise.
+func (o *SettingsIn) GetCustomStringsOverride() CustomStringsOverride {
+	if o == nil || o.CustomStringsOverride == nil {
+		var ret CustomStringsOverride
+		return ret
+	}
+	return *o.CustomStringsOverride
+}
+
+// GetCustomStringsOverrideOk returns a tuple with the CustomStringsOverride field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *SettingsIn) GetCustomStringsOverrideOk() (*CustomStringsOverride, bool) {
+	if o == nil || o.CustomStringsOverride == nil {
+		return nil, false
+	}
+	return o.CustomStringsOverride, true
+}
+
+// HasCustomStringsOverride returns a boolean if a field has been set.
+func (o *SettingsIn) HasCustomStringsOverride() bool {
+	if o != nil && o.CustomStringsOverride != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetCustomStringsOverride gets a reference to the given CustomStringsOverride and assigns it to the CustomStringsOverride field.
+func (o *SettingsIn) SetCustomStringsOverride(v CustomStringsOverride) {
+	o.CustomStringsOverride = &v
 }
 
 // GetCustomThemeOverride returns the CustomThemeOverride field value if set, zero value otherwise.
@@ -747,6 +780,9 @@ func (o SettingsIn) MarshalJSON() ([]byte, error) {
 	}
 	if o.CustomLogoUrl.IsSet() {
 		toSerialize["customLogoUrl"] = o.CustomLogoUrl.Get()
+	}
+	if o.CustomStringsOverride != nil {
+		toSerialize["customStringsOverride"] = o.CustomStringsOverride
 	}
 	if o.CustomThemeOverride != nil {
 		toSerialize["customThemeOverride"] = o.CustomThemeOverride

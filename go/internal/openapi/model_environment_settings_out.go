@@ -22,6 +22,7 @@ type EnvironmentSettingsOut struct {
 	CustomFontFamily NullableString `json:"customFontFamily,omitempty"`
 	CustomFontFamilyUrl NullableString `json:"customFontFamilyUrl,omitempty"`
 	CustomLogoUrl NullableString `json:"customLogoUrl,omitempty"`
+	CustomStringsOverride *CustomStringsOverride `json:"customStringsOverride,omitempty"`
 	CustomThemeOverride *CustomThemeOverride `json:"customThemeOverride,omitempty"`
 	DisplayName NullableString `json:"displayName,omitempty"`
 	EnableChannels *bool `json:"enableChannels,omitempty"`
@@ -303,6 +304,38 @@ func (o *EnvironmentSettingsOut) SetCustomLogoUrlNil() {
 // UnsetCustomLogoUrl ensures that no value is present for CustomLogoUrl, not even an explicit nil
 func (o *EnvironmentSettingsOut) UnsetCustomLogoUrl() {
 	o.CustomLogoUrl.Unset()
+}
+
+// GetCustomStringsOverride returns the CustomStringsOverride field value if set, zero value otherwise.
+func (o *EnvironmentSettingsOut) GetCustomStringsOverride() CustomStringsOverride {
+	if o == nil || o.CustomStringsOverride == nil {
+		var ret CustomStringsOverride
+		return ret
+	}
+	return *o.CustomStringsOverride
+}
+
+// GetCustomStringsOverrideOk returns a tuple with the CustomStringsOverride field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *EnvironmentSettingsOut) GetCustomStringsOverrideOk() (*CustomStringsOverride, bool) {
+	if o == nil || o.CustomStringsOverride == nil {
+		return nil, false
+	}
+	return o.CustomStringsOverride, true
+}
+
+// HasCustomStringsOverride returns a boolean if a field has been set.
+func (o *EnvironmentSettingsOut) HasCustomStringsOverride() bool {
+	if o != nil && o.CustomStringsOverride != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetCustomStringsOverride gets a reference to the given CustomStringsOverride and assigns it to the CustomStringsOverride field.
+func (o *EnvironmentSettingsOut) SetCustomStringsOverride(v CustomStringsOverride) {
+	o.CustomStringsOverride = &v
 }
 
 // GetCustomThemeOverride returns the CustomThemeOverride field value if set, zero value otherwise.
@@ -590,6 +623,9 @@ func (o EnvironmentSettingsOut) MarshalJSON() ([]byte, error) {
 	}
 	if o.CustomLogoUrl.IsSet() {
 		toSerialize["customLogoUrl"] = o.CustomLogoUrl.Get()
+	}
+	if o.CustomStringsOverride != nil {
+		toSerialize["customStringsOverride"] = o.CustomStringsOverride
 	}
 	if o.CustomThemeOverride != nil {
 		toSerialize["customThemeOverride"] = o.CustomThemeOverride

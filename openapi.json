@@ -586,6 +586,19 @@
                 },
                 "type": "object"
             },
+            "CustomStringsOverride": {
+                "properties": {
+                    "channelsMany": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "channelsOne": {
+                        "nullable": true,
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
             "CustomThemeOverride": {
                 "properties": {
                     "borderRadius": {
@@ -895,7 +908,7 @@
                         "items": {
                             "example": "project_1337",
                             "maxLength": 128,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
                         "maxItems": 10,
@@ -994,10 +1007,10 @@
                         "items": {
                             "example": "project_1337",
                             "maxLength": 128,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
-                        "maxItems": 5,
+                        "maxItems": 10,
                         "minItems": 1,
                         "nullable": true,
                         "type": "array",
@@ -1151,7 +1164,7 @@
                         "items": {
                             "example": "project_1337",
                             "maxLength": 128,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
                         "maxItems": 10,
@@ -1252,7 +1265,7 @@
                         "items": {
                             "example": "project_1337",
                             "maxLength": 128,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
                         "nullable": true,
@@ -1408,7 +1421,7 @@
                         "items": {
                             "example": "project_1337",
                             "maxLength": 128,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
                         "nullable": true,
@@ -1471,7 +1484,7 @@
                         "items": {
                             "example": "project_1337",
                             "maxLength": 128,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
                         "maxItems": 10,
@@ -1699,6 +1712,10 @@
                         "minLength": 1,
                         "nullable": true,
                         "type": "string"
+                    },
+                    "customStringsOverride": {
+                        "$ref": "#/components/schemas/CustomStringsOverride",
+                        "nullable": true
                     },
                     "customThemeOverride": {
                         "$ref": "#/components/schemas/CustomThemeOverride",
@@ -2908,6 +2925,34 @@
                 ],
                 "type": "object"
             },
+            "ListResponse_StreamSinkOut_": {
+                "properties": {
+                    "data": {
+                        "items": {
+                            "$ref": "#/components/schemas/StreamSinkOut"
+                        },
+                        "type": "array"
+                    },
+                    "done": {
+                        "type": "boolean"
+                    },
+                    "iterator": {
+                        "example": "iterator",
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "prevIterator": {
+                        "example": "-iterator",
+                        "nullable": true,
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "data",
+                    "done"
+                ],
+                "type": "object"
+            },
             "ListResponse_TemplateOut_": {
                 "properties": {
                     "data": {
@@ -3353,10 +3398,10 @@
                         "items": {
                             "example": "project_1337",
                             "maxLength": 128,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
-                        "maxItems": 5,
+                        "maxItems": 10,
                         "minItems": 1,
                         "nullable": true,
                         "type": "array",
@@ -3442,7 +3487,7 @@
                         "items": {
                             "example": "project_1337",
                             "maxLength": 128,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
                         "maxItems": 10,
@@ -3577,10 +3622,10 @@
                         "items": {
                             "example": "project_1337",
                             "maxLength": 128,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
-                        "maxItems": 5,
+                        "maxItems": 10,
                         "minItems": 1,
                         "nullable": true,
                         "type": "array",
@@ -3671,10 +3716,10 @@
                         "items": {
                             "example": "project_1337",
                             "maxLength": 128,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
-                        "maxItems": 5,
+                        "maxItems": 10,
                         "minItems": 1,
                         "nullable": true,
                         "type": "array",
@@ -3959,6 +4004,29 @@
                 ],
                 "type": "object"
             },
+            "S3Config": {
+                "properties": {
+                    "accessKey": {
+                        "type": "string"
+                    },
+                    "bucket": {
+                        "type": "string"
+                    },
+                    "region": {
+                        "type": "string"
+                    },
+                    "secretAccessKey": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "accessKey",
+                    "bucket",
+                    "region",
+                    "secretAccessKey"
+                ],
+                "type": "object"
+            },
             "SettingsIn": {
                 "properties": {
                     "colorPaletteDark": {
@@ -3998,6 +4066,10 @@
                         "minLength": 1,
                         "nullable": true,
                         "type": "string"
+                    },
+                    "customStringsOverride": {
+                        "$ref": "#/components/schemas/CustomStringsOverride",
+                        "nullable": true
                     },
                     "customThemeOverride": {
                         "$ref": "#/components/schemas/CustomThemeOverride",
@@ -4085,6 +4157,10 @@
                         "minLength": 1,
                         "nullable": true,
                         "type": "string"
+                    },
+                    "customStringsOverride": {
+                        "$ref": "#/components/schemas/CustomStringsOverride",
+                        "nullable": true
                     },
                     "customThemeOverride": {
                         "$ref": "#/components/schemas/CustomThemeOverride",
@@ -4242,6 +4318,25 @@
                             "url"
                         ],
                         "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "type": {
+                                "enum": [
+                                    "http"
+                                ],
+                                "type": "string"
+                            },
+                            "url": {
+                                "format": "uri",
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "type",
+                            "url"
+                        ],
+                        "type": "object"
                     }
                 ],
                 "properties": {
@@ -4262,7 +4357,7 @@
                         "items": {
                             "example": "project_1337",
                             "maxLength": 128,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
                         "maxItems": 10,
@@ -4447,6 +4542,25 @@
                             "url"
                         ],
                         "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "type": {
+                                "enum": [
+                                    "http"
+                                ],
+                                "type": "string"
+                            },
+                            "url": {
+                                "format": "uri",
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "type",
+                            "url"
+                        ],
+                        "type": "object"
                     }
                 ],
                 "properties": {
@@ -4465,7 +4579,7 @@
                         "items": {
                             "example": "project_1337",
                             "maxLength": 128,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
                         "maxItems": 10,
@@ -4551,6 +4665,27 @@
                     "updatedAt"
                 ],
                 "type": "object"
+            },
+            "SinkPayloadFormat": {
+                "enum": [
+                    "json"
+                ],
+                "type": "string"
+            },
+            "SinkStatus": {
+                "enum": [
+                    "enabled",
+                    "paused",
+                    "disabled"
+                ],
+                "type": "string"
+            },
+            "SinkStatusIn": {
+                "enum": [
+                    "enabled",
+                    "paused"
+                ],
+                "type": "string"
             },
             "SinkTransformIn": {
                 "properties": {
@@ -4661,6 +4796,345 @@
                     },
                     "uid": {
                         "description": "Optional unique identifier for the stream",
+                        "nullable": true,
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "StreamSinkIn": {
+                "oneOf": [
+                    {
+                        "properties": {
+                            "config": {
+                                "properties": {
+                                    "url": {
+                                        "format": "uri",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "url"
+                                ],
+                                "type": "object"
+                            },
+                            "type": {
+                                "enum": [
+                                    "otelV1HttpTrace"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "properties": {
+                                    "url": {
+                                        "format": "uri",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "url"
+                                ],
+                                "type": "object"
+                            },
+                            "type": {
+                                "enum": [
+                                    "http"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/S3Config"
+                            },
+                            "type": {
+                                "enum": [
+                                    "amazonS3"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    }
+                ],
+                "properties": {
+                    "batchSize": {
+                        "default": 100,
+                        "format": "uint16",
+                        "maximum": 1000,
+                        "minimum": 0,
+                        "type": "integer"
+                    },
+                    "format": {
+                        "$ref": "#/components/schemas/SinkPayloadFormat"
+                    },
+                    "maxWaitSecs": {
+                        "default": 0,
+                        "format": "uint16",
+                        "maximum": 3600,
+                        "minimum": 0,
+                        "type": "integer"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/SinkStatusIn"
+                    },
+                    "uid": {
+                        "nullable": true,
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "format"
+                ],
+                "type": "object"
+            },
+            "StreamSinkOut": {
+                "oneOf": [
+                    {
+                        "properties": {
+                            "config": {
+                                "properties": {
+                                    "url": {
+                                        "format": "uri",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "url"
+                                ],
+                                "type": "object"
+                            },
+                            "type": {
+                                "enum": [
+                                    "otelV1HttpTrace"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "properties": {
+                                    "url": {
+                                        "format": "uri",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "url"
+                                ],
+                                "type": "object"
+                            },
+                            "type": {
+                                "enum": [
+                                    "http"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/S3Config"
+                            },
+                            "type": {
+                                "enum": [
+                                    "amazonS3"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    }
+                ],
+                "properties": {
+                    "batchSize": {
+                        "format": "int32",
+                        "type": "integer"
+                    },
+                    "createdAt": {
+                        "format": "date-time",
+                        "type": "string"
+                    },
+                    "currentIterator": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "disabledReason": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "format": {
+                        "$ref": "#/components/schemas/SinkPayloadFormat"
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "maxWaitSecs": {
+                        "format": "int32",
+                        "type": "integer"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/SinkStatus"
+                    },
+                    "uid": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "updatedAt": {
+                        "format": "date-time",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "batchSize",
+                    "createdAt",
+                    "format",
+                    "id",
+                    "maxWaitSecs",
+                    "status",
+                    "updatedAt"
+                ],
+                "type": "object"
+            },
+            "StreamSinkPatch": {
+                "oneOf": [
+                    {
+                        "properties": {
+                            "config": {
+                                "properties": {
+                                    "url": {
+                                        "format": "uri",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "url"
+                                ],
+                                "type": "object"
+                            },
+                            "type": {
+                                "enum": [
+                                    "otelV1HttpTrace"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "properties": {
+                                    "url": {
+                                        "format": "uri",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "url"
+                                ],
+                                "type": "object"
+                            },
+                            "type": {
+                                "enum": [
+                                    "http"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/S3Config"
+                            },
+                            "type": {
+                                "enum": [
+                                    "amazonS3"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    }
+                ],
+                "properties": {
+                    "batchSize": {
+                        "default": null,
+                        "format": "uint16",
+                        "maximum": 1000,
+                        "minimum": 0,
+                        "nullable": true,
+                        "type": "integer"
+                    },
+                    "format": {
+                        "$ref": "#/components/schemas/SinkPayloadFormat",
+                        "default": null,
+                        "nullable": true
+                    },
+                    "maxWaitSecs": {
+                        "default": null,
+                        "format": "uint16",
+                        "maximum": 3600,
+                        "minimum": 0,
+                        "nullable": true,
+                        "type": "integer"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/SinkStatusIn",
+                        "nullable": true
+                    },
+                    "uid": {
                         "nullable": true,
                         "type": "string"
                     }
@@ -4941,7 +5415,7 @@
                         "items": {
                             "example": "project_1337",
                             "maxLength": 128,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
                         "nullable": true,
@@ -6446,7 +6920,7 @@
                             "example": "project_1337",
                             "maxLength": 128,
                             "nullable": true,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
                         "style": "form"
@@ -6777,7 +7251,7 @@
                             "example": "project_1337",
                             "maxLength": 128,
                             "nullable": true,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
                         "style": "form"
@@ -8851,7 +9325,7 @@
                             "example": "project_1337",
                             "maxLength": 128,
                             "nullable": true,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
                         "style": "form"
@@ -12119,7 +12593,7 @@
                             "items": {
                                 "example": "project_1337",
                                 "maxLength": 128,
-                                "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                                "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                                 "type": "string"
                             },
                             "nullable": true,
@@ -12381,7 +12855,7 @@
                             "items": {
                                 "example": "project_1337",
                                 "maxLength": 128,
-                                "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                                "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                                 "type": "string"
                             },
                             "nullable": true,
@@ -14567,7 +15041,7 @@
                             "example": "project_1337",
                             "maxLength": 128,
                             "nullable": true,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
                         "style": "form"
@@ -15267,7 +15741,7 @@
                             "example": "project_1337",
                             "maxLength": 128,
                             "nullable": true,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
                         "style": "form"
@@ -16579,7 +17053,7 @@
                             "example": "project_1337",
                             "maxLength": 128,
                             "nullable": true,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                             "type": "string"
                         },
                         "style": "form"
@@ -22151,7 +22625,7 @@
                             "items": {
                                 "example": "project_1337",
                                 "maxLength": 128,
-                                "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                                "pattern": "^[a-zA-Z0-9\\-_.:]+$",
                                 "type": "string"
                             },
                             "nullable": true,
