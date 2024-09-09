@@ -9,47 +9,22 @@ env:
 
 jobs:
   release:
-    name: release ${{ matrix.target }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - target: x86_64-pc-windows-gnu
-            os: windows-latest
-            extension: ".exe"
-
-          - target: x86_64-unknown-linux-gnu
-            os: ubuntu-latest
-            extension: ""
-
-          - target: x86_64-apple-darwin
-            os: macos-latest
-            extension: ""
-
-          - target: aarch64-apple-darwin
-            os: macos-latest
-            extension: ""
+    name: release x86_64-unknown-linux-gnu
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.target }}
-
-      - name: Install musl for x86_64-unknown-linux-musl
-        if: ${{ matrix.target == 'x86_64-unknown-linux-musl' }}
-        run: sudo apt-get install -y musl-dev musl-tools
 
       - name: Compile server
-        run: cargo build --target ${{ matrix.target }} --release --manifest-path server/svix-server/Cargo.toml
+        run: cargo build --release --manifest-path server/svix-server/Cargo.toml
 
       - name: Release
         uses: actions/upload-artifact@v3
         with:
-          name: svix-server-${{ matrix.target }}
-          path: server/target/${{ matrix.target }}/release/svix-server${{ matrix.extension }}
+          name: svix-server-x86_64-unknown-linux-gnu
+          path: server/target/release/svix-server
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
