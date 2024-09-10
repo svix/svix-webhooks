@@ -1,5 +1,5 @@
 {% set class_name = model.class_info.name %}
-{% if model.required_properties == [] and model.optional_properties == [] %}
+{% if model.required_properties == [] and model.optional_properties == [] and False %}
 from typing import Any, Dict, Type, TypeVar
 
 T = TypeVar("T", bound="{{ class_name }}")

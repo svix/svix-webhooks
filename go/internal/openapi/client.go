@@ -80,7 +80,11 @@ type APIClient struct {
 
 	MessageAttemptApi *MessageAttemptApiService
 
+	SinkApi *SinkApiService
+
 	StatisticsApi *StatisticsApiService
+
+	StreamApi *StreamApiService
 
 	TransformationTemplateApi *TransformationTemplateApiService
 }
@@ -115,7 +119,9 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.IntegrationApi = (*IntegrationApiService)(&c.common)
 	c.MessageApi = (*MessageApiService)(&c.common)
 	c.MessageAttemptApi = (*MessageAttemptApiService)(&c.common)
+	c.SinkApi = (*SinkApiService)(&c.common)
 	c.StatisticsApi = (*StatisticsApiService)(&c.common)
+	c.StreamApi = (*StreamApiService)(&c.common)
 	c.TransformationTemplateApi = (*TransformationTemplateApiService)(&c.common)
 
 	return c
