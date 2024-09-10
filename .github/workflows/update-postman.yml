@@ -9,6 +9,7 @@ jobs:
   postman:
     name: Update Postman Collection
     runs-on: ubuntu-latest
+    environment: release
 
     steps:
       - uses: actions/checkout@v4

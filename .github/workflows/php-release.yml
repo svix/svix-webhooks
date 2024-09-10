@@ -9,6 +9,7 @@ jobs:
   packagist:
     name: Update Packagist
     runs-on: ubuntu-latest
+    environment: release
 
     steps:
       - name: Update Packagist
