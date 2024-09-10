@@ -208,15 +208,13 @@ pub struct ProxyConfig {
 
 #[derive(Clone, Debug)]
 pub struct ProxyAddr {
-    raw: String,
     parsed: http::Uri,
 }
 
 impl ProxyAddr {
-    pub fn new(raw: impl Into<String>) -> Result<Self, InvalidUri> {
-        let raw = raw.into();
-        let parsed = raw.parse()?;
-        Ok(Self { raw, parsed })
+    pub fn new(raw: impl AsRef<str>) -> Result<Self, InvalidUri> {
+        let parsed = raw.as_ref().parse()?;
+        Ok(Self { parsed })
     }
 }
 
@@ -225,14 +223,6 @@ impl From<ProxyAddr> for http::Uri {
         value.parsed
     }
 }
-
-impl PartialEq for ProxyAddr {
-    fn eq(&self, other: &Self) -> bool {
-        self.raw == other.raw
-    }
-}
-
-impl Eq for ProxyAddr {}
 
 impl<'de> Deserialize<'de> for ProxyAddr {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
