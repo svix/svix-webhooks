@@ -11,6 +11,8 @@ jobs:
   release:
     name: release ${{ matrix.target }}
     runs-on: ${{ matrix.os }}
+    environment: release
+
     strategy:
       fail-fast: false
       matrix:
