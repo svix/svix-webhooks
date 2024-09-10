@@ -131,10 +131,15 @@ pub struct ConfigurationInner {
     pub db_pool_max_size: u16,
 
     /// The DSN for redis (can be left empty if not using redis)
+    /// Note that if using Redis Sentinel, this will be the the DSN
+    /// for a Sentinel instance.
     pub redis_dsn: Option<String>,
     /// The maximum number of connections for the Redis pool
     #[validate(range(min = 10))]
     pub redis_pool_max_size: u16,
+
+    #[serde(flatten, default)]
+    pub redis_sentinel_cfg: Option<SentinelConfig>,
 
     /// What kind of message queue to use. Supported: memory, redis (must have redis_dsn or
     /// queue_dsn configured).
@@ -255,6 +260,27 @@ fn validate_config_complete(config: &ConfigurationInner) -> Result<(), Validatio
                 });
             }
         }
+        CacheType::RedisSentinel => {
+            if config.cache_dsn().is_none() {
+                return Err(ValidationError {
+                    code: Cow::from("missing field"),
+                    message: Some(Cow::from(
+                        "The redis_dsn or cache_dsn field must be set if the cache_type is `redissentinel`"
+                    )),
+                    params: HashMap::new(),
+                });
+            }
+
+            if config.redis_sentinel_cfg.is_none() {
+                return Err(ValidationError {
+                    code: Cow::from("missing field"),
+                    message: Some(Cow::from(
+                        "sentinel_service_name must be set if the cache_type is `redissentinel`",
+                    )),
+                    params: HashMap::new(),
+                });
+            }
+        }
     }
 
     match config.queue_type {
@@ -276,6 +302,27 @@ fn validate_config_complete(config: &ConfigurationInner) -> Result<(), Validatio
                     code: Cow::from("missing field"),
                     message: Some(Cow::from(
                         "The rabbit_dsn field must be set if the queue_type is `rabbitmq`",
+                    )),
+                    params: HashMap::new(),
+                });
+            }
+        }
+        QueueType::RedisSentinel => {
+            if config.queue_dsn().is_none() {
+                return Err(ValidationError {
+                    code: Cow::from("missing field"),
+                    message: Some(Cow::from(
+                        "The redis_dsn or queue_dsn field must be set if the queue_type is `redissentinel`"
+                    )),
+                    params: HashMap::new(),
+                });
+            }
+
+            if config.redis_sentinel_cfg.is_none() {
+                return Err(ValidationError {
+                    code: Cow::from("missing field"),
+                    message: Some(Cow::from(
+                        "sentinel_service_name must be set if the queue_type is `redissentinel`",
                     )),
                     params: HashMap::new(),
                 });
@@ -304,6 +351,10 @@ impl ConfigurationInner {
             QueueType::Memory => QueueBackend::Memory,
             QueueType::Redis => QueueBackend::Redis(self.queue_dsn().expect(err)),
             QueueType::RedisCluster => QueueBackend::RedisCluster(self.queue_dsn().expect(err)),
+            QueueType::RedisSentinel => QueueBackend::RedisSentinel(
+                self.queue_dsn().expect(err),
+                self.redis_sentinel_cfg.as_ref().expect(err),
+            ),
             QueueType::RabbitMQ => QueueBackend::RabbitMq(self.rabbit_dsn.as_ref().expect(err)),
         }
     }
@@ -318,6 +369,10 @@ impl ConfigurationInner {
             CacheType::Memory => CacheBackend::Memory,
             CacheType::Redis => CacheBackend::Redis(self.cache_dsn().expect(err)),
             CacheType::RedisCluster => CacheBackend::RedisCluster(self.cache_dsn().expect(err)),
+            CacheType::RedisSentinel => CacheBackend::RedisSentinel(
+                self.cache_dsn().expect(err),
+                self.redis_sentinel_cfg.as_ref().expect(err),
+            ),
         }
     }
 }
@@ -346,6 +401,7 @@ pub enum QueueBackend<'a> {
     Memory,
     Redis(&'a str),
     RedisCluster(&'a str),
+    RedisSentinel(&'a str, &'a SentinelConfig),
     RabbitMq(&'a str),
 }
 
@@ -355,6 +411,7 @@ pub enum CacheBackend<'a> {
     Memory,
     Redis(&'a str),
     RedisCluster(&'a str),
+    RedisSentinel(&'a str, &'a SentinelConfig),
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -378,6 +435,7 @@ pub enum QueueType {
     Memory,
     Redis,
     RedisCluster,
+    RedisSentinel,
     RabbitMQ,
 }
 
@@ -387,6 +445,7 @@ pub enum CacheType {
     Memory,
     Redis,
     RedisCluster,
+    RedisSentinel,
     None,
 }
 
@@ -427,6 +486,40 @@ impl fmt::Display for LogLevel {
             Self::Trace => Level::TRACE,
         }
         .fmt(f)
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq)]
+pub struct SentinelConfig {
+    #[serde(rename = "sentinel_service_name")]
+    pub service_name: String,
+    #[serde(default)]
+    pub redis_tls_mode_secure: bool,
+    pub redis_db: Option<i64>,
+    pub redis_username: Option<String>,
+    pub redis_password: Option<String>,
+    #[serde(default)]
+    pub redis_use_resp3: bool,
+}
+
+impl From<SentinelConfig> for omniqueue::backends::redis::SentinelConfig {
+    fn from(val: SentinelConfig) -> Self {
+        let SentinelConfig {
+            service_name,
+            redis_tls_mode_secure,
+            redis_db,
+            redis_username,
+            redis_password,
+            redis_use_resp3,
+        } = val;
+        omniqueue::backends::redis::SentinelConfig {
+            service_name,
+            redis_tls_mode_secure,
+            redis_db,
+            redis_username,
+            redis_password,
+            redis_use_resp3,
+        }
     }
 }
 

@@ -66,7 +66,9 @@ async fn test_app_deletion() {
     // Delete the cached [`CreateMessageApp`] here instead of waiting 30s for it to expire
     let cache = match cfg.cache_backend() {
         CacheBackend::None => cache::none::new(),
-        CacheBackend::Redis(_) | CacheBackend::RedisCluster(_) => {
+        CacheBackend::Redis(_)
+        | CacheBackend::RedisCluster(_)
+        | CacheBackend::RedisSentinel(_, _) => {
             let mgr = RedisManager::from_cache_backend(&cfg.cache_backend()).await;
             cache::redis::new(mgr)
         }
@@ -146,7 +148,9 @@ async fn test_endp_deletion() {
     // Delete the cached [`CreateMessageApp`] here instead of waiting 30s for it to expire
     let cache = match cfg.cache_backend() {
         CacheBackend::None => cache::none::new(),
-        CacheBackend::Redis(_) | CacheBackend::RedisCluster(_) => {
+        CacheBackend::Redis(_)
+        | CacheBackend::RedisCluster(_)
+        | CacheBackend::RedisSentinel(_, _) => {
             let mgr = RedisManager::from_cache_backend(&cfg.cache_backend()).await;
             cache::redis::new(mgr)
         }

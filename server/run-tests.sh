@@ -80,3 +80,16 @@ echo "*********** RUN 6 ***********"
         ${TEST_COMMAND} -- --ignored rabbitmq
     fi
 )
+
+echo "*********** RUN 7 ***********"
+(
+    export SVIX_QUEUE_TYPE="redissentinel"
+    export SVIX_CACHE_TYPE="redissentinel"
+    export SVIX_REDIS_DSN="redis://localhost:26379"
+    export SVIX_SENTINEL_SERVICE_NAME="master0"
+
+    ${TEST_COMMAND} "$@"
+    if [[ -z "$@" ]]; then
+        ${TEST_COMMAND} -- --ignored redis
+    fi
+)

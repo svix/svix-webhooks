@@ -639,13 +639,24 @@ dependencies = [
 
 [[package]]
 name = "bb8-redis"
-version = "0.15.0"
+version = "0.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7eb4f141b33a750b5f667c445bd8588de10b8f2b045cd2aabc040ca746fb53ae"
+checksum = "0c6910977c026bb1d0a6b523508d1a893d6d4c2ba216355e9569d8181d92ccbe"
 dependencies = [
  "async-trait",
  "bb8",
- "redis",
+ "redis 0.26.1",
+]
+
+[[package]]
+name = "bb8-redis"
+version = "0.17.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1781f22daa0ae97d934fdf04a5c66646f154a164c4bdc157ec8d3c11166c05cc"
+dependencies = [
+ "async-trait",
+ "bb8",
+ "redis 0.27.2",
 ]
 
 [[package]]
@@ -2877,18 +2888,19 @@ dependencies = [
 [[package]]
 name = "omniqueue"
 version = "0.2.1"
-source = "git+https://github.com/svix/omniqueue-rs?rev=5ae22000e2ea214ba707cac81657f098e5785a76#5ae22000e2ea214ba707cac81657f098e5785a76"
+source = "git+https://github.com/svix/omniqueue-rs?rev=75e5a9510ad338ac3702b2e911bacf8967ac58d8#75e5a9510ad338ac3702b2e911bacf8967ac58d8"
 dependencies = [
  "async-trait",
  "bb8",
- "bb8-redis",
+ "bb8-redis 0.17.0",
  "bytesize",
  "futures-util",
  "lapin",
- "redis",
+ "redis 0.27.2",
  "serde",
  "serde_json",
  "svix-ksuid 0.8.0",
+ "sync_wrapper 1.0.1",
  "thiserror",
  "time",
  "tokio",
@@ -3586,9 +3598,9 @@ dependencies = [
 
 [[package]]
 name = "redis"
-version = "0.25.4"
+version = "0.26.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e0d7a6955c7511f60f3ba9e86c6d02b3c3f144f8c24b288d1f4e18074ab8bbec"
+checksum = "e902a69d09078829137b4a5d9d082e0490393537badd7c91a3d69d14639e115f"
 dependencies = [
  "arc-swap",
  "async-trait",
@@ -3600,6 +3612,7 @@ dependencies = [
  "itoa",
  "log",
  "native-tls",
+ "num-bigint",
  "percent-encoding",
  "pin-project-lite",
  "rand",
@@ -3609,6 +3622,35 @@ dependencies = [
  "tokio",
  "tokio-native-tls",
  "tokio-retry",
+ "tokio-util",
+ "url",
+]
+
+[[package]]
+name = "redis"
+version = "0.27.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a7e86f5670bd8b028edfb240f0616cad620705b31ec389d55e4f3da2c38dcd48"
+dependencies = [
+ "arc-swap",
+ "async-trait",
+ "bytes",
+ "combine",
+ "crc16",
+ "futures",
+ "futures-util",
+ "itoa",
+ "log",
+ "native-tls",
+ "num-bigint",
+ "percent-encoding",
+ "pin-project-lite",
+ "rand",
+ "ryu",
+ "sha1_smol",
+ "socket2 0.5.7",
+ "tokio",
+ "tokio-native-tls",
  "tokio-util",
  "url",
 ]
@@ -4856,7 +4898,7 @@ dependencies = [
  "axum-server",
  "base64 0.13.1",
  "bb8",
- "bb8-redis",
+ "bb8-redis 0.16.0",
  "blake2",
  "bytes",
  "chacha20poly1305",
@@ -4890,7 +4932,7 @@ dependencies = [
  "opentelemetry-otlp",
  "opentelemetry_sdk",
  "rand",
- "redis",
+ "redis 0.26.1",
  "regex",
  "reqwest 0.11.27",
  "schemars",

@@ -44,8 +44,8 @@ ed25519-compact = "2.1.1"
 chrono = { version="0.4.26", features = ["serde"] }
 reqwest = { version = "0.11.27", features = ["json", "rustls-tls", "hickory-resolver"], default-features = false }
 bb8 = "0.8"
-bb8-redis = "0.15.0"
-redis = { version = "0.25.4", features = ["tokio-comp", "tokio-native-tls-comp", "streams", "cluster-async", "tcp_nodelay", "connection-manager"] }
+bb8-redis = "0.16.0"
+redis = { version = "0.26", features = ["tokio-comp", "tokio-native-tls-comp", "streams", "cluster-async", "tcp_nodelay", "connection-manager", "sentinel"] }
 thiserror = "1.0.30"
 bytes = "1.1.0"
 blake2 = "0.10.4"
@@ -68,7 +68,7 @@ urlencoding = "2.1.2"
 form_urlencoded = "1.1.0"
 lapin = "2.1.1"
 sentry = { version = "0.32.2", features = ["tracing"] }
-omniqueue = { git = "https://github.com/svix/omniqueue-rs", rev = "5ae22000e2ea214ba707cac81657f098e5785a76", default-features = false, features = ["in_memory", "rabbitmq-with-message-ids", "redis_cluster"] }
+omniqueue = { git = "https://github.com/svix/omniqueue-rs", rev = "75e5a9510ad338ac3702b2e911bacf8967ac58d8", default-features = false, features = ["in_memory", "rabbitmq-with-message-ids", "redis_cluster", "redis_sentinel"] }
 # Not a well-known author, and no longer gets updates => pinned.
 # Switch to hyper-http-proxy when upgrading hyper to 1.0.
 hyper-proxy = { version = "=0.9.1", default-features = false, features = ["openssl-tls"] }
