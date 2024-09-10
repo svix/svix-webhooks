@@ -1,15 +1,27 @@
 mod cluster;
+mod sentinel;
 
-use std::time::Duration;
+use std::{sync::Arc, time::Duration};
 
 use bb8::{Pool, RunError};
 use bb8_redis::RedisConnectionManager;
-use redis::{FromRedisValue, RedisError, RedisResult};
+use redis::{
+    aio::ConnectionManagerConfig, sentinel::SentinelNodeConnectionInfo, AsyncConnectionConfig,
+    FromRedisValue, ProtocolVersion, RedisConnectionInfo, RedisError, RedisResult, TlsMode,
+};
+use sentinel::RedisSentinelConnectionManager;
+use tokio::sync::Mutex;
 
 pub use self::cluster::RedisClusterConnectionManager;
-use crate::cfg::{CacheBackend, QueueBackend};
+use crate::cfg::{CacheBackend, QueueBackend, SentinelConfig};
 
 pub const REDIS_CONN_TIMEOUT: Duration = Duration::from_secs(2);
+
+pub enum RedisVariant<'a> {
+    Clustered,
+    NonClustered,
+    Sentinel(&'a SentinelConfig),
+}
 
 #[derive(Clone, Debug)]
 pub enum RedisManager {
@@ -17,72 +29,149 @@ pub enum RedisManager {
     ClusteredUnpooled(ClusteredRedisUnpooled),
     NonClustered(NonClusteredRedisPool),
     NonClusteredUnpooled(NonClusteredRedisUnpooled),
+    Sentinel(SentinelPooled),
+    SentinelUnpooled(SentinelUnpooled),
 }
 
 impl RedisManager {
-    async fn new_pooled(dsn: &str, clustered: bool, max_conns: u16) -> Self {
-        if clustered {
-            let mgr = RedisClusterConnectionManager::new(dsn)
-                .expect("Error initializing redis cluster client");
-            let pool = bb8::Pool::builder()
-                .max_size(max_conns.into())
-                .build(mgr)
-                .await
-                .expect("Error initializing redis cluster connection pool");
-            let pool = ClusteredRedisPool { pool };
-            RedisManager::Clustered(pool)
-        } else {
-            let mgr = RedisConnectionManager::new(dsn).expect("Error initializing redis client");
-            let pool = bb8::Pool::builder()
-                .max_size(max_conns.into())
-                .build(mgr)
-                .await
-                .expect("Error initializing redis connection pool");
-            let pool = NonClusteredRedisPool { pool };
-            RedisManager::NonClustered(pool)
+    async fn new_pooled(dsn: &str, variant: RedisVariant<'_>, max_conns: u16) -> Self {
+        match variant {
+            RedisVariant::Clustered => {
+                let mgr = RedisClusterConnectionManager::new(dsn)
+                    .expect("Error initializing redis cluster client");
+                let pool = bb8::Pool::builder()
+                    .max_size(max_conns.into())
+                    .build(mgr)
+                    .await
+                    .expect("Error initializing redis cluster connection pool");
+                let pool = ClusteredRedisPool { pool };
+                RedisManager::Clustered(pool)
+            }
+            RedisVariant::NonClustered => {
+                let mgr =
+                    RedisConnectionManager::new(dsn).expect("Error initializing redis client");
+                let pool = bb8::Pool::builder()
+                    .max_size(max_conns.into())
+                    .build(mgr)
+                    .await
+                    .expect("Error initializing redis connection pool");
+                let pool = NonClusteredRedisPool { pool };
+                RedisManager::NonClustered(pool)
+            }
+            RedisVariant::Sentinel(cfg) => {
+                let tls_mode = cfg.redis_tls_mode_secure.then_some(TlsMode::Secure);
+                let protocol = if cfg.redis_use_resp3 {
+                    ProtocolVersion::RESP3
+                } else {
+                    ProtocolVersion::default()
+                };
+                let mgr = RedisSentinelConnectionManager::new(
+                    vec![dsn],
+                    cfg.service_name.clone(),
+                    Some(SentinelNodeConnectionInfo {
+                        tls_mode,
+                        redis_connection_info: Some(RedisConnectionInfo {
+                            db: cfg.redis_db.unwrap_or(0),
+                            username: cfg.redis_username.clone(),
+                            password: cfg.redis_password.clone(),
+                            protocol,
+                        }),
+                    }),
+                )
+                .expect("Error initializing RedisSentinelConnectionManager");
+                let pool = bb8::Pool::builder()
+                    .max_size(max_conns.into())
+                    .build(mgr)
+                    .await
+                    .expect("Error initializing redis connection pool");
+
+                let pool = SentinelPooled { pool };
+                RedisManager::Sentinel(pool)
+            }
         }
     }
 
-    async fn new_unpooled(dsn: &str, clustered: bool) -> Self {
-        if clustered {
-            let cli = redis::cluster::ClusterClient::builder(vec![dsn])
-                .retries(1)
-                .connection_timeout(REDIS_CONN_TIMEOUT)
-                .build()
-                .expect("Error initializing redis-unpooled cluster client");
-            let con = cli
-                .get_async_connection()
+    async fn new_unpooled(dsn: &str, variant: RedisVariant<'_>) -> Self {
+        match variant {
+            RedisVariant::Clustered => {
+                let cli = redis::cluster::ClusterClient::builder(vec![dsn])
+                    .retries(1)
+                    .connection_timeout(REDIS_CONN_TIMEOUT)
+                    .build()
+                    .expect("Error initializing redis-unpooled cluster client");
+                let con = cli
+                    .get_async_connection()
+                    .await
+                    .expect("Failed to get redis-cluster-unpooled connection");
+                RedisManager::ClusteredUnpooled(ClusteredRedisUnpooled { con })
+            }
+            RedisVariant::NonClustered => {
+                let cli =
+                    redis::Client::open(dsn).expect("Error initializing redis unpooled client");
+                let con = redis::aio::ConnectionManager::new_with_config(
+                    cli,
+                    ConnectionManagerConfig::new()
+                        .set_number_of_retries(1)
+                        .set_connection_timeout(REDIS_CONN_TIMEOUT),
+                )
                 .await
-                .expect("Failed to get redis-cluster-unpooled connection");
-            RedisManager::ClusteredUnpooled(ClusteredRedisUnpooled { con })
-        } else {
-            let cli = redis::Client::open(dsn).expect("Error initializing redis unpooled client");
-            let con = redis::aio::ConnectionManager::new_with_backoff_and_timeouts(
-                cli,
-                2,
-                100,
-                1,
-                Duration::MAX,
-                REDIS_CONN_TIMEOUT,
-            )
-            .await
-            .expect("Failed to get redis-unpooled connection manager");
-            RedisManager::NonClusteredUnpooled(NonClusteredRedisUnpooled { con })
+                .expect("Failed to get redis-unpooled connection manager");
+                RedisManager::NonClusteredUnpooled(NonClusteredRedisUnpooled { con })
+            }
+            RedisVariant::Sentinel(cfg) => {
+                let tls_mode = cfg.redis_tls_mode_secure.then_some(TlsMode::Secure);
+                let protocol = if cfg.redis_use_resp3 {
+                    ProtocolVersion::RESP3
+                } else {
+                    ProtocolVersion::default()
+                };
+                let cli = redis::sentinel::SentinelClient::build(
+                    vec![dsn],
+                    cfg.service_name.clone(),
+                    Some(SentinelNodeConnectionInfo {
+                        tls_mode,
+                        redis_connection_info: Some(RedisConnectionInfo {
+                            db: cfg.redis_db.unwrap_or(0),
+                            username: cfg.redis_username.clone(),
+                            password: cfg.redis_password.clone(),
+                            protocol,
+                        }),
+                    }),
+                    redis::sentinel::SentinelServerType::Master,
+                )
+                .expect("Failed to build sentinel client");
+
+                RedisManager::SentinelUnpooled(SentinelUnpooled {
+                    pool: Arc::new(Mutex::new(cli)),
+                })
+            }
         }
     }
 
     pub async fn from_cache_backend(cache_backend: &CacheBackend<'_>) -> Self {
         match cache_backend {
-            CacheBackend::Redis(dsn) => Self::new_unpooled(dsn, false).await,
-            CacheBackend::RedisCluster(dsn) => Self::new_unpooled(dsn, true).await,
+            CacheBackend::Redis(dsn) => Self::new_unpooled(dsn, RedisVariant::NonClustered).await,
+            CacheBackend::RedisCluster(dsn) => {
+                Self::new_unpooled(dsn, RedisVariant::Clustered).await
+            }
+            CacheBackend::RedisSentinel(dsn, cfg) => {
+                Self::new_unpooled(dsn, RedisVariant::Sentinel(cfg)).await
+            }
             _ => panic!("Queue type not supported with redis"),
         }
     }
 
     pub async fn from_queue_backend(queue_backend: &QueueBackend<'_>, max_conns: u16) -> Self {
         match queue_backend {
-            QueueBackend::Redis(dsn) => Self::new_pooled(dsn, false, max_conns).await,
-            QueueBackend::RedisCluster(dsn) => Self::new_pooled(dsn, true, max_conns).await,
+            QueueBackend::Redis(dsn) => {
+                Self::new_pooled(dsn, RedisVariant::NonClustered, max_conns).await
+            }
+            QueueBackend::RedisCluster(dsn) => {
+                Self::new_pooled(dsn, RedisVariant::Clustered, max_conns).await
+            }
+            QueueBackend::RedisSentinel(dsn, cfg) => {
+                Self::new_pooled(dsn, RedisVariant::Sentinel(cfg), max_conns).await
+            }
             _ => panic!("Queue type not supported with redis"),
         }
     }
@@ -93,6 +182,8 @@ impl RedisManager {
             Self::NonClustered(pool) => pool.get().await,
             Self::ClusteredUnpooled(pool) => pool.get().await,
             Self::NonClusteredUnpooled(pool) => pool.get().await,
+            Self::Sentinel(pool) => pool.get().await,
+            Self::SentinelUnpooled(pool) => pool.get().await,
         }
     }
 }
@@ -153,6 +244,50 @@ impl std::fmt::Debug for NonClusteredRedisUnpooled {
     }
 }
 
+#[derive(Clone)]
+pub struct SentinelPooled {
+    pool: Pool<crate::redis::sentinel::RedisSentinelConnectionManager>,
+}
+
+impl SentinelPooled {
+    pub async fn get(&self) -> Result<RedisConnection<'_>, RunError<RedisError>> {
+        Ok(RedisConnection::SentinelPooled(SentinelPooledConnection {
+            con: self.pool.get().await?,
+        }))
+    }
+}
+
+impl std::fmt::Debug for SentinelPooled {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("SentinelPooled").finish()
+    }
+}
+
+#[derive(Clone)]
+pub struct SentinelUnpooled {
+    pool: Arc<Mutex<redis::sentinel::SentinelClient>>,
+}
+
+impl SentinelUnpooled {
+    pub async fn get(&self) -> Result<RedisConnection<'_>, RunError<RedisError>> {
+        let mut pool = (*self.pool).lock().await;
+        let con = pool
+            .get_async_connection_with_config(
+                &AsyncConnectionConfig::new().set_response_timeout(REDIS_CONN_TIMEOUT),
+            )
+            .await?;
+        Ok(RedisConnection::SentinelUnpooled(
+            SentinelUnpooledConnection { con },
+        ))
+    }
+}
+
+impl std::fmt::Debug for SentinelUnpooled {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("SentinelUnpooled").finish()
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct NonClusteredRedisPool {
     pool: Pool<RedisConnectionManager>,
@@ -171,6 +306,8 @@ pub enum RedisConnection<'a> {
     ClusteredUnpooled(ClusteredUnpooledConnection),
     NonClustered(NonClusteredPooledConnection<'a>),
     NonClusteredUnpooled(NonClusteredUnpooledConnection),
+    SentinelPooled(SentinelPooledConnection<'a>),
+    SentinelUnpooled(SentinelUnpooledConnection),
 }
 
 impl RedisConnection<'_> {
@@ -196,6 +333,8 @@ impl redis::aio::ConnectionLike for RedisConnection<'_> {
             RedisConnection::NonClustered(conn) => conn.con.req_packed_command(cmd),
             RedisConnection::ClusteredUnpooled(conn) => conn.con.req_packed_command(cmd),
             RedisConnection::NonClusteredUnpooled(conn) => conn.con.req_packed_command(cmd),
+            RedisConnection::SentinelPooled(conn) => conn.con.req_packed_command(cmd),
+            RedisConnection::SentinelUnpooled(conn) => conn.con.req_packed_command(cmd),
         }
     }
 
@@ -214,6 +353,12 @@ impl redis::aio::ConnectionLike for RedisConnection<'_> {
             RedisConnection::NonClusteredUnpooled(conn) => {
                 conn.con.req_packed_commands(cmd, offset, count)
             }
+            RedisConnection::SentinelPooled(conn) => {
+                conn.con.req_packed_commands(cmd, offset, count)
+            }
+            RedisConnection::SentinelUnpooled(conn) => {
+                conn.con.req_packed_commands(cmd, offset, count)
+            }
         }
     }
 
@@ -223,6 +368,8 @@ impl redis::aio::ConnectionLike for RedisConnection<'_> {
             RedisConnection::NonClustered(conn) => conn.con.get_db(),
             RedisConnection::ClusteredUnpooled(conn) => conn.con.get_db(),
             RedisConnection::NonClusteredUnpooled(conn) => conn.con.get_db(),
+            RedisConnection::SentinelPooled(conn) => conn.con.get_db(),
+            RedisConnection::SentinelUnpooled(conn) => conn.con.get_db(),
         }
     }
 }
@@ -287,6 +434,11 @@ pooled_connection!(
     bb8::PooledConnection<'a, RedisClusterConnectionManager>
 );
 
+pooled_connection!(
+    SentinelPooledConnection,
+    bb8::PooledConnection<'a, RedisSentinelConnectionManager>
+);
+
 connection!(
     NonClusteredUnpooledConnection,
     redis::aio::ConnectionManager
@@ -295,6 +447,11 @@ connection!(
 connection!(
     ClusteredUnpooledConnection,
     redis::cluster_async::ClusterConnection
+);
+
+connection!(
+    SentinelUnpooledConnection,
+    redis::aio::MultiplexedConnection
 );
 
 #[cfg(test)]

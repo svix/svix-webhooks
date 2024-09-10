@@ -111,7 +111,9 @@ pub async fn run_with_prefix(
     let cache = match &cache_backend {
         CacheBackend::None => cache::none::new(),
         CacheBackend::Memory => cache::memory::new(),
-        CacheBackend::Redis(_) | CacheBackend::RedisCluster(_) => {
+        CacheBackend::Redis(_)
+        | CacheBackend::RedisCluster(_)
+        | CacheBackend::RedisSentinel(_, _) => {
             let mgr = RedisManager::from_cache_backend(&cache_backend).await;
             cache::redis::new(mgr)
         }

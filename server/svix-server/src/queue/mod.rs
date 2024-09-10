@@ -33,9 +33,9 @@ pub async fn new_pair(
     prefix: Option<&str>,
 ) -> (TaskQueueProducer, TaskQueueConsumer) {
     match cfg.queue_backend() {
-        QueueBackend::Redis(_) | QueueBackend::RedisCluster(_) => {
-            redis::new_pair(cfg, prefix).await
-        }
+        QueueBackend::Redis(_)
+        | QueueBackend::RedisCluster(_)
+        | QueueBackend::RedisSentinel(_, _) => redis::new_pair(cfg, prefix).await,
         QueueBackend::Memory => {
             let (producer, consumer) = InMemoryBackend::builder()
                 .build_pair()

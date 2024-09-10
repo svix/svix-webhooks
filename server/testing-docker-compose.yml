@@ -72,6 +72,42 @@ services:
       ALLOW_EMPTY_PASSWORD: "yes"
       REDIS_NODES: "redis-cluster redis-cluster-node-0 redis-cluster-node-1 redis-cluster-node-2 redis-cluster-node-3 redis-cluster-node-4"
 
+  redis-sentinel:
+    image: docker.io/redis:7
+    ports:
+      - "26379:26379"
+    command: >
+      sh -c 'echo "bind 0.0.0.0" > /etc/sentinel.conf &&
+            echo "sentinel monitor master0 redis-master-0 6379 2" >> /etc/sentinel.conf &&
+            echo "sentinel resolve-hostnames yes" >> /etc/sentinel.conf &&
+            echo "sentinel down-after-milliseconds master0 10000" >> /etc/sentinel.conf &&
+            echo "sentinel failover-timeout master0 10000" >> /etc/sentinel.conf &&
+            echo "sentinel parallel-syncs master0 1" >> /etc/sentinel.conf &&
+            redis-sentinel /etc/sentinel.conf'
+
+  redis-master-0:
+    image: docker.io/redis:7
+    ports:
+      - "6387:6379"
+
+  redis-replica-0:
+    image: docker.io/redis:7
+    ports:
+      - "6388:6379"
+    command:
+      [
+        "redis-server",
+        "--appendonly",
+        "yes",
+        "--replicaof",
+        "redis-master-0",
+        "6379",
+        "--repl-diskless-load",
+        "on-empty-db",
+        "--protected-mode",
+        "no"
+      ]
+
   rabbitmq:
     image: "docker.io/rabbitmq:3.11.13-management-alpine"
     ports:

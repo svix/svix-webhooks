@@ -206,6 +206,8 @@ async fn new_pair_inner(
         consumer_name: WORKER_CONSUMER.to_owned(),
         payload_key: QUEUE_KV_KEY.to_owned(),
         ack_deadline_ms: pending_duration,
+        dlq_config: None,
+        sentinel_config: cfg.redis_sentinel_cfg.clone().map(|c| c.into()),
     };
 
     match &cfg.queue_type {
@@ -219,7 +221,17 @@ async fn new_pair_inner(
             let consumer = TaskQueueConsumer::new(consumer);
             (producer, consumer)
         }
-        _ => {
+        QueueType::RedisSentinel => {
+            let (producer, consumer) = RedisBackend::sentinel_builder(config)
+                .build_pair()
+                .await
+                .expect("Error initializing redis-cluster queue");
+
+            let producer = TaskQueueProducer::new(producer);
+            let consumer = TaskQueueConsumer::new(consumer);
+            (producer, consumer)
+        }
+        QueueType::Redis => {
             let (producer, consumer) = RedisBackend::builder(config)
                 .build_pair()
                 .await
@@ -229,6 +241,7 @@ async fn new_pair_inner(
             let consumer = TaskQueueConsumer::new(consumer);
             (producer, consumer)
         }
+        _ => panic!("Unsupported backend!"),
     }
 }
 
