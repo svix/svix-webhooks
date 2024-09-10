@@ -17,21 +17,38 @@ async fn test_message_delivery_via_socks5() {
     use crate::utils::start_svix_server_with_cfg;
 
     let mut cfg = get_default_test_config();
-    cfg.proxy_config = Some(proxy_config());
+    cfg.proxy_config = Some(socks_proxy_config());
     let (client, _) = start_svix_server_with_cfg(&cfg).await;
-    run_socks5_test(&client).await;
+    run_proxy_test(&client).await;
 }
 
-fn proxy_config() -> ProxyConfig {
+fn socks_proxy_config() -> ProxyConfig {
     ProxyConfig {
         addr: ProxyAddr::new("socks5://localhost:1080").unwrap(),
     }
 }
 
-async fn run_socks5_test(client: &TestClient) {
+#[ignore] // requires an http proxy to be running
+#[tokio::test]
+async fn test_message_delivery_via_http_proxy() {
+    use crate::utils::start_svix_server_with_cfg;
+
+    let mut cfg = get_default_test_config();
+    cfg.proxy_config = Some(http_proxy_config());
+    let (client, _) = start_svix_server_with_cfg(&cfg).await;
+    run_proxy_test(&client).await;
+}
+
+fn http_proxy_config() -> ProxyConfig {
+    ProxyConfig {
+        addr: ProxyAddr::new("http://localhost:8888").unwrap(),
+    }
+}
+
+async fn run_proxy_test(client: &TestClient) {
     let mut receiver = TestReceiver::start(StatusCode::OK);
 
-    let app_id = create_test_app(client, "kafkaSinkTest").await.unwrap().id;
+    let app_id = create_test_app(client, "proxyTest").await.unwrap().id;
     create_test_endpoint(client, &app_id, &receiver.endpoint)
         .await
         .unwrap();

@@ -21,16 +21,17 @@ use hyper::{
     ext::HeaderCaseMap,
     Body, Client, Uri,
 };
-use hyper_openssl::HttpsConnector;
+use hyper_openssl::{HttpsConnector, MaybeHttpsStream};
+use hyper_proxy::{Intercept, Proxy, ProxyConnector as HttpProxyConnector, ProxyStream};
 use hyper_socks2::SocksConnector;
 use ipnet::IpNet;
-use openssl::ssl::{SslConnector, SslMethod, SslVerifyMode};
+use openssl::ssl::{SslConnector, SslConnectorBuilder, SslMethod, SslVerifyMode};
 use serde::Serialize;
 use thiserror::Error;
 use tokio::{net::TcpStream, sync::Mutex};
 use tower::Service;
 
-use crate::cfg::ProxyConfig;
+use crate::cfg::{ProxyAddr, ProxyConfig};
 
 pub type CaseSensitiveHeaderMap = HashMap<String, HeaderValue>;
 
@@ -55,7 +56,7 @@ pub enum Error {
 
 #[derive(Clone)]
 pub struct WebhookClient {
-    client: Client<HttpsConnector<SvixHttpConnector>, Body>,
+    client: Client<SvixHttpsConnector, Body>,
     whitelist_nets: Arc<Vec<IpNet>>,
 }
 
@@ -64,7 +65,7 @@ impl WebhookClient {
         whitelist_nets: Option<Arc<Vec<IpNet>>>,
         whitelist_names: Option<Arc<Vec<String>>>,
         dangerous_disable_tls_verification: bool,
-        proxy_config: Option<ProxyConfig>,
+        proxy_config: Option<&ProxyConfig>,
     ) -> Self {
         let whitelist_nets = whitelist_nets.unwrap_or_else(|| Arc::new(Vec::new()));
         let whitelist_names = whitelist_names.unwrap_or_else(|| Arc::new(Vec::new()));
@@ -81,8 +82,8 @@ impl WebhookClient {
             ssl.set_verify(SslVerifyMode::NONE);
         }
 
-        let http = SvixHttpConnector::new(http, proxy_config);
-        let https = HttpsConnector::with_connector(http, ssl).expect("HttpsConnector build failed");
+        let https = SvixHttpsConnector::new(http, proxy_config, ssl)
+            .expect("SvixHttpsConnector build failed");
 
         let client: Client<_, hyper::Body> = Client::builder()
             .http1_ignore_invalid_headers_in_responses(true)
@@ -428,30 +429,53 @@ impl RequestBuilder {
     }
 }
 
-/// Plain-HTTP connector that blocks outgoing requests to private IPs with
-/// support for optionally proxying via SOCKS5.
-#[derive(Clone, Debug)]
-enum SvixHttpConnector {
-    Regular(NonLocalHttpConnector),
-    Proxied(SocksConnector<NonLocalHttpConnector>),
+/// HTTP connector that blocks outgoing requests to private IPs with support
+/// for HTTPS and optionally proxying via SOCKS5 or HTTP(S).
+#[derive(Clone)]
+enum SvixHttpsConnector {
+    Regular(HttpsConnector<NonLocalHttpConnector>),
+    Socks5Proxy(HttpsConnector<SocksConnector<NonLocalHttpConnector>>),
+    HttpProxy(HttpProxyConnector<HttpConnector<NonLocalDnsResolver>>),
 }
 
-impl SvixHttpConnector {
-    fn new(inner: NonLocalHttpConnector, proxy_cfg: Option<ProxyConfig>) -> Self {
+impl SvixHttpsConnector {
+    fn new(
+        inner: NonLocalHttpConnector,
+        proxy_cfg: Option<&ProxyConfig>,
+        ssl: SslConnectorBuilder,
+    ) -> Result<Self, Box<dyn std::error::Error>> {
         match proxy_cfg {
-            Some(proxy_cfg) => Self::Proxied(SocksConnector {
-                proxy_addr: proxy_cfg.addr.into(),
-                auth: None,
-                connector: inner,
-            }),
-            None => Self::Regular(inner),
+            Some(proxy_cfg) => match proxy_cfg.addr.clone() {
+                // In the SOCKS5 case, TLS is handled inside of the proxy
+                // TcpStream, by the same code that would do it without a proxy
+                ProxyAddr::Socks5(proxy_addr) => {
+                    let socks = SocksConnector {
+                        proxy_addr,
+                        auth: None,
+                        connector: inner,
+                    };
+                    let socks_https = HttpsConnector::with_connector(socks, ssl)?;
+                    Ok(Self::Socks5Proxy(socks_https))
+                }
+                // In the HTTP proxy case, TLS is handled by the proxy connector
+                ProxyAddr::Http(proxy_addr) => {
+                    let proxy = Proxy::new(Intercept::All, proxy_addr);
+                    Ok(Self::HttpProxy(HttpProxyConnector::from_proxy(
+                        inner, proxy,
+                    )?))
+                }
+            },
+            None => {
+                let https = HttpsConnector::with_connector(inner, ssl)?;
+                Ok(Self::Regular(https))
+            }
         }
     }
 }
 
-impl Service<Uri> for SvixHttpConnector {
-    type Response = TcpStream;
-    type Error = hyper_socks2::Error;
+impl Service<Uri> for SvixHttpsConnector {
+    type Response = ProxyStream<TcpStream>;
+    type Error = Box<dyn std::error::Error + Send + Sync>;
     type Future = Pin<Box<dyn Future<Output = Result<Self::Response, Self::Error>> + Send>>;
 
     fn poll_ready(
@@ -459,23 +483,33 @@ impl Service<Uri> for SvixHttpConnector {
         cx: &mut std::task::Context<'_>,
     ) -> std::task::Poll<Result<(), Self::Error>> {
         match self {
-            Self::Regular(inner) => inner
-                .poll_ready(cx)
-                .map_err(|e| hyper_socks2::Error::Connector(e.into())),
-            Self::Proxied(inner) => inner.poll_ready(cx),
+            Self::Regular(inner) => inner.poll_ready(cx),
+            Self::Socks5Proxy(inner) => inner.poll_ready(cx),
+            Self::HttpProxy(inner) => inner.poll_ready(cx).map_err(Into::into),
         }
     }
 
     fn call(&mut self, req: Uri) -> Self::Future {
+        fn convert_stream(maybe_https: MaybeHttpsStream<TcpStream>) -> ProxyStream<TcpStream> {
+            match maybe_https {
+                MaybeHttpsStream::Http(stream) => ProxyStream::NoProxy(stream),
+                MaybeHttpsStream::Https(stream) => ProxyStream::Secured(stream),
+            }
+        }
+
         match self {
             Self::Regular(inner) => {
                 let fut = inner.call(req);
-                Box::pin(async move {
-                    fut.await
-                        .map_err(|e| hyper_socks2::Error::Connector(e.into()))
-                })
+                Box::pin(async move { Ok(convert_stream(fut.await?)) })
             }
-            Self::Proxied(inner) => Box::pin(inner.call(req)),
+            Self::Socks5Proxy(inner) => {
+                let fut = inner.call(req);
+                Box::pin(async move { Ok(convert_stream(fut.await?)) })
+            }
+            Self::HttpProxy(inner) => {
+                let fut = inner.call(req);
+                Box::pin(async move { fut.await.map_err(Into::into) })
+            }
         }
     }
 }
