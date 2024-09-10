@@ -18,6 +18,16 @@ pub use crate::models::*;
 
 const CRATE_VERSION: &str = env!("CARGO_PKG_VERSION");
 
+#[cfg(feature = "svix_beta")]
+pub mod raw_stream_api {
+    pub use crate::{
+        apis::stream_api::*,
+        models::{
+            stream_in, stream_out, stream_patch, stream_sink_in, stream_sink_out, stream_sink_patch,
+        },
+    };
+}
+
 pub struct SvixOptions {
     pub debug: bool,
     pub server_url: Option<String>,
@@ -130,6 +140,11 @@ impl Svix {
 
     pub fn statistics(&self) -> Statistics<'_> {
         Statistics::new(&self.cfg)
+    }
+
+    #[cfg(feature = "svix_beta")]
+    pub fn cfg(&self) -> &Configuration {
+        &self.cfg
     }
 }
 

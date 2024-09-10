@@ -2925,6 +2925,34 @@
                 ],
                 "type": "object"
             },
+            "ListResponse_StreamSinkOut_": {
+                "properties": {
+                    "data": {
+                        "items": {
+                            "$ref": "#/components/schemas/StreamSinkOut"
+                        },
+                        "type": "array"
+                    },
+                    "done": {
+                        "type": "boolean"
+                    },
+                    "iterator": {
+                        "example": "iterator",
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "prevIterator": {
+                        "example": "-iterator",
+                        "nullable": true,
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "data",
+                    "done"
+                ],
+                "type": "object"
+            },
             "ListResponse_TemplateOut_": {
                 "properties": {
                     "data": {
@@ -3582,7 +3610,7 @@
                 "properties": {
                     "application": {
                         "$ref": "#/components/schemas/ApplicationIn",
-                        "description": "Optionally creates a new application alongside the message. If the application id or uid that is used in the path already exists, this argument is ignored.",
+                        "description": "Optionally creates a new application alongside the message.\n\nIf the application id or uid that is used in the path already exists, this argument is ignored.",
                         "nullable": true
                     },
                     "channels": {
@@ -3827,7 +3855,7 @@
                 "type": "object"
             },
             "Oauth2AuthMethodIn": {
-                "description": "The method used for authenticating to the OAuth authorization server. `clientSecretJwt` will construct a JWT used for authentication with the oauth authorization server. This method is less commonly used and may not be supported by all oauth providers. `clientSecretBasic` will authenticate to the oauth authorization server using an `Authorization` header with the client secret as the value. This is the most common means of authentication. `clientSecretPost` will authenticate to the oauth authorization server by passing the client secret in a `client_secret` field in the request body. This method may not be supported by all oauth providers, and in general `clientSecretBasic` should be preferred.",
+                "description": "The method used for authenticating to the OAuth authorization server.\n\n`clientSecretJwt` will construct a JWT used for authentication with the oauth authorization server. This method is less commonly used and may not be supported by all oauth providers. `clientSecretBasic` will authenticate to the oauth authorization server using an `Authorization` header with the client secret as the value. This is the most common means of authentication. `clientSecretPost` will authenticate to the oauth authorization server by passing the client secret in a `client_secret` field in the request body. This method may not be supported by all oauth providers, and in general `clientSecretBasic` should be preferred.",
                 "enum": [
                     "clientSecretJwt",
                     "clientSecretBasic",
@@ -3973,6 +4001,29 @@
                 },
                 "required": [
                     "url"
+                ],
+                "type": "object"
+            },
+            "S3Config": {
+                "properties": {
+                    "accessKey": {
+                        "type": "string"
+                    },
+                    "bucket": {
+                        "type": "string"
+                    },
+                    "region": {
+                        "type": "string"
+                    },
+                    "secretAccessKey": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "accessKey",
+                    "bucket",
+                    "region",
+                    "secretAccessKey"
                 ],
                 "type": "object"
             },
@@ -4158,6 +4209,18 @@
                 },
                 "type": "object"
             },
+            "SinkHttpConfig": {
+                "properties": {
+                    "url": {
+                        "format": "uri",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "url"
+                ],
+                "type": "object"
+            },
             "SinkIn": {
                 "oneOf": [
                     {
@@ -4267,6 +4330,25 @@
                             "url"
                         ],
                         "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "type": {
+                                "enum": [
+                                    "http"
+                                ],
+                                "type": "string"
+                            },
+                            "url": {
+                                "format": "uri",
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "type",
+                            "url"
+                        ],
+                        "type": "object"
                     }
                 ],
                 "properties": {
@@ -4361,6 +4443,18 @@
                         "type": "string"
                     }
                 },
+                "type": "object"
+            },
+            "SinkOtelV1Config": {
+                "properties": {
+                    "url": {
+                        "format": "uri",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "url"
+                ],
                 "type": "object"
             },
             "SinkOut": {
@@ -4459,6 +4553,25 @@
                             "type": {
                                 "enum": [
                                     "otelV1HttpTrace"
+                                ],
+                                "type": "string"
+                            },
+                            "url": {
+                                "format": "uri",
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "type",
+                            "url"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "type": {
+                                "enum": [
+                                    "http"
                                 ],
                                 "type": "string"
                             },
@@ -4577,6 +4690,27 @@
                 ],
                 "type": "object"
             },
+            "SinkPayloadFormat": {
+                "enum": [
+                    "json"
+                ],
+                "type": "string"
+            },
+            "SinkStatus": {
+                "enum": [
+                    "enabled",
+                    "paused",
+                    "disabled"
+                ],
+                "type": "string"
+            },
+            "SinkStatusIn": {
+                "enum": [
+                    "enabled",
+                    "paused"
+                ],
+                "type": "string"
+            },
             "SinkTransformIn": {
                 "properties": {
                     "code": {
@@ -4686,6 +4820,291 @@
                     },
                     "uid": {
                         "description": "Optional unique identifier for the stream",
+                        "nullable": true,
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "StreamSinkIn": {
+                "oneOf": [
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SinkOtelV1Config"
+                            },
+                            "type": {
+                                "enum": [
+                                    "otelV1HttpTrace"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SinkHttpConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "http"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/S3Config"
+                            },
+                            "type": {
+                                "enum": [
+                                    "amazonS3"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    }
+                ],
+                "properties": {
+                    "batchSize": {
+                        "default": 100,
+                        "format": "uint16",
+                        "maximum": 1000,
+                        "minimum": 0,
+                        "type": "integer"
+                    },
+                    "format": {
+                        "$ref": "#/components/schemas/SinkPayloadFormat"
+                    },
+                    "maxWaitSecs": {
+                        "default": 0,
+                        "format": "uint16",
+                        "maximum": 3600,
+                        "minimum": 0,
+                        "type": "integer"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/SinkStatusIn"
+                    },
+                    "uid": {
+                        "nullable": true,
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "format"
+                ],
+                "type": "object"
+            },
+            "StreamSinkOut": {
+                "oneOf": [
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SinkOtelV1Config"
+                            },
+                            "type": {
+                                "enum": [
+                                    "otelV1HttpTrace"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SinkHttpConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "http"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/S3Config"
+                            },
+                            "type": {
+                                "enum": [
+                                    "amazonS3"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    }
+                ],
+                "properties": {
+                    "batchSize": {
+                        "format": "int32",
+                        "type": "integer"
+                    },
+                    "createdAt": {
+                        "format": "date-time",
+                        "type": "string"
+                    },
+                    "currentIterator": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "disabledReason": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "format": {
+                        "$ref": "#/components/schemas/SinkPayloadFormat"
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "maxWaitSecs": {
+                        "format": "int32",
+                        "type": "integer"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/SinkStatus"
+                    },
+                    "uid": {
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "updatedAt": {
+                        "format": "date-time",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "batchSize",
+                    "createdAt",
+                    "format",
+                    "id",
+                    "maxWaitSecs",
+                    "status",
+                    "updatedAt"
+                ],
+                "type": "object"
+            },
+            "StreamSinkPatch": {
+                "oneOf": [
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SinkOtelV1Config"
+                            },
+                            "type": {
+                                "enum": [
+                                    "otelV1HttpTrace"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SinkHttpConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "http"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/S3Config"
+                            },
+                            "type": {
+                                "enum": [
+                                    "amazonS3"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    }
+                ],
+                "properties": {
+                    "batchSize": {
+                        "default": null,
+                        "format": "uint16",
+                        "maximum": 1000,
+                        "minimum": 0,
+                        "nullable": true,
+                        "type": "integer"
+                    },
+                    "format": {
+                        "$ref": "#/components/schemas/SinkPayloadFormat",
+                        "default": null,
+                        "nullable": true
+                    },
+                    "maxWaitSecs": {
+                        "default": null,
+                        "format": "uint16",
+                        "maximum": 3600,
+                        "minimum": 0,
+                        "nullable": true,
+                        "type": "integer"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/SinkStatusIn",
+                        "nullable": true
+                    },
+                    "uid": {
                         "nullable": true,
                         "type": "string"
                     }
@@ -23311,6 +23730,1478 @@
                         "label": "cURL",
                         "lang": "Shell",
                         "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/stats/usage/event-types' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/stream": {
+            "get": {
+                "description": "List of all the organization's streams.",
+                "operationId": "v1.stream.list",
+                "parameters": [
+                    {
+                        "description": "Limit the number of returned items",
+                        "in": "query",
+                        "name": "limit",
+                        "schema": {
+                            "description": "Limit the number of returned items",
+                            "format": "uint64",
+                            "maximum": 250,
+                            "minimum": 1,
+                            "type": "integer"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "The iterator returned from a prior invocation",
+                        "in": "query",
+                        "name": "iterator",
+                        "schema": {
+                            "description": "The iterator returned from a prior invocation",
+                            "nullable": true,
+                            "type": "string"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "The sorting order of the returned items",
+                        "in": "query",
+                        "name": "order",
+                        "schema": {
+                            "$ref": "#/components/schemas/Ordering",
+                            "description": "The sorting order of the returned items",
+                            "nullable": true
+                        },
+                        "style": "form"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListResponse_StreamOut_"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "List Streams",
+                "tags": [
+                    "Stream"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const listResponseStreamOut = await svix.stream.list();"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const listResponseStreamOut = await svix.stream.list();"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "list_response_stream_out = svix.stream.list(None)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "list_response_stream_out = await svix.stream.list(None)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "listResponseStreamOut, err := svixClient.Stream.List(ctx, nil)"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val listResponseStreamOut = svix.stream.list()"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "ListResponseStreamOut listResponseStreamOut = svix.getStream().list()"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "list_response_stream_out = svix.stream.list()"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let list_response_stream_out = svix.stream().list(None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var listResponseStreamOut = await svix.Stream.ListAsync()"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix stream list "
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stream' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            },
+            "post": {
+                "description": "Creates a new stream.",
+                "operationId": "v1.stream.create",
+                "parameters": [
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StreamIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StreamOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StreamOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Create Stream",
+                "tags": [
+                    "Stream"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const streamOut = await svix.stream.create({\n    uid: null\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const streamOut = await svix.stream.create({\n    uid: null\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "stream_out = svix.stream.create(StreamIn(\n    uid=None\n), None)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "stream_out = await svix.stream.create(StreamIn(\n    uid=None\n), None)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "streamOut, err := svixClient.Stream.Create(ctx, &StreamIn{\n    Uid: nil,\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val streamOut = svix.stream.create(StreamIn()\n    .uid(null)\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "StreamOut streamOut = svix.getStream().create(new StreamIn()\n    .uid(null)\n)"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "stream_out = svix.stream.create(Svix::StreamIn.new({\n    \"uid\": nil\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let stream_out = svix.stream().create(StreamIn {\n    uid: None,\n}, None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var streamOut = await svix.Stream.CreateAsync(new StreamIn{\n    uid: null\n})"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix stream create '{\n    \"uid\": null\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/stream' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"uid\": null\n    }'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/stream/{stream_id}": {
+            "delete": {
+                "description": "Delete a stream.",
+                "operationId": "v1.stream.delete",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "stream_id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "no content"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Delete Stream",
+                "tags": [
+                    "Stream"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.stream.delete(\"stream_id\");"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "await svix.stream.delete(\"stream_id\");"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "svix.stream.delete(\"stream_id\")"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "await svix.stream.delete(\"stream_id\")"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "err := svixClient.Stream.Delete(ctx, \"stream_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "svix.stream.delete(\"stream_id\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "svix.getStream().delete(\"stream_id\")"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "svix.stream.delete(\"stream_id\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "svix.stream().delete(\"stream_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "await svix.Stream.DeleteAsync(\"stream_id\")"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix stream delete \"stream_id\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/stream/{stream_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            },
+            "get": {
+                "description": "Get a stream by id or uid.",
+                "operationId": "v1.stream.get",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "stream_id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StreamOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Get Stream",
+                "tags": [
+                    "Stream"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const streamOut = await svix.stream.get(\"stream_id\");"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const streamOut = await svix.stream.get(\"stream_id\");"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "stream_out = svix.stream.get(\"stream_id\")"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "stream_out = await svix.stream.get(\"stream_id\")"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "streamOut, err := svixClient.Stream.Get(ctx, \"stream_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val streamOut = svix.stream.get(\"stream_id\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "StreamOut streamOut = svix.getStream().get(\"stream_id\")"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "stream_out = svix.stream.get(\"stream_id\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let stream_out = svix.stream().get(\"stream_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var streamOut = await svix.Stream.GetAsync(\"stream_id\")"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix stream get \"stream_id\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stream/{stream_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            },
+            "patch": {
+                "description": "Partially update a stream.",
+                "operationId": "v1.stream.patch",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "stream_id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StreamPatch"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StreamOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Patch Stream",
+                "tags": [
+                    "Stream"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const streamOut = await svix.stream.patch(\"stream_id\", {\n    uid: null\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const streamOut = await svix.stream.patch(\"stream_id\", {\n    uid: null\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "stream_out = svix.stream.patch(\"stream_id\", StreamPatch(\n    uid=None\n))"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "stream_out = await svix.stream.patch(\"stream_id\", StreamPatch(\n    uid=None\n))"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "streamOut, err := svixClient.Stream.Patch(ctx, \"stream_id\", &StreamPatch{\n    Uid: nil,\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val streamOut = svix.stream.patch(\"stream_id\", StreamPatch()\n    .uid(null)\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "StreamOut streamOut = svix.getStream().patch(\"stream_id\", new StreamPatch()\n    .uid(null)\n)"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "stream_out = svix.stream.patch(\"stream_id\", Svix::StreamPatch.new({\n    \"uid\": nil\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let stream_out = svix.stream().patch(\"stream_id\", StreamPatch {\n    uid: None,\n}).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var streamOut = await svix.Stream.PatchAsync(\"stream_id\", new StreamPatch{\n    uid: null\n})"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix stream patch \"stream_id\" '{\n    \"uid\": null\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/stream/{stream_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"uid\": null\n    }'"
+                    }
+                ]
+            },
+            "put": {
+                "description": "Update a stream.",
+                "operationId": "v1.stream.update",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "stream_id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StreamIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StreamOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StreamOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Update Stream",
+                "tags": [
+                    "Stream"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const streamOut = await svix.stream.update(\"stream_id\", {\n    uid: null\n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const streamOut = await svix.stream.update(\"stream_id\", {\n    uid: null\n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "stream_out = svix.stream.update(\"stream_id\", StreamIn(\n    uid=None\n))"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "stream_out = await svix.stream.update(\"stream_id\", StreamIn(\n    uid=None\n))"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "streamOut, err := svixClient.Stream.Update(ctx, \"stream_id\", &StreamIn{\n    Uid: nil,\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val streamOut = svix.stream.update(\"stream_id\", StreamIn()\n    .uid(null)\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "StreamOut streamOut = svix.getStream().update(\"stream_id\", new StreamIn()\n    .uid(null)\n)"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "stream_out = svix.stream.update(\"stream_id\", Svix::StreamIn.new({\n    \"uid\": nil\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let stream_out = svix.stream().update(\"stream_id\", StreamIn {\n    uid: None,\n}).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var streamOut = await svix.Stream.UpdateAsync(\"stream_id\", new StreamIn{\n    uid: null\n})"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix stream update \"stream_id\" '{\n    \"uid\": null\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/stream/{stream_id}' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"uid\": null\n    }'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/stream/{stream_id}/events": {
+            "get": {
+                "description": "Iterate over a stream of events.",
+                "operationId": "v1.stream.events-get",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "stream_id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "Limit the number of returned items",
+                        "in": "query",
+                        "name": "limit",
+                        "schema": {
+                            "description": "Limit the number of returned items",
+                            "format": "uint64",
+                            "maximum": 250,
+                            "minimum": 1,
+                            "type": "integer"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "description": "The iterator returned from a prior invocation",
+                        "in": "query",
+                        "name": "iterator",
+                        "schema": {
+                            "description": "The iterator returned from a prior invocation",
+                            "nullable": true,
+                            "type": "string"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "in": "query",
+                        "name": "after",
+                        "schema": {
+                            "format": "date-time",
+                            "nullable": true,
+                            "type": "string"
+                        },
+                        "style": "form"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EventStreamOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Stream Events",
+                "tags": [
+                    "Sink"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const eventStreamOut = await svix.stream.eventsGet(\"stream_id\");"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const eventStreamOut = await svix.stream.eventsGet(\"stream_id\");"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "event_stream_out = svix.stream.events_get(\"stream_id\")"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "event_stream_out = await svix.stream.events_get(\"stream_id\")"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "eventStreamOut, err := svixClient.Stream.EventsGet(ctx, \"stream_id\")"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val eventStreamOut = svix.stream.eventsGet(\"stream_id\")"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "EventStreamOut eventStreamOut = svix.getStream().eventsGet(\"stream_id\")"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "event_stream_out = svix.stream.events_get(\"stream_id\")"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let event_stream_out = svix.stream().events_get(\"stream_id\").await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var eventStreamOut = await svix.Stream.EventsGetAsync(\"stream_id\")"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix stream events-get \"stream_id\""
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/stream/{stream_id}/events' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json'"
+                    }
+                ]
+            },
+            "post": {
+                "description": "Creates streaming events.",
+                "operationId": "v1.stream.create-events",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "stream_id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateStreamIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "202": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CreateStreamOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "summary": "Append To Stream",
+                "tags": [
+                    "Sink"
+                ],
+                "x-codeSamples": [
+                    {
+                        "label": "JavaScript",
+                        "lang": "JavaScript",
+                        "source": "const createStreamOut = await svix.stream.createEvents(\"stream_id\", \n});"
+                    },
+                    {
+                        "label": "TypeScript",
+                        "lang": "JavaScript",
+                        "source": "const createStreamOut = await svix.stream.createEvents(\"stream_id\", \n});"
+                    },
+                    {
+                        "label": "Python",
+                        "lang": "Python",
+                        "source": "create_stream_out = svix.stream.create_events(\"stream_id\", CreateStreamIn\n), None)"
+                    },
+                    {
+                        "label": "Python (Async)",
+                        "lang": "Python",
+                        "source": "create_stream_out = await svix.stream.create_events(\"stream_id\", CreateStreamIn\n), None)"
+                    },
+                    {
+                        "label": "Go",
+                        "lang": "Go",
+                        "source": "createStreamOut, err := svixClient.Stream.CreateEvents(ctx, \"stream_id\", &CreateStreamIn{\n})"
+                    },
+                    {
+                        "label": "Kotlin",
+                        "lang": "Kotlin",
+                        "source": "val createStreamOut = svix.stream.createEvents(\"stream_id\", CreateStreamIn()\n)"
+                    },
+                    {
+                        "label": "Java",
+                        "lang": "Java",
+                        "source": "CreateStreamOut createStreamOut = svix.getStream().createEvents(\"stream_id\", new CreateStreamIn()\n)"
+                    },
+                    {
+                        "label": "Ruby",
+                        "lang": "Ruby",
+                        "source": "create_stream_out = svix.stream.create_events(\"stream_id\", Svix::CreateStreamIn.new(\n}))"
+                    },
+                    {
+                        "label": "Rust",
+                        "lang": "Rust",
+                        "source": "let create_stream_out = svix.stream().create_events(\"stream_id\", CreateStreamIn {\n}, None).await?;"
+                    },
+                    {
+                        "label": "C#",
+                        "lang": "C#",
+                        "source": "var createStreamOut = await svix.Stream.CreateEventsAsync(\"stream_id\", new CreateStreamIn\n})"
+                    },
+                    {
+                        "label": "CLI",
+                        "lang": "Shell",
+                        "source": "svix stream create-events \"stream_id\" '\n}'"
+                    },
+                    {
+                        "label": "cURL",
+                        "lang": "Shell",
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/stream/{stream_id}/events' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '\n    }'"
                     }
                 ]
             }

@@ -31,7 +31,7 @@ mod apis;
 #[allow(dead_code, clippy::all)]
 mod models;
 
-struct Configuration {
+pub struct Configuration {
     pub base_path: String,
     pub user_agent: Option<String>,
     pub client: HyperClient<Connector, http_body_util::Full<Bytes>>,
