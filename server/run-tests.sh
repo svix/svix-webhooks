@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eo pipefail
+
 # Run tests with various configurations.
 
 if [[ -z "$TEST_COMMAND" ]]; then
