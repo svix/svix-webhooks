@@ -964,9 +964,9 @@ impl<'a> Message<'a> {
     #[cfg(feature = "svix_beta")]
     pub async fn events(
         &self,
-        params: message_api::V1MessageCreateParams,
-    ) -> Result<crate::models::MessageOut> {
-        message_api::v1_message_create(self.cfg, params).await
+        params: message_api::V1MessageEventsParams,
+    ) -> Result<crate::models::MessageEventsOut> {
+        message_api::v1_message_events(self.cfg, params).await
     }
 
     #[cfg(feature = "svix_beta")]
