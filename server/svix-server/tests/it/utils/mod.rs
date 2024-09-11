@@ -189,6 +189,31 @@ impl TestClient {
             .context("error receiving/parsing response")
     }
 
+    pub async fn put_without_response<I: Serialize>(
+        &self,
+        endpoint: &str,
+        input: I,
+        expected_code: StatusCode,
+    ) -> Result<()> {
+        let mut req = self.client.put(self.build_uri(endpoint));
+        req = self.add_headers(req).json(&input);
+
+        let resp = req.send().await.context("error sending request")?;
+
+        if resp.status() != expected_code {
+            anyhow::bail!(
+                "assertion failed: expected status {}, actual status {}",
+                expected_code,
+                resp.status()
+            );
+        }
+
+        let res_body = resp.text().await.context("error receiving response")?;
+        anyhow::ensure!(res_body.is_empty());
+
+        Ok(())
+    }
+
     pub async fn delete<O: DeserializeOwned>(
         &self,
         endpoint: &str,
