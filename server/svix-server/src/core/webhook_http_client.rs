@@ -55,7 +55,7 @@ pub enum Error {
 
 #[derive(Clone)]
 pub struct WebhookClient {
-    client: Client<HttpsConnector<NonLocalConnector>, Body>,
+    client: Client<HttpsConnector<SvixHttpConnector>, Body>,
     whitelist_nets: Arc<Vec<IpNet>>,
 }
 
@@ -81,7 +81,7 @@ impl WebhookClient {
             ssl.set_verify(SslVerifyMode::NONE);
         }
 
-        let http = NonLocalConnector::new(http, proxy_config);
+        let http = SvixHttpConnector::new(http, proxy_config);
         let https = HttpsConnector::with_connector(http, ssl).expect("HttpsConnector build failed");
 
         let client: Client<_, hyper::Body> = Client::builder()
@@ -428,14 +428,16 @@ impl RequestBuilder {
     }
 }
 
+/// Plain-HTTP connector that blocks outgoing requests to private IPs with
+/// support for optionally proxying via SOCKS5.
 #[derive(Clone, Debug)]
-enum NonLocalConnector {
-    Regular(HttpConnector<NonLocalDnsResolver>),
-    Proxied(SocksConnector<HttpConnector<NonLocalDnsResolver>>),
+enum SvixHttpConnector {
+    Regular(NonLocalHttpConnector),
+    Proxied(SocksConnector<NonLocalHttpConnector>),
 }
 
-impl NonLocalConnector {
-    fn new(inner: HttpConnector<NonLocalDnsResolver>, proxy_cfg: Option<ProxyConfig>) -> Self {
+impl SvixHttpConnector {
+    fn new(inner: NonLocalHttpConnector, proxy_cfg: Option<ProxyConfig>) -> Self {
         match proxy_cfg {
             Some(proxy_cfg) => Self::Proxied(SocksConnector {
                 proxy_addr: proxy_cfg.addr.into(),
@@ -447,7 +449,7 @@ impl NonLocalConnector {
     }
 }
 
-impl Service<Uri> for NonLocalConnector {
+impl Service<Uri> for SvixHttpConnector {
     type Response = TcpStream;
     type Error = hyper_socks2::Error;
     type Future = Pin<Box<dyn Future<Output = Result<Self::Response, Self::Error>> + Send>>;
@@ -478,6 +480,14 @@ impl Service<Uri> for NonLocalConnector {
     }
 }
 
+/// A plain-HTTP connector that blocks outgoing requests to private IPs.
+///
+/// Used as a building block for [`SvixHttpConnector`].
+type NonLocalHttpConnector = HttpConnector<NonLocalDnsResolver>;
+
+/// A DNS resolver that produces an error for names that resolve to private IPs.
+///
+/// Specific private subnets or domain names may be whitelisted.
 #[derive(Clone, Debug)]
 struct NonLocalDnsResolver {
     state: Arc<Mutex<DnsState>>,
