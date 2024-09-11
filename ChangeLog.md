@@ -3,6 +3,10 @@
 ## Next
 * 
 
+## Version 1.33.0
+* Server: Add support for deprecating event types
+* Server: Add support for HTTP(S) proxies
+
 ## Version 1.32.0
 * Libs/Go Remove modules no longer produced by the generator
 * Server: Fix parsing proxy config from process environment

@@ -4155,7 +4155,7 @@ dependencies = [
 
 [[package]]
 name = "svix-bridge"
-version = "1.32.0"
+version = "1.33.0"
 dependencies = [
  "anyhow",
  "axum",
