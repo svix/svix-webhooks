@@ -62,7 +62,7 @@ async fn test_restricted_application_access() {
         )
         .await
         .unwrap();
-    let _: IgnoredAny = client
+    client
         .delete(&format!("api/v1/app/{app_id}/"), StatusCode::FORBIDDEN)
         .await
         .unwrap();

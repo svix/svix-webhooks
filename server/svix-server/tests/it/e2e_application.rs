@@ -260,11 +260,11 @@ async fn test_crud() {
     );
 
     // DELETE
-    let _: IgnoredAny = client
+    client
         .delete(&format!("api/v1/app/{}/", app_1.id), StatusCode::NO_CONTENT)
         .await
         .unwrap();
-    let _: IgnoredAny = client
+    client
         .delete(&format!("api/v1/app/{}/", app_2.id), StatusCode::NO_CONTENT)
         .await
         .unwrap();
@@ -442,7 +442,7 @@ async fn test_uid() {
         .unwrap();
 
     // Delete app1
-    let _: IgnoredAny = client
+    client
         .delete(&format!("api/v1/app/{}/", app.id), StatusCode::NO_CONTENT)
         .await
         .unwrap();
@@ -461,7 +461,7 @@ async fn test_uid() {
         .await
         .unwrap();
 
-    let _: IgnoredAny = client
+    client
         .delete(
             &format!("api/v1/app/{}/", app2.uid.unwrap()),
             StatusCode::NO_CONTENT,

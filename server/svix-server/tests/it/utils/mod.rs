@@ -238,11 +238,7 @@ impl TestClient {
         Ok(())
     }
 
-    pub async fn delete<O: DeserializeOwned>(
-        &self,
-        endpoint: &str,
-        expected_code: StatusCode,
-    ) -> Result<O> {
+    pub async fn delete(&self, endpoint: &str, expected_code: StatusCode) -> Result<()> {
         let mut req = self.client.delete(self.build_uri(endpoint));
         req = self.add_headers(req);
 
@@ -256,9 +252,12 @@ impl TestClient {
             );
         }
 
-        resp.json()
-            .await
-            .context("error receiving/parsing response")
+        if expected_code == StatusCode::NO_CONTENT {
+            let res_body = resp.text().await.context("error receiving response")?;
+            anyhow::ensure!(res_body.is_empty());
+        }
+
+        Ok(())
     }
 
     pub async fn patch<I: Serialize, O: DeserializeOwned>(

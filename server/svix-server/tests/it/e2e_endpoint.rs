@@ -76,13 +76,12 @@ async fn get_endpoint_404(client: &TestClient, app_id: &str, ep_id: &str) -> Res
 }
 
 async fn delete_endpoint(client: &TestClient, app_id: &ApplicationId, ep_id: &str) -> Result<()> {
-    let _: IgnoredAny = client
+    client
         .delete(
             &format!("api/v1/app/{app_id}/endpoint/{ep_id}/"),
             StatusCode::NO_CONTENT,
         )
-        .await?;
-    Ok(())
+        .await
 }
 
 #[allow(deprecated)]
@@ -916,8 +915,8 @@ async fn test_endpoint_secret_get_and_rotation() {
         .await
         .unwrap();
 
-    let _: IgnoredAny = client
-        .post(
+    client
+        .post_without_response(
             &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", ep.id),
             serde_json::json!({ "key": null }),
             StatusCode::NO_CONTENT,
@@ -936,8 +935,8 @@ async fn test_endpoint_secret_get_and_rotation() {
             .unwrap()
     );
 
-    let _: IgnoredAny = client
-        .post(
+    client
+        .post_without_response(
             &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", ep.id),
             &former_secret,
             StatusCode::NO_CONTENT,
@@ -1055,8 +1054,8 @@ async fn test_endpoint_rotate_max() {
         .id;
 
     for _ in 0..ExpiringSigningKeys::MAX_OLD_KEYS {
-        let _: IgnoredAny = client
-            .post(
+        client
+            .post_without_response(
                 &format!("api/v1/app/{app_id}/endpoint/{endp_id}/secret/rotate/"),
                 serde_json::json!({ "key": null }),
                 StatusCode::NO_CONTENT,
@@ -1095,8 +1094,8 @@ async fn test_endpoint_rotate_signing_e2e() {
         .await
         .unwrap();
 
-    let _: IgnoredAny = client
-        .post(
+    client
+        .post_without_response(
             &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", endp.id),
             serde_json::json!({ "key": null }),
             StatusCode::NO_CONTENT,
@@ -1119,8 +1118,8 @@ async fn test_endpoint_rotate_signing_e2e() {
         .into_endpoint_secret(&Encryption::new_noop())
         .unwrap();
 
-    let _: IgnoredAny = client
-        .post(
+    client
+        .post_without_response(
             &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", endp.id),
             serde_json::json!({ "key": secret3_key }),
             StatusCode::NO_CONTENT,
@@ -1186,8 +1185,8 @@ async fn test_endpoint_rotate_signing_symmetric_and_asymmetric() {
         .unwrap();
 
     // Rotate to asmmetric
-    let _: IgnoredAny = client
-        .post(
+    client
+        .post_without_response(
             &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", endp.id),
             serde_json::json!({ "key": "whsk_6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg==" }),
             StatusCode::NO_CONTENT,
@@ -1196,8 +1195,8 @@ async fn test_endpoint_rotate_signing_symmetric_and_asymmetric() {
         .unwrap();
 
     // Rotate back to symmetric
-    let _: IgnoredAny = client
-        .post(
+    client
+        .post_without_response(
             &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", endp.id),
             serde_json::json!({ "key": secret_3.serialize_public_key() }),
             StatusCode::NO_CONTENT,
@@ -1284,8 +1283,8 @@ async fn test_endpoint_secret_config() {
     assert!(key1.starts_with("whpk_"));
 
     // Rotate to asmmetric
-    let _: IgnoredAny = client
-        .post(
+    client
+        .post_without_response(
             &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", ep.id),
             serde_json::json!({ "key": null }),
             StatusCode::NO_CONTENT,
@@ -1343,8 +1342,8 @@ async fn test_custom_endpoint_secret() {
     let endp_3 = post_endpoint(&client, &app_id, ep_in.clone())
         .await
         .unwrap();
-    let _: IgnoredAny = client
-        .post(
+    client
+        .post_without_response(
             &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", endp_3.id),
             serde_json::json!({ "key": "whsk_6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg==" }),
             StatusCode::NO_CONTENT,
@@ -1419,8 +1418,8 @@ async fn test_endpoint_secret_encryption() {
     assert_eq!(secret, secret2);
 
     // Generate a new encrypted secret
-    let _: IgnoredAny = client
-        .post(
+    client
+        .post_without_response(
             &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", ep.id),
             serde_json::json!({ "key": secret }),
             StatusCode::NO_CONTENT,
@@ -2099,8 +2098,8 @@ async fn test_endpoint_headers_manipulation() {
         ])),
     };
 
-    let _: IgnoredAny = client
-        .patch(
+    client
+        .patch_without_response(
             &format!("api/v1/app/{app_id}/endpoint/{}/headers/", endp.id),
             patched_headers_in,
             StatusCode::NO_CONTENT,
@@ -2158,8 +2157,8 @@ async fn test_endpoint_headers_manipulation() {
     };
 
     for hdrs in [&org_headers, &updated_headers] {
-        let _: IgnoredAny = client
-            .put(
+        client
+            .put_without_response(
                 &format!("api/v1/app/{app_id}/endpoint/{}/headers/", endp.id),
                 hdrs,
                 StatusCode::NO_CONTENT,
@@ -2185,8 +2184,8 @@ async fn test_endpoint_headers_manipulation() {
         ])),
     };
 
-    let _: IgnoredAny = client
-        .patch(
+    client
+        .patch_without_response(
             &format!("api/v1/app/{app_id}/endpoint/{}/headers/", endp.id),
             &patched_headers_in,
             StatusCode::NO_CONTENT,
@@ -2217,8 +2216,8 @@ async fn test_endpoint_headers_manipulation() {
         ])),
     };
 
-    let _: IgnoredAny = client
-        .put(
+    client
+        .put_without_response(
             &format!("api/v1/app/{app_id}/endpoint/{}/headers/", endp.id),
             redacted_headers,
             StatusCode::NO_CONTENT,
@@ -2264,8 +2263,8 @@ async fn test_endpoint_headers_sending() {
         ])),
     };
 
-    let _: IgnoredAny = client
-        .put(
+    client
+        .put_without_response(
             &format!("api/v1/app/{app_id}/endpoint/{}/headers/", endp.id),
             &headers,
             StatusCode::NO_CONTENT,
@@ -2303,8 +2302,8 @@ async fn test_endpoint_header_key_capitalization() {
         )])),
     };
 
-    let _: IgnoredAny = client
-        .put(
+    client
+        .put_without_response(
             &format!("api/v1/app/{app_id}/endpoint/{}/headers/", endp.id),
             &headers,
             StatusCode::NO_CONTENT,

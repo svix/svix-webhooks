@@ -4,7 +4,6 @@
 use std::time::Duration;
 
 use reqwest::StatusCode;
-use serde::de::IgnoredAny;
 use svix_server::{
     core::types::{EndpointUid, MessageStatus},
     v1::{
@@ -67,7 +66,7 @@ async fn test_expunge_attempt_response_body() {
     assert_eq!(sensitive_response_json, attempt_response);
 
     let attempt_id = &attempt.id;
-    let _: IgnoredAny = client
+    client
         .delete(
             &format!("api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/content/"),
             StatusCode::NO_CONTENT,
