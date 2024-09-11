@@ -46,7 +46,7 @@ pub async fn create_test_app(client: &TestClient, name: &str) -> Result<Applicat
         .await
 }
 
-pub async fn delete_test_app(client: &TestClient, id: ApplicationId) -> Result<IgnoredAny> {
+pub async fn delete_test_app(client: &TestClient, id: ApplicationId) -> Result<()> {
     client
         .delete(&format!("api/v1/app/{id}/"), StatusCode::NO_CONTENT)
         .await

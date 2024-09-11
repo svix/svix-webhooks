@@ -6,7 +6,7 @@ use std::{net::TcpListener, sync::Arc, time::Duration};
 use chrono::{DateTime, Utc};
 use http::StatusCode;
 use reqwest::Url;
-use serde::{de::IgnoredAny, Deserialize};
+use serde::Deserialize;
 use svix::api::EventTypeOut;
 use svix_ksuid::KsuidLike;
 use svix_server::{
@@ -239,8 +239,8 @@ async fn test_endpoint_create_update_and_delete() {
     };
 
     // Rotate secrets
-    let _: IgnoredAny = client_regular
-        .post(
+    client_regular
+        .post_without_response(
             &format!(
                 "api/v1/app/{}/endpoint/{}/secret/rotate/",
                 regular_app.id, regular_endp.id
@@ -258,7 +258,7 @@ async fn test_endpoint_create_update_and_delete() {
     );
 
     // And finally delete the endpoint
-    let _: IgnoredAny = client_regular
+    client_regular
         .delete(
             &format!(
                 "api/v1/app/{}/endpoint/{}/",

@@ -59,7 +59,7 @@ async fn test_app_deletion() {
     );
 
     client
-        .delete::<IgnoredAny>(&format!("api/v1/app/{app_id}/"), StatusCode::NO_CONTENT)
+        .delete(&format!("api/v1/app/{app_id}/"), StatusCode::NO_CONTENT)
         .await
         .unwrap();
 
@@ -136,7 +136,7 @@ async fn test_endp_deletion() {
     );
 
     client
-        .delete::<IgnoredAny>(
+        .delete(
             &format!("api/v1/app/{app_id}/endpoint/{endp_id}/"),
             StatusCode::NO_CONTENT,
         )

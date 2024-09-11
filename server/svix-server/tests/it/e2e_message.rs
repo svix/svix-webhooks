@@ -4,7 +4,6 @@
 use chrono::{Duration, Utc};
 use reqwest::StatusCode;
 use sea_orm::{sea_query::Expr, ColumnTrait, EntityTrait, QueryFilter};
-use serde::de::IgnoredAny;
 use svix_server::{
     db::models::messagecontent,
     expired_message_cleaner,
@@ -455,7 +454,7 @@ async fn test_expunge_message_payload() {
         serde_json::to_string(&payload).unwrap()
     );
 
-    let _: IgnoredAny = client
+    client
         .delete(
             &format!("api/v1/app/{}/msg/{}/content/", &app_id, &msg.id),
             StatusCode::NO_CONTENT,

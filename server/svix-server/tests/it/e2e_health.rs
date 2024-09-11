@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 use reqwest::StatusCode;
-use serde::de::IgnoredAny;
 
 use crate::utils::start_svix_server;
 
@@ -10,8 +9,8 @@ use crate::utils::start_svix_server;
 async fn ping_with_trailing_slash() {
     let (client, _jh) = start_svix_server().await;
 
-    let _: IgnoredAny = client
-        .get("api/v1/health/ping/", StatusCode::NO_CONTENT)
+    client
+        .get_without_response("api/v1/health/ping/", StatusCode::NO_CONTENT)
         .await
         .unwrap();
 }
@@ -20,8 +19,8 @@ async fn ping_with_trailing_slash() {
 async fn ping_without_trailing_slash() {
     let (client, _jh) = start_svix_server().await;
 
-    let _: IgnoredAny = client
-        .get("api/v1/health/ping", StatusCode::NO_CONTENT)
+    client
+        .get_without_response("api/v1/health/ping", StatusCode::NO_CONTENT)
         .await
         .unwrap();
 }
