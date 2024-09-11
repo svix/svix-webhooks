@@ -901,7 +901,7 @@ pub async fn queue_handler(
         cfg.whitelist_subnets.clone(),
         Some(Arc::new(vec!["backend".to_owned()])),
         cfg.dangerous_disable_tls_verification,
-        cfg.proxy_config.clone(),
+        cfg.proxy_config.as_ref(),
     );
 
     tokio::spawn(

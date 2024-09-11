@@ -7,7 +7,6 @@ use figment::{
     providers::{Env, Format, Toml},
     Figment,
 };
-use http::uri::InvalidUri;
 use ipnet::IpNet;
 use serde::{Deserialize, Deserializer};
 use tracing::Level;
@@ -199,28 +198,36 @@ pub struct ConfigurationInner {
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct ProxyConfig {
-    /// SOCKS5 proxy address.
+    /// Proxy address.
     ///
-    /// More proxy types may be supported in the future.
+    /// Currently supported proxy types are:
+    /// - `socks5://`, i.e. a SOCKS5 proxy, with domain name resolution being
+    ///   done before the proxy gets involved
+    /// - `http://` or `https://` proxy, sending HTTP requests to the proxy;
+    ///   both HTTP and HTTPS targets are supported
     #[serde(rename = "proxy_addr")]
     pub addr: ProxyAddr,
 }
 
 #[derive(Clone, Debug)]
-pub struct ProxyAddr {
-    parsed: http::Uri,
+pub enum ProxyAddr {
+    /// A SOCKS5 proxy.
+    Socks5(http::Uri),
+    /// An HTTP / HTTPs proxy.
+    Http(http::Uri),
 }
 
 impl ProxyAddr {
-    pub fn new(raw: impl AsRef<str>) -> Result<Self, InvalidUri> {
-        let parsed = raw.as_ref().parse()?;
-        Ok(Self { parsed })
-    }
-}
-
-impl From<ProxyAddr> for http::Uri {
-    fn from(value: ProxyAddr) -> Self {
-        value.parsed
+    pub fn new(raw: impl Into<String>) -> Result<Self, Box<dyn std::error::Error>> {
+        let raw = raw.into();
+        let parsed: http::Uri = raw.parse()?;
+        match parsed.scheme_str().unwrap_or("") {
+            "socks5" => Ok(Self::Socks5(parsed)),
+            "http" | "https" => Ok(Self::Http(parsed)),
+            _ => Err("Unsupported proxy scheme. \
+                Supported schemes are `socks5://`, `http://` and `https://`."
+                .into()),
+        }
     }
 }
 
@@ -510,7 +517,7 @@ mod tests {
         figment::Jail::expect_with(|jail| {
             jail.set_env("SVIX_QUEUE_TYPE", "memory");
             jail.set_env("SVIX_JWT_SECRET", "x");
-            jail.set_env("SVIX_PROXY_ADDR", "x");
+            jail.set_env("SVIX_PROXY_ADDR", "socks5://127.0.0.1");
 
             let cfg = load().unwrap();
             assert!(cfg.proxy_config.is_some());
