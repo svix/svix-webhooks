@@ -9,6 +9,7 @@ services:
       WAIT_FOR: "true"  # We want to wait for the default services
       SVIX_REDIS_DSN: "redis://redis:6379"
       SVIX_DB_DSN: "postgresql://postgres:postgres@pgbouncer/postgres"
+      # SVIX_JWT_SECRET: "x"  # IMPORTANT: uncomment and set a real JWT secret here.
     ports:
       - "8071:8071"
     depends_on:
