@@ -9,24 +9,16 @@ env:
 
 jobs:
   release:
-    name: release ${{ matrix.target }}
-    runs-on: ${{ matrix.os }}
+    name: release x86_64-unknown-linux-gnu
+    runs-on: ubuntu-latest
     environment: release
 
     strategy:
       fail-fast: false
       matrix:
         include:
-          - target: x86_64-pc-windows-gnu
-            os: windows-latest
-            extension: ".exe"
-
           - target: x86_64-unknown-linux-gnu
             os: ubuntu-latest
-            extension: ""
-
-          - target: x86_64-apple-darwin
-            os: macos-latest
             extension: ""
 
           - target: aarch64-apple-darwin
@@ -37,21 +29,15 @@ jobs:
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.target }}
-
-      - name: Install musl for x86_64-unknown-linux-musl
-        if: ${{ matrix.target == 'x86_64-unknown-linux-musl' }}
-        run: sudo apt-get install -y musl-dev musl-tools
 
       - name: Compile bridge
-        run: cargo build --target ${{ matrix.target }} --release --manifest-path bridge/svix-bridge/Cargo.toml
+        run: cargo build --release --manifest-path bridge/svix-bridge/Cargo.toml
 
       - name: Release
         uses: actions/upload-artifact@v3
         with:
-          name: svix-bridge-${{ matrix.target }}
-          path: bridge/target/${{ matrix.target }}/release/svix-bridge${{ matrix.extension }}
+          name: svix-bridge-x86_64-unknown-linux-gnu
+          path: bridge/target/release/svix-bridge
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
