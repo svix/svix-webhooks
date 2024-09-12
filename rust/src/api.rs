@@ -11,8 +11,8 @@ use crate::{
 
 #[cfg(feature = "svix_beta")]
 pub use crate::apis::message_api::{
-    V1MessageCreateError, V1MessageCreateParams, V1MessageEventsSubscriptionError,
-    V1MessageEventsSubscriptionParams,
+    V1MessageCreateError, V1MessageCreateParams, V1MessageEventsParams,
+    V1MessageEventsSubscriptionError, V1MessageEventsSubscriptionParams,
 };
 pub use crate::models::*;
 
