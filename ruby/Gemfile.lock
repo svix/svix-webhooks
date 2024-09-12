@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    svix (1.33.0)
+    svix (1.34.0)
       typhoeus (~> 1.0, >= 1.0.1)
 
 GEM
@@ -9,7 +9,7 @@ GEM
   specs:
     diff-lcs (1.4.4)
     ethon (0.14.0)
-      ffi (>= 1.33.0)
+      ffi (>= 1.34.0)
     ffi (1.15.1)
     rake (13.0.6)
     rspec (3.10.0)
