@@ -3,6 +3,9 @@
 ## Next
 * 
 
+## Version 1.34.0
+* Libs/Rust: Add missing export of `V1MessageEventsParams`
+
 ## Version 1.33.0
 * Server: Add support for deprecating event types
 * Server: Add support for HTTP(S) proxies
