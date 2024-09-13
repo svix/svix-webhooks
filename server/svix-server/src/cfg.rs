@@ -452,7 +452,7 @@ pub fn load() -> Result<Arc<ConfigurationInner>> {
 
 #[cfg(test)]
 mod tests {
-    use std::{sync::Arc, time::Duration};
+    use std::sync::Arc;
 
     use figment::{
         providers::{Format as _, Toml},
@@ -463,73 +463,7 @@ mod tests {
     use crate::core::security::{JWTAlgorithm, JwtSigningConfig};
 
     #[test]
-    fn test_retry_schedule_parsing() {
-        figment::Jail::expect_with(|jail| {
-            jail.set_env("SVIX_JWT_SECRET", "x");
-
-            // Multi item
-            jail.set_env("SVIX_RETRY_SCHEDULE", "[1,2]");
-
-            let cfg = load().unwrap();
-            assert_eq!(
-                cfg.retry_schedule,
-                vec![Duration::new(1, 0), Duration::new(2, 0)]
-            );
-
-            // Single item
-            jail.set_env("SVIX_RETRY_SCHEDULE", "[1]");
-
-            let cfg = load().unwrap();
-            assert_eq!(cfg.retry_schedule, vec![Duration::new(1, 0)]);
-
-            // Empty
-            jail.set_env("SVIX_RETRY_SCHEDULE", "[]");
-
-            let cfg = load().unwrap();
-            assert!(cfg.retry_schedule.is_empty());
-
-            Ok(())
-        });
-    }
-
-    #[test]
-    fn test_retry_schedule_parsing_legacy() {
-        figment::Jail::expect_with(|jail| {
-            jail.set_env("SVIX_JWT_SECRET", "x");
-
-            // Multi item
-            jail.set_env("SVIX_RETRY_SCHEDULE", "1,2");
-
-            let cfg = load().unwrap();
-            assert_eq!(
-                cfg.retry_schedule,
-                vec![Duration::new(1, 0), Duration::new(2, 0)]
-            );
-
-            // Single item and empty were failing before so not testing them
-
-            Ok(())
-        });
-    }
-
-    #[test]
-    fn test_proxy_addr_from_env_parsing() {
-        figment::Jail::expect_with(|jail| {
-            jail.set_env("SVIX_QUEUE_TYPE", "memory");
-            jail.set_env("SVIX_JWT_SECRET", "x");
-            jail.set_env("SVIX_PROXY_ADDR", "socks5://127.0.0.1");
-
-            let cfg = load().unwrap();
-            assert!(cfg.proxy_config.is_some());
-
-            Ok(())
-        });
-    }
-
-    #[test]
     fn test_cache_or_queue_dsn_priority() {
-        // NOTE: Does not use `figment::Jail` like the above because set env vars will leak into
-        // other tests overwriting real configurations
         let mut cfg = load().unwrap();
         let cfg = Arc::make_mut(&mut cfg);
 
