@@ -458,11 +458,13 @@ mod tests {
         providers::{Format as _, Toml},
         Figment,
     };
+    use serial_test::serial;
 
     use super::{load, CacheBackend, CacheType, QueueBackend, QueueType};
     use crate::core::security::{JWTAlgorithm, JwtSigningConfig};
 
     #[test]
+    #[serial]
     fn test_retry_schedule_parsing() {
         figment::Jail::expect_with(|jail| {
             jail.set_env("SVIX_JWT_SECRET", "x");
@@ -493,6 +495,7 @@ mod tests {
     }
 
     #[test]
+    #[serial]
     fn test_retry_schedule_parsing_legacy() {
         figment::Jail::expect_with(|jail| {
             jail.set_env("SVIX_JWT_SECRET", "x");
@@ -513,6 +516,7 @@ mod tests {
     }
 
     #[test]
+    #[serial]
     fn test_proxy_addr_from_env_parsing() {
         figment::Jail::expect_with(|jail| {
             jail.set_env("SVIX_QUEUE_TYPE", "memory");

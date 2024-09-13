@@ -87,6 +87,7 @@ assert_matches = "1.5.0"
 # NOTE: Purposely not the latest version such as not to mess up the `hyper` fork patch
 axum-server = { version = "0.5", features = ["tls-openssl"] }
 ctor = "0.2.7"
+serial_test = "3.1.1"
 
 [features]
 default = ["jemalloc"]
