@@ -56,7 +56,9 @@ async fn test_expunge_attempt_response_body() {
             )
             .await
             .unwrap();
-        assert_eq!(1, attempts.data.len());
+        if attempts.data.len() != 1 {
+            anyhow::bail!("list len {}, not 1", attempts.data.len());
+        }
         Ok(attempts.data[0].clone())
     })
     .await
