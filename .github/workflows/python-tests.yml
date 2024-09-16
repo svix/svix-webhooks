@@ -1,0 +1,49 @@
+name: Python Tests
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "python/**"
+      - "openapi.json"
+      - "server/**"
+      - ".github/workflows/python-tests.yml"
+  pull_request:
+    paths:
+      - "python/**"
+      - "openapi.json"
+      - "server/**"
+      - ".github/workflows/python-tests.yml"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build svix server image
+        run: docker compose build
+        working-directory: ./server
+
+      - uses: actions/setup-python@v5
+        name: Install Python
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt .
+          python -m pip install -r requirements-dev.txt .
+        working-directory: ./python
+
+      - name: Regen openapi libs
+        run: ./scripts/generate_openapi.sh
+        working-directory: ./python
+
+      - name: Check typing on client tests
+        run: mypy tests/test_client.py
+        working-directory: ./python
+
+      - name: Run Python tests
+        run: pytest -sv
+        working-directory: ./python

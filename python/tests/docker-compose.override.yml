@@ -1,0 +1,13 @@
+version: "3.7"
+services:
+  backend:
+    environment:
+      SVIX_JWT_SECRET: "x"
+      SVIX_ENDPOINT_HTTPS_ONLY: "false"
+      SVIX_WHITELIST_SUBNETS: "[127.0.0.1/32, 172.17.0.0/16]"
+  pgbouncer:
+    ports:
+      - "8079:5432" # Needed for sqlx
+  redis:
+    ports:
+      - "8078:6379" # Needed for sqlx
