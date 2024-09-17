@@ -3,6 +3,9 @@
 ## Next
 * 
 
+## Version 1.35.0
+* Libs/Python: Revert breaking change to MessageInPayload/MessageOutPayload
+
 ## Version 1.34.0
 * Libs/Rust: Add missing export of `V1MessageEventsParams`
 
