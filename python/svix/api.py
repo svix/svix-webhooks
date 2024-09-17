@@ -1074,7 +1074,7 @@ class MessageAsync(ApiBase):
             with_content=False,
             **options.to_dict(),
         )
-        ret.payload = MessageOutPayload.from_dict(message_in.payload.to_dict())
+        ret.payload = message_in.payload
         return ret
 
     async def get(self, app_id: str, msg_id: str) -> MessageOut:
@@ -1112,7 +1112,7 @@ class Message(ApiBase):
             with_content=False,
             **options.to_dict(),
         )
-        ret.payload = MessageOutPayload.from_dict(message_in.payload.to_dict())
+        ret.payload = message_in.payload
         return ret
 
     def get(self, app_id: str, msg_id: str) -> MessageOut:
