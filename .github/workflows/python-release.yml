@@ -41,8 +41,7 @@ jobs:
           cd python
           python setup.py sdist
 
-      - uses: pypa/gh-action-pypi-publish@master
+      - uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          user: __token__
           password: ${{ secrets.TWINE_PASSWORD }}
           packages_dir: python/dist
