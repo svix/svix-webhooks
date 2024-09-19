@@ -588,6 +588,10 @@
             },
             "CustomStringsOverride": {
                 "properties": {
+                    "channelsHelp": {
+                        "nullable": true,
+                        "type": "string"
+                    },
                     "channelsMany": {
                         "nullable": true,
                         "type": "string"
@@ -3007,6 +3011,7 @@
                         "type": "string"
                     },
                     "responseDurationMs": {
+                        "description": "Response duration in milliseconds.",
                         "format": "int64",
                         "type": "integer"
                     },
@@ -3266,6 +3271,7 @@
                         "type": "string"
                     },
                     "responseDurationMs": {
+                        "description": "Response duration in milliseconds.",
                         "format": "int64",
                         "type": "integer"
                     },
@@ -4738,6 +4744,34 @@
                 },
                 "type": "object"
             },
+            "SnowflakeConfig": {
+                "properties": {
+                    "accountIdentifier": {
+                        "type": "string"
+                    },
+                    "dbName": {
+                        "type": "string"
+                    },
+                    "privateKey": {
+                        "type": "string"
+                    },
+                    "schemaName": {
+                        "type": "string"
+                    },
+                    "tableName": {
+                        "type": "string"
+                    },
+                    "userId": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "accountIdentifier",
+                    "privateKey",
+                    "userId"
+                ],
+                "type": "object"
+            },
             "StatisticsPeriod": {
                 "description": "Period length for a statistics data point",
                 "enum": [
@@ -4774,9 +4808,9 @@
                         "type": "string"
                     },
                     "uid": {
+                        "$ref": "#/components/schemas/StreamUid",
                         "description": "Optional unique identifier for the stream",
-                        "nullable": true,
-                        "type": "string"
+                        "nullable": true
                     }
                 },
                 "required": [
@@ -4798,8 +4832,8 @@
                         "type": "string"
                     },
                     "uid": {
-                        "nullable": true,
-                        "type": "string"
+                        "$ref": "#/components/schemas/StreamUid",
+                        "nullable": true
                     },
                     "updatedAt": {
                         "format": "date-time",
@@ -4819,9 +4853,9 @@
                         "type": "string"
                     },
                     "uid": {
+                        "$ref": "#/components/schemas/StreamUid",
                         "description": "Optional unique identifier for the stream",
-                        "nullable": true,
-                        "type": "string"
+                        "nullable": true
                     }
                 },
                 "type": "object"
@@ -4881,6 +4915,24 @@
                             "type"
                         ],
                         "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SnowflakeConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "snowflake"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
                     }
                 ],
                 "properties": {
@@ -4905,8 +4957,8 @@
                         "$ref": "#/components/schemas/SinkStatusIn"
                     },
                     "uid": {
-                        "nullable": true,
-                        "type": "string"
+                        "$ref": "#/components/schemas/StreamSinkUid",
+                        "nullable": true
                     }
                 },
                 "required": [
@@ -4969,6 +5021,24 @@
                             "type"
                         ],
                         "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SnowflakeConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "snowflake"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
                     }
                 ],
                 "properties": {
@@ -5002,8 +5072,8 @@
                         "$ref": "#/components/schemas/SinkStatus"
                     },
                     "uid": {
-                        "nullable": true,
-                        "type": "string"
+                        "$ref": "#/components/schemas/StreamSinkUid",
+                        "nullable": true
                     },
                     "updatedAt": {
                         "format": "date-time",
@@ -5076,6 +5146,24 @@
                             "type"
                         ],
                         "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/SnowflakeConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "snowflake"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
                     }
                 ],
                 "properties": {
@@ -5105,11 +5193,23 @@
                         "nullable": true
                     },
                     "uid": {
-                        "nullable": true,
-                        "type": "string"
+                        "$ref": "#/components/schemas/StreamSinkUid",
+                        "nullable": true
                     }
                 },
                 "type": "object"
+            },
+            "StreamSinkUid": {
+                "maxLength": 60,
+                "minLength": 1,
+                "pattern": "^(?!sink_)[a-zA-Z0-9_-]+$",
+                "type": "string"
+            },
+            "StreamUid": {
+                "maxLength": 60,
+                "minLength": 1,
+                "pattern": "^(?!strm_)[a-zA-Z0-9_-]+$",
+                "type": "string"
             },
             "TemplateIn": {
                 "properties": {

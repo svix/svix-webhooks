@@ -25,6 +25,7 @@ type MessageAttemptEndpointOut struct {
 	// The msg's ID
 	MsgId string `json:"msgId"`
 	Response string `json:"response"`
+	// Response duration in milliseconds.
 	ResponseDurationMs int64 `json:"responseDurationMs"`
 	ResponseStatusCode int32 `json:"responseStatusCode"`
 	Status MessageStatus `json:"status"`

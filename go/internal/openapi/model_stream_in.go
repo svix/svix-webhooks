@@ -17,8 +17,7 @@ import (
 // StreamIn struct for StreamIn
 type StreamIn struct {
 	Description string `json:"description"`
-	// Optional unique identifier for the stream
-	Uid NullableString `json:"uid,omitempty"`
+	Uid *string `json:"uid,omitempty"`
 }
 
 // NewStreamIn instantiates a new StreamIn object
@@ -63,46 +62,36 @@ func (o *StreamIn) SetDescription(v string) {
 	o.Description = v
 }
 
-// GetUid returns the Uid field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetUid returns the Uid field value if set, zero value otherwise.
 func (o *StreamIn) GetUid() string {
-	if o == nil || o.Uid.Get() == nil {
+	if o == nil || o.Uid == nil {
 		var ret string
 		return ret
 	}
-	return *o.Uid.Get()
+	return *o.Uid
 }
 
 // GetUidOk returns a tuple with the Uid field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *StreamIn) GetUidOk() (*string, bool) {
-	if o == nil  {
+	if o == nil || o.Uid == nil {
 		return nil, false
 	}
-	return o.Uid.Get(), o.Uid.IsSet()
+	return o.Uid, true
 }
 
 // HasUid returns a boolean if a field has been set.
 func (o *StreamIn) HasUid() bool {
-	if o != nil && o.Uid.IsSet() {
+	if o != nil && o.Uid != nil {
 		return true
 	}
 
 	return false
 }
 
-// SetUid gets a reference to the given NullableString and assigns it to the Uid field.
+// SetUid gets a reference to the given string and assigns it to the Uid field.
 func (o *StreamIn) SetUid(v string) {
-	o.Uid.Set(&v)
-}
-// SetUidNil sets the value for Uid to be an explicit nil
-func (o *StreamIn) SetUidNil() {
-	o.Uid.Set(nil)
-}
-
-// UnsetUid ensures that no value is present for Uid, not even an explicit nil
-func (o *StreamIn) UnsetUid() {
-	o.Uid.Unset()
+	o.Uid = &v
 }
 
 func (o StreamIn) MarshalJSON() ([]byte, error) {
@@ -110,8 +99,8 @@ func (o StreamIn) MarshalJSON() ([]byte, error) {
 	if true {
 		toSerialize["description"] = o.Description
 	}
-	if o.Uid.IsSet() {
-		toSerialize["uid"] = o.Uid.Get()
+	if o.Uid != nil {
+		toSerialize["uid"] = o.Uid
 	}
 	return json.Marshal(toSerialize)
 }

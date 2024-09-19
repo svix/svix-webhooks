@@ -20,6 +20,7 @@ type StreamSinkOut struct {
 	StreamSinkInOneOf *StreamSinkInOneOf
 	StreamSinkInOneOf1 *StreamSinkInOneOf1
 	StreamSinkInOneOf2 *StreamSinkInOneOf2
+	StreamSinkInOneOf3 *StreamSinkInOneOf3
 }
 
 // StreamSinkInOneOfAsStreamSinkOut is a convenience function that returns StreamSinkInOneOf wrapped in StreamSinkOut
@@ -35,6 +36,11 @@ func StreamSinkInOneOf1AsStreamSinkOut(v *StreamSinkInOneOf1) StreamSinkOut {
 // StreamSinkInOneOf2AsStreamSinkOut is a convenience function that returns StreamSinkInOneOf2 wrapped in StreamSinkOut
 func StreamSinkInOneOf2AsStreamSinkOut(v *StreamSinkInOneOf2) StreamSinkOut {
 	return StreamSinkOut{ StreamSinkInOneOf2: v}
+}
+
+// StreamSinkInOneOf3AsStreamSinkOut is a convenience function that returns StreamSinkInOneOf3 wrapped in StreamSinkOut
+func StreamSinkInOneOf3AsStreamSinkOut(v *StreamSinkInOneOf3) StreamSinkOut {
+	return StreamSinkOut{ StreamSinkInOneOf3: v}
 }
 
 
@@ -81,11 +87,25 @@ func (dst *StreamSinkOut) UnmarshalJSON(data []byte) error {
 		dst.StreamSinkInOneOf2 = nil
 	}
 
+	// try to unmarshal data into StreamSinkInOneOf3
+	err = json.Unmarshal(data, &dst.StreamSinkInOneOf3)
+	if err == nil {
+		jsonStreamSinkInOneOf3, _ := json.Marshal(dst.StreamSinkInOneOf3)
+		if string(jsonStreamSinkInOneOf3) == "{}" { // empty struct
+			dst.StreamSinkInOneOf3 = nil
+		} else {
+			match++
+		}
+	} else {
+		dst.StreamSinkInOneOf3 = nil
+	}
+
 	if match > 1 { // more than 1 match
 		// reset to nil
 		dst.StreamSinkInOneOf = nil
 		dst.StreamSinkInOneOf1 = nil
 		dst.StreamSinkInOneOf2 = nil
+		dst.StreamSinkInOneOf3 = nil
 
 		return fmt.Errorf("Data matches more than one schema in oneOf(StreamSinkOut)")
 	} else if match == 1 {
@@ -109,6 +129,10 @@ func (src StreamSinkOut) MarshalJSON() ([]byte, error) {
 		return json.Marshal(&src.StreamSinkInOneOf2)
 	}
 
+	if src.StreamSinkInOneOf3 != nil {
+		return json.Marshal(&src.StreamSinkInOneOf3)
+	}
+
 	return nil, nil // no data in oneOf schemas
 }
 
@@ -124,6 +148,10 @@ func (obj *StreamSinkOut) GetActualInstance() (interface{}) {
 
 	if obj.StreamSinkInOneOf2 != nil {
 		return obj.StreamSinkInOneOf2
+	}
+
+	if obj.StreamSinkInOneOf3 != nil {
+		return obj.StreamSinkInOneOf3
 	}
 
 	// all schemas are nil
