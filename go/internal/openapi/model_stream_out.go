@@ -20,7 +20,7 @@ type StreamOut struct {
 	CreatedAt time.Time `json:"createdAt"`
 	Description NullableString `json:"description,omitempty"`
 	Id string `json:"id"`
-	Uid NullableString `json:"uid,omitempty"`
+	Uid *string `json:"uid,omitempty"`
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
@@ -134,46 +134,36 @@ func (o *StreamOut) SetId(v string) {
 	o.Id = v
 }
 
-// GetUid returns the Uid field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetUid returns the Uid field value if set, zero value otherwise.
 func (o *StreamOut) GetUid() string {
-	if o == nil || o.Uid.Get() == nil {
+	if o == nil || o.Uid == nil {
 		var ret string
 		return ret
 	}
-	return *o.Uid.Get()
+	return *o.Uid
 }
 
 // GetUidOk returns a tuple with the Uid field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *StreamOut) GetUidOk() (*string, bool) {
-	if o == nil  {
+	if o == nil || o.Uid == nil {
 		return nil, false
 	}
-	return o.Uid.Get(), o.Uid.IsSet()
+	return o.Uid, true
 }
 
 // HasUid returns a boolean if a field has been set.
 func (o *StreamOut) HasUid() bool {
-	if o != nil && o.Uid.IsSet() {
+	if o != nil && o.Uid != nil {
 		return true
 	}
 
 	return false
 }
 
-// SetUid gets a reference to the given NullableString and assigns it to the Uid field.
+// SetUid gets a reference to the given string and assigns it to the Uid field.
 func (o *StreamOut) SetUid(v string) {
-	o.Uid.Set(&v)
-}
-// SetUidNil sets the value for Uid to be an explicit nil
-func (o *StreamOut) SetUidNil() {
-	o.Uid.Set(nil)
-}
-
-// UnsetUid ensures that no value is present for Uid, not even an explicit nil
-func (o *StreamOut) UnsetUid() {
-	o.Uid.Unset()
+	o.Uid = &v
 }
 
 // GetUpdatedAt returns the UpdatedAt field value
@@ -211,8 +201,8 @@ func (o StreamOut) MarshalJSON() ([]byte, error) {
 	if true {
 		toSerialize["id"] = o.Id
 	}
-	if o.Uid.IsSet() {
-		toSerialize["uid"] = o.Uid.Get()
+	if o.Uid != nil {
+		toSerialize["uid"] = o.Uid
 	}
 	if true {
 		toSerialize["updatedAt"] = o.UpdatedAt

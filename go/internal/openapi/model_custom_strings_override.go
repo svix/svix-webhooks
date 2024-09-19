@@ -16,6 +16,7 @@ import (
 
 // CustomStringsOverride struct for CustomStringsOverride
 type CustomStringsOverride struct {
+	ChannelsHelp NullableString `json:"channelsHelp,omitempty"`
 	ChannelsMany NullableString `json:"channelsMany,omitempty"`
 	ChannelsOne NullableString `json:"channelsOne,omitempty"`
 }
@@ -35,6 +36,48 @@ func NewCustomStringsOverride() *CustomStringsOverride {
 func NewCustomStringsOverrideWithDefaults() *CustomStringsOverride {
 	this := CustomStringsOverride{}
 	return &this
+}
+
+// GetChannelsHelp returns the ChannelsHelp field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *CustomStringsOverride) GetChannelsHelp() string {
+	if o == nil || o.ChannelsHelp.Get() == nil {
+		var ret string
+		return ret
+	}
+	return *o.ChannelsHelp.Get()
+}
+
+// GetChannelsHelpOk returns a tuple with the ChannelsHelp field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *CustomStringsOverride) GetChannelsHelpOk() (*string, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return o.ChannelsHelp.Get(), o.ChannelsHelp.IsSet()
+}
+
+// HasChannelsHelp returns a boolean if a field has been set.
+func (o *CustomStringsOverride) HasChannelsHelp() bool {
+	if o != nil && o.ChannelsHelp.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetChannelsHelp gets a reference to the given NullableString and assigns it to the ChannelsHelp field.
+func (o *CustomStringsOverride) SetChannelsHelp(v string) {
+	o.ChannelsHelp.Set(&v)
+}
+// SetChannelsHelpNil sets the value for ChannelsHelp to be an explicit nil
+func (o *CustomStringsOverride) SetChannelsHelpNil() {
+	o.ChannelsHelp.Set(nil)
+}
+
+// UnsetChannelsHelp ensures that no value is present for ChannelsHelp, not even an explicit nil
+func (o *CustomStringsOverride) UnsetChannelsHelp() {
+	o.ChannelsHelp.Unset()
 }
 
 // GetChannelsMany returns the ChannelsMany field value if set, zero value otherwise (both if not set or set to explicit null).
@@ -123,6 +166,9 @@ func (o *CustomStringsOverride) UnsetChannelsOne() {
 
 func (o CustomStringsOverride) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
+	if o.ChannelsHelp.IsSet() {
+		toSerialize["channelsHelp"] = o.ChannelsHelp.Get()
+	}
 	if o.ChannelsMany.IsSet() {
 		toSerialize["channelsMany"] = o.ChannelsMany.Get()
 	}
