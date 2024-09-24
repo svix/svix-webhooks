@@ -17,7 +17,7 @@ import (
 // MessageBroadcastIn struct for MessageBroadcastIn
 type MessageBroadcastIn struct {
 	// List of free-form identifiers that endpoints can filter by
-	Channels []string `json:"channels,omitempty"`
+	Channels *[]string `json:"channels,omitempty"`
 	// Optional unique identifier for the message
 	EventId NullableString `json:"eventId,omitempty"`
 	// The event type's name
@@ -54,11 +54,11 @@ func NewMessageBroadcastInWithDefaults() *MessageBroadcastIn {
 
 // GetChannels returns the Channels field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *MessageBroadcastIn) GetChannels() []string {
-	if o == nil  {
+	if o == nil || o.Channels == nil {
 		var ret []string
 		return ret
 	}
-	return o.Channels
+	return *o.Channels
 }
 
 // GetChannelsOk returns a tuple with the Channels field value if set, nil otherwise
@@ -68,7 +68,7 @@ func (o *MessageBroadcastIn) GetChannelsOk() (*[]string, bool) {
 	if o == nil || o.Channels == nil {
 		return nil, false
 	}
-	return &o.Channels, true
+	return o.Channels, true
 }
 
 // HasChannels returns a boolean if a field has been set.
@@ -82,7 +82,7 @@ func (o *MessageBroadcastIn) HasChannels() bool {
 
 // SetChannels gets a reference to the given []string and assigns it to the Channels field.
 func (o *MessageBroadcastIn) SetChannels(v []string) {
-	o.Channels = v
+	o.Channels = &v
 }
 
 // GetEventId returns the EventId field value if set, zero value otherwise (both if not set or set to explicit null).

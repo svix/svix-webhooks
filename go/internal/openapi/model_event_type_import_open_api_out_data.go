@@ -17,7 +17,7 @@ import (
 // EventTypeImportOpenApiOutData struct for EventTypeImportOpenApiOutData
 type EventTypeImportOpenApiOutData struct {
 	Modified []string `json:"modified"`
-	ToModify []EventTypeFromOpenApi `json:"to_modify,omitempty"`
+	ToModify *[]EventTypeFromOpenApi `json:"to_modify,omitempty"`
 }
 
 // NewEventTypeImportOpenApiOutData instantiates a new EventTypeImportOpenApiOutData object
@@ -64,11 +64,11 @@ func (o *EventTypeImportOpenApiOutData) SetModified(v []string) {
 
 // GetToModify returns the ToModify field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *EventTypeImportOpenApiOutData) GetToModify() []EventTypeFromOpenApi {
-	if o == nil  {
+	if o == nil || o.ToModify == nil {
 		var ret []EventTypeFromOpenApi
 		return ret
 	}
-	return o.ToModify
+	return *o.ToModify
 }
 
 // GetToModifyOk returns a tuple with the ToModify field value if set, nil otherwise
@@ -78,7 +78,7 @@ func (o *EventTypeImportOpenApiOutData) GetToModifyOk() (*[]EventTypeFromOpenApi
 	if o == nil || o.ToModify == nil {
 		return nil, false
 	}
-	return &o.ToModify, true
+	return o.ToModify, true
 }
 
 // HasToModify returns a boolean if a field has been set.
@@ -92,7 +92,7 @@ func (o *EventTypeImportOpenApiOutData) HasToModify() bool {
 
 // SetToModify gets a reference to the given []EventTypeFromOpenApi and assigns it to the ToModify field.
 func (o *EventTypeImportOpenApiOutData) SetToModify(v []EventTypeFromOpenApi) {
-	o.ToModify = v
+	o.ToModify = &v
 }
 
 func (o EventTypeImportOpenApiOutData) MarshalJSON() ([]byte, error) {

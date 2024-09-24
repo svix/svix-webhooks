@@ -17,7 +17,7 @@ import (
 
 // AppUsageStatsIn struct for AppUsageStatsIn
 type AppUsageStatsIn struct {
-	AppIds []string `json:"appIds,omitempty"`
+	AppIds *[]string `json:"appIds,omitempty"`
 	Since time.Time `json:"since"`
 	Until time.Time `json:"until"`
 }
@@ -43,11 +43,11 @@ func NewAppUsageStatsInWithDefaults() *AppUsageStatsIn {
 
 // GetAppIds returns the AppIds field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *AppUsageStatsIn) GetAppIds() []string {
-	if o == nil  {
+	if o == nil || o.AppIds == nil {
 		var ret []string
 		return ret
 	}
-	return o.AppIds
+	return *o.AppIds
 }
 
 // GetAppIdsOk returns a tuple with the AppIds field value if set, nil otherwise
@@ -57,7 +57,7 @@ func (o *AppUsageStatsIn) GetAppIdsOk() (*[]string, bool) {
 	if o == nil || o.AppIds == nil {
 		return nil, false
 	}
-	return &o.AppIds, true
+	return o.AppIds, true
 }
 
 // HasAppIds returns a boolean if a field has been set.
@@ -71,7 +71,7 @@ func (o *AppUsageStatsIn) HasAppIds() bool {
 
 // SetAppIds gets a reference to the given []string and assigns it to the AppIds field.
 func (o *AppUsageStatsIn) SetAppIds(v []string) {
-	o.AppIds = v
+	o.AppIds = &v
 }
 
 // GetSince returns the Since field value

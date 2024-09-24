@@ -20,7 +20,7 @@ type TemplateOut struct {
 	CreatedAt time.Time `json:"createdAt"`
 	Description string `json:"description"`
 	FeatureFlag NullableString `json:"featureFlag,omitempty"`
-	FilterTypes []string `json:"filterTypes,omitempty"`
+	FilterTypes *[]string `json:"filterTypes,omitempty"`
 	Id string `json:"id"`
 	Instructions string `json:"instructions"`
 	InstructionsLink NullableString `json:"instructionsLink,omitempty"`
@@ -151,11 +151,11 @@ func (o *TemplateOut) UnsetFeatureFlag() {
 
 // GetFilterTypes returns the FilterTypes field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *TemplateOut) GetFilterTypes() []string {
-	if o == nil  {
+	if o == nil || o.FilterTypes == nil {
 		var ret []string
 		return ret
 	}
-	return o.FilterTypes
+	return *o.FilterTypes
 }
 
 // GetFilterTypesOk returns a tuple with the FilterTypes field value if set, nil otherwise
@@ -165,7 +165,7 @@ func (o *TemplateOut) GetFilterTypesOk() (*[]string, bool) {
 	if o == nil || o.FilterTypes == nil {
 		return nil, false
 	}
-	return &o.FilterTypes, true
+	return o.FilterTypes, true
 }
 
 // HasFilterTypes returns a boolean if a field has been set.
@@ -179,7 +179,7 @@ func (o *TemplateOut) HasFilterTypes() bool {
 
 // SetFilterTypes gets a reference to the given []string and assigns it to the FilterTypes field.
 func (o *TemplateOut) SetFilterTypes(v []string) {
-	o.FilterTypes = v
+	o.FilterTypes = &v
 }
 
 // GetId returns the Id field value

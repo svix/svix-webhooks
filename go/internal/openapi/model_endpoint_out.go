@@ -18,12 +18,12 @@ import (
 // EndpointOut struct for EndpointOut
 type EndpointOut struct {
 	// List of message channels this endpoint listens to (omit for all)
-	Channels []string `json:"channels,omitempty"`
+	Channels *[]string `json:"channels,omitempty"`
 	CreatedAt time.Time `json:"createdAt"`
 	// An example endpoint name
 	Description string `json:"description"`
 	Disabled *bool `json:"disabled,omitempty"`
-	FilterTypes []string `json:"filterTypes,omitempty"`
+	FilterTypes *[]string `json:"filterTypes,omitempty"`
 	// The ep's ID
 	Id string `json:"id"`
 	Metadata map[string]string `json:"metadata"`
@@ -65,11 +65,11 @@ func NewEndpointOutWithDefaults() *EndpointOut {
 
 // GetChannels returns the Channels field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *EndpointOut) GetChannels() []string {
-	if o == nil  {
+	if o == nil || o.Channels == nil {
 		var ret []string
 		return ret
 	}
-	return o.Channels
+	return *o.Channels
 }
 
 // GetChannelsOk returns a tuple with the Channels field value if set, nil otherwise
@@ -79,7 +79,7 @@ func (o *EndpointOut) GetChannelsOk() (*[]string, bool) {
 	if o == nil || o.Channels == nil {
 		return nil, false
 	}
-	return &o.Channels, true
+	return o.Channels, true
 }
 
 // HasChannels returns a boolean if a field has been set.
@@ -93,7 +93,7 @@ func (o *EndpointOut) HasChannels() bool {
 
 // SetChannels gets a reference to the given []string and assigns it to the Channels field.
 func (o *EndpointOut) SetChannels(v []string) {
-	o.Channels = v
+	o.Channels = &v
 }
 
 // GetCreatedAt returns the CreatedAt field value
@@ -178,11 +178,11 @@ func (o *EndpointOut) SetDisabled(v bool) {
 
 // GetFilterTypes returns the FilterTypes field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *EndpointOut) GetFilterTypes() []string {
-	if o == nil  {
+	if o == nil || o.FilterTypes == nil {
 		var ret []string
 		return ret
 	}
-	return o.FilterTypes
+	return *o.FilterTypes
 }
 
 // GetFilterTypesOk returns a tuple with the FilterTypes field value if set, nil otherwise
@@ -192,7 +192,7 @@ func (o *EndpointOut) GetFilterTypesOk() (*[]string, bool) {
 	if o == nil || o.FilterTypes == nil {
 		return nil, false
 	}
-	return &o.FilterTypes, true
+	return o.FilterTypes, true
 }
 
 // HasFilterTypes returns a boolean if a field has been set.
@@ -206,7 +206,7 @@ func (o *EndpointOut) HasFilterTypes() bool {
 
 // SetFilterTypes gets a reference to the given []string and assigns it to the FilterTypes field.
 func (o *EndpointOut) SetFilterTypes(v []string) {
-	o.FilterTypes = v
+	o.FilterTypes = &v
 }
 
 // GetId returns the Id field value

@@ -18,7 +18,7 @@ import (
 type MessageIn struct {
 	Application *ApplicationIn `json:"application,omitempty"`
 	// List of free-form identifiers that endpoints can filter by
-	Channels []string `json:"channels,omitempty"`
+	Channels *[]string `json:"channels,omitempty"`
 	// Optional unique identifier for the message
 	EventId NullableString `json:"eventId,omitempty"`
 	// The event type's name
@@ -30,9 +30,9 @@ type MessageIn struct {
 	// Optional number of days to retain the message payload. Defaults to 90. Note that this is mutually exclusive with `payloadRetentionHours`.
 	PayloadRetentionPeriod NullableInt64 `json:"payloadRetentionPeriod,omitempty"`
 	// List of free-form tags that can be filtered by when listing messages
-	Tags []string `json:"tags,omitempty"`
+	Tags *[]string `json:"tags,omitempty"`
 	// Extra parameters to pass to Transformations (for future use)
-	TransformationsParams map[string]interface{} `json:"transformationsParams,omitempty"`
+	TransformationsParams *map[string]interface{} `json:"transformationsParams,omitempty"`
 }
 
 // NewMessageIn instantiates a new MessageIn object
@@ -92,11 +92,11 @@ func (o *MessageIn) SetApplication(v ApplicationIn) {
 
 // GetChannels returns the Channels field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *MessageIn) GetChannels() []string {
-	if o == nil  {
+	if o == nil || o.Channels == nil {
 		var ret []string
 		return ret
 	}
-	return o.Channels
+	return *o.Channels
 }
 
 // GetChannelsOk returns a tuple with the Channels field value if set, nil otherwise
@@ -106,7 +106,7 @@ func (o *MessageIn) GetChannelsOk() (*[]string, bool) {
 	if o == nil || o.Channels == nil {
 		return nil, false
 	}
-	return &o.Channels, true
+	return o.Channels, true
 }
 
 // HasChannels returns a boolean if a field has been set.
@@ -120,7 +120,7 @@ func (o *MessageIn) HasChannels() bool {
 
 // SetChannels gets a reference to the given []string and assigns it to the Channels field.
 func (o *MessageIn) SetChannels(v []string) {
-	o.Channels = v
+	o.Channels = &v
 }
 
 // GetEventId returns the EventId field value if set, zero value otherwise (both if not set or set to explicit null).
@@ -299,11 +299,11 @@ func (o *MessageIn) UnsetPayloadRetentionPeriod() {
 
 // GetTags returns the Tags field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *MessageIn) GetTags() []string {
-	if o == nil  {
+	if o == nil || o.Tags == nil {
 		var ret []string
 		return ret
 	}
-	return o.Tags
+	return *o.Tags
 }
 
 // GetTagsOk returns a tuple with the Tags field value if set, nil otherwise
@@ -313,7 +313,7 @@ func (o *MessageIn) GetTagsOk() (*[]string, bool) {
 	if o == nil || o.Tags == nil {
 		return nil, false
 	}
-	return &o.Tags, true
+	return o.Tags, true
 }
 
 // HasTags returns a boolean if a field has been set.
@@ -327,16 +327,16 @@ func (o *MessageIn) HasTags() bool {
 
 // SetTags gets a reference to the given []string and assigns it to the Tags field.
 func (o *MessageIn) SetTags(v []string) {
-	o.Tags = v
+	o.Tags = &v
 }
 
 // GetTransformationsParams returns the TransformationsParams field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *MessageIn) GetTransformationsParams() map[string]interface{} {
-	if o == nil  {
+	if o == nil || o.TransformationsParams == nil {
 		var ret map[string]interface{}
 		return ret
 	}
-	return o.TransformationsParams
+	return *o.TransformationsParams
 }
 
 // GetTransformationsParamsOk returns a tuple with the TransformationsParams field value if set, nil otherwise
@@ -346,7 +346,7 @@ func (o *MessageIn) GetTransformationsParamsOk() (*map[string]interface{}, bool)
 	if o == nil || o.TransformationsParams == nil {
 		return nil, false
 	}
-	return &o.TransformationsParams, true
+	return o.TransformationsParams, true
 }
 
 // HasTransformationsParams returns a boolean if a field has been set.
@@ -360,7 +360,7 @@ func (o *MessageIn) HasTransformationsParams() bool {
 
 // SetTransformationsParams gets a reference to the given map[string]interface{} and assigns it to the TransformationsParams field.
 func (o *MessageIn) SetTransformationsParams(v map[string]interface{}) {
-	o.TransformationsParams = v
+	o.TransformationsParams = &v
 }
 
 func (o MessageIn) MarshalJSON() ([]byte, error) {

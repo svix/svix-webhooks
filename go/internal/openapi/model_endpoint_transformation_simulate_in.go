@@ -16,7 +16,7 @@ import (
 
 // EndpointTransformationSimulateIn struct for EndpointTransformationSimulateIn
 type EndpointTransformationSimulateIn struct {
-	Channels []string `json:"channels,omitempty"`
+	Channels *[]string `json:"channels,omitempty"`
 	Code string `json:"code"`
 	// The event type's name
 	EventType string `json:"eventType"`
@@ -45,11 +45,11 @@ func NewEndpointTransformationSimulateInWithDefaults() *EndpointTransformationSi
 
 // GetChannels returns the Channels field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *EndpointTransformationSimulateIn) GetChannels() []string {
-	if o == nil  {
+	if o == nil || o.Channels == nil {
 		var ret []string
 		return ret
 	}
-	return o.Channels
+	return *o.Channels
 }
 
 // GetChannelsOk returns a tuple with the Channels field value if set, nil otherwise
@@ -59,7 +59,7 @@ func (o *EndpointTransformationSimulateIn) GetChannelsOk() (*[]string, bool) {
 	if o == nil || o.Channels == nil {
 		return nil, false
 	}
-	return &o.Channels, true
+	return o.Channels, true
 }
 
 // HasChannels returns a boolean if a field has been set.
@@ -73,7 +73,7 @@ func (o *EndpointTransformationSimulateIn) HasChannels() bool {
 
 // SetChannels gets a reference to the given []string and assigns it to the Channels field.
 func (o *EndpointTransformationSimulateIn) SetChannels(v []string) {
-	o.Channels = v
+	o.Channels = &v
 }
 
 // GetCode returns the Code field value

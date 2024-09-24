@@ -16,8 +16,8 @@ import (
 
 // AttemptStatisticsData struct for AttemptStatisticsData
 type AttemptStatisticsData struct {
-	FailureCount []int32 `json:"failureCount,omitempty"`
-	SuccessCount []int32 `json:"successCount,omitempty"`
+	FailureCount *[]int32 `json:"failureCount,omitempty"`
+	SuccessCount *[]int32 `json:"successCount,omitempty"`
 }
 
 // NewAttemptStatisticsData instantiates a new AttemptStatisticsData object
@@ -39,11 +39,11 @@ func NewAttemptStatisticsDataWithDefaults() *AttemptStatisticsData {
 
 // GetFailureCount returns the FailureCount field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *AttemptStatisticsData) GetFailureCount() []int32 {
-	if o == nil  {
+	if o == nil || o.FailureCount == nil {
 		var ret []int32
 		return ret
 	}
-	return o.FailureCount
+	return *o.FailureCount
 }
 
 // GetFailureCountOk returns a tuple with the FailureCount field value if set, nil otherwise
@@ -53,7 +53,7 @@ func (o *AttemptStatisticsData) GetFailureCountOk() (*[]int32, bool) {
 	if o == nil || o.FailureCount == nil {
 		return nil, false
 	}
-	return &o.FailureCount, true
+	return o.FailureCount, true
 }
 
 // HasFailureCount returns a boolean if a field has been set.
@@ -67,16 +67,16 @@ func (o *AttemptStatisticsData) HasFailureCount() bool {
 
 // SetFailureCount gets a reference to the given []int32 and assigns it to the FailureCount field.
 func (o *AttemptStatisticsData) SetFailureCount(v []int32) {
-	o.FailureCount = v
+	o.FailureCount = &v
 }
 
 // GetSuccessCount returns the SuccessCount field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *AttemptStatisticsData) GetSuccessCount() []int32 {
-	if o == nil  {
+	if o == nil || o.SuccessCount == nil {
 		var ret []int32
 		return ret
 	}
-	return o.SuccessCount
+	return *o.SuccessCount
 }
 
 // GetSuccessCountOk returns a tuple with the SuccessCount field value if set, nil otherwise
@@ -86,7 +86,7 @@ func (o *AttemptStatisticsData) GetSuccessCountOk() (*[]int32, bool) {
 	if o == nil || o.SuccessCount == nil {
 		return nil, false
 	}
-	return &o.SuccessCount, true
+	return o.SuccessCount, true
 }
 
 // HasSuccessCount returns a boolean if a field has been set.
@@ -100,7 +100,7 @@ func (o *AttemptStatisticsData) HasSuccessCount() bool {
 
 // SetSuccessCount gets a reference to the given []int32 and assigns it to the SuccessCount field.
 func (o *AttemptStatisticsData) SetSuccessCount(v []int32) {
-	o.SuccessCount = v
+	o.SuccessCount = &v
 }
 
 func (o AttemptStatisticsData) MarshalJSON() ([]byte, error) {

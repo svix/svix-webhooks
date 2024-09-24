@@ -19,7 +19,7 @@ type EventTypeImportOpenApiIn struct {
 	// If `true`, return the event types that would be modified without actually modifying them.
 	DryRun *bool `json:"dry_run,omitempty"`
 	// A pre-parsed JSON spec.
-	Spec map[string]map[string]interface{} `json:"spec,omitempty"`
+	Spec *map[string]map[string]interface{} `json:"spec,omitempty"`
 	// A string, parsed by the server as YAML or JSON.
 	SpecRaw NullableString `json:"specRaw,omitempty"`
 }
@@ -79,11 +79,11 @@ func (o *EventTypeImportOpenApiIn) SetDryRun(v bool) {
 
 // GetSpec returns the Spec field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *EventTypeImportOpenApiIn) GetSpec() map[string]map[string]interface{} {
-	if o == nil  {
+	if o == nil || o.Spec == nil {
 		var ret map[string]map[string]interface{}
 		return ret
 	}
-	return o.Spec
+	return *o.Spec
 }
 
 // GetSpecOk returns a tuple with the Spec field value if set, nil otherwise
@@ -93,7 +93,7 @@ func (o *EventTypeImportOpenApiIn) GetSpecOk() (*map[string]map[string]interface
 	if o == nil || o.Spec == nil {
 		return nil, false
 	}
-	return &o.Spec, true
+	return o.Spec, true
 }
 
 // HasSpec returns a boolean if a field has been set.
@@ -107,7 +107,7 @@ func (o *EventTypeImportOpenApiIn) HasSpec() bool {
 
 // SetSpec gets a reference to the given map[string]map[string]interface{} and assigns it to the Spec field.
 func (o *EventTypeImportOpenApiIn) SetSpec(v map[string]map[string]interface{}) {
-	o.Spec = v
+	o.Spec = &v
 }
 
 // GetSpecRaw returns the SpecRaw field value if set, zero value otherwise (both if not set or set to explicit null).
