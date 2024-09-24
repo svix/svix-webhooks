@@ -16,7 +16,7 @@ type {{classname}} struct {
 {{#description}}
 	// {{{description}}}
 {{/description}}
-	{{name}} {{^required}}{{^isNullable}}*{{/isNullable}}{{/required}}{{{dataType}}} `json:"{{baseName}}{{^required}},omitempty{{/required}}"{{#withXml}} xml:"{{baseName}}{{#isXmlAttribute}},attr{{/isXmlAttribute}}"{{/withXml}}{{#vendorExtensions.x-go-custom-tag}} {{{.}}}{{/vendorExtensions.x-go-custom-tag}}`
+	{{name}} {{^required}}{{^isNullable}}*{{/isNullable}}{{#isNullable}}{{#vendorExtensions.x-golang-is-container}}*{{/vendorExtensions.x-golang-is-container}}{{/isNullable}}{{/required}}{{{dataType}}} `json:"{{baseName}}{{^required}},omitempty{{/required}}"{{#withXml}} xml:"{{baseName}}{{#isXmlAttribute}},attr{{/isXmlAttribute}}"{{/withXml}}{{#vendorExtensions.x-go-custom-tag}} {{{.}}}{{/vendorExtensions.x-go-custom-tag}}`
 {{/vars}}
 {{#isAdditionalPropertiesTrue}}
 	AdditionalProperties map[string]interface{}
@@ -144,13 +144,13 @@ func (o *{{classname}}) Set{{name}}(v {{vendorExtensions.x-go-base-type}}) {
 {{^required}}
 // Get{{name}} returns the {{name}} field value if set, zero value otherwise{{#isNullable}} (both if not set or set to explicit null){{/isNullable}}.
 func (o *{{classname}}) Get{{name}}() {{vendorExtensions.x-go-base-type}} {
-	if o == nil {{^isNullable}}|| o.{{name}} == nil{{/isNullable}}{{#isNullable}}{{^vendorExtensions.x-golang-is-container}}|| o.{{name}}.Get() == nil{{/vendorExtensions.x-golang-is-container}}{{/isNullable}} {
+	if o == nil {{^isNullable}}|| o.{{name}} == nil{{/isNullable}}{{#isNullable}}{{#vendorExtensions.x-golang-is-container}}|| o.{{name}} == nil{{/vendorExtensions.x-golang-is-container}}{{^vendorExtensions.x-golang-is-container}}|| o.{{name}}.Get() == nil{{/vendorExtensions.x-golang-is-container}}{{/isNullable}} {
 		var ret {{vendorExtensions.x-go-base-type}}
 		return ret
 	}
 {{#isNullable}}
 {{#vendorExtensions.x-golang-is-container}}
-	return o.{{name}}
+	return *o.{{name}}
 {{/vendorExtensions.x-golang-is-container}}
 {{^vendorExtensions.x-golang-is-container}}
 	return *o.{{name}}.Get()
@@ -172,7 +172,7 @@ func (o *{{classname}}) Get{{name}}Ok() (*{{vendorExtensions.x-go-base-type}}, b
 	}
 {{#isNullable}}
 {{#vendorExtensions.x-golang-is-container}}
-	return &o.{{name}}, true
+	return o.{{name}}, true
 {{/vendorExtensions.x-golang-is-container}}
 {{^vendorExtensions.x-golang-is-container}}
 	return o.{{name}}.Get(), o.{{name}}.IsSet()
@@ -196,7 +196,7 @@ func (o *{{classname}}) Has{{name}}() bool {
 func (o *{{classname}}) Set{{name}}(v {{vendorExtensions.x-go-base-type}}) {
 {{#isNullable}}
 {{#vendorExtensions.x-golang-is-container}}
-	o.{{name}} = v
+	o.{{name}} = &v
 {{/vendorExtensions.x-golang-is-container}}
 {{^vendorExtensions.x-golang-is-container}}
 	o.{{name}}.Set(&v)
