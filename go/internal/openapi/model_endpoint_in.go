@@ -17,10 +17,10 @@ import (
 // EndpointIn struct for EndpointIn
 type EndpointIn struct {
 	// List of message channels this endpoint listens to (omit for all)
-	Channels []string `json:"channels,omitempty"`
+	Channels *[]string `json:"channels,omitempty"`
 	Description *string `json:"description,omitempty"`
 	Disabled *bool `json:"disabled,omitempty"`
-	FilterTypes []string `json:"filterTypes,omitempty"`
+	FilterTypes *[]string `json:"filterTypes,omitempty"`
 	Metadata *map[string]string `json:"metadata,omitempty"`
 	RateLimit NullableInt32 `json:"rateLimit,omitempty"`
 	// The endpoint's verification secret. If `null` is passed, a secret is automatically generated. Format: `base64` encoded random bytes optionally prefixed with `whsec_`. Recommended size: 24.
@@ -63,11 +63,11 @@ func NewEndpointInWithDefaults() *EndpointIn {
 
 // GetChannels returns the Channels field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *EndpointIn) GetChannels() []string {
-	if o == nil  {
+	if o == nil || o.Channels == nil {
 		var ret []string
 		return ret
 	}
-	return o.Channels
+	return *o.Channels
 }
 
 // GetChannelsOk returns a tuple with the Channels field value if set, nil otherwise
@@ -77,7 +77,7 @@ func (o *EndpointIn) GetChannelsOk() (*[]string, bool) {
 	if o == nil || o.Channels == nil {
 		return nil, false
 	}
-	return &o.Channels, true
+	return o.Channels, true
 }
 
 // HasChannels returns a boolean if a field has been set.
@@ -91,7 +91,7 @@ func (o *EndpointIn) HasChannels() bool {
 
 // SetChannels gets a reference to the given []string and assigns it to the Channels field.
 func (o *EndpointIn) SetChannels(v []string) {
-	o.Channels = v
+	o.Channels = &v
 }
 
 // GetDescription returns the Description field value if set, zero value otherwise.
@@ -160,11 +160,11 @@ func (o *EndpointIn) SetDisabled(v bool) {
 
 // GetFilterTypes returns the FilterTypes field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *EndpointIn) GetFilterTypes() []string {
-	if o == nil  {
+	if o == nil || o.FilterTypes == nil {
 		var ret []string
 		return ret
 	}
-	return o.FilterTypes
+	return *o.FilterTypes
 }
 
 // GetFilterTypesOk returns a tuple with the FilterTypes field value if set, nil otherwise
@@ -174,7 +174,7 @@ func (o *EndpointIn) GetFilterTypesOk() (*[]string, bool) {
 	if o == nil || o.FilterTypes == nil {
 		return nil, false
 	}
-	return &o.FilterTypes, true
+	return o.FilterTypes, true
 }
 
 // HasFilterTypes returns a boolean if a field has been set.
@@ -188,7 +188,7 @@ func (o *EndpointIn) HasFilterTypes() bool {
 
 // SetFilterTypes gets a reference to the given []string and assigns it to the FilterTypes field.
 func (o *EndpointIn) SetFilterTypes(v []string) {
-	o.FilterTypes = v
+	o.FilterTypes = &v
 }
 
 // GetMetadata returns the Metadata field value if set, zero value otherwise.
