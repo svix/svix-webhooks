@@ -1,0 +1,30 @@
+name: Go CI
+
+on:
+  pull_request:
+    paths:
+      - "go/**"
+      - "go.sum"
+      - "go.mod"
+      - "openapi.json"
+      - ".github/workflows/go-ci.yml"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.23.x"
+          cache-dependency-path: ./go.sum
+      - name: Display Go version
+        run: go version
+      - name: Install dependencies
+        run: go get ./go/...
+      - name: Build
+        run: go build -v ./go/...
+      - name: Test
+        run: go test -v ./go/...
