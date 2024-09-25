@@ -229,73 +229,75 @@ impl redis::aio::ConnectionLike for PooledConnection<'_> {
     }
 }
 
-pub struct NonClusteredPooledConnection<'a> {
-    con: bb8::PooledConnection<'a, RedisConnectionManager>,
-}
+macro_rules! pooled_connection {
+    (
+        $(
+            $struct_name:ident,
+            $con_type:ty
+        ),*
+    ) => {
+        $(
+            pub struct $struct_name<'a> {
+                con: $con_type,
+            }
 
-impl<'a> NonClusteredPooledConnection<'a> {
-    pub async fn query_async<T: FromRedisValue>(&mut self, cmd: redis::Cmd) -> RedisResult<T> {
-        cmd.query_async(&mut *self.con).await
-    }
+            impl<'a> $struct_name<'a> {
+                pub async fn query_async<T: FromRedisValue>(&mut self, cmd: redis::Cmd) -> RedisResult<T> {
+                    cmd.query_async(&mut *self.con).await
+                }
 
-    pub async fn query_async_pipeline<T: FromRedisValue>(
-        &mut self,
-        pipe: redis::Pipeline,
-    ) -> RedisResult<T> {
-        pipe.query_async(&mut *self.con).await
-    }
-}
-
-pub struct NonClusteredUnpooledConnection {
-    con: redis::aio::ConnectionManager,
-}
-
-impl NonClusteredUnpooledConnection {
-    pub async fn query_async<T: FromRedisValue>(&mut self, cmd: redis::Cmd) -> RedisResult<T> {
-        cmd.query_async(&mut self.con).await
-    }
-
-    pub async fn query_async_pipeline<T: FromRedisValue>(
-        &mut self,
-        pipe: redis::Pipeline,
-    ) -> RedisResult<T> {
-        pipe.query_async(&mut self.con).await
+                pub async fn query_async_pipeline<T: FromRedisValue>(&mut self, pipe: redis::Pipeline) -> RedisResult<T> {
+                    pipe.query_async(&mut *self.con).await
+                }
+            }
+        )*
     }
 }
 
-pub struct ClusteredPooledConnection<'a> {
-    con: bb8::PooledConnection<'a, RedisClusterConnectionManager>,
-}
+macro_rules! connection {
+    (
+        $(
+            $struct_name:ident,
+            $con_type:ty
+        ),*
+    ) => {
+        $(
+            pub struct $struct_name {
+                con: $con_type,
+            }
 
-impl<'a> ClusteredPooledConnection<'a> {
-    pub async fn query_async<T: FromRedisValue>(&mut self, cmd: redis::Cmd) -> RedisResult<T> {
-        cmd.query_async(&mut *self.con).await
-    }
+            impl $struct_name {
+                pub async fn query_async<T: FromRedisValue>(&mut self, cmd: redis::Cmd) -> RedisResult<T> {
+                    cmd.query_async(&mut self.con).await
+                }
 
-    pub async fn query_async_pipeline<T: FromRedisValue>(
-        &mut self,
-        pipe: redis::Pipeline,
-    ) -> RedisResult<T> {
-        pipe.query_async(&mut *self.con).await
-    }
-}
-
-pub struct ClusteredUnpooledConnection {
-    con: redis::cluster_async::ClusterConnection,
-}
-
-impl ClusteredUnpooledConnection {
-    pub async fn query_async<T: FromRedisValue>(&mut self, cmd: redis::Cmd) -> RedisResult<T> {
-        cmd.query_async(&mut self.con).await
-    }
-
-    pub async fn query_async_pipeline<T: FromRedisValue>(
-        &mut self,
-        pipe: redis::Pipeline,
-    ) -> RedisResult<T> {
-        pipe.query_async(&mut self.con).await
+                pub async fn query_async_pipeline<T: FromRedisValue>(&mut self, pipe: redis::Pipeline) -> RedisResult<T> {
+                    pipe.query_async(&mut self.con).await
+                }
+            }
+        )*
     }
 }
+
+pooled_connection!(
+    NonClusteredPooledConnection,
+    bb8::PooledConnection<'a, RedisConnectionManager>
+);
+
+pooled_connection!(
+    ClusteredPooledConnection,
+    bb8::PooledConnection<'a, RedisClusterConnectionManager>
+);
+
+connection!(
+    NonClusteredUnpooledConnection,
+    redis::aio::ConnectionManager
+);
+
+connection!(
+    ClusteredUnpooledConnection,
+    redis::cluster_async::ClusterConnection
+);
 
 #[cfg(test)]
 mod tests {
