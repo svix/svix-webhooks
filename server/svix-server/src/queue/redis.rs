@@ -36,7 +36,7 @@ use super::{QueueTask, TaskQueueConsumer, TaskQueueProducer};
 use crate::{
     cfg::{Configuration, QueueType},
     error::Result,
-    redis::{PooledConnection, RedisManager},
+    redis::{RedisConnection, RedisManager},
 };
 
 /// This is the key of the main queue. As a KV store, redis places the entire stream under this key.
@@ -240,7 +240,7 @@ fn task_from_redis_key(key: &str) -> serde_json::Result<Arc<QueueTask>> {
     serde_json::from_str(&key[pos + 1..])
 }
 
-async fn migrate_v2_to_v3_queues(conn: &mut PooledConnection<'_>) -> Result<()> {
+async fn migrate_v2_to_v3_queues(conn: &mut RedisConnection<'_>) -> Result<()> {
     migrate_list_to_stream(conn, LEGACY_V2_MAIN, MAIN).await?;
     migrate_list_to_stream(conn, LEGACY_V2_PROCESSING, MAIN).await?;
 
@@ -248,7 +248,7 @@ async fn migrate_v2_to_v3_queues(conn: &mut PooledConnection<'_>) -> Result<()> 
 }
 
 async fn migrate_list_to_stream(
-    conn: &mut PooledConnection<'_>,
+    conn: &mut RedisConnection<'_>,
     legacy_queue: &str,
     queue: &str,
 ) -> Result<()> {
@@ -286,7 +286,7 @@ async fn migrate_list_to_stream(
     }
 }
 
-async fn migrate_v1_to_v2_queues(conn: &mut PooledConnection<'_>) -> Result<()> {
+async fn migrate_v1_to_v2_queues(conn: &mut RedisConnection<'_>) -> Result<()> {
     migrate_list(conn, LEGACY_V1_MAIN, LEGACY_V2_MAIN).await?;
     migrate_list(conn, LEGACY_V1_PROCESSING, LEGACY_V2_PROCESSING).await?;
     migrate_sset(conn, LEGACY_V1_DELAYED, DELAYED).await?;
@@ -295,7 +295,7 @@ async fn migrate_v1_to_v2_queues(conn: &mut PooledConnection<'_>) -> Result<()> 
 }
 
 async fn migrate_list(
-    conn: &mut PooledConnection<'_>,
+    conn: &mut RedisConnection<'_>,
     legacy_queue: &str,
     queue: &str,
 ) -> Result<()> {
@@ -318,7 +318,7 @@ async fn migrate_list(
 }
 
 async fn migrate_sset(
-    conn: &mut PooledConnection<'_>,
+    conn: &mut RedisConnection<'_>,
     legacy_queue: &str,
     queue: &str,
 ) -> Result<()> {
