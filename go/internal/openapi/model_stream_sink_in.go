@@ -21,6 +21,9 @@ type StreamSinkIn struct {
 	StreamSinkInOneOf1 *StreamSinkInOneOf1
 	StreamSinkInOneOf2 *StreamSinkInOneOf2
 	StreamSinkInOneOf3 *StreamSinkInOneOf3
+	StreamSinkInOneOf4 *StreamSinkInOneOf4
+	StreamSinkInOneOf5 *StreamSinkInOneOf5
+	StreamSinkInOneOf6 *StreamSinkInOneOf6
 }
 
 // StreamSinkInOneOfAsStreamSinkIn is a convenience function that returns StreamSinkInOneOf wrapped in StreamSinkIn
@@ -41,6 +44,21 @@ func StreamSinkInOneOf2AsStreamSinkIn(v *StreamSinkInOneOf2) StreamSinkIn {
 // StreamSinkInOneOf3AsStreamSinkIn is a convenience function that returns StreamSinkInOneOf3 wrapped in StreamSinkIn
 func StreamSinkInOneOf3AsStreamSinkIn(v *StreamSinkInOneOf3) StreamSinkIn {
 	return StreamSinkIn{ StreamSinkInOneOf3: v}
+}
+
+// StreamSinkInOneOf4AsStreamSinkIn is a convenience function that returns StreamSinkInOneOf4 wrapped in StreamSinkIn
+func StreamSinkInOneOf4AsStreamSinkIn(v *StreamSinkInOneOf4) StreamSinkIn {
+	return StreamSinkIn{ StreamSinkInOneOf4: v}
+}
+
+// StreamSinkInOneOf5AsStreamSinkIn is a convenience function that returns StreamSinkInOneOf5 wrapped in StreamSinkIn
+func StreamSinkInOneOf5AsStreamSinkIn(v *StreamSinkInOneOf5) StreamSinkIn {
+	return StreamSinkIn{ StreamSinkInOneOf5: v}
+}
+
+// StreamSinkInOneOf6AsStreamSinkIn is a convenience function that returns StreamSinkInOneOf6 wrapped in StreamSinkIn
+func StreamSinkInOneOf6AsStreamSinkIn(v *StreamSinkInOneOf6) StreamSinkIn {
+	return StreamSinkIn{ StreamSinkInOneOf6: v}
 }
 
 
@@ -100,12 +118,54 @@ func (dst *StreamSinkIn) UnmarshalJSON(data []byte) error {
 		dst.StreamSinkInOneOf3 = nil
 	}
 
+	// try to unmarshal data into StreamSinkInOneOf4
+	err = json.Unmarshal(data, &dst.StreamSinkInOneOf4)
+	if err == nil {
+		jsonStreamSinkInOneOf4, _ := json.Marshal(dst.StreamSinkInOneOf4)
+		if string(jsonStreamSinkInOneOf4) == "{}" { // empty struct
+			dst.StreamSinkInOneOf4 = nil
+		} else {
+			match++
+		}
+	} else {
+		dst.StreamSinkInOneOf4 = nil
+	}
+
+	// try to unmarshal data into StreamSinkInOneOf5
+	err = json.Unmarshal(data, &dst.StreamSinkInOneOf5)
+	if err == nil {
+		jsonStreamSinkInOneOf5, _ := json.Marshal(dst.StreamSinkInOneOf5)
+		if string(jsonStreamSinkInOneOf5) == "{}" { // empty struct
+			dst.StreamSinkInOneOf5 = nil
+		} else {
+			match++
+		}
+	} else {
+		dst.StreamSinkInOneOf5 = nil
+	}
+
+	// try to unmarshal data into StreamSinkInOneOf6
+	err = json.Unmarshal(data, &dst.StreamSinkInOneOf6)
+	if err == nil {
+		jsonStreamSinkInOneOf6, _ := json.Marshal(dst.StreamSinkInOneOf6)
+		if string(jsonStreamSinkInOneOf6) == "{}" { // empty struct
+			dst.StreamSinkInOneOf6 = nil
+		} else {
+			match++
+		}
+	} else {
+		dst.StreamSinkInOneOf6 = nil
+	}
+
 	if match > 1 { // more than 1 match
 		// reset to nil
 		dst.StreamSinkInOneOf = nil
 		dst.StreamSinkInOneOf1 = nil
 		dst.StreamSinkInOneOf2 = nil
 		dst.StreamSinkInOneOf3 = nil
+		dst.StreamSinkInOneOf4 = nil
+		dst.StreamSinkInOneOf5 = nil
+		dst.StreamSinkInOneOf6 = nil
 
 		return fmt.Errorf("Data matches more than one schema in oneOf(StreamSinkIn)")
 	} else if match == 1 {
@@ -133,6 +193,18 @@ func (src StreamSinkIn) MarshalJSON() ([]byte, error) {
 		return json.Marshal(&src.StreamSinkInOneOf3)
 	}
 
+	if src.StreamSinkInOneOf4 != nil {
+		return json.Marshal(&src.StreamSinkInOneOf4)
+	}
+
+	if src.StreamSinkInOneOf5 != nil {
+		return json.Marshal(&src.StreamSinkInOneOf5)
+	}
+
+	if src.StreamSinkInOneOf6 != nil {
+		return json.Marshal(&src.StreamSinkInOneOf6)
+	}
+
 	return nil, nil // no data in oneOf schemas
 }
 
@@ -152,6 +224,18 @@ func (obj *StreamSinkIn) GetActualInstance() (interface{}) {
 
 	if obj.StreamSinkInOneOf3 != nil {
 		return obj.StreamSinkInOneOf3
+	}
+
+	if obj.StreamSinkInOneOf4 != nil {
+		return obj.StreamSinkInOneOf4
+	}
+
+	if obj.StreamSinkInOneOf5 != nil {
+		return obj.StreamSinkInOneOf5
+	}
+
+	if obj.StreamSinkInOneOf6 != nil {
+		return obj.StreamSinkInOneOf6
 	}
 
 	// all schemas are nil

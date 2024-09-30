@@ -16,7 +16,7 @@ import (
 
 // StreamSinkInOneOf3 struct for StreamSinkInOneOf3
 type StreamSinkInOneOf3 struct {
-	Config SnowflakeConfig `json:"config"`
+	Config S3Config `json:"config"`
 	Type string `json:"type"`
 }
 
@@ -24,7 +24,7 @@ type StreamSinkInOneOf3 struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewStreamSinkInOneOf3(config SnowflakeConfig, type_ string) *StreamSinkInOneOf3 {
+func NewStreamSinkInOneOf3(config S3Config, type_ string) *StreamSinkInOneOf3 {
 	this := StreamSinkInOneOf3{}
 	this.Config = config
 	this.Type = type_
@@ -40,9 +40,9 @@ func NewStreamSinkInOneOf3WithDefaults() *StreamSinkInOneOf3 {
 }
 
 // GetConfig returns the Config field value
-func (o *StreamSinkInOneOf3) GetConfig() SnowflakeConfig {
+func (o *StreamSinkInOneOf3) GetConfig() S3Config {
 	if o == nil {
-		var ret SnowflakeConfig
+		var ret S3Config
 		return ret
 	}
 
@@ -51,7 +51,7 @@ func (o *StreamSinkInOneOf3) GetConfig() SnowflakeConfig {
 
 // GetConfigOk returns a tuple with the Config field value
 // and a boolean to check if the value has been set.
-func (o *StreamSinkInOneOf3) GetConfigOk() (*SnowflakeConfig, bool) {
+func (o *StreamSinkInOneOf3) GetConfigOk() (*S3Config, bool) {
 	if o == nil  {
 		return nil, false
 	}
@@ -59,7 +59,7 @@ func (o *StreamSinkInOneOf3) GetConfigOk() (*SnowflakeConfig, bool) {
 }
 
 // SetConfig sets field value
-func (o *StreamSinkInOneOf3) SetConfig(v SnowflakeConfig) {
+func (o *StreamSinkInOneOf3) SetConfig(v S3Config) {
 	o.Config = v
 }
 

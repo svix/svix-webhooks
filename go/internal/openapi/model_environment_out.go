@@ -20,6 +20,7 @@ type EnvironmentOut struct {
 	CreatedAt time.Time `json:"createdAt"`
 	EventTypes []EventTypeOut `json:"eventTypes"`
 	Settings *SettingsOut `json:"settings,omitempty"`
+	TransformationTemplates []TemplateOut `json:"transformationTemplates"`
 	Version *int32 `json:"version,omitempty"`
 }
 
@@ -27,10 +28,11 @@ type EnvironmentOut struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEnvironmentOut(createdAt time.Time, eventTypes []EventTypeOut) *EnvironmentOut {
+func NewEnvironmentOut(createdAt time.Time, eventTypes []EventTypeOut, transformationTemplates []TemplateOut) *EnvironmentOut {
 	this := EnvironmentOut{}
 	this.CreatedAt = createdAt
 	this.EventTypes = eventTypes
+	this.TransformationTemplates = transformationTemplates
 	var version int32 = 1
 	this.Version = &version
 	return &this
@@ -126,6 +128,30 @@ func (o *EnvironmentOut) SetSettings(v SettingsOut) {
 	o.Settings = &v
 }
 
+// GetTransformationTemplates returns the TransformationTemplates field value
+func (o *EnvironmentOut) GetTransformationTemplates() []TemplateOut {
+	if o == nil {
+		var ret []TemplateOut
+		return ret
+	}
+
+	return o.TransformationTemplates
+}
+
+// GetTransformationTemplatesOk returns a tuple with the TransformationTemplates field value
+// and a boolean to check if the value has been set.
+func (o *EnvironmentOut) GetTransformationTemplatesOk() (*[]TemplateOut, bool) {
+	if o == nil  {
+		return nil, false
+	}
+	return &o.TransformationTemplates, true
+}
+
+// SetTransformationTemplates sets field value
+func (o *EnvironmentOut) SetTransformationTemplates(v []TemplateOut) {
+	o.TransformationTemplates = v
+}
+
 // GetVersion returns the Version field value if set, zero value otherwise.
 func (o *EnvironmentOut) GetVersion() int32 {
 	if o == nil || o.Version == nil {
@@ -168,6 +194,9 @@ func (o EnvironmentOut) MarshalJSON() ([]byte, error) {
 	}
 	if o.Settings != nil {
 		toSerialize["settings"] = o.Settings
+	}
+	if true {
+		toSerialize["transformationTemplates"] = o.TransformationTemplates
 	}
 	if o.Version != nil {
 		toSerialize["version"] = o.Version

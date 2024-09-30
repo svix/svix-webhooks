@@ -364,6 +364,25 @@
                 ],
                 "type": "object"
             },
+            "AzureBlobStorageConfig": {
+                "properties": {
+                    "accessKey": {
+                        "type": "string"
+                    },
+                    "account": {
+                        "type": "string"
+                    },
+                    "container": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "accessKey",
+                    "account",
+                    "container"
+                ],
+                "type": "object"
+            },
             "BackgroundTaskData": {
                 "type": "object"
             },
@@ -1643,6 +1662,13 @@
                         "$ref": "#/components/schemas/SettingsIn",
                         "nullable": true
                     },
+                    "transformationTemplates": {
+                        "items": {
+                            "$ref": "#/components/schemas/TemplateIn"
+                        },
+                        "nullable": true,
+                        "type": "array"
+                    },
                     "version": {
                         "format": "int",
                         "type": "integer"
@@ -1670,6 +1696,12 @@
                         "$ref": "#/components/schemas/SettingsOut",
                         "nullable": true
                     },
+                    "transformationTemplates": {
+                        "items": {
+                            "$ref": "#/components/schemas/TemplateOut"
+                        },
+                        "type": "array"
+                    },
                     "version": {
                         "default": 1,
                         "format": "int",
@@ -1678,7 +1710,8 @@
                 },
                 "required": [
                     "createdAt",
-                    "eventTypes"
+                    "eventTypes",
+                    "transformationTemplates"
                 ],
                 "type": "object"
             },
@@ -2411,6 +2444,23 @@
                     "id",
                     "model",
                     "object"
+                ],
+                "type": "object"
+            },
+            "GoogleCloudStorageConfig": {
+                "description": "Configuration for a Google Cloud Storage sink.\n\nWrite stream events into the named bucket using the supplied Google Cloud credentials.",
+                "properties": {
+                    "bucket": {
+                        "type": "string"
+                    },
+                    "credentials": {
+                        "description": "Google Cloud Credentials JSON Object as a string.",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "bucket",
+                    "credentials"
                 ],
                 "type": "object"
             },
@@ -3948,6 +3998,47 @@
                 ],
                 "type": "object"
             },
+            "RedshiftConfig": {
+                "description": "Configuration parameters for defining a Redshift sink.",
+                "properties": {
+                    "accessKeyId": {
+                        "type": "string"
+                    },
+                    "clusterIdentifier": {
+                        "type": "string"
+                    },
+                    "dbName": {
+                        "description": "Database name.\n\nOnly required if not using transformations.",
+                        "type": "string"
+                    },
+                    "dbUser": {
+                        "type": "string"
+                    },
+                    "region": {
+                        "type": "string"
+                    },
+                    "schemaName": {
+                        "description": "Schema name.\n\nOnly used if not using transformations.",
+                        "nullable": true,
+                        "type": "string"
+                    },
+                    "secretAccessKey": {
+                        "type": "string"
+                    },
+                    "tableName": {
+                        "description": "Table name.\n\nOnly required if not using transformations.",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "accessKeyId",
+                    "clusterIdentifier",
+                    "dbUser",
+                    "region",
+                    "secretAccessKey"
+                ],
+                "type": "object"
+            },
             "ReplayIn": {
                 "properties": {
                     "since": {
@@ -4012,7 +4103,7 @@
             },
             "S3Config": {
                 "properties": {
-                    "accessKey": {
+                    "accessKeyId": {
                         "type": "string"
                     },
                     "bucket": {
@@ -4026,7 +4117,7 @@
                     }
                 },
                 "required": [
-                    "accessKey",
+                    "accessKeyId",
                     "bucket",
                     "region",
                     "secretAccessKey"
@@ -4217,6 +4308,13 @@
             },
             "SinkHttpConfig": {
                 "properties": {
+                    "headers": {
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "default": {},
+                        "type": "object"
+                    },
                     "url": {
                         "format": "uri",
                         "type": "string"
@@ -4322,25 +4420,6 @@
                         "properties": {
                             "type": {
                                 "enum": [
-                                    "otelV1HttpTrace"
-                                ],
-                                "type": "string"
-                            },
-                            "url": {
-                                "format": "uri",
-                                "type": "string"
-                            }
-                        },
-                        "required": [
-                            "type",
-                            "url"
-                        ],
-                        "type": "object"
-                    },
-                    {
-                        "properties": {
-                            "type": {
-                                "enum": [
                                     "http"
                                 ],
                                 "type": "string"
@@ -4358,14 +4437,6 @@
                     }
                 ],
                 "properties": {
-                    "batchSize": {
-                        "default": 100,
-                        "description": "Upper limit for how many messages to publish to the sink at once.\n\nDefault: `100`",
-                        "format": "uint16",
-                        "maximum": 1000,
-                        "minimum": 1,
-                        "type": "integer"
-                    },
                     "channels": {
                         "description": "List of message channels this sink listens to (omit for all)",
                         "example": [
@@ -4410,14 +4481,6 @@
                         "nullable": true,
                         "type": "array",
                         "uniqueItems": true
-                    },
-                    "maxWait": {
-                        "default": 0,
-                        "description": "How many seconds to spend waiting to try and fill a given batch.\n\nWhen preparing to flush a partial batch of messages to the sink, wait this long for any late-arriving messages that could complete the batch.\n\nDefault: `0` meaning \"don't wait.\"",
-                        "format": "uint16",
-                        "maximum": 3600,
-                        "minimum": 0,
-                        "type": "integer"
                     },
                     "metadata": {
                         "additionalProperties": {
@@ -4558,25 +4621,6 @@
                         "properties": {
                             "type": {
                                 "enum": [
-                                    "otelV1HttpTrace"
-                                ],
-                                "type": "string"
-                            },
-                            "url": {
-                                "format": "uri",
-                                "type": "string"
-                            }
-                        },
-                        "required": [
-                            "type",
-                            "url"
-                        ],
-                        "type": "object"
-                    },
-                    {
-                        "properties": {
-                            "type": {
-                                "enum": [
                                     "http"
                                 ],
                                 "type": "string"
@@ -4594,12 +4638,6 @@
                     }
                 ],
                 "properties": {
-                    "batchSize": {
-                        "description": "The desired batch size when flushing events to the sink.",
-                        "format": "uint16",
-                        "minimum": 0,
-                        "type": "integer"
-                    },
                     "channels": {
                         "description": "List of message channels this endpoint listens to (omit for all)",
                         "example": [
@@ -4653,12 +4691,6 @@
                         "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                         "type": "string"
                     },
-                    "maxWait": {
-                        "description": "How many seconds to spend waiting to try and fill a given batch.\n\nWhen preparing to flush a partial batch of messages to the sink, wait this long for any late-arriving messages that could complete the batch.\n\nDefault: `0` meaning \"don't wait.\"",
-                        "format": "uint16",
-                        "minimum": 0,
-                        "type": "integer"
-                    },
                     "metadata": {
                         "additionalProperties": {
                             "type": "string"
@@ -4686,11 +4718,9 @@
                     }
                 },
                 "required": [
-                    "batchSize",
                     "createdAt",
                     "description",
                     "id",
-                    "maxWait",
                     "metadata",
                     "updatedAt"
                 ],
@@ -4745,23 +4775,30 @@
                 "type": "object"
             },
             "SnowflakeConfig": {
+                "description": "Configuration parameters for defining a Snowflake sink.",
                 "properties": {
                     "accountIdentifier": {
+                        "description": "Snowflake account identifier, which includes both the organization and account IDs separated by a hyphen.",
                         "type": "string"
                     },
                     "dbName": {
+                        "description": "Database name.\n\nOnly required if not using transformations.",
                         "type": "string"
                     },
                     "privateKey": {
+                        "description": "PEM-encoded private key used for signing token-based requests to the Snowflake API.\n\nBeginning/end delimiters are not required.",
                         "type": "string"
                     },
                     "schemaName": {
+                        "description": "Schema name.\n\nOnly required if not using transformations.",
                         "type": "string"
                     },
                     "tableName": {
+                        "description": "Table name.\n\nOnly required if not using transformations.",
                         "type": "string"
                     },
                     "userId": {
+                        "description": "The Snowflake user id.",
                         "type": "string"
                     }
                 },
@@ -4865,6 +4902,24 @@
                     {
                         "properties": {
                             "config": {
+                                "$ref": "#/components/schemas/AzureBlobStorageConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "azureBlobStorage"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
                                 "$ref": "#/components/schemas/SinkOtelV1Config"
                             },
                             "type": {
@@ -4924,6 +4979,42 @@
                             "type": {
                                 "enum": [
                                     "snowflake"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/GoogleCloudStorageConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "googleCloudStorage"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/RedshiftConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "redshift"
                                 ],
                                 "type": "string"
                             }
@@ -4971,6 +5062,24 @@
                     {
                         "properties": {
                             "config": {
+                                "$ref": "#/components/schemas/AzureBlobStorageConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "azureBlobStorage"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
                                 "$ref": "#/components/schemas/SinkOtelV1Config"
                             },
                             "type": {
@@ -5030,6 +5139,42 @@
                             "type": {
                                 "enum": [
                                     "snowflake"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/GoogleCloudStorageConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "googleCloudStorage"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/RedshiftConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "redshift"
                                 ],
                                 "type": "string"
                             }
@@ -5096,6 +5241,24 @@
                     {
                         "properties": {
                             "config": {
+                                "$ref": "#/components/schemas/AzureBlobStorageConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "azureBlobStorage"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
                                 "$ref": "#/components/schemas/SinkOtelV1Config"
                             },
                             "type": {
@@ -5155,6 +5318,42 @@
                             "type": {
                                 "enum": [
                                     "snowflake"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/GoogleCloudStorageConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "googleCloudStorage"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ],
+                        "type": "object"
+                    },
+                    {
+                        "properties": {
+                            "config": {
+                                "$ref": "#/components/schemas/RedshiftConfig"
+                            },
+                            "type": {
+                                "enum": [
+                                    "redshift"
                                 ],
                                 "type": "string"
                             }
@@ -20403,62 +20602,62 @@
                     {
                         "label": "JavaScript",
                         "lang": "JavaScript",
-                        "source": "await svix.environment.import({\n    eventTypes: null,\n    settings: null\n});"
+                        "source": "await svix.environment.import({\n    eventTypes: null,\n    settings: null,\n    transformationTemplates: null\n});"
                     },
                     {
                         "label": "TypeScript",
                         "lang": "JavaScript",
-                        "source": "await svix.environment.import({\n    eventTypes: null,\n    settings: null\n});"
+                        "source": "await svix.environment.import({\n    eventTypes: null,\n    settings: null,\n    transformationTemplates: null\n});"
                     },
                     {
                         "label": "Python",
                         "lang": "Python",
-                        "source": "svix.environment.import(EnvironmentIn(\n    event_types=None,\n    settings=None\n), None)"
+                        "source": "svix.environment.import(EnvironmentIn(\n    event_types=None,\n    settings=None,\n    transformation_templates=None\n), None)"
                     },
                     {
                         "label": "Python (Async)",
                         "lang": "Python",
-                        "source": "await svix.environment.import(EnvironmentIn(\n    event_types=None,\n    settings=None\n), None)"
+                        "source": "await svix.environment.import(EnvironmentIn(\n    event_types=None,\n    settings=None,\n    transformation_templates=None\n), None)"
                     },
                     {
                         "label": "Go",
                         "lang": "Go",
-                        "source": "err := svixClient.Environment.Import(ctx, &EnvironmentIn{\n    EventTypes: nil,\n    Settings: nil,\n})"
+                        "source": "err := svixClient.Environment.Import(ctx, &EnvironmentIn{\n    EventTypes: nil,\n    Settings: nil,\n    TransformationTemplates: nil,\n})"
                     },
                     {
                         "label": "Kotlin",
                         "lang": "Kotlin",
-                        "source": "svix.environment.import(EnvironmentIn()\n    .eventTypes(null)\n    .settings(null)\n)"
+                        "source": "svix.environment.import(EnvironmentIn()\n    .eventTypes(null)\n    .settings(null)\n    .transformationTemplates(null)\n)"
                     },
                     {
                         "label": "Java",
                         "lang": "Java",
-                        "source": "svix.getEnvironment().import(new EnvironmentIn()\n    .eventTypes(null)\n    .settings(null)\n)"
+                        "source": "svix.getEnvironment().import(new EnvironmentIn()\n    .eventTypes(null)\n    .settings(null)\n    .transformationTemplates(null)\n)"
                     },
                     {
                         "label": "Ruby",
                         "lang": "Ruby",
-                        "source": "svix.environment.import(Svix::EnvironmentIn.new({\n    \"event_types\": nil,\n    \"settings\": nil\n}))"
+                        "source": "svix.environment.import(Svix::EnvironmentIn.new({\n    \"event_types\": nil,\n    \"settings\": nil,\n    \"transformation_templates\": nil\n}))"
                     },
                     {
                         "label": "Rust",
                         "lang": "Rust",
-                        "source": "svix.environment().import(EnvironmentIn {\n    event_types: None,\n    settings: None,\n}, None).await?;"
+                        "source": "svix.environment().import(EnvironmentIn {\n    event_types: None,\n    settings: None,\n    transformation_templates: None,\n}, None).await?;"
                     },
                     {
                         "label": "C#",
                         "lang": "C#",
-                        "source": "await svix.Environment.ImportAsync(new EnvironmentIn{\n    eventTypes: null,\n    settings: null\n})"
+                        "source": "await svix.Environment.ImportAsync(new EnvironmentIn{\n    eventTypes: null,\n    settings: null,\n    transformationTemplates: null\n})"
                     },
                     {
                         "label": "CLI",
                         "lang": "Shell",
-                        "source": "svix environment import '{\n    \"eventTypes\": null,\n    \"settings\": null\n}'"
+                        "source": "svix environment import '{\n    \"eventTypes\": null,\n    \"settings\": null,\n    \"transformationTemplates\": null\n}'"
                     },
                     {
                         "label": "cURL",
                         "lang": "Shell",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/environment/import' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"eventTypes\": null,\n        \"settings\": null\n    }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/environment/import' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"eventTypes\": null,\n        \"settings\": null,\n        \"transformationTemplates\": null\n    }'"
                     }
                 ]
             }
