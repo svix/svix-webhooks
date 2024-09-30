@@ -1,15 +1,10 @@
 [package]
 name = "svix-server"
 version = "1.36.0"
-license = "MIT"
 description = "Svix webhooks server"
-
-authors = ["Svix Inc. <oss@svix.com>"]
-homepage = "https://www.svix.com"
-repository = "https://github.com/svix/svix-webhooks"
-readme = "../README.md"
-edition = "2021"
 publish = false
+edition.workspace = true
+license.workspace = true
 
 [dependencies]
 svix-server_derive = { path = "../svix-server_derive" }
