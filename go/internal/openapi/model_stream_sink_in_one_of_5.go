@@ -14,35 +14,35 @@ import (
 	"encoding/json"
 )
 
-// StreamSinkInOneOf struct for StreamSinkInOneOf
-type StreamSinkInOneOf struct {
-	Config AzureBlobStorageConfig `json:"config"`
+// StreamSinkInOneOf5 struct for StreamSinkInOneOf5
+type StreamSinkInOneOf5 struct {
+	Config GoogleCloudStorageConfig `json:"config"`
 	Type string `json:"type"`
 }
 
-// NewStreamSinkInOneOf instantiates a new StreamSinkInOneOf object
+// NewStreamSinkInOneOf5 instantiates a new StreamSinkInOneOf5 object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewStreamSinkInOneOf(config AzureBlobStorageConfig, type_ string) *StreamSinkInOneOf {
-	this := StreamSinkInOneOf{}
+func NewStreamSinkInOneOf5(config GoogleCloudStorageConfig, type_ string) *StreamSinkInOneOf5 {
+	this := StreamSinkInOneOf5{}
 	this.Config = config
 	this.Type = type_
 	return &this
 }
 
-// NewStreamSinkInOneOfWithDefaults instantiates a new StreamSinkInOneOf object
+// NewStreamSinkInOneOf5WithDefaults instantiates a new StreamSinkInOneOf5 object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewStreamSinkInOneOfWithDefaults() *StreamSinkInOneOf {
-	this := StreamSinkInOneOf{}
+func NewStreamSinkInOneOf5WithDefaults() *StreamSinkInOneOf5 {
+	this := StreamSinkInOneOf5{}
 	return &this
 }
 
 // GetConfig returns the Config field value
-func (o *StreamSinkInOneOf) GetConfig() AzureBlobStorageConfig {
+func (o *StreamSinkInOneOf5) GetConfig() GoogleCloudStorageConfig {
 	if o == nil {
-		var ret AzureBlobStorageConfig
+		var ret GoogleCloudStorageConfig
 		return ret
 	}
 
@@ -51,7 +51,7 @@ func (o *StreamSinkInOneOf) GetConfig() AzureBlobStorageConfig {
 
 // GetConfigOk returns a tuple with the Config field value
 // and a boolean to check if the value has been set.
-func (o *StreamSinkInOneOf) GetConfigOk() (*AzureBlobStorageConfig, bool) {
+func (o *StreamSinkInOneOf5) GetConfigOk() (*GoogleCloudStorageConfig, bool) {
 	if o == nil  {
 		return nil, false
 	}
@@ -59,12 +59,12 @@ func (o *StreamSinkInOneOf) GetConfigOk() (*AzureBlobStorageConfig, bool) {
 }
 
 // SetConfig sets field value
-func (o *StreamSinkInOneOf) SetConfig(v AzureBlobStorageConfig) {
+func (o *StreamSinkInOneOf5) SetConfig(v GoogleCloudStorageConfig) {
 	o.Config = v
 }
 
 // GetType returns the Type field value
-func (o *StreamSinkInOneOf) GetType() string {
+func (o *StreamSinkInOneOf5) GetType() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -75,7 +75,7 @@ func (o *StreamSinkInOneOf) GetType() string {
 
 // GetTypeOk returns a tuple with the Type field value
 // and a boolean to check if the value has been set.
-func (o *StreamSinkInOneOf) GetTypeOk() (*string, bool) {
+func (o *StreamSinkInOneOf5) GetTypeOk() (*string, bool) {
 	if o == nil  {
 		return nil, false
 	}
@@ -83,11 +83,11 @@ func (o *StreamSinkInOneOf) GetTypeOk() (*string, bool) {
 }
 
 // SetType sets field value
-func (o *StreamSinkInOneOf) SetType(v string) {
+func (o *StreamSinkInOneOf5) SetType(v string) {
 	o.Type = v
 }
 
-func (o StreamSinkInOneOf) MarshalJSON() ([]byte, error) {
+func (o StreamSinkInOneOf5) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
 		toSerialize["config"] = o.Config
@@ -98,38 +98,38 @@ func (o StreamSinkInOneOf) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-type NullableStreamSinkInOneOf struct {
-	value *StreamSinkInOneOf
+type NullableStreamSinkInOneOf5 struct {
+	value *StreamSinkInOneOf5
 	isSet bool
 }
 
-func (v NullableStreamSinkInOneOf) Get() *StreamSinkInOneOf {
+func (v NullableStreamSinkInOneOf5) Get() *StreamSinkInOneOf5 {
 	return v.value
 }
 
-func (v *NullableStreamSinkInOneOf) Set(val *StreamSinkInOneOf) {
+func (v *NullableStreamSinkInOneOf5) Set(val *StreamSinkInOneOf5) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableStreamSinkInOneOf) IsSet() bool {
+func (v NullableStreamSinkInOneOf5) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableStreamSinkInOneOf) Unset() {
+func (v *NullableStreamSinkInOneOf5) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableStreamSinkInOneOf(val *StreamSinkInOneOf) *NullableStreamSinkInOneOf {
-	return &NullableStreamSinkInOneOf{value: val, isSet: true}
+func NewNullableStreamSinkInOneOf5(val *StreamSinkInOneOf5) *NullableStreamSinkInOneOf5 {
+	return &NullableStreamSinkInOneOf5{value: val, isSet: true}
 }
 
-func (v NullableStreamSinkInOneOf) MarshalJSON() ([]byte, error) {
+func (v NullableStreamSinkInOneOf5) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableStreamSinkInOneOf) UnmarshalJSON(src []byte) error {
+func (v *NullableStreamSinkInOneOf5) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

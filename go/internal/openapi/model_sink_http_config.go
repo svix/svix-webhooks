@@ -16,6 +16,7 @@ import (
 
 // SinkHttpConfig struct for SinkHttpConfig
 type SinkHttpConfig struct {
+	Headers *map[string]string `json:"headers,omitempty"`
 	Url string `json:"url"`
 }
 
@@ -35,6 +36,38 @@ func NewSinkHttpConfig(url string) *SinkHttpConfig {
 func NewSinkHttpConfigWithDefaults() *SinkHttpConfig {
 	this := SinkHttpConfig{}
 	return &this
+}
+
+// GetHeaders returns the Headers field value if set, zero value otherwise.
+func (o *SinkHttpConfig) GetHeaders() map[string]string {
+	if o == nil || o.Headers == nil {
+		var ret map[string]string
+		return ret
+	}
+	return *o.Headers
+}
+
+// GetHeadersOk returns a tuple with the Headers field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *SinkHttpConfig) GetHeadersOk() (*map[string]string, bool) {
+	if o == nil || o.Headers == nil {
+		return nil, false
+	}
+	return o.Headers, true
+}
+
+// HasHeaders returns a boolean if a field has been set.
+func (o *SinkHttpConfig) HasHeaders() bool {
+	if o != nil && o.Headers != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetHeaders gets a reference to the given map[string]string and assigns it to the Headers field.
+func (o *SinkHttpConfig) SetHeaders(v map[string]string) {
+	o.Headers = &v
 }
 
 // GetUrl returns the Url field value
@@ -63,6 +96,9 @@ func (o *SinkHttpConfig) SetUrl(v string) {
 
 func (o SinkHttpConfig) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
+	if o.Headers != nil {
+		toSerialize["headers"] = o.Headers
+	}
 	if true {
 		toSerialize["url"] = o.Url
 	}

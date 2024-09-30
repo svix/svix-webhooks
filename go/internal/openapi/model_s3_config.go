@@ -16,7 +16,7 @@ import (
 
 // S3Config struct for S3Config
 type S3Config struct {
-	AccessKey string `json:"accessKey"`
+	AccessKeyId string `json:"accessKeyId"`
 	Bucket string `json:"bucket"`
 	Region string `json:"region"`
 	SecretAccessKey string `json:"secretAccessKey"`
@@ -26,9 +26,9 @@ type S3Config struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewS3Config(accessKey string, bucket string, region string, secretAccessKey string) *S3Config {
+func NewS3Config(accessKeyId string, bucket string, region string, secretAccessKey string) *S3Config {
 	this := S3Config{}
-	this.AccessKey = accessKey
+	this.AccessKeyId = accessKeyId
 	this.Bucket = bucket
 	this.Region = region
 	this.SecretAccessKey = secretAccessKey
@@ -43,28 +43,28 @@ func NewS3ConfigWithDefaults() *S3Config {
 	return &this
 }
 
-// GetAccessKey returns the AccessKey field value
-func (o *S3Config) GetAccessKey() string {
+// GetAccessKeyId returns the AccessKeyId field value
+func (o *S3Config) GetAccessKeyId() string {
 	if o == nil {
 		var ret string
 		return ret
 	}
 
-	return o.AccessKey
+	return o.AccessKeyId
 }
 
-// GetAccessKeyOk returns a tuple with the AccessKey field value
+// GetAccessKeyIdOk returns a tuple with the AccessKeyId field value
 // and a boolean to check if the value has been set.
-func (o *S3Config) GetAccessKeyOk() (*string, bool) {
+func (o *S3Config) GetAccessKeyIdOk() (*string, bool) {
 	if o == nil  {
 		return nil, false
 	}
-	return &o.AccessKey, true
+	return &o.AccessKeyId, true
 }
 
-// SetAccessKey sets field value
-func (o *S3Config) SetAccessKey(v string) {
-	o.AccessKey = v
+// SetAccessKeyId sets field value
+func (o *S3Config) SetAccessKeyId(v string) {
+	o.AccessKeyId = v
 }
 
 // GetBucket returns the Bucket field value
@@ -142,7 +142,7 @@ func (o *S3Config) SetSecretAccessKey(v string) {
 func (o S3Config) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
-		toSerialize["accessKey"] = o.AccessKey
+		toSerialize["accessKeyId"] = o.AccessKeyId
 	}
 	if true {
 		toSerialize["bucket"] = o.Bucket
