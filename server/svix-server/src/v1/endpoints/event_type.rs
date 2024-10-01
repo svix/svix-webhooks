@@ -402,6 +402,14 @@ async fn patch_event_type(
     Ok(Json(ret.into()))
 }
 
+#[derive(Debug, Deserialize, Serialize, Validate, JsonSchema)]
+struct DeleteEventTypeQueryParams {
+    /// By default event types are archived when "deleted". Passing this to `true` deletes them
+    /// entirely.
+    #[serde(default)]
+    expunge: bool,
+}
+
 /// Archive an event type.
 ///
 /// Endpoints already configured to filter on an event type will continue to do so after archival.
@@ -412,6 +420,9 @@ async fn patch_event_type(
 async fn delete_event_type(
     State(AppState { ref db, .. }): State<AppState>,
     Path(EventTypeNamePath { event_type_name }): Path<EventTypeNamePath>,
+    ValidatedQuery(DeleteEventTypeQueryParams { expunge }): ValidatedQuery<
+        DeleteEventTypeQueryParams,
+    >,
     permissions::Organization { org_id }: permissions::Organization,
 ) -> Result<NoContent> {
     let evtype = eventtype::Entity::secure_find_by_name(org_id, event_type_name)
@@ -420,8 +431,13 @@ async fn delete_event_type(
         .ok_or_else(|| HttpError::not_found(None, None))?;
 
     let mut evtype: eventtype::ActiveModel = evtype.into();
-    evtype.deleted = Set(true);
-    evtype.update(db).await?;
+
+    if expunge {
+        evtype.delete(db).await?;
+    } else {
+        evtype.deleted = Set(true);
+        evtype.update(db).await?;
+    }
     Ok(NoContent)
 }
 
