@@ -6991,6 +6991,17 @@
                             "type": "string"
                         },
                         "style": "simple"
+                    },
+                    {
+                        "description": "By default event types are archived when \"deleted\". Passing this to `true` deletes them entirely.",
+                        "in": "query",
+                        "name": "expunge",
+                        "schema": {
+                            "default": false,
+                            "description": "By default event types are archived when \"deleted\". Passing this to `true` deletes them entirely.",
+                            "type": "boolean"
+                        },
+                        "style": "form"
                     }
                 ],
                 "responses": {
