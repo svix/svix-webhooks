@@ -16,6 +16,10 @@ nonstandard_macro_braces = "warn"
 todo = "warn"
 uninlined_format_args = "warn"
 
+[workspace.package]
+edition = "2021"
+license = "MIT"
+
 [profile.dev]
 # optimize host dependencies for faster rebuilds.
 # slows down compilation of those dependencies, but they'll not be compiled
