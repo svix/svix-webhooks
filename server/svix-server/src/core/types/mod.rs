@@ -637,7 +637,7 @@ pub struct ExpiringSigningKeys(pub Vec<ExpiringSigningKey>);
 json_wrapper!(ExpiringSigningKeys);
 
 impl ExpiringSigningKeys {
-    pub const MAX_OLD_KEYS: usize = 5;
+    pub const MAX_OLD_KEYS: usize = 10;
     pub const OLD_KEY_EXPIRY_HOURS: i64 = 24;
 }
 
